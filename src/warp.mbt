@@ -1,3 +1,13 @@
+// extern types
+type LLVMBool Int derive(Eq)
+
+type LLVMContextRef
+// type LLVMModuleRef
+// type LLVMBasicBlockRef
+// type LLVMBuilderRef
+type LLVMValueRef
+type LLVMTypeRef
+
 // Utils
 extern "C" fn moonbit_str_to_c_str(s: String) -> CStr = "moonbit_str_to_c_str"
 extern "C" fn c_str_to_moonbit_str(s: CStr) -> String = "c_str_to_moonbit_str"
@@ -10,6 +20,90 @@ extern "C" fn c_str_to_moonbit_str(s: CStr) -> String = "c_str_to_moonbit_str"
 //
 extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
 extern "C" fn llvm_int32_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
+
+//
+// Create a new, empty module in the global context.
+//
+// This is equivalent to calling LLVMModuleCreateWithNameInContext with
+// LLVMGetGlobalContext() as the context parameter.
+//
+// Every invocation should be paired with LLVMDisposeModule() or memory
+// will be leaked.
+//
+// extern "C" fn llvm_module_create_with_name(name: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
+
+// 
+// Create a new, empty module in a specific context.
+// 
+// Every invocation should be paired with LLVMDisposeModule() or memory
+// will be leaked.
+// 
+// extern "C" fn llvm_module_create_with_name_in_context(name: CStr, ctx: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
+
+// 
+// Destroy a module instance.
+// 
+// This must be called for every created module or memory will be
+// leaked.
+// 
+// extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
+
+// 
+// Dump a representation of a module to stderr.
+// 
+// @see Module::dump()
+// 
+// extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
+
+// 
+// Return a string representation of the module. Use
+// LLVMDisposeMessage to free the string.
+// 
+// @see Module::print()
+// 
+// extern "C" fn llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_print_module_to_string"
+
+// ==================== Function ====================
+// 
+// Add a function to a module under a specified name.
+// 
+// @see llvm::Function::Create()
+// 
+// extern "C" fn llvm_add_function(m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_add_function"
+
+// 
+// Obtain a Function value from a Module by its name.
+// 
+// The returned value corresponds to a llvm::Function value.
+// 
+// @see llvm::Module::getFunction()
+// 
+// extern "C" fn llvm_get_named_function(m: LLVMModuleRef, name: CStr) -> LLVMValueRef = "__llvm_get_named_function"
+
+// 
+// Obtain an iterator to the first Function in a Module.
+// 
+// @see llvm::Module::begin()
+// 
+// extern "C" fn llvm_get_first_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_first_function"
+
+// 
+// Obtain an iterator to the last Function in a Module.
+// 
+// @see llvm::Module::end()
+// 
+// extern "C" fn llvm_get_last_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_last_function"
+
+
+// ==================== Type
+
+// 
+// Print a representation of a module to a file. The ErrorMessage needs to be
+// disposed with LLVMDisposeMessage. Returns 0 on success, 1 otherwise.
+// 
+// @see Module::print()
+// 
+// extern "C" fn llvm_print_module_to_file(module: LLVMModuleRef, filename: CStr, errmsg: CStr) -> LLVMBool = "__llvm_print_module_to_file"
 
 //
 // Determine whether a type instance is null.

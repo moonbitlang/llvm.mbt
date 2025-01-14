@@ -1,5 +1,4 @@
 // Utils
-type LLVMBool Int derive(Eq)
 type CStr
 
 fn to_moonbit_bool(self: LLVMBool) -> Bool {
@@ -31,8 +30,6 @@ fn assert_not(cond: Bool) -> Unit {
 }
 
 // Values
-type LLVMValueRef
-
 pub struct Value {
   value: LLVMValueRef
 }
@@ -96,8 +93,6 @@ pub fn dump(self: IntValue) -> Unit {
 }
 
 // Types
-type LLVMTypeRef
-
 pub struct Type {
   ty: LLVMTypeRef
 }
@@ -146,8 +141,6 @@ pub fn const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
 }
 
 // Context
-type LLVMContextRef
-
 struct Context {
   context: LLVMContextRef
 }
