@@ -76,7 +76,17 @@ LLVMBool __llvm_type_is_null(void *type_ref) {
  *
  * @see llvm::Type::dump()
  */
-void __llvm_dump_type(void *type_ref) { LLVMDumpType((LLVMTypeRef)type_ref); }
+void __llvm_dump_type(void *val) { LLVMDumpType((LLVMTypeRef)val); }
+
+/**
+ * Return a string representation of the type. Use
+ * LLVMDisposeMessage to free the string.
+ *
+ * @see llvm::Type::print()
+ */
+void *__llvm_print_type_to_string(void *val) {
+  return LLVMPrintTypeToString((LLVMTypeRef)val);
+}
 
 /**
  * Dump a representation of a value to stderr.
