@@ -1,4 +1,5 @@
 // extern types
+type CStr
 type LLVMBool Int derive(Eq)
 
 type LLVMContextRef
