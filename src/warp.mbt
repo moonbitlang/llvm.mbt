@@ -3,15 +3,19 @@ type CStr
 type LLVMBool Int derive(Eq)
 
 type LLVMContextRef
-// type LLVMModuleRef
-// type LLVMBasicBlockRef
-// type LLVMBuilderRef
+type LLVMModuleRef
+type LLVMBasicBlockRef
+type LLVMBuilderRef
 type LLVMValueRef
 type LLVMTypeRef
 
 // Utils
-extern "C" fn moonbit_str_to_c_str(s: String) -> CStr = "moonbit_str_to_c_str"
-extern "C" fn c_str_to_moonbit_str(s: CStr) -> String = "c_str_to_moonbit_str"
+extern "C" fn moonbit_str_to_c_str(
+  s: String
+) -> CStr = "moonbit_str_to_c_str"
+extern "C" fn c_str_to_moonbit_str(
+  s: CStr
+) -> String = "c_str_to_moonbit_str"
 
 //
 // Create a new context.
@@ -21,6 +25,57 @@ extern "C" fn c_str_to_moonbit_str(s: CStr) -> String = "c_str_to_moonbit_str"
 //
 extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
 
+//
+// Create a new, empty module in the global context.
+//
+// This is equivalent to calling LLVMModuleCreateWithNameInContext with
+// LLVMGetGlobalContext() as the context parameter.
+//
+// Every invocation should be paired with LLVMDisposeModule() or memory
+// will be leaked.
+//
+// extern "C" fn llvm_module_create_with_name(name: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
+
+// 
+// Create a new, empty module in a specific context.
+// 
+// Every invocation should be paired with LLVMDisposeModule() or memory
+// will be leaked.
+// 
+extern "C" fn llvm_module_create_with_name_in_context(name: CStr, ctx: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
+
+// 
+// Destroy a module instance.
+// 
+// This must be called for every created module or memory will be
+// leaked.
+// 
+// extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
+
+// 
+// Dump a representation of a module to stderr.
+// 
+// @see Module::dump()
+// 
+extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
+
+// 
+// Return a string representation of the module. Use
+// LLVMDisposeMessage to free the string.
+// 
+// @see Module::print()
+// 
+extern "C" fn llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_print_module_to_string"
+
+
+// 
+// Add a function to a module under a specified name.
+// 
+// @see llvm::Function::Create()
+// 
+extern "C" fn llvm_add_function(
+  m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef
+) -> LLVMValueRef = "__llvm_add_function"
 
 // 
 // @defgroup LLVMCCoreTypeInt Integer Types
@@ -53,47 +108,12 @@ extern "C" fn llvm_int32_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "
 // extern "C" fn llvm_int128_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type"
 // extern "C" fn llvm_int_type(ctx: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type"
 
-//
-// Create a new, empty module in the global context.
-//
-// This is equivalent to calling LLVMModuleCreateWithNameInContext with
-// LLVMGetGlobalContext() as the context parameter.
-//
-// Every invocation should be paired with LLVMDisposeModule() or memory
-// will be leaked.
-//
-// extern "C" fn llvm_module_create_with_name(name: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
-
-// 
-// Create a new, empty module in a specific context.
-// 
-// Every invocation should be paired with LLVMDisposeModule() or memory
-// will be leaked.
-// 
-// extern "C" fn llvm_module_create_with_name_in_context(name: CStr, ctx: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
-
-// 
-// Destroy a module instance.
-// 
-// This must be called for every created module or memory will be
-// leaked.
-// 
-// extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
-
-// 
-// Dump a representation of a module to stderr.
-// 
-// @see Module::dump()
-// 
-// extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
-
-// 
-// Return a string representation of the module. Use
-// LLVMDisposeMessage to free the string.
-// 
-// @see Module::print()
-// 
-// extern "C" fn llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_print_module_to_string"
+extern "C" fn llvm_function_type(
+  return_type: LLVMTypeRef,
+  param_types: Array[LLVMTypeRef],
+  param_count: UInt,
+  is_var_arg: LLVMBool
+) -> LLVMTypeRef = "__llvm_function_type"
 
 // ==================== Function ====================
 // 
@@ -183,3 +203,15 @@ extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 extern "C" fn llvm_const_int(ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) -> LLVMValueRef = "__llvm_const_int"
 extern "C" fn llvm_is_const(val: LLVMValueRef) -> LLVMBool = "__llvm_is_const"
 extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr, name_len: UInt) = "__llvm_set_value_name"
+
+// BasicBlock
+extern "C" fn llvm_append_basic_block_in_context(ctx: LLVMContextRef, fn_val: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block_in_context"
+
+// builder
+extern "C" fn llvm_create_builder_in_context(ctx: LLVMContextRef) -> LLVMBuilderRef = "__llvm_create_builder_in_context"
+
+extern "C" fn llvm_build_ret_void(builder: LLVMBuilderRef) = "__llvm_build_ret_void"
+
+extern "C" fn llvm_build_ret(builder: LLVMBuilderRef, val: LLVMValueRef) = "__llvm_build_ret"
+
+extern "C" fn llvm_position_builder_at_end(builder: LLVMBuilderRef, block: LLVMBasicBlockRef) = "__llvm_position_builder_at_end"
