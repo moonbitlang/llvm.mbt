@@ -19,7 +19,38 @@ extern "C" fn c_str_to_moonbit_str(s: CStr) -> String = "c_str_to_moonbit_str"
 // LLVMContextDispose() or the context will leak memory.
 //
 extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
+
+
+// 
+// @defgroup LLVMCCoreTypeInt Integer Types
+// 
+// Functions in this section operate on integer types.
+// 
+// @{
+// 
+//
+// 
+// Obtain an integer type from a context with specified bit width.
+// 
+// extern "C" fn llvm_int1_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
+// extern "C" fn llvm_int8_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
+// extern "C" fn llvm_int16_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
 extern "C" fn llvm_int32_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
+// extern "C" fn llvm_int64_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
+// extern "C" fn llvm_int128_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
+// extern "C" fn llvm_int_type_in_context(ctx: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type_in_context"
+
+// 
+// Obtain an integer type from the global context with a specified bit
+// width.
+// 
+// extern "C" fn llvm_int1_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type"
+// extern "C" fn llvm_int8_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type"
+// extern "C" fn llvm_int16_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type"
+// extern "C" fn llvm_int32_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type"
+// extern "C" fn llvm_int64_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type"
+// extern "C" fn llvm_int128_type(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type"
+// extern "C" fn llvm_int_type(ctx: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type"
 
 //
 // Create a new, empty module in the global context.
