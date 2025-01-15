@@ -17,11 +17,167 @@
 void *__llvm_context_create() { return LLVMContextCreate(); }
 
 /**
+ * @defgroup LLVMCCoreModule Modules
+ *
+ * Modules represent the top-level structure in an LLVM program. An LLVM
+ * module is effectively a translation unit or a collection of
+ * translation units merged together.
+ *
+ * @{
+ */
+
+/**
+ * Create a new, empty module in the global context.
+ *
+ * This is equivalent to calling LLVMModuleCreateWithNameInContext with
+ * LLVMGetGlobalContext() as the context parameter.
+ *
+ * Every invocation should be paired with LLVMDisposeModule() or memory
+ * will be leaked.
+ */
+
+void *__llvm_module_create_with_name(void *module_id) {
+  return (LLVMModuleRef)LLVMModuleCreateWithName((const char *)module_id);
+}
+
+/**
+ * Create a new, empty module in a specific context.
+ *
+ * Every invocation should be paired with LLVMDisposeModule() or memory
+ * will be leaked.
+ */
+void *__llvm_module_create_with_name_in_context(void *module_id,
+                                                void *context) {
+  return (LLVMModuleRef)LLVMModuleCreateWithNameInContext(
+      (const char *)module_id, (LLVMContextRef)context);
+}
+
+/**
+ * Return an exact copy of the specified module.
+ */
+void *__llvm_clone_module(void *module) {
+  return (LLVMModuleRef)LLVMCloneModule((LLVMModuleRef)module);
+}
+
+/**
+ * Destroy a module instance.
+ *
+ * This must be called for every created module or memory will be
+ * leaked.
+ */
+void __llvm_dispose_module(void *module) {
+  LLVMDisposeModule((LLVMModuleRef)module);
+}
+
+/**
+ * Dump a representation of a module to stderr.
+ *
+ * @see Module::dump()
+ */
+void __llvm_dump_module(void *m) { LLVMDumpModule((LLVMModuleRef)m); }
+
+/**
+ * Return a string representation of the module. Use
+ * LLVMDisposeMessage to free the string.
+ *
+ * @see Module::print()
+ */
+void *__llvm_print_module_to_string(void *m) {
+  return (char *)LLVMPrintModuleToString((LLVMModuleRef)m);
+}
+
+/**
+ * Add a function to a module under a specified name.
+ *
+ * @see llvm::Function::Create()
+ */
+void *__llvm_add_function(void *m, void *name, void *function_ty) {
+  return (LLVMValueRef)LLVMAddFunction((LLVMModuleRef)m, (const char *)name,
+                                       (LLVMTypeRef)function_ty);
+}
+
+/**
+ * Obtain a Function value from a Module by its name.
+ *
+ * The returned value corresponds to a llvm::Function value.
+ *
+ * @see llvm::Module::getFunction()
+ */
+void *__llvm_get_named_function(void *m, void *name) {
+  return (LLVMValueRef)LLVMGetNamedFunction((LLVMModuleRef)m,
+                                            (const char *)name);
+}
+
+/**
+ * Obtain an iterator to the first Function in a Module.
+ *
+ * @see llvm::Module::begin()
+ */
+void *__llvm_get_first_function(void *m) {
+  return (LLVMValueRef)LLVMGetFirstFunction((LLVMModuleRef)m);
+}
+
+/**
+ * Obtain an iterator to the last Function in a Module.
+ *
+ * @see llvm::Module::end()
+ */
+void *__llvm_get_last_function(void *m) {
+  return (LLVMValueRef)LLVMGetLastFunction((LLVMModuleRef)m);
+}
+/**
+ * Advance a Function iterator to the next Function.
+ *
+ * Returns NULL if the iterator was already at the end and there are no more
+ * functions.
+ */
+void *__llvm_get_next_function(void *function) {
+  return (LLVMValueRef)LLVMGetNextFunction((LLVMValueRef)function);
+}
+/**
+ * Decrement a Function iterator to the previous Function.
+ *
+ * Returns NULL if the iterator was already at the beginning and there are
+ * no previous functions.
+ */
+void *__llvm_get_previous_function(void *function) {
+  return (LLVMValueRef)LLVMGetPreviousFunction((LLVMValueRef)function);
+}
+
+/**
+ * @}
+ */
+
+/**
  * @defgroup LLVMCCoreTypeInt Integer Types
  *
  * Functions in this section operate on integer types.
  *
  */
+
+/**
+ * Determine whether a type instance is null.
+ */
+LLVMBool __llvm_type_is_null(void *type_ref) {
+  return type_ref == NULL ? 1 : 0;
+}
+
+/**
+ * Dump a representation of a type to stderr.
+ *
+ * @see llvm::Type::dump()
+ */
+void __llvm_dump_type(void *val) { LLVMDumpType((LLVMTypeRef)val); }
+
+/**
+ * Return a string representation of the type. Use
+ * LLVMDisposeMessage to free the string.
+ *
+ * @see llvm::Type::print()
+ */
+void *__llvm_print_type_to_string(void *val) {
+  return LLVMPrintTypeToString((LLVMTypeRef)val);
+}
 
 /**
  * Obtain an integer type from a context with specified bit width.
@@ -187,30 +343,6 @@ unsigned __llvm_count_param_types(void *function_ty) {
  * @param Dest Memory address of an array to be filled with result.
  */
 // void __llvm_get_param_types(void* function_ty, void* param_types);
-
-/**
- * Determine whether a type instance is null.
- */
-LLVMBool __llvm_type_is_null(void *type_ref) {
-  return type_ref == NULL ? 1 : 0;
-}
-
-/**
- * Dump a representation of a type to stderr.
- *
- * @see llvm::Type::dump()
- */
-void __llvm_dump_type(void *val) { LLVMDumpType((LLVMTypeRef)val); }
-
-/**
- * Return a string representation of the type. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see llvm::Type::print()
- */
-void *__llvm_print_type_to_string(void *val) {
-  return LLVMPrintTypeToString((LLVMTypeRef)val);
-}
 
 // ============================
 // Struct Type and Array Type and Vector Type
@@ -923,3 +1055,336 @@ void *__llvm_const_real(void *real_ty, double n) {
 /**
  * @}
  */
+
+/**
+ * @defgroup LLVMCCoreValueBasicBlock Basic Block
+ *
+ * A basic block represents a single entry single exit section of code.
+ * Basic blocks contain a list of instructions which form the body of
+ * the block.
+ *
+ * Basic blocks belong to functions. They have the type of label.
+ *
+ * Basic blocks are themselves values. However, the C API models them as
+ * LLVMBasicBlockRef.
+ *
+ * @see llvm::BasicBlock
+ *
+ * @{
+ */
+
+/**
+ * Convert a basic block instance to a value type.
+ */
+void *__llvm_basic_block_as_value(void *bb) {
+  return (LLVMValueRef)LLVMBasicBlockAsValue((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Determine whether an LLVMValueRef is itself a basic block.
+ */
+LLVMBool LLVMValueIsBasicBlock(void *val) {
+  return LLVMValueIsBasicBlock((LLVMValueRef)val);
+}
+
+/**
+ * Convert an LLVMValueRef to an LLVMBasicBlockRef instance.
+ */
+void *__llvm_value_as_basic_block(void *val) {
+  return (LLVMBasicBlockRef)LLVMValueAsBasicBlock((LLVMValueRef)val);
+}
+
+/**
+ * Obtain the string name of a basic block.
+ */
+void *__llvm_get_basic_block_name(void *bb) {
+  return (char *)LLVMGetBasicBlockName((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Obtain the function to which a basic block belongs.
+ *
+ * @see llvm::BasicBlock::getParent()
+ */
+void *__llvm_get_basic_block_parent(void *bb) {
+  return (LLVMValueRef)LLVMGetBasicBlockParent((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Obtain the terminator instruction for a basic block.
+ *
+ * If the basic block does not have a terminator (it is not well-formed
+ * if it doesn't), then NULL is returned.
+ *
+ * The returned LLVMValueRef corresponds to an llvm::Instruction.
+ *
+ * @see llvm::BasicBlock::getTerminator()
+ */
+void *__llvm_get_basic_block_terminator(void *bb) {
+  return (LLVMValueRef)LLVMGetBasicBlockTerminator((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Obtain the number of basic blocks in a function.
+ *
+ * @param Fn Function value to operate on.
+ */
+uint32_t __llvm_count_basic_blocks(void *fn) {
+  return LLVMCountBasicBlocks((LLVMValueRef)fn);
+}
+
+/**
+ * Obtain all of the basic blocks in a function.
+ *
+ * This operates on a function value. The BasicBlocks parameter is a
+ * pointer to a pre-allocated array of LLVMBasicBlockRef of at least
+ * LLVMCountBasicBlocks() in length. This array is populated with
+ * LLVMBasicBlockRef instances.
+ */
+// void __llvm_get_basic_blocks(LLVMValueRef, LLVMBasicBlockRef*)
+
+/**
+ * Obtain the first basic block in a function.
+ *
+ * The returned basic block can be used as an iterator. You will likely
+ * eventually call into LLVMGetNextBasicBlock() with it.
+ *
+ * @see llvm::Function::begin()
+ */
+void *__llvm_get_first_basic_block(void *fn) {
+  return (LLVMBasicBlockRef)LLVMGetFirstBasicBlock((LLVMValueRef)fn);
+}
+
+/**
+ * Obtain the last basic block in a function.
+ *
+ * @see llvm::Function::end()
+ */
+void *__llvm_get_last_basic_block(void *fn) {
+  return (LLVMBasicBlockRef)LLVMGetLastBasicBlock((LLVMValueRef)fn);
+}
+
+/**
+ * Advance a basic block iterator.
+ */
+void *__llvm_get_next_basic_block(void *bb) {
+  return (LLVMBasicBlockRef)LLVMGetNextBasicBlock((LLVMBasicBlockRef)bb);
+}
+/**
+ * Go backwards in a basic block iterator.
+ */
+void *__llvm_get_previous_basic_block(void *bb) {
+  return (LLVMBasicBlockRef)LLVMGetPreviousBasicBlock((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Obtain the basic block that corresponds to the entry point of a
+ * function.
+ *
+ * @see llvm::Function::getEntryBlock()
+ */
+void *__llvm_get_entry_basic_block(void *fn) {
+  return (LLVMBasicBlockRef)LLVMGetEntryBasicBlock((LLVMValueRef)fn);
+}
+
+/**
+ * Insert the given basic block after the insertion point of the given builder.
+ *
+ * The insertion point must be valid.
+ *
+ * @see llvm::Function::BasicBlockListType::insertAfter()
+ */
+void __llvm_insert_existing_basic_block_after_insert_block(void *builder,
+                                                           void *bb) {
+  LLVMInsertExistingBasicBlockAfterInsertBlock((LLVMBuilderRef)builder,
+                                               (LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Append the given basic block to the basic block list of the given function.
+ *
+ * @see llvm::Function::BasicBlockListType::push_back()
+ */
+void __llvm_append_existing_basic_block(void *fn, void *bb) {
+  LLVMAppendExistingBasicBlock((LLVMValueRef)fn, (LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Create a new basic block without inserting it into a function.
+ *
+ * @see llvm::BasicBlock::Create()
+ */
+void *__llvm_create_basic_block_in_context(void *context, void *name) {
+  return (LLVMBasicBlockRef)LLVMCreateBasicBlockInContext(
+      (LLVMContextRef)context, (const char *)name);
+}
+
+/**
+ * Append a basic block to the end of a function.
+ *
+ * @see llvm::BasicBlock::Create()
+ */
+void *__llvm_append_basic_block_in_context(void *context, void *fn,
+                                           void *name) {
+  return (LLVMBasicBlockRef)LLVMAppendBasicBlockInContext(
+      (LLVMContextRef)context, (LLVMValueRef)fn, (const char *)name);
+}
+
+/**
+ * Append a basic block to the end of a function using the global
+ * context.
+ *
+ * @see llvm::BasicBlock::Create()
+ */
+void *__llvm_append_basic_block(void *fn, void *name) {
+  return (LLVMBasicBlockRef)LLVMAppendBasicBlock((LLVMValueRef)fn,
+                                                 (const char *)name);
+}
+
+/**
+ * Insert a basic block in a function before another basic block.
+ *
+ * The function to add to is determined by the function of the
+ * passed basic block.
+ *
+ * @see llvm::BasicBlock::Create()
+ */
+void *__llvm_insert_basic_block_in_context(void *context, void *bb,
+                                           void *name) {
+  return (LLVMBasicBlockRef)LLVMInsertBasicBlockInContext(
+      (LLVMContextRef)context, (LLVMBasicBlockRef)bb, (const char *)name);
+}
+
+/**
+ * Insert a basic block in a function using the global context.
+ *
+ * @see llvm::BasicBlock::Create()
+ */
+void *__llvm_insert_basic_block(void *bb, void *name) {
+  return (LLVMBasicBlockRef)LLVMInsertBasicBlock((LLVMBasicBlockRef)bb,
+                                                 (const char *)name);
+}
+
+/**
+ * Remove a basic block from a function and delete it.
+ *
+ * This deletes the basic block from its containing function and deletes
+ * the basic block itself.
+ *
+ * @see llvm::BasicBlock::eraseFromParent()
+ */
+void __llvm_delete_basic_block(void *bb) {
+  return LLVMDeleteBasicBlock((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Remove a basic block from a function.
+ *
+ * This deletes the basic block from its containing function but keep
+ * the basic block alive.
+ *
+ * @see llvm::BasicBlock::removeFromParent()
+ */
+void __llvm_remove_basic_block_from_parent(void *bb) {
+  return LLVMRemoveBasicBlockFromParent((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Move a basic block to before another one.
+ *
+ * @see llvm::BasicBlock::moveBefore()
+ */
+void __llvm_move_basic_block_before(void *bb, void *pos) {
+  return LLVMMoveBasicBlockBefore((LLVMBasicBlockRef)bb,
+                                  (LLVMBasicBlockRef)pos);
+}
+
+/**
+ * Move a basic block to after another one.
+ *
+ * @see llvm::BasicBlock::moveAfter()
+ */
+void __llvm_move_basic_block_after(void *bb, void *pos) {
+  return LLVMMoveBasicBlockAfter((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)pos);
+}
+
+/**
+ * Obtain the first instruction in a basic block.
+ *
+ * The returned LLVMValueRef corresponds to a llvm::Instruction
+ * instance.
+ */
+void *__llvm_get_first_instruction(void *bb) {
+  return (LLVMValueRef)LLVMGetFirstInstruction((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Obtain the last instruction in a basic block.
+ *
+ * The returned LLVMValueRef corresponds to an LLVM:Instruction.
+ */
+void *__llvm_get_last_instruction(void *bb) {
+  return (LLVMValueRef)LLVMGetLastInstruction((LLVMBasicBlockRef)bb);
+}
+
+/**
+ * @defgroup LLVMCCoreInstructionBuilder Instruction Builders
+ *
+ * An instruction builder represents a point within a basic block and is
+ * the exclusive means of building instructions using the C interface.
+ *
+ * @{
+ */
+void *__llvm_create_builder_in_context(void *context) {
+  return (LLVMBuilderRef)LLVMCreateBuilderInContext((LLVMContextRef)context);
+}
+
+/**
+ * Set the builder position before Instr but after any attached debug records,
+ * or if Instr is null set the position to the end of Block.
+ */
+void *__llvm_create_builder() { return (LLVMBuilderRef)LLVMCreateBuilder(); }
+
+/**
+ * Set the builder position before Instr and any attached debug records,
+ * or if Instr is null set the position to the end of Block.
+ */
+void __llvm_position_builder(void *builder, void *block, void *instr) {
+  return LLVMPositionBuilder((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block,
+                             (LLVMValueRef)instr);
+}
+
+void __llvm_position_builder_before(void *builder, void *instr) {
+  return LLVMPositionBuilderBefore((LLVMBuilderRef)builder,
+                                   (LLVMValueRef)instr);
+}
+
+/**
+ * Set the builder position before Instr and any attached debug records.
+ */
+void __llvm_position_builder_at_end(void *builder, void *block) {
+  return LLVMPositionBuilderAtEnd((LLVMBuilderRef)builder,
+                                  (LLVMBasicBlockRef)block);
+}
+
+void *__llvm_get_insert_block(void *builder) {
+  return (LLVMBasicBlockRef)LLVMGetInsertBlock((LLVMBuilderRef)builder);
+}
+
+void __llvm_clear_insertion_position(void *builder) {
+  LLVMClearInsertionPosition((LLVMBuilderRef)builder);
+}
+
+void __llvm_insert_into_builder(void *builder, void *instr) {
+  LLVMInsertIntoBuilder((LLVMBuilderRef)builder, (LLVMValueRef)instr);
+}
+
+void __llvm_insert_into_builder_with_name(void *builder, void *instr,
+                                          void *name) {
+  LLVMInsertIntoBuilderWithName((LLVMBuilderRef)builder, (LLVMValueRef)instr,
+                                (const char *)name);
+}
+
+void __llvm_dispose_builder(void *builder) {
+  LLVMDisposeBuilder((LLVMBuilderRef)builder);
+}
