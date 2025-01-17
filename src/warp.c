@@ -381,16 +381,16 @@ void *__llvm_lable_type_in_context(void *context) {
 /**
  * Create a X86 MMX type in a context.
  */
-void *__llvm_x86mmx_type_in_context(void *context) {
-  return LLVMX86MMXTypeInContext((LLVMContextRef)context);
-}
+// void *__llvm_x86mmx_type_in_context(void *context) {
+//   return LLVMX86MMXTypeInContext((LLVMContextRef)context);
+// }
 
 /**
  * Create a X86 AMX type in a context.
  */
-void *__llvm_x86amx_type_in_context(void *context) {
-  return LLVMX86AMXTypeInContext((LLVMContextRef)context);
-}
+// void *__llvm_x86amx_type_in_context(void *context) {
+//   return LLVMX86AMXTypeInContext((LLVMContextRef)context);
+// }
 /**
  * Create a token type in a context.
  */
@@ -410,7 +410,7 @@ void *__llvm_metadata_type_in_context(void *context) {
  */
 void *__llvm_void_type() { return LLVMVoidType(); }
 void *__llvm_label_type() { return LLVMLabelType(); }
-void *__llvm_x86mmx_type() { return LLVMX86MMXType(); }
+// void *__llvm_x86mmx_type() { return LLVMX86MMXType(); }
 void *__llvm_x86amx_type() { return LLVMX86AMXType(); }
 
 // ========================
