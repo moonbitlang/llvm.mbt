@@ -8,6 +8,17 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+typedef struct ArrayLLVMTypeRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMTypeRef *$0;
+} ArrayLLVMTypeRef;
+
+struct UnsafedArrayLLVMTypeRef {
+  struct moonbit_object header;
+  void *data[0];
+};
+
 /**
  * Create a new context.
  *
@@ -308,7 +319,12 @@ void *__llvm_ppcfp128_type() { return LLVMPPCFP128Type(); }
  * The function is defined as a tuple of a return Type, a list of
  * parameter types, and whether the function is variadic.
  */
-// void* __llvm_function_type()
+void *__llvm_function_type(void *ret_ty, ArrayLLVMTypeRef *param_types,
+                           unsigned param_count, LLVMBool is_var_arg) {
+  LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
+  return (LLVMTypeRef)LLVMFunctionType((LLVMTypeRef)ret_ty, llvm_param_types,
+                                       param_count, is_var_arg);
+}
 
 /**
  * Returns whether a function type is variadic.
@@ -1083,7 +1099,7 @@ void *__llvm_basic_block_as_value(void *bb) {
 /**
  * Determine whether an LLVMValueRef is itself a basic block.
  */
-LLVMBool LLVMValueIsBasicBlock(void *val) {
+LLVMBool __llvm_value_is_basic_block(void *val) {
   return LLVMValueIsBasicBlock((LLVMValueRef)val);
 }
 
@@ -1387,4 +1403,13 @@ void __llvm_insert_into_builder_with_name(void *builder, void *instr,
 
 void __llvm_dispose_builder(void *builder) {
   LLVMDisposeBuilder((LLVMBuilderRef)builder);
+}
+
+/* Terminators */
+void __llvm_build_ret_void(void *builder) {
+  LLVMBuildRetVoid((LLVMBuilderRef)builder);
+}
+
+void __llvm_build_ret(void *builder, void *val) {
+  LLVMBuildRet((LLVMBuilderRef)builder, (LLVMValueRef)val);
 }

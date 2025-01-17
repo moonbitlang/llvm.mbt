@@ -18,18 +18,20 @@ pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
   }
 }
 
-impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
+pub impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
-pub fn fn_type[T: TypeRef](
+// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+pub fn fn_type(
   self: Type,
-  param_types: Array[T],
+  param_types: Array[LLVMTypeRef],
   is_var_arg: Bool
 ) -> FunctionType {
   let ret_ty = self.as_type_ref()
   let param_len = param_types.length().reinterpret_as_uint()
-  let type_refs = param_types.map(fn (t) {t.as_type_ref()})
+  // let type_refs = param_types.map(fn (t) {t.as_type_ref()})
+  let type_refs = param_types
   let is_var_arg = to_llvm_bool(is_var_arg)
   let fty_ref = llvm_function_type(ret_ty, type_refs, param_len, is_var_arg)
   FunctionType::new(fty_ref)
@@ -49,7 +51,7 @@ pub struct IntType {
   ty: Type
 }
 
-impl TypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
+pub impl TypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
@@ -61,7 +63,8 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   }
 }
 
-pub fn fn_type(self: IntType, param_types: Array[IntType], is_var_arg: Bool) -> FunctionType {
+// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+pub fn fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
@@ -69,6 +72,10 @@ pub fn fn_type(self: IntType, param_types: Array[IntType], is_var_arg: Bool) -> 
 pub fn const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
   let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, to_llvm_bool(sign_extend))
   IntValue::new(llvm_val_ref)
+}
+
+pub fn dump(self: IntType) -> Unit {
+  self.ty.dump()
 }
 
 // FunctionType
@@ -86,4 +93,8 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   FunctionType::{
     ty: Type::new(type_ref)
   }
+}
+
+pub fn dump(self: FunctionType) -> Unit {
+  self.ty.dump()
 }
