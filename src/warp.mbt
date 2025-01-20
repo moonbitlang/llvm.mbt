@@ -260,7 +260,7 @@ extern "C" fn llvm_const_int(ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) 
 // 
 // Obtain a constant value referring to a double floating point value.
 // 
-// extern "C" fn llvm_const_real(ty: LLVMTypeRef, n: Double) -> LLVMValueRef = "__llvm_const_real"
+extern "C" fn llvm_const_real(ty: LLVMTypeRef, n: Double) -> LLVMValueRef = "__llvm_const_real"
 
 extern "C" fn llvm_align_of(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_align_of"
 

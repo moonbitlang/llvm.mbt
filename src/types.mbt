@@ -139,7 +139,7 @@ pub fn IntType::size_of(self: IntType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
-pub fn IntType::get_alignemnt(self: IntType) -> IntValue {
+pub fn IntType::get_alignment(self: IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
@@ -164,6 +164,80 @@ pub fn IntType::to_string(self: IntType) -> String {
 pub fn IntType::dump(self: IntType) -> Unit {
   self.ty.dump()
 }
+
+// ==============================================
+// FloatType
+// ==============================================
+pub struct FloatType {
+  ty: Type
+}
+
+pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
+  assert_not(type_ref.is_null().to_moonbit_bool())
+
+  FloatType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl TypeRef for FloatType with as_type_ref(
+  self: FloatType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+pub fn FloatType::fn_type(self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+// pub fn array_type(self: FloatType, size: UInt) -> ArrayType;
+// pub fn vec_type(self: FloatType, size: UInt) -> VectorType;
+// pub fn scalable_vec_type(self: FloatType) -> ScalableVectorType;
+
+// use llvm_const_real
+pub fn FloatType::const_float(self: FloatType, val: Double) -> FloatValue {
+  let llvm_val_ref = llvm_const_real(self.as_type_ref(), val)
+  FloatValue::new(llvm_val_ref)
+}
+
+// pub fn Float::const_zero(self: FloatType) -> FloatValue {
+//   let llvm_val_ref = llvm_const_zero(self.as_type_ref())
+//   FloatValue::new(llvm_val_ref)
+// }
+
+pub fn FloatType::size_of(self: FloatType) -> IntValue {
+  self.ty.size_of().unwrap()
+}
+
+pub fn get_alignment(self: FloatType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn get_context(self: FloatType) -> Context {
+  self.ty.get_context()
+}
+
+// pub fn ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
+//   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+// }
+
+pub fn get_undef(self: FloatType) -> FloatValue {
+  FloatValue::new(self.ty.get_undef())
+}
+
+pub fn get_poison(self: FloatType) -> FloatValue {
+  FloatValue::new(self.ty.get_poison())
+}
+
+pub fn to_string(self: FloatType) -> String {
+  self.ty.to_string()
+}
+
+pub fn dump(self: FloatType) -> Unit {
+  self.ty.dump()
+}
+
 
 // ==============================================
 // VoidType

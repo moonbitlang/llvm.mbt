@@ -110,9 +110,10 @@ pub fn IntValue::set_name(self: IntValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
-pub fn IntValue::get_type(self: IntValue) -> Type {
-  self.value.get_type()
-}
+// TODO: inconsistant with `inkwell`
+// pub fn IntValue::get_type(self: IntValue) -> Type {
+//   self.value.get_type()
+// }
 
 pub fn IntValue::is_null(self: IntValue) -> Bool {
   self.value.is_null()
@@ -222,6 +223,61 @@ pub fn IntValue::to_string(self: IntValue) -> String {
 }
 
 pub fn IntValue::dump(self: IntValue) -> Unit {
+  self.value.dump()
+}
+
+// ============================================
+// FloatValue
+// ============================================
+pub struct FloatValue {
+  value: Value
+}
+
+pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
+  assert_not(value_ref.is_null().to_moonbit_bool())
+
+  FloatValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub fn FloatValue::get_name(self: FloatValue) -> String {
+  self.value.get_name()
+}
+
+pub fn FloatValue::set_name(self: FloatValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+// pub fn get_type(self: FloatValue) -> Type {
+//   self.value.get_type()
+// }
+
+pub fn FloatValue::is_null(self: FloatValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
+  self.value.is_undef()
+}
+
+// -----------------------
+// TODO: const ops: add, sub, mul ...
+// -----------------------
+
+pub fn FloatValue::is_const(self: FloatValue) -> Bool {
+  self.value.is_const()
+}
+
+pub fn FloatValue::replace_all_uses_with(self: FloatValue, new_value: FloatValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn FloatValue::to_string(self: FloatValue) -> String {
+  self.value.to_string()
+}
+
+pub fn FloatValue::dump(self: FloatValue) -> Unit {
   self.value.dump()
 }
 
