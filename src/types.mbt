@@ -22,6 +22,12 @@ pub impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
+// pub fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType
+
+// pub fn vec_type(self: Type, size: UInt) -> VectorType;
+
+// pub fn scalable_vec_type(self: Type) -> ScalableVectorType;
+
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn fn_type(
   self: Type,
@@ -35,6 +41,38 @@ pub fn fn_type(
   let is_var_arg = to_llvm_bool(is_var_arg)
   let fty_ref = llvm_function_type(ret_ty, type_refs, param_len, is_var_arg)
   FunctionType::new(fty_ref)
+}
+
+// pub fn array_type(self: Type, size: UInt) -> ArrayType;
+
+fn get_undef(self: Type) -> LLVMValueRef {
+  llvm_get_undef(self.as_type_ref())
+}
+
+fn get_posion(self: Type) -> LLVMValueRef {
+  llvm_get_poison(self.as_type_ref())
+}
+
+fn get_alignment(self: Type) -> IntValue {
+  IntValue::new(llvm_align_of(self.as_type_ref()))
+}
+
+fn get_context(self: Type) -> Context {
+  let context_ref = self.as_type_ref().get_context()
+  Context::new(context_ref)
+}
+
+fn is_sized(self: Type) -> Bool {
+  self.as_type_ref().is_sized().to_moonbit_bool()
+}
+
+fn size_of(self: Type) -> IntValue? {
+  if not(self.is_sized()) {
+    return None
+  }
+
+  let v = IntValue::new(llvm_size_of(self.as_type_ref()))
+  Some(v)
 }
 
 pub fn to_string(self: Type) -> String {

@@ -174,6 +174,26 @@ LLVMBool __llvm_type_is_null(void *type_ref) {
 }
 
 /**
+ * Whether the type has a known size.
+ *
+ * Things that don't have a size are abstract types, labels, and void.a
+ *
+ * @see llvm::Type::isSized()
+ */
+LLVMBool __llvm_type_is_sized(void *ty) {
+  return LLVMTypeIsSized((LLVMTypeRef)ty);
+}
+
+/**
+ * Obtain the context to which this type instance is associated.
+ *
+ * @see llvm::Type::getContext()
+ */
+void *__llvm_get_type_context(void *ty) {
+  return (LLVMContextRef)LLVMGetTypeContext((LLVMTypeRef)ty);
+}
+
+/**
  * Dump a representation of a type to stderr.
  *
  * @see llvm::Type::dump()
@@ -363,6 +383,41 @@ unsigned __llvm_count_param_types(void *function_ty) {
 // ============================
 // Struct Type and Array Type and Vector Type
 // ============================
+/**
+ * @defgroup LLVMCCoreTypeStruct Structure Types
+ *
+ * These functions relate to LLVMTypeRef instances.
+ *
+ * @see llvm::StructType
+ *
+ * @{
+ */
+
+/**
+ * Create a new structure type in a context.
+ *
+ * A structure is specified by a list of inner elements/types and
+ * whether these can be packed together.
+ *
+ * @see llvm::StructType::create()
+ */
+void *__llvm_struct_type_in_context(void *context,
+                                    ArrayLLVMTypeRef *element_types,
+                                    LLVMBool packed) {
+  return (LLVMTypeRef)LLVMStructTypeInContext(
+      (LLVMContextRef)context, (LLVMTypeRef *)element_types->$0->data,
+      element_types->$1, packed);
+}
+
+/**
+ * Create a new structure type in the global context.
+ *
+ * @see llvm::StructType::create()
+ */
+void *__llvm_struct_type(ArrayLLVMTypeRef *element_types, LLVMBool packed) {
+  return (LLVMTypeRef)LLVMStructType((LLVMTypeRef *)element_types->$0->data,
+                                     element_types->$1, packed);
+}
 
 /**
  * Create a void type in a context.
@@ -1004,7 +1059,9 @@ void *__llvm_const_all_ones(void *ty) {
  *
  * @see llvm::UndefValue::get()
  */
-void *__llvm_get_undef(void *ty) { return LLVMGetUndef((LLVMTypeRef)ty); }
+void *__llvm_get_undef(void *ty) {
+  return (LLVMValueRef)LLVMGetUndef((LLVMTypeRef)ty);
+}
 
 /**
  * Obtain a constant value referring to a poison value of a type.
@@ -1066,6 +1123,161 @@ void *__llvm_const_int(void *IntTy, unsigned long long N, LLVMBool SignExtend) {
  */
 void *__llvm_const_real(void *real_ty, double n) {
   return (LLVMValueRef)LLVMConstReal((LLVMTypeRef)real_ty, n);
+}
+
+/**
+ * @defgroup LLVMCCoreValueConstantExpressions Constant Expressions
+ *
+ * Functions in this group correspond to APIs on llvm::ConstantExpr.
+ *
+ * @see llvm::ConstantExpr.
+ *
+ * @{
+ */
+void *__llvm_align_of(void *ty) { return LLVMAlignOf((LLVMTypeRef)ty); }
+
+void *__llvm_size_of(void *ty) {
+  return (LLVMValueRef)LLVMSizeOf((LLVMTypeRef)ty);
+}
+
+void *__llvm_const_neg(void *constant_val) {
+  return (LLVMValueRef)LLVMConstNeg((LLVMValueRef)constant_val);
+}
+
+void *__llvm_const_nsw_neg(void *constant_val) {
+  return (LLVMValueRef)LLVMConstNSWNeg((LLVMValueRef)constant_val);
+}
+
+void *__llvm_const_not(void *constant_val) {
+  return (LLVMValueRef)LLVMConstNot((LLVMValueRef)constant_val);
+}
+
+void *__llvm_const_add(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nsw_add(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNSWAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nuw_add(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNUWAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_sub(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nsw_sub(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNSWSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nuw_sub(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNUWSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_mul(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nsw_mul(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNSWMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_nuw_mul(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstNUWMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+void *__llvm_const_xor(void *lhs, void *rhs) {
+  return (LLVMValueRef)LLVMConstXor((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+}
+
+// void* __llvm_const_gep2(void* ty, void* constant_val, void**
+// constant_indices, unsigned num_indices) {
+//   return (LLVMValueRef)LLVMConstGEP2((LLVMTypeRef)ty,
+//   (LLVMValueRef)constant_val, (LLVMValueRef*)constant_indices, num_indices);
+// }
+
+// void* __llvm_const_in_bounds_gep2(void* ty, void* constant_val, void**
+// constant_indices, unsigned num_indices) {
+//   return (LLVMValueRef)LLVMConstInBoundsGEP2((LLVMTypeRef)ty,
+//   (LLVMValueRef)constant_val, (LLVMValueRef*)constant_indices, num_indices);
+// }
+
+void *__llvm_const_trunc(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstTrunc((LLVMValueRef)constant_val,
+                                      (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_ptr_to_int(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstPtrToInt((LLVMValueRef)constant_val,
+                                         (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_int_to_ptr(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstIntToPtr((LLVMValueRef)constant_val,
+                                         (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_bit_cast(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstBitCast((LLVMValueRef)constant_val,
+                                        (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_addr_space_cast(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstAddrSpaceCast((LLVMValueRef)constant_val,
+                                              (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_trunc_or_bit_cast(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstTruncOrBitCast((LLVMValueRef)constant_val,
+                                               (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_pointer_cast(void *constant_val, void *to_type) {
+  return (LLVMValueRef)LLVMConstPointerCast((LLVMValueRef)constant_val,
+                                            (LLVMTypeRef)to_type);
+}
+
+void *__llvm_const_extract_element(void *vector_constant,
+                                   void *index_constant) {
+  return (LLVMValueRef)LLVMConstExtractElement((LLVMValueRef)vector_constant,
+                                               (LLVMValueRef)index_constant);
+}
+
+void *__llvm_const_insert_element(void *vector_constant,
+                                  void *element_value_constant,
+                                  void *index_constant) {
+  return (LLVMValueRef)LLVMConstInsertElement(
+      (LLVMValueRef)vector_constant, (LLVMValueRef)element_value_constant,
+      (LLVMValueRef)index_constant);
+}
+
+void *__llvm_const_shuffle_vector(void *vector_a_constant,
+                                  void *vector_b_constant,
+                                  void *mask_constant) {
+  return (LLVMValueRef)LLVMConstShuffleVector((LLVMValueRef)vector_a_constant,
+                                              (LLVMValueRef)vector_b_constant,
+                                              (LLVMValueRef)mask_constant);
+}
+
+void *__llvm_block_address(void *f, void *bb) {
+  return (LLVMValueRef)LLVMBlockAddress((LLVMValueRef)f, (LLVMBasicBlockRef)bb);
+}
+
+/**
+ * Gets the function associated with a given BlockAddress constant value.
+ */
+void *__llvm_get_block_address_function(void *block_addr) {
+  return (LLVMValueRef)LLVMGetBlockAddressFunction((LLVMValueRef)block_addr);
+}
+
+/**
+ * Gets the basic block associated with a given BlockAddress constant value.
+ */
+void *__llvm_get_block_address_basic_block(void *block_addr) {
+  return (LLVMBasicBlockRef)LLVMGetBlockAddressBasicBlock(
+      (LLVMValueRef)block_addr);
 }
 
 /**

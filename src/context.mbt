@@ -3,14 +3,18 @@ struct Context {
   ctx_ref: LLVMContextRef
 }
 
+pub fn Context::new(ctx_ref: LLVMContextRef) -> Context {
+  Context :: {
+    ctx_ref: ctx_ref
+  }
+}
+
 fn as_context_ref(self: Context) -> LLVMContextRef {
   self.ctx_ref
 }
 
 pub fn Context::create() -> Context {
-  Context :: {
-    ctx_ref: llvm_context_create()
-  }
+  Context::new(llvm_context_create())
 }
 
 pub fn bool_type(self: Context) -> IntType {

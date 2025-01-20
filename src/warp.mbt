@@ -163,7 +163,23 @@ extern "C" fn llvm_function_type(
 // Determine whether a type instance is null.
 //
 // extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
-extern "C" fn is_null(self: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
+extern "C" fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
+
+// 
+// Whether the type has a known size.
+// 
+// Things that don't have a size are abstract types, labels, and void.a
+// 
+// @see llvm::Type::isSized()
+// 
+extern "C" fn LLVMTypeRef::is_sized(self: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_sized"
+
+// 
+// Obtain the context to which this type instance is associated.
+// 
+// @see llvm::Type::getContext()
+// 
+extern "C" fn LLVMTypeRef::get_context(self: LLVMTypeRef) -> LLVMContextRef = "__llvm_get_type_context"
 
 //
 // Return a string representation of the type. Use
@@ -193,6 +209,19 @@ extern "C" fn llvm_dump_value(val: LLVMValueRef) = "__llvm_dump_value"
 //
 extern "C" fn llvm_print_value_to_string(val: LLVMValueRef) -> CStr = "__llvm_print_value_to_string"
 
+// 
+// Obtain a constant value referring to an undefined value of a type.
+// 
+// @see llvm::UndefValue::get()
+// 
+extern "C" fn llvm_get_undef(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_undef"
+
+// 
+// Obtain a constant value referring to a poison value of a type.
+// 
+// @see llvm::PoisonValue::get()
+// 
+extern "C" fn llvm_get_poison(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_posion"
 
 // Determine whether a value instance is null.
 //
@@ -201,8 +230,20 @@ extern "C" fn LLVMValueRef::is_null(self: LLVMValueRef) -> LLVMBool = "__llvm_is
 extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 
 
-// Determine whether the specified value instance is constant.
+
 extern "C" fn llvm_const_int(ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) -> LLVMValueRef = "__llvm_const_int"
+
+// 
+// Obtain a constant value referring to a double floating point value.
+// 
+// extern "C" fn llvm_const_real(ty: LLVMTypeRef, n: Double) -> LLVMValueRef = "__llvm_const_real"
+
+extern "C" fn llvm_align_of(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_align_of"
+
+extern "C" fn llvm_size_of(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_size_of"
+
+
+// Determine whether the specified value instance is constant.
 extern "C" fn llvm_is_const(val: LLVMValueRef) -> LLVMBool = "__llvm_is_const"
 extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr, name_len: UInt) = "__llvm_set_value_name"
 
