@@ -7,7 +7,7 @@ struct moonbit_string *moonbit_make_string(int32_t, uint16_t);
 
 // Utils
 void *moonbit_str_to_c_str(struct moonbit_string *ms) {
-  int32_t len = moonbit_array_length(ms);
+  int32_t len = Moonbit_array_length(ms);
   char *ptr = (char *)malloc(len + 1);
   uint16_t *data = ms->data;
   for (int i = 0; i < len; i++) {

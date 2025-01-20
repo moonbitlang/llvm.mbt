@@ -77,6 +77,8 @@ extern "C" fn llvm_add_function(
   m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef
 ) -> LLVMValueRef = "__llvm_add_function"
 
+
+extern "C" fn llvm_void_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_void_type_in_context"
 // 
 // @defgroup LLVMCCoreTypeInt Integer Types
 // 
@@ -88,12 +90,12 @@ extern "C" fn llvm_add_function(
 // 
 // Obtain an integer type from a context with specified bit width.
 // 
-// extern "C" fn llvm_int1_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
-// extern "C" fn llvm_int8_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
-// extern "C" fn llvm_int16_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
+extern "C" fn llvm_int1_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
+extern "C" fn llvm_int8_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
+extern "C" fn llvm_int16_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
 extern "C" fn llvm_int32_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
-// extern "C" fn llvm_int64_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
-// extern "C" fn llvm_int128_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
+extern "C" fn llvm_int64_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
+extern "C" fn llvm_int128_type_in_context(ctx: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
 // extern "C" fn llvm_int_type_in_context(ctx: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type_in_context"
 
 // 
@@ -195,7 +197,7 @@ extern "C" fn llvm_print_value_to_string(val: LLVMValueRef) -> CStr = "__llvm_pr
 // Determine whether a value instance is null.
 //
 // @see llvm::Constant::isNullValue()
-extern "C" fn is_null(self: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
+extern "C" fn LLVMValueRef::is_null(self: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 
 

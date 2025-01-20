@@ -20,11 +20,11 @@ pub fn add_function(
   fn_val
 }
 
-pub fn to_string(self: Module) -> String {
+pub fn Module::to_string(self: Module) -> String {
   let c_str = llvm_print_module_to_string(self.module_ref)
   c_str_to_moonbit_str(c_str)
 }
 
-pub fn dump(self: Module) -> Unit {
+pub fn Module::dump(self: Module) -> Unit {
   llvm_dump_module(self.module_ref)
 }

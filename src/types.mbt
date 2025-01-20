@@ -64,7 +64,7 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
-pub fn fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
@@ -74,7 +74,37 @@ pub fn const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
   IntValue::new(llvm_val_ref)
 }
 
-pub fn dump(self: IntType) -> Unit {
+pub fn IntType::dump(self: IntType) -> Unit {
+  self.ty.dump()
+}
+
+// VoidType
+pub struct VoidType {
+  ty : Type
+}
+
+pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
+  assert_not(type_ref.is_null().to_moonbit_bool())
+
+  VoidType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl TypeRef for VoidType with as_type_ref(self: VoidType) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+pub fn VoidType::fn_type(self: VoidType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn VoidType::to_string(self: VoidType) -> String {
+  self.ty.to_string()
+}
+
+pub fn VoidType::dump(self: VoidType) -> Unit {
   self.ty.dump()
 }
 
@@ -95,6 +125,6 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   }
 }
 
-pub fn dump(self: FunctionType) -> Unit {
+pub fn FunctionType::dump(self: FunctionType) -> Unit {
   self.ty.dump()
 }

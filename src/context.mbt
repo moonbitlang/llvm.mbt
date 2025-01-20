@@ -13,9 +13,39 @@ pub fn Context::create() -> Context {
   }
 }
 
+pub fn bool_type(self: Context) -> IntType {
+  let type_ref = llvm_int1_type_in_context(self.as_context_ref())
+  IntType::new(type_ref)
+}
+
+pub fn i8_type(self: Context) -> IntType {
+  let type_ref = llvm_int8_type_in_context(self.as_context_ref())
+  IntType::new(type_ref)
+}
+
+pub fn i16_type(self: Context) -> IntType {
+  let type_ref = llvm_int16_type_in_context(self.as_context_ref())
+  IntType::new(type_ref)
+}
+
 pub fn i32_type(self: Context) -> IntType {
   let type_ref = llvm_int32_type_in_context(self.as_context_ref())
   IntType::new(type_ref)
+}
+
+pub fn i64_type(self: Context) -> IntType {
+  let type_ref = llvm_int64_type_in_context(self.as_context_ref())
+  IntType::new(type_ref)
+}
+
+pub fn i128_type(self: Context) -> IntType {
+  let type_ref = llvm_int128_type_in_context(self.as_context_ref())
+  IntType::new(type_ref)
+}
+
+pub fn void_type(self: Context) -> VoidType {
+  let type_ref = llvm_void_type_in_context(self.as_context_ref())
+  VoidType::new(type_ref)
 }
 
 pub fn create_module(self: Context, name: String) -> Module {
