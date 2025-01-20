@@ -1,4 +1,6 @@
+// ==========================================
 // Types
+// ==========================================
 pub struct Type {
   type_ref: LLVMTypeRef
 }
@@ -29,7 +31,7 @@ pub impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
 // pub fn scalable_vec_type(self: Type) -> ScalableVectorType;
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
-pub fn fn_type(
+pub fn Type::fn_type(
   self: Type,
   param_types: Array[LLVMTypeRef],
   is_var_arg: Bool
@@ -45,28 +47,28 @@ pub fn fn_type(
 
 // pub fn array_type(self: Type, size: UInt) -> ArrayType;
 
-fn get_undef(self: Type) -> LLVMValueRef {
+fn Type::get_undef(self: Type) -> LLVMValueRef {
   llvm_get_undef(self.as_type_ref())
 }
 
-fn get_posion(self: Type) -> LLVMValueRef {
+fn Type::get_poison(self: Type) -> LLVMValueRef {
   llvm_get_poison(self.as_type_ref())
 }
 
-fn get_alignment(self: Type) -> IntValue {
+fn Type::get_alignment(self: Type) -> IntValue {
   IntValue::new(llvm_align_of(self.as_type_ref()))
 }
 
-fn get_context(self: Type) -> Context {
+fn Type::get_context(self: Type) -> Context {
   let context_ref = self.as_type_ref().get_context()
   Context::new(context_ref)
 }
 
-fn is_sized(self: Type) -> Bool {
+fn Type::is_sized(self: Type) -> Bool {
   self.as_type_ref().is_sized().to_moonbit_bool()
 }
 
-fn size_of(self: Type) -> IntValue? {
+fn Type::size_of(self: Type) -> IntValue? {
   if not(self.is_sized()) {
     return None
   }
@@ -75,16 +77,18 @@ fn size_of(self: Type) -> IntValue? {
   Some(v)
 }
 
-pub fn to_string(self: Type) -> String {
+fn Type::to_string(self: Type) -> String {
   let c_str = llvm_print_type_to_string(self.as_type_ref())
   c_str_to_moonbit_str(c_str)
 }
 
-pub fn dump(self: Type) -> Unit {
+fn Type::dump(self: Type) -> Unit {
   llvm_dump_type(self.as_type_ref())
 }
 
+// ===============================================
 // IntType
+// ===============================================
 pub struct IntType {
   ty: Type
 }
@@ -101,22 +105,69 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   }
 }
 
+
+pub fn IntType::const_all_ones(self: IntType) -> IntValue {
+  let llvm_val_ref = llvm_const_all_ones(self.as_type_ref())
+  IntValue::new(llvm_val_ref)
+}
+
+// pub fn const_zero(self: IntType) -> IntValue {
+//   let llvm_val_ref = llvm_const_zero(self.as_type_ref())
+//   IntValue::new(llvm_val_ref)
+// }
+
+// TODO: Maybe better explain signextension
+pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
+  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, to_llvm_bool(sign_extend))
+  IntValue::new(llvm_val_ref)
+}
+
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-// TODO: Maybe better explain signextension
-pub fn const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
-  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, to_llvm_bool(sign_extend))
-  IntValue::new(llvm_val_ref)
+// pub fn array_type(self: IntType, size: UInt) -> ArrayType;
+// pub fn vec_type(self: IntType, size: UInt) -> VectorType;
+// pub fn scalable_vec_type(self: IntType) -> ScalableVectorType;
+
+pub fn IntType::get_context(self: IntType) -> Context {
+  self.ty.get_context()
+}
+
+pub fn IntType::size_of(self: IntType) -> IntValue {
+  self.ty.size_of().unwrap()
+}
+
+pub fn IntType::get_alignemnt(self: IntType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+// pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType
+
+pub fn IntType::get_bit_width(self: IntType) -> UInt {
+  llvm_get_int_type_width(self.as_type_ref())
+}
+
+pub fn IntType::get_undef(self: IntType) -> IntValue {
+  IntValue::new(self.ty.get_undef())
+}
+
+pub fn IntType::get_poison(self: IntType) -> IntValue {
+  IntValue::new(self.ty.get_poison())
+}
+
+pub fn IntType::to_string(self: IntType) -> String {
+  self.ty.to_string()
 }
 
 pub fn IntType::dump(self: IntType) -> Unit {
   self.ty.dump()
 }
 
+// ==============================================
 // VoidType
+// ==============================================
 pub struct VoidType {
   ty : Type
 }
@@ -129,8 +180,18 @@ pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
   }
 }
 
-pub impl TypeRef for VoidType with as_type_ref(self: VoidType) -> LLVMTypeRef {
+pub impl TypeRef for VoidType with as_type_ref(
+  self: VoidType
+) -> LLVMTypeRef {
   self.ty.as_type_ref()
+}
+
+pub fn VoidType::is_sized(self: VoidType) -> Bool {
+  self.ty.is_sized()
+}
+
+pub fn VoidType::get_context(self: VoidType) -> Context {
+  self.ty.get_context()
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
@@ -146,12 +207,88 @@ pub fn VoidType::dump(self: VoidType) -> Unit {
   self.ty.dump()
 }
 
+// ===========================================
+// PointerType
+// ===========================================
+pub struct PointerType {
+  ty: Type
+}
+
+pub fn PointerType::new(type_ref: LLVMTypeRef) -> PointerType {
+  assert_not(type_ref.is_null().to_moonbit_bool())
+
+  PointerType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl TypeRef for PointerType with as_type_ref(
+  self: PointerType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub fn PointerType::size_of(self: PointerType) -> IntValue {
+  self.ty.size_of().unwrap()
+}
+
+pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+// pub fn PointerType::ptr_type(aself: PointerType, address_space: AddressSpace) -> PointerType
+
+pub fn PointerType::get_context(self: PointerType) -> Context {
+  self.ty.get_context()
+}
+
+pub fn fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+// pub fn array_type(self: PointerType, size: UInt) -> ArrayType;
+// pub fn get_address_space(self: PointerType) -> AddressSpace;
+
+pub fn PointerType::to_string(self: PointerType) -> String {
+  self.ty.to_string()
+}
+
+pub fn PointerType::dump(self: PointerType) -> Unit {
+  self.ty.dump()
+}
+
+// pub fn const_null(self: PointerType) -> PointerValue {
+//   PointerValue::new(llvm_const_null(self.as_type_ref()))
+// }
+
+// pub fn const_zero(self: PointerType) -> PointerValue {
+//   PointerValue::new(llvm_const_zero(self.as_type_ref()))
+// }
+
+// pub fn get_undef(self: PointerType) -> PointerValue {
+//   PointerValue::new(llvm_get_undef(self.as_type_ref()))
+// }
+
+// pub fn get_poison(self: PointerType) -> PointerValue {
+//   PointerValue::new(llvm_get_poison(self.as_type_ref()))
+// }
+
+// pub fn vec_type(self: PointerType, size: UInt) -> VectorType
+// pub fn scalable_vec_type(self: PointerType) -> ScalableVectorType
+// pub fn get_element_type(self: PointerType) -> ...
+
+
+
+// ===========================================
 // FunctionType
+// ===========================================
 pub struct FunctionType {
   ty: Type
 }
 
-pub fn as_type_ref(self: FunctionType) -> LLVMTypeRef {
+pub impl TypeRef for FunctionType with as_type_ref(
+  self: FunctionType
+) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 

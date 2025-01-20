@@ -4,9 +4,7 @@
 #include <llvm-c/ExecutionEngine.h>
 #include <llvm-c/Target.h>
 
-#include "moonbit.h"
-#include <stdio.h>
-#include <stdlib.h>
+#include "utils.h"
 
 typedef struct ArrayLLVMTypeRef {
   struct moonbit_object header;
@@ -472,8 +470,13 @@ void *__llvm_x86amx_type() { return LLVMX86AMXType(); }
 // Target Ext
 // ========================
 
+/**
+ * Obtain the type of a value.
+ *
+ * @see llvm::Value::getType()
+ */
 void *__llvm_type_of(void *val_ref) {
-  return LLVMTypeOf((LLVMValueRef)val_ref);
+  return (LLVMTypeRef)LLVMTypeOf((LLVMValueRef)val_ref);
 }
 
 /**
@@ -485,7 +488,16 @@ void __llvm_set_value_name(void *val_ref, void *name, size_t name_len) {
   LLVMSetValueName2((LLVMValueRef)val_ref, (const char *)name, name_len);
 }
 
-// void* __llvm_get_value_name(void* )
+/**
+ * Obtain the string name of a value.
+ *
+ * @see llvm::Value::getName()
+ */
+void *__llvm_get_value_name(void *val_ref) {
+  size_t len = 0;
+  const char *p = LLVMGetValueName2((LLVMValueRef)val_ref, &len);
+  return (void *)p;
+}
 
 /**
  * Dump a representation of a value to stderr.
@@ -1051,7 +1063,7 @@ void *__llvm_const_null(void *ty) { return LLVMConstNull((LLVMTypeRef)ty); }
  * @see llvm::Constant::getAllOnesValue()
  */
 void *__llvm_const_all_ones(void *ty) {
-  return LLVMConstAllOnes((LLVMTypeRef)ty);
+  return (LLVMValueRef)LLVMConstAllOnes((LLVMTypeRef)ty);
 }
 
 /**
