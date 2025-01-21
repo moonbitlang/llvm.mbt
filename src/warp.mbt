@@ -1,15 +1,3 @@
-// extern types
-type CStr
-type LLVMBool Int derive(Eq)
-
-type LLVMContextRef
-type LLVMModuleRef
-type LLVMBasicBlockRef
-type LLVMBuilderRef
-type LLVMValueRef
-type LLVMTypeRef
-type LLVMUseRef
-
 // Utils
 extern "C" fn moonbit_str_to_c_str(
   s: String

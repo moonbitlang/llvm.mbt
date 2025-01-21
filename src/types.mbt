@@ -339,13 +339,13 @@ pub fn PointerType::dump(self: PointerType) -> Unit {
 //   PointerValue::new(llvm_const_zero(self.as_type_ref()))
 // }
 
-// pub fn get_undef(self: PointerType) -> PointerValue {
-//   PointerValue::new(llvm_get_undef(self.as_type_ref()))
-// }
+pub fn PointerType::get_undef(self: PointerType) -> PointerValue {
+  PointerValue::new(llvm_get_undef(self.as_type_ref()))
+}
 
-// pub fn get_poison(self: PointerType) -> PointerValue {
-//   PointerValue::new(llvm_get_poison(self.as_type_ref()))
-// }
+pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
+  PointerValue::new(llvm_get_poison(self.as_type_ref()))
+}
 
 // pub fn vec_type(self: PointerType, size: UInt) -> VectorType
 // pub fn scalable_vec_type(self: PointerType) -> ScalableVectorType
