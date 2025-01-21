@@ -8,6 +8,7 @@ type LLVMBasicBlockRef
 type LLVMBuilderRef
 type LLVMValueRef
 type LLVMTypeRef
+type LLVMUseRef
 
 // Utils
 extern "C" fn moonbit_str_to_c_str(
@@ -209,6 +210,20 @@ extern "C" fn llvm_dump_value(val: LLVMValueRef) = "__llvm_dump_value"
 // @see llvm::Value::print()
 //
 extern "C" fn llvm_print_value_to_string(val: LLVMValueRef) -> CStr = "__llvm_print_value_to_string"
+
+
+extern "C" fn llvm_use_ref_is_null(self: LLVMUseRef) -> LLVMBool = "__llvm_use_ref_is_null"
+fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
+  llvm_use_ref_is_null(self).to_moonbit_bool()
+}
+// extern "C" fn llvm_get_first_use(val: LLVMValueRef) -> LLVMUseRef = "__llvm_get_first_use"
+
+extern "C" fn llvm_get_next_use(use_ref: LLVMUseRef) -> LLVMUseRef = "__llvm_get_next_use"
+// extern "C" fn llvm_get_user(use: LLVMUseRef) -> LLVMValueRef = "__llvm_get_user"
+// extern "C" fn llvm_get_used_value(use: LLVMUseRef) -> LLVMValueRef = "__llvm_get_used_value"
+
+
+
 
 // 
 // Replace all uses of a value with another one.

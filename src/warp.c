@@ -944,6 +944,10 @@ void *__llvm_isa_md_string(void *val) {
  * @{
  */
 
+LLVMBool __llvm_use_ref_is_null(void *use_ref) {
+  return use_ref == NULL ? 1 : 0;
+}
+
 /**
  * Obtain the first use of a value.
  *
