@@ -206,6 +206,27 @@ pub fn IntValue::const_xor(self: IntValue, rhs: IntValue) -> IntValue {
   IntValue::new(value_ref)
 }
 
+// const_cast
+// const_shl
+// const_rshr
+// const_ashr
+// const_unsigned_to_float
+// const_signed_to_float
+pub fn IntValue::const_to_pointer(self: IntValue, ptr_type: PointerType) -> PointerValue {
+  PointerValue::new(llvm_const_int_to_ptr(self.as_value_ref(), ptr_type.as_type_ref()))
+}
+
+pub fn IntValue::const_truncate(self: IntValue, int_type: IntType) -> IntValue {
+  IntValue::new(llvm_const_trunc(self.as_value_ref(), int_type.as_type_ref()))
+}
+pub fn IntValue::const_truncate_or_bit_cast(self: IntValue, int_type: IntType) -> IntValue {
+  IntValue::new(llvm_const_trunc_or_bit_cast(self.as_value_ref(), int_type.as_type_ref()))
+}
+pub fn IntValue::const_bit_cast(self: IntValue, int_tyep: IntType) -> IntValue {
+  IntValue::new(llvm_const_bit_cast(self.as_value_ref(), int_tyep.as_type_ref()))
+}
+// const_int_compare
+
 pub fn IntValue::is_const(self: IntValue) -> Bool {
   self.value.is_const()
 }
@@ -265,6 +286,10 @@ pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
 // TODO: const ops: add, sub, mul ...
 // -----------------------
 
+// pub fn FloatValue::const_compare(self: FloatValue, op: FloatPredicate, rhs: FloatValue) -> IntValue {
+//   IntValue::new(llvm_const_fcmp(op.into(). self.as_value_ref(), rhs.as_value_ref())
+// }
+
 pub fn FloatValue::is_const(self: FloatValue) -> Bool {
   self.value.is_const()
 }
@@ -278,6 +303,73 @@ pub fn FloatValue::to_string(self: FloatValue) -> String {
 }
 
 pub fn FloatValue::dump(self: FloatValue) -> Unit {
+  self.value.dump()
+}
+
+// ============================================
+// PointerValue
+// ============================================
+pub struct PointerValue {
+  value: Value
+}
+
+pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
+  assert_not(value_ref.is_null().to_moonbit_bool())
+
+  PointerValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl ValueRef for PointerValue with as_value_ref(self: PointerValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub fn PointerValue::get_name(self: PointerValue) -> String {
+  self.value.get_name()
+}
+
+pub fn PointerValue::set_name(self: PointerValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+// pub fn get_type(self: PointerValue) -> Type {
+//   self.value.get_type()
+// }
+
+pub fn PointerValue::is_null(self: PointerValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn PointerValue::is_undef(self: PointerValue) -> Bool {
+  self.value.is_undef()
+}
+
+pub fn PointerValue::is_const(self: PointerValue) -> Bool {
+  self.value.is_const()
+}
+
+// pub fn as_instruction(self: PointerValue) -> InstructionValue?
+// pub fn const_gep
+// pub fn const_in_bounds_gep
+
+pub fn PointerValue::const_to_int(self: PointerValue, int_type: IntType) -> IntValue {
+  IntValue::new(llvm_const_ptr_to_int(self.as_value_ref(), int_type.as_type_ref()))
+}
+
+pub fn PointerValue::const_cast(self: PointerValue, ptr_type: PointerType) -> PointerValue {
+  PointerValue::new(llvm_const_pointer_cast(self.as_value_ref(), ptr_type.as_type_ref()))
+}
+
+pub fn const_address_space_cast(self: PointerValue, ptr_type: PointerType) -> PointerValue {
+  PointerValue::new(llvm_const_addr_space_cast(self.as_value_ref(), ptr_type.as_type_ref()))
+}
+
+pub fn PointerValue::replace_all_uses_with(self: PointerValue, new_value: PointerValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn PointerValue::dump(self: PointerValue) -> Unit {
   self.value.dump()
 }
 

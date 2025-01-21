@@ -280,7 +280,20 @@ extern "C" fn llvm_const_mul(lhs: LLVMValueRef, rhs: LLVMValueRef) -> LLVMValueR
 extern "C" fn llvm_const_nsw_mul(lhs: LLVMValueRef, rhs: LLVMValueRef) -> LLVMValueRef = "__llvm_const_nsw_mul"
 extern "C" fn llvm_const_nuw_mul(lhs: LLVMValueRef, rhs: LLVMValueRef) -> LLVMValueRef = "__llvm_const_nuw_mul"
 extern "C" fn llvm_const_xor(lhs: LLVMValueRef, rhs: LLVMValueRef) -> LLVMValueRef = "__llvm_const_xor"
-//
+
+extern "C" fn llvm_const_trunc(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_trunc"
+
+extern "C" fn llvm_const_ptr_to_int(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_ptr_to_int"
+
+extern "C" fn llvm_const_int_to_ptr(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_int_to_ptr"
+
+extern "C" fn llvm_const_bit_cast(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_bit_cast"
+
+extern "C" fn llvm_const_addr_space_cast(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_addr_space_cast"
+extern "C" fn llvm_const_trunc_or_bit_cast(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_trunc_or_bit_cast"
+extern "C" fn llvm_const_pointer_cast(const_val: LLVMValueRef, to_type: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_pointer_cast"
+
+// 
 // Determine whether the specified value instance is constant.
 //
 extern "C" fn llvm_is_const(val: LLVMValueRef) -> LLVMBool = "__llvm_is_const"
