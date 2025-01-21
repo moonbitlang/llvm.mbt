@@ -374,6 +374,137 @@ pub fn PointerValue::dump(self: PointerValue) -> Unit {
 }
 
 // ============================================
+// InstructionValue
+// ============================================
+pub struct InstructionValue {
+  value: Value
+}
+
+pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
+  assert_not(value_ref.is_null().to_moonbit_bool())
+
+  InstructionValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl ValueRef for InstructionValue with as_value_ref(self: InstructionValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+// pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_load_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_a_store_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_store_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_alloca_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_getelementptr_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_atomicrmw_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
+//   llvm_isa_cmpxchg_inst(self.as_value_ref()).is_null()
+// }
+
+pub fn InstructionValue::get_name(self: InstructionValue) -> String {
+  self.value.get_name()
+}
+
+pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+// pub fn get_instruction_with_name(self: InstructionValue) -> String {
+//   let c_str = llvm_get_instruction_name(self.as_value_ref())
+//   c_str_to_moonbit_str(c_str)
+// }
+
+// pub fn InstructionValue::get_type(self: InstructionValue) -> AnyTypeEnum
+
+// pub fn InstructionValue::get_opcode(self: InstructionValue) -> InstructionOpcode
+
+// pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> InstructionValue? {
+//   let value_ref = llvm_get_previous_instruction(self.as_value_ref())
+//   
+//   if value_ref.is_null() {
+//     None
+//   } else {
+//     Some(InstructionValue::new(value_ref))
+//   }
+// }
+//
+// pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> InstructionValue? {
+//   let value_ref = llvm_get_next_instruction(self.as_value_ref())
+//   
+//   if value_ref.is_null() {
+//     None
+//   } else {
+//     Some(InstructionValue::new(value_ref))
+//   }
+// }
+
+// TODO: need review, possibly unsafe
+// pub fn InstructionValue::erase_from_basic_block(self: InstructionValue) -> Unit {
+// llvm_instruction_erase_from_parent(self.as_value_ref())
+// }
+
+// pub fn InstructionValue::remove_from_basic_block(self: InstructionValue) -> Unit {
+//   llvm_instruction_remove_from_parent(self.as_value_ref())
+// }
+
+// pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
+//   llvm_is_a_terminator_inst(self.as_value_ref()).is_null()
+// }
+//
+// pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
+//   // Only apply to terminators
+//   if self.is_terminator() {
+//     // it is `is` not `isa`
+//     llvm_is_conditional(self.as_value_ref()) == 1
+//   } else {
+//     false
+//   }
+// }
+
+// pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
+//   if self.get_opcode() == InstructionOpcode::Call {
+//     llvm_is_tail_call(self.as_value_ref()) == 1
+//   } else {
+//     false
+//   }
+// }
+
+// Only llvm 18..
+// pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailCallKind? {
+//   if self.get_opcode() == InstructionOpcode::Call {
+//     llvm_get_tail_call_kind(self.as_value_ref())
+//   } else {
+//     None
+//   }
+// }
+
+// pub fn InstructionValue::can_use_fast_math_flags(self: InstructionValue) -> bool {
+//   llvm_can_value_use_fast_math_flags(self.as_value_ref()) == 1
+// }
+
+// ..... Need More
+
+// pub fn InstructionValue::get_num_operands(self: InstructionValue) -> Int {
+//   llvm_get_num_operands(self.as_value_ref())
+// }
+
+
+// ============================================
 // FunctionValue
 // ============================================
 pub struct FunctionValue {

@@ -93,6 +93,78 @@ type LLVMUseRef
 //   UNO
 // } derive(Eq, Show, Hash)
 //
+
+// pub enum InstructionOpcode {
+//     Add
+//     AddrSpaceCast
+//     Alloca
+//     And
+//     AShr
+//     AtomicCmpXchg
+//     AtomicRMW
+//     BitCast
+//     Br
+//     Call
+//     CallBr
+//     CatchPad
+//     CatchRet
+//     CatchSwitch
+//     CleanupPad
+//     CleanupRet
+//     ExtractElement
+//     ExtractValue
+//     FNeg
+//     FAdd
+//     FCmp
+//     FDiv
+//     Fence
+//     FMul
+//     FPExt
+//     FPToSI
+//     FPToUI
+//     FPTrunc
+//     Freeze
+//     FRem
+//     FSub
+//     GetElementPtr
+//     ICmp
+//     IndirectBr
+//     InsertElement
+//     InsertValue
+//     IntToPtr
+//     Invoke
+//     LandingPad
+//     Load
+//     LShr
+//     Mul
+//     Or
+//     Phi
+//     PtrToInt
+//     Resume
+//     Return
+//     SDiv
+//     Select
+//     SExt
+//     Shl
+//     ShuffleVector
+//     SIToFP
+//     SRem
+//     Store
+//     Sub
+//     Switch
+//     Trunc
+//     UDiv
+//     UIToFP
+//     Unreachable
+//     URem
+//     UserOp1
+//     UserOp2
+//     VAArg
+//     Xor
+//     ZExt
+// } derive(Eq, Show, Hash)
+
+
 // pub enum AtomicOrdering {
 //   NotAtomic
 //
