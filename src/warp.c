@@ -3,6 +3,7 @@
 #include <llvm-c/Core.h>
 #include <llvm-c/ExecutionEngine.h>
 #include <llvm-c/Target.h>
+#include <llvm-c/Types.h>
 
 #include "utils.h"
 
@@ -294,6 +295,173 @@ void *__llvm_clone_module(void *module) {
 void __llvm_dispose_module(void *module) {
   LLVMDisposeModule((LLVMModuleRef)module);
 }
+
+// deprecated
+// void __llvm_set_is_new_dbg_info_format(void* module, LLVMBool use_new_format)
+// {
+//   LLVMSetIsNewDbgInfoFormat((LLVMModuleRef)module, use_new_format);
+// }
+
+/**
+ * Obtain the identifier of a module.
+ *
+ * @param M Module to obtain identifier of
+ * @param Len Out parameter which holds the length of the returned string.
+ * @return The identifier of M.
+ * @see Module::getModuleIdentifier()
+ */
+void *__llvm_get_module_identifier(void *module) {
+  size_t len = 0;
+  const char *p = LLVMGetModuleIdentifier((LLVMModuleRef)module, &len);
+  return (void *)p;
+}
+
+/**
+ * Set the identifier of a module to a string Ident with length Len.
+ *
+ * @param M The module to set identifier
+ * @param Ident The string to set M's identifier to
+ * @param Len Length of Ident
+ * @see Module::setModuleIdentifier()
+ */
+void __llvm_set_module_identifier(void *module, void *ident, size_t len) {
+  LLVMSetModuleIdentifier((LLVMModuleRef)module, (const char *)ident, len);
+}
+
+/**
+ * Obtain the module's original source file name.
+ *
+ * @param M Module to obtain the name of
+ * @param Len Out parameter which holds the length of the returned string
+ * @return The original source file name of M
+ * @see Module::getSourceFileName()
+ */
+void *__llvm_get_source_file_name(void *module) {
+  size_t len = 0;
+  const char *p = LLVMGetSourceFileName((LLVMModuleRef)module, &len);
+  return (void *)p;
+}
+
+/**
+ * Set the original source file name of a module to a string Name with length
+ * Len.
+ *
+ * @param M The module to set the source file name of
+ * @param Name The string to set M's source file name to
+ * @param Len Length of Name
+ * @see Module::setSourceFileName()
+ */
+// void LLVMSetSourceFileName(LLVMModuleRef M, const char *Name, size_t Len);
+void __llvm_set_source_file_name(void *module, void *name, size_t len) {
+  LLVMSetSourceFileName((LLVMModuleRef)module, (const char *)name, len);
+}
+
+/**
+ * Obtain the data layout for a module.
+ *
+ * @see Module::getDataLayoutStr()
+ *
+ * LLVMGetDataLayout is DEPRECATED, as the name is not only incorrect,
+ * but match the name of another method on the module. Prefer the use
+ * of LLVMGetDataLayoutStr, which is not ambiguous.
+ */
+void *__llvm_get_data_layout_str(void *module) {
+  return (void *)LLVMGetDataLayoutStr((LLVMModuleRef)module);
+}
+
+void *__llvm_get_data_layout(void *module) {
+  return (void *)LLVMGetDataLayout((LLVMModuleRef)module);
+}
+
+/**
+ * Set the data layout for a module.
+ *
+ * @see Module::setDataLayout()
+ */
+void __llvm_set_data_layout(void *module, void *data_layout) {
+  LLVMSetDataLayout((LLVMModuleRef)module, (const char *)data_layout);
+}
+
+/**
+ * Obtain the target triple for a module.
+ *
+ * @see Module::getTargetTriple()
+ */
+void *__llvm_get_target(void *module) {
+  return (char *)LLVMGetTarget((LLVMModuleRef)module);
+}
+
+/**
+ * Set the target triple for a module.
+ *
+ * @see Module::setTargetTriple()
+ */
+void __llvm_set_target(void *module, void *triple) {
+  LLVMSetTarget((LLVMModuleRef)module, (const char *)triple);
+}
+
+/**
+ * Returns the module flags as an array of flag-key-value triples.  The caller
+ * is responsible for freeing this array by calling
+ * \c LLVMDisposeModuleFlagsMetadata.
+ *
+ * @see Module::getModuleFlagsMetadata()
+ */
+// LLVMModuleFlagEntry *LLVMCopyModuleFlagsMetadata(LLVMModuleRef M, size_t
+// *Len);
+
+/**
+ * Destroys module flags metadata entries.
+ */
+// void LLVMDisposeModuleFlagsMetadata(LLVMModuleFlagEntry *Entries);
+
+/**
+ * Returns the flag behavior for a module flag entry at a specific index.
+ *
+ * @see Module::ModuleFlagEntry::Behavior
+ */
+// LLVMModuleFlagBehavior
+// LLVMModuleFlagEntriesGetFlagBehavior(LLVMModuleFlagEntry *Entries,
+//                                      unsigned Index);
+
+/**
+ * Returns the key for a module flag entry at a specific index.
+ *
+ * @see Module::ModuleFlagEntry::Key
+ */
+// const char *LLVMModuleFlagEntriesGetKey(LLVMModuleFlagEntry *Entries,
+//                                         unsigned Index, size_t *Len);
+
+/**
+ * Returns the metadata for a module flag entry at a specific index.
+ *
+ * @see Module::ModuleFlagEntry::Val
+ */
+// LLVMMetadataRef LLVMModuleFlagEntriesGetMetadata(LLVMModuleFlagEntry
+// *Entries,
+//                                                  unsigned Index);
+
+/**
+ * Add a module-level flag to the module-level flags metadata if it doesn't
+ * already exist.
+ *
+ * @see Module::getModuleFlag()
+ */
+// LLVMMetadataRef LLVMGetModuleFlag(LLVMModuleRef M, const char *Key,
+//                                   size_t KeyLen);
+void *__llvm_get_module_flag(void *m, void *key, size_t key_len) {
+  return (LLVMMetadataRef)LLVMGetModuleFlag((LLVMModuleRef)m, (const char *)key,
+                                            key_len);
+}
+
+/**
+ * Add a module-level flag to the module-level flags metadata if it doesn't
+ * already exist.
+ *
+ * @see Module::addModuleFlag()
+ */
+// void LLVMAddModuleFlag(LLVMModuleRef M, LLVMModuleFlagBehavior Behavior,
+//                        const char *Key, size_t KeyLen, LLVMMetadataRef Val);
 
 /**
  * Dump a representation of a module to stderr.
@@ -1787,6 +1955,445 @@ void *__llvm_get_first_instruction(void *bb) {
 void *__llvm_get_last_instruction(void *bb) {
   return (LLVMValueRef)LLVMGetLastInstruction((LLVMBasicBlockRef)bb);
 }
+
+/**
+ * @defgroup LLVMCCoreValueInstruction Instructions
+ *
+ * Functions in this group relate to the inspection and manipulation of
+ * individual instructions.
+ *
+ * In the C++ API, an instruction is modeled by llvm::Instruction. This
+ * class has a large number of descendents. llvm::Instruction is a
+ * llvm::Value and in the C API, instructions are modeled by
+ * LLVMValueRef.
+ *
+ * This group also contains sub-groups which operate on specific
+ * llvm::Instruction types, e.g. llvm::CallInst.
+ *
+ * @{
+ */
+
+/**
+ * Determine whether an instruction has any metadata attached.
+ */
+int __llvm_has_metadata(void *val) {
+  return LLVMHasMetadata((LLVMValueRef)val);
+}
+
+/**
+ * Return metadata associated with an instruction value.
+ */
+void *__llvm_get_metadata(void *val, unsigned kind_id) {
+  return (LLVMValueRef)LLVMGetMetadata((LLVMValueRef)val, kind_id);
+}
+
+/**
+ * Set metadata associated with an instruction value.
+ */
+void __llvm_set_metadata(void *val, unsigned kind_id, void *node) {
+  LLVMSetMetadata((LLVMValueRef)val, kind_id, (LLVMValueRef)node);
+}
+
+/**
+ * Returns the metadata associated with an instruction value, but filters out
+ * all the debug locations.
+ *
+ * @see llvm::Instruction::getAllMetadataOtherThanDebugLoc()
+ */
+// LLVMValueMetadataEntry *
+// LLVMInstructionGetAllMetadataOtherThanDebugLoc(LLVMValueRef Instr,
+//                                                size_t *NumEntries);
+
+/**
+ * Obtain the basic block to which an instruction belongs.
+ *
+ * @see llvm::Instruction::getParent()
+ */
+void *__llvm_get_instruction_parent(void *inst) {
+  return (LLVMBasicBlockRef)LLVMGetInstructionParent((LLVMValueRef)inst);
+}
+
+/**
+ * Obtain the instruction that occurs after the one specified.
+ *
+ * The next instruction will be from the same basic block.
+ *
+ * If this is the last instruction in a basic block, NULL will be
+ * returned.
+ */
+void *__llvm_get_next_instruction(void *inst) {
+  return (LLVMValueRef)LLVMGetNextInstruction((LLVMValueRef)inst);
+}
+
+/**
+ * Obtain the instruction that occurred before this one.
+ *
+ * If the instruction is the first instruction in a basic block, NULL
+ * will be returned.
+ */
+void *__llvm_get_previous_instruction(void *inst) {
+  return (LLVMValueRef)LLVMGetPreviousInstruction((LLVMValueRef)inst);
+}
+
+/**
+ * Remove an instruction.
+ *
+ * The instruction specified is removed from its containing building
+ * block but is kept alive.
+ *
+ * @see llvm::Instruction::removeFromParent()
+ */
+void __llvm_instruction_remove_from_parent(void *inst) {
+  return LLVMInstructionRemoveFromParent((LLVMValueRef)inst);
+}
+
+/**
+ * Remove and delete an instruction.
+ *
+ * The instruction specified is removed from its containing building
+ * block and then deleted.
+ *
+ * @see llvm::Instruction::eraseFromParent()
+ */
+void __llvm_instruction_erase_from_parent(void *inst) {
+  return LLVMInstructionEraseFromParent((LLVMValueRef)inst);
+}
+
+/**
+ * Delete an instruction.
+ *
+ * The instruction specified is deleted. It must have previously been
+ * removed from its containing building block.
+ *
+ * @see llvm::Value::deleteValue()
+ */
+void __llvm_delete_instruction(void *inst) {
+  return LLVMDeleteInstruction((LLVMValueRef)inst);
+}
+
+/**
+ * Obtain the code opcode for an individual instruction.
+ *
+ * @see llvm::Instruction::getOpCode()
+ */
+int32_t __llvm_get_instruction_opcode(void *inst) {
+  LLVMOpcode code = LLVMGetInstructionOpcode((LLVMValueRef)inst);
+  return (int32_t)code;
+}
+
+/**
+ * Obtain the predicate of an instruction.
+ *
+ * This is only valid for instructions that correspond to llvm::ICmpInst.
+ *
+ * @see llvm::ICmpInst::getPredicate()
+ */
+int32_t __llvm_get_icmp_predicate(void *inst) {
+  LLVMIntPredicate p = LLVMGetICmpPredicate((LLVMValueRef)inst);
+  return (int32_t)p;
+}
+
+/**
+ * Obtain the float predicate of an instruction.
+ *
+ * This is only valid for instructions that correspond to llvm::FCmpInst.
+ *
+ * @see llvm::FCmpInst::getPredicate()
+ */
+int32_t __llvm_get_fcmp_predicate(void *inst) {
+  LLVMRealPredicate p = LLVMGetFCmpPredicate((LLVMValueRef)inst);
+  return (int32_t)p;
+}
+
+/**
+ * Create a copy of 'this' instruction that is identical in all ways
+ * except the following:
+ *   * The instruction has no parent
+ *   * The instruction has no name
+ *
+ * @see llvm::Instruction::clone()
+ */
+void *__llvm_instruction_clone(void *inst) {
+  return (LLVMValueRef)LLVMInstructionClone((LLVMValueRef)inst);
+}
+
+/**
+ * Determine whether an instruction is a terminator. This routine is named to
+ * be compatible with historical functions that did this by querying the
+ * underlying C++ type.
+ *
+ * @see llvm::Instruction::isTerminator()
+ */
+void *__llvm_isa_terminator_inst(void *inst) {
+  return (LLVMValueRef)LLVMIsATerminatorInst((LLVMValueRef)inst);
+}
+
+/**
+ * @defgroup LLVMCCoreValueInstructionCall Call Sites and Invocations
+ *
+ * Functions in this group apply to instructions that refer to call
+ * sites and invocations. These correspond to C++ types in the
+ * llvm::CallInst class tree.
+ *
+ * @{
+ */
+
+/**
+ * Obtain the argument count for a call instruction.
+ *
+ * This expects an LLVMValueRef that corresponds to a llvm::CallInst,
+ * llvm::InvokeInst, or llvm:FuncletPadInst.
+ *
+ * @see llvm::CallInst::getNumArgOperands()
+ * @see llvm::InvokeInst::getNumArgOperands()
+ * @see llvm::FuncletPadInst::getNumArgOperands()
+ */
+unsigned __klee_get_num_arg_operands(void *instr) {
+  return LLVMGetNumArgOperands((LLVMValueRef)instr);
+}
+
+/**
+ * Set the calling convention for a call instruction.
+ *
+ * This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+ * llvm::InvokeInst.
+ *
+ * @see llvm::CallInst::setCallingConv()
+ * @see llvm::InvokeInst::setCallingConv()
+ */
+void __llvm_set_instruction_call_conv(void *instr, unsigned cc) {
+  LLVMSetInstructionCallConv((LLVMValueRef)instr, cc);
+}
+
+/**
+ * Obtain the calling convention for a call instruction.
+ *
+ * This is the opposite of LLVMSetInstructionCallConv(). Reads its
+ * usage.
+ *
+ * @see LLVMSetInstructionCallConv()
+ */
+unsigned __llvm_get_instruction_call_conv(void *instr) {
+  return LLVMGetInstructionCallConv((LLVMValueRef)instr);
+}
+
+void __llvm_set_instr_param_alignment(void *instr, LLVMAttributeIndex idx,
+                                      unsigned align) {
+  LLVMSetInstrParamAlignment((LLVMValueRef)instr, idx, align);
+}
+
+void __llvm_add_call_site_attribute(void *instr, LLVMAttributeIndex idx,
+                                    void *attr) {
+  LLVMAddCallSiteAttribute((LLVMValueRef)instr, idx, (LLVMAttributeRef)attr);
+}
+
+unsigned __llvm_get_call_size_attribute_count(void *instr,
+                                              LLVMAttributeIndex idx) {
+  return LLVMGetCallSiteAttributeCount((LLVMValueRef)instr, idx);
+}
+
+// void LLVMGetCallSiteAttributes(LLVMValueRef C, LLVMAttributeIndex Idx,
+//                                LLVMAttributeRef *Attrs);
+//
+// void __llvm_get_call_site_attributes(void *instr, LLVMAttributeIndex idx,
+//                                      void *attrs) {
+//   LLVMGetCallSiteAttributes((LLVMValueRef)instr, idx, (LLVMAttributeRef
+//   *)attrs);
+// }
+
+void *__llvm_get_call_size_enum_attribute(void *instr, LLVMAttributeIndex idx,
+                                          unsigned kind_id) {
+  return (LLVMAttributeRef *)LLVMGetCallSiteEnumAttribute((LLVMValueRef)instr,
+                                                          idx, kind_id);
+}
+
+void *__llvm_get_call_site_string_attribute(void *inst, LLVMAttributeIndex idx,
+                                            void *k, unsigned klen) {
+  return (LLVMAttributeRef)LLVMGetCallSiteStringAttribute(
+      (LLVMValueRef)inst, idx, (const char *)k, klen);
+}
+
+void __llvm_remove_call_size_enum_attribute(void *inst, LLVMAttributeIndex idx,
+                                            unsigned kind_id) {
+  LLVMRemoveCallSiteEnumAttribute((LLVMValueRef)inst, idx, kind_id);
+}
+
+void __llvm_remove_call_site_string_attribute(void *inst,
+                                              LLVMAttributeIndex idx, void *k,
+                                              unsigned klen) {
+  LLVMRemoveCallSiteStringAttribute((LLVMValueRef)inst, idx, (const char *)k,
+                                    klen);
+}
+
+/**
+ * Obtain the function type called by this instruction.
+ *
+ * @see llvm::CallBase::getFunctionType()
+ */
+void *__llvm_get_called_function_type(void *instr) {
+  return (LLVMTypeRef)LLVMGetCalledFunctionType((LLVMValueRef)instr);
+}
+
+/**
+ * Obtain the pointer to the function invoked by this instruction.
+ *
+ * This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+ * llvm::InvokeInst.
+ *
+ * @see llvm::CallInst::getCalledOperand()
+ * @see llvm::InvokeInst::getCalledOperand()
+ */
+void *__llvm_get_called_value(void *instr) {
+  return (LLVMValueRef)LLVMGetCalledValue((LLVMValueRef)instr);
+}
+
+/**
+ * Obtain the number of operand bundles attached to this instruction.
+ *
+ * This only works on llvm::CallInst and llvm::InvokeInst instructions.
+ *
+ * @see llvm::CallBase::getNumOperandBundles()
+ */
+unsigned __llvm_get_num_operand_bundles(void *instr) {
+  return LLVMGetNumOperandBundles((LLVMValueRef)instr);
+}
+
+/**
+ * Obtain the operand bundle attached to this instruction at the given index.
+ * Use LLVMDisposeOperandBundle to free the operand bundle.
+ *
+ * This only works on llvm::CallInst and llvm::InvokeInst instructions.
+ */
+void *__llvm_get_operand_bundle_at_index(void *instr, unsigned index) {
+  return (LLVMOperandBundleRef)LLVMGetOperandBundleAtIndex((LLVMValueRef)instr,
+                                                           index);
+}
+
+/**
+ * Obtain whether a call instruction is a tail call.
+ *
+ * This only works on llvm::CallInst instructions.
+ *
+ * @see llvm::CallInst::isTailCall()
+ */
+LLVMBool __llvm_is_tail_call(void *call_inst) {
+  return LLVMIsTailCall((LLVMValueRef)call_inst);
+}
+
+/**
+ * Set whether a call instruction is a tail call.
+ *
+ * This only works on llvm::CallInst instructions.
+ *
+ * @see llvm::CallInst::setTailCall()
+ */
+void __llvm_set_tail_call(void *call_inst, LLVMBool is_tail_call) {
+  LLVMSetTailCall((LLVMValueRef)call_inst, is_tail_call);
+}
+
+/**
+ * Obtain a tail call kind of the call instruction.
+ *
+ * @see llvm::CallInst::setTailCallKind()
+ */
+int32_t __llvm_get_tail_call_kind(void *call_inst) {
+  LLVMTailCallKind k = LLVMGetTailCallKind((LLVMValueRef)call_inst);
+  return (int32_t)k;
+}
+
+/**
+ * Set the call kind of the call instruction.
+ *
+ * @see llvm::CallInst::getTailCallKind()
+ */
+// TODO: need check
+void __llvm_set_tail_call_kind(void *call_inst, int32_t kind) {
+  LLVMTailCallKind k = (LLVMTailCallKind)kind;
+  LLVMSetTailCallKind((LLVMValueRef)call_inst, k);
+}
+
+/**
+ * Return the normal destination basic block.
+ *
+ * This only works on llvm::InvokeInst instructions.
+ *
+ * @see llvm::InvokeInst::getNormalDest()
+ */
+void *__llvm_get_normal_dest(void *invoke_inst) {
+  return (LLVMBasicBlockRef)LLVMGetNormalDest((LLVMValueRef)invoke_inst);
+}
+
+/**
+ * Return the unwind destination basic block.
+ *
+ * Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+ * llvm::CatchSwitchInst instructions.
+ *
+ * @see llvm::InvokeInst::getUnwindDest()
+ * @see llvm::CleanupReturnInst::getUnwindDest()
+ * @see llvm::CatchSwitchInst::getUnwindDest()
+ */
+void *__llvm_get_unwind_dest(void *invoke_inst) {
+  return (LLVMBasicBlockRef)LLVMGetUnwindDest((LLVMValueRef)invoke_inst);
+}
+
+/**
+ * Set the normal destination basic block.
+ *
+ * This only works on llvm::InvokeInst instructions.
+ *
+ * @see llvm::InvokeInst::setNormalDest()
+ */
+void __llvm_set_normal_dest(void *invoke_inst, void *b) {
+  LLVMSetNormalDest((LLVMValueRef)invoke_inst, (LLVMBasicBlockRef)b);
+}
+
+/**
+ * Set the unwind destination basic block.
+ *
+ * Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+ * llvm::CatchSwitchInst instructions.
+ *
+ * @see llvm::InvokeInst::setUnwindDest()
+ * @see llvm::CleanupReturnInst::setUnwindDest()
+ * @see llvm::CatchSwitchInst::setUnwindDest()
+ */
+void __llvm_set_unwind_dest(void *invoke_inst, void *b) {
+  LLVMSetUnwindDest((LLVMValueRef)invoke_inst, (LLVMBasicBlockRef)b);
+}
+
+/**
+ * Get the default destination of a CallBr instruction.
+ *
+ * @see llvm::CallBrInst::getDefaultDest()
+ */
+void *__llvm_get_call_br_default_dest(void *call_br) {
+  return (LLVMBasicBlockRef)LLVMGetCallBrDefaultDest((LLVMValueRef)call_br);
+}
+
+/**
+ * Get the number of indirect destinations of a CallBr instruction.
+ *
+ * @see llvm::CallBrInst::getNumIndirectDests()
+
+ */
+unsigned __llvm_get_call_br_num_indirect_dests(void *call_br) {
+  return LLVMGetCallBrNumIndirectDests((LLVMValueRef)call_br);
+}
+
+/**
+ * Get the indirect destination of a CallBr instruction at the given index.
+ *
+ * @see llvm::CallBrInst::getIndirectDest()
+ */
+void *__llvm_get_call_br_indirect_dest(void *call_br, unsigned idx) {
+  return (LLVMBasicBlockRef)LLVMGetCallBrIndirectDest((LLVMValueRef)call_br,
+                                                      idx);
+}
+
+/**
+ * @}
+ */
 
 /**
  * @defgroup LLVMCCoreInstructionBuilder Instruction Builders

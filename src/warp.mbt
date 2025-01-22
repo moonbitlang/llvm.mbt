@@ -105,8 +105,10 @@ pub extern "C" fn llvm_get_previous_function(fn_val: LLVMValueRef) -> LLVMValueR
 //
 // Determine whether a type instance is null.
 //
-// extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
-extern "C" fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
+extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
+fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
+  llvm_type_is_null(self).to_moonbit_bool()
+}
 
 // 
 // Whether the type has a known size.
@@ -275,8 +277,10 @@ extern "C" fn llvm_get_poison(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_pos
 // Determine whether a value instance is null.
 //
 // @see llvm::Constant::isNullValue()
-extern "C" fn LLVMValueRef::is_null(self: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
+fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
+  llvm_is_null(self).to_moonbit_bool()
+}
 
 // 
 // Obtain a constant that is a constant pointer pointing to NULL for a
@@ -453,6 +457,418 @@ extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_value
 
 // BasicBlock
 extern "C" fn llvm_append_basic_block_in_context(ctx: LLVMContextRef, fn_val: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block_in_context"
+
+pub extern "C" fn llvm_inster_basic_block_in_conext(ctx: LLVMContextRef, bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block_in_context"
+
+pub extern "C" fn llvm_inster_basic_block(bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block"
+
+pub extern "C" fn llvm_delete_basic_block(bb: LLVMBasicBlockRef) = "__llvm_delete_basic_block"
+
+// 
+// Remove a basic block from a function.
+// 
+// This deletes the basic block from its containing function but keep
+// the basic block alive.
+// 
+// @see llvm::BasicBlock::removeFromParent()
+pub extern "C" fn llvm_remove_basic_block_from_parent(bb: LLVMBasicBlockRef) = "__llvm_remove_basic_block_from_parent"
+//
+// 
+// Move a basic block to before another one.
+// 
+// @see llvm::BasicBlock::moveBefore()
+// 
+pub extern "C" fn llvm_move_basic_block_before(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_before"
+// 
+// Move a basic block to after another one.
+// 
+// @see llvm::BasicBlock::moveAfter()
+// 
+pub extern "C" fn llvm_move_basic_block_after(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_after"
+//
+// 
+// Obtain the first instruction in a basic block.
+// 
+// The returned LLVMValueRef corresponds to a llvm::Instruction
+// instance.
+// 
+pub extern "C" fn llvm_get_first_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_first_instruction"
+//
+// 
+// Obtain the last instruction in a basic block.
+// 
+// The returned LLVMValueRef corresponds to an LLVM:Instruction.
+// 
+pub extern "C" fn llvm_get_last_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_last_instruction"
+
+// /**
+//  * @defgroup LLVMCCoreValueInstruction Instructions
+//  *
+//  * Functions in this group relate to the inspection and manipulation of
+//  * individual instructions.
+//  *
+//  * In the C++ API, an instruction is modeled by llvm::Instruction. This
+//  * class has a large number of descendents. llvm::Instruction is a
+//  * llvm::Value and in the C API, instructions are modeled by
+//  * LLVMValueRef.
+//  *
+//  * This group also contains sub-groups which operate on specific
+//  * llvm::Instruction types, e.g. llvm::CallInst.
+//  *
+//  * @{
+//  */
+//
+// /**
+//  * Determine whether an instruction has any metadata attached.
+//  */
+// int LLVMHasMetadata(LLVMValueRef Val);
+pub extern "C" fn llvm_has_metadata(val: LLVMValueRef) -> Int = "__llvm_has_metadata"
+//
+// /**
+//  * Return metadata associated with an instruction value.
+//  */
+pub extern "C" fn llvm_get_metadata(val: LLVMValueRef, kind_id: UInt) -> LLVMValueRef = "__llvm_get_metadata"
+//
+// /**
+//  * Set metadata associated with an instruction value.
+//  */
+// void LLVMSetMetadata(LLVMValueRef Val, unsigned KindID, LLVMValueRef Node);
+pub extern "C" fn llvm_set_metadata(val: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) = "__llvm_set_metadata"
+
+//
+// Returns the metadata associated with an instruction value, but filters out
+// all the debug locations.
+//
+// @see llvm::Instruction::getAllMetadataOtherThanDebugLoc()
+//
+// LLVMValueMetadataEntry *LLVMInstructionGetAllMetadataOtherThanDebugLoc(LLVMValueRef Instr, size_t *NumEntries);
+// pub extern "C" fn llvm_instruction_get_all_metadata_other_than_debug_loc(instr: LLVMValueRef, num_entries: *mut Size) -> *mut LLVMValueMetadataEntry = "__llvm_instruction_get_all_metadata_other_than_debug_loc"
+
+//
+// Obtain the basic block to which an instruction belongs.
+//
+// @see llvm::Instruction::getParent()
+//
+// LLVMBasicBlockRef LLVMGetInstructionParent(LLVMValueRef Inst);
+pub extern "C" fn llvm_get_instruction_parent(inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_instruction_parent"
+
+//
+// Obtain the instruction that occurs after the one specified.
+//
+// The next instruction will be from the same basic block.
+//
+// If this is the last instruction in a basic block, NULL will be
+// returned.
+//
+// LLVMValueRef LLVMGetNextInstruction(LLVMValueRef Inst);
+pub extern "C" fn llvm_get_next_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_instruction"
+
+//
+// Obtain the instruction that occurred before this one.
+//
+// If the instruction is the first instruction in a basic block, NULL
+// will be returned.
+//
+// LLVMValueRef LLVMGetPreviousInstruction(LLVMValueRef Inst);
+pub extern "C" fn llvm_get_previous_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_instruction"
+
+//
+// Remove an instruction.
+//
+// The instruction specified is removed from its containing building
+// block but is kept alive.
+//
+// @see llvm::Instruction::removeFromParent()
+//
+// void LLVMInstructionRemoveFromParent(LLVMValueRef Inst);
+pub extern "C" fn llvm_instruction_remove_from_parent(inst: LLVMValueRef) = "__llvm_instruction_remove_from_parent"
+
+//
+// Remove and delete an instruction.
+//
+// The instruction specified is removed from its containing building
+// block and then deleted.
+//
+// @see llvm::Instruction::eraseFromParent()
+//
+// void LLVMInstructionEraseFromParent(LLVMValueRef Inst);
+pub extern "C" fn llvm_instruction_erase_from_parent(inst: LLVMValueRef) = "__llvm_instruction_erase_from_parent"
+
+//
+// Delete an instruction.
+//
+// The instruction specified is deleted. It must have previously been
+// removed from its containing building block.
+//
+// @see llvm::Value::deleteValue()
+//
+// void LLVMDeleteInstruction(LLVMValueRef Inst);
+pub extern "C" fn llvm_delete_instruction(inst: LLVMValueRef) = "__llvm_delete_instruction"
+
+//
+// Obtain the code opcode for an individual instruction.
+//
+// @see llvm::Instruction::getOpCode()
+//
+// LLVMOpcode LLVMGetInstructionOpcode(LLVMValueRef Inst);
+// pub extern "C" fn llvm_get_instruction_opcode(inst: LLVMValueRef) -> LLVMOpcode = "__llvm_get_instruction_opcode"
+
+//
+// Obtain the predicate of an instruction.
+//
+// This is only valid for instructions that correspond to llvm::ICmpInst.
+//
+// @see llvm::ICmpInst::getPredicate()
+//
+// LLVMIntPredicate LLVMGetICmpPredicate(LLVMValueRef Inst);
+// pub extern "C" fn llvm_get_icmp_predicate(inst: LLVMValueRef) -> LLVMIntPredicate = "__llvm_get_icmp_predicate"
+
+//
+// Obtain the float predicate of an instruction.
+//
+// This is only valid for instructions that correspond to llvm::FCmpInst.
+//
+// @see llvm::FCmpInst::getPredicate()
+//
+// LLVMRealPredicate LLVMGetFCmpPredicate(LLVMValueRef Inst);
+// pub extern "C" fn llvm_get_fcmp_predicate(inst: LLVMValueRef) -> LLVMRealPredicate = "__llvm_get_fcmp_predicate"
+
+//
+// Create a copy of 'this' instruction that is identical in all ways
+// except the following:
+//   * The instruction has no parent
+//   * The instruction has no name
+//
+// @see llvm::Instruction::clone()
+//
+// LLVMValueRef LLVMInstructionClone(LLVMValueRef Inst);
+pub extern "C" fn llvm_instruction_clone(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_instruction_clone"
+
+//
+// Determine whether an instruction is a terminator. This routine is named to
+// be compatible with historical functions that did this by querying the
+// underlying C++ type.
+//
+// @see llvm::Instruction::isTerminator()
+//
+// LLVMValueRef LLVMIsATerminatorInst(LLVMValueRef Inst);
+pub extern "C" fn llvm_is_a_terminator_inst(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_is_a_terminator_inst"
+
+//
+// Obtain the argument count for a call instruction.
+//
+// This expects an LLVMValueRef that corresponds to a llvm::CallInst,
+// llvm::InvokeInst, or llvm:FuncletPadInst.
+//
+// @see llvm::CallInst::getNumArgOperands()
+// @see llvm::InvokeInst::getNumArgOperands()
+// @see llvm::FuncletPadInst::getNumArgOperands()
+//
+// unsigned LLVMGetNumArgOperands(LLVMValueRef Instr);
+pub extern "C" fn llvm_get_num_arg_operands(instr: LLVMValueRef) -> UInt = "__llvm_get_num_arg_operands"
+
+//
+// Set the calling convention for a call instruction.
+//
+// This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+// llvm::InvokeInst.
+//
+// @see llvm::CallInst::setCallingConv()
+// @see llvm::InvokeInst::setCallingConv()
+//
+// void LLVMSetInstructionCallConv(LLVMValueRef Instr, unsigned CC);
+pub extern "C" fn llvm_set_instruction_call_conv(instr: LLVMValueRef, cc: UInt) = "__llvm_set_instruction_call_conv"
+
+//
+// Obtain the calling convention for a call instruction.
+//
+// This is the opposite of LLVMSetInstructionCallConv(). Reads its
+// usage.
+//
+// @see LLVMSetInstructionCallConv()
+//
+// unsigned LLVMGetInstructionCallConv(LLVMValueRef Instr);
+// pub extern "C" fn llvm_get_instruction_call_conv(instr: LLVMValueRef) -> UInt = "__llvm_get_instruction_call_conv"
+
+//
+// void LLVMSetInstrParamAlignment(LLVMValueRef Instr, LLVMAttributeIndex Idx, unsigned Align);
+// pub extern "C" fn llvm_set_instr_param_alignment(instr: LLVMValueRef, idx: LLVMAttributeIndex, align: UInt) = "__llvm_set_instr_param_alignment"
+
+//
+// void LLVMAddCallSiteAttribute(LLVMValueRef C, LLVMAttributeIndex Idx, LLVMAttributeRef A);
+// pub extern "C" fn llvm_add_call_site_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, a: LLVMAttributeRef) = "__llvm_add_call_site_attribute"
+
+//
+// unsigned LLVMGetCallSiteAttributeCount(LLVMValueRef C, LLVMAttributeIndex Idx);
+// pub extern "C" fn llvm_get_call_site_attribute_count(c: LLVMValueRef, idx: LLVMAttributeIndex) -> UInt = "__llvm_get_call_site_attribute_count"
+
+//
+// void LLVMGetCallSiteAttributes(LLVMValueRef C, LLVMAttributeIndex Idx, LLVMAttributeRef *Attrs);
+// pub extern "C" fn llvm_get_call_site_attributes(c: LLVMValueRef, idx: LLVMAttributeIndex, attrs: *mut LLVMAttributeRef) = "__llvm_get_call_site_attributes"
+
+//
+// LLVMAttributeRef LLVMGetCallSiteEnumAttribute(LLVMValueRef C, LLVMAttributeIndex Idx, unsigned KindID);
+// pub extern "C" fn llvm_get_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_enum_attribute"
+
+//
+// LLVMAttributeRef LLVMGetCallSiteStringAttribute(LLVMValueRef C, LLVMAttributeIndex Idx, const char *K, unsigned KLen);
+// pub extern "C" fn llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: *const Char, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_string_attribute"
+
+//
+// void LLVMRemoveCallSiteEnumAttribute(LLVMValueRef C, LLVMAttributeIndex Idx, unsigned KindID);
+pub extern "C" fn llvm_remove_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) = "__llvm_remove_call_site_enum_attribute"
+
+//
+// void LLVMRemoveCallSiteStringAttribute(LLVMValueRef C, LLVMAttributeIndex Idx, const char *K, unsigned KLen);
+// pub extern "C" fn llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: *const Char, k_len: UInt) = "__llvm_remove_call_site_string_attribute"
+
+//
+// Obtain the function type called by this instruction.
+//
+// @see llvm::CallBase::getFunctionType()
+//
+// LLVMTypeRef LLVMGetCalledFunctionType(LLVMValueRef C);
+pub extern "C" fn llvm_get_called_function_type(c: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_called_function_type"
+
+//
+// Obtain the pointer to the function invoked by this instruction.
+//
+// This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+// llvm::InvokeInst.
+//
+// @see llvm::CallInst::getCalledOperand()
+// @see llvm::InvokeInst::getCalledOperand()
+//
+// LLVMValueRef LLVMGetCalledValue(LLVMValueRef Instr);
+pub extern "C" fn llvm_get_called_value(instr: LLVMValueRef) -> LLVMValueRef = "__llvm_get_called_value"
+
+//
+// Obtain the number of operand bundles attached to this instruction.
+//
+// This only works on llvm::CallInst and llvm::InvokeInst instructions.
+//
+// @see llvm::CallBase::getNumOperandBundles()
+//
+// unsigned LLVMGetNumOperandBundles(LLVMValueRef C);
+pub extern "C" fn llvm_get_num_operand_bundles(c: LLVMValueRef) -> UInt = "__llvm_get_num_operand_bundles"
+
+//
+// Obtain the operand bundle attached to this instruction at the given index.
+// Use LLVMDisposeOperandBundle to free the operand bundle.
+//
+// This only works on llvm::CallInst and llvm::InvokeInst instructions.
+//
+// LLVMOperandBundleRef LLVMGetOperandBundleAtIndex(LLVMValueRef C, unsigned Index);
+pub extern "C" fn llvm_get_operand_bundle_at_index(c: LLVMValueRef, index: UInt) -> LLVMOperandBundleRef = "__llvm_get_operand_bundle_at_index"
+
+//
+// Obtain whether a call instruction is a tail call.
+//
+// This only works on llvm::CallInst instructions.
+//
+// @see llvm::CallInst::isTailCall()
+//
+// LLVMBool LLVMIsTailCall(LLVMValueRef CallInst);
+pub extern "C" fn llvm_is_tail_call(call_inst: LLVMValueRef) -> LLVMBool = "__llvm_is_tail_call"
+
+//
+// Set whether a call instruction is a tail call.
+//
+// This only works on llvm::CallInst instructions.
+//
+// @see llvm::CallInst::setTailCall()
+//
+// void LLVMSetTailCall(LLVMValueRef CallInst, LLVMBool IsTailCall);
+pub extern "C" fn llvm_set_tail_call(call_inst: LLVMValueRef, is_tail_call: LLVMBool) = "__llvm_set_tail_call"
+
+//
+// Obtain a tail call kind of the call instruction.
+//
+// @see llvm::CallInst::setTailCallKind()
+//
+// LLVMTailCallKind LLVMGetTailCallKind(LLVMValueRef CallInst);
+// pub extern "C" fn llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> LLVMTailCallKind = "__llvm_get_tail_call_kind"
+
+//
+// Set the call kind of the call instruction.
+//
+// @see llvm::CallInst::getTailCallKind()
+//
+// void LLVMSetTailCallKind(LLVMValueRef CallInst, LLVMTailCallKind kind);
+// pub extern "C" fn llvm_set_tail_call_kind(call_inst: LLVMValueRef, kind: LLVMTailCallKind) = "__llvm_set_tail_call_kind"
+
+//
+// Return the normal destination basic block.
+//
+// This only works on llvm::InvokeInst instructions.
+//
+// @see llvm::InvokeInst::getNormalDest()
+//
+// LLVMBasicBlockRef LLVMGetNormalDest(LLVMValueRef InvokeInst);
+pub extern "C" fn llvm_get_normal_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_normal_dest"
+
+//
+// Return the unwind destination basic block.
+//
+// Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+// llvm::CatchSwitchInst instructions.
+//
+// @see llvm::InvokeInst::getUnwindDest()
+// @see llvm::CleanupReturnInst::getUnwindDest()
+// @see llvm::CatchSwitchInst::getUnwindDest()
+//
+// LLVMBasicBlockRef LLVMGetUnwindDest(LLVMValueRef InvokeInst);
+pub extern "C" fn llvm_get_unwind_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_unwind_dest"
+
+//
+// Set the normal destination basic block.
+//
+// This only works on llvm::InvokeInst instructions.
+//
+// @see llvm::InvokeInst::setNormalDest()
+//
+// void LLVMSetNormalDest(LLVMValueRef InvokeInst, LLVMBasicBlockRef B);
+pub extern "C" fn llvm_set_normal_dest(invoke_inst: LLVMValueRef, b: LLVMBasicBlockRef) = "__llvm_set_normal_dest"
+
+//
+// Set the unwind destination basic block.
+//
+// Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+// llvm::CatchSwitchInst instructions.
+//
+// @see llvm::InvokeInst::setUnwindDest()
+// @see llvm::CleanupReturnInst::setUnwindDest()
+// @see llvm::CatchSwitchInst::setUnwindDest()
+//
+// void LLVMSetUnwindDest(LLVMValueRef InvokeInst, LLVMBasicBlockRef B);
+pub extern "C" fn llvm_set_unwind_dest(invoke_inst: LLVMValueRef, b: LLVMBasicBlockRef) = "__llvm_set_unwind_dest"
+
+//
+// Get the default destination of a CallBr instruction.
+//
+// @see llvm::CallBrInst::getDefaultDest()
+//
+// LLVMBasicBlockRef LLVMGetCallBrDefaultDest(LLVMValueRef CallBr);
+pub extern "C" fn llvm_get_call_br_default_dest(call_br: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_call_br_default_dest"
+
+//
+// Get the number of indirect destinations of a CallBr instruction.
+//
+// @see llvm::CallBrInst::getNumIndirectDests()
+//
+// unsigned LLVMGetCallBrNumIndirectDests(LLVMValueRef CallBr);
+pub extern "C" fn llvm_get_call_br_num_indirect_dests(call_br: LLVMValueRef) -> UInt = "__llvm_get_call_br_num_indirect_dests"
+
+//
+// Get the indirect destination of a CallBr instruction at the given index.
+//
+// @see llvm::CallBrInst::getIndirectDest()
+//
+// LLVMBasicBlockRef LLVMGetCallBrIndirectDest(LLVMValueRef CallBr, unsigned Idx);
+pub extern "C" fn llvm_get_call_br_indirect_dest(call_br: LLVMValueRef, idx: UInt) -> LLVMBasicBlockRef = "__llvm_get_call_br_indirect_dest"
+
+
+
 
 // builder
 extern "C" fn llvm_create_builder_in_context(ctx: LLVMContextRef) -> LLVMBuilderRef = "__llvm_create_builder_in_context"

@@ -91,7 +91,7 @@ pub struct IntValue {
 }
 
 pub fn IntValue::new(value_ref: LLVMValueRef) -> IntValue {
-  assert_not(value_ref.is_null().to_moonbit_bool())
+  assert_not(value_ref.is_null())
 
   IntValue::{
     value: Value::new(value_ref)
@@ -232,7 +232,7 @@ pub fn IntValue::is_const(self: IntValue) -> Bool {
 }
 
 pub fn IntValue::is_constant_int(self: IntValue) -> Bool {
-  llvm_isa_constant_int(self.as_value_ref()).is_null().to_moonbit_bool()
+  llvm_isa_constant_int(self.as_value_ref()).is_null()
 }
 
 pub fn replace_all_uses_with(self: IntValue, new_value: IntValue) -> Unit {
@@ -255,7 +255,7 @@ pub struct FloatValue {
 }
 
 pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
-  assert_not(value_ref.is_null().to_moonbit_bool())
+  assert_not(value_ref.is_null())
 
   FloatValue::{
     value: Value::new(value_ref)
@@ -314,7 +314,7 @@ pub struct PointerValue {
 }
 
 pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
-  assert_not(value_ref.is_null().to_moonbit_bool())
+  assert_not(value_ref.is_null())
 
   PointerValue::{
     value: Value::new(value_ref)
@@ -381,7 +381,7 @@ pub struct InstructionValue {
 }
 
 pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
-  assert_not(value_ref.is_null().to_moonbit_bool())
+  assert_not(value_ref.is_null())
 
   InstructionValue::{
     value: Value::new(value_ref)
@@ -392,18 +392,18 @@ pub impl ValueRef for InstructionValue with as_value_ref(self: InstructionValue)
   self.value.as_value_ref()
 }
 
-// pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_load_inst(self.as_value_ref()).is_null()
-// }
-//
-// pub fn InstructionValue::is_a_store_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_store_inst(self.as_value_ref()).is_null()
-// }
-//
-// pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_alloca_inst(self.as_value_ref()).is_null()
-// }
-//
+pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
+  llvm_isa_load_inst(self.as_value_ref()).is_null()
+}
+
+pub fn InstructionValue::is_a_store_inst(self: InstructionValue) -> Bool {
+  llvm_isa_store_inst(self.as_value_ref()).is_null()
+}
+
+pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
+  llvm_isa_alloca_inst(self.as_value_ref()).is_null()
+}
+
 // pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
 //   llvm_isa_getelementptr_inst(self.as_value_ref()).is_null()
 // }
@@ -512,7 +512,7 @@ pub struct FunctionValue {
 }
 
 pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue {
-  assert_not(value_ref.is_null().to_moonbit_bool())
+  assert_not(value_ref.is_null())
 
   FunctionValue::{
     value: Value::new(value_ref)

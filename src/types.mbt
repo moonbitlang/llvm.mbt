@@ -10,7 +10,7 @@ trait TypeRef {
 }
 
 pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
-  if type_ref.is_null().to_moonbit_bool() {
+  if type_ref.is_null() {
     println("Type is null")
     panic()
   }
@@ -98,7 +98,7 @@ pub impl TypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
 }
 
 pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
-  assert_not(type_ref.is_null().to_moonbit_bool())
+  assert_not(type_ref.is_null())
 
   IntType::{
     ty: Type::new(type_ref)
@@ -173,7 +173,7 @@ pub struct FloatType {
 }
 
 pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
-  assert_not(type_ref.is_null().to_moonbit_bool())
+  assert_not(type_ref.is_null())
 
   FloatType::{
     ty: Type::new(type_ref)
@@ -247,7 +247,7 @@ pub struct VoidType {
 }
 
 pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
-  assert_not(type_ref.is_null().to_moonbit_bool())
+  assert_not(type_ref.is_null())
 
   VoidType::{
     ty: Type::new(type_ref)
@@ -289,7 +289,7 @@ pub struct PointerType {
 }
 
 pub fn PointerType::new(type_ref: LLVMTypeRef) -> PointerType {
-  assert_not(type_ref.is_null().to_moonbit_bool())
+  assert_not(type_ref.is_null())
 
   PointerType::{
     ty: Type::new(type_ref)
@@ -367,7 +367,7 @@ pub impl TypeRef for FunctionType with as_type_ref(
 }
 
 pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
-  assert_not(type_ref.is_null().to_moonbit_bool())
+  assert_not(type_ref.is_null())
 
   FunctionType::{
     ty: Type::new(type_ref)

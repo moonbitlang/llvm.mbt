@@ -1,6 +1,7 @@
 // extern types
 type CStr
 type LLVMBool Int derive(Eq)
+// type LLVMAttributeIndex UInt derive(Eq)
 
 // type LLVMMemoryBufferRef
 type LLVMContextRef
@@ -16,8 +17,8 @@ type LLVMBuilderRef
 type LLVMUseRef
 type LLVMValueRef
 type LLVMTypeRef
-// type LLVMOperandBundleRef
-// type LLVMAttributeRef
+type LLVMOperandBundleRef
+type LLVMAttributeRef
 // type LLVMDiagnosticInfoRef
 // type LLVMComdatRef
 // type LLVMModuleFlagEntry
@@ -25,6 +26,12 @@ type LLVMTypeRef
 // type LLVMBinaryRef
 // type LLVMDbgRecordRef
 
+// pub enum LLVMTailCallKind {
+//   LLVMTailCallKindNone
+//   LLVMTailCallKindTail
+//   LLVMTailCallKindMustTail
+//   LLVMTailCallKindNoTail
+// }
 
 // pub enum IntPredicate {
 //   // Equal
