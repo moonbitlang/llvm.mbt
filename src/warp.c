@@ -26,6 +26,223 @@ struct UnsafedArrayLLVMTypeRef {
 void *__llvm_context_create() { return LLVMContextCreate(); }
 
 /**
+ * Obtain the global context instance.
+ */
+void *__llvm_get_global_context() { return LLVMGetGlobalContext(); }
+
+/**
+ * Set the diagnostic handler for this context.
+ */
+// void LLVMContextSetDiagnosticHandler(LLVMContextRef C,
+//                                      LLVMDiagnosticHandler Handler,
+//                                      void *DiagnosticContext);
+
+/**
+ * Get the diagnostic handler of this context.
+ */
+// void* __llvm_context_get_diagnostic_handler(void* context) {
+//   return
+//   (LLVMDiagnosticHandler)LLVMContextGetDiagnosticHandler((LLVMContextRef)context);
+// }
+
+/**
+ * Get the diagnostic context of this context.
+ */
+void *__llvm_context_get_diagnostic_context(void *context) {
+  return LLVMContextGetDiagnosticContext((LLVMContextRef)context);
+}
+
+/**
+ * Set the yield callback function for this context.
+ *
+ * @see LLVMContext::setYieldCallback()
+ */
+// void LLVMContextSetYieldCallback(LLVMContextRef C, LLVMYieldCallback
+// Callback,
+//                                  void *OpaqueHandle);
+
+/**
+ * Retrieve whether the given context is set to discard all value names.
+ *
+ * @see LLVMContext::shouldDiscardValueNames()
+ */
+// LLVMBool LLVMContextShouldDiscardValueNames(LLVMContextRef C);
+
+/**
+ * Set whether the given context discards all value names.
+ *
+ * If true, only the names of GlobalValue objects will be available in the IR.
+ * This can be used to save memory and runtime, especially in release mode.
+ *
+ * @see LLVMContext::setDiscardValueNames()
+ */
+// void LLVMContextSetDiscardValueNames(LLVMContextRef C, LLVMBool Discard);
+
+/**
+ * Destroy a context instance.
+ *
+ * This should be called for every call to LLVMContextCreate() or memory
+ * will be leaked.
+ */
+void __llvm_context_dispose(void *context) {
+  LLVMContextDispose((LLVMContextRef)context);
+}
+
+/**
+ * Return a string representation of the DiagnosticInfo. Use
+ * LLVMDisposeMessage to free the string.
+ *
+ * @see DiagnosticInfo::print()
+ */
+void *__llvm_get_diag_info_description(void *di) {
+  return (char *)LLVMGetDiagInfoDescription((LLVMDiagnosticInfoRef)di);
+}
+
+/**
+ * Return an enum LLVMDiagnosticSeverity.
+ *
+ * @see DiagnosticInfo::getSeverity()
+ */
+// LLVMDiagnosticSeverity LLVMGetDiagInfoSeverity(LLVMDiagnosticInfoRef DI);
+unsigned __llvm_get_md_kind_id_in_context(void *context, void *name,
+                                          unsigned slen) {
+  return LLVMGetMDKindIDInContext((LLVMContextRef)context, (const char *)name,
+                                  slen);
+}
+unsigned __llvm_get_md_kind_id(void *name, unsigned slen) {
+  return LLVMGetMDKindID((const char *)name, slen);
+}
+
+/**
+ * Return an unique id given the name of a enum attribute,
+ * or 0 if no attribute by that name exists.
+ *
+ * See http://llvm.org/docs/LangRef.html#parameter-attributes
+ * and http://llvm.org/docs/LangRef.html#function-attributes
+ * for the list of available attributes.
+ *
+ * NB: Attribute names and/or id are subject to change without
+ * going through the C API deprecation cycle.
+ */
+unsigned __llvm_get_enum_attribute_kind_for_name(void *name, unsigned slen) {
+  return LLVMGetEnumAttributeKindForName((const char *)name, slen);
+}
+
+unsigned __llvm_get_last_enum_attribute_kind() {
+  return LLVMGetLastEnumAttributeKind();
+}
+
+/**
+ * Create an enum attribute.
+ */
+void *__llvm_create_enum_attribute(void *context, unsigned kind_id,
+                                   uint64_t val) {
+  return (LLVMAttributeRef)LLVMCreateEnumAttribute((LLVMContextRef)context,
+                                                   kind_id, val);
+}
+
+/**
+ * Get the unique id corresponding to the enum attribute
+ * passed as argument.
+ */
+unsigned __llvm_get_enum_attribute_kind(void *attr) {
+  return LLVMGetEnumAttributeKind((LLVMAttributeRef)attr);
+}
+
+/**
+ * Get the enum attribute's value. 0 is returned if none exists.
+ */
+uint64_t __llvm_get_enum_attribute_value(void *attr) {
+  return LLVMGetEnumAttributeValue((LLVMAttributeRef)attr);
+}
+
+/**
+ * Create a type attribute
+ */
+void *__llvm_create_type_attribute(void *context, unsigned kind_id,
+                                   void *type_ref) {
+  return (LLVMAttributeRef)LLVMCreateTypeAttribute(
+      (LLVMContextRef)context, kind_id, (LLVMTypeRef)type_ref);
+}
+/**
+ * Get the type attribute's value.
+ */
+void *__llvm_get_type_attribute_value(void *attr) {
+  return (LLVMTypeRef)LLVMGetTypeAttributeValue((LLVMAttributeRef)attr);
+}
+
+/**
+ * Create a ConstantRange attribute.
+ *
+ * LowerWords and UpperWords need to be NumBits divided by 64 rounded up
+ * elements long.
+ */
+// LLVMAttributeRef LLVMCreateConstantRangeAttribute(LLVMContextRef C,
+//                                                   unsigned KindID,
+//                                                   unsigned NumBits,
+//                                                   const uint64_t
+//                                                   LowerWords[], const
+//                                                   uint64_t UpperWords[]);
+
+/**
+ * Create a string attribute.
+ */
+// LLVMAttributeRef LLVMCreateStringAttribute(LLVMContextRef C,
+//                                            const char *K, unsigned KLength,
+//                                            const char *V, unsigned VLength);
+void *__llvm_create_string_attribute(void *context, void *k, unsigned klen,
+                                     void *v, unsigned vlen) {
+  return (LLVMAttributeRef)LLVMCreateStringAttribute(
+      (LLVMContextRef)context, (const char *)k, klen, (const char *)v, vlen);
+}
+/**
+ * Get the string attribute's kind.
+ */
+// const char *LLVMGetStringAttributeKind(LLVMAttributeRef A, unsigned *Length);
+void *__llvm_get_string_attribute_kind(void *attr) {
+  unsigned len;
+  return (char *)LLVMGetStringAttributeKind((LLVMAttributeRef)attr, &len);
+}
+
+/**
+ * Get the string attribute's value.
+ */
+// const char *LLVMGetStringAttributeValue(LLVMAttributeRef A, unsigned
+// *Length);
+void *__llvm_get_string_attribute_value(void *attr) {
+  unsigned len;
+  return (char *)LLVMGetStringAttributeValue((LLVMAttributeRef)attr, &len);
+}
+
+/**
+ * Check for the different types of attributes.
+ */
+LLVMBool __llvm_is_enum_attribute(void *attr) {
+  return LLVMIsEnumAttribute((LLVMAttributeRef)attr);
+}
+
+LLVMBool __llvm_is_string_attribute(void *attr) {
+  return LLVMIsStringAttribute((LLVMAttributeRef)attr);
+}
+
+LLVMBool __llvm_is_type_attribute(void *attr) {
+  return LLVMIsTypeAttribute((LLVMAttributeRef)attr);
+}
+
+/**
+ * Obtain a Type from a context by its registered name.
+ */
+// LLVMTypeRef LLVMGetTypeByName2(LLVMContextRef C, const char *Name);
+void *__llvm_get_type_by_name(void *context, void *name) {
+  return (LLVMTypeRef)LLVMGetTypeByName2((LLVMContextRef)context,
+                                         (const char *)name);
+}
+
+/**
+ * @}
+ */
+
+/**
  * @defgroup LLVMCCoreModule Modules
  *
  * Modules represent the top-level structure in an LLVM program. An LLVM

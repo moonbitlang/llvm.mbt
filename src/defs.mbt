@@ -2,13 +2,29 @@
 type CStr
 type LLVMBool Int derive(Eq)
 
+// type LLVMMemoryBufferRef
 type LLVMContextRef
 type LLVMModuleRef
 type LLVMBasicBlockRef
+// type LLVMMetadataRef
+// type LLVMNamedMDNodeRef
+// type LLVMValueMetadataEntry
 type LLVMBuilderRef
+// type LLVMDIBuilderRef
+// type LLVMModuleProviderRef
+// type LLVMPassManagerRef
+type LLVMUseRef
 type LLVMValueRef
 type LLVMTypeRef
-type LLVMUseRef
+// type LLVMOperandBundleRef
+// type LLVMAttributeRef
+// type LLVMDiagnosticInfoRef
+// type LLVMComdatRef
+// type LLVMModuleFlagEntry
+// type LLVMJITEventListenerRef
+// type LLVMBinaryRef
+// type LLVMDbgRecordRef
+
 
 // pub enum IntPredicate {
 //   // Equal
