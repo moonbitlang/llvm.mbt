@@ -86,6 +86,10 @@ fn Type::dump(self: Type) -> Unit {
   llvm_dump_type(self.as_type_ref())
 }
 
+impl Show for Type with output(self: Type, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 // ===============================================
 // IntType
 // ===============================================
@@ -104,7 +108,6 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
     ty: Type::new(type_ref)
   }
 }
-
 
 pub fn IntType::const_all_ones(self: IntType) -> IntValue {
   let llvm_val_ref = llvm_const_all_ones(self.as_type_ref())
@@ -163,6 +166,10 @@ pub fn IntType::to_string(self: IntType) -> String {
 
 pub fn IntType::dump(self: IntType) -> Unit {
   self.ty.dump()
+}
+
+pub impl Show for IntType with output(self: IntType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // ==============================================
@@ -238,6 +245,10 @@ pub fn dump(self: FloatType) -> Unit {
   self.ty.dump()
 }
 
+pub impl Show for FloatType with output(self: FloatType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 
 // ==============================================
 // VoidType
@@ -279,6 +290,10 @@ pub fn VoidType::to_string(self: VoidType) -> String {
 
 pub fn VoidType::dump(self: VoidType) -> Unit {
   self.ty.dump()
+}
+
+pub impl Show for VoidType with output(self: VoidType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // ===========================================
@@ -323,13 +338,6 @@ pub fn fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: B
 // pub fn array_type(self: PointerType, size: UInt) -> ArrayType;
 // pub fn get_address_space(self: PointerType) -> AddressSpace;
 
-pub fn PointerType::to_string(self: PointerType) -> String {
-  self.ty.to_string()
-}
-
-pub fn PointerType::dump(self: PointerType) -> Unit {
-  self.ty.dump()
-}
 
 // pub fn const_null(self: PointerType) -> PointerValue {
 //   PointerValue::new(llvm_const_null(self.as_type_ref()))
@@ -351,6 +359,66 @@ pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
 // pub fn scalable_vec_type(self: PointerType) -> ScalableVectorType
 // pub fn get_element_type(self: PointerType) -> ...
 
+pub fn PointerType::to_string(self: PointerType) -> String {
+  self.ty.to_string()
+}
+
+pub fn PointerType::dump(self: PointerType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for PointerType with output(self: PointerType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ===========================================
+// StructType
+// ===========================================
+pub struct StructType {
+  ty: Type
+}
+
+pub fn StructType::new(type_ref: LLVMTypeRef) -> StructType {
+  assert_not(type_ref.is_null())
+
+  StructType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl TypeRef for StructType with as_type_ref(
+  self: StructType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+// pub fn StructType::is_opaque(self: StructType) -> Bool {
+//   llvm_is_opaque_struct(self.as_type_ref()) == 1
+// }
+
+// pub fn StructType::count_fields(self: StructType) -> UInt {
+//   llvm_count_struct_fields(self.as_type_ref())
+// }
+
+// pub fn StructType::get_field_types(self: StructType) -> Array[BaiscTypeEnum] {
+//
+// }
+
+// pub fn StructType::get_poison(self: StructType) -> StructValue {
+//   StructValue::new(llvm_get_poison(self.as_type_ref()))
+// }
+
+pub fn StructType::to_string(self: StructType) -> String {
+  self.ty.to_string()
+}
+
+pub fn StructType::dump(self: StructType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for StructType with output(self: StructType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
 
 
 // ===========================================
@@ -374,6 +442,14 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   }
 }
 
+pub fn FunctionType::to_string(self: FunctionType) -> String {
+  self.ty.to_string()
+}
+
 pub fn FunctionType::dump(self: FunctionType) -> Unit {
   self.ty.dump()
+}
+
+pub impl Show for FunctionType with output(self: FunctionType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }

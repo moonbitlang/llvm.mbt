@@ -18,6 +18,109 @@ struct UnsafedArrayLLVMTypeRef {
   void *data[0];
 };
 
+void panic(const char *msg) {
+  printf("%s\n", msg);
+  exit(1);
+}
+
+int32_t __llvm_type_kind_transfer_to_moonbit_llvm_type_kind(LLVMTypeKind k) {
+  switch (k) {
+  case LLVMVoidTypeKind:
+    return 0;
+  case LLVMHalfTypeKind:
+    return 1;
+  case LLVMFloatTypeKind:
+    return 2;
+  case LLVMDoubleTypeKind:
+    return 3;
+  case LLVMX86_FP80TypeKind:
+    return 4;
+  case LLVMFP128TypeKind:
+    return 5;
+  case LLVMPPC_FP128TypeKind:
+    return 6;
+  case LLVMLabelTypeKind:
+    return 7;
+  case LLVMIntegerTypeKind:
+    return 8;
+  case LLVMFunctionTypeKind:
+    return 9;
+  case LLVMStructTypeKind:
+    return 10;
+  case LLVMArrayTypeKind:
+    return 11;
+  case LLVMPointerTypeKind:
+    return 12;
+  case LLVMVectorTypeKind:
+    return 13;
+  case LLVMMetadataTypeKind:
+    return 14;
+  case LLVMX86_MMXTypeKind:
+    return 15;
+  case LLVMTokenTypeKind:
+    return 16;
+  case LLVMScalableVectorTypeKind:
+    return 17;
+  case LLVMBFloatTypeKind:
+    return 18;
+  case LLVMX86_AMXTypeKind:
+    return 19;
+  case LLVMTargetExtTypeKind:
+    return 20;
+  default:
+    panic("Error during LLVMTypeKind Convert to Moonbit");
+  }
+}
+
+LLVMTypeKind __moonbit_llvm_type_kind_to_real_llvm_type_kind(int32_t k) {
+  switch (k) {
+  case 0:
+    return LLVMVoidTypeKind;
+  case 1:
+    return LLVMHalfTypeKind;
+  case 2:
+    return LLVMFloatTypeKind;
+  case 3:
+    return LLVMDoubleTypeKind;
+  case 4:
+    return LLVMX86_FP80TypeKind;
+  case 5:
+    return LLVMFP128TypeKind;
+  case 6:
+    return LLVMPPC_FP128TypeKind;
+  case 7:
+    return LLVMLabelTypeKind;
+  case 8:
+    return LLVMIntegerTypeKind;
+  case 9:
+    return LLVMFunctionTypeKind;
+  case 10:
+    return LLVMStructTypeKind;
+  case 11:
+    return LLVMArrayTypeKind;
+  case 12:
+    return LLVMPointerTypeKind;
+  case 13:
+    return LLVMVectorTypeKind;
+  case 14:
+    return LLVMMetadataTypeKind;
+  case 15:
+    return LLVMX86_MMXTypeKind;
+  case 16:
+    return LLVMTokenTypeKind;
+  case 17:
+    return LLVMScalableVectorTypeKind;
+  case 18:
+    return LLVMBFloatTypeKind;
+  case 19:
+    return LLVMX86_AMXTypeKind;
+  case 20:
+    return LLVMTargetExtTypeKind;
+  default:
+    panic("Error during Moonbit Convert to LLVMTypeKind");
+  }
+}
+
 /**
  * Create a new context.
  *
@@ -554,6 +657,16 @@ void *__llvm_get_previous_function(void *function) {
  */
 LLVMBool __llvm_type_is_null(void *type_ref) {
   return type_ref == NULL ? 1 : 0;
+}
+
+/**
+ * Obtain the enumerated type of a Type instance.
+ *
+ * @see llvm::Type:getTypeID()
+ */
+int32_t __llvm_get_type_kind(void *type_ref) {
+  LLVMTypeKind k = LLVMGetTypeKind((LLVMTypeRef)type_ref);
+  return __llvm_type_kind_transfer_to_moonbit_llvm_type_kind(k);
 }
 
 /**

@@ -83,6 +83,10 @@ pub fn Value::dump(self: Value) -> Unit {
   llvm_dump_value(self.as_value_ref())
 }
 
+pub impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 // =========================================
 // IntValue
 // =========================================
@@ -235,7 +239,7 @@ pub fn IntValue::is_constant_int(self: IntValue) -> Bool {
   llvm_isa_constant_int(self.as_value_ref()).is_null()
 }
 
-pub fn replace_all_uses_with(self: IntValue, new_value: IntValue) -> Unit {
+pub fn IntValue::replace_all_uses_with(self: IntValue, new_value: IntValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
@@ -245,6 +249,10 @@ pub fn IntValue::to_string(self: IntValue) -> String {
 
 pub fn IntValue::dump(self: IntValue) -> Unit {
   self.value.dump()
+}
+
+pub impl Show for IntValue with output(self: IntValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // ============================================
@@ -282,6 +290,10 @@ pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
   self.value.is_undef()
 }
 
+// pub fn FloatValue::const_add(self: FloatValue, rhs: FloatValue) -> FloatValue {
+//   FloatValue::new(llvm_const_fadd(self.as_value_ref(), rhs.as_value_ref()))
+// }
+
 // -----------------------
 // TODO: const ops: add, sub, mul ...
 // -----------------------
@@ -304,6 +316,10 @@ pub fn FloatValue::to_string(self: FloatValue) -> String {
 
 pub fn FloatValue::dump(self: FloatValue) -> Unit {
   self.value.dump()
+}
+
+pub impl Show for FloatValue with output(self: FloatValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // ============================================
@@ -504,6 +520,99 @@ pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit 
 // }
 
 
+pub fn InstructionValue::replace_all_uses_with(self: InstructionValue, new_value: InstructionValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn InstructionValue::is_const(self: InstructionValue) -> Bool {
+  self.value.is_const()
+}
+
+pub fn InstructionValue::to_string(self: InstructionValue) -> String {
+  self.value.to_string()
+}
+
+pub fn InstructionValue::dump(self: InstructionValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for InstructionValue with output(self: InstructionValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// StructValue
+// ============================================
+pub struct StructValue {
+  value: Value
+}
+
+pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
+  assert_not(value_ref.is_null())
+
+  StructValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl ValueRef for StructValue with as_value_ref(self: StructValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+// pub fn StructValue::get_field_at_index(self: StructValue, index: Int) -> BasicValueEnum? {
+//   if index >= self.count_fields() {
+//     return None
+//   }
+//
+//   let v = llvm_get_operand(self.as_value_ref(), index)
+//
+//   Some(BasicValueEnum::new(v))
+// }
+
+pub fn get_name(self: StructValue) -> String {
+  self.value.get_name()
+}
+
+pub fn set_name(self: StructValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+pub fn get_type(self: StructValue) -> StructType {
+  StructType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn is_null(self: StructValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn is_undef(self: StructValue) -> Bool {
+  self.value.is_undef()
+}
+
+// pub fn as_instruction(self: StructValue) -> InstructionValue? {
+//   self.value.as_instruction()
+// }
+
+pub fn StructValue::replace_all_uses_with(self: StructValue, new_value: StructValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn StructValue::is_const(self: StructValue) -> Bool {
+  self.value.is_const()
+}
+
+pub fn StructValue::to_string(self: StructValue) -> String {
+  self.value.to_string()
+}
+
+pub fn StructValue::dump(self: StructValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for StructValue with output(self: StructValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 // ============================================
 // FunctionValue
 // ============================================
@@ -535,4 +644,8 @@ pub fn FunctionValue::to_string(self: FunctionValue) -> String {
 
 pub fn FunctionValue::dump(self: FunctionValue) -> Unit {
   self.value.dump()
+}
+
+pub impl Show for FunctionValue with output(self: FunctionValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }

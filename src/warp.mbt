@@ -14,6 +14,14 @@ extern "C" fn c_str_to_moonbit_str(
 //
 extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
 
+// 
+// Destroy a context instance.
+// 
+// This should be called for every call to LLVMContextCreate() or memory
+// will be leaked.
+// 
+extern "C" fn llvm_context_dispose(ctx: LLVMContextRef) = "__llvm_context_dispose"
+
 //
 // Create a new, empty module in the global context.
 //
@@ -109,6 +117,13 @@ extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_n
 fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()
 }
+
+// 
+// Obtain the enumerated type of a Type instance.
+// 
+// @see llvm::Type:getTypeID()
+// 
+pub extern "C" fn llvm_get_type_kind(ty: LLVMTypeRef) -> LLVMTypeKind = "__llvm_get_type_kind"
 
 // 
 // Whether the type has a known size.
