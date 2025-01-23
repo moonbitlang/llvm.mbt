@@ -67,6 +67,12 @@ test "Basic type and Basic value" {
   let tri_six = i64_ty.const_int(666, true)
   inspect!(tri_six, content="i64 666")
 
+  let pi = f64_ty.const_float(3.1415926)
+  inspect!(pi, content="double 0x400921FB4D12D84A")
+
+  let e = f32_ty.const_float(2.7182818)
+  inspect!(e, content="float 0x4005BF0A80000000")
+
   // size of and align of
   let i16_sz = i16_ty.size_of().to_string()
   let expect = "i64 ptrtoint (ptr getelementptr (i16, ptr null, i32 1) to i64)"

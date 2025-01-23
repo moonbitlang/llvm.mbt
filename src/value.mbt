@@ -114,10 +114,9 @@ pub fn IntValue::set_name(self: IntValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
-// TODO: inconsistant with `inkwell`
-// pub fn IntValue::get_type(self: IntValue) -> Type {
-//   self.value.get_type()
-// }
+pub fn IntValue::get_type(self: IntValue) -> IntType {
+  IntType::new(self.value.get_type().as_type_ref())
+}
 
 pub fn IntValue::is_null(self: IntValue) -> Bool {
   self.value.is_null()
@@ -278,9 +277,9 @@ pub fn FloatValue::set_name(self: FloatValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
-// pub fn get_type(self: FloatValue) -> Type {
-//   self.value.get_type()
-// }
+pub fn FloatValue::get_type(self: FloatValue) -> FloatType {
+  FloatType::new(self.value.get_type().as_type_ref())
+}
 
 pub fn FloatValue::is_null(self: FloatValue) -> Bool {
   self.value.is_null()
@@ -289,10 +288,6 @@ pub fn FloatValue::is_null(self: FloatValue) -> Bool {
 pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
   self.value.is_undef()
 }
-
-// pub fn FloatValue::const_add(self: FloatValue, rhs: FloatValue) -> FloatValue {
-//   FloatValue::new(llvm_const_fadd(self.as_value_ref(), rhs.as_value_ref()))
-// }
 
 // -----------------------
 // TODO: const ops: add, sub, mul ...
@@ -349,9 +344,9 @@ pub fn PointerValue::set_name(self: PointerValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
-// pub fn get_type(self: PointerValue) -> Type {
-//   self.value.get_type()
-// }
+pub fn PointerValue::get_type(self: PointerValue) -> PointerType {
+  PointerType::new(self.value.get_type().as_type_ref())
+}
 
 pub fn PointerValue::is_null(self: PointerValue) -> Bool {
   self.value.is_null()
