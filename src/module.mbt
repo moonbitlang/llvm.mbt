@@ -15,7 +15,9 @@ pub fn add_function(
 ) -> FunctionValue {
   let cname = moonbit_str_to_c_str(name)
   let val_ref = llvm_add_function(self.module_ref, cname, function_ty.as_type_ref())
-  let fn_val = FunctionValue::new(val_ref)
+  guard let Some(fn_val) = FunctionValue::new(val_ref) else {
+    None => abort("Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function")
+  }
 
   fn_val
 }

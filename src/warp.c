@@ -1049,6 +1049,8 @@ LLVMBool __llvm_type_is_null(void *type_ref) {
 
 LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
 
+LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
+
 void __llvm_shutdown() { LLVMShutdown(); }
 
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {

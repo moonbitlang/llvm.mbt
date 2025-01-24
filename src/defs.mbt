@@ -1377,13 +1377,9 @@ pub fn LLVMOpcode::into(self: LLVMOpcode) -> InstructionOpcode {
     LLVMIntToPtr => IntToPtr
     LLVMBitCast => BitCast
     LLVMAddrSpaceCast => AddrSpaceCast
-    LLVMCleanupPad => CleanupPad
-    LLVMCatchPad => CatchPad
     LLVMICmp => ICmp
     LLVMFCmp => FCmp
     LLVMPHI => Phi
-    LLVMLoad => Load
-    LLVMStore => Store
     LLVMCall => Call
     LLVMCallBr => CallBr
     LLVMFNeg => FNeg
@@ -1398,7 +1394,6 @@ pub fn LLVMOpcode::into(self: LLVMOpcode) -> InstructionOpcode {
     LLVMUserOp1 => UserOp1
     LLVMUserOp2 => UserOp2
     LLVMVAArg => VAArg
-    _ => abort("Invalid LLVMOpcode in `LLVMOpcode::to_inst_opcode`")
   }
 }
 
@@ -1475,6 +1470,11 @@ pub enum AtomicRMWBinOp {
 
   /// Sets memory to the lesser of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
   FMin
+
+  // TODO: need notes
+  UIncWrap
+
+  UDecWrap
 } derive(Eq, Show, Hash)
 
 pub fn LLVMAtomicRMWBinOp::into(self: LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
@@ -1494,6 +1494,8 @@ pub fn LLVMAtomicRMWBinOp::into(self: LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
     LLVMAtomicRMWBinOpFSub => FSub
     LLVMAtomicRMWBinOpFMax => FMax
     LLVMAtomicRMWBinOpFMin => FMin
+    LLVMAtomicRMWBinOpUIncWrap => UIncWrap
+    LLVMAtomicRMWBinOpUDecWrap => UDecWrap
   }
 }
 

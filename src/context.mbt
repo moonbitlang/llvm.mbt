@@ -130,5 +130,5 @@ pub fn append_basic_block(
   let cname = moonbit_str_to_c_str(name)
   
   let bb_ref = llvm_append_basic_block_in_context(ctx_ref, fn_val_ref, cname)
-  BasicBlock::new(bb_ref)
+  BasicBlock::new(bb_ref).unwrap()
 }

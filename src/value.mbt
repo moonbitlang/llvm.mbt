@@ -756,12 +756,15 @@ pub struct FunctionValue {
   value: Value
 }
 
-pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue {
-  assert_not(value_ref.is_null())
+pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue? {
+  if value_ref.is_null() {
+    return None
+  }
 
-  FunctionValue::{
+  let fv = FunctionValue::{
     value: Value::new(value_ref)
   }
+  Some(fv)
 }
 
 impl ValueRef for FunctionValue with as_value_ref(

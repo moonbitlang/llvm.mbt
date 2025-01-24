@@ -15,9 +15,14 @@ fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
   llvm_value_is_null(self).to_moonbit_bool()
 }
 
-extern "C" fn llvm_use_is_null(self: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
+extern "C" fn llvm_use_is_null(u: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
 fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
   llvm_use_is_null(self).to_moonbit_bool()
+}
+
+extern "C" fn llvm_bb_is_null(bb: LLVMBasicBlockRef) -> LLVMBool = "__llvm_bb_is_null"
+fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
+  llvm_bb_is_null(self).to_moonbit_bool()
 }
 
 pub extern "C" fn llvm_shutdown() = "__llvm_shutdown"
@@ -384,6 +389,9 @@ pub fn llvm_set_value_name(val: LLVMValueRef, name: String) -> Unit {
   let len = name.length()
   __llvm_set_value_name(val, cstr, len)
 }
+pub fn LLVMValueRef::set_name(self: LLVMValueRef, name: String) -> Unit {
+  llvm_set_value_name(self, name)
+}
 
 pub extern "C" fn llvm_dump_value(val: LLVMValueRef) = "__llvm_dump_value"
 
@@ -595,6 +603,9 @@ pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_v
 // pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "__llvm_set_value_name"
 
 pub extern "C" fn llvm_get_first_use(val: LLVMValueRef) -> LLVMUseRef = "__llvm_get_first_use"
+pub fn LLVMValueRef::get_first_use(self: LLVMValueRef) -> LLVMUseRef {
+  llvm_get_first_use(self)
+}
 
 pub extern "C" fn llvm_get_next_use(u: LLVMUseRef) -> LLVMUseRef = "__llvm_get_next_use"
 
@@ -965,16 +976,32 @@ pub extern "C" fn llvm_get_num_operand_bundle_args(bundle: LLVMOperandBundleRef)
 pub extern "C" fn llvm_get_operand_bundle_arg_at_index(bundle: LLVMOperandBundleRef, index: UInt) -> LLVMValueRef = "__llvm_get_operand_bundle_arg_at_index"
 
 pub extern "C" fn llvm_basic_block_as_value(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_basic_block_as_value"
+pub fn LLVMBasicBlockRef::as_value_ref(self: LLVMBasicBlockRef) -> LLVMValueRef {
+  llvm_basic_block_as_value(self)
+}
 
 pub extern "C" fn llvm_value_is_basic_block(val: LLVMValueRef) -> LLVMBool = "__llvm_value_is_basic_block"
 
 pub extern "C" fn llvm_value_as_basic_block(val: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_value_as_basic_block"
 
-pub extern "C" fn llvm_get_basic_block_name(bb: LLVMBasicBlockRef) -> CStr = "__llvm_get_basic_block_name"
+extern "C" fn __llvm_get_basic_block_name(bb: LLVMBasicBlockRef) -> CStr = "__llvm_get_basic_block_name"
+pub fn llvm_get_basic_block_name(bb: LLVMBasicBlockRef) -> String {
+  let name = __llvm_get_basic_block_name(bb);
+  c_str_to_moonbit_str(name)
+}
+pub fn LLVMBasicBlockRef::get_name(self: LLVMBasicBlockRef) -> String {
+  llvm_get_basic_block_name(self)
+}
 
 pub extern "C" fn llvm_get_basic_block_parent(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_basic_block_parent"
+pub fn LLVMBasicBlockRef::get_parent(self: LLVMBasicBlockRef) -> LLVMValueRef {
+  llvm_get_basic_block_parent(self)
+}
 
 pub extern "C" fn llvm_get_basic_block_terminator(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_basic_block_terminator"
+pub fn LLVMBasicBlockRef::get_terminator(self: LLVMBasicBlockRef) -> LLVMValueRef {
+  llvm_get_basic_block_terminator(self)
+}
 
 pub extern "C" fn llvm_count_basic_blocks(func: LLVMValueRef) -> UInt = "__llvm_count_basic_blocks"
 
