@@ -102,3 +102,25 @@ pub enum BasicMetadataTypeEnum {
   // ScalableVectorType(ScalableVectorType);
   // MetadataType(MetadataType);
 }
+
+pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnum {
+  let kind : LLVMTypeKind = llvm_get_type_kind(type_ref);
+  match kind {
+    LLVMHalfTypeKind | 
+    LLVMFloatTypeKind | 
+    LLVMDoubleTypeKind | 
+    LLVMX86_FP80TypeKind |
+    LLVMFP128TypeKind |
+    LLVMPPC_FP128TypeKind => BasicMetadataTypeEnum::FloatType(FloatType::new(type_ref))
+    LLVMIntegerTypeKind => BasicMetadataTypeEnum::IntType(IntType::new(type_ref))
+    // LLVMArrayTypeKind => BasicMetadataTypeEnum::ArrayType(ArrayType::new(type_ref))
+    // LLVMVectorTypeKind => BasicMetadataTypeEnum::VectorType(VectorType::new(type_ref))
+    LLVMPointerTypeKind => BasicMetadataTypeEnum::PointerType(PointerType::new(type_ref))
+    LLVMStructTypeKind => BasicMetadataTypeEnum::StructType(StructType::new(type_ref))
+    // LLVMScalableVectorTypeKind => BasicMetadataTypeEnum::ScalableVectorType(ScalableVectorType::new(type_ref))
+    // LLVMMetadataTypeKind => BasicMetadataTypeEnum::MetadataType(MetadataType::new(type_ref))
+    _ => {
+      abort("Unsupported type kind");
+    }
+  }
+}

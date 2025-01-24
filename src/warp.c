@@ -7,23 +7,12 @@
 
 #include "utils.h"
 
-typedef struct ArrayLLVMTypeRef {
-  struct moonbit_object header;
-  int32_t $1;
-  struct UnsafedArrayLLVMTypeRef *$0;
-} ArrayLLVMTypeRef;
-
-struct UnsafedArrayLLVMTypeRef {
-  struct moonbit_object header;
-  void *data[0];
-};
-
 void panic(const char *msg) {
   printf("%s\n", msg);
   exit(1);
 }
 
-int32_t __llvm_type_kind_transfer_to_moonbit_llvm_type_kind(LLVMTypeKind k) {
+int32_t llvm_type_kind_to_int(LLVMTypeKind k) {
   switch (k) {
   case LLVMVoidTypeKind:
     return 0;
@@ -72,7 +61,7 @@ int32_t __llvm_type_kind_transfer_to_moonbit_llvm_type_kind(LLVMTypeKind k) {
   }
 }
 
-LLVMTypeKind __moonbit_llvm_type_kind_to_real_llvm_type_kind(int32_t k) {
+LLVMTypeKind int_to_llvm_type_kind(int32_t k) {
   switch (k) {
   case 0:
     return LLVMVoidTypeKind;
@@ -121,950 +110,835 @@ LLVMTypeKind __moonbit_llvm_type_kind_to_real_llvm_type_kind(int32_t k) {
   }
 }
 
-/**
- * Create a new context.
- *
- * Every call to this function should be paired with a call to
- * LLVMContextDispose() or the context will leak memory.
- */
-void *__llvm_context_create() { return LLVMContextCreate(); }
+typedef struct ArrayLLVMTypeRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMTypeRef *$0;
+} ArrayLLVMTypeRef;
 
-/**
- * Obtain the global context instance.
- */
-void *__llvm_get_global_context() { return LLVMGetGlobalContext(); }
+struct UnsafedArrayLLVMTypeRef {
+  struct moonbit_object header;
+  void *data[0];
+};
 
-/**
- * Set the diagnostic handler for this context.
- */
-// void LLVMContextSetDiagnosticHandler(LLVMContextRef C,
-//                                      LLVMDiagnosticHandler Handler,
-//                                      void *DiagnosticContext);
+typedef struct ArrayLLVMValueRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMValueRef *$0;
+} ArrayLLVMValueRef;
 
-/**
- * Get the diagnostic handler of this context.
- */
-// void* __llvm_context_get_diagnostic_handler(void* context) {
-//   return
-//   (LLVMDiagnosticHandler)LLVMContextGetDiagnosticHandler((LLVMContextRef)context);
+struct UnsafedArrayLLVMValueRef {
+  struct moonbit_object header;
+  void *data[0];
+};
+
+typedef struct ArrayLLVMBasicBlockRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMBasicBlockRef *$0;
+} ArrayLLVMBasicBlockRef;
+
+struct UnsafedArrayLLVMBasicBlockRef {
+  struct moonbit_object header;
+  void *data[0];
+};
+
+typedef struct ArrayLLVMMetadataRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMMetadataRef *$0;
+} ArrayLLVMMetadataRef;
+
+struct UnsafedArrayLLVMMetadataRef {
+  struct moonbit_object header;
+  void *data[0];
+};
+
+typedef struct ArrayLLVMOperandBundleRef {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayLLVMOperandBundleRef *$0;
+} ArrayLLVMOperandBundleRef;
+
+struct UnsafedArrayLLVMOperandBundleRef {
+  struct moonbit_object header;
+  void *data[0];
+};
+
+LLVMBool __llvm_value_is_null(void *val) {
+  return LLVMIsNull((LLVMValueRef)val);
+}
+
+LLVMBool __llvm_type_is_null(void *type_ref) {
+  return type_ref == NULL ? 1 : 0;
+}
+
+LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
+
+void __llvm_shutdown() { LLVMShutdown(); }
+
+void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {
+  LLVMGetVersion(major, minor, patch);
+}
+
+void *__llvm_create_message(void *message) {
+  return (char *)LLVMCreateMessage((const char *)message);
+}
+
+void __llvm_dispose_message(void *message) {
+  LLVMDisposeMessage((char *)message);
+}
+
+void *__llvm_context_create() { return (LLVMContextRef)LLVMContextCreate(); }
+
+void *__llvm_get_global_context() {
+  return (LLVMContextRef)LLVMGetGlobalContext();
+}
+
+void __llvm_context_set_diagnostic_handler(void *context, void *handler,
+                                           void *diagnostic_context) {
+  LLVMContextSetDiagnosticHandler((LLVMContextRef)context,
+                                  (LLVMDiagnosticHandler)handler,
+                                  diagnostic_context);
+}
+
+// void *__llvm_context_get_diagnostic_handler(void *context) {
+//   return (LLVMDiagnosticHandler)LLVMContextGetDiagnosticHandler(
+//       (LLVMContextRef)context);
 // }
 
-/**
- * Get the diagnostic context of this context.
- */
 void *__llvm_context_get_diagnostic_context(void *context) {
   return LLVMContextGetDiagnosticContext((LLVMContextRef)context);
 }
 
-/**
- * Set the yield callback function for this context.
- *
- * @see LLVMContext::setYieldCallback()
- */
-// void LLVMContextSetYieldCallback(LLVMContextRef C, LLVMYieldCallback
-// Callback,
-//                                  void *OpaqueHandle);
+void __llvm_context_set_yield_callback(void *context, void *callback,
+                                       void *opaque_handle) {
+  LLVMContextSetYieldCallback((LLVMContextRef)context,
+                              (LLVMYieldCallback)callback, opaque_handle);
+}
 
-/**
- * Retrieve whether the given context is set to discard all value names.
- *
- * @see LLVMContext::shouldDiscardValueNames()
- */
-// LLVMBool LLVMContextShouldDiscardValueNames(LLVMContextRef C);
+LLVMBool __llvm_context_should_discard_value_names(void *context) {
+  return LLVMContextShouldDiscardValueNames((LLVMContextRef)context);
+}
 
-/**
- * Set whether the given context discards all value names.
- *
- * If true, only the names of GlobalValue objects will be available in the IR.
- * This can be used to save memory and runtime, especially in release mode.
- *
- * @see LLVMContext::setDiscardValueNames()
- */
-// void LLVMContextSetDiscardValueNames(LLVMContextRef C, LLVMBool Discard);
+void __llvm_context_set_discard_value_names(void *context, LLVMBool discard) {
+  LLVMContextSetDiscardValueNames((LLVMContextRef)context, discard);
+}
 
-/**
- * Destroy a context instance.
- *
- * This should be called for every call to LLVMContextCreate() or memory
- * will be leaked.
- */
 void __llvm_context_dispose(void *context) {
   LLVMContextDispose((LLVMContextRef)context);
 }
 
-/**
- * Return a string representation of the DiagnosticInfo. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see DiagnosticInfo::print()
- */
 void *__llvm_get_diag_info_description(void *di) {
   return (char *)LLVMGetDiagInfoDescription((LLVMDiagnosticInfoRef)di);
 }
 
-/**
- * Return an enum LLVMDiagnosticSeverity.
- *
- * @see DiagnosticInfo::getSeverity()
- */
-// LLVMDiagnosticSeverity LLVMGetDiagInfoSeverity(LLVMDiagnosticInfoRef DI);
-unsigned __llvm_get_md_kind_id_in_context(void *context, void *name,
-                                          unsigned slen) {
-  return LLVMGetMDKindIDInContext((LLVMContextRef)context, (const char *)name,
-                                  slen);
-}
-unsigned __llvm_get_md_kind_id(void *name, unsigned slen) {
-  return LLVMGetMDKindID((const char *)name, slen);
+LLVMDiagnosticSeverity __llvm_get_diag_info_severity(void *di) {
+  return LLVMGetDiagInfoSeverity((LLVMDiagnosticInfoRef)di);
 }
 
-/**
- * Return an unique id given the name of a enum attribute,
- * or 0 if no attribute by that name exists.
- *
- * See http://llvm.org/docs/LangRef.html#parameter-attributes
- * and http://llvm.org/docs/LangRef.html#function-attributes
- * for the list of available attributes.
- *
- * NB: Attribute names and/or id are subject to change without
- * going through the C API deprecation cycle.
- */
-unsigned __llvm_get_enum_attribute_kind_for_name(void *name, unsigned slen) {
-  return LLVMGetEnumAttributeKindForName((const char *)name, slen);
+unsigned __llvm_get_md_kind_id_in_context(void *context, void *name,
+                                          unsigned s_len) {
+  return LLVMGetMDKindIDInContext((LLVMContextRef)context, (const char *)name,
+                                  s_len);
+}
+
+unsigned __llvm_get_md_kind_id(void *name, unsigned s_len) {
+  return LLVMGetMDKindID((const char *)name, s_len);
+}
+
+unsigned __llvm_get_enum_attribute_kind_for_name(void *name, size_t s_len) {
+  return LLVMGetEnumAttributeKindForName((const char *)name, s_len);
 }
 
 unsigned __llvm_get_last_enum_attribute_kind() {
   return LLVMGetLastEnumAttributeKind();
 }
 
-/**
- * Create an enum attribute.
- */
 void *__llvm_create_enum_attribute(void *context, unsigned kind_id,
                                    uint64_t val) {
   return (LLVMAttributeRef)LLVMCreateEnumAttribute((LLVMContextRef)context,
                                                    kind_id, val);
 }
 
-/**
- * Get the unique id corresponding to the enum attribute
- * passed as argument.
- */
-unsigned __llvm_get_enum_attribute_kind(void *attr) {
-  return LLVMGetEnumAttributeKind((LLVMAttributeRef)attr);
+unsigned __llvm_get_enum_attribute_kind(void *a) {
+  return LLVMGetEnumAttributeKind((LLVMAttributeRef)a);
 }
 
-/**
- * Get the enum attribute's value. 0 is returned if none exists.
- */
-uint64_t __llvm_get_enum_attribute_value(void *attr) {
-  return LLVMGetEnumAttributeValue((LLVMAttributeRef)attr);
+uint64_t __llvm_get_enum_attribute_value(void *a) {
+  return LLVMGetEnumAttributeValue((LLVMAttributeRef)a);
 }
 
-/**
- * Create a type attribute
- */
 void *__llvm_create_type_attribute(void *context, unsigned kind_id,
                                    void *type_ref) {
   return (LLVMAttributeRef)LLVMCreateTypeAttribute(
       (LLVMContextRef)context, kind_id, (LLVMTypeRef)type_ref);
 }
-/**
- * Get the type attribute's value.
- */
-void *__llvm_get_type_attribute_value(void *attr) {
-  return (LLVMTypeRef)LLVMGetTypeAttributeValue((LLVMAttributeRef)attr);
+
+void *__llvm_get_type_attribute_value(void *a) {
+  return (LLVMTypeRef)LLVMGetTypeAttributeValue((LLVMAttributeRef)a);
 }
 
-/**
- * Create a ConstantRange attribute.
- *
- * LowerWords and UpperWords need to be NumBits divided by 64 rounded up
- * elements long.
- */
-// LLVMAttributeRef LLVMCreateConstantRangeAttribute(LLVMContextRef C,
-//                                                   unsigned KindID,
-//                                                   unsigned NumBits,
-//                                                   const uint64_t
-//                                                   LowerWords[], const
-//                                                   uint64_t UpperWords[]);
+// void *__llvm_create_constant_range_attribute(void *context, unsigned kind_id,
+//                                              unsigned num_bits,
+//                                              ArrayUint64_t *lower_words,
+//                                              ArrayUint64_t *upper_words) {
+//   const uint64_t *llvm_lower_words = (const uint64_t *)lower_words->$0->data;
+//   const uint64_t *llvm_upper_words = (const uint64_t *)upper_words->$0->data;
+//   return (LLVMAttributeRef)LLVMCreateConstantRangeAttribute(
+//       (LLVMContextRef)context, kind_id, num_bits, llvm_lower_words,
+//       llvm_upper_words);
+// }
 
-/**
- * Create a string attribute.
- */
-// LLVMAttributeRef LLVMCreateStringAttribute(LLVMContextRef C,
-//                                            const char *K, unsigned KLength,
-//                                            const char *V, unsigned VLength);
-void *__llvm_create_string_attribute(void *context, void *k, unsigned klen,
-                                     void *v, unsigned vlen) {
-  return (LLVMAttributeRef)LLVMCreateStringAttribute(
-      (LLVMContextRef)context, (const char *)k, klen, (const char *)v, vlen);
-}
-/**
- * Get the string attribute's kind.
- */
-// const char *LLVMGetStringAttributeKind(LLVMAttributeRef A, unsigned *Length);
-void *__llvm_get_string_attribute_kind(void *attr) {
-  unsigned len;
-  return (char *)LLVMGetStringAttributeKind((LLVMAttributeRef)attr, &len);
+// void *__llvm_create_string_attribute(void *context, void *k, unsigned
+// k_length,
+//                                      void *v, unsigned v_length) {
+//   return (LLVMAttributeRef)LLVMCreateStringAttribute((LLVMContextRef)context,
+//                                                      (const char *)k,
+//                                                      k_length, (const char
+//                                                      *)v, v_length);
+// }
+
+void *__llvm_get_string_attribute_kind(void *a, unsigned *length) {
+  return (char *)LLVMGetStringAttributeKind((LLVMAttributeRef)a, length);
 }
 
-/**
- * Get the string attribute's value.
- */
-// const char *LLVMGetStringAttributeValue(LLVMAttributeRef A, unsigned
-// *Length);
-void *__llvm_get_string_attribute_value(void *attr) {
-  unsigned len;
-  return (char *)LLVMGetStringAttributeValue((LLVMAttributeRef)attr, &len);
+void *__llvm_get_string_attribute_value(void *a, unsigned *length) {
+  return (char *)LLVMGetStringAttributeValue((LLVMAttributeRef)a, length);
 }
 
-/**
- * Check for the different types of attributes.
- */
-LLVMBool __llvm_is_enum_attribute(void *attr) {
-  return LLVMIsEnumAttribute((LLVMAttributeRef)attr);
+LLVMBool __llvm_is_enum_attribute(void *a) {
+  return LLVMIsEnumAttribute((LLVMAttributeRef)a);
 }
 
-LLVMBool __llvm_is_string_attribute(void *attr) {
-  return LLVMIsStringAttribute((LLVMAttributeRef)attr);
+LLVMBool __llvm_is_string_attribute(void *a) {
+  return LLVMIsStringAttribute((LLVMAttributeRef)a);
 }
 
-LLVMBool __llvm_is_type_attribute(void *attr) {
-  return LLVMIsTypeAttribute((LLVMAttributeRef)attr);
+LLVMBool __llvm_is_type_attribute(void *a) {
+  return LLVMIsTypeAttribute((LLVMAttributeRef)a);
 }
 
-/**
- * Obtain a Type from a context by its registered name.
- */
-// LLVMTypeRef LLVMGetTypeByName2(LLVMContextRef C, const char *Name);
 void *__llvm_get_type_by_name(void *context, void *name) {
   return (LLVMTypeRef)LLVMGetTypeByName2((LLVMContextRef)context,
                                          (const char *)name);
 }
 
-/**
- * @}
- */
-
-/**
- * @defgroup LLVMCCoreModule Modules
- *
- * Modules represent the top-level structure in an LLVM program. An LLVM
- * module is effectively a translation unit or a collection of
- * translation units merged together.
- *
- * @{
- */
-
-/**
- * Create a new, empty module in the global context.
- *
- * This is equivalent to calling LLVMModuleCreateWithNameInContext with
- * LLVMGetGlobalContext() as the context parameter.
- *
- * Every invocation should be paired with LLVMDisposeModule() or memory
- * will be leaked.
- */
-
 void *__llvm_module_create_with_name(void *module_id) {
   return (LLVMModuleRef)LLVMModuleCreateWithName((const char *)module_id);
 }
 
-/**
- * Create a new, empty module in a specific context.
- *
- * Every invocation should be paired with LLVMDisposeModule() or memory
- * will be leaked.
- */
 void *__llvm_module_create_with_name_in_context(void *module_id,
                                                 void *context) {
   return (LLVMModuleRef)LLVMModuleCreateWithNameInContext(
       (const char *)module_id, (LLVMContextRef)context);
 }
 
-/**
- * Return an exact copy of the specified module.
- */
-void *__llvm_clone_module(void *module) {
-  return (LLVMModuleRef)LLVMCloneModule((LLVMModuleRef)module);
+void *__llvm_clone_module(void *m) {
+  return (LLVMModuleRef)LLVMCloneModule((LLVMModuleRef)m);
 }
 
-/**
- * Destroy a module instance.
- *
- * This must be called for every created module or memory will be
- * leaked.
- */
-void __llvm_dispose_module(void *module) {
-  LLVMDisposeModule((LLVMModuleRef)module);
+void __llvm_dispose_module(void *m) { LLVMDisposeModule((LLVMModuleRef)m); }
+
+LLVMBool __llvm_is_new_dbg_info_format(void *m) {
+  return LLVMIsNewDbgInfoFormat((LLVMModuleRef)m);
 }
 
-// deprecated
-// void __llvm_set_is_new_dbg_info_format(void* module, LLVMBool use_new_format)
-// {
-//   LLVMSetIsNewDbgInfoFormat((LLVMModuleRef)module, use_new_format);
-// }
-
-/**
- * Obtain the identifier of a module.
- *
- * @param M Module to obtain identifier of
- * @param Len Out parameter which holds the length of the returned string.
- * @return The identifier of M.
- * @see Module::getModuleIdentifier()
- */
-void *__llvm_get_module_identifier(void *module) {
-  size_t len = 0;
-  const char *p = LLVMGetModuleIdentifier((LLVMModuleRef)module, &len);
-  return (void *)p;
+void __llvm_set_is_new_dbg_info_format(void *m, LLVMBool use_new_format) {
+  LLVMSetIsNewDbgInfoFormat((LLVMModuleRef)m, use_new_format);
 }
 
-/**
- * Set the identifier of a module to a string Ident with length Len.
- *
- * @param M The module to set identifier
- * @param Ident The string to set M's identifier to
- * @param Len Length of Ident
- * @see Module::setModuleIdentifier()
- */
-void __llvm_set_module_identifier(void *module, void *ident, size_t len) {
-  LLVMSetModuleIdentifier((LLVMModuleRef)module, (const char *)ident, len);
+void *__llvm_get_module_identifier(void *m, size_t *len) {
+  return (char *)LLVMGetModuleIdentifier((LLVMModuleRef)m, len);
 }
 
-/**
- * Obtain the module's original source file name.
- *
- * @param M Module to obtain the name of
- * @param Len Out parameter which holds the length of the returned string
- * @return The original source file name of M
- * @see Module::getSourceFileName()
- */
-void *__llvm_get_source_file_name(void *module) {
-  size_t len = 0;
-  const char *p = LLVMGetSourceFileName((LLVMModuleRef)module, &len);
-  return (void *)p;
+void __llvm_set_module_identifier(void *m, void *ident, size_t len) {
+  LLVMSetModuleIdentifier((LLVMModuleRef)m, (const char *)ident, len);
 }
 
-/**
- * Set the original source file name of a module to a string Name with length
- * Len.
- *
- * @param M The module to set the source file name of
- * @param Name The string to set M's source file name to
- * @param Len Length of Name
- * @see Module::setSourceFileName()
- */
-// void LLVMSetSourceFileName(LLVMModuleRef M, const char *Name, size_t Len);
-void __llvm_set_source_file_name(void *module, void *name, size_t len) {
-  LLVMSetSourceFileName((LLVMModuleRef)module, (const char *)name, len);
+void *__llvm_get_source_file_name(void *m, size_t *len) {
+  return (char *)LLVMGetSourceFileName((LLVMModuleRef)m, len);
 }
 
-/**
- * Obtain the data layout for a module.
- *
- * @see Module::getDataLayoutStr()
- *
- * LLVMGetDataLayout is DEPRECATED, as the name is not only incorrect,
- * but match the name of another method on the module. Prefer the use
- * of LLVMGetDataLayoutStr, which is not ambiguous.
- */
-void *__llvm_get_data_layout_str(void *module) {
-  return (void *)LLVMGetDataLayoutStr((LLVMModuleRef)module);
+void __llvm_set_source_file_name(void *m, void *name, size_t len) {
+  LLVMSetSourceFileName((LLVMModuleRef)m, (const char *)name, len);
 }
 
-void *__llvm_get_data_layout(void *module) {
-  return (void *)LLVMGetDataLayout((LLVMModuleRef)module);
+void *__llvm_get_data_layout_str(void *m) {
+  return (char *)LLVMGetDataLayoutStr((LLVMModuleRef)m);
 }
 
-/**
- * Set the data layout for a module.
- *
- * @see Module::setDataLayout()
- */
-void __llvm_set_data_layout(void *module, void *data_layout) {
-  LLVMSetDataLayout((LLVMModuleRef)module, (const char *)data_layout);
+void *__llvm_get_data_layout(void *m) {
+  return (char *)LLVMGetDataLayout((LLVMModuleRef)m);
 }
 
-/**
- * Obtain the target triple for a module.
- *
- * @see Module::getTargetTriple()
- */
-void *__llvm_get_target(void *module) {
-  return (char *)LLVMGetTarget((LLVMModuleRef)module);
+void __llvm_set_data_layout(void *m, void *data_layout_str) {
+  LLVMSetDataLayout((LLVMModuleRef)m, (const char *)data_layout_str);
 }
 
-/**
- * Set the target triple for a module.
- *
- * @see Module::setTargetTriple()
- */
-void __llvm_set_target(void *module, void *triple) {
-  LLVMSetTarget((LLVMModuleRef)module, (const char *)triple);
+void *__llvm_get_target(void *m) {
+  return (char *)LLVMGetTarget((LLVMModuleRef)m);
 }
 
-/**
- * Returns the module flags as an array of flag-key-value triples.  The caller
- * is responsible for freeing this array by calling
- * \c LLVMDisposeModuleFlagsMetadata.
- *
- * @see Module::getModuleFlagsMetadata()
- */
-// LLVMModuleFlagEntry *LLVMCopyModuleFlagsMetadata(LLVMModuleRef M, size_t
-// *Len);
+void __llvm_set_target(void *m, void *triple) {
+  LLVMSetTarget((LLVMModuleRef)m, (const char *)triple);
+}
 
-/**
- * Destroys module flags metadata entries.
- */
-// void LLVMDisposeModuleFlagsMetadata(LLVMModuleFlagEntry *Entries);
+void *__llvm_copy_module_flags_metadata(void *m, size_t *len) {
+  return (LLVMModuleFlagEntry *)LLVMCopyModuleFlagsMetadata((LLVMModuleRef)m,
+                                                            len);
+}
 
-/**
- * Returns the flag behavior for a module flag entry at a specific index.
- *
- * @see Module::ModuleFlagEntry::Behavior
- */
-// LLVMModuleFlagBehavior
-// LLVMModuleFlagEntriesGetFlagBehavior(LLVMModuleFlagEntry *Entries,
-//                                      unsigned Index);
+void __llvm_dispose_module_flags_metadata(void *entries) {
+  LLVMDisposeModuleFlagsMetadata((LLVMModuleFlagEntry *)entries);
+}
 
-/**
- * Returns the key for a module flag entry at a specific index.
- *
- * @see Module::ModuleFlagEntry::Key
- */
-// const char *LLVMModuleFlagEntriesGetKey(LLVMModuleFlagEntry *Entries,
-//                                         unsigned Index, size_t *Len);
+LLVMModuleFlagBehavior
+__llvm_module_flag_entries_get_flag_behavior(void *entries, unsigned index) {
+  return LLVMModuleFlagEntriesGetFlagBehavior((LLVMModuleFlagEntry *)entries,
+                                              index);
+}
 
-/**
- * Returns the metadata for a module flag entry at a specific index.
- *
- * @see Module::ModuleFlagEntry::Val
- */
-// LLVMMetadataRef LLVMModuleFlagEntriesGetMetadata(LLVMModuleFlagEntry
-// *Entries,
-//                                                  unsigned Index);
+void *__llvm_module_flag_entries_get_key(void *entries, unsigned index,
+                                         size_t *len) {
+  return (char *)LLVMModuleFlagEntriesGetKey((LLVMModuleFlagEntry *)entries,
+                                             index, len);
+}
 
-/**
- * Add a module-level flag to the module-level flags metadata if it doesn't
- * already exist.
- *
- * @see Module::getModuleFlag()
- */
-// LLVMMetadataRef LLVMGetModuleFlag(LLVMModuleRef M, const char *Key,
-//                                   size_t KeyLen);
+void *__llvm_module_flag_entries_get_metadata(void *entries, unsigned index) {
+  return (LLVMMetadataRef)LLVMModuleFlagEntriesGetMetadata(
+      (LLVMModuleFlagEntry *)entries, index);
+}
+
 void *__llvm_get_module_flag(void *m, void *key, size_t key_len) {
   return (LLVMMetadataRef)LLVMGetModuleFlag((LLVMModuleRef)m, (const char *)key,
                                             key_len);
 }
 
-/**
- * Add a module-level flag to the module-level flags metadata if it doesn't
- * already exist.
- *
- * @see Module::addModuleFlag()
- */
-// void LLVMAddModuleFlag(LLVMModuleRef M, LLVMModuleFlagBehavior Behavior,
-//                        const char *Key, size_t KeyLen, LLVMMetadataRef Val);
+void __llvm_add_module_flag(void *m, LLVMModuleFlagBehavior behavior, void *key,
+                            size_t key_len, void *val) {
+  LLVMAddModuleFlag((LLVMModuleRef)m, behavior, (const char *)key, key_len,
+                    (LLVMMetadataRef)val);
+}
 
-/**
- * Dump a representation of a module to stderr.
- *
- * @see Module::dump()
- */
 void __llvm_dump_module(void *m) { LLVMDumpModule((LLVMModuleRef)m); }
 
-/**
- * Return a string representation of the module. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see Module::print()
- */
+LLVMBool __llvm_print_module_to_file(void *m, void *filename,
+                                     void **error_message) {
+  return LLVMPrintModuleToFile((LLVMModuleRef)m, (const char *)filename,
+                               (char **)error_message);
+}
+
 void *__llvm_print_module_to_string(void *m) {
   return (char *)LLVMPrintModuleToString((LLVMModuleRef)m);
 }
 
-/**
- * Add a function to a module under a specified name.
- *
- * @see llvm::Function::Create()
- */
+void *__llvm_get_module_inline_asm(void *m, size_t *len) {
+  return (char *)LLVMGetModuleInlineAsm((LLVMModuleRef)m, len);
+}
+
+void __llvm_set_module_inline_asm2(void *m, void *_asm, size_t len) {
+  LLVMSetModuleInlineAsm2((LLVMModuleRef)m, (char *)_asm, len);
+}
+
+void __llvm_append_module_inline_asm(void *m, void *_asm, size_t len) {
+  LLVMAppendModuleInlineAsm((LLVMModuleRef)m, (char *)_asm, len);
+}
+
+void *__llvm_get_inline_asm(void *ty, void *asm_string, size_t asm_string_size,
+                            void *constraints, size_t constraints_size,
+                            LLVMBool has_side_effects, LLVMBool is_align_stack,
+                            LLVMInlineAsmDialect dialect, LLVMBool can_throw) {
+  return (LLVMValueRef)LLVMGetInlineAsm(
+      (LLVMTypeRef)ty, (const char *)asm_string, asm_string_size,
+      (const char *)constraints, constraints_size, has_side_effects,
+      is_align_stack, dialect, can_throw);
+}
+
+void *__llvm_get_inline_asm_asm_string(void *inline_asm_val, size_t *len) {
+  return (char *)LLVMGetInlineAsmAsmString((LLVMValueRef)inline_asm_val, len);
+}
+
+void *__llvm_get_inline_asm_constraint_string(void *inline_asm_val,
+                                              size_t *len) {
+  return (char *)LLVMGetInlineAsmConstraintString((LLVMValueRef)inline_asm_val,
+                                                  len);
+}
+
+LLVMInlineAsmDialect __llvm_get_inline_asm_dialect(void *inline_asm_val) {
+  return LLVMGetInlineAsmDialect((LLVMValueRef)inline_asm_val);
+}
+
+void *__llvm_get_inline_asm_function_type(void *inline_asm_val) {
+  return (LLVMTypeRef)LLVMGetInlineAsmFunctionType(
+      (LLVMValueRef)inline_asm_val);
+}
+
+LLVMBool __llvm_get_inline_asm_has_side_effects(void *inline_asm_val) {
+  return LLVMGetInlineAsmHasSideEffects((LLVMValueRef)inline_asm_val);
+}
+
+LLVMBool __llvm_get_inline_asm_needs_aligned_stack(void *inline_asm_val) {
+  return LLVMGetInlineAsmNeedsAlignedStack((LLVMValueRef)inline_asm_val);
+}
+
+LLVMBool __llvm_get_inline_asm_can_unwind(void *inline_asm_val) {
+  return LLVMGetInlineAsmCanUnwind((LLVMValueRef)inline_asm_val);
+}
+
+void *__llvm_get_module_context(void *m) {
+  return (LLVMContextRef)LLVMGetModuleContext((LLVMModuleRef)m);
+}
+
+void *__llvm_get_type_by_name_in_module(void *m, void *name) {
+  return (LLVMTypeRef)LLVMGetTypeByName((LLVMModuleRef)m, (const char *)name);
+}
+
+void *__llvm_get_first_named_metadata(void *m) {
+  return (LLVMNamedMDNodeRef)LLVMGetFirstNamedMetadata((LLVMModuleRef)m);
+}
+
+void *__llvm_get_last_named_metadata(void *m) {
+  return (LLVMNamedMDNodeRef)LLVMGetLastNamedMetadata((LLVMModuleRef)m);
+}
+
+void *__llvm_get_next_named_metadata(void *named_md_node) {
+  return (LLVMNamedMDNodeRef)LLVMGetNextNamedMetadata(
+      (LLVMNamedMDNodeRef)named_md_node);
+}
+
+void *__llvm_get_previous_named_metadata(void *named_md_node) {
+  return (LLVMNamedMDNodeRef)LLVMGetPreviousNamedMetadata(
+      (LLVMNamedMDNodeRef)named_md_node);
+}
+
+void *__llvm_get_named_metadata(void *m, void *name, size_t name_len) {
+  return (LLVMNamedMDNodeRef)LLVMGetNamedMetadata((LLVMModuleRef)m,
+                                                  (const char *)name, name_len);
+}
+
+void *__llvm_get_or_insert_named_metadata(void *m, void *name,
+                                          size_t name_len) {
+  return (LLVMNamedMDNodeRef)LLVMGetOrInsertNamedMetadata(
+      (LLVMModuleRef)m, (const char *)name, name_len);
+}
+
+void *__llvm_get_named_metadata_name(void *named_md, size_t *name_len) {
+  return (char *)LLVMGetNamedMetadataName((LLVMNamedMDNodeRef)named_md,
+                                          name_len);
+}
+
+unsigned __llvm_get_named_metadata_num_operands(void *m, void *name) {
+  return LLVMGetNamedMetadataNumOperands((LLVMModuleRef)m, (const char *)name);
+}
+
+void __llvm_get_named_metadata_operands(void *m, void *name, void *dest) {
+  LLVMGetNamedMetadataOperands((LLVMModuleRef)m, (const char *)name,
+                               (LLVMValueRef *)dest);
+}
+
+void __llvm_add_named_metadata_operand(void *m, void *name, void *val) {
+  LLVMAddNamedMetadataOperand((LLVMModuleRef)m, (const char *)name,
+                              (LLVMValueRef)val);
+}
+
+void *__llvm_get_debug_loc_directory(void *val, unsigned *length) {
+  return (char *)LLVMGetDebugLocDirectory((LLVMValueRef)val, length);
+}
+
+void *__llvm_get_debug_loc_filename(void *val, unsigned *length) {
+  return (char *)LLVMGetDebugLocFilename((LLVMValueRef)val, length);
+}
+
+unsigned __llvm_get_debug_loc_line(void *val) {
+  return LLVMGetDebugLocLine((LLVMValueRef)val);
+}
+
+unsigned __llvm_get_debug_loc_column(void *val) {
+  return LLVMGetDebugLocColumn((LLVMValueRef)val);
+}
+
 void *__llvm_add_function(void *m, void *name, void *function_ty) {
   return (LLVMValueRef)LLVMAddFunction((LLVMModuleRef)m, (const char *)name,
                                        (LLVMTypeRef)function_ty);
 }
 
-/**
- * Obtain a Function value from a Module by its name.
- *
- * The returned value corresponds to a llvm::Function value.
- *
- * @see llvm::Module::getFunction()
- */
 void *__llvm_get_named_function(void *m, void *name) {
   return (LLVMValueRef)LLVMGetNamedFunction((LLVMModuleRef)m,
                                             (const char *)name);
 }
 
-/**
- * Obtain an iterator to the first Function in a Module.
- *
- * @see llvm::Module::begin()
- */
 void *__llvm_get_first_function(void *m) {
   return (LLVMValueRef)LLVMGetFirstFunction((LLVMModuleRef)m);
 }
 
-/**
- * Obtain an iterator to the last Function in a Module.
- *
- * @see llvm::Module::end()
- */
 void *__llvm_get_last_function(void *m) {
   return (LLVMValueRef)LLVMGetLastFunction((LLVMModuleRef)m);
 }
-/**
- * Advance a Function iterator to the next Function.
- *
- * Returns NULL if the iterator was already at the end and there are no more
- * functions.
- */
-void *__llvm_get_next_function(void *function) {
-  return (LLVMValueRef)LLVMGetNextFunction((LLVMValueRef)function);
-}
-/**
- * Decrement a Function iterator to the previous Function.
- *
- * Returns NULL if the iterator was already at the beginning and there are
- * no previous functions.
- */
-void *__llvm_get_previous_function(void *function) {
-  return (LLVMValueRef)LLVMGetPreviousFunction((LLVMValueRef)function);
+
+void *__llvm_get_next_function(void *fn) {
+  return (LLVMValueRef)LLVMGetNextFunction((LLVMValueRef)fn);
 }
 
-/**
- * @}
- */
-
-/**
- * @defgroup LLVMCCoreTypeInt Integer Types
- *
- * Functions in this section operate on integer types.
- *
- */
-
-/**
- * Determine whether a type instance is null.
- */
-LLVMBool __llvm_type_is_null(void *type_ref) {
-  return type_ref == NULL ? 1 : 0;
+void *__llvm_get_previous_function(void *fn) {
+  return (LLVMValueRef)LLVMGetPreviousFunction((LLVMValueRef)fn);
 }
 
-/**
- * Obtain the enumerated type of a Type instance.
- *
- * @see llvm::Type:getTypeID()
- */
-int32_t __llvm_get_type_kind(void *type_ref) {
-  LLVMTypeKind k = LLVMGetTypeKind((LLVMTypeRef)type_ref);
-  return __llvm_type_kind_transfer_to_moonbit_llvm_type_kind(k);
+void __llvm_set_module_inline_asm(void *m, void *_asm) {
+  LLVMSetModuleInlineAsm((LLVMModuleRef)m, (char *)_asm);
 }
 
-/**
- * Whether the type has a known size.
- *
- * Things that don't have a size are abstract types, labels, and void.a
- *
- * @see llvm::Type::isSized()
- */
+int32_t __llvm_get_type_kind(void *ty) {
+  LLVMTypeKind k = LLVMGetTypeKind((LLVMTypeRef)ty);
+  return llvm_type_kind_to_int(k);
+}
+
 LLVMBool __llvm_type_is_sized(void *ty) {
   return LLVMTypeIsSized((LLVMTypeRef)ty);
 }
 
-/**
- * Obtain the context to which this type instance is associated.
- *
- * @see llvm::Type::getContext()
- */
 void *__llvm_get_type_context(void *ty) {
   return (LLVMContextRef)LLVMGetTypeContext((LLVMTypeRef)ty);
 }
 
-/**
- * Dump a representation of a type to stderr.
- *
- * @see llvm::Type::dump()
- */
 void __llvm_dump_type(void *val) { LLVMDumpType((LLVMTypeRef)val); }
 
-/**
- * Return a string representation of the type. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see llvm::Type::print()
- */
 void *__llvm_print_type_to_string(void *val) {
-  return LLVMPrintTypeToString((LLVMTypeRef)val);
+  return (char *)LLVMPrintTypeToString((LLVMTypeRef)val);
 }
 
-/**
- * Obtain an integer type from a context with specified bit width.
- */
 void *__llvm_int1_type_in_context(void *context) {
-  return LLVMInt1TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int8_type_in_context(void *context) {
-  return LLVMInt8TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int16_type_in_context(void *context) {
-  return LLVMInt16TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int32_type_in_context(void *context) {
-  return LLVMInt32TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int64_type_in_context(void *context) {
-  return LLVMInt64TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int128_type_in_context(void *context) {
-  return LLVMInt128TypeInContext((LLVMContextRef)context);
-}
-void *__llvm_int_type_in_context(void *context, unsigned num_bits) {
-  return LLVMIntTypeInContext((LLVMContextRef)context, num_bits);
+  return (LLVMTypeRef)LLVMInt1TypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain an integer type from the global context with a specified bit
- * width.
- */
-void *__llvm_int1_type() { return LLVMInt1Type(); }
-void *__llvm_int8_type() { return LLVMInt8Type(); }
-void *__llvm_int16_type() { return LLVMInt16Type(); }
-void *__llvm_int32_type() { return LLVMInt32Type(); }
-void *__llvm_int64_type() { return LLVMInt64Type(); }
-void *__llvm_int128_type() { return LLVMInt128Type(); }
-void *__llvm_int_type(unsigned num_bits) { return LLVMIntType(num_bits); }
+void *__llvm_int8_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMInt8TypeInContext((LLVMContextRef)context);
+}
+
+void *__llvm_int16_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMInt16TypeInContext((LLVMContextRef)context);
+}
+
+void *__llvm_int32_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMInt32TypeInContext((LLVMContextRef)context);
+}
+
+void *__llvm_int64_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMInt64TypeInContext((LLVMContextRef)context);
+}
+
+void *__llvm_int128_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMInt128TypeInContext((LLVMContextRef)context);
+}
+
+void *__llvm_int_type_in_context(void *context, unsigned num_bits) {
+  return (LLVMTypeRef)LLVMIntTypeInContext((LLVMContextRef)context, num_bits);
+}
+
+void *__llvm_int1_type() { return (LLVMTypeRef)LLVMInt1Type(); }
+
+void *__llvm_int8_type() { return (LLVMTypeRef)LLVMInt8Type(); }
+
+void *__llvm_int16_type() { return (LLVMTypeRef)LLVMInt16Type(); }
+
+void *__llvm_int32_type() { return (LLVMTypeRef)LLVMInt32Type(); }
+
+void *__llvm_int64_type() { return (LLVMTypeRef)LLVMInt64Type(); }
+
+void *__llvm_int128_type() { return (LLVMTypeRef)LLVMInt128Type(); }
+
+void *__llvm_int_type(unsigned num_bits) {
+  return (LLVMTypeRef)LLVMIntType(num_bits);
+}
+
 unsigned __llvm_get_int_type_width(void *integer_ty) {
   return LLVMGetIntTypeWidth((LLVMTypeRef)integer_ty);
 }
 
-/**
- * @}
- */
-
-/**
- * @defgroup LLVMCCoreTypeFloat Floating Point Types
- *
- * @{
- */
-
-/**
- * Obtain a 16-bit floating point type from a context.
- */
 void *__llvm_half_type_in_context(void *context) {
-  return LLVMHalfTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMHalfTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 16-bit brain floating point type from a context.
- */
 void *__llvm_bfloat_type_in_context(void *context) {
-  return LLVMBFloatTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMBFloatTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 32-bit floating point type from a context.
- */
 void *__llvm_float_type_in_context(void *context) {
-  return LLVMFloatTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMFloatTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 64-bit floating point type from a context.
- */
 void *__llvm_double_type_in_context(void *context) {
-  return LLVMDoubleTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMDoubleTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 80-bit floating point type (X87) from a context.
- */
-void *__llvm_x86fp80_type_in_context(void *context) {
-  return LLVMX86FP80TypeInContext((LLVMContextRef)context);
+void *__llvm_x86_fp80_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMX86FP80TypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 128-bit floating point type (112-bit mantissa) from a
- * context.
- */
 void *__llvm_fp128_type_in_context(void *context) {
-  return LLVMFP128TypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMFP128TypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a 128-bit floating point type (two 64-bits) from a context.
- */
-void *__llvm_ppcfp128_type_in_context(void *context) {
-  return LLVMPPCFP128TypeInContext((LLVMContextRef)context);
+void *__llvm_ppc_fp128_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMPPCFP128TypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Obtain a floating point type from the global context.
- *
- * These map to the functions in this group of the same name.
- */
-void *__llvm_half_type() { return LLVMHalfType(); }
-void *__llvm_bfloat_type() { return LLVMBFloatType(); }
-void *__llvm_float_type() { return LLVMFloatType(); }
-void *__llvm_double_type() { return LLVMDoubleType(); }
-void *__llvm_x86fp80_type() { return LLVMX86FP80Type(); }
-void *__llvm_fp128_type() { return LLVMFP128Type(); }
-void *__llvm_ppcfp128_type() { return LLVMPPCFP128Type(); }
+void *__llvm_half_type() { return (LLVMTypeRef)LLVMHalfType(); }
 
-/**
- * @}
- */
+void *__llvm_bfloat_type() { return (LLVMTypeRef)LLVMBFloatType(); }
 
-/**
- * @defgroup LLVMCCoreTypeFunction Function Types
- *
- * @{
- */
+void *__llvm_float_type() { return (LLVMTypeRef)LLVMFloatType(); }
 
-/**
- * Obtain a function type consisting of a specified signature.
- *
- * The function is defined as a tuple of a return Type, a list of
- * parameter types, and whether the function is variadic.
- */
-void *__llvm_function_type(void *ret_ty, ArrayLLVMTypeRef *param_types,
-                           unsigned param_count, LLVMBool is_var_arg) {
+void *__llvm_double_type() { return (LLVMTypeRef)LLVMDoubleType(); }
+
+void *__llvm_x86_fp80_type() { return (LLVMTypeRef)LLVMX86FP80Type(); }
+
+void *__llvm_fp128_type() { return (LLVMTypeRef)LLVMFP128Type(); }
+
+void *__llvm_ppc_fp128_type() { return (LLVMTypeRef)LLVMPPCFP128Type(); }
+
+void *__llvm_function_type(void *return_type, ArrayLLVMTypeRef *param_types,
+                           LLVMBool is_var_arg) {
   LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
-  return (LLVMTypeRef)LLVMFunctionType((LLVMTypeRef)ret_ty, llvm_param_types,
-                                       param_count, is_var_arg);
+  unsigned param_count = param_types->$1;
+  return (LLVMTypeRef)LLVMFunctionType(
+      (LLVMTypeRef)return_type, llvm_param_types, param_count, is_var_arg);
 }
 
-/**
- * Returns whether a function type is variadic.
- */
 LLVMBool __llvm_is_function_var_arg(void *function_ty) {
   return LLVMIsFunctionVarArg((LLVMTypeRef)function_ty);
 }
 
-/**
- * Obtain the Type this function Type returns.
- */
 void *__llvm_get_return_type(void *function_ty) {
-  return LLVMGetReturnType((LLVMTypeRef)function_ty);
+  return (LLVMTypeRef)LLVMGetReturnType((LLVMTypeRef)function_ty);
 }
 
-/**
- * Obtain the number of parameters this function accepts.
- */
 unsigned __llvm_count_param_types(void *function_ty) {
   return LLVMCountParamTypes((LLVMTypeRef)function_ty);
 }
 
-/**
- * Obtain the types of a function's parameters.
- *
- * The Dest parameter should point to a pre-allocated array of
- * LLVMTypeRef at least LLVMCountParamTypes() large. On return, the
- * first LLVMCountParamTypes() entries in the array will be populated
- * with LLVMTypeRef instances.
- *
- * @param FunctionTy The function type to operate on.
- * @param Dest Memory address of an array to be filled with result.
- */
-// void __llvm_get_param_types(void* function_ty, void* param_types);
+void __llvm_get_param_types(void *function_ty, void *dest) {
+  LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)dest);
+}
 
-// ============================
-// Struct Type and Array Type and Vector Type
-// ============================
-/**
- * @defgroup LLVMCCoreTypeStruct Structure Types
- *
- * These functions relate to LLVMTypeRef instances.
- *
- * @see llvm::StructType
- *
- * @{
- */
-
-/**
- * Create a new structure type in a context.
- *
- * A structure is specified by a list of inner elements/types and
- * whether these can be packed together.
- *
- * @see llvm::StructType::create()
- */
 void *__llvm_struct_type_in_context(void *context,
                                     ArrayLLVMTypeRef *element_types,
                                     LLVMBool packed) {
+  LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)element_types->$0->data;
+  unsigned element_count = element_types->$1;
   return (LLVMTypeRef)LLVMStructTypeInContext(
-      (LLVMContextRef)context, (LLVMTypeRef *)element_types->$0->data,
-      element_types->$1, packed);
+      (LLVMContextRef)context, llvm_element_types, element_count, packed);
 }
 
-/**
- * Create a new structure type in the global context.
- *
- * @see llvm::StructType::create()
- */
 void *__llvm_struct_type(ArrayLLVMTypeRef *element_types, LLVMBool packed) {
-  return (LLVMTypeRef)LLVMStructType((LLVMTypeRef *)element_types->$0->data,
-                                     element_types->$1, packed);
+  LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)element_types->$0->data;
+  unsigned element_count = element_types->$1;
+  return (LLVMTypeRef)LLVMStructType(llvm_element_types, element_count, packed);
 }
 
-/**
- * Create a void type in a context.
- */
+void *__llvm_struct_create_named(void *context, void *name) {
+  return (LLVMTypeRef)LLVMStructCreateNamed((LLVMContextRef)context,
+                                            (const char *)name);
+}
+
+void *__llvm_get_struct_name(void *ty) {
+  return (char *)LLVMGetStructName((LLVMTypeRef)ty);
+}
+
+void __llvm_struct_set_body(void *struct_ty, ArrayLLVMTypeRef *element_types,
+                            LLVMBool packed) {
+  LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)element_types->$0->data;
+  unsigned element_count = element_types->$1;
+  LLVMStructSetBody((LLVMTypeRef)struct_ty, llvm_element_types, element_count,
+                    packed);
+}
+
+unsigned __llvm_count_struct_element_types(void *struct_ty) {
+  return LLVMCountStructElementTypes((LLVMTypeRef)struct_ty);
+}
+
+void __llvm_get_struct_element_types(void *struct_ty, void *dest) {
+  LLVMGetStructElementTypes((LLVMTypeRef)struct_ty, (LLVMTypeRef *)dest);
+}
+
+void *__llvm_struct_get_type_at_index(void *struct_ty, unsigned i) {
+  return (LLVMTypeRef)LLVMStructGetTypeAtIndex((LLVMTypeRef)struct_ty, i);
+}
+
+LLVMBool __llvm_is_packed_struct(void *struct_ty) {
+  return LLVMIsPackedStruct((LLVMTypeRef)struct_ty);
+}
+
+LLVMBool __llvm_is_opaque_struct(void *struct_ty) {
+  return LLVMIsOpaqueStruct((LLVMTypeRef)struct_ty);
+}
+
+LLVMBool __llvm_is_literal_struct(void *struct_ty) {
+  return LLVMIsLiteralStruct((LLVMTypeRef)struct_ty);
+}
+
+void *__llvm_get_element_type(void *ty) {
+  return (LLVMTypeRef)LLVMGetElementType((LLVMTypeRef)ty);
+}
+
+void __llvm_get_subtypes(void *tp, void *arr) {
+  LLVMGetSubtypes((LLVMTypeRef)tp, (LLVMTypeRef *)arr);
+}
+
+unsigned __llvm_get_num_contained_types(void *tp) {
+  return LLVMGetNumContainedTypes((LLVMTypeRef)tp);
+}
+
+void *__llvm_array_type(void *element_type, unsigned element_count) {
+  return (LLVMTypeRef)LLVMArrayType((LLVMTypeRef)element_type, element_count);
+}
+
+void *__llvm_array_type2(void *element_type, uint64_t element_count) {
+  return (LLVMTypeRef)LLVMArrayType2((LLVMTypeRef)element_type, element_count);
+}
+
+unsigned __llvm_get_array_length(void *array_ty) {
+  return LLVMGetArrayLength((LLVMTypeRef)array_ty);
+}
+
+uint64_t __llvm_get_array_length2(void *array_ty) {
+  return LLVMGetArrayLength2((LLVMTypeRef)array_ty);
+}
+
+void *__llvm_pointer_type(void *element_type, unsigned address_space) {
+  return (LLVMTypeRef)LLVMPointerType((LLVMTypeRef)element_type, address_space);
+}
+
+LLVMBool __llvm_pointer_type_is_opaque(void *ty) {
+  return LLVMPointerTypeIsOpaque((LLVMTypeRef)ty);
+}
+
+void *__llvm_pointer_type_in_context(void *context, unsigned address_space) {
+  return (LLVMTypeRef)LLVMPointerTypeInContext((LLVMContextRef)context,
+                                               address_space);
+}
+
+unsigned __llvm_get_pointer_address_space(void *pointer_ty) {
+  return LLVMGetPointerAddressSpace((LLVMTypeRef)pointer_ty);
+}
+
+void *__llvm_vector_type(void *element_type, unsigned element_count) {
+  return (LLVMTypeRef)LLVMVectorType((LLVMTypeRef)element_type, element_count);
+}
+
+void *__llvm_scalable_vector_type(void *element_type, unsigned element_count) {
+  return (LLVMTypeRef)LLVMScalableVectorType((LLVMTypeRef)element_type,
+                                             element_count);
+}
+
+unsigned __llvm_get_vector_size(void *vector_ty) {
+  return LLVMGetVectorSize((LLVMTypeRef)vector_ty);
+}
+
 void *__llvm_void_type_in_context(void *context) {
-  return LLVMVoidTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMVoidTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Create a label type in a context.
- */
-void *__llvm_lable_type_in_context(void *context) {
-  return LLVMLabelTypeInContext((LLVMContextRef)context);
+void *__llvm_label_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMLabelTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * Create a X86 MMX type in a context.
- */
-// void *__llvm_x86mmx_type_in_context(void *context) {
-//   return LLVMX86MMXTypeInContext((LLVMContextRef)context);
-// }
+void *__llvm_x86_mmx_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMX86MMXTypeInContext((LLVMContextRef)context);
+}
 
-/**
- * Create a X86 AMX type in a context.
- */
-// void *__llvm_x86amx_type_in_context(void *context) {
-//   return LLVMX86AMXTypeInContext((LLVMContextRef)context);
-// }
-/**
- * Create a token type in a context.
- */
+void *__llvm_x86_amx_type_in_context(void *context) {
+  return (LLVMTypeRef)LLVMX86AMXTypeInContext((LLVMContextRef)context);
+}
+
 void *__llvm_token_type_in_context(void *context) {
-  return LLVMTokenTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMTokenTypeInContext((LLVMContextRef)context);
 }
-/**
- * Create a metadata type in a context.
- */
+
 void *__llvm_metadata_type_in_context(void *context) {
-  return LLVMMetadataTypeInContext((LLVMContextRef)context);
+  return (LLVMTypeRef)LLVMMetadataTypeInContext((LLVMContextRef)context);
 }
 
-/**
- * These are similar to the above functions except they operate on the
- * global context.
- */
-void *__llvm_void_type() { return LLVMVoidType(); }
-void *__llvm_label_type() { return LLVMLabelType(); }
-// void *__llvm_x86mmx_type() { return LLVMX86MMXType(); }
-void *__llvm_x86amx_type() { return LLVMX86AMXType(); }
+void *__llvm_void_type() { return (LLVMTypeRef)LLVMVoidType(); }
 
-// ========================
-// Target Ext
-// ========================
+void *__llvm_label_type() { return (LLVMTypeRef)LLVMLabelType(); }
 
-/**
- * Obtain the type of a value.
- *
- * @see llvm::Value::getType()
- */
-void *__llvm_type_of(void *val_ref) {
-  return (LLVMTypeRef)LLVMTypeOf((LLVMValueRef)val_ref);
+void *__llvm_x86_mmx_type() { return (LLVMTypeRef)LLVMX86MMXType(); }
+
+void *__llvm_x86_amx_type() { return (LLVMTypeRef)LLVMX86AMXType(); }
+
+// void *__llvm_target_ext_type_in_context(void *context, void *name,
+//                                         ArrayLLVMTypeRef *type_params,
+//                                         ArrayUnsigned *int_params) {
+//   LLVMTypeRef *llvm_type_params = (LLVMTypeRef *)type_params->$0->data;
+//   unsigned type_param_count = type_params->$1;
+//   unsigned *llvm_int_params = (unsigned *)int_params->$0->data;
+//   unsigned int_param_count = int_params->$1;
+//   return (LLVMTypeRef)LLVMTargetExtTypeInContext(
+//       (LLVMContextRef)context, (const char *)name, llvm_type_params,
+//       type_param_count, llvm_int_params, int_param_count);
+// }
+
+void *__llvm_get_target_ext_type_name(void *target_ext_ty) {
+  return (char *)LLVMGetTargetExtTypeName((LLVMTypeRef)target_ext_ty);
 }
 
-/**
- * Set the string name of a value.
- *
- * @see llvm::Value::setName()
- */
-void __llvm_set_value_name(void *val_ref, void *name, size_t name_len) {
-  LLVMSetValueName2((LLVMValueRef)val_ref, (const char *)name, name_len);
+unsigned __llvm_get_target_ext_type_num_type_params(void *target_ext_ty) {
+  return LLVMGetTargetExtTypeNumTypeParams((LLVMTypeRef)target_ext_ty);
 }
 
-/**
- * Obtain the string name of a value.
- *
- * @see llvm::Value::getName()
- */
-void *__llvm_get_value_name(void *val_ref) {
-  size_t len = 0;
-  const char *p = LLVMGetValueName2((LLVMValueRef)val_ref, &len);
-  return (void *)p;
+void *__llvm_get_target_ext_type_type_param(void *target_ext_ty, unsigned idx) {
+  return (LLVMTypeRef)LLVMGetTargetExtTypeTypeParam((LLVMTypeRef)target_ext_ty,
+                                                    idx);
 }
 
-/**
- * Dump a representation of a value to stderr.
- *
- * @see llvm::Value::dump()
- */
-void __llvm_dump_value(void *val_ref) { LLVMDumpValue((LLVMValueRef)val_ref); }
-
-/**
- * Return a string representation of the value. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see llvm::Value::print()
- */
-void *__llvm_print_value_to_string(void *val_ref) {
-  return LLVMPrintValueToString((LLVMValueRef)val_ref);
+unsigned __llvm_get_target_ext_type_num_int_params(void *target_ext_ty) {
+  return LLVMGetTargetExtTypeNumIntParams((LLVMTypeRef)target_ext_ty);
 }
 
-/**
- * Return a string representation of the DbgRecord. Use
- * LLVMDisposeMessage to free the string.
- *
- * @see llvm::DbgRecord::print()
- */
+unsigned __llvm_get_target_ext_type_int_param(void *target_ext_ty,
+                                              unsigned idx) {
+  return LLVMGetTargetExtTypeIntParam((LLVMTypeRef)target_ext_ty, idx);
+}
+
+void *__llvm_type_of(void *val) {
+  return (LLVMTypeRef)LLVMTypeOf((LLVMValueRef)val);
+}
+
+LLVMValueKind __llvm_get_value_kind(void *val) {
+  return LLVMGetValueKind((LLVMValueRef)val);
+}
+
+void *__llvm_get_value_name2(void *val, size_t *length) {
+  return (char *)LLVMGetValueName2((LLVMValueRef)val, length);
+}
+
+void __llvm_set_value_name2(void *val, void *name, size_t name_len) {
+  LLVMSetValueName2((LLVMValueRef)val, (const char *)name, name_len);
+}
+
+void __llvm_dump_value(void *val) { LLVMDumpValue((LLVMValueRef)val); }
+
+void *__llvm_print_value_to_string(void *val) {
+  return (char *)LLVMPrintValueToString((LLVMValueRef)val);
+}
+
 void *__llvm_print_dbg_record_to_string(void *record) {
   return (char *)LLVMPrintDbgRecordToString((LLVMDbgRecordRef)record);
 }
 
-/**
- * Replace all uses of a value with another one.
- *
- * @see llvm::Value::replaceAllUsesWith()
- */
 void __llvm_replace_all_uses_with(void *old_val, void *new_val) {
   LLVMReplaceAllUsesWith((LLVMValueRef)old_val, (LLVMValueRef)new_val);
 }
 
-/**
- * Determine whether the specified value instance is constant.
- */
-LLVMBool llvm_is_const(void *val_ref) {
-  return LLVMIsConstant((LLVMValueRef)val_ref);
+LLVMBool __llvm_is_constant(void *val) {
+  return LLVMIsConstant((LLVMValueRef)val);
 }
 
-/**
- * Determine whether a value instance is undefined.
- */
-LLVMBool __llvm_is_undef(void *val_ref) {
-  return LLVMIsUndef((LLVMValueRef)val_ref);
-}
+LLVMBool __llvm_is_undef(void *val) { return LLVMIsUndef((LLVMValueRef)val); }
 
-/**
- * Determine whether a value instance is poisonous.
- */
-LLVMBool __llvm_is_poison(void *val_ref) {
-  return LLVMIsPoison((LLVMValueRef)val_ref);
-}
+LLVMBool __llvm_is_poison(void *val) { return LLVMIsPoison((LLVMValueRef)val); }
 
-/**
- * Convert value instances between types.
- *
- * Internally, an LLVMValueRef is "pinned" to a specific type. This
- * series of functions allows you to cast an instance to a specific
- * type.
- *
- * If the cast is not valid for the specified type, NULL is returned.
- *
- * @see llvm::dyn_cast_or_null<>
- */
 void *__llvm_isa_argument(void *val) {
   return (LLVMValueRef)LLVMIsAArgument((LLVMValueRef)val);
 }
@@ -1201,7 +1075,7 @@ void *__llvm_isa_dbg_declare_inst(void *val) {
   return (LLVMValueRef)LLVMIsADbgDeclareInst((LLVMValueRef)val);
 }
 
-void *__llvm_dbg_label_inst(void *val) {
+void *__llvm_isa_dbg_label_inst(void *val) {
   return (LLVMValueRef)LLVMIsADbgLabelInst((LLVMValueRef)val);
 }
 
@@ -1225,11 +1099,11 @@ void *__llvm_isa_cmp_inst(void *val) {
   return (LLVMValueRef)LLVMIsACmpInst((LLVMValueRef)val);
 }
 
-void *__llvm_isa_fcmp_inst(void *val) {
+void *__llvm_isa_f_cmp_inst(void *val) {
   return (LLVMValueRef)LLVMIsAFCmpInst((LLVMValueRef)val);
 }
 
-void *__llvm_isa_icmp_inst(void *val) {
+void *__llvm_isa_i_cmp_inst(void *val) {
   return (LLVMValueRef)LLVMIsAICmpInst((LLVMValueRef)val);
 }
 
@@ -1241,7 +1115,7 @@ void *__llvm_isa_get_element_ptr_inst(void *val) {
   return (LLVMValueRef)LLVMIsAGetElementPtrInst((LLVMValueRef)val);
 }
 
-void *__llvm_insert_element_ptr_inst(void *val) {
+void *__llvm_isa_insert_element_inst(void *val) {
   return (LLVMValueRef)LLVMIsAInsertElementInst((LLVMValueRef)val);
 }
 
@@ -1353,7 +1227,7 @@ void *__llvm_isa_fp_to_si_inst(void *val) {
   return (LLVMValueRef)LLVMIsAFPToSIInst((LLVMValueRef)val);
 }
 
-void *__llvm_isa_fp_ui_inst(void *val) {
+void *__llvm_isa_fp_to_ui_inst(void *val) {
   return (LLVMValueRef)LLVMIsAFPToUIInst((LLVMValueRef)val);
 }
 
@@ -1361,7 +1235,7 @@ void *__llvm_isa_fp_trunc_inst(void *val) {
   return (LLVMValueRef)LLVMIsAFPTruncInst((LLVMValueRef)val);
 }
 
-void *__llvm_int_to_ptr_inst(void *val) {
+void *__llvm_isa_int_to_ptr_inst(void *val) {
   return (LLVMValueRef)LLVMIsAIntToPtrInst((LLVMValueRef)val);
 }
 
@@ -1385,7 +1259,7 @@ void *__llvm_isa_ui_to_fp_inst(void *val) {
   return (LLVMValueRef)LLVMIsAUIToFPInst((LLVMValueRef)val);
 }
 
-void *__llvm_isa_zext_inst(void *val) {
+void *__llvm_isa_z_ext_inst(void *val) {
   return (LLVMValueRef)LLVMIsAZExtInst((LLVMValueRef)val);
 }
 
@@ -1429,226 +1303,205 @@ void *__llvm_isa_md_string(void *val) {
   return (LLVMValueRef)LLVMIsAMDString((LLVMValueRef)val);
 }
 
-/**
- * @defgroup LLVMCCoreValueUses Usage
- *
- * This module defines functions that allow you to inspect the uses of a
- * LLVMValueRef.
- *
- * It is possible to obtain an LLVMUseRef for any LLVMValueRef instance.
- * Each LLVMUseRef (which corresponds to a llvm::Use instance) holds a
- * llvm::User and llvm::Value.
- *
- * @{
- */
-
-LLVMBool __llvm_use_ref_is_null(void *use_ref) {
-  return use_ref == NULL ? 1 : 0;
+void *__llvm_get_value_name(void *val) {
+  return (char *)LLVMGetValueName((LLVMValueRef)val);
 }
 
-/**
- * Obtain the first use of a value.
- *
- * Uses are obtained in an iterator fashion. First, call this function
- * to obtain a reference to the first use. Then, call LLVMGetNextUse()
- * on that instance and all subsequently obtained instances until
- * LLVMGetNextUse() returns NULL.
- *
- * @see llvm::Value::use_begin()
- */
+void __llvm_set_value_name(void *val, void *name) {
+  LLVMSetValueName((LLVMValueRef)val, (const char *)name);
+}
+
 void *__llvm_get_first_use(void *val) {
   return (LLVMUseRef)LLVMGetFirstUse((LLVMValueRef)val);
 }
 
-/**
- * Obtain the next use of a value.
- *
- * This effectively advances the iterator. It returns NULL if you are on
- * the final use and no more are available.
- */
-void *__llvm_get_next_use(void *use) {
-  return (LLVMUseRef)LLVMGetNextUse((LLVMUseRef)use);
-}
-/**
- * Obtain the user value for a user.
- *
- * The returned value corresponds to a llvm::User type.
- *
- * @see llvm::Use::getUser()
- */
-void *__llvm_get_user(void *use) {
-  return (LLVMValueRef)LLVMGetUser((LLVMUseRef)use);
-}
-/**
- * Obtain the value this use corresponds to.
- *
- * @see llvm::Use::get().
- */
-void *__llvm_get_used_value(void *use) {
-  return (LLVMValueRef)LLVMGetUsedValue((LLVMUseRef)use);
+void *__llvm_get_next_use(void *u) {
+  return (LLVMUseRef)LLVMGetNextUse((LLVMUseRef)u);
 }
 
-/**
- * @}
- */
+void *__llvm_get_user(void *u) {
+  return (LLVMValueRef)LLVMGetUser((LLVMUseRef)u);
+}
 
-/**
- * @defgroup LLVMCCoreValueUser User value
- *
- * Function in this group pertain to LLVMValueRef instances that descent
- * from llvm::User. This includes constants, instructions, and
- * operators.
- *
- * @{
- */
+void *__llvm_get_used_value(void *u) {
+  return (LLVMValueRef)LLVMGetUsedValue((LLVMUseRef)u);
+}
 
-/**
- * Obtain an operand at a specific index in a llvm::User value.
- *
- * @see llvm::User::getOperand()
- */
 void *__llvm_get_operand(void *val, unsigned index) {
-  return LLVMGetOperand((LLVMValueRef)val, index);
+  return (LLVMValueRef)LLVMGetOperand((LLVMValueRef)val, index);
 }
-/**
- * Obtain the use of an operand at a specific index in a llvm::User value.
- *
- * @see llvm::User::getOperandUse()
- */
+
 void *__llvm_get_operand_use(void *val, unsigned index) {
   return (LLVMUseRef)LLVMGetOperandUse((LLVMValueRef)val, index);
 }
-/**
- * Set an operand at a specific index in a llvm::User value.
- *
- * @see llvm::User::setOperand()
- */
-void __llvm_set_operand(void *val, unsigned index, void *operand) {
-  return LLVMSetOperand((LLVMValueRef)val, index, (LLVMValueRef)operand);
+
+void __llvm_set_operand(void *user, unsigned index, void *val) {
+  LLVMSetOperand((LLVMValueRef)user, index, (LLVMValueRef)val);
 }
-/**
- * Obtain the number of operands in a llvm::User value.
- *
- * @see llvm::User::getNumOperands()
- */
+
 int __llvm_get_num_operands(void *val) {
   return LLVMGetNumOperands((LLVMValueRef)val);
 }
 
-/**
- * @}
- */
+void *__llvm_const_null(void *ty) {
+  return (LLVMValueRef)LLVMConstNull((LLVMTypeRef)ty);
+}
 
-/**
- * @defgroup LLVMCCoreValueConstant Constants
- *
- * This section contains APIs for interacting with LLVMValueRef that
- * correspond to llvm::Constant instances.
- *
- * These functions will work for any LLVMValueRef in the llvm::Constant
- * class hierarchy.
- */
-
-/**
- * Obtain a constant value referring to the null instance of a type.
- *
- * @see llvm::Constant::getNullValue()
- */
-void *__llvm_const_null(void *ty) { return LLVMConstNull((LLVMTypeRef)ty); }
-
-/**
- * Obtain a constant value referring to the instance of a type
- * consisting of all ones.
- *
- * This is only valid for integer types.
- *
- * @see llvm::Constant::getAllOnesValue()
- */
 void *__llvm_const_all_ones(void *ty) {
   return (LLVMValueRef)LLVMConstAllOnes((LLVMTypeRef)ty);
 }
 
-/**
- * Obtain a constant value referring to an undefined value of a type.
- *
- * @see llvm::UndefValue::get()
- */
 void *__llvm_get_undef(void *ty) {
   return (LLVMValueRef)LLVMGetUndef((LLVMTypeRef)ty);
 }
 
-/**
- * Obtain a constant value referring to a poison value of a type.
- *
- * @see llvm::PoisonValue::get()
- */
-void *__llvm_get_poison(void *ty) { return LLVMGetPoison((LLVMTypeRef)ty); }
-
-/**
- * Determine whether a value instance is null.
- *
- * @see llvm::Constant::isNullValue()
- */
-LLVMBool __llvm_is_null(void *val_ref) {
-  return LLVMIsNull((LLVMValueRef)val_ref);
+void *__llvm_get_poison(void *ty) {
+  return (LLVMValueRef)LLVMGetPoison((LLVMTypeRef)ty);
 }
 
-/**
- * Obtain a constant that is a constant pointer pointing to NULL for a
- * specified type.
- */
+LLVMBool __llvm_is_null(void *val) { return LLVMIsNull((LLVMValueRef)val); }
+
 void *__llvm_const_pointer_null(void *ty) {
   return (LLVMValueRef)LLVMConstPointerNull((LLVMTypeRef)ty);
 }
 
-/**
- * @defgroup LLVMCCoreValueConstantScalar Scalar constants
- *
- * Functions in this group model LLVMValueRef instances that correspond
- * to constants referring to scalar types.
- *
- * For integer types, the LLVMTypeRef parameter should correspond to a
- * llvm::IntegerType instance and the returned LLVMValueRef will
- * correspond to a llvm::ConstantInt.
- *
- * For floating point types, the LLVMTypeRef returned corresponds to a
- * llvm::ConstantFP.
- *
- * @{
- */
-
-/**
- * Obtain a constant value for an integer type.
- *
- * The returned value corresponds to a llvm::ConstantInt.
- *
- * @see llvm::ConstantInt::get()
- *
- * @param IntTy Integer type to obtain value of.
- * @param N The value the returned instance should refer to.
- * @param SignExtend Whether to sign extend the produced value.
- */
-void *__llvm_const_int(void *IntTy, unsigned long long N, LLVMBool SignExtend) {
-  return LLVMConstInt((LLVMTypeRef)IntTy, N, SignExtend);
+void *__llvm_const_int(void *int_ty, unsigned long long n,
+                       LLVMBool sign_extend) {
+  return (LLVMValueRef)LLVMConstInt((LLVMTypeRef)int_ty, n, sign_extend);
 }
 
-/**
- * Obtain a constant value referring to a double floating point value.
- */
+// void *__llvm_const_int_of_arbitrary_precision(void *int_ty, unsigned
+// num_words,
+//                                               ArrayUint64_t *words) {
+//   const uint64_t *llvm_words = (const uint64_t *)words->$0->data;
+//   return (LLVMValueRef)LLVMConstIntOfArbitraryPrecision((LLVMTypeRef)int_ty,
+//                                                         num_words,
+//                                                         llvm_words);
+// }
+
+void *__llvm_const_int_of_string(void *int_ty, void *text, uint8_t radix) {
+  return (LLVMValueRef)LLVMConstIntOfString((LLVMTypeRef)int_ty,
+                                            (const char *)text, radix);
+}
+
+void *__llvm_const_int_of_string_and_size(void *int_ty, void *text,
+                                          unsigned s_len, uint8_t radix) {
+  return (LLVMValueRef)LLVMConstIntOfStringAndSize(
+      (LLVMTypeRef)int_ty, (const char *)text, s_len, radix);
+}
+
 void *__llvm_const_real(void *real_ty, double n) {
   return (LLVMValueRef)LLVMConstReal((LLVMTypeRef)real_ty, n);
 }
 
-/**
- * @defgroup LLVMCCoreValueConstantExpressions Constant Expressions
- *
- * Functions in this group correspond to APIs on llvm::ConstantExpr.
- *
- * @see llvm::ConstantExpr.
- *
- * @{
- */
-void *__llvm_align_of(void *ty) { return LLVMAlignOf((LLVMTypeRef)ty); }
+void *__llvm_const_real_of_string(void *real_ty, void *text) {
+  return (LLVMValueRef)LLVMConstRealOfString((LLVMTypeRef)real_ty,
+                                             (const char *)text);
+}
+
+void *__llvm_const_real_of_string_and_size(void *real_ty, void *text,
+                                           unsigned s_len) {
+  return (LLVMValueRef)LLVMConstRealOfStringAndSize((LLVMTypeRef)real_ty,
+                                                    (const char *)text, s_len);
+}
+
+unsigned long long __llvm_const_int_get_z_ext_value(void *constant_val) {
+  return LLVMConstIntGetZExtValue((LLVMValueRef)constant_val);
+}
+
+long long __llvm_const_int_get_s_ext_value(void *constant_val) {
+  return LLVMConstIntGetSExtValue((LLVMValueRef)constant_val);
+}
+
+double __llvm_const_real_get_double(void *constant_val, LLVMBool *loses_info) {
+  return LLVMConstRealGetDouble((LLVMValueRef)constant_val, loses_info);
+}
+
+void *__llvm_const_string_in_context(void *context, void *str, unsigned length,
+                                     LLVMBool dont_null_terminate) {
+  return (LLVMValueRef)LLVMConstStringInContext(
+      (LLVMContextRef)context, (const char *)str, length, dont_null_terminate);
+}
+
+void *__llvm_const_string_in_context2(void *context, void *str, size_t length,
+                                      LLVMBool dont_null_terminate) {
+  return (LLVMValueRef)LLVMConstStringInContext2(
+      (LLVMContextRef)context, (const char *)str, length, dont_null_terminate);
+}
+
+void *__llvm_const_string(void *str, unsigned length,
+                          LLVMBool dont_null_terminate) {
+  return (LLVMValueRef)LLVMConstString((const char *)str, length,
+                                       dont_null_terminate);
+}
+
+LLVMBool __llvm_is_constant_string(void *c) {
+  return LLVMIsConstantString((LLVMValueRef)c);
+}
+
+void *__llvm_get_as_string(void *c, size_t *length) {
+  return (char *)LLVMGetAsString((LLVMValueRef)c, length);
+}
+
+void *__llvm_const_struct_in_context(void *context,
+                                     ArrayLLVMValueRef *constant_vals,
+                                     LLVMBool packed) {
+  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
+  unsigned count = constant_vals->$1;
+  return (LLVMValueRef)LLVMConstStructInContext(
+      (LLVMContextRef)context, llvm_constant_vals, count, packed);
+}
+
+void *__llvm_const_struct(ArrayLLVMValueRef *constant_vals, LLVMBool packed) {
+  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
+  unsigned count = constant_vals->$1;
+  return (LLVMValueRef)LLVMConstStruct(llvm_constant_vals, count, packed);
+}
+
+void *__llvm_const_array(void *element_ty, ArrayLLVMValueRef *constant_vals) {
+  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
+  unsigned length = constant_vals->$1;
+  return (LLVMValueRef)LLVMConstArray((LLVMTypeRef)element_ty,
+                                      llvm_constant_vals, length);
+}
+
+void *__llvm_const_array2(void *element_ty, ArrayLLVMValueRef *constant_vals) {
+  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
+  unsigned length = constant_vals->$1;
+  return (LLVMValueRef)LLVMConstArray2((LLVMTypeRef)element_ty,
+                                       llvm_constant_vals, length);
+}
+
+void *__llvm_const_named_struct(void *struct_ty,
+                                ArrayLLVMValueRef *constant_vals) {
+  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
+  unsigned count = constant_vals->$1;
+  return (LLVMValueRef)LLVMConstNamedStruct((LLVMTypeRef)struct_ty,
+                                            llvm_constant_vals, count);
+}
+
+void *__llvm_get_aggregate_element(void *c, unsigned idx) {
+  return (LLVMValueRef)LLVMGetAggregateElement((LLVMValueRef)c, idx);
+}
+
+// void *__llvm_get_element_as_constant(void *c, unsigned idx) {
+//   return (LLVMValueRef)LLVMGetElementAsConstant((LLVMValueRef)c, idx);
+// }
+
+void *__llvm_const_vector(ArrayLLVMValueRef *scalar_constant_vals) {
+  LLVMValueRef *llvm_scalar_constant_vals =
+      (LLVMValueRef *)scalar_constant_vals->$0->data;
+  unsigned size = scalar_constant_vals->$1;
+  return (LLVMValueRef)LLVMConstVector(llvm_scalar_constant_vals, size);
+}
+
+LLVMOpcode __llvm_get_const_opcode(void *constant_val) {
+  return LLVMGetConstOpcode((LLVMValueRef)constant_val);
+}
+
+void *__llvm_align_of(void *ty) {
+  return (LLVMValueRef)LLVMAlignOf((LLVMTypeRef)ty);
+}
 
 void *__llvm_size_of(void *ty) {
   return (LLVMValueRef)LLVMSizeOf((LLVMTypeRef)ty);
@@ -1662,61 +1515,83 @@ void *__llvm_const_nsw_neg(void *constant_val) {
   return (LLVMValueRef)LLVMConstNSWNeg((LLVMValueRef)constant_val);
 }
 
+// void *__llvm_const_nuw_neg(void *constant_val) {
+//   return (LLVMValueRef)LLVMConstNUWNeg((LLVMValueRef)constant_val);
+// }
+
 void *__llvm_const_not(void *constant_val) {
   return (LLVMValueRef)LLVMConstNot((LLVMValueRef)constant_val);
 }
 
-void *__llvm_const_add(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_add(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstAdd((LLVMValueRef)lhs_constant,
+                                    (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nsw_add(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNSWAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nsw_add(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNSWAdd((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nuw_add(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNUWAdd((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nuw_add(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNUWAdd((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_sub(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_sub(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstSub((LLVMValueRef)lhs_constant,
+                                    (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nsw_sub(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNSWSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nsw_sub(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNSWSub((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nuw_sub(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNUWSub((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nuw_sub(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNUWSub((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_mul(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_mul(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstMul((LLVMValueRef)lhs_constant,
+                                    (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nsw_mul(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNSWMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nsw_mul(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNSWMul((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_nuw_mul(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstNUWMul((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_nuw_mul(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstNUWMul((LLVMValueRef)lhs_constant,
+                                       (LLVMValueRef)rhs_constant);
 }
 
-void *__llvm_const_xor(void *lhs, void *rhs) {
-  return (LLVMValueRef)LLVMConstXor((LLVMValueRef)lhs, (LLVMValueRef)rhs);
+void *__llvm_const_xor(void *lhs_constant, void *rhs_constant) {
+  return (LLVMValueRef)LLVMConstXor((LLVMValueRef)lhs_constant,
+                                    (LLVMValueRef)rhs_constant);
 }
 
-// void* __llvm_const_gep2(void* ty, void* constant_val, void**
-// constant_indices, unsigned num_indices) {
-//   return (LLVMValueRef)LLVMConstGEP2((LLVMTypeRef)ty,
-//   (LLVMValueRef)constant_val, (LLVMValueRef*)constant_indices, num_indices);
-// }
+void *__llvm_const_gep2(void *ty, void *constant_val,
+                        ArrayLLVMValueRef *constant_indices) {
+  LLVMValueRef *llvm_constant_indices =
+      (LLVMValueRef *)constant_indices->$0->data;
+  unsigned num_indices = constant_indices->$1;
+  return (LLVMValueRef)LLVMConstGEP2((LLVMTypeRef)ty,
+                                     (LLVMValueRef)constant_val,
+                                     llvm_constant_indices, num_indices);
+}
 
-// void* __llvm_const_in_bounds_gep2(void* ty, void* constant_val, void**
-// constant_indices, unsigned num_indices) {
-//   return (LLVMValueRef)LLVMConstInBoundsGEP2((LLVMTypeRef)ty,
-//   (LLVMValueRef)constant_val, (LLVMValueRef*)constant_indices, num_indices);
-// }
+void *__llvm_const_in_bounds_gep2(void *ty, void *constant_val,
+                                  ArrayLLVMValueRef *constant_indices) {
+  LLVMValueRef *llvm_constant_indices =
+      (LLVMValueRef *)constant_indices->$0->data;
+  unsigned num_indices = constant_indices->$1;
+  return (LLVMValueRef)LLVMConstInBoundsGEP2(
+      (LLVMTypeRef)ty, (LLVMValueRef)constant_val, llvm_constant_indices,
+      num_indices);
+}
 
 void *__llvm_const_trunc(void *constant_val, void *to_type) {
   return (LLVMValueRef)LLVMConstTrunc((LLVMValueRef)constant_val,
@@ -1779,513 +1654,727 @@ void *__llvm_block_address(void *f, void *bb) {
   return (LLVMValueRef)LLVMBlockAddress((LLVMValueRef)f, (LLVMBasicBlockRef)bb);
 }
 
-/**
- * Gets the function associated with a given BlockAddress constant value.
- */
 void *__llvm_get_block_address_function(void *block_addr) {
   return (LLVMValueRef)LLVMGetBlockAddressFunction((LLVMValueRef)block_addr);
 }
 
-/**
- * Gets the basic block associated with a given BlockAddress constant value.
- */
 void *__llvm_get_block_address_basic_block(void *block_addr) {
   return (LLVMBasicBlockRef)LLVMGetBlockAddressBasicBlock(
       (LLVMValueRef)block_addr);
 }
 
-/**
- * @}
- */
+void *__llvm_const_inline_asm(void *ty, void *asm_string, void *constraints,
+                              LLVMBool has_side_effects,
+                              LLVMBool is_align_stack) {
+  return (LLVMValueRef)LLVMConstInlineAsm(
+      (LLVMTypeRef)ty, (const char *)asm_string, (const char *)constraints,
+      has_side_effects, is_align_stack);
+}
 
-/**
- * @defgroup LLVMCCoreValueBasicBlock Basic Block
- *
- * A basic block represents a single entry single exit section of code.
- * Basic blocks contain a list of instructions which form the body of
- * the block.
- *
- * Basic blocks belong to functions. They have the type of label.
- *
- * Basic blocks are themselves values. However, the C API models them as
- * LLVMBasicBlockRef.
- *
- * @see llvm::BasicBlock
- *
- * @{
- */
+void *__llvm_get_global_parent(void *global) {
+  return (LLVMModuleRef)LLVMGetGlobalParent((LLVMValueRef)global);
+}
 
-/**
- * Convert a basic block instance to a value type.
- */
+LLVMBool __llvm_is_declaration(void *global) {
+  return LLVMIsDeclaration((LLVMValueRef)global);
+}
+
+LLVMLinkage __llvm_get_linkage(void *global) {
+  return LLVMGetLinkage((LLVMValueRef)global);
+}
+
+void __llvm_set_linkage(void *global, LLVMLinkage linkage) {
+  LLVMSetLinkage((LLVMValueRef)global, linkage);
+}
+
+void *__llvm_get_section(void *global) {
+  return (char *)LLVMGetSection((LLVMValueRef)global);
+}
+
+void __llvm_set_section(void *global, void *section) {
+  LLVMSetSection((LLVMValueRef)global, (const char *)section);
+}
+
+LLVMVisibility __llvm_get_visibility(void *global) {
+  return LLVMGetVisibility((LLVMValueRef)global);
+}
+
+void __llvm_set_visibility(void *global, LLVMVisibility viz) {
+  LLVMSetVisibility((LLVMValueRef)global, viz);
+}
+
+LLVMDLLStorageClass __llvm_get_dll_storage_class(void *global) {
+  return LLVMGetDLLStorageClass((LLVMValueRef)global);
+}
+
+// void __llvm_set_dll_storage_class(void *global, LLVMDLLStorageClass class) {
+//   LLVMSetDLLStorageClass((LLVMValueRef)global, class);
+// }
+
+LLVMUnnamedAddr __llvm_get_unnamed_address(void *global) {
+  return LLVMGetUnnamedAddress((LLVMValueRef)global);
+}
+
+void __llvm_set_unnamed_address(void *global, LLVMUnnamedAddr unnamed_addr) {
+  LLVMSetUnnamedAddress((LLVMValueRef)global, unnamed_addr);
+}
+
+void *__llvm_global_get_value_type(void *global) {
+  return (LLVMTypeRef)LLVMGlobalGetValueType((LLVMValueRef)global);
+}
+
+LLVMBool __llvm_has_unnamed_addr(void *global) {
+  return LLVMHasUnnamedAddr((LLVMValueRef)global);
+}
+
+void __llvm_set_unnamed_addr(void *global, LLVMBool has_unnamed_addr) {
+  LLVMSetUnnamedAddr((LLVMValueRef)global, has_unnamed_addr);
+}
+
+unsigned __llvm_get_alignment(void *v) {
+  return LLVMGetAlignment((LLVMValueRef)v);
+}
+
+void __llvm_set_alignment(void *v, unsigned bytes) {
+  LLVMSetAlignment((LLVMValueRef)v, bytes);
+}
+
+void __llvm_global_set_metadata(void *global, unsigned kind, void *md) {
+  LLVMGlobalSetMetadata((LLVMValueRef)global, kind, (LLVMMetadataRef)md);
+}
+
+void __llvm_global_erase_metadata(void *global, unsigned kind) {
+  LLVMGlobalEraseMetadata((LLVMValueRef)global, kind);
+}
+
+void __llvm_global_clear_metadata(void *global) {
+  LLVMGlobalClearMetadata((LLVMValueRef)global);
+}
+
+void *__llvm_global_copy_all_metadata(void *value, size_t *num_entries) {
+  return (LLVMValueMetadataEntry *)LLVMGlobalCopyAllMetadata(
+      (LLVMValueRef)value, num_entries);
+}
+
+void __llvm_dispose_value_metadata_entries(void *entries) {
+  LLVMDisposeValueMetadataEntries((LLVMValueMetadataEntry *)entries);
+}
+
+unsigned __llvm_value_metadata_entries_get_kind(void *entries, unsigned index) {
+  return LLVMValueMetadataEntriesGetKind((LLVMValueMetadataEntry *)entries,
+                                         index);
+}
+
+void *__llvm_value_metadata_entries_get_metadata(void *entries,
+                                                 unsigned index) {
+  return (LLVMMetadataRef)LLVMValueMetadataEntriesGetMetadata(
+      (LLVMValueMetadataEntry *)entries, index);
+}
+
+void *__llvm_add_global(void *m, void *ty, void *name) {
+  return (LLVMValueRef)LLVMAddGlobal((LLVMModuleRef)m, (LLVMTypeRef)ty,
+                                     (const char *)name);
+}
+
+void *__llvm_add_global_in_address_space(void *m, void *ty, void *name,
+                                         unsigned address_space) {
+  return (LLVMValueRef)LLVMAddGlobalInAddressSpace(
+      (LLVMModuleRef)m, (LLVMTypeRef)ty, (const char *)name, address_space);
+}
+
+void *__llvm_get_named_global(void *m, void *name) {
+  return (LLVMValueRef)LLVMGetNamedGlobal((LLVMModuleRef)m, (const char *)name);
+}
+
+void *__llvm_get_first_global(void *m) {
+  return (LLVMValueRef)LLVMGetFirstGlobal((LLVMModuleRef)m);
+}
+
+void *__llvm_get_last_global(void *m) {
+  return (LLVMValueRef)LLVMGetLastGlobal((LLVMModuleRef)m);
+}
+
+void *__llvm_get_next_global(void *global_var) {
+  return (LLVMValueRef)LLVMGetNextGlobal((LLVMValueRef)global_var);
+}
+
+void *__llvm_get_previous_global(void *global_var) {
+  return (LLVMValueRef)LLVMGetPreviousGlobal((LLVMValueRef)global_var);
+}
+
+void __llvm_delete_global(void *global_var) {
+  LLVMDeleteGlobal((LLVMValueRef)global_var);
+}
+
+void *__llvm_get_initializer(void *global_var) {
+  return (LLVMValueRef)LLVMGetInitializer((LLVMValueRef)global_var);
+}
+
+void __llvm_set_initializer(void *global_var, void *constant_val) {
+  LLVMSetInitializer((LLVMValueRef)global_var, (LLVMValueRef)constant_val);
+}
+
+LLVMBool __llvm_is_thread_local(void *global_var) {
+  return LLVMIsThreadLocal((LLVMValueRef)global_var);
+}
+
+void __llvm_set_thread_local(void *global_var, LLVMBool is_thread_local) {
+  LLVMSetThreadLocal((LLVMValueRef)global_var, is_thread_local);
+}
+
+LLVMBool __llvm_is_global_constant(void *global_var) {
+  return LLVMIsGlobalConstant((LLVMValueRef)global_var);
+}
+
+void __llvm_set_global_constant(void *global_var, LLVMBool is_constant) {
+  LLVMSetGlobalConstant((LLVMValueRef)global_var, is_constant);
+}
+
+LLVMThreadLocalMode __llvm_get_thread_local_mode(void *global_var) {
+  return LLVMGetThreadLocalMode((LLVMValueRef)global_var);
+}
+
+void __llvm_set_thread_local_mode(void *global_var, LLVMThreadLocalMode mode) {
+  LLVMSetThreadLocalMode((LLVMValueRef)global_var, mode);
+}
+
+LLVMBool __llvm_is_externally_initialized(void *global_var) {
+  return LLVMIsExternallyInitialized((LLVMValueRef)global_var);
+}
+
+void __llvm_set_externally_initialized(void *global_var, LLVMBool is_ext_init) {
+  LLVMSetExternallyInitialized((LLVMValueRef)global_var, is_ext_init);
+}
+
+void *__llvm_add_alias2(void *m, void *value_ty, unsigned addr_space,
+                        void *aliasee, void *name) {
+  return (LLVMValueRef)LLVMAddAlias2((LLVMModuleRef)m, (LLVMTypeRef)value_ty,
+                                     addr_space, (LLVMValueRef)aliasee,
+                                     (const char *)name);
+}
+
+void *__llvm_get_named_global_alias(void *m, void *name, size_t name_len) {
+  return (LLVMValueRef)LLVMGetNamedGlobalAlias((LLVMModuleRef)m,
+                                               (const char *)name, name_len);
+}
+
+void *__llvm_get_first_global_alias(void *m) {
+  return (LLVMValueRef)LLVMGetFirstGlobalAlias((LLVMModuleRef)m);
+}
+
+void *__llvm_get_last_global_alias(void *m) {
+  return (LLVMValueRef)LLVMGetLastGlobalAlias((LLVMModuleRef)m);
+}
+
+void *__llvm_get_next_global_alias(void *ga) {
+  return (LLVMValueRef)LLVMGetNextGlobalAlias((LLVMValueRef)ga);
+}
+
+void *__llvm_get_previous_global_alias(void *ga) {
+  return (LLVMValueRef)LLVMGetPreviousGlobalAlias((LLVMValueRef)ga);
+}
+
+void *__llvm_alias_get_aliasee(void *alias) {
+  return (LLVMValueRef)LLVMAliasGetAliasee((LLVMValueRef)alias);
+}
+
+void __llvm_alias_set_aliasee(void *alias, void *aliasee) {
+  LLVMAliasSetAliasee((LLVMValueRef)alias, (LLVMValueRef)aliasee);
+}
+
+void __llvm_delete_function(void *fn) { LLVMDeleteFunction((LLVMValueRef)fn); }
+
+LLVMBool __llvm_has_personality_fn(void *fn) {
+  return LLVMHasPersonalityFn((LLVMValueRef)fn);
+}
+
+void *__llvm_get_personality_fn(void *fn) {
+  return (LLVMValueRef)LLVMGetPersonalityFn((LLVMValueRef)fn);
+}
+
+void __llvm_set_personality_fn(void *fn, void *personality_fn) {
+  LLVMSetPersonalityFn((LLVMValueRef)fn, (LLVMValueRef)personality_fn);
+}
+
+unsigned __llvm_lookup_intrinsic_id(void *name, size_t name_len) {
+  return LLVMLookupIntrinsicID((const char *)name, name_len);
+}
+
+unsigned __llvm_get_intrinsic_id(void *fn) {
+  return LLVMGetIntrinsicID((LLVMValueRef)fn);
+}
+
+void *__llvm_get_intrinsic_declaration(void *mod, unsigned id,
+                                       ArrayLLVMTypeRef *param_types) {
+  LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
+  unsigned param_count = param_types->$1;
+  return (LLVMValueRef)LLVMGetIntrinsicDeclaration(
+      (LLVMModuleRef)mod, id, llvm_param_types, param_count);
+}
+
+void *__llvm_intrinsic_get_type(void *ctx, unsigned id,
+                                ArrayLLVMTypeRef *param_types) {
+  LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
+  unsigned param_count = param_types->$1;
+  return (LLVMTypeRef)LLVMIntrinsicGetType((LLVMContextRef)ctx, id,
+                                           llvm_param_types, param_count);
+}
+
+void *__llvm_intrinsic_get_name(unsigned id, size_t *name_length) {
+  return (char *)LLVMIntrinsicGetName(id, name_length);
+}
+
+void *__llvm_intrinsic_copy_overloaded_name(unsigned id,
+                                            ArrayLLVMTypeRef *param_types) {
+  LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
+  unsigned param_count = param_types->$1;
+  size_t name_length = 0;
+  return (char *)LLVMIntrinsicCopyOverloadedName(id, llvm_param_types,
+                                                 param_count, &name_length);
+}
+
+void *__llvm_intrinsic_copy_overloaded_name2(void *mod, unsigned id,
+                                             ArrayLLVMTypeRef *param_types) {
+  LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types->$0->data;
+  unsigned param_count = param_types->$1;
+  size_t name_length = 0;
+  return (char *)LLVMIntrinsicCopyOverloadedName2(
+      (LLVMModuleRef)mod, id, llvm_param_types, param_count, &name_length);
+}
+
+LLVMBool __llvm_intrinsic_is_overloaded(unsigned id) {
+  return LLVMIntrinsicIsOverloaded(id);
+}
+
+unsigned __llvm_get_function_call_conv(void *fn) {
+  return LLVMGetFunctionCallConv((LLVMValueRef)fn);
+}
+
+void __llvm_set_function_call_conv(void *fn, unsigned cc) {
+  LLVMSetFunctionCallConv((LLVMValueRef)fn, cc);
+}
+
+void *__llvm_get_gc(void *fn) { return (char *)LLVMGetGC((LLVMValueRef)fn); }
+
+void __llvm_set_gc(void *fn, void *name) {
+  LLVMSetGC((LLVMValueRef)fn, (const char *)name);
+}
+
+void *__llvm_get_prefix_data(void *fn) {
+  return (LLVMValueRef)LLVMGetPrefixData((LLVMValueRef)fn);
+}
+
+LLVMBool __llvm_has_prefix_data(void *fn) {
+  return LLVMHasPrefixData((LLVMValueRef)fn);
+}
+
+void __llvm_set_prefix_data(void *fn, void *prefix_data) {
+  LLVMSetPrefixData((LLVMValueRef)fn, (LLVMValueRef)prefix_data);
+}
+
+void *__llvm_get_prologue_data(void *fn) {
+  return (LLVMValueRef)LLVMGetPrologueData((LLVMValueRef)fn);
+}
+
+LLVMBool __llvm_has_prologue_data(void *fn) {
+  return LLVMHasPrologueData((LLVMValueRef)fn);
+}
+
+void __llvm_set_prologue_data(void *fn, void *prologue_data) {
+  LLVMSetPrologueData((LLVMValueRef)fn, (LLVMValueRef)prologue_data);
+}
+
+void __llvm_add_attribute_at_index(void *f, LLVMAttributeIndex idx, void *a) {
+  LLVMAddAttributeAtIndex((LLVMValueRef)f, idx, (LLVMAttributeRef)a);
+}
+
+unsigned __llvm_get_attribute_count_at_index(void *f, LLVMAttributeIndex idx) {
+  return LLVMGetAttributeCountAtIndex((LLVMValueRef)f, idx);
+}
+
+void __llvm_get_attributes_at_index(void *f, LLVMAttributeIndex idx,
+                                    void *attrs) {
+  LLVMGetAttributesAtIndex((LLVMValueRef)f, idx, (LLVMAttributeRef *)attrs);
+}
+
+void *__llvm_get_enum_attribute_at_index(void *f, LLVMAttributeIndex idx,
+                                         unsigned kind_id) {
+  return (LLVMAttributeRef)LLVMGetEnumAttributeAtIndex((LLVMValueRef)f, idx,
+                                                       kind_id);
+}
+
+void *__llvm_get_string_attribute_at_index(void *f, LLVMAttributeIndex idx,
+                                           void *k, unsigned k_len) {
+  return (LLVMAttributeRef)LLVMGetStringAttributeAtIndex(
+      (LLVMValueRef)f, idx, (const char *)k, k_len);
+}
+
+void __llvm_remove_enum_attribute_at_index(void *f, LLVMAttributeIndex idx,
+                                           unsigned kind_id) {
+  LLVMRemoveEnumAttributeAtIndex((LLVMValueRef)f, idx, kind_id);
+}
+
+void __llvm_remove_string_attribute_at_index(void *f, LLVMAttributeIndex idx,
+                                             void *k, unsigned k_len) {
+  LLVMRemoveStringAttributeAtIndex((LLVMValueRef)f, idx, (const char *)k,
+                                   k_len);
+}
+
+void __llvm_add_target_dependent_function_attr(void *fn, void *a, void *v) {
+  LLVMAddTargetDependentFunctionAttr((LLVMValueRef)fn, (const char *)a,
+                                     (const char *)v);
+}
+
+unsigned __llvm_count_params(void *fn) {
+  return LLVMCountParams((LLVMValueRef)fn);
+}
+
+void __llvm_get_params(void *fn, void *params) {
+  LLVMGetParams((LLVMValueRef)fn, (LLVMValueRef *)params);
+}
+
+void *__llvm_get_param(void *fn, unsigned index) {
+  return (LLVMValueRef)LLVMGetParam((LLVMValueRef)fn, index);
+}
+
+void *__llvm_get_param_parent(void *inst) {
+  return (LLVMValueRef)LLVMGetParamParent((LLVMValueRef)inst);
+}
+
+void *__llvm_get_first_param(void *fn) {
+  return (LLVMValueRef)LLVMGetFirstParam((LLVMValueRef)fn);
+}
+
+void *__llvm_get_last_param(void *fn) {
+  return (LLVMValueRef)LLVMGetLastParam((LLVMValueRef)fn);
+}
+
+void *__llvm_get_next_param(void *arg) {
+  return (LLVMValueRef)LLVMGetNextParam((LLVMValueRef)arg);
+}
+
+void *__llvm_get_previous_param(void *arg) {
+  return (LLVMValueRef)LLVMGetPreviousParam((LLVMValueRef)arg);
+}
+
+void __llvm_set_param_alignment(void *arg, unsigned align) {
+  LLVMSetParamAlignment((LLVMValueRef)arg, align);
+}
+
+void *__llvm_add_global_ifunc(void *m, void *name, size_t name_len, void *ty,
+                              unsigned addr_space, void *resolver) {
+  return (LLVMValueRef)LLVMAddGlobalIFunc((LLVMModuleRef)m, (const char *)name,
+                                          name_len, (LLVMTypeRef)ty, addr_space,
+                                          (LLVMValueRef)resolver);
+}
+
+void *__llvm_get_named_global_ifunc(void *m, void *name, size_t name_len) {
+  return (LLVMValueRef)LLVMGetNamedGlobalIFunc((LLVMModuleRef)m,
+                                               (const char *)name, name_len);
+}
+
+void *__llvm_get_first_global_ifunc(void *m) {
+  return (LLVMValueRef)LLVMGetFirstGlobalIFunc((LLVMModuleRef)m);
+}
+
+void *__llvm_get_last_global_ifunc(void *m) {
+  return (LLVMValueRef)LLVMGetLastGlobalIFunc((LLVMModuleRef)m);
+}
+
+void *__llvm_get_next_global_ifunc(void *ifunc) {
+  return (LLVMValueRef)LLVMGetNextGlobalIFunc((LLVMValueRef)ifunc);
+}
+
+void *__llvm_get_previous_global_ifunc(void *ifunc) {
+  return (LLVMValueRef)LLVMGetPreviousGlobalIFunc((LLVMValueRef)ifunc);
+}
+
+void *__llvm_get_global_ifunc_resolver(void *ifunc) {
+  return (LLVMValueRef)LLVMGetGlobalIFuncResolver((LLVMValueRef)ifunc);
+}
+
+void __llvm_set_global_ifunc_resolver(void *ifunc, void *resolver) {
+  LLVMSetGlobalIFuncResolver((LLVMValueRef)ifunc, (LLVMValueRef)resolver);
+}
+
+void __llvm_erase_global_ifunc(void *ifunc) {
+  LLVMEraseGlobalIFunc((LLVMValueRef)ifunc);
+}
+
+void __llvm_remove_global_ifunc(void *ifunc) {
+  LLVMRemoveGlobalIFunc((LLVMValueRef)ifunc);
+}
+
+void *__llvm_md_string_in_context2(void *context, void *str, size_t s_len) {
+  return (LLVMMetadataRef)LLVMMDStringInContext2((LLVMContextRef)context,
+                                                 (const char *)str, s_len);
+}
+
+void *__llvm_md_node_in_context2(void *context, ArrayLLVMMetadataRef *mds) {
+  LLVMMetadataRef *llvm_mds = (LLVMMetadataRef *)mds->$0->data;
+  unsigned count = mds->$1;
+  return (LLVMMetadataRef)LLVMMDNodeInContext2((LLVMContextRef)context,
+                                               llvm_mds, count);
+}
+
+void *__llvm_metadata_as_value(void *context, void *md) {
+  return (LLVMValueRef)LLVMMetadataAsValue((LLVMContextRef)context,
+                                           (LLVMMetadataRef)md);
+}
+
+void *__llvm_value_as_metadata(void *val) {
+  return (LLVMMetadataRef)LLVMValueAsMetadata((LLVMValueRef)val);
+}
+
+void *__llvm_get_md_string(void *v, unsigned *length) {
+  return (char *)LLVMGetMDString((LLVMValueRef)v, length);
+}
+
+unsigned __llvm_get_md_node_num_operands(void *v) {
+  return LLVMGetMDNodeNumOperands((LLVMValueRef)v);
+}
+
+void __llvm_get_md_node_operands(void *v, void *dest) {
+  LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
+}
+
+void __llvm_replace_md_node_operand_with(void *v, unsigned index,
+                                         void *replacement) {
+  LLVMReplaceMDNodeOperandWith((LLVMValueRef)v, index,
+                               (LLVMMetadataRef)replacement);
+}
+
+void *__llvm_md_string_in_context(void *context, void *str, unsigned s_len) {
+  return (LLVMValueRef)LLVMMDStringInContext((LLVMContextRef)context,
+                                             (char *)str, s_len);
+}
+
+void *__llvm_md_string(void *str, unsigned s_len) {
+  return (LLVMValueRef)LLVMMDString((const char *)str, s_len);
+}
+
+void *__llvm_md_node_in_context(void *context, ArrayLLVMValueRef *vals) {
+  LLVMValueRef *llvm_vals = (LLVMValueRef *)vals->$0->data;
+  unsigned count = vals->$1;
+  return (LLVMValueRef)LLVMMDNodeInContext((LLVMContextRef)context, llvm_vals,
+                                           count);
+}
+
+void *__llvm_md_node(ArrayLLVMValueRef *vals, unsigned count) {
+  LLVMValueRef *llvm_vals = (LLVMValueRef *)vals->$0->data;
+  return (LLVMValueRef)LLVMMDNode(llvm_vals, count);
+}
+
+void *__llvm_create_operand_bundle(void *tag, size_t tag_len,
+                                   ArrayLLVMValueRef *args) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  return (LLVMOperandBundleRef)LLVMCreateOperandBundle(
+      (const char *)tag, tag_len, llvm_args, num_args);
+}
+
+void __llvm_dispose_operand_bundle(void *bundle) {
+  LLVMDisposeOperandBundle((LLVMOperandBundleRef)bundle);
+}
+
+void *__llvm_get_operand_bundle_tag(void *bundle, size_t *len) {
+  return (char *)LLVMGetOperandBundleTag((LLVMOperandBundleRef)bundle, len);
+}
+
+unsigned __llvm_get_num_operand_bundle_args(void *bundle) {
+  return LLVMGetNumOperandBundleArgs((LLVMOperandBundleRef)bundle);
+}
+
+void *__llvm_get_operand_bundle_arg_at_index(void *bundle, unsigned index) {
+  return (LLVMValueRef)LLVMGetOperandBundleArgAtIndex(
+      (LLVMOperandBundleRef)bundle, index);
+}
+
 void *__llvm_basic_block_as_value(void *bb) {
   return (LLVMValueRef)LLVMBasicBlockAsValue((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Determine whether an LLVMValueRef is itself a basic block.
- */
 LLVMBool __llvm_value_is_basic_block(void *val) {
   return LLVMValueIsBasicBlock((LLVMValueRef)val);
 }
 
-/**
- * Convert an LLVMValueRef to an LLVMBasicBlockRef instance.
- */
 void *__llvm_value_as_basic_block(void *val) {
   return (LLVMBasicBlockRef)LLVMValueAsBasicBlock((LLVMValueRef)val);
 }
 
-/**
- * Obtain the string name of a basic block.
- */
 void *__llvm_get_basic_block_name(void *bb) {
   return (char *)LLVMGetBasicBlockName((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Obtain the function to which a basic block belongs.
- *
- * @see llvm::BasicBlock::getParent()
- */
 void *__llvm_get_basic_block_parent(void *bb) {
   return (LLVMValueRef)LLVMGetBasicBlockParent((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Obtain the terminator instruction for a basic block.
- *
- * If the basic block does not have a terminator (it is not well-formed
- * if it doesn't), then NULL is returned.
- *
- * The returned LLVMValueRef corresponds to an llvm::Instruction.
- *
- * @see llvm::BasicBlock::getTerminator()
- */
 void *__llvm_get_basic_block_terminator(void *bb) {
   return (LLVMValueRef)LLVMGetBasicBlockTerminator((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Obtain the number of basic blocks in a function.
- *
- * @param Fn Function value to operate on.
- */
-uint32_t __llvm_count_basic_blocks(void *fn) {
+unsigned __llvm_count_basic_blocks(void *fn) {
   return LLVMCountBasicBlocks((LLVMValueRef)fn);
 }
 
-/**
- * Obtain all of the basic blocks in a function.
- *
- * This operates on a function value. The BasicBlocks parameter is a
- * pointer to a pre-allocated array of LLVMBasicBlockRef of at least
- * LLVMCountBasicBlocks() in length. This array is populated with
- * LLVMBasicBlockRef instances.
- */
-// void __llvm_get_basic_blocks(LLVMValueRef, LLVMBasicBlockRef*)
+void __llvm_get_basic_blocks(void *fn, void *basic_blocks) {
+  LLVMGetBasicBlocks((LLVMValueRef)fn, (LLVMBasicBlockRef *)basic_blocks);
+}
 
-/**
- * Obtain the first basic block in a function.
- *
- * The returned basic block can be used as an iterator. You will likely
- * eventually call into LLVMGetNextBasicBlock() with it.
- *
- * @see llvm::Function::begin()
- */
 void *__llvm_get_first_basic_block(void *fn) {
   return (LLVMBasicBlockRef)LLVMGetFirstBasicBlock((LLVMValueRef)fn);
 }
 
-/**
- * Obtain the last basic block in a function.
- *
- * @see llvm::Function::end()
- */
 void *__llvm_get_last_basic_block(void *fn) {
   return (LLVMBasicBlockRef)LLVMGetLastBasicBlock((LLVMValueRef)fn);
 }
 
-/**
- * Advance a basic block iterator.
- */
 void *__llvm_get_next_basic_block(void *bb) {
   return (LLVMBasicBlockRef)LLVMGetNextBasicBlock((LLVMBasicBlockRef)bb);
 }
-/**
- * Go backwards in a basic block iterator.
- */
+
 void *__llvm_get_previous_basic_block(void *bb) {
   return (LLVMBasicBlockRef)LLVMGetPreviousBasicBlock((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Obtain the basic block that corresponds to the entry point of a
- * function.
- *
- * @see llvm::Function::getEntryBlock()
- */
 void *__llvm_get_entry_basic_block(void *fn) {
   return (LLVMBasicBlockRef)LLVMGetEntryBasicBlock((LLVMValueRef)fn);
 }
 
-/**
- * Insert the given basic block after the insertion point of the given builder.
- *
- * The insertion point must be valid.
- *
- * @see llvm::Function::BasicBlockListType::insertAfter()
- */
 void __llvm_insert_existing_basic_block_after_insert_block(void *builder,
                                                            void *bb) {
   LLVMInsertExistingBasicBlockAfterInsertBlock((LLVMBuilderRef)builder,
                                                (LLVMBasicBlockRef)bb);
 }
 
-/**
- * Append the given basic block to the basic block list of the given function.
- *
- * @see llvm::Function::BasicBlockListType::push_back()
- */
 void __llvm_append_existing_basic_block(void *fn, void *bb) {
   LLVMAppendExistingBasicBlock((LLVMValueRef)fn, (LLVMBasicBlockRef)bb);
 }
 
-/**
- * Create a new basic block without inserting it into a function.
- *
- * @see llvm::BasicBlock::Create()
- */
 void *__llvm_create_basic_block_in_context(void *context, void *name) {
   return (LLVMBasicBlockRef)LLVMCreateBasicBlockInContext(
       (LLVMContextRef)context, (const char *)name);
 }
 
-/**
- * Append a basic block to the end of a function.
- *
- * @see llvm::BasicBlock::Create()
- */
 void *__llvm_append_basic_block_in_context(void *context, void *fn,
                                            void *name) {
   return (LLVMBasicBlockRef)LLVMAppendBasicBlockInContext(
       (LLVMContextRef)context, (LLVMValueRef)fn, (const char *)name);
 }
 
-/**
- * Append a basic block to the end of a function using the global
- * context.
- *
- * @see llvm::BasicBlock::Create()
- */
 void *__llvm_append_basic_block(void *fn, void *name) {
   return (LLVMBasicBlockRef)LLVMAppendBasicBlock((LLVMValueRef)fn,
                                                  (const char *)name);
 }
 
-/**
- * Insert a basic block in a function before another basic block.
- *
- * The function to add to is determined by the function of the
- * passed basic block.
- *
- * @see llvm::BasicBlock::Create()
- */
 void *__llvm_insert_basic_block_in_context(void *context, void *bb,
                                            void *name) {
   return (LLVMBasicBlockRef)LLVMInsertBasicBlockInContext(
       (LLVMContextRef)context, (LLVMBasicBlockRef)bb, (const char *)name);
 }
 
-/**
- * Insert a basic block in a function using the global context.
- *
- * @see llvm::BasicBlock::Create()
- */
-void *__llvm_insert_basic_block(void *bb, void *name) {
-  return (LLVMBasicBlockRef)LLVMInsertBasicBlock((LLVMBasicBlockRef)bb,
-                                                 (const char *)name);
+void *__llvm_insert_basic_block(void *insert_before_bb, void *name) {
+  return (LLVMBasicBlockRef)LLVMInsertBasicBlock(
+      (LLVMBasicBlockRef)insert_before_bb, (const char *)name);
 }
 
-/**
- * Remove a basic block from a function and delete it.
- *
- * This deletes the basic block from its containing function and deletes
- * the basic block itself.
- *
- * @see llvm::BasicBlock::eraseFromParent()
- */
 void __llvm_delete_basic_block(void *bb) {
-  return LLVMDeleteBasicBlock((LLVMBasicBlockRef)bb);
+  LLVMDeleteBasicBlock((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Remove a basic block from a function.
- *
- * This deletes the basic block from its containing function but keep
- * the basic block alive.
- *
- * @see llvm::BasicBlock::removeFromParent()
- */
 void __llvm_remove_basic_block_from_parent(void *bb) {
-  return LLVMRemoveBasicBlockFromParent((LLVMBasicBlockRef)bb);
+  LLVMRemoveBasicBlockFromParent((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Move a basic block to before another one.
- *
- * @see llvm::BasicBlock::moveBefore()
- */
-void __llvm_move_basic_block_before(void *bb, void *pos) {
-  return LLVMMoveBasicBlockBefore((LLVMBasicBlockRef)bb,
-                                  (LLVMBasicBlockRef)pos);
+void __llvm_move_basic_block_before(void *bb, void *move_pos) {
+  LLVMMoveBasicBlockBefore((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)move_pos);
 }
 
-/**
- * Move a basic block to after another one.
- *
- * @see llvm::BasicBlock::moveAfter()
- */
-void __llvm_move_basic_block_after(void *bb, void *pos) {
-  return LLVMMoveBasicBlockAfter((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)pos);
+void __llvm_move_basic_block_after(void *bb, void *move_pos) {
+  LLVMMoveBasicBlockAfter((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)move_pos);
 }
 
-/**
- * Obtain the first instruction in a basic block.
- *
- * The returned LLVMValueRef corresponds to a llvm::Instruction
- * instance.
- */
 void *__llvm_get_first_instruction(void *bb) {
   return (LLVMValueRef)LLVMGetFirstInstruction((LLVMBasicBlockRef)bb);
 }
 
-/**
- * Obtain the last instruction in a basic block.
- *
- * The returned LLVMValueRef corresponds to an LLVM:Instruction.
- */
 void *__llvm_get_last_instruction(void *bb) {
   return (LLVMValueRef)LLVMGetLastInstruction((LLVMBasicBlockRef)bb);
 }
 
-/**
- * @defgroup LLVMCCoreValueInstruction Instructions
- *
- * Functions in this group relate to the inspection and manipulation of
- * individual instructions.
- *
- * In the C++ API, an instruction is modeled by llvm::Instruction. This
- * class has a large number of descendents. llvm::Instruction is a
- * llvm::Value and in the C API, instructions are modeled by
- * LLVMValueRef.
- *
- * This group also contains sub-groups which operate on specific
- * llvm::Instruction types, e.g. llvm::CallInst.
- *
- * @{
- */
-
-/**
- * Determine whether an instruction has any metadata attached.
- */
 int __llvm_has_metadata(void *val) {
   return LLVMHasMetadata((LLVMValueRef)val);
 }
 
-/**
- * Return metadata associated with an instruction value.
- */
 void *__llvm_get_metadata(void *val, unsigned kind_id) {
   return (LLVMValueRef)LLVMGetMetadata((LLVMValueRef)val, kind_id);
 }
 
-/**
- * Set metadata associated with an instruction value.
- */
 void __llvm_set_metadata(void *val, unsigned kind_id, void *node) {
   LLVMSetMetadata((LLVMValueRef)val, kind_id, (LLVMValueRef)node);
 }
 
-/**
- * Returns the metadata associated with an instruction value, but filters out
- * all the debug locations.
- *
- * @see llvm::Instruction::getAllMetadataOtherThanDebugLoc()
- */
-// LLVMValueMetadataEntry *
-// LLVMInstructionGetAllMetadataOtherThanDebugLoc(LLVMValueRef Instr,
-//                                                size_t *NumEntries);
+void *
+__llvm_instruction_get_all_metadata_other_than_debug_loc(void *instr,
+                                                         size_t *num_entries) {
+  return (LLVMValueMetadataEntry *)
+      LLVMInstructionGetAllMetadataOtherThanDebugLoc((LLVMValueRef)instr,
+                                                     num_entries);
+}
 
-/**
- * Obtain the basic block to which an instruction belongs.
- *
- * @see llvm::Instruction::getParent()
- */
 void *__llvm_get_instruction_parent(void *inst) {
   return (LLVMBasicBlockRef)LLVMGetInstructionParent((LLVMValueRef)inst);
 }
 
-/**
- * Obtain the instruction that occurs after the one specified.
- *
- * The next instruction will be from the same basic block.
- *
- * If this is the last instruction in a basic block, NULL will be
- * returned.
- */
 void *__llvm_get_next_instruction(void *inst) {
   return (LLVMValueRef)LLVMGetNextInstruction((LLVMValueRef)inst);
 }
 
-/**
- * Obtain the instruction that occurred before this one.
- *
- * If the instruction is the first instruction in a basic block, NULL
- * will be returned.
- */
 void *__llvm_get_previous_instruction(void *inst) {
   return (LLVMValueRef)LLVMGetPreviousInstruction((LLVMValueRef)inst);
 }
 
-/**
- * Remove an instruction.
- *
- * The instruction specified is removed from its containing building
- * block but is kept alive.
- *
- * @see llvm::Instruction::removeFromParent()
- */
 void __llvm_instruction_remove_from_parent(void *inst) {
-  return LLVMInstructionRemoveFromParent((LLVMValueRef)inst);
+  LLVMInstructionRemoveFromParent((LLVMValueRef)inst);
 }
 
-/**
- * Remove and delete an instruction.
- *
- * The instruction specified is removed from its containing building
- * block and then deleted.
- *
- * @see llvm::Instruction::eraseFromParent()
- */
 void __llvm_instruction_erase_from_parent(void *inst) {
-  return LLVMInstructionEraseFromParent((LLVMValueRef)inst);
+  LLVMInstructionEraseFromParent((LLVMValueRef)inst);
 }
 
-/**
- * Delete an instruction.
- *
- * The instruction specified is deleted. It must have previously been
- * removed from its containing building block.
- *
- * @see llvm::Value::deleteValue()
- */
 void __llvm_delete_instruction(void *inst) {
-  return LLVMDeleteInstruction((LLVMValueRef)inst);
+  LLVMDeleteInstruction((LLVMValueRef)inst);
 }
 
-/**
- * Obtain the code opcode for an individual instruction.
- *
- * @see llvm::Instruction::getOpCode()
- */
-int32_t __llvm_get_instruction_opcode(void *inst) {
-  LLVMOpcode code = LLVMGetInstructionOpcode((LLVMValueRef)inst);
-  return (int32_t)code;
+LLVMOpcode __llvm_get_instruction_opcode(void *inst) {
+  return LLVMGetInstructionOpcode((LLVMValueRef)inst);
 }
 
-/**
- * Obtain the predicate of an instruction.
- *
- * This is only valid for instructions that correspond to llvm::ICmpInst.
- *
- * @see llvm::ICmpInst::getPredicate()
- */
-int32_t __llvm_get_icmp_predicate(void *inst) {
-  LLVMIntPredicate p = LLVMGetICmpPredicate((LLVMValueRef)inst);
-  return (int32_t)p;
+LLVMIntPredicate __llvm_get_icmp_predicate(void *inst) {
+  return LLVMGetICmpPredicate((LLVMValueRef)inst);
 }
 
-/**
- * Obtain the float predicate of an instruction.
- *
- * This is only valid for instructions that correspond to llvm::FCmpInst.
- *
- * @see llvm::FCmpInst::getPredicate()
- */
-int32_t __llvm_get_fcmp_predicate(void *inst) {
-  LLVMRealPredicate p = LLVMGetFCmpPredicate((LLVMValueRef)inst);
-  return (int32_t)p;
+LLVMRealPredicate __llvm_get_fcmp_predicate(void *inst) {
+  return LLVMGetFCmpPredicate((LLVMValueRef)inst);
 }
 
-/**
- * Create a copy of 'this' instruction that is identical in all ways
- * except the following:
- *   * The instruction has no parent
- *   * The instruction has no name
- *
- * @see llvm::Instruction::clone()
- */
 void *__llvm_instruction_clone(void *inst) {
   return (LLVMValueRef)LLVMInstructionClone((LLVMValueRef)inst);
 }
 
-/**
- * Determine whether an instruction is a terminator. This routine is named to
- * be compatible with historical functions that did this by querying the
- * underlying C++ type.
- *
- * @see llvm::Instruction::isTerminator()
- */
 void *__llvm_isa_terminator_inst(void *inst) {
   return (LLVMValueRef)LLVMIsATerminatorInst((LLVMValueRef)inst);
 }
 
-/**
- * @defgroup LLVMCCoreValueInstructionCall Call Sites and Invocations
- *
- * Functions in this group apply to instructions that refer to call
- * sites and invocations. These correspond to C++ types in the
- * llvm::CallInst class tree.
- *
- * @{
- */
-
-/**
- * Obtain the argument count for a call instruction.
- *
- * This expects an LLVMValueRef that corresponds to a llvm::CallInst,
- * llvm::InvokeInst, or llvm:FuncletPadInst.
- *
- * @see llvm::CallInst::getNumArgOperands()
- * @see llvm::InvokeInst::getNumArgOperands()
- * @see llvm::FuncletPadInst::getNumArgOperands()
- */
-unsigned __klee_get_num_arg_operands(void *instr) {
+unsigned __llvm_get_num_arg_operands(void *instr) {
   return LLVMGetNumArgOperands((LLVMValueRef)instr);
 }
 
-/**
- * Set the calling convention for a call instruction.
- *
- * This expects an LLVMValueRef that corresponds to a llvm::CallInst or
- * llvm::InvokeInst.
- *
- * @see llvm::CallInst::setCallingConv()
- * @see llvm::InvokeInst::setCallingConv()
- */
 void __llvm_set_instruction_call_conv(void *instr, unsigned cc) {
   LLVMSetInstructionCallConv((LLVMValueRef)instr, cc);
 }
 
-/**
- * Obtain the calling convention for a call instruction.
- *
- * This is the opposite of LLVMSetInstructionCallConv(). Reads its
- * usage.
- *
- * @see LLVMSetInstructionCallConv()
- */
 unsigned __llvm_get_instruction_call_conv(void *instr) {
   return LLVMGetInstructionCallConv((LLVMValueRef)instr);
 }
@@ -2295,257 +2384,209 @@ void __llvm_set_instr_param_alignment(void *instr, LLVMAttributeIndex idx,
   LLVMSetInstrParamAlignment((LLVMValueRef)instr, idx, align);
 }
 
-void __llvm_add_call_site_attribute(void *instr, LLVMAttributeIndex idx,
-                                    void *attr) {
-  LLVMAddCallSiteAttribute((LLVMValueRef)instr, idx, (LLVMAttributeRef)attr);
+void __llvm_add_call_site_attribute(void *c, LLVMAttributeIndex idx, void *a) {
+  LLVMAddCallSiteAttribute((LLVMValueRef)c, idx, (LLVMAttributeRef)a);
 }
 
-unsigned __llvm_get_call_size_attribute_count(void *instr,
-                                              LLVMAttributeIndex idx) {
-  return LLVMGetCallSiteAttributeCount((LLVMValueRef)instr, idx);
+unsigned __llvm_get_call_site_attribute_count(void *c, LLVMAttributeIndex idx) {
+  return LLVMGetCallSiteAttributeCount((LLVMValueRef)c, idx);
 }
 
-// void LLVMGetCallSiteAttributes(LLVMValueRef C, LLVMAttributeIndex Idx,
-//                                LLVMAttributeRef *Attrs);
-//
-// void __llvm_get_call_site_attributes(void *instr, LLVMAttributeIndex idx,
-//                                      void *attrs) {
-//   LLVMGetCallSiteAttributes((LLVMValueRef)instr, idx, (LLVMAttributeRef
-//   *)attrs);
-// }
+void __llvm_get_call_site_attributes(void *c, LLVMAttributeIndex idx,
+                                     void *attrs) {
+  LLVMGetCallSiteAttributes((LLVMValueRef)c, idx, (LLVMAttributeRef *)attrs);
+}
 
-void *__llvm_get_call_size_enum_attribute(void *instr, LLVMAttributeIndex idx,
+void *__llvm_get_call_site_enum_attribute(void *c, LLVMAttributeIndex idx,
                                           unsigned kind_id) {
-  return (LLVMAttributeRef *)LLVMGetCallSiteEnumAttribute((LLVMValueRef)instr,
-                                                          idx, kind_id);
+  return (LLVMAttributeRef)LLVMGetCallSiteEnumAttribute((LLVMValueRef)c, idx,
+                                                        kind_id);
 }
 
-void *__llvm_get_call_site_string_attribute(void *inst, LLVMAttributeIndex idx,
-                                            void *k, unsigned klen) {
+void *__llvm_get_call_site_string_attribute(void *c, LLVMAttributeIndex idx,
+                                            void *k, unsigned k_len) {
   return (LLVMAttributeRef)LLVMGetCallSiteStringAttribute(
-      (LLVMValueRef)inst, idx, (const char *)k, klen);
+      (LLVMValueRef)c, idx, (const char *)k, k_len);
 }
 
-void __llvm_remove_call_size_enum_attribute(void *inst, LLVMAttributeIndex idx,
+void __llvm_remove_call_site_enum_attribute(void *c, LLVMAttributeIndex idx,
                                             unsigned kind_id) {
-  LLVMRemoveCallSiteEnumAttribute((LLVMValueRef)inst, idx, kind_id);
+  LLVMRemoveCallSiteEnumAttribute((LLVMValueRef)c, idx, kind_id);
 }
 
-void __llvm_remove_call_site_string_attribute(void *inst,
-                                              LLVMAttributeIndex idx, void *k,
-                                              unsigned klen) {
-  LLVMRemoveCallSiteStringAttribute((LLVMValueRef)inst, idx, (const char *)k,
-                                    klen);
+void __llvm_remove_call_site_string_attribute(void *c, LLVMAttributeIndex idx,
+                                              void *k, unsigned k_len) {
+  LLVMRemoveCallSiteStringAttribute((LLVMValueRef)c, idx, (const char *)k,
+                                    k_len);
 }
 
-/**
- * Obtain the function type called by this instruction.
- *
- * @see llvm::CallBase::getFunctionType()
- */
-void *__llvm_get_called_function_type(void *instr) {
-  return (LLVMTypeRef)LLVMGetCalledFunctionType((LLVMValueRef)instr);
+void *__llvm_get_called_function_type(void *c) {
+  return (LLVMTypeRef)LLVMGetCalledFunctionType((LLVMValueRef)c);
 }
 
-/**
- * Obtain the pointer to the function invoked by this instruction.
- *
- * This expects an LLVMValueRef that corresponds to a llvm::CallInst or
- * llvm::InvokeInst.
- *
- * @see llvm::CallInst::getCalledOperand()
- * @see llvm::InvokeInst::getCalledOperand()
- */
 void *__llvm_get_called_value(void *instr) {
   return (LLVMValueRef)LLVMGetCalledValue((LLVMValueRef)instr);
 }
 
-/**
- * Obtain the number of operand bundles attached to this instruction.
- *
- * This only works on llvm::CallInst and llvm::InvokeInst instructions.
- *
- * @see llvm::CallBase::getNumOperandBundles()
- */
-unsigned __llvm_get_num_operand_bundles(void *instr) {
-  return LLVMGetNumOperandBundles((LLVMValueRef)instr);
+unsigned __llvm_get_num_operand_bundles(void *c) {
+  return LLVMGetNumOperandBundles((LLVMValueRef)c);
 }
 
-/**
- * Obtain the operand bundle attached to this instruction at the given index.
- * Use LLVMDisposeOperandBundle to free the operand bundle.
- *
- * This only works on llvm::CallInst and llvm::InvokeInst instructions.
- */
-void *__llvm_get_operand_bundle_at_index(void *instr, unsigned index) {
-  return (LLVMOperandBundleRef)LLVMGetOperandBundleAtIndex((LLVMValueRef)instr,
+void *__llvm_get_operand_bundle_at_index(void *c, unsigned index) {
+  return (LLVMOperandBundleRef)LLVMGetOperandBundleAtIndex((LLVMValueRef)c,
                                                            index);
 }
 
-/**
- * Obtain whether a call instruction is a tail call.
- *
- * This only works on llvm::CallInst instructions.
- *
- * @see llvm::CallInst::isTailCall()
- */
 LLVMBool __llvm_is_tail_call(void *call_inst) {
   return LLVMIsTailCall((LLVMValueRef)call_inst);
 }
 
-/**
- * Set whether a call instruction is a tail call.
- *
- * This only works on llvm::CallInst instructions.
- *
- * @see llvm::CallInst::setTailCall()
- */
 void __llvm_set_tail_call(void *call_inst, LLVMBool is_tail_call) {
   LLVMSetTailCall((LLVMValueRef)call_inst, is_tail_call);
 }
 
-/**
- * Obtain a tail call kind of the call instruction.
- *
- * @see llvm::CallInst::setTailCallKind()
- */
-int32_t __llvm_get_tail_call_kind(void *call_inst) {
-  LLVMTailCallKind k = LLVMGetTailCallKind((LLVMValueRef)call_inst);
-  return (int32_t)k;
+LLVMTailCallKind __llvm_get_tail_call_kind(void *call_inst) {
+  return LLVMGetTailCallKind((LLVMValueRef)call_inst);
 }
 
-/**
- * Set the call kind of the call instruction.
- *
- * @see llvm::CallInst::getTailCallKind()
- */
-// TODO: need check
-void __llvm_set_tail_call_kind(void *call_inst, int32_t kind) {
-  LLVMTailCallKind k = (LLVMTailCallKind)kind;
-  LLVMSetTailCallKind((LLVMValueRef)call_inst, k);
+void __llvm_set_tail_call_kind(void *call_inst, LLVMTailCallKind kind) {
+  LLVMSetTailCallKind((LLVMValueRef)call_inst, kind);
 }
 
-/**
- * Return the normal destination basic block.
- *
- * This only works on llvm::InvokeInst instructions.
- *
- * @see llvm::InvokeInst::getNormalDest()
- */
 void *__llvm_get_normal_dest(void *invoke_inst) {
   return (LLVMBasicBlockRef)LLVMGetNormalDest((LLVMValueRef)invoke_inst);
 }
 
-/**
- * Return the unwind destination basic block.
- *
- * Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
- * llvm::CatchSwitchInst instructions.
- *
- * @see llvm::InvokeInst::getUnwindDest()
- * @see llvm::CleanupReturnInst::getUnwindDest()
- * @see llvm::CatchSwitchInst::getUnwindDest()
- */
 void *__llvm_get_unwind_dest(void *invoke_inst) {
   return (LLVMBasicBlockRef)LLVMGetUnwindDest((LLVMValueRef)invoke_inst);
 }
 
-/**
- * Set the normal destination basic block.
- *
- * This only works on llvm::InvokeInst instructions.
- *
- * @see llvm::InvokeInst::setNormalDest()
- */
 void __llvm_set_normal_dest(void *invoke_inst, void *b) {
   LLVMSetNormalDest((LLVMValueRef)invoke_inst, (LLVMBasicBlockRef)b);
 }
 
-/**
- * Set the unwind destination basic block.
- *
- * Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
- * llvm::CatchSwitchInst instructions.
- *
- * @see llvm::InvokeInst::setUnwindDest()
- * @see llvm::CleanupReturnInst::setUnwindDest()
- * @see llvm::CatchSwitchInst::setUnwindDest()
- */
 void __llvm_set_unwind_dest(void *invoke_inst, void *b) {
   LLVMSetUnwindDest((LLVMValueRef)invoke_inst, (LLVMBasicBlockRef)b);
 }
 
-/**
- * Get the default destination of a CallBr instruction.
- *
- * @see llvm::CallBrInst::getDefaultDest()
- */
 void *__llvm_get_call_br_default_dest(void *call_br) {
   return (LLVMBasicBlockRef)LLVMGetCallBrDefaultDest((LLVMValueRef)call_br);
 }
 
-/**
- * Get the number of indirect destinations of a CallBr instruction.
- *
- * @see llvm::CallBrInst::getNumIndirectDests()
-
- */
 unsigned __llvm_get_call_br_num_indirect_dests(void *call_br) {
   return LLVMGetCallBrNumIndirectDests((LLVMValueRef)call_br);
 }
 
-/**
- * Get the indirect destination of a CallBr instruction at the given index.
- *
- * @see llvm::CallBrInst::getIndirectDest()
- */
 void *__llvm_get_call_br_indirect_dest(void *call_br, unsigned idx) {
   return (LLVMBasicBlockRef)LLVMGetCallBrIndirectDest((LLVMValueRef)call_br,
                                                       idx);
 }
 
-/**
- * @}
- */
+unsigned __llvm_get_num_successors(void *term) {
+  return LLVMGetNumSuccessors((LLVMValueRef)term);
+}
 
-/**
- * @defgroup LLVMCCoreInstructionBuilder Instruction Builders
- *
- * An instruction builder represents a point within a basic block and is
- * the exclusive means of building instructions using the C interface.
- *
- * @{
- */
+void *__llvm_get_successor(void *term, unsigned i) {
+  return (LLVMBasicBlockRef)LLVMGetSuccessor((LLVMValueRef)term, i);
+}
+
+void __llvm_set_successor(void *term, unsigned i, void *block) {
+  LLVMSetSuccessor((LLVMValueRef)term, i, (LLVMBasicBlockRef)block);
+}
+
+LLVMBool __llvm_is_conditional(void *branch) {
+  return LLVMIsConditional((LLVMValueRef)branch);
+}
+
+void *__llvm_get_condition(void *branch) {
+  return (LLVMValueRef)LLVMGetCondition((LLVMValueRef)branch);
+}
+
+void __llvm_set_condition(void *branch, void *cond) {
+  LLVMSetCondition((LLVMValueRef)branch, (LLVMValueRef)cond);
+}
+
+void *__llvm_get_switch_default_dest(void *switch_instr) {
+  return (LLVMBasicBlockRef)LLVMGetSwitchDefaultDest(
+      (LLVMValueRef)switch_instr);
+}
+
+void *__llvm_get_allocated_type(void *alloca) {
+  return (LLVMTypeRef)LLVMGetAllocatedType((LLVMValueRef)alloca);
+}
+
+LLVMBool __llvm_is_in_bounds(void *gep) {
+  return LLVMIsInBounds((LLVMValueRef)gep);
+}
+
+void __llvm_set_is_in_bounds(void *gep, LLVMBool in_bounds) {
+  LLVMSetIsInBounds((LLVMValueRef)gep, in_bounds);
+}
+
+void *__llvm_get_gep_source_element_type(void *gep) {
+  return (LLVMTypeRef)LLVMGetGEPSourceElementType((LLVMValueRef)gep);
+}
+
+void __llvm_add_incoming(void *phi_node, ArrayLLVMValueRef *incoming_values,
+                         ArrayLLVMBasicBlockRef *incoming_blocks,
+                         unsigned count) {
+  LLVMValueRef *llvm_incoming_values =
+      (LLVMValueRef *)incoming_values->$0->data;
+  LLVMBasicBlockRef *llvm_incoming_blocks =
+      (LLVMBasicBlockRef *)incoming_blocks->$0->data;
+  LLVMAddIncoming((LLVMValueRef)phi_node, llvm_incoming_values,
+                  llvm_incoming_blocks, count);
+}
+
+unsigned __llvm_count_incoming(void *phi_node) {
+  return LLVMCountIncoming((LLVMValueRef)phi_node);
+}
+
+void *__llvm_get_incoming_value(void *phi_node, unsigned index) {
+  return (LLVMValueRef)LLVMGetIncomingValue((LLVMValueRef)phi_node, index);
+}
+
+void *__llvm_get_incoming_block(void *phi_node, unsigned index) {
+  return (LLVMBasicBlockRef)LLVMGetIncomingBlock((LLVMValueRef)phi_node, index);
+}
+
+unsigned __llvm_get_num_indices(void *inst) {
+  return LLVMGetNumIndices((LLVMValueRef)inst);
+}
+
+const unsigned *__llvm_get_indices(void *inst) {
+  return LLVMGetIndices((LLVMValueRef)inst);
+}
+
 void *__llvm_create_builder_in_context(void *context) {
   return (LLVMBuilderRef)LLVMCreateBuilderInContext((LLVMContextRef)context);
 }
 
-/**
- * Set the builder position before Instr but after any attached debug records,
- * or if Instr is null set the position to the end of Block.
- */
 void *__llvm_create_builder() { return (LLVMBuilderRef)LLVMCreateBuilder(); }
 
-/**
- * Set the builder position before Instr and any attached debug records,
- * or if Instr is null set the position to the end of Block.
- */
 void __llvm_position_builder(void *builder, void *block, void *instr) {
-  return LLVMPositionBuilder((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block,
-                             (LLVMValueRef)instr);
+  LLVMPositionBuilder((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block,
+                      (LLVMValueRef)instr);
+}
+
+void __llvm_position_builder_before_dbg_records(void *builder, void *block,
+                                                void *inst) {
+  LLVMPositionBuilderBeforeDbgRecords(
+      (LLVMBuilderRef)builder, (LLVMBasicBlockRef)block, (LLVMValueRef)inst);
 }
 
 void __llvm_position_builder_before(void *builder, void *instr) {
-  return LLVMPositionBuilderBefore((LLVMBuilderRef)builder,
-                                   (LLVMValueRef)instr);
+  LLVMPositionBuilderBefore((LLVMBuilderRef)builder, (LLVMValueRef)instr);
 }
 
-/**
- * Set the builder position before Instr and any attached debug records.
- */
+void __llvm_position_builder_before_instr_and_dbg_records(void *builder,
+                                                          void *instr) {
+  LLVMPositionBuilderBeforeInstrAndDbgRecords((LLVMBuilderRef)builder,
+                                              (LLVMValueRef)instr);
+}
+
 void __llvm_position_builder_at_end(void *builder, void *block) {
-  return LLVMPositionBuilderAtEnd((LLVMBuilderRef)builder,
-                                  (LLVMBasicBlockRef)block);
+  LLVMPositionBuilderAtEnd((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block);
 }
 
 void *__llvm_get_insert_block(void *builder) {
@@ -2570,11 +2611,992 @@ void __llvm_dispose_builder(void *builder) {
   LLVMDisposeBuilder((LLVMBuilderRef)builder);
 }
 
-/* Terminators */
-void __llvm_build_ret_void(void *builder) {
-  LLVMBuildRetVoid((LLVMBuilderRef)builder);
+void *__llvm_get_current_debug_location2(void *builder) {
+  return (LLVMMetadataRef)LLVMGetCurrentDebugLocation2((LLVMBuilderRef)builder);
 }
 
-void __llvm_build_ret(void *builder, void *val) {
-  LLVMBuildRet((LLVMBuilderRef)builder, (LLVMValueRef)val);
+void __llvm_set_current_debug_location2(void *builder, void *loc) {
+  LLVMSetCurrentDebugLocation2((LLVMBuilderRef)builder, (LLVMMetadataRef)loc);
 }
+
+void __llvm_set_inst_debug_location(void *builder, void *inst) {
+  LLVMSetInstDebugLocation((LLVMBuilderRef)builder, (LLVMValueRef)inst);
+}
+
+void __llvm_add_metadata_to_inst(void *builder, void *inst) {
+  LLVMAddMetadataToInst((LLVMBuilderRef)builder, (LLVMValueRef)inst);
+}
+
+void *__llvm_builder_get_default_fp_math_tag(void *builder) {
+  return (LLVMMetadataRef)LLVMBuilderGetDefaultFPMathTag(
+      (LLVMBuilderRef)builder);
+}
+
+void __llvm_builder_set_default_fp_math_tag(void *builder, void *fp_math_tag) {
+  LLVMBuilderSetDefaultFPMathTag((LLVMBuilderRef)builder,
+                                 (LLVMMetadataRef)fp_math_tag);
+}
+
+void __llvm_set_current_debug_location(void *builder, void *l) {
+  LLVMSetCurrentDebugLocation((LLVMBuilderRef)builder, (LLVMValueRef)l);
+}
+
+void *__llvm_get_current_debug_location(void *builder) {
+  return (LLVMValueRef)LLVMGetCurrentDebugLocation((LLVMBuilderRef)builder);
+}
+
+void *__llvm_build_ret_void(void *builder) {
+  return (LLVMValueRef)LLVMBuildRetVoid((LLVMBuilderRef)builder);
+}
+
+void *__llvm_build_ret(void *builder, void *v) {
+  return (LLVMValueRef)LLVMBuildRet((LLVMBuilderRef)builder, (LLVMValueRef)v);
+}
+
+void *__llvm_build_aggregate_ret(void *builder, ArrayLLVMValueRef *ret_vals) {
+
+  LLVMValueRef *llvm_ret_vals = (LLVMValueRef *)ret_vals->$0->data;
+  unsigned n = ret_vals->$1;
+  return (LLVMValueRef)LLVMBuildAggregateRet((LLVMBuilderRef)builder,
+                                             llvm_ret_vals, n);
+}
+
+void *__llvm_build_br(void *builder, void *dest) {
+  return (LLVMValueRef)LLVMBuildBr((LLVMBuilderRef)builder,
+                                   (LLVMBasicBlockRef)dest);
+}
+
+void *__llvm_build_cond_br(void *builder, void *_if, void *then, void *_else) {
+  return (LLVMValueRef)LLVMBuildCondBr(
+      (LLVMBuilderRef)builder, (LLVMValueRef)_if, (LLVMBasicBlockRef)then,
+      (LLVMBasicBlockRef)_else);
+}
+
+void *__llvm_build_switch(void *builder, void *v, void *_else,
+                          unsigned num_cases) {
+  return (LLVMValueRef)LLVMBuildSwitch((LLVMBuilderRef)builder, (LLVMValueRef)v,
+                                       (LLVMBasicBlockRef)_else, num_cases);
+}
+
+void *__llvm_build_indirect_br(void *builder, void *addr, unsigned num_dests) {
+  return (LLVMValueRef)LLVMBuildIndirectBr((LLVMBuilderRef)builder,
+                                           (LLVMValueRef)addr, num_dests);
+}
+
+void *__llvm_build_call_br(void *builder, void *ty, void *fn,
+                           void *default_dest,
+                           ArrayLLVMBasicBlockRef *indirect_dests,
+                           ArrayLLVMValueRef *args,
+                           ArrayLLVMOperandBundleRef *bundles, void *name) {
+  LLVMBasicBlockRef *llvm_indirect_dests =
+      (LLVMBasicBlockRef *)indirect_dests->$0->data;
+  unsigned num_indirect_dests = indirect_dests->$1;
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  LLVMOperandBundleRef *llvm_bundles =
+      (LLVMOperandBundleRef *)bundles->$0->data;
+  unsigned num_bundles = bundles->$1;
+  return (LLVMValueRef)LLVMBuildCallBr(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)fn,
+      (LLVMBasicBlockRef)default_dest, llvm_indirect_dests, num_indirect_dests,
+      llvm_args, num_args, llvm_bundles, num_bundles, (const char *)name);
+}
+
+void *__llvm_build_invoke2(void *builder, void *ty, void *fn,
+                           ArrayLLVMValueRef *args, void *then, void *_catch,
+                           void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  return (LLVMValueRef)LLVMBuildInvoke2(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)fn, llvm_args,
+      num_args, (LLVMBasicBlockRef)then, (LLVMBasicBlockRef)_catch,
+      (const char *)name);
+}
+
+void *__llvm_build_invoke_with_operand_bundles(
+    void *builder, void *ty, void *fn, ArrayLLVMValueRef *args, void *then,
+    void *_catch, ArrayLLVMOperandBundleRef *bundles, void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  LLVMOperandBundleRef *llvm_bundles =
+      (LLVMOperandBundleRef *)bundles->$0->data;
+  unsigned num_bundles = bundles->$1;
+  return (LLVMValueRef)LLVMBuildInvokeWithOperandBundles(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)fn, llvm_args,
+      num_args, (LLVMBasicBlockRef)then, (LLVMBasicBlockRef)_catch,
+      llvm_bundles, num_bundles, (const char *)name);
+}
+
+void *__llvm_build_unreachable(void *builder) {
+  return (LLVMValueRef)LLVMBuildUnreachable((LLVMBuilderRef)builder);
+}
+
+void *__llvm_build_resume(void *builder, void *exn) {
+  return (LLVMValueRef)LLVMBuildResume((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)exn);
+}
+
+void *__llvm_build_landing_pad(void *builder, void *ty, void *pers_fn,
+                               unsigned num_clauses, void *name) {
+  return (LLVMValueRef)LLVMBuildLandingPad(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)pers_fn,
+      num_clauses, (const char *)name);
+}
+
+void *__llvm_build_cleanup_ret(void *builder, void *catch_pad, void *bb) {
+  return (LLVMValueRef)LLVMBuildCleanupRet(
+      (LLVMBuilderRef)builder, (LLVMValueRef)catch_pad, (LLVMBasicBlockRef)bb);
+}
+
+void *__llvm_build_catch_ret(void *builder, void *catch_pad, void *bb) {
+  return (LLVMValueRef)LLVMBuildCatchRet(
+      (LLVMBuilderRef)builder, (LLVMValueRef)catch_pad, (LLVMBasicBlockRef)bb);
+}
+
+void *__llvm_build_catch_pad(void *builder, void *parent_pad,
+                             ArrayLLVMValueRef *args, void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  return (LLVMValueRef)LLVMBuildCatchPad((LLVMBuilderRef)builder,
+                                         (LLVMValueRef)parent_pad, llvm_args,
+                                         num_args, (const char *)name);
+}
+
+void *__llvm_build_cleanup_pad(void *builder, void *parent_pad,
+                               ArrayLLVMValueRef *args, void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  return (LLVMValueRef)LLVMBuildCleanupPad((LLVMBuilderRef)builder,
+                                           (LLVMValueRef)parent_pad, llvm_args,
+                                           num_args, (const char *)name);
+}
+
+void *__llvm_build_catch_switch(void *builder, void *parent_pad,
+                                void *unwind_bb, unsigned num_handlers,
+                                void *name) {
+  return (LLVMValueRef)LLVMBuildCatchSwitch(
+      (LLVMBuilderRef)builder, (LLVMValueRef)parent_pad,
+      (LLVMBasicBlockRef)unwind_bb, num_handlers, (const char *)name);
+}
+
+void __llvm_add_case(void *_switch, void *on_val, void *dest) {
+  LLVMAddCase((LLVMValueRef)_switch, (LLVMValueRef)on_val,
+              (LLVMBasicBlockRef)dest);
+}
+
+void __llvm_add_destination(void *indirect_br, void *dest) {
+  LLVMAddDestination((LLVMValueRef)indirect_br, (LLVMBasicBlockRef)dest);
+}
+
+unsigned __llvm_get_num_clauses(void *landing_pad) {
+  return LLVMGetNumClauses((LLVMValueRef)landing_pad);
+}
+
+void *__llvm_get_clause(void *landing_pad, unsigned idx) {
+  return (LLVMValueRef)LLVMGetClause((LLVMValueRef)landing_pad, idx);
+}
+
+void __llvm_add_clause(void *landing_pad, void *clause_val) {
+  LLVMAddClause((LLVMValueRef)landing_pad, (LLVMValueRef)clause_val);
+}
+
+LLVMBool __llvm_is_cleanup(void *landing_pad) {
+  return LLVMIsCleanup((LLVMValueRef)landing_pad);
+}
+
+void __llvm_set_cleanup(void *landing_pad, LLVMBool val) {
+  LLVMSetCleanup((LLVMValueRef)landing_pad, val);
+}
+
+void __llvm_add_handler(void *catch_switch, void *dest) {
+  LLVMAddHandler((LLVMValueRef)catch_switch, (LLVMBasicBlockRef)dest);
+}
+
+unsigned __llvm_get_num_handlers(void *catch_switch) {
+  return LLVMGetNumHandlers((LLVMValueRef)catch_switch);
+}
+
+void __llvm_get_handlers(void *catch_switch, void *handlers) {
+  LLVMGetHandlers((LLVMValueRef)catch_switch, (LLVMBasicBlockRef *)handlers);
+}
+
+void *__llvm_get_arg_operand(void *funclet, unsigned i) {
+  return (LLVMValueRef)LLVMGetArgOperand((LLVMValueRef)funclet, i);
+}
+
+void __llvm_set_arg_operand(void *funclet, unsigned i, void *value) {
+  LLVMSetArgOperand((LLVMValueRef)funclet, i, (LLVMValueRef)value);
+}
+
+void *__llvm_get_parent_catch_switch(void *catch_pad) {
+  return (LLVMValueRef)LLVMGetParentCatchSwitch((LLVMValueRef)catch_pad);
+}
+
+void __llvm_set_parent_catch_switch(void *catch_pad, void *catch_switch) {
+  LLVMSetParentCatchSwitch((LLVMValueRef)catch_pad, (LLVMValueRef)catch_switch);
+}
+
+void *__llvm_build_add(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildAdd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_nsw_add(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNSWAdd((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_nuw_add(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNUWAdd((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_f_add(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFAdd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_sub(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildSub((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_nsw_sub(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNSWSub((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_nuw_sub(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNUWSub((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_f_sub(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFSub((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_mul(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildMul((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_nsw_mul(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNSWMul((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_nuw_mul(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildNUWMul((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                       (const char *)name);
+}
+
+void *__llvm_build_f_mul(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFMul((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_u_div(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildUDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_exact_u_div(void *builder, void *lhs, void *rhs,
+                               void *name) {
+  return (LLVMValueRef)LLVMBuildExactUDiv((LLVMBuilderRef)builder,
+                                          (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                          (const char *)name);
+}
+
+void *__llvm_build_s_div(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildSDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_exact_s_div(void *builder, void *lhs, void *rhs,
+                               void *name) {
+  return (LLVMValueRef)LLVMBuildExactSDiv((LLVMBuilderRef)builder,
+                                          (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                          (const char *)name);
+}
+
+void *__llvm_build_f_div(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_u_rem(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildURem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_s_rem(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildSRem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_f_rem(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFRem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_shl(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildShl((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_l_shr(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildLShr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_a_shr(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildAShr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                     (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_and(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildAnd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_or(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildOr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                   (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_xor(void *builder, void *lhs, void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildXor((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
+                                    (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_bin_op(void *builder, LLVMOpcode op, void *lhs, void *rhs,
+                          void *name) {
+  return (LLVMValueRef)LLVMBuildBinOp((LLVMBuilderRef)builder, op,
+                                      (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                      (const char *)name);
+}
+
+void *__llvm_build_neg(void *builder, void *v, void *name) {
+  return (LLVMValueRef)LLVMBuildNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
+                                    (const char *)name);
+}
+
+void *__llvm_build_nsw_neg(void *builder, void *v, void *name) {
+  return (LLVMValueRef)LLVMBuildNSWNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
+                                       (const char *)name);
+}
+
+// void *__llvm_build_nuw_neg(void *builder, void *v, void *name) {
+//   return (LLVMValueRef)LLVMBuildNUWNeg((LLVMBuilderRef)builder,
+//   (LLVMValueRef)v,
+//                                        (const char *)name);
+// }
+
+void *__llvm_build_f_neg(void *builder, void *v, void *name) {
+  return (LLVMValueRef)LLVMBuildFNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
+                                     (const char *)name);
+}
+
+void *__llvm_build_not(void *builder, void *v, void *name) {
+  return (LLVMValueRef)LLVMBuildNot((LLVMBuilderRef)builder, (LLVMValueRef)v,
+                                    (const char *)name);
+}
+
+LLVMBool __llvm_get_nuw(void *arith_inst) {
+  return LLVMGetNUW((LLVMValueRef)arith_inst);
+}
+
+void __llvm_set_nuw(void *arith_inst, LLVMBool has_nuw) {
+  LLVMSetNUW((LLVMValueRef)arith_inst, has_nuw);
+}
+
+LLVMBool __llvm_get_nsw(void *arith_inst) {
+  return LLVMGetNSW((LLVMValueRef)arith_inst);
+}
+
+void __llvm_set_nsw(void *arith_inst, LLVMBool has_nsw) {
+  LLVMSetNSW((LLVMValueRef)arith_inst, has_nsw);
+}
+
+LLVMBool __llvm_get_exact(void *div_or_shr_inst) {
+  return LLVMGetExact((LLVMValueRef)div_or_shr_inst);
+}
+
+void __llvm_set_exact(void *div_or_shr_inst, LLVMBool is_exact) {
+  LLVMSetExact((LLVMValueRef)div_or_shr_inst, is_exact);
+}
+
+LLVMBool __llvm_get_n_neg(void *non_neg_inst) {
+  return LLVMGetNNeg((LLVMValueRef)non_neg_inst);
+}
+
+void __llvm_set_n_neg(void *non_neg_inst, LLVMBool is_non_neg) {
+  LLVMSetNNeg((LLVMValueRef)non_neg_inst, is_non_neg);
+}
+
+LLVMFastMathFlags __llvm_get_fast_math_flags(void *fp_math_inst) {
+  return LLVMGetFastMathFlags((LLVMValueRef)fp_math_inst);
+}
+
+void __llvm_set_fast_math_flags(void *fp_math_inst, LLVMFastMathFlags fmf) {
+  LLVMSetFastMathFlags((LLVMValueRef)fp_math_inst, fmf);
+}
+
+LLVMBool __llvm_can_value_use_fast_math_flags(void *inst) {
+  return LLVMCanValueUseFastMathFlags((LLVMValueRef)inst);
+}
+
+LLVMBool __llvm_get_is_disjoint(void *inst) {
+  return LLVMGetIsDisjoint((LLVMValueRef)inst);
+}
+
+void __llvm_set_is_disjoint(void *inst, LLVMBool is_disjoint) {
+  LLVMSetIsDisjoint((LLVMValueRef)inst, is_disjoint);
+}
+
+void *__llvm_build_malloc(void *builder, void *ty, void *name) {
+  return (LLVMValueRef)LLVMBuildMalloc((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_array_malloc(void *builder, void *ty, void *val,
+                                void *name) {
+  return (LLVMValueRef)LLVMBuildArrayMalloc((LLVMBuilderRef)builder,
+                                            (LLVMTypeRef)ty, (LLVMValueRef)val,
+                                            (const char *)name);
+}
+
+void *__llvm_build_mem_set(void *builder, void *ptr, void *val, void *len,
+                           unsigned align) {
+  return (LLVMValueRef)LLVMBuildMemSet((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)ptr, (LLVMValueRef)val,
+                                       (LLVMValueRef)len, align);
+}
+
+void *__llvm_build_mem_cpy(void *builder, void *dst, unsigned dst_align,
+                           void *src, unsigned src_align, void *size) {
+  return (LLVMValueRef)LLVMBuildMemCpy(
+      (LLVMBuilderRef)builder, (LLVMValueRef)dst, dst_align, (LLVMValueRef)src,
+      src_align, (LLVMValueRef)size);
+}
+
+void *__llvm_build_mem_move(void *builder, void *dst, unsigned dst_align,
+                            void *src, unsigned src_align, void *size) {
+  return (LLVMValueRef)LLVMBuildMemMove(
+      (LLVMBuilderRef)builder, (LLVMValueRef)dst, dst_align, (LLVMValueRef)src,
+      src_align, (LLVMValueRef)size);
+}
+
+void *__llvm_build_alloca(void *builder, void *ty, void *name) {
+  return (LLVMValueRef)LLVMBuildAlloca((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_array_alloca(void *builder, void *ty, void *val,
+                                void *name) {
+  return (LLVMValueRef)LLVMBuildArrayAlloca((LLVMBuilderRef)builder,
+                                            (LLVMTypeRef)ty, (LLVMValueRef)val,
+                                            (const char *)name);
+}
+
+void *__llvm_build_free(void *builder, void *pointer_val) {
+  return (LLVMValueRef)LLVMBuildFree((LLVMBuilderRef)builder,
+                                     (LLVMValueRef)pointer_val);
+}
+
+void *__llvm_build_load2(void *builder, void *ty, void *pointer_val,
+                         void *name) {
+  return (LLVMValueRef)LLVMBuildLoad2((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                      (LLVMValueRef)pointer_val,
+                                      (const char *)name);
+}
+
+void *__llvm_build_store(void *builder, void *val, void *ptr) {
+  return (LLVMValueRef)LLVMBuildStore((LLVMBuilderRef)builder,
+                                      (LLVMValueRef)val, (LLVMValueRef)ptr);
+}
+
+void *__llvm_build_gep2(void *builder, void *ty, void *pointer,
+                        ArrayLLVMValueRef *indices, void *name) {
+  LLVMValueRef *llvm_indices = (LLVMValueRef *)indices->$0->data;
+  unsigned num_indices = indices->$1;
+  return (LLVMValueRef)LLVMBuildGEP2((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                     (LLVMValueRef)pointer, llvm_indices,
+                                     num_indices, (const char *)name);
+}
+
+void *__llvm_build_in_bounds_gep2(void *builder, void *ty, void *pointer,
+                                  ArrayLLVMValueRef *indices, void *name) {
+  LLVMValueRef *llvm_indices = (LLVMValueRef *)indices->$0->data;
+  unsigned num_indices = indices->$1;
+  return (LLVMValueRef)LLVMBuildInBoundsGEP2(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)pointer,
+      llvm_indices, num_indices, (const char *)name);
+}
+
+void *__llvm_build_struct_gep2(void *builder, void *ty, void *pointer,
+                               unsigned idx, void *name) {
+  return (LLVMValueRef)LLVMBuildStructGEP2(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)pointer, idx,
+      (const char *)name);
+}
+
+void *__llvm_build_global_string(void *builder, void *str, void *name) {
+  return (LLVMValueRef)LLVMBuildGlobalString(
+      (LLVMBuilderRef)builder, (const char *)str, (const char *)name);
+}
+
+void *__llvm_build_global_string_ptr(void *builder, void *str, void *name) {
+  return (LLVMValueRef)LLVMBuildGlobalStringPtr(
+      (LLVMBuilderRef)builder, (const char *)str, (const char *)name);
+}
+
+LLVMBool __llvm_get_volatile(void *memory_access_inst) {
+  return LLVMGetVolatile((LLVMValueRef)memory_access_inst);
+}
+
+void __llvm_set_volatile(void *memory_access_inst, LLVMBool is_volatile) {
+  LLVMSetVolatile((LLVMValueRef)memory_access_inst, is_volatile);
+}
+
+LLVMBool __llvm_get_weak(void *cmp_xchg_inst) {
+  return LLVMGetWeak((LLVMValueRef)cmp_xchg_inst);
+}
+
+void __llvm_set_weak(void *cmp_xchg_inst, LLVMBool is_weak) {
+  LLVMSetWeak((LLVMValueRef)cmp_xchg_inst, is_weak);
+}
+
+LLVMAtomicOrdering __llvm_get_ordering(void *memory_access_inst) {
+  return LLVMGetOrdering((LLVMValueRef)memory_access_inst);
+}
+
+void __llvm_set_ordering(void *memory_access_inst,
+                         LLVMAtomicOrdering ordering) {
+  LLVMSetOrdering((LLVMValueRef)memory_access_inst, ordering);
+}
+
+LLVMAtomicRMWBinOp __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
+  return LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
+}
+
+void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst,
+                                  LLVMAtomicRMWBinOp bin_op) {
+  LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, bin_op);
+}
+
+void *__llvm_build_trunc(void *builder, void *val, void *dest_ty, void *name) {
+  return (LLVMValueRef)LLVMBuildTrunc((LLVMBuilderRef)builder,
+                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                      (const char *)name);
+}
+
+void *__llvm_build_z_ext(void *builder, void *val, void *dest_ty, void *name) {
+  return (LLVMValueRef)LLVMBuildZExt((LLVMBuilderRef)builder, (LLVMValueRef)val,
+                                     (LLVMTypeRef)dest_ty, (const char *)name);
+}
+
+void *__llvm_build_s_ext(void *builder, void *val, void *dest_ty, void *name) {
+  return (LLVMValueRef)LLVMBuildSExt((LLVMBuilderRef)builder, (LLVMValueRef)val,
+                                     (LLVMTypeRef)dest_ty, (const char *)name);
+}
+
+void *__llvm_build_fp_to_ui(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildFPToUI((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_fp_to_si(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildFPToSI((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_ui_to_fp(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildUIToFP((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_si_to_fp(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildSIToFP((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_fp_trunc(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildFPTrunc((LLVMBuilderRef)builder,
+                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                        (const char *)name);
+}
+
+void *__llvm_build_fp_ext(void *builder, void *val, void *dest_ty, void *name) {
+  return (LLVMValueRef)LLVMBuildFPExt((LLVMBuilderRef)builder,
+                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                      (const char *)name);
+}
+
+void *__llvm_build_ptr_to_int(void *builder, void *val, void *dest_ty,
+                              void *name) {
+  return (LLVMValueRef)LLVMBuildPtrToInt(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_int_to_ptr(void *builder, void *val, void *dest_ty,
+                              void *name) {
+  return (LLVMValueRef)LLVMBuildIntToPtr(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_bit_cast(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildBitCast((LLVMBuilderRef)builder,
+                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                        (const char *)name);
+}
+
+void *__llvm_build_addr_space_cast(void *builder, void *val, void *dest_ty,
+                                   void *name) {
+  return (LLVMValueRef)LLVMBuildAddrSpaceCast(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_z_ext_or_bit_cast(void *builder, void *val, void *dest_ty,
+                                     void *name) {
+  return (LLVMValueRef)LLVMBuildZExtOrBitCast(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_s_ext_or_bit_cast(void *builder, void *val, void *dest_ty,
+                                     void *name) {
+  return (LLVMValueRef)LLVMBuildSExtOrBitCast(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_trunc_or_bit_cast(void *builder, void *val, void *dest_ty,
+                                     void *name) {
+  return (LLVMValueRef)LLVMBuildTruncOrBitCast(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_cast(void *builder, LLVMOpcode op, void *val, void *dest_ty,
+                        void *name) {
+  return (LLVMValueRef)LLVMBuildCast((LLVMBuilderRef)builder, op,
+                                     (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                     (const char *)name);
+}
+
+void *__llvm_build_pointer_cast(void *builder, void *val, void *dest_ty,
+                                void *name) {
+  return (LLVMValueRef)LLVMBuildPointerCast(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      (const char *)name);
+}
+
+void *__llvm_build_int_cast2(void *builder, void *val, void *dest_ty,
+                             LLVMBool is_signed, void *name) {
+  return (LLVMValueRef)LLVMBuildIntCast2(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+      is_signed, (const char *)name);
+}
+
+void *__llvm_build_fp_cast(void *builder, void *val, void *dest_ty,
+                           void *name) {
+  return (LLVMValueRef)LLVMBuildFPCast((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                       (const char *)name);
+}
+
+void *__llvm_build_int_cast(void *builder, void *val, void *dest_ty,
+                            void *name) {
+  return (LLVMValueRef)LLVMBuildIntCast((LLVMBuilderRef)builder,
+                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
+                                        (const char *)name);
+}
+
+LLVMOpcode __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed,
+                                  void *dest_ty, LLVMBool dest_is_signed) {
+  return LLVMGetCastOpcode((LLVMValueRef)src, src_is_signed,
+                           (LLVMTypeRef)dest_ty, dest_is_signed);
+}
+
+void *__llvm_build_icmp(void *builder, LLVMIntPredicate op, void *lhs,
+                        void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildICmp((LLVMBuilderRef)builder, op,
+                                     (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                     (const char *)name);
+}
+
+void *__llvm_build_fcmp(void *builder, LLVMRealPredicate op, void *lhs,
+                        void *rhs, void *name) {
+  return (LLVMValueRef)LLVMBuildFCmp((LLVMBuilderRef)builder, op,
+                                     (LLVMValueRef)lhs, (LLVMValueRef)rhs,
+                                     (const char *)name);
+}
+
+void *__llvm_build_phi(void *builder, void *ty, void *name) {
+  return (LLVMValueRef)LLVMBuildPhi((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                    (const char *)name);
+}
+
+void *__llvm_build_call2(void *builder, void *ty, void *fn,
+                         ArrayLLVMValueRef *args, void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  return (LLVMValueRef)LLVMBuildCall2((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
+                                      (LLVMValueRef)fn, llvm_args, num_args,
+                                      (const char *)name);
+}
+
+void *__llvm_build_call_with_operand_bundles(void *builder, void *ty, void *fn,
+                                             ArrayLLVMValueRef *args,
+                                             ArrayLLVMOperandBundleRef *bundles,
+                                             void *name) {
+  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
+  unsigned num_args = args->$1;
+  LLVMOperandBundleRef *llvm_bundles =
+      (LLVMOperandBundleRef *)bundles->$0->data;
+  unsigned num_bundles = bundles->$1;
+  return (LLVMValueRef)LLVMBuildCallWithOperandBundles(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)fn, llvm_args,
+      num_args, llvm_bundles, num_bundles, (const char *)name);
+}
+
+void *__llvm_build_select(void *builder, void *_if, void *then, void *_else,
+                          void *name) {
+  return (LLVMValueRef)LLVMBuildSelect((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)_if, (LLVMValueRef)then,
+                                       (LLVMValueRef)_else, (const char *)name);
+}
+
+void *__llvm_build_va_arg(void *builder, void *list, void *ty, void *name) {
+  return (LLVMValueRef)LLVMBuildVAArg((LLVMBuilderRef)builder,
+                                      (LLVMValueRef)list, (LLVMTypeRef)ty,
+                                      (const char *)name);
+}
+
+void *__llvm_build_extract_element(void *builder, void *vec_val, void *index,
+                                   void *name) {
+  return (LLVMValueRef)LLVMBuildExtractElement(
+      (LLVMBuilderRef)builder, (LLVMValueRef)vec_val, (LLVMValueRef)index,
+      (const char *)name);
+}
+
+void *__llvm_build_insert_element(void *builder, void *vec_val, void *elt_val,
+                                  void *index, void *name) {
+  return (LLVMValueRef)LLVMBuildInsertElement(
+      (LLVMBuilderRef)builder, (LLVMValueRef)vec_val, (LLVMValueRef)elt_val,
+      (LLVMValueRef)index, (const char *)name);
+}
+
+void *__llvm_build_shuffle_vector(void *builder, void *v1, void *v2, void *mask,
+                                  void *name) {
+  return (LLVMValueRef)LLVMBuildShuffleVector(
+      (LLVMBuilderRef)builder, (LLVMValueRef)v1, (LLVMValueRef)v2,
+      (LLVMValueRef)mask, (const char *)name);
+}
+
+void *__llvm_build_extract_value(void *builder, void *agg_val, unsigned index,
+                                 void *name) {
+  return (LLVMValueRef)LLVMBuildExtractValue((LLVMBuilderRef)builder,
+                                             (LLVMValueRef)agg_val, index,
+                                             (const char *)name);
+}
+
+void *__llvm_build_insert_value(void *builder, void *agg_val, void *elt_val,
+                                unsigned index, void *name) {
+  return (LLVMValueRef)LLVMBuildInsertValue(
+      (LLVMBuilderRef)builder, (LLVMValueRef)agg_val, (LLVMValueRef)elt_val,
+      index, (const char *)name);
+}
+
+void *__llvm_build_freeze(void *builder, void *val, void *name) {
+  return (LLVMValueRef)LLVMBuildFreeze((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (const char *)name);
+}
+
+void *__llvm_build_is_null(void *builder, void *val, void *name) {
+  return (LLVMValueRef)LLVMBuildIsNull((LLVMBuilderRef)builder,
+                                       (LLVMValueRef)val, (const char *)name);
+}
+
+void *__llvm_build_is_not_null(void *builder, void *val, void *name) {
+  return (LLVMValueRef)LLVMBuildIsNotNull(
+      (LLVMBuilderRef)builder, (LLVMValueRef)val, (const char *)name);
+}
+
+void *__llvm_build_ptr_diff2(void *builder, void *elem_ty, void *lhs, void *rhs,
+                             void *name) {
+  return (LLVMValueRef)LLVMBuildPtrDiff2(
+      (LLVMBuilderRef)builder, (LLVMTypeRef)elem_ty, (LLVMValueRef)lhs,
+      (LLVMValueRef)rhs, (const char *)name);
+}
+
+void *__llvm_build_fence(void *builder, LLVMAtomicOrdering ordering,
+                         LLVMBool single_thread, void *name) {
+  return (LLVMValueRef)LLVMBuildFence((LLVMBuilderRef)builder, ordering,
+                                      single_thread, (const char *)name);
+}
+
+void *__llvm_build_atomic_rmw(void *builder, LLVMAtomicRMWBinOp op, void *ptr,
+                              void *val, LLVMAtomicOrdering ordering,
+                              LLVMBool single_thread) {
+  return (LLVMValueRef)LLVMBuildAtomicRMW((LLVMBuilderRef)builder, op,
+                                          (LLVMValueRef)ptr, (LLVMValueRef)val,
+                                          ordering, single_thread);
+}
+
+void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
+                                   void *_new,
+                                   LLVMAtomicOrdering success_ordering,
+                                   LLVMAtomicOrdering failure_ordering,
+                                   LLVMBool single_thread) {
+  return (LLVMValueRef)LLVMBuildAtomicCmpXchg(
+      (LLVMBuilderRef)builder, (LLVMValueRef)ptr, (LLVMValueRef)cmp,
+      (LLVMValueRef)_new, success_ordering, failure_ordering, single_thread);
+}
+
+unsigned __llvm_get_num_mask_elements(void *shuffle_vector_inst) {
+  return LLVMGetNumMaskElements((LLVMValueRef)shuffle_vector_inst);
+}
+
+int __llvm_get_undef_mask_elem() { return LLVMGetUndefMaskElem(); }
+
+int __llvm_get_mask_value(void *shuffle_vector_inst, unsigned elt) {
+  return LLVMGetMaskValue((LLVMValueRef)shuffle_vector_inst, elt);
+}
+
+LLVMBool __llvm_is_atomic_single_thread(void *atomic_inst) {
+  return LLVMIsAtomicSingleThread((LLVMValueRef)atomic_inst);
+}
+
+void __llvm_set_atomic_single_thread(void *atomic_inst,
+                                     LLVMBool single_thread) {
+  LLVMSetAtomicSingleThread((LLVMValueRef)atomic_inst, single_thread);
+}
+
+LLVMAtomicOrdering __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
+  return LLVMGetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst);
+}
+
+void __llvm_set_cmp_xchg_success_ordering(void *cmp_xchg_inst,
+                                          LLVMAtomicOrdering ordering) {
+  LLVMSetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
+}
+
+LLVMAtomicOrdering __llvm_get_cmp_xchg_failure_ordering(void *cmp_xchg_inst) {
+  return LLVMGetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst);
+}
+
+void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst,
+                                          LLVMAtomicOrdering ordering) {
+  LLVMSetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
+}
+
+void *__llvm_create_module_provider_for_existing_module(void *m) {
+  return (LLVMModuleProviderRef)LLVMCreateModuleProviderForExistingModule(
+      (LLVMModuleRef)m);
+}
+
+void __llvm_dispose_module_provider(void *m) {
+  LLVMDisposeModuleProvider((LLVMModuleProviderRef)m);
+}
+
+LLVMBool __llvm_create_memory_buffer_with_contents_of_file(void *path,
+                                                           void **out_mem_buf,
+                                                           void **out_message) {
+  return LLVMCreateMemoryBufferWithContentsOfFile(
+      (const char *)path, (LLVMMemoryBufferRef *)out_mem_buf,
+      (char **)out_message);
+}
+
+LLVMBool __llvm_create_memory_buffer_with_stdin(void **out_mem_buf,
+                                                void **out_message) {
+  return LLVMCreateMemoryBufferWithSTDIN((LLVMMemoryBufferRef *)out_mem_buf,
+                                         (char **)out_message);
+}
+
+void *__llvm_create_memory_buffer_with_memory_range(
+    void *input_data, size_t input_data_length, void *buffer_name,
+    LLVMBool requires_null_terminator) {
+  return (LLVMMemoryBufferRef)LLVMCreateMemoryBufferWithMemoryRange(
+      (const char *)input_data, input_data_length, (const char *)buffer_name,
+      requires_null_terminator);
+}
+
+void *__llvm_create_memory_buffer_with_memory_range_copy(
+    void *input_data, size_t input_data_length, void *buffer_name) {
+  return (LLVMMemoryBufferRef)LLVMCreateMemoryBufferWithMemoryRangeCopy(
+      (const char *)input_data, input_data_length, (const char *)buffer_name);
+}
+
+void *__llvm_get_buffer_start(void *mem_buf) {
+  return (char *)LLVMGetBufferStart((LLVMMemoryBufferRef)mem_buf);
+}
+
+size_t __llvm_get_buffer_size(void *mem_buf) {
+  return LLVMGetBufferSize((LLVMMemoryBufferRef)mem_buf);
+}
+
+void __llvm_dispose_memory_buffer(void *mem_buf) {
+  LLVMDisposeMemoryBuffer((LLVMMemoryBufferRef)mem_buf);
+}
+
+void *__llvm_create_pass_manager() {
+  return (LLVMPassManagerRef)LLVMCreatePassManager();
+}
+
+void *__llvm_create_function_pass_manager_for_module(void *m) {
+  return (LLVMPassManagerRef)LLVMCreateFunctionPassManagerForModule(
+      (LLVMModuleRef)m);
+}
+
+void *__llvm_create_function_pass_manager(void *mp) {
+  return (LLVMPassManagerRef)LLVMCreateFunctionPassManager(
+      (LLVMModuleProviderRef)mp);
+}
+
+LLVMBool __llvm_run_pass_manager(void *pm, void *m) {
+  return LLVMRunPassManager((LLVMPassManagerRef)pm, (LLVMModuleRef)m);
+}
+
+LLVMBool __llvm_initialize_function_pass_manager(void *fpm) {
+  return LLVMInitializeFunctionPassManager((LLVMPassManagerRef)fpm);
+}
+
+LLVMBool __llvm_run_function_pass_manager(void *fpm, void *f) {
+  return LLVMRunFunctionPassManager((LLVMPassManagerRef)fpm, (LLVMValueRef)f);
+}
+
+LLVMBool __llvm_finalize_function_pass_manager(void *fpm) {
+  return LLVMFinalizeFunctionPassManager((LLVMPassManagerRef)fpm);
+}
+
+void __llvm_dispose_pass_manager(void *pm) {
+  LLVMDisposePassManager((LLVMPassManagerRef)pm);
+}
+
+LLVMBool __llvm_start_multithreaded() { return LLVMStartMultithreaded(); }
+
+void __llvm_stop_multithreaded() { LLVMStopMultithreaded(); }
+
+LLVMBool __llvm_is_multithreaded() { return LLVMIsMultithreaded(); }

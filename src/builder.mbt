@@ -18,10 +18,10 @@ pub fn build_return[T: ValueRef](self: Builder, val~:T?=None) -> Unit {
   match val {
     Some(val) => {
       let val_ref = val.as_value_ref()
-      llvm_build_ret(builder_ref, val_ref)
+      let _ = llvm_build_ret(builder_ref, val_ref)
     }
     None => {
-      llvm_build_ret_void(builder_ref)
+      let _ = llvm_build_ret_void(builder_ref)
     }
   }
 }

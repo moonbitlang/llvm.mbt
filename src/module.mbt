@@ -21,8 +21,7 @@ pub fn add_function(
 }
 
 pub fn Module::to_string(self: Module) -> String {
-  let c_str = llvm_print_module_to_string(self.module_ref)
-  c_str_to_moonbit_str(c_str)
+  llvm_print_module_to_string(self.module_ref)
 }
 
 pub fn Module::dump(self: Module) -> Unit {

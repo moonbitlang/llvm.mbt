@@ -24,7 +24,9 @@ pub impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
-// pub fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType
+pub fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
 
 // pub fn vec_type(self: Type, size: UInt) -> VectorType;
 
@@ -37,11 +39,10 @@ pub fn Type::fn_type(
   is_var_arg: Bool
 ) -> FunctionType {
   let ret_ty = self.as_type_ref()
-  let param_len = param_types.length().reinterpret_as_uint()
   // let type_refs = param_types.map(fn (t) {t.as_type_ref()})
   let type_refs = param_types
   let is_var_arg = to_llvm_bool(is_var_arg)
-  let fty_ref = llvm_function_type(ret_ty, type_refs, param_len, is_var_arg)
+  let fty_ref = llvm_function_type(ret_ty, type_refs, is_var_arg)
   FunctionType::new(fty_ref)
 }
 
@@ -78,8 +79,7 @@ fn Type::size_of(self: Type) -> IntValue? {
 }
 
 fn Type::to_string(self: Type) -> String {
-  let c_str = llvm_print_type_to_string(self.as_type_ref())
-  c_str_to_moonbit_str(c_str)
+  llvm_print_type_to_string(self.as_type_ref())
 }
 
 fn Type::dump(self: Type) -> Unit {
@@ -146,7 +146,9 @@ pub fn IntType::get_alignment(self: IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
-// pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType
+pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
 
 pub fn IntType::get_bit_width(self: IntType) -> UInt {
   llvm_get_int_type_width(self.as_type_ref())
@@ -217,17 +219,17 @@ pub fn FloatType::size_of(self: FloatType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
-pub fn get_alignment(self: FloatType) -> IntValue {
+pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
   self.ty.get_alignment()
 }
 
-pub fn get_context(self: FloatType) -> Context {
+pub fn FloatType::get_context(self: FloatType) -> Context {
   self.ty.get_context()
 }
 
-// pub fn ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
-//   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-// }
+pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
 
 pub fn get_undef(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_undef())
@@ -237,11 +239,11 @@ pub fn get_poison(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())
 }
 
-pub fn to_string(self: FloatType) -> String {
+pub fn FloatType::to_string(self: FloatType) -> String {
   self.ty.to_string()
 }
 
-pub fn dump(self: FloatType) -> Unit {
+pub fn FloatType::dump(self: FloatType) -> Unit {
   self.ty.dump()
 }
 
@@ -325,7 +327,9 @@ pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
   self.ty.get_alignment()
 }
 
-// pub fn PointerType::ptr_type(aself: PointerType, address_space: AddressSpace) -> PointerType
+pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
 
 pub fn PointerType::get_context(self: PointerType) -> Context {
   self.ty.get_context()
@@ -336,7 +340,11 @@ pub fn fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: B
 }
 
 // pub fn array_type(self: PointerType, size: UInt) -> ArrayType;
-// pub fn get_address_space(self: PointerType) -> AddressSpace;
+pub fn get_address_space(self: PointerType) -> AddressSpace {
+  let addr_space = llvm_get_pointer_address_space(self.as_type_ref())
+
+  AddressSpace(addr_space)
+}
 
 
 // pub fn const_null(self: PointerType) -> PointerValue {

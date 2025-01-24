@@ -32,14 +32,12 @@ pub fn Value::is_null(self: Value) -> Bool {
 }
 
 pub fn Value::is_const(self: Value) -> Bool {
-  llvm_is_const(self.as_value_ref()) == 1
+  llvm_is_constant(self.as_value_ref()) == 1
 }
 
 pub fn Value::set_name(self: Value, name: String) -> Unit {
-  let cname = moonbit_str_to_c_str(name)
   let value_ref = self.as_value_ref()
-  let name_len = name.length().reinterpret_as_uint()
-  llvm_set_value_name(value_ref, cname, name_len)
+  llvm_set_value_name(value_ref, name)
 }
 
 // TODO: This API use `LLVMGetValueName2` possibly problematic
@@ -75,8 +73,7 @@ fn Value::replace_all_uses_with(self: Value, new_value: Value) -> Unit {
 // pub fn set_section(self: Value) -> String?
 
 pub fn Value::to_string(self: Value) -> String {
-  let c_str = llvm_print_value_to_string(self.as_value_ref())
-  c_str_to_moonbit_str(c_str)
+  llvm_print_value_to_string(self.as_value_ref())
 }
 
 pub fn Value::dump(self: Value) -> Unit {
