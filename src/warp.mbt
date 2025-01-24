@@ -22,7 +22,8 @@ fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
 
 pub extern "C" fn llvm_shutdown() = "__llvm_shutdown"
 
-// pub extern "C" fn llvm_get_version(major: Ptr[UInt], minor: Ptr[UInt], patch: Ptr[UInt]) = "__llvm_get_version"
+// FIXME: Not implemented
+pub extern "C" fn llvm_get_version() -> (UInt, UInt, UInt) = "__llvm_get_version"
 
 pub extern "C" fn llvm_create_message(message: CStr) -> CStr = "__llvm_create_message"
 
@@ -144,7 +145,7 @@ pub extern "C" fn llvm_append_module_inline_asm(m: LLVMModuleRef, _asm: CStr, le
 
 // pub extern "C" fn llvm_get_inline_asm_constraint_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_constraint_string"
 
-// pub extern "C" fn llvm_get_inline_asm_dialect(inline_asm_val: LLVMValueRef) -> LLVMInlineAsmDialect = "__llvm_get_inline_asm_dialect"
+pub extern "C" fn llvm_get_inline_asm_dialect(inline_asm_val: LLVMValueRef) -> LLVMInlineAsmDialect = "__llvm_get_inline_asm_dialect"
 
 pub extern "C" fn llvm_get_inline_asm_function_type(inline_asm_val: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_inline_asm_function_type"
 
@@ -197,9 +198,6 @@ pub extern "C" fn llvm_get_last_function(m: LLVMModuleRef) -> LLVMValueRef = "__
 pub extern "C" fn llvm_get_next_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_function"
 //
 pub extern "C" fn llvm_get_previous_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_function"
-//
-// pub extern "C" fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr) = "__llvm_set_module_inline_asm"
-
 
 extern "C" fn __llvm_get_type_kind(ty: LLVMTypeRef) -> Int = "__llvm_get_type_kind"
 pub fn llvm_get_type_kind(ty: LLVMTypeRef) -> LLVMTypeKind {
@@ -317,7 +315,8 @@ pub extern "C" fn llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "
 
 pub extern "C" fn llvm_get_element_type(ty: LLVMTypeRef) -> LLVMTypeRef = "__llvm_get_element_type"
 
-// pub extern "C" fn llvm_get_subtypes(tp: LLVMTypeRef, arr: Ptr[LLVMTypeRef]) = "__llvm_get_subtypes"
+// FIXME: Not implemented
+pub extern "C" fn llvm_get_subtypes(tp: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
 
 pub extern "C" fn llvm_get_num_contained_types(tp: LLVMTypeRef) -> UInt = "__llvm_get_num_contained_types"
 
@@ -375,7 +374,7 @@ pub extern "C" fn llvm_get_target_ext_type_int_param(target_ext_ty: LLVMTypeRef,
 
 pub extern "C" fn llvm_type_of(val: LLVMValueRef) -> LLVMTypeRef = "__llvm_type_of"
 
-// pub extern "C" fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind = "__llvm_get_value_kind"
+pub extern "C" fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind = "__llvm_get_value_kind"
 
 // pub extern "C" fn llvm_get_value_name2(val: LLVMValueRef, length: Ptr[UInt64]) -> CStr = "__llvm_get_value_name2"
 
@@ -457,8 +456,6 @@ pub extern "C" fn llvm_isa_global_variable(val: LLVMValueRef) -> LLVMValueRef = 
 pub extern "C" fn llvm_isa_global_ifunc(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_ifunc"
 
 pub extern "C" fn llvm_isa_undef_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_undef_value"
-
-
 
 pub extern "C" fn llvm_isa_poison_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_poison_value"
 
@@ -594,6 +591,7 @@ pub extern "C" fn llvm_isa_md_string(val: LLVMValueRef) -> LLVMValueRef = "__llv
 
 pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_value_name"
 
+// deprecated
 // pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "__llvm_set_value_name"
 
 pub extern "C" fn llvm_get_first_use(val: LLVMValueRef) -> LLVMUseRef = "__llvm_get_first_use"
@@ -738,23 +736,23 @@ pub extern "C" fn llvm_get_global_parent(global: LLVMValueRef) -> LLVMModuleRef 
 
 pub extern "C" fn llvm_is_declaration(global: LLVMValueRef) -> LLVMBool = "__llvm_is_declaration"
 
-// pub extern "C" fn llvm_get_linkage(global: LLVMValueRef) -> LLVMLinkage = "__llvm_get_linkage"
+pub extern "C" fn llvm_get_linkage(global: LLVMValueRef) -> LLVMLinkage = "__llvm_get_linkage"
 
-// pub extern "C" fn llvm_set_linkage(global: LLVMValueRef, linkage: LLVMLinkage) = "__llvm_set_linkage"
+pub extern "C" fn llvm_set_linkage(global: LLVMValueRef, linkage: LLVMLinkage) = "__llvm_set_linkage"
 
 pub extern "C" fn llvm_get_section(global: LLVMValueRef) -> CStr = "__llvm_get_section"
 
 pub extern "C" fn llvm_set_section(global: LLVMValueRef, section: CStr) = "__llvm_set_section"
 
-// pub extern "C" fn llvm_get_visibility(global: LLVMValueRef) -> LLVMVisibility = "__llvm_get_visibility"
+pub extern "C" fn llvm_get_visibility(global: LLVMValueRef) -> LLVMVisibility = "__llvm_get_visibility"
 
-// pub extern "C" fn llvm_set_visibility(global: LLVMValueRef, viz: LLVMVisibility) = "__llvm_set_visibility"
+pub extern "C" fn llvm_set_visibility(global: LLVMValueRef, viz: LLVMVisibility) = "__llvm_set_visibility"
 
-// pub extern "C" fn llvm_get_dll_storage_class(global: LLVMValueRef) -> LLVMDLLStorageClass = "__llvm_get_dll_storage_class"
+pub extern "C" fn llvm_get_dll_storage_class(global: LLVMValueRef) -> LLVMDLLStorageClass = "__llvm_get_dll_storage_class"
 
-// pub extern "C" fn llvm_get_unnamed_address(global: LLVMValueRef) -> LLVMUnnamedAddr = "__llvm_get_unnamed_address"
+pub extern "C" fn llvm_get_unnamed_address(global: LLVMValueRef) -> LLVMUnnamedAddr = "__llvm_get_unnamed_address"
 
-// pub extern "C" fn llvm_set_unnamed_address(global: LLVMValueRef, unnamed_addr: LLVMUnnamedAddr) = "__llvm_set_unnamed_address"
+pub extern "C" fn llvm_set_unnamed_address(global: LLVMValueRef, unnamed_addr: LLVMUnnamedAddr) = "__llvm_set_unnamed_address"
 
 pub extern "C" fn llvm_global_get_value_type(global: LLVMValueRef) -> LLVMTypeRef = "__llvm_global_get_value_type"
 
@@ -766,7 +764,7 @@ pub extern "C" fn llvm_get_alignment(v: LLVMValueRef) -> UInt = "__llvm_get_alig
 
 pub extern "C" fn llvm_set_alignment(v: LLVMValueRef, bytes: UInt) = "__llvm_set_alignment"
 
-// pub extern "C" fn llvm_global_set_metadata(global: LLVMValueRef, kind: UInt, md: LLVMMetadataRef) = "__llvm_global_set_metadata"
+pub extern "C" fn llvm_global_set_metadata(global: LLVMValueRef, kind: UInt, md: LLVMMetadataRef) = "__llvm_global_set_metadata"
 
 pub extern "C" fn llvm_global_erase_metadata(global: LLVMValueRef, kind: UInt) = "__llvm_global_erase_metadata"
 
@@ -808,9 +806,9 @@ pub extern "C" fn llvm_is_global_constant(global_var: LLVMValueRef) -> LLVMBool 
 
 pub extern "C" fn llvm_set_global_constant(global_var: LLVMValueRef, is_constant: LLVMBool) = "__llvm_set_global_constant"
 
-// pub extern "C" fn llvm_get_thread_local_mode(global_var: LLVMValueRef) -> LLVMThreadLocalMode = "__llvm_get_thread_local_mode"
+pub extern "C" fn llvm_get_thread_local_mode(global_var: LLVMValueRef) -> LLVMThreadLocalMode = "__llvm_get_thread_local_mode"
 
-// pub extern "C" fn llvm_set_thread_local_mode(global_var: LLVMValueRef, mode: LLVMThreadLocalMode) = "__llvm_set_thread_local_mode"
+pub extern "C" fn llvm_set_thread_local_mode(global_var: LLVMValueRef, mode: LLVMThreadLocalMode) = "__llvm_set_thread_local_mode"
 
 pub extern "C" fn llvm_is_externally_initialized(global_var: LLVMValueRef) -> LLVMBool = "__llvm_is_externally_initialized"
 
@@ -832,17 +830,17 @@ pub extern "C" fn llvm_alias_get_aliasee(alias_ref: LLVMValueRef) -> LLVMValueRe
 
 pub extern "C" fn llvm_alias_set_aliasee(alias_ref: LLVMValueRef, aliasee: LLVMValueRef) = "__llvm_alias_set_aliasee"
 
-// pub extern "C" fn llvm_delete_function(fn: LLVMValueRef) = "__llvm_delete_function"
+pub extern "C" fn llvm_delete_function(func: LLVMValueRef) = "__llvm_delete_function"
 //
-// pub extern "C" fn llvm_has_personality_fn(fn: LLVMValueRef) -> LLVMBool = "__llvm_has_personality_fn"
+pub extern "C" fn llvm_has_personality_fn(func: LLVMValueRef) -> LLVMBool = "__llvm_has_personality_fn"
 //
-// pub extern "C" fn llvm_get_personality_fn(fn: LLVMValueRef) -> LLVMValueRef = "__llvm_get_personality_fn"
+pub extern "C" fn llvm_get_personality_fn(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_personality_fn"
 //
-// pub extern "C" fn llvm_set_personality_fn(fn: LLVMValueRef, personality_fn: LLVMValueRef) = "__llvm_set_personality_fn"
+pub extern "C" fn llvm_set_personality_fn(func: LLVMValueRef, personality_fn: LLVMValueRef) = "__llvm_set_personality_fn"
 //
 pub extern "C" fn llvm_lookup_intrinsic_id(name: CStr, name_len: UInt64) -> UInt = "__llvm_lookup_intrinsic_id"
 //
-// pub extern "C" fn llvm_get_intrinsic_id(fn: LLVMValueRef) -> UInt = "__llvm_get_intrinsic_id"
+pub extern "C" fn llvm_get_intrinsic_id(func: LLVMValueRef) -> UInt = "__llvm_get_intrinsic_id"
 
 pub extern "C" fn llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMValueRef = "__llvm_get_intrinsic_declaration"
 
@@ -856,25 +854,25 @@ pub extern "C" fn llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: U
 
 pub extern "C" fn llvm_intrinsic_is_overloaded(id: UInt) -> LLVMBool = "__llvm_intrinsic_is_overloaded"
 
-// pub extern "C" fn llvm_get_function_call_conv(fn: LLVMValueRef) -> UInt = "__llvm_get_function_call_conv"
-//
-// pub extern "C" fn llvm_set_function_call_conv(fn: LLVMValueRef, cc: UInt) = "__llvm_set_function_call_conv"
-//
-// pub extern "C" fn llvm_get_gc(fn: LLVMValueRef) -> CStr = "__llvm_get_gc"
-//
-// pub extern "C" fn llvm_set_gc(fn: LLVMValueRef, name: CStr) = "__llvm_set_gc"
-//
-// pub extern "C" fn llvm_get_prefix_data(fn: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prefix_data"
-//
-// pub extern "C" fn llvm_has_prefix_data(fn: LLVMValueRef) -> LLVMBool = "__llvm_has_prefix_data"
-//
-// pub extern "C" fn llvm_set_prefix_data(fn: LLVMValueRef, prefix_data: LLVMValueRef) = "__llvm_set_prefix_data"
-//
-// pub extern "C" fn llvm_get_prologue_data(fn: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prologue_data"
-//
-// pub extern "C" fn llvm_has_prologue_data(fn: LLVMValueRef) -> LLVMBool = "__llvm_has_prologue_data"
-//
-// pub extern "C" fn llvm_set_prologue_data(fn: LLVMValueRef, prologue_data: LLVMValueRef) = "__llvm_set_prologue_data"
+pub extern "C" fn llvm_get_function_call_conv(func: LLVMValueRef) -> UInt = "__llvm_get_function_call_conv"
+
+pub extern "C" fn llvm_set_function_call_conv(func: LLVMValueRef, cc: UInt) = "__llvm_set_function_call_conv"
+
+pub extern "C" fn llvm_get_gc(func: LLVMValueRef) -> CStr = "__llvm_get_gc"
+
+pub extern "C" fn llvm_set_gc(func: LLVMValueRef, name: CStr) = "__llvm_set_gc"
+
+pub extern "C" fn llvm_get_prefix_data(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prefix_data"
+
+pub extern "C" fn llvm_has_prefix_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prefix_data"
+
+pub extern "C" fn llvm_set_prefix_data(func: LLVMValueRef, prefix_data: LLVMValueRef) = "__llvm_set_prefix_data"
+
+pub extern "C" fn llvm_get_prologue_data(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prologue_data"
+
+pub extern "C" fn llvm_has_prologue_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prologue_data"
+
+pub extern "C" fn llvm_set_prologue_data(func: LLVMValueRef, prologue_data: LLVMValueRef) = "__llvm_set_prologue_data"
 
 pub extern "C" fn llvm_add_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, a: LLVMAttributeRef) = "__llvm_add_attribute_at_index"
 
@@ -894,7 +892,8 @@ pub extern "C" fn llvm_add_target_dependent_function_attr(func: LLVMValueRef, a:
 
 pub extern "C" fn llvm_count_params(func: LLVMValueRef) -> UInt = "__llvm_count_params"
 
-// pub extern "C" fn llvm_get_params(func: LLVMValueRef, params: Ptr[LLVMValueRef]) = "__llvm_get_params"
+// FIXME: Not implemented
+pub extern "C" fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_params"
 
 pub extern "C" fn llvm_get_param(func: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_param"
 
@@ -942,7 +941,8 @@ pub extern "C" fn llvm_value_as_metadata(val: LLVMValueRef) -> LLVMMetadataRef =
 
 pub extern "C" fn llvm_get_md_node_num_operands(v: LLVMValueRef) -> UInt = "__llvm_get_md_node_num_operands"
 
-// pub extern "C" fn llvm_get_md_node_operands(v: LLVMValueRef, dest: Ptr[LLVMValueRef]) = "__llvm_get_md_node_operands"
+// FIXME: Not implemented
+pub extern "C" fn llvm_get_md_node_operands(v: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_md_node_operands" 
 
 pub extern "C" fn llvm_replace_md_node_operand_with(v: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) = "__llvm_replace_md_node_operand_with"
 
@@ -976,13 +976,13 @@ pub extern "C" fn llvm_get_basic_block_parent(bb: LLVMBasicBlockRef) -> LLVMValu
 
 pub extern "C" fn llvm_get_basic_block_terminator(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_basic_block_terminator"
 
-// pub extern "C" fn llvm_count_basic_blocks(fn: LLVMValueRef) -> UInt = "__llvm_count_basic_blocks"
+pub extern "C" fn llvm_count_basic_blocks(func: LLVMValueRef) -> UInt = "__llvm_count_basic_blocks"
 
-// pub extern "C" fn llvm_get_basic_blocks(fn: LLVMValueRef, basic_blocks: Ptr[LLVMBasicBlockRef]) = "__llvm_get_basic_blocks"
+pub extern "C" fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[BasicBlock] = "__llvm_get_basic_blocks"
 
-// pub extern "C" fn llvm_get_first_basic_block(fn: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_first_basic_block"
+pub extern "C" fn llvm_get_first_basic_block(func: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_first_basic_block"
 
-// pub extern "C" fn llvm_get_last_basic_block(fn: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_last_basic_block"
+pub extern "C" fn llvm_get_last_basic_block(func: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_last_basic_block"
 
 pub extern "C" fn llvm_get_next_basic_block(bb: LLVMBasicBlockRef) -> LLVMBasicBlockRef = "__llvm_get_next_basic_block"
 
@@ -1092,9 +1092,9 @@ pub extern "C" fn llvm_is_tail_call(call_inst: LLVMValueRef) -> LLVMBool = "__ll
 
 pub extern "C" fn llvm_set_tail_call(call_inst: LLVMValueRef, is_tail_call: LLVMBool) = "__llvm_set_tail_call"
 
-// pub extern "C" fn llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> LLVMTailCallKind = "__llvm_get_tail_call_kind"
+pub extern "C" fn llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> LLVMTailCallKind = "__llvm_get_tail_call_kind"
 
-// pub extern "C" fn llvm_set_tail_call_kind(call_inst: LLVMValueRef, kind: LLVMTailCallKind) = "__llvm_set_tail_call_kind"
+pub extern "C" fn llvm_set_tail_call_kind(call_inst: LLVMValueRef, kind: LLVMTailCallKind) = "__llvm_set_tail_call_kind"
 
 pub extern "C" fn llvm_get_normal_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_normal_dest"
 
@@ -1142,7 +1142,8 @@ pub extern "C" fn llvm_get_incoming_block(phi_node: LLVMValueRef, index: UInt) -
 
 pub extern "C" fn llvm_get_num_indices(inst: LLVMValueRef) -> UInt = "__llvm_get_num_indices"
 
-// pub extern "C" fn llvm_get_indices(inst: LLVMValueRef) -> Ptr[UInt] = "__llvm_get_indices"
+// FIXME: Not implemented
+pub extern "C" fn llvm_get_indices(inst: LLVMValueRef) -> Array[UInt] = "__llvm_get_indices"
 
 pub extern "C" fn llvm_create_builder_in_context(context: LLVMContextRef) -> LLVMBuilderRef = "__llvm_create_builder_in_context"
 
@@ -1198,11 +1199,11 @@ pub extern "C" fn llvm_build_switch(builder: LLVMBuilderRef, v: LLVMValueRef, el
 
 pub extern "C" fn llvm_build_indirect_br(builder: LLVMBuilderRef, addr: LLVMValueRef, num_dests: UInt) -> LLVMValueRef = "__llvm_build_indirect_br"
 
-// pub extern "C" fn llvm_build_call_br(builder: LLVMBuilderRef, ty: LLVMTypeRef, fn: LLVMValueRef, default_dest: LLVMBasicBlockRef, indirect_dests: Array[LLVMBasicBlockRef], args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_call_br"
-//
-// pub extern "C" fn llvm_build_invoke2(builder: LLVMBuilderRef, ty: LLVMTypeRef, fn: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, name: CStr) -> LLVMValueRef = "__llvm_build_invoke2"
-//
-// pub extern "C" fn llvm_build_invoke_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, fn: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_invoke_with_operand_bundles"
+pub extern "C" fn llvm_build_call_br(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, default_dest: LLVMBasicBlockRef, indirect_dests: Array[LLVMBasicBlockRef], args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_call_br"
+
+pub extern "C" fn llvm_build_invoke2(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, name: CStr) -> LLVMValueRef = "__llvm_build_invoke2"
+
+pub extern "C" fn llvm_build_invoke_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_invoke_with_operand_bundles"
 
 pub extern "C" fn llvm_build_unreachable(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_build_unreachable"
 
@@ -1238,7 +1239,7 @@ pub extern "C" fn llvm_add_handler(catch_switch: LLVMValueRef, dest: LLVMBasicBl
 
 pub extern "C" fn llvm_get_num_handlers(catch_switch: LLVMValueRef) -> UInt = "__llvm_get_num_handlers"
 
-// pub extern "C" fn llvm_get_handlers(catch_switch: LLVMValueRef, handlers: Ptr[LLVMBasicBlockRef]) = "__llvm_get_handlers"
+pub extern "C" fn llvm_get_handlers(catch_switch: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "__llvm_get_handlers"
 
 pub extern "C" fn llvm_get_arg_operand(funclet: LLVMValueRef, i: UInt) -> LLVMValueRef = "__llvm_get_arg_operand"
 
@@ -1330,15 +1331,25 @@ pub extern "C" fn llvm_get_n_neg(non_neg_inst: LLVMValueRef) -> LLVMBool = "__ll
 
 pub extern "C" fn llvm_set_n_neg(non_neg_inst: LLVMValueRef, is_non_neg: LLVMBool) = "__llvm_set_n_neg"
 
-// pub extern "C" fn llvm_get_fast_math_flags(fp_math_inst: LLVMValueRef) -> LLVMFastMathFlags = "__llvm_get_fast_math_flags"
+pub extern "C" fn llvm_get_fast_math_flags(fp_math_inst: LLVMValueRef) -> LLVMFastMathFlags = "__llvm_get_fast_math_flags"
 
-// pub extern "C" fn llvm_set_fast_math_flags(fp_math_inst: LLVMValueRef, fmf: LLVMFastMathFlags) = "__llvm_set_fast_math_flags"
+pub extern "C" fn llvm_set_fast_math_flags(fp_math_inst: LLVMValueRef, fmf: LLVMFastMathFlags) = "__llvm_set_fast_math_flags"
 
 pub extern "C" fn llvm_can_value_use_fast_math_flags(inst: LLVMValueRef) -> LLVMBool = "__llvm_can_value_use_fast_math_flags"
 
 pub extern "C" fn llvm_get_is_disjoint(inst: LLVMValueRef) -> LLVMBool = "__llvm_get_is_disjoint"
+pub fn LLVMValueRef::get_is_disjoint(self: LLVMValueRef) -> Bool {
+  let is_disjoint = llvm_get_is_disjoint(self);
+  to_moonbit_bool(is_disjoint)
+}
 
-pub extern "C" fn llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: LLVMBool) = "__llvm_set_is_disjoint"
+extern "C" fn __llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: LLVMBool) = "__llvm_set_is_disjoint"
+pub fn llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: Bool) -> Unit {
+  __llvm_set_is_disjoint(inst, to_llvm_bool(is_disjoint))
+}
+pub fn LLVMValueRef::set_is_disjoint(self: LLVMValueRef, is_disjoint: Bool) -> Unit {
+  llvm_set_is_disjoint(self, is_disjoint)
+}
 
 pub extern "C" fn llvm_build_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_malloc"
 
@@ -1372,19 +1383,26 @@ pub extern "C" fn llvm_build_global_string_ptr(builder: LLVMBuilderRef, str: CSt
 
 pub extern "C" fn llvm_get_volatile(memory_access_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_volatile"
 
-pub extern "C" fn llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: LLVMBool) = "__llvm_set_volatile"
+extern "C" fn __llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: LLVMBool) = "__llvm_set_volatile"
+pub fn llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: Bool) -> Unit {
+  __llvm_set_volatile(memory_access_inst, to_llvm_bool(is_volatile))
+}
+pub fn LLVMValueRef::set_volatile(self: LLVMValueRef, is_volatile: Bool) -> Unit {
+  llvm_set_volatile(self, is_volatile)
+}
+
 
 pub extern "C" fn llvm_get_weak(cmp_xchg_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_weak"
 
 pub extern "C" fn llvm_set_weak(cmp_xchg_inst: LLVMValueRef, is_weak: LLVMBool) = "__llvm_set_weak"
 
-// pub extern "C" fn llvm_get_ordering(memory_access_inst: LLVMValueRef) -> LLVMAtomicOrdering = "__llvm_get_ordering"
+pub extern "C" fn llvm_get_ordering(memory_access_inst: LLVMValueRef) -> LLVMAtomicOrdering = "__llvm_get_ordering"
 
-// pub extern "C" fn llvm_set_ordering(memory_access_inst: LLVMValueRef, ordering: LLVMAtomicOrdering) = "__llvm_set_ordering"
+pub extern "C" fn llvm_set_ordering(memory_access_inst: LLVMValueRef, ordering: LLVMAtomicOrdering) = "__llvm_set_ordering"
 
-// pub extern "C" fn llvm_get_atomic_rmw_bin_op(atomic_rmw_inst: LLVMValueRef) -> LLVMAtomicRMWBinOp = "__llvm_get_atomic_rmw_bin_op"
+pub extern "C" fn llvm_get_atomic_rmw_bin_op(atomic_rmw_inst: LLVMValueRef) -> LLVMAtomicRMWBinOp = "__llvm_get_atomic_rmw_bin_op"
 
-// pub extern "C" fn llvm_set_atomic_rmw_bin_op(atomic_rmw_inst: LLVMValueRef, bin_op: LLVMAtomicRMWBinOp) = "__llvm_set_atomic_rmw_bin_op"
+pub extern "C" fn llvm_set_atomic_rmw_bin_op(atomic_rmw_inst: LLVMValueRef, bin_op: LLVMAtomicRMWBinOp) = "__llvm_set_atomic_rmw_bin_op"
 
 pub extern "C" fn llvm_build_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_trunc"
 
@@ -1446,7 +1464,6 @@ pub fn llvm_build_icmp(builder: LLVMBuilderRef, op: LLVMIntPredicate, lhs: LLVMV
 }
 
 
-// pub extern "C" fn llvm_build_fcmp(builder: LLVMBuilderRef, op: LLVMRealPredicate, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_fcmp"
 extern "C" fn __llvm_build_fcmp(builder: LLVMBuilderRef, op: Int, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_fcmp"
 pub fn llvm_build_fcmp(builder: LLVMBuilderRef, op: LLVMRealPredicate, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef {
   let code = op.to_int()
@@ -1455,9 +1472,9 @@ pub fn llvm_build_fcmp(builder: LLVMBuilderRef, op: LLVMRealPredicate, lhs: LLVM
 
 pub extern "C" fn llvm_build_phi(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_phi"
 
-// pub extern "C" fn llvm_build_call2(builder: LLVMBuilderRef, ty: LLVMTypeRef, fn: LLVMValueRef, args: Array[LLVMValueRef], name: CStr) -> LLVMValueRef = "__llvm_build_call2"
+pub extern "C" fn llvm_build_call2(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], name: CStr) -> LLVMValueRef = "__llvm_build_call2"
 
-// pub extern "C" fn llvm_build_call_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, fn: LLVMValueRef, args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_call_with_operand_bundles"
+pub extern "C" fn llvm_build_call_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: CStr) -> LLVMValueRef = "__llvm_build_call_with_operand_bundles"
 
 pub extern "C" fn llvm_build_select(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMValueRef, else_block: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_select"
 

@@ -61,7 +61,7 @@ int32_t llvm_type_kind_to_int(LLVMTypeKind k) {
   }
 }
 
-LLVMTypeKind int_to_llvm_type_kind(int32_t k) {
+LLVMTypeKind llvm_type_kind_from_int(int32_t k) {
   switch (k) {
   case 0:
     return LLVMVoidTypeKind;
@@ -107,6 +107,880 @@ LLVMTypeKind int_to_llvm_type_kind(int32_t k) {
     return LLVMTargetExtTypeKind;
   default:
     panic("Error during Moonbit Convert to LLVMTypeKind");
+  }
+}
+
+int llvm_opcode_to_int(LLVMOpcode self) {
+  switch (self) {
+  case LLVMRet:
+    return 0;
+  case LLVMBr:
+    return 1;
+  case LLVMSwitch:
+    return 2;
+  case LLVMIndirectBr:
+    return 3;
+  case LLVMInvoke:
+    return 4;
+  case LLVMUnreachable:
+    return 5;
+  case LLVMCallBr:
+    return 6;
+  case LLVMFNeg:
+    return 7;
+  case LLVMAdd:
+    return 8;
+  case LLVMFAdd:
+    return 9;
+  case LLVMSub:
+    return 10;
+  case LLVMFSub:
+    return 11;
+  case LLVMMul:
+    return 12;
+  case LLVMFMul:
+    return 13;
+  case LLVMUDiv:
+    return 14;
+  case LLVMSDiv:
+    return 15;
+  case LLVMFDiv:
+    return 16;
+  case LLVMURem:
+    return 17;
+  case LLVMSRem:
+    return 18;
+  case LLVMFRem:
+    return 19;
+  case LLVMShl:
+    return 20;
+  case LLVMLShr:
+    return 21;
+  case LLVMAShr:
+    return 22;
+  case LLVMAnd:
+    return 23;
+  case LLVMOr:
+    return 24;
+  case LLVMXor:
+    return 25;
+  case LLVMAlloca:
+    return 26;
+  case LLVMLoad:
+    return 27;
+  case LLVMStore:
+    return 28;
+  case LLVMGetElementPtr:
+    return 29;
+  case LLVMTrunc:
+    return 30;
+  case LLVMZExt:
+    return 31;
+  case LLVMSExt:
+    return 32;
+  case LLVMFPToUI:
+    return 33;
+  case LLVMFPToSI:
+    return 34;
+  case LLVMUIToFP:
+    return 35;
+  case LLVMSIToFP:
+    return 36;
+  case LLVMFPTrunc:
+    return 37;
+  case LLVMFPExt:
+    return 38;
+  case LLVMPtrToInt:
+    return 39;
+  case LLVMIntToPtr:
+    return 40;
+  case LLVMBitCast:
+    return 41;
+  case LLVMAddrSpaceCast:
+    return 42;
+  case LLVMICmp:
+    return 43;
+  case LLVMFCmp:
+    return 44;
+  case LLVMPHI:
+    return 45;
+  case LLVMCall:
+    return 46;
+  case LLVMSelect:
+    return 47;
+  case LLVMUserOp1:
+    return 48;
+  case LLVMUserOp2:
+    return 49;
+  case LLVMVAArg:
+    return 50;
+  case LLVMExtractElement:
+    return 51;
+  case LLVMInsertElement:
+    return 52;
+  case LLVMShuffleVector:
+    return 53;
+  case LLVMExtractValue:
+    return 54;
+  case LLVMInsertValue:
+    return 55;
+  case LLVMFreeze:
+    return 56;
+  case LLVMFence:
+    return 57;
+  case LLVMAtomicCmpXchg:
+    return 58;
+  case LLVMAtomicRMW:
+    return 59;
+  case LLVMResume:
+    return 60;
+  case LLVMLandingPad:
+    return 61;
+  case LLVMCleanupRet:
+    return 62;
+  case LLVMCatchRet:
+    return 63;
+  case LLVMCatchPad:
+    return 64;
+  case LLVMCleanupPad:
+    return 65;
+  case LLVMCatchSwitch:
+    return 66;
+  default:
+    panic("Unknown Error happened, loc: llvm_opcode_to_int");
+  }
+}
+
+LLVMOpcode llvm_opcode_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMRet;
+  case 1:
+    return LLVMBr;
+  case 2:
+    return LLVMSwitch;
+  case 3:
+    return LLVMIndirectBr;
+  case 4:
+    return LLVMInvoke;
+  case 5:
+    return LLVMUnreachable;
+  case 6:
+    return LLVMCallBr;
+  case 7:
+    return LLVMFNeg;
+  case 8:
+    return LLVMAdd;
+  case 9:
+    return LLVMFAdd;
+  case 10:
+    return LLVMSub;
+  case 11:
+    return LLVMFSub;
+  case 12:
+    return LLVMMul;
+  case 13:
+    return LLVMFMul;
+  case 14:
+    return LLVMUDiv;
+  case 15:
+    return LLVMSDiv;
+  case 16:
+    return LLVMFDiv;
+  case 17:
+    return LLVMURem;
+  case 18:
+    return LLVMSRem;
+  case 19:
+    return LLVMFRem;
+  case 20:
+    return LLVMShl;
+  case 21:
+    return LLVMLShr;
+  case 22:
+    return LLVMAShr;
+  case 23:
+    return LLVMAnd;
+  case 24:
+    return LLVMOr;
+  case 25:
+    return LLVMXor;
+  case 26:
+    return LLVMAlloca;
+  case 27:
+    return LLVMLoad;
+  case 28:
+    return LLVMStore;
+  case 29:
+    return LLVMGetElementPtr;
+  case 30:
+    return LLVMTrunc;
+  case 31:
+    return LLVMZExt;
+  case 32:
+    return LLVMSExt;
+  case 33:
+    return LLVMFPToUI;
+  case 34:
+    return LLVMFPToSI;
+  case 35:
+    return LLVMUIToFP;
+  case 36:
+    return LLVMSIToFP;
+  case 37:
+    return LLVMFPTrunc;
+  case 38:
+    return LLVMFPExt;
+  case 39:
+    return LLVMPtrToInt;
+  case 40:
+    return LLVMIntToPtr;
+  case 41:
+    return LLVMBitCast;
+  case 42:
+    return LLVMAddrSpaceCast;
+  case 43:
+    return LLVMICmp;
+  case 44:
+    return LLVMFCmp;
+  case 45:
+    return LLVMPHI;
+  case 46:
+    return LLVMCall;
+  case 47:
+    return LLVMSelect;
+  case 48:
+    return LLVMUserOp1;
+  case 49:
+    return LLVMUserOp2;
+  case 50:
+    return LLVMVAArg;
+  case 51:
+    return LLVMExtractElement;
+  case 52:
+    return LLVMInsertElement;
+  case 53:
+    return LLVMShuffleVector;
+  case 54:
+    return LLVMExtractValue;
+  case 55:
+    return LLVMInsertValue;
+  case 56:
+    return LLVMFreeze;
+  case 57:
+    return LLVMFence;
+  case 58:
+    return LLVMAtomicCmpXchg;
+  case 59:
+    return LLVMAtomicRMW;
+  case 60:
+    return LLVMResume;
+  case 61:
+    return LLVMLandingPad;
+  case 62:
+    return LLVMCleanupRet;
+  case 63:
+    return LLVMCatchRet;
+  case 64:
+    return LLVMCatchPad;
+  case 65:
+    return LLVMCleanupPad;
+  case 66:
+    return LLVMCatchSwitch;
+  default:
+    panic("Unknown Error happened, loc: llvm_opcode_from_int");
+  }
+}
+
+int llvm_linkage_to_int(LLVMLinkage self) {
+  switch (self) {
+  case LLVMExternalLinkage:
+    return 0;
+  case LLVMAvailableExternallyLinkage:
+    return 1;
+  case LLVMLinkOnceAnyLinkage:
+    return 2;
+  case LLVMLinkOnceODRLinkage:
+    return 3;
+  case LLVMLinkOnceODRAutoHideLinkage:
+    return 4;
+  case LLVMWeakAnyLinkage:
+    return 5;
+  case LLVMWeakODRLinkage:
+    return 6;
+  case LLVMAppendingLinkage:
+    return 7;
+  case LLVMInternalLinkage:
+    return 8;
+  case LLVMPrivateLinkage:
+    return 9;
+  case LLVMDLLImportLinkage:
+    return 10;
+  case LLVMDLLExportLinkage:
+    return 11;
+  case LLVMExternalWeakLinkage:
+    return 12;
+  case LLVMGhostLinkage:
+    return 13;
+  case LLVMCommonLinkage:
+    return 14;
+  case LLVMLinkerPrivateLinkage:
+    return 15;
+  case LLVMLinkerPrivateWeakLinkage:
+    return 16;
+  default:
+    panic("Unknown Error happened, loc: llvm_linkage_to_int");
+  }
+}
+
+LLVMLinkage llvm_linkage_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMExternalLinkage;
+  case 1:
+    return LLVMAvailableExternallyLinkage;
+  case 2:
+    return LLVMLinkOnceAnyLinkage;
+  case 3:
+    return LLVMLinkOnceODRLinkage;
+  case 4:
+    return LLVMLinkOnceODRAutoHideLinkage;
+  case 5:
+    return LLVMWeakAnyLinkage;
+  case 6:
+    return LLVMWeakODRLinkage;
+  case 7:
+    return LLVMAppendingLinkage;
+  case 8:
+    return LLVMInternalLinkage;
+  case 9:
+    return LLVMPrivateLinkage;
+  case 10:
+    return LLVMDLLImportLinkage;
+  case 11:
+    return LLVMDLLExportLinkage;
+  case 12:
+    return LLVMExternalWeakLinkage;
+  case 13:
+    return LLVMGhostLinkage;
+  case 14:
+    return LLVMCommonLinkage;
+  case 15:
+    return LLVMLinkerPrivateLinkage;
+  case 16:
+    return LLVMLinkerPrivateWeakLinkage;
+  default:
+    panic("Unknown Error happened, loc: llvm_linkage_from_int");
+  }
+}
+
+int llvm_visibility_to_int(LLVMVisibility self) {
+  switch (self) {
+  case LLVMDefaultVisibility:
+    return 0;
+  case LLVMHiddenVisibility:
+    return 1;
+  case LLVMProtectedVisibility:
+    return 2;
+  default:
+    panic("Unknown Error happened, loc: llvm_visibility_to_int");
+  }
+}
+
+LLVMVisibility llvm_visibility_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMDefaultVisibility;
+  case 1:
+    return LLVMHiddenVisibility;
+  case 2:
+    return LLVMProtectedVisibility;
+  default:
+    panic("Unknown Error happened, loc: llvm_visibility_from_int");
+  }
+}
+
+int llvm_unnamed_addr_to_int(LLVMUnnamedAddr self) {
+  switch (self) {
+  case LLVMNoUnnamedAddr:
+    return 0;
+  case LLVMLocalUnnamedAddr:
+    return 1;
+  case LLVMGlobalUnnamedAddr:
+    return 2;
+  default:
+    panic("Unknown Error happened, loc: llvm_unnamed_addr_to_int");
+  }
+}
+
+LLVMUnnamedAddr llvm_unnamed_addr_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMNoUnnamedAddr;
+  case 1:
+    return LLVMLocalUnnamedAddr;
+  case 2:
+    return LLVMGlobalUnnamedAddr;
+  default:
+    panic("Unknown Error happened, loc: llvm_unnamed_addr_from_int");
+  }
+}
+
+int llvm_dll_storage_class_to_int(LLVMDLLStorageClass self) {
+  switch (self) {
+  case LLVMDefaultStorageClass:
+    return 0;
+  case LLVMDLLImportStorageClass:
+    return 1;
+  case LLVMDLLExportStorageClass:
+    return 2;
+  default:
+    panic("Unknown Error happened, loc: llvm_dll_storage_class_to_int");
+  }
+}
+
+LLVMDLLStorageClass llvm_dll_storage_class_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMDefaultStorageClass;
+  case 1:
+    return LLVMDLLImportStorageClass;
+  case 2:
+    return LLVMDLLExportStorageClass;
+  default:
+    panic("Unknown Error happened, loc: llvm_dll_storage_class_from_int");
+  }
+}
+
+int llvm_call_conv_to_int(LLVMCallConv self) {
+  switch (self) {
+  case LLVMCCallConv:
+    return 0;
+  case LLVMFastCallConv:
+    return 1;
+  case LLVMColdCallConv:
+    return 2;
+  case LLVMGHCCallConv:
+    return 3;
+  case LLVMHiPECallConv:
+    return 4;
+  case LLVMAnyRegCallConv:
+    return 5;
+  case LLVMPreserveMostCallConv:
+    return 6;
+  case LLVMPreserveAllCallConv:
+    return 7;
+  case LLVMSwiftCallConv:
+    return 8;
+  case LLVMCXXFASTTLSCallConv:
+    return 9;
+  case LLVMX86StdcallCallConv:
+    return 10;
+  case LLVMX86FastcallCallConv:
+    return 11;
+  case LLVMARMAPCSCallConv:
+    return 12;
+  case LLVMARMAAPCSCallConv:
+    return 13;
+  case LLVMARMAAPCSVFPCallConv:
+    return 14;
+  case LLVMMSP430INTRCallConv:
+    return 15;
+  case LLVMX86ThisCallCallConv:
+    return 16;
+  case LLVMPTXKernelCallConv:
+    return 17;
+  case LLVMPTXDeviceCallConv:
+    return 18;
+  case LLVMSPIRFUNCCallConv:
+    return 19;
+  case LLVMSPIRKERNELCallConv:
+    return 20;
+  case LLVMIntelOCLBICallConv:
+    return 21;
+  case LLVMX8664SysVCallConv:
+    return 22;
+  case LLVMWin64CallConv:
+    return 23;
+  case LLVMX86VectorCallCallConv:
+    return 24;
+  case LLVMHHVMCallConv:
+    return 25;
+  case LLVMHHVMCCallConv:
+    return 26;
+  case LLVMX86INTRCallConv:
+    return 27;
+  case LLVMAVRINTRCallConv:
+    return 28;
+  case LLVMAVRSIGNALCallConv:
+    return 29;
+  case LLVMAVRBUILTINCallConv:
+    return 30;
+  case LLVMAMDGPUVSCallConv:
+    return 31;
+  case LLVMAMDGPUGSCallConv:
+    return 32;
+  case LLVMAMDGPUPSCallConv:
+    return 33;
+  case LLVMAMDGPUCSCallConv:
+    return 34;
+  case LLVMAMDGPUKERNELCallConv:
+    return 35;
+  case LLVMX86RegCallCallConv:
+    return 36;
+  case LLVMAMDGPUHSCallConv:
+    return 37;
+  case LLVMMSP430BUILTINCallConv:
+    return 38;
+  case LLVMAMDGPULSCallConv:
+    return 39;
+  case LLVMAMDGPUESCallConv:
+    return 40;
+  default:
+    panic("Unknown Error happened, loc: llvm_call_conv_to_int");
+  }
+}
+
+LLVMCallConv llvm_call_conv_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMCCallConv;
+  case 1:
+    return LLVMFastCallConv;
+  case 2:
+    return LLVMColdCallConv;
+  case 3:
+    return LLVMGHCCallConv;
+  case 4:
+    return LLVMHiPECallConv;
+  case 5:
+    return LLVMAnyRegCallConv;
+  case 6:
+    return LLVMPreserveMostCallConv;
+  case 7:
+    return LLVMPreserveAllCallConv;
+  case 8:
+    return LLVMSwiftCallConv;
+  case 9:
+    return LLVMCXXFASTTLSCallConv;
+  case 10:
+    return LLVMX86StdcallCallConv;
+  case 11:
+    return LLVMX86FastcallCallConv;
+  case 12:
+    return LLVMARMAPCSCallConv;
+  case 13:
+    return LLVMARMAAPCSCallConv;
+  case 14:
+    return LLVMARMAAPCSVFPCallConv;
+  case 15:
+    return LLVMMSP430INTRCallConv;
+  case 16:
+    return LLVMX86ThisCallCallConv;
+  case 17:
+    return LLVMPTXKernelCallConv;
+  case 18:
+    return LLVMPTXDeviceCallConv;
+  case 19:
+    return LLVMSPIRFUNCCallConv;
+  case 20:
+    return LLVMSPIRKERNELCallConv;
+  case 21:
+    return LLVMIntelOCLBICallConv;
+  case 22:
+    return LLVMX8664SysVCallConv;
+  case 23:
+    return LLVMWin64CallConv;
+  case 24:
+    return LLVMX86VectorCallCallConv;
+  case 25:
+    return LLVMHHVMCallConv;
+  case 26:
+    return LLVMHHVMCCallConv;
+  case 27:
+    return LLVMX86INTRCallConv;
+  case 28:
+    return LLVMAVRINTRCallConv;
+  case 29:
+    return LLVMAVRSIGNALCallConv;
+  case 30:
+    return LLVMAVRBUILTINCallConv;
+  case 31:
+    return LLVMAMDGPUVSCallConv;
+  case 32:
+    return LLVMAMDGPUGSCallConv;
+  case 33:
+    return LLVMAMDGPUPSCallConv;
+  case 34:
+    return LLVMAMDGPUCSCallConv;
+  case 35:
+    return LLVMAMDGPUKERNELCallConv;
+  case 36:
+    return LLVMX86RegCallCallConv;
+  case 37:
+    return LLVMAMDGPUHSCallConv;
+  case 38:
+    return LLVMMSP430BUILTINCallConv;
+  case 39:
+    return LLVMAMDGPULSCallConv;
+  case 40:
+    return LLVMAMDGPUESCallConv;
+  default:
+    panic("Unknown Error happened, loc: llvm_call_conv_from_int");
+  }
+}
+
+int llvm_value_kind_to_int(LLVMValueKind self) {
+  switch (self) {
+  case LLVMArgumentValueKind:
+    return 0;
+  case LLVMBasicBlockValueKind:
+    return 1;
+  case LLVMMemoryUseValueKind:
+    return 2;
+  case LLVMMemoryDefValueKind:
+    return 3;
+  case LLVMMemoryPhiValueKind:
+    return 4;
+  case LLVMFunctionValueKind:
+    return 5;
+  case LLVMGlobalAliasValueKind:
+    return 6;
+  case LLVMGlobalIFuncValueKind:
+    return 7;
+  case LLVMGlobalVariableValueKind:
+    return 8;
+  case LLVMBlockAddressValueKind:
+    return 9;
+  case LLVMConstantExprValueKind:
+    return 10;
+  case LLVMConstantArrayValueKind:
+    return 11;
+  case LLVMConstantStructValueKind:
+    return 12;
+  case LLVMConstantVectorValueKind:
+    return 13;
+  case LLVMUndefValueValueKind:
+    return 14;
+  case LLVMConstantAggregateZeroValueKind:
+    return 15;
+  case LLVMConstantDataArrayValueKind:
+    return 16;
+  case LLVMConstantDataVectorValueKind:
+    return 17;
+  case LLVMConstantIntValueKind:
+    return 18;
+  case LLVMConstantFPValueKind:
+    return 19;
+  case LLVMConstantPointerNullValueKind:
+    return 20;
+  case LLVMConstantTokenNoneValueKind:
+    return 21;
+  case LLVMMetadataAsValueValueKind:
+    return 22;
+  case LLVMInlineAsmValueKind:
+    return 23;
+  case LLVMInstructionValueKind:
+    return 24;
+  case LLVMPoisonValueValueKind:
+    return 25;
+  case LLVMConstantTargetNoneValueKind:
+    return 26;
+  default:
+    panic("Unknown Error happened, loc: llvm_value_kind_to_int");
+  }
+}
+
+LLVMValueKind llvm_value_kind_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMArgumentValueKind;
+  case 1:
+    return LLVMBasicBlockValueKind;
+  case 2:
+    return LLVMMemoryUseValueKind;
+  case 3:
+    return LLVMMemoryDefValueKind;
+  case 4:
+    return LLVMMemoryPhiValueKind;
+  case 5:
+    return LLVMFunctionValueKind;
+  case 6:
+    return LLVMGlobalAliasValueKind;
+  case 7:
+    return LLVMGlobalIFuncValueKind;
+  case 8:
+    return LLVMGlobalVariableValueKind;
+  case 9:
+    return LLVMBlockAddressValueKind;
+  case 10:
+    return LLVMConstantExprValueKind;
+  case 11:
+    return LLVMConstantArrayValueKind;
+  case 12:
+    return LLVMConstantStructValueKind;
+  case 13:
+    return LLVMConstantVectorValueKind;
+  case 14:
+    return LLVMUndefValueValueKind;
+  case 15:
+    return LLVMConstantAggregateZeroValueKind;
+  case 16:
+    return LLVMConstantDataArrayValueKind;
+  case 17:
+    return LLVMConstantDataVectorValueKind;
+  case 18:
+    return LLVMConstantIntValueKind;
+  case 19:
+    return LLVMConstantFPValueKind;
+  case 20:
+    return LLVMConstantPointerNullValueKind;
+  case 21:
+    return LLVMConstantTokenNoneValueKind;
+  case 22:
+    return LLVMMetadataAsValueValueKind;
+  case 23:
+    return LLVMInlineAsmValueKind;
+  case 24:
+    return LLVMInstructionValueKind;
+  case 25:
+    return LLVMPoisonValueValueKind;
+  case 26:
+    return LLVMConstantTargetNoneValueKind;
+  default:
+    panic("Unknown Error happened, loc: llvm_value_kind_from_int");
+  }
+}
+
+int llvm_int_predicate_to_int(LLVMIntPredicate self) {
+  switch (self) {
+  case LLVMIntEQ:
+    return 0;
+  case LLVMIntNE:
+    return 1;
+  case LLVMIntUGT:
+    return 2;
+  case LLVMIntUGE:
+    return 3;
+  case LLVMIntULT:
+    return 4;
+  case LLVMIntULE:
+    return 5;
+  case LLVMIntSGT:
+    return 6;
+  case LLVMIntSGE:
+    return 7;
+  case LLVMIntSLT:
+    return 8;
+  case LLVMIntSLE:
+    return 9;
+  default:
+    panic("Unknown Error happened, loc: llvm_int_predicate_to_int");
+  }
+}
+
+LLVMIntPredicate llvm_int_predicate_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMIntEQ;
+  case 1:
+    return LLVMIntNE;
+  case 2:
+    return LLVMIntUGT;
+  case 3:
+    return LLVMIntUGE;
+  case 4:
+    return LLVMIntULT;
+  case 5:
+    return LLVMIntULE;
+  case 6:
+    return LLVMIntSGT;
+  case 7:
+    return LLVMIntSGE;
+  case 8:
+    return LLVMIntSLT;
+  case 9:
+    return LLVMIntSLE;
+  default:
+    panic("Unknown Error happened, loc: llvm_int_predicate_from_int");
+  }
+}
+
+int llvm_real_predicate_to_int(LLVMRealPredicate self) {
+  switch (self) {
+  case LLVMRealPredicateFalse:
+    return 0;
+  case LLVMRealOEQ:
+    return 1;
+  case LLVMRealOGT:
+    return 2;
+  case LLVMRealOGE:
+    return 3;
+  case LLVMRealOLT:
+    return 4;
+  case LLVMRealOLE:
+    return 5;
+  case LLVMRealONE:
+    return 6;
+  case LLVMRealORD:
+    return 7;
+  case LLVMRealUNO:
+    return 8;
+  case LLVMRealUEQ:
+    return 9;
+  case LLVMRealUGT:
+    return 10;
+  case LLVMRealUGE:
+    return 11;
+  case LLVMRealULT:
+    return 12;
+  case LLVMRealULE:
+    return 13;
+  case LLVMRealUNE:
+    return 14;
+  case LLVMRealPredicateTrue:
+    return 15;
+  default:
+    panic("Unknown Error happened, loc: llvm_real_predicate_to_int");
+  }
+}
+
+LLVMRealPredicate llvm_real_predicate_from_int(int idx) {
+  switch (idx) {
+  case 0:
+    return LLVMRealPredicateFalse;
+  case 1:
+    return LLVMRealOEQ;
+  case 2:
+    return LLVMRealOGT;
+  case 3:
+    return LLVMRealOGE;
+  case 4:
+    return LLVMRealOLT;
+  case 5:
+    return LLVMRealOLE;
+  case 6:
+    return LLVMRealONE;
+  case 7:
+    return LLVMRealORD;
+  case 8:
+    return LLVMRealUNO;
+  case 9:
+    return LLVMRealUEQ;
+  case 10:
+    return LLVMRealUGT;
+  case 11:
+    return LLVMRealUGE;
+  case 12:
+    return LLVMRealULT;
+  case 13:
+    return LLVMRealULE;
+  case 14:
+    return LLVMRealUNE;
+  case 15:
+    return LLVMRealPredicateTrue;
+  default:
+    panic("Unknown Error happened, loc: llvm_real_predicate_from_int");
   }
 }
 
@@ -1495,8 +2369,9 @@ void *__llvm_const_vector(ArrayLLVMValueRef *scalar_constant_vals) {
   return (LLVMValueRef)LLVMConstVector(llvm_scalar_constant_vals, size);
 }
 
-LLVMOpcode __llvm_get_const_opcode(void *constant_val) {
-  return LLVMGetConstOpcode((LLVMValueRef)constant_val);
+int __llvm_get_const_opcode(void *constant_val) {
+  LLVMOpcode code = LLVMGetConstOpcode((LLVMValueRef)constant_val);
+  return llvm_opcode_to_int(code);
 }
 
 void *__llvm_align_of(void *ty) {
@@ -2347,8 +3222,9 @@ void __llvm_delete_instruction(void *inst) {
   LLVMDeleteInstruction((LLVMValueRef)inst);
 }
 
-LLVMOpcode __llvm_get_instruction_opcode(void *inst) {
-  return LLVMGetInstructionOpcode((LLVMValueRef)inst);
+int __llvm_get_instruction_opcode(void *inst) {
+  LLVMOpcode opcode = LLVMGetInstructionOpcode((LLVMValueRef)inst);
+  return llvm_opcode_to_int(opcode);
 }
 
 LLVMIntPredicate __llvm_get_icmp_predicate(void *inst) {
@@ -2976,8 +3852,9 @@ void *__llvm_build_xor(void *builder, void *lhs, void *rhs, void *name) {
                                     (LLVMValueRef)rhs, (const char *)name);
 }
 
-void *__llvm_build_bin_op(void *builder, LLVMOpcode op, void *lhs, void *rhs,
+void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                           void *name) {
+  LLVMOpcode op = llvm_opcode_from_int(op_code);
   return (LLVMValueRef)LLVMBuildBinOp((LLVMBuilderRef)builder, op,
                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
                                       (const char *)name);
@@ -3298,8 +4175,9 @@ void *__llvm_build_trunc_or_bit_cast(void *builder, void *val, void *dest_ty,
       (const char *)name);
 }
 
-void *__llvm_build_cast(void *builder, LLVMOpcode op, void *val, void *dest_ty,
+void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                         void *name) {
+  LLVMOpcode op = llvm_opcode_from_int(op_code);
   return (LLVMValueRef)LLVMBuildCast((LLVMBuilderRef)builder, op,
                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
                                      (const char *)name);
@@ -3333,10 +4211,11 @@ void *__llvm_build_int_cast(void *builder, void *val, void *dest_ty,
                                         (const char *)name);
 }
 
-LLVMOpcode __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed,
-                                  void *dest_ty, LLVMBool dest_is_signed) {
-  return LLVMGetCastOpcode((LLVMValueRef)src, src_is_signed,
-                           (LLVMTypeRef)dest_ty, dest_is_signed);
+int __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed, void *dest_ty,
+                           LLVMBool dest_is_signed) {
+  LLVMOpcode code = LLVMGetCastOpcode((LLVMValueRef)src, src_is_signed,
+                                      (LLVMTypeRef)dest_ty, dest_is_signed);
+  return llvm_opcode_to_int(code);
 }
 
 void *__llvm_build_icmp(void *builder, LLVMIntPredicate op, void *lhs,

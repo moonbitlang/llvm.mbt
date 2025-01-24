@@ -347,9 +347,9 @@ pub fn get_address_space(self: PointerType) -> AddressSpace {
 }
 
 
-// pub fn const_null(self: PointerType) -> PointerValue {
-//   PointerValue::new(llvm_const_null(self.as_type_ref()))
-// }
+pub fn const_null(self: PointerType) -> PointerValue {
+  PointerValue::new(llvm_const_null(self.as_type_ref()))
+}
 
 // pub fn const_zero(self: PointerType) -> PointerValue {
 //   PointerValue::new(llvm_const_zero(self.as_type_ref()))
@@ -400,21 +400,21 @@ pub impl TypeRef for StructType with as_type_ref(
   self.ty.as_type_ref()
 }
 
-// pub fn StructType::is_opaque(self: StructType) -> Bool {
-//   llvm_is_opaque_struct(self.as_type_ref()) == 1
-// }
+pub fn StructType::is_opaque(self: StructType) -> Bool {
+  llvm_is_opaque_struct(self.as_type_ref()) == 1
+}
 
-// pub fn StructType::count_fields(self: StructType) -> UInt {
-//   llvm_count_struct_fields(self.as_type_ref())
-// }
+pub fn StructType::count_fields(self: StructType) -> UInt {
+  llvm_count_struct_element_types(self.as_type_ref())
+}
 
 // pub fn StructType::get_field_types(self: StructType) -> Array[BaiscTypeEnum] {
 //
 // }
 
-// pub fn StructType::get_poison(self: StructType) -> StructValue {
-//   StructValue::new(llvm_get_poison(self.as_type_ref()))
-// }
+pub fn StructType::get_poison(self: StructType) -> StructValue {
+  StructValue::new(llvm_get_poison(self.as_type_ref()))
+}
 
 pub fn StructType::to_string(self: StructType) -> String {
   self.ty.to_string()

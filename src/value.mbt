@@ -59,15 +59,15 @@ fn Value::replace_all_uses_with(self: Value, new_value: Value) -> Unit {
   llvm_replace_all_uses_with(self.as_value_ref(), new_value.as_value_ref())
 }
 
-// pub fn Value::get_first_use(self: Value) -> BasicValueUse? {
-//   let use_ = llvm_get_first_use(self.as_value_ref())
-//
-//   if use_.is_null() {
-//     None
-//   }
-//
-//   Some(BasicValueUse::new(use_))
-// }
+pub fn Value::get_first_use(self: Value) -> BasicValueUse? {
+  let use_ = llvm_get_first_use(self.as_value_ref())
+
+  if use_.is_null() {
+    None
+  } else {
+    Some(BasicValueUse::new(use_))
+  }
+}
 
 // pub fn get_section(self: Value) -> String?
 // pub fn set_section(self: Value) -> String?
@@ -412,17 +412,17 @@ pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
   llvm_isa_alloca_inst(self.as_value_ref()).is_null()
 }
 
-// pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_getelementptr_inst(self.as_value_ref()).is_null()
-// }
+pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
+  llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_null()
+}
 //
-// pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_atomicrmw_inst(self.as_value_ref()).is_null()
-// }
-//
-// pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
-//   llvm_isa_cmpxchg_inst(self.as_value_ref()).is_null()
-// }
+pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
+  llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_null()
+}
+
+pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
+  llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_null()
+}
 
 pub fn InstructionValue::get_name(self: InstructionValue) -> String {
   self.value.get_name()
@@ -433,47 +433,52 @@ pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit 
 }
 
 // pub fn get_instruction_with_name(self: InstructionValue) -> String {
-//   let c_str = llvm_get_instruction_name(self.as_value_ref())
-//   c_str_to_moonbit_str(c_str)
+//   ""
 // }
 
-// pub fn InstructionValue::get_type(self: InstructionValue) -> AnyTypeEnum
+pub fn InstructionValue::get_type(self: InstructionValue) -> AnyTypeEnum {
+  AnyTypeEnum::new(self.value.get_type().as_type_ref())
+}
 
-// pub fn InstructionValue::get_opcode(self: InstructionValue) -> InstructionOpcode
+pub fn InstructionValue::get_opcode(self: InstructionValue) -> InstructionOpcode {
+  let opcode = llvm_get_instruction_opcode(self.as_value_ref())
 
-// pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> InstructionValue? {
-//   let value_ref = llvm_get_previous_instruction(self.as_value_ref())
-//   
-//   if value_ref.is_null() {
-//     None
-//   } else {
-//     Some(InstructionValue::new(value_ref))
-//   }
-// }
-//
-// pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> InstructionValue? {
-//   let value_ref = llvm_get_next_instruction(self.as_value_ref())
-//   
-//   if value_ref.is_null() {
-//     None
-//   } else {
-//     Some(InstructionValue::new(value_ref))
-//   }
-// }
+  opcode.into()
+}
+
+pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> InstructionValue? {
+  let value_ref = llvm_get_previous_instruction(self.as_value_ref())
+  
+  if value_ref.is_null() {
+    None
+  } else {
+    Some(InstructionValue::new(value_ref))
+  }
+}
+
+pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> InstructionValue? {
+  let value_ref = llvm_get_next_instruction(self.as_value_ref())
+  
+  if value_ref.is_null() {
+    None
+  } else {
+    Some(InstructionValue::new(value_ref))
+  }
+}
 
 // TODO: need review, possibly unsafe
-// pub fn InstructionValue::erase_from_basic_block(self: InstructionValue) -> Unit {
-// llvm_instruction_erase_from_parent(self.as_value_ref())
-// }
+pub fn InstructionValue::erase_from_basic_block(self: InstructionValue) -> Unit {
+  llvm_instruction_erase_from_parent(self.as_value_ref())
+}
 
-// pub fn InstructionValue::remove_from_basic_block(self: InstructionValue) -> Unit {
-//   llvm_instruction_remove_from_parent(self.as_value_ref())
-// }
+pub fn InstructionValue::remove_from_basic_block(self: InstructionValue) -> Unit {
+  llvm_instruction_remove_from_parent(self.as_value_ref())
+}
 
-// pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
-//   llvm_is_a_terminator_inst(self.as_value_ref()).is_null()
-// }
-//
+pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
+  llvm_isa_terminator_inst(self.as_value_ref()).is_null()
+}
+
 // pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
 //   // Only apply to terminators
 //   if self.is_terminator() {
@@ -484,37 +489,176 @@ pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit 
 //   }
 // }
 
-// pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
-//   if self.get_opcode() == InstructionOpcode::Call {
-//     llvm_is_tail_call(self.as_value_ref()) == 1
-//   } else {
-//     false
-//   }
-// }
+pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
+  if self.get_opcode() == InstructionOpcode::Call {
+    llvm_is_tail_call(self.as_value_ref()) == 1
+  } else {
+    false
+  }
+}
 
 // Only llvm 18..
-// pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailCallKind? {
-//   if self.get_opcode() == InstructionOpcode::Call {
-//     llvm_get_tail_call_kind(self.as_value_ref())
-//   } else {
-//     None
-//   }
-// }
+pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailCallKind? {
+  if self.get_opcode() == InstructionOpcode::Call {
+    Some(llvm_get_tail_call_kind(self.as_value_ref()))
+  } else {
+    None
+  }
+}
 
-// pub fn InstructionValue::can_use_fast_math_flags(self: InstructionValue) -> bool {
-//   llvm_can_value_use_fast_math_flags(self.as_value_ref()) == 1
-// }
+pub fn InstructionValue::can_use_fast_math_flags(self: InstructionValue) -> Bool {
+  llvm_can_value_use_fast_math_flags(self.as_value_ref()) == 1
+}
 
 // ..... Need More
+pub fn InstructionValue::get_fast_math_flags(self: InstructionValue) -> FastMathFlags? {
+  if self.can_use_fast_math_flags() {
+    Some(llvm_get_fast_math_flags(self.as_value_ref()).to_fast_math_flags())
+  } else {
+    None
+  }
+}
 
-// pub fn InstructionValue::get_num_operands(self: InstructionValue) -> Int {
-//   llvm_get_num_operands(self.as_value_ref())
-// }
+// pub fn get_non_negative_flag(self: InstructionValue) -> Bool?
+// pub fn set_non_negative_flag(self: InstructionValue, flag: Bool) -> Unit
 
+pub fn InstructionValue::get_disjoint_flag(self: InstructionValue) -> Bool? {
+  if self.get_opcode() == InstructionOpcode::Or {
+    Some(self.as_value_ref().get_is_disjoint())
+  } else {
+    None
+  }
+}
+
+pub fn InstructionValue::set_disjoint_flag(self: InstructionValue, flag: Bool) -> Unit {
+  if self.get_opcode() == InstructionOpcode::Or {
+    self.as_value_ref().set_is_disjoint(flag)
+  }
+}
+
+pub fn InstructionValue::get_num_operands(self: InstructionValue) -> Int {
+  llvm_get_num_operands(self.as_value_ref())
+}
 
 pub fn InstructionValue::replace_all_uses_with(self: InstructionValue, new_value: InstructionValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
+
+pub fn InstructionValue::get_volatile(self:InstructionValue)-> Result[Bool,String] {
+  if not(self.is_a_load_inst()) &&
+     not(self.is_a_store_inst()) &&
+     not(self.is_a_atomicrmw_inst()) &&
+     not(self.is_a_cmpxchg_inst()) {
+    return Err("Value is not a load, store, atomicrmw or cmpxchg instruction")
+  }
+
+  Ok(llvm_get_volatile(self.as_value_ref()) == 1)
+}
+
+pub fn InstructionValue::set_volatile(self:InstructionValue, flag: Bool) -> Result[Unit,String] {
+  if not(self.is_a_load_inst()) &&
+     not(self.is_a_store_inst()) &&
+     not(self.is_a_atomicrmw_inst()) &&
+     not(self.is_a_cmpxchg_inst()) {
+    return Err("Value is not a load, store, atomicrmw or cmpxchg instruction")
+  }
+
+  self.as_value_ref().set_volatile(flag)
+  Ok(())
+}
+
+pub fn InstructionValue::get_allocated_type(self: InstructionValue) -> Result[BasicTypeEnum, String] {
+  if not(self.is_a_alloca_inst()) {
+    return Err("Value is not an alloca instruction")
+  }
+
+  Ok(BasicTypeEnum::new(llvm_get_allocated_type(self.as_value_ref())))
+}
+
+pub fn InstructionValue::get_gep_source_element_type(self: InstructionValue) -> Result[BasicTypeEnum, String] {
+  if not(self.is_a_getelementptr_inst()) {
+    return Err("Value is not a getelementptr instruction")
+  }
+  Ok(BasicTypeEnum::new(llvm_get_gep_source_element_type(self.as_value_ref())))
+}
+
+pub fn InstructionValue::get_alignment(self: InstructionValue) -> Result[UInt, String] {
+  if not(self.is_a_alloca_inst()) && not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
+    return Err("Value is not a load, store or alloca instruction")
+  }
+
+  Ok(llvm_get_alignment(self.as_value_ref()))
+}
+
+pub fn InstructionValue::set_alignment(self: InstructionValue, alignment: UInt) -> Result[Unit, String] {
+  fn is_power_of_two(value: UInt) -> Bool {
+    (value & (value - 1)) == 0
+  }
+
+  if not(is_power_of_two(alignment)) && alignment != 0 {
+    return Err("Alignment must be a power of two")
+  }
+
+  if not(self.is_a_alloca_inst()) && not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
+    return Err("Value is not a load, store or alloca instruction")
+  }
+
+  llvm_set_alignment(self.as_value_ref(), alignment)
+  Ok(())
+}
+
+pub fn InstructionValue::get_atomic_ordering(self: InstructionValue) -> Result[AtomicOrdering, String] {
+  if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
+    return Err("Value is not a load or store instruction")
+  }
+
+  Ok(llvm_get_ordering(self.as_value_ref()).into())
+}
+
+// pub fn set_atomic_ordering()
+// pub fn get_operand()
+
+// ...
+
+
+pub fn InstructionValue::get_first_use(self: InstructionValue) -> BasicValueUse? {
+  self.value.get_first_use()
+}
+
+pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredicate? {
+  if self.get_opcode() == InstructionOpcode::ICmp {
+    Some(llvm_get_icmp_predicate(self.as_value_ref()).into())
+  } else {
+    None
+  }
+}
+
+pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPredicate? {
+  if self.get_opcode() == InstructionOpcode::FCmp {
+    Some(llvm_get_fcmp_predicate(self.as_value_ref()).into())
+  } else {
+    None
+  }
+}
+
+// pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> MetadataValue? {
+//   let metadata = llvm_get_metadata(self.as_value_ref(), kind_id)
+//
+//   if metadata.is_null() {
+//     None
+//   } else {
+//     Some(MetadataValue::new(metadata))
+//   }
+// }
+//
+// pub fn InstructionValue::set_metadata(self: InstructionValue, metadata: MetadataValue, kind_id: UInt) -> Result[Unit, String] {
+//   if not(metadata.is_node()) {
+//     return Err("Metadata is expected to be a node.")
+//   }
+//
+//   llvm_set_metadata(self.as_value_ref(), kind_id, metadata.as_metadata_ref())
+//   Ok(())
+// }
 
 pub fn InstructionValue::is_const(self: InstructionValue) -> Bool {
   self.value.is_const()

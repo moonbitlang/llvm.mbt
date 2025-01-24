@@ -2,12 +2,25 @@
 type CStr
 type LLVMBool Int derive(Eq)
 type LLVMAttributeIndex UInt derive(Eq)
+type LLVMFastMathFlags UInt derive(Eq)
+
 type AddressSpace UInt derive(Eq)
+type FastMathFlags UInt derive(Eq)
 
 // Dummpy function, only for eliminate warning
 // FIXME: Remove this function
 pub fn LLVMAttributeIndex::new(idx: UInt) -> LLVMAttributeIndex {
   LLVMAttributeIndex(idx)
+}
+
+pub fn LLVMFastMathFlags::to_fast_math_flags(self: LLVMFastMathFlags) -> FastMathFlags {
+  guard let LLVMFastMathFlags(f) = self
+  FastMathFlags(f)
+}
+
+pub fn FastMathFlags::to_llvm_fast_math_flags(self: FastMathFlags) -> LLVMFastMathFlags {
+  guard let FastMathFlags(f) = self
+  LLVMFastMathFlags(f)
 }
 
 type LLVMMemoryBufferRef
@@ -1122,263 +1135,451 @@ pub fn LLVMTailCallKind::from_int(idx: Int) -> LLVMTailCallKind {
   }
 }
 
-// pub enum IntPredicate {
-//   // Equal
-//   EQ
-//
-//   // Not equal
-//   NE
-//
-//   // Unsigned greater than
-//   UGT
-//
-//   // Unsigned greater than or equal
-//   UGE
-//
-//   // Unsigned less than
-//   ULT
-//
-//   // Unsigned greater than or equal
-//   ULE
-//
-//   // Signed greater than
-//   SGT
-//
-//   // Signed greater than or equal
-//   SGE
-//
-//   // Signed less than
-//   SLT
-//
-//   // Signed less than or equal
-//   SLE
-// } derive(Eq, Show, Hash)
-//
-// pub enum FloatPredicate {
-//   /// Returns true if `left` == `right` and neither are NaN
-//   OEQ
-//
-//   /// Returns true if `left` >= `right` and neither are NaN
-//
-//   OGE
-//
-//   /// Returns true if `left` > `right` and neither are NaN
-//   OGT
-//
-//   /// Returns true if `left` <= `right` and neither are NaN
-//   OLE
-//
-//   /// Returns true if `left` < `right` and neither are NaN
-//   OLT
-//
-//   /// Returns true if `left` != `right` and neither are NaN
-//   ONE
-//
-//   /// Returns true if neither value is NaN
-//   ORD
-//
-//   /// Always returns false
-//   PredicateFalse
-//
-//   /// Always returns true
-//   PredicateTrue
-//
-//   /// Returns true if `left` == `right` or either is NaN
-//   UEQ
-//
-//   /// Returns true if `left` >= `right` or either is NaN
-//   UGE
-//
-//   /// Returns true if `left` > `right` or either is NaN
-//   UGT
-//
-//   /// Returns true if `left` <= `right` or either is NaN
-//   ULE
-//
-//   /// Returns true if `left` < `right` or either is NaN
-//   ULT
-//
-//   /// Returns true if `left` != `right` or either is NaN
-//   UNE
-//
-//   /// Returns true if either value is NaN
-//   UNO
-// } derive(Eq, Show, Hash)
-//
+pub enum IntPredicate {
+  // Equal
+  EQ
 
-// pub enum InstructionOpcode {
-//     Add
-//     AddrSpaceCast
-//     Alloca
-//     And
-//     AShr
-//     AtomicCmpXchg
-//     AtomicRMW
-//     BitCast
-//     Br
-//     Call
-//     CallBr
-//     CatchPad
-//     CatchRet
-//     CatchSwitch
-//     CleanupPad
-//     CleanupRet
-//     ExtractElement
-//     ExtractValue
-//     FNeg
-//     FAdd
-//     FCmp
-//     FDiv
-//     Fence
-//     FMul
-//     FPExt
-//     FPToSI
-//     FPToUI
-//     FPTrunc
-//     Freeze
-//     FRem
-//     FSub
-//     GetElementPtr
-//     ICmp
-//     IndirectBr
-//     InsertElement
-//     InsertValue
-//     IntToPtr
-//     Invoke
-//     LandingPad
-//     Load
-//     LShr
-//     Mul
-//     Or
-//     Phi
-//     PtrToInt
-//     Resume
-//     Return
-//     SDiv
-//     Select
-//     SExt
-//     Shl
-//     ShuffleVector
-//     SIToFP
-//     SRem
-//     Store
-//     Sub
-//     Switch
-//     Trunc
-//     UDiv
-//     UIToFP
-//     Unreachable
-//     URem
-//     UserOp1
-//     UserOp2
-//     VAArg
-//     Xor
-//     ZExt
-// } derive(Eq, Show, Hash)
+  // Not equal
+  NE
+
+  // Unsigned greater than
+  UGT
+
+  // Unsigned greater than or equal
+  UGE
+
+  // Unsigned less than
+  ULT
+
+  // Unsigned greater than or equal
+  ULE
+
+  // Signed greater than
+  SGT
+
+  // Signed greater than or equal
+  SGE
+
+  // Signed less than
+  SLT
+
+  // Signed less than or equal
+  SLE
+} derive(Eq, Show, Hash)
+
+pub fn LLVMIntPredicate::into(self: LLVMIntPredicate) -> IntPredicate {
+  match self {
+    LLVMIntEQ => EQ
+    LLVMIntNE => NE
+    LLVMIntUGT => UGT
+    LLVMIntUGE => UGE
+    LLVMIntULT => ULT
+    LLVMIntULE => ULE
+    LLVMIntSGT => SGT
+    LLVMIntSGE => SGE
+    LLVMIntSLT => SLT
+    LLVMIntSLE => SLE
+  }
+}
+
+pub enum FloatPredicate {
+  /// Returns true if `left` == `right` and neither are NaN
+  OEQ
+
+  /// Returns true if `left` >= `right` and neither are NaN
+
+  OGE
+
+  /// Returns true if `left` > `right` and neither are NaN
+  OGT
+
+  /// Returns true if `left` <= `right` and neither are NaN
+  OLE
+
+  /// Returns true if `left` < `right` and neither are NaN
+  OLT
+
+  /// Returns true if `left` != `right` and neither are NaN
+  ONE
+
+  /// Returns true if neither value is NaN
+  ORD
+
+  /// Always returns false
+  PredicateFalse
+
+  /// Always returns true
+  PredicateTrue
+
+  /// Returns true if `left` == `right` or either is NaN
+  UEQ
+
+  /// Returns true if `left` >= `right` or either is NaN
+  UGE
+
+  /// Returns true if `left` > `right` or either is NaN
+  UGT
+
+  /// Returns true if `left` <= `right` or either is NaN
+  ULE
+
+  /// Returns true if `left` < `right` or either is NaN
+  ULT
+
+  /// Returns true if `left` != `right` or either is NaN
+  UNE
+
+  /// Returns true if either value is NaN
+  UNO
+} derive(Eq, Show, Hash)
+
+fn LLVMRealPredicate::into(self: LLVMRealPredicate) -> FloatPredicate {
+  match self {
+    LLVMRealPredicateFalse => FloatPredicate::PredicateFalse
+    LLVMRealOEQ => OEQ
+    LLVMRealOGT => OGT
+    LLVMRealOGE => OGE
+    LLVMRealOLT => OLT
+    LLVMRealOLE => OLE
+    LLVMRealONE => ONE
+    LLVMRealORD => ORD
+    LLVMRealUNO => UNO
+    LLVMRealUEQ => UEQ
+    LLVMRealUGT => UGT
+    LLVMRealUGE => UGE
+    LLVMRealULT => ULT
+    LLVMRealULE => ULE
+    LLVMRealUNE => UNE
+    LLVMRealPredicateTrue => FloatPredicate::PredicateTrue
+  }
+}
 
 
-// pub enum AtomicOrdering {
-//   NotAtomic
-//
-//   Unordered
-//
-//   Monotonic
-//
-//   Acquire
-//
-//   Release
-//
-//   AcquireRelease
-//
-//   SequentiallyConsistent
-// } derive(Eq, Show, Hash)
-//
-// pub enum AtomicRMWBinOp {
-//   /// Stores to memory and returns the prior value.
-//   Xchg
-//
-//   /// Adds to the value in memory and returns the prior value.
-//   Add
-//
-//   /// Subtract a value off the value in memory and returns the prior value.
-//   Sub
-//
-//   /// Bitwise and into memory and returns the prior value.
-//   And
-//
-//   /// Bitwise nands into memory and returns the prior value.
-//   Nand
-//
-//   /// Bitwise ors into memory and returns the prior value.
-//   Or
-//
-//   /// Bitwise xors into memory and returns the prior value.
-//   Xor
-//
-//   /// Sets memory to the signed-greater of the value provided and the value in memory. Returns the value that was in memory.
-//   Max
-//
-//   /// Sets memory to the signed-lesser of the value provided and the value in memory. Returns the value that was in memory.
-//   Min
-//
-//   /// Sets memory to the unsigned-greater of the value provided and the value in memory. Returns the value that was in memory.
-//   UMax
-//
-//   /// Sets memory to the unsigned-lesser of the value provided and the value in memory. Returns the value that was in memory.
-//   UMin
-//
-//   /// Adds to the float-typed value in memory and returns the prior value.
-//   FAdd
-//
-//   /// Subtract a float-typed value off the value in memory and returns the prior value.
-//   FSub
-//
-//   /// Sets memory to the greater of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
-//   FMax
-//
-//   /// Sets memory to the lesser of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
-//   FMin
-// } derive(Eq, Show, Hash)
-//
-// pub enum OptimizationLevel {
-//   None
-//
-//   Less
-//
-//   Default
-//
-//   Aggressive
-// } derive(Eq, Show, Hash)
-//
-// pub enum GlobalVisibility {
-//   Default
-//
-//   Hidden
-//
-//   Protected
-// } derive(Eq, Show, Hash)
-//
-// pub enum ThreadLocalMode {
-//   NotThreadLocal
-//
-//   GeneralDynamic
-//
-//   LocalDynamic
-//
-//   InitialExec
-//
-//   LocalExec
-// } derive(Eq, Show, Hash)
-//
-// pub enum DLLStorageClass {
-//   Default
-//
-//   DLLImport
-//
-//   DLLExport
-// } derive(Eq, Show, Hash)
-//
-// pub enum InlineAsmDialect {
-//   ATT
-//   Intel
-// } derive(Eq, Show, Hash)
+pub enum InstructionOpcode {
+    Add
+    AddrSpaceCast
+    Alloca
+    And
+    AShr
+    AtomicCmpXchg
+    AtomicRMW
+    BitCast
+    Br
+    Call
+    CallBr
+    CatchPad
+    CatchRet
+    CatchSwitch
+    CleanupPad
+    CleanupRet
+    ExtractElement
+    ExtractValue
+    FNeg
+    FAdd
+    FCmp
+    FDiv
+    Fence
+    FMul
+    FPExt
+    FPToSI
+    FPToUI
+    FPTrunc
+    Freeze
+    FRem
+    FSub
+    GetElementPtr
+    ICmp
+    IndirectBr
+    InsertElement
+    InsertValue
+    IntToPtr
+    Invoke
+    LandingPad
+    Load
+    LShr
+    Mul
+    Or
+    Phi
+    PtrToInt
+    Resume
+    Return
+    SDiv
+    Select
+    SExt
+    Shl
+    ShuffleVector
+    SIToFP
+    SRem
+    Store
+    Sub
+    Switch
+    Trunc
+    UDiv
+    UIToFP
+    Unreachable
+    URem
+    UserOp1
+    UserOp2
+    VAArg
+    Xor
+    ZExt
+} derive(Eq, Show, Hash)
+
+pub fn LLVMOpcode::into(self: LLVMOpcode) -> InstructionOpcode {
+  match self {
+    LLVMRet => Return
+    LLVMBr => Br
+    LLVMSwitch => Switch
+    LLVMIndirectBr => IndirectBr
+    LLVMInvoke => Invoke
+    LLVMResume => Resume
+    LLVMLandingPad => LandingPad
+    LLVMCatchPad => CatchPad
+    LLVMCleanupPad => CleanupPad
+    LLVMCatchRet => CatchRet
+    LLVMCleanupRet => CleanupRet
+    LLVMCatchSwitch => CatchSwitch
+    LLVMAdd => Add
+    LLVMFAdd => FAdd
+    LLVMSub => Sub
+    LLVMFSub => FSub
+    LLVMMul => Mul
+    LLVMFMul => FMul
+    LLVMUDiv => UDiv
+    LLVMSDiv => SDiv
+    LLVMFDiv => FDiv
+    LLVMURem => URem
+    LLVMSRem => SRem
+    LLVMFRem => FRem
+    LLVMShl => Shl
+    LLVMLShr => LShr
+    LLVMAShr => AShr
+    LLVMAnd => And
+    LLVMOr => Or
+    LLVMXor => Xor
+    LLVMAlloca => Alloca
+    LLVMLoad => Load
+    LLVMStore => Store
+    LLVMGetElementPtr => GetElementPtr
+    LLVMFence => Fence
+    LLVMAtomicCmpXchg => AtomicCmpXchg
+    LLVMAtomicRMW => AtomicRMW
+    LLVMTrunc => Trunc
+    LLVMZExt => ZExt
+    LLVMSExt => SExt
+    LLVMFPToUI => FPToUI
+    LLVMFPToSI => FPToSI
+    LLVMUIToFP => UIToFP
+    LLVMSIToFP => SIToFP
+    LLVMFPTrunc => FPTrunc
+    LLVMFPExt => FPExt
+    LLVMPtrToInt => PtrToInt
+    LLVMIntToPtr => IntToPtr
+    LLVMBitCast => BitCast
+    LLVMAddrSpaceCast => AddrSpaceCast
+    LLVMCleanupPad => CleanupPad
+    LLVMCatchPad => CatchPad
+    LLVMICmp => ICmp
+    LLVMFCmp => FCmp
+    LLVMPHI => Phi
+    LLVMLoad => Load
+    LLVMStore => Store
+    LLVMCall => Call
+    LLVMCallBr => CallBr
+    LLVMFNeg => FNeg
+    LLVMExtractElement => ExtractElement
+    LLVMExtractValue => ExtractValue
+    LLVMFreeze => Freeze
+    LLVMInsertElement => InsertElement
+    LLVMInsertValue => InsertValue
+    LLVMSelect => Select
+    LLVMShuffleVector => ShuffleVector
+    LLVMUnreachable => Unreachable
+    LLVMUserOp1 => UserOp1
+    LLVMUserOp2 => UserOp2
+    LLVMVAArg => VAArg
+    _ => abort("Invalid LLVMOpcode in `LLVMOpcode::to_inst_opcode`")
+  }
+}
+
+pub enum AtomicOrdering {
+  NotAtomic
+
+  Unordered
+
+  Monotonic
+
+  Acquire
+
+  Release
+
+  AcquireRelease
+
+  SequentiallyConsistent
+} derive(Eq, Show, Hash)
+
+pub fn LLVMAtomicOrdering::into(self: LLVMAtomicOrdering) -> AtomicOrdering {
+  match self {
+    LLVMAtomicOrderingNotAtomic => NotAtomic
+    LLVMAtomicOrderingUnordered => Unordered
+    LLVMAtomicOrderingMonotonic => Monotonic
+    LLVMAtomicOrderingAcquire => Acquire
+    LLVMAtomicOrderingRelease => Release
+    LLVMAtomicOrderingAcquireRelease => AcquireRelease
+    LLVMAtomicOrderingSequentiallyConsistent => SequentiallyConsistent
+  }
+}
+
+pub enum AtomicRMWBinOp {
+  /// Stores to memory and returns the prior value.
+  Xchg
+
+  /// Adds to the value in memory and returns the prior value.
+  Add
+
+  /// Subtract a value off the value in memory and returns the prior value.
+  Sub
+
+  /// Bitwise and into memory and returns the prior value.
+  And
+
+  /// Bitwise nands into memory and returns the prior value.
+  Nand
+
+  /// Bitwise ors into memory and returns the prior value.
+  Or
+
+  /// Bitwise xors into memory and returns the prior value.
+  Xor
+
+  /// Sets memory to the signed-greater of the value provided and the value in memory. Returns the value that was in memory.
+  Max
+
+  /// Sets memory to the signed-lesser of the value provided and the value in memory. Returns the value that was in memory.
+  Min
+
+  /// Sets memory to the unsigned-greater of the value provided and the value in memory. Returns the value that was in memory.
+  UMax
+
+  /// Sets memory to the unsigned-lesser of the value provided and the value in memory. Returns the value that was in memory.
+  UMin
+
+  /// Adds to the float-typed value in memory and returns the prior value.
+  FAdd
+
+  /// Subtract a float-typed value off the value in memory and returns the prior value.
+  FSub
+
+  /// Sets memory to the greater of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
+  FMax
+
+  /// Sets memory to the lesser of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
+  FMin
+} derive(Eq, Show, Hash)
+
+pub fn LLVMAtomicRMWBinOp::into(self: LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
+  match self {
+    LLVMAtomicRMWBinOpXchg => Xchg
+    LLVMAtomicRMWBinOpAdd => Add
+    LLVMAtomicRMWBinOpSub => Sub
+    LLVMAtomicRMWBinOpAnd => And
+    LLVMAtomicRMWBinOpNand => Nand
+    LLVMAtomicRMWBinOpOr => Or
+    LLVMAtomicRMWBinOpXor => Xor
+    LLVMAtomicRMWBinOpMax => Max
+    LLVMAtomicRMWBinOpMin => Min
+    LLVMAtomicRMWBinOpUMax => UMax
+    LLVMAtomicRMWBinOpUMin => UMin
+    LLVMAtomicRMWBinOpFAdd => FAdd
+    LLVMAtomicRMWBinOpFSub => FSub
+    LLVMAtomicRMWBinOpFMax => FMax
+    LLVMAtomicRMWBinOpFMin => FMin
+  }
+}
+
+pub enum OptimizationLevel {
+  None
+
+  Less
+
+  Default
+
+  Aggressive
+} derive(Eq, Show, Hash)
+
+// Note: Check if we realy need it
+pub fn OptimizationLevel::from_int(i: Int) -> OptimizationLevel {
+  match i {
+    0 => OptimizationLevel::None
+    1 => OptimizationLevel::Less
+    2 => OptimizationLevel::Default
+    3 => OptimizationLevel::Aggressive
+    _ => abort("Invalid OptimizationLevel Number in `OptimizationLevel::from_int`")
+  }
+}
+
+pub enum GlobalVisibility {
+  Default
+
+  Hidden
+
+  Protected
+} derive(Eq, Show, Hash)
+
+pub fn LLVMVisibility::into(self: LLVMVisibility) -> GlobalVisibility {
+  match self {
+    LLVMDefaultVisibility => Default
+    LLVMHiddenVisibility => Hidden
+    LLVMProtectedVisibility => Protected
+  }
+}
+
+pub enum ThreadLocalMode {
+  NotThreadLocal
+
+  GeneralDynamic
+
+  LocalDynamic
+
+  InitialExec
+
+  LocalExec
+} derive(Eq, Show, Hash)
+
+pub fn LLVMThreadLocalMode::into(self: LLVMThreadLocalMode) -> ThreadLocalMode {
+  match self {
+    LLVMNotThreadLocal => NotThreadLocal
+    LLVMGeneralDynamicTLSModel => GeneralDynamic
+    LLVMLocalDynamicTLSModel => LocalDynamic
+    LLVMInitialExecTLSModel => InitialExec
+    LLVMLocalExecTLSModel => LocalExec
+  }
+}
+
+pub enum DLLStorageClass {
+  Default
+
+  DLLImport
+
+  DLLExport
+} derive(Eq, Show, Hash)
+
+pub fn LLVMDLLStorageClass::into(self: LLVMDLLStorageClass) -> DLLStorageClass {
+  match self {
+    LLVMDefaultStorageClass => Default
+    LLVMDLLImportStorageClass => DLLImport
+    LLVMDLLExportStorageClass => DLLExport
+  }
+}
+
+pub enum InlineAsmDialect {
+  ATT
+  Intel
+} derive(Eq, Show, Hash)
+
+pub fn LLVMInlineAsmDialect::into(self: LLVMInlineAsmDialect) -> InlineAsmDialect {
+  match self {
+    LLVMInlineAsmDialectATT => ATT
+    LLVMInlineAsmDialectIntel => Intel
+  }
+}
