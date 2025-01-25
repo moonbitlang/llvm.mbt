@@ -28,14 +28,26 @@ pub fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
 pub extern "C" fn llvm_shutdown() = "__llvm_shutdown"
 
 // FIXME: Not implemented
+// 
+// Return the major, minor, and patch version of LLVM
+// 
+// The version components are returned via the function's three output
+// parameters or skipped if a NULL pointer was supplied.
+// 
 pub extern "C" fn llvm_get_version() -> (UInt, UInt, UInt) = "__llvm_get_version"
 
 pub extern "C" fn llvm_create_message(message: CStr) -> CStr = "__llvm_create_message"
 
 pub extern "C" fn llvm_dispose_message(message: CStr) = "__llvm_dispose_message"
 
+///| Create a new context.
+/// 
+/// Every call to this function should be paired with a call to
+/// `llvm_context_dispose()` or the context will leak memory.
 pub extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
 
+///| Obtain the global context instance.
+/// 
 pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "__llvm_get_global_context"
 
 // pub extern "C" fn llvm_context_set_diagnostic_handler(context: LLVMContextRef, handler: LLVMDiagnosticHandler, diagnostic_context: Ptr[Void]) = "__llvm_context_set_diagnostic_handler"
@@ -44,11 +56,21 @@ pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "__llvm_get_glob
 
 // pub extern "C" fn llvm_context_set_yield_callback(context: LLVMContextRef, callback: LLVMYieldCallback, opaque_handle: Ptr[Void]) = "__llvm_context_set_yield_callback"
 
+
+///| Retrieve whether the given context is set to discard all value names.
+///
+/// see `LLVMContext::shouldDiscardValueNames()`
 pub extern "C" fn llvm_context_should_discard_value_names(context: LLVMContextRef) -> LLVMBool = "__llvm_context_should_discard_value_names"
 pub fn LLVMContextRef::should_discard_value_names(self: LLVMContextRef) -> Bool {
   llvm_context_should_discard_value_names(self).to_moonbit_bool()
 }
 
+///| Set whether the given context discards all value names.
+/// 
+/// If true, only the names of GlobalValue objects will be available in the IR.
+/// This can be used to save memory and runtime, especially in release mode.
+/// 
+/// see `LLVMContext::setDiscardValueNames()`
 extern "C" fn __llvm_context_set_discard_value_names(context: LLVMContextRef, discard: LLVMBool) = "__llvm_context_set_discard_value_names"
 pub fn llvm_context_set_discard_value_names(context: LLVMContextRef, discard: Bool) -> Unit {
   __llvm_context_set_discard_value_names(context, to_llvm_bool(discard))
@@ -57,20 +79,34 @@ pub fn LLVMContextRef::set_discard_value_names(self: LLVMContextRef, discard: Bo
   __llvm_context_set_discard_value_names(self, to_llvm_bool(discard))
 }
 
+///| Destroy a context instance.
+/// 
+/// This should be called for every call to `llvm_context_create()` or memory
+/// will be leaked.
 pub extern "C" fn llvm_context_dispose(context: LLVMContextRef) = "__llvm_context_dispose"
 pub fn LLVMContextRef::dispose(self: LLVMContextRef) -> Unit {
   llvm_context_dispose(self)
 }
 
+
+///| Return a string representation of the DiagnosticInfo. Use `llvm_dispose_message` to free the string.
+/// 
+/// see `DiagnosticInfo::print()`
+/// 
 extern "C" fn __llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> CStr = "__llvm_get_diag_info_description"
 pub fn llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> String {
   let cstr = __llvm_get_diag_info_description(di)
   c_str_to_moonbit_str(cstr)
 }
 
-pub extern "C" fn llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity = "__llvm_get_diag_info_severity"
+
+///| Return an enum llvm_diagnostic_severity.
+/// 
+/// see `DiagnosticInfo::getSeverity()`
+/// 
+pub extern "C" fn llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> Int = "__llvm_get_diag_info_severity"
 pub fn LLVMDiagnosticInfoRef::get_severity(self: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity {
-  llvm_get_diag_info_severity(self)
+  LLVMDiagnosticSeverity::from_int(llvm_get_diag_info_severity(self))
 }
 
 // TODO: Warp it
@@ -82,20 +118,25 @@ pub extern "C" fn llvm_get_enum_attribute_kind_for_name(name: CStr, s_len: UInt6
 
 pub extern "C" fn llvm_get_last_enum_attribute_kind() -> UInt = "__llvm_get_last_enum_attribute_kind"
 
+// Create an enum attribute.
 pub extern "C" fn llvm_create_enum_attribute(context: LLVMContextRef, kind_id: UInt, val: UInt64) -> LLVMAttributeRef = "__llvm_create_enum_attribute"
 
+///| Get the unique id corresponding to the enum attribute passed as argument.
 pub extern "C" fn llvm_get_enum_attribute_kind(a: LLVMAttributeRef) -> UInt = "__llvm_get_enum_attribute_kind"
 pub fn LLVMAttributeRef::get_enum_attribute_kind(self: LLVMAttributeRef) -> UInt {
   llvm_get_enum_attribute_kind(self)
 }
 
+///| Get the enum attribute's value. 0 is returned if none exists.
 pub extern "C" fn llvm_get_enum_attribute_value(a: LLVMAttributeRef) -> UInt64 = "__llvm_get_enum_attribute_value"
 pub fn LLVMAttributeRef::get_enum_attribute_value(self: LLVMAttributeRef) -> UInt64 {
   llvm_get_enum_attribute_value(self)
 }
 
+///| Create a type attribute
 pub extern "C" fn llvm_create_type_attribute(context: LLVMContextRef, kind_id: UInt, type_ref: LLVMTypeRef) -> LLVMAttributeRef = "__llvm_create_type_attribute"
 
+///| Get the type attribute's value.
 pub extern "C" fn llvm_get_type_attribute_value(a: LLVMAttributeRef) -> LLVMTypeRef = "__llvm_get_type_attribute_value"
 pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLVMTypeRef {
   llvm_get_type_attribute_value(self)
@@ -105,6 +146,7 @@ pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLV
 //
 // pub extern "C" fn llvm_get_string_attribute_value(a: LLVMAttributeRef, length: Ptr[UInt]) -> CStr = "__llvm_get_string_attribute_value"
 
+///| Check if the attribute is an enum attribute.
 extern "C" fn __llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_enum_attribute"
 pub fn llvm_is_enum_attribute(a: LLVMAttributeRef) -> Bool {
   __llvm_is_enum_attribute(a).to_moonbit_bool()
@@ -113,6 +155,7 @@ pub fn LLVMAttributeRef::is_enum_attribute(self: LLVMAttributeRef) -> Bool {
   __llvm_is_enum_attribute(self).to_moonbit_bool()
 }
 
+///| Check if the attribute is a string attribute.
 extern "C" fn __llvm_is_string_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_string_attribute"
 pub fn llvm_is_string_attribute(a: LLVMAttributeRef) -> Bool {
   __llvm_is_string_attribute(a).to_moonbit_bool()
@@ -121,6 +164,7 @@ pub fn LLVMAttributeRef::is_string_attribute(self: LLVMAttributeRef) -> Bool {
   __llvm_is_string_attribute(self).to_moonbit_bool()
 }
 
+///| Check if the attribute is a type attribute.
 extern "C" fn __llvm_is_type_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_type_attribute"
 pub fn llvm_is_type_attribute(a: LLVMAttributeRef) -> Bool {
   __llvm_is_type_attribute(a).to_moonbit_bool()
@@ -129,6 +173,7 @@ pub fn LLVMAttributeRef::is_type_attribute(self: LLVMAttributeRef) -> Bool {
   __llvm_is_type_attribute(self).to_moonbit_bool()
 }
 
+///| Obtain a Type from a context by its registered name.
 extern "C" fn __llvm_get_type_by_name(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name"
 pub fn llvm_get_type_by_name(context: LLVMContextRef, name: String) -> LLVMTypeRef {
   let cstr = moonbit_str_to_c_str(name)
@@ -138,12 +183,28 @@ pub fn LLVMContextRef::get_type_by_name(self: LLVMContextRef, name: String) -> L
   llvm_get_type_by_name(self, name)
 }
 
+///| Create a new, empty module in the global context.
+/// 
+/// This is equivalent to calling `LLVMModuleCreateWithNameInContext` with
+/// `LLVMGetGlobalContext()` as the context parameter.
+/// 
+/// Every invocation should be paired with `LLVMDisposeModule()` or memory
+/// will be leaked.
+/// 
 extern "C" fn __llvm_module_create_with_name(module_id: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
 pub fn llvm_module_create_with_name(module_id: String) -> LLVMModuleRef {
   let cstr = moonbit_str_to_c_str(module_id)
   __llvm_module_create_with_name(cstr)
 }
 
+/// Create a new, empty module in the global context.
+/// 
+/// This is equivalent to calling LLVMModuleCreateWithNameInContext with
+/// LLVMGetGlobalContext() as the context parameter.
+/// 
+/// Every invocation should be paired with LLVMDisposeModule() or memory
+/// will be leaked.
+/// 
 extern "C" fn __llvm_module_create_with_name_in_context(module_id: CStr, context: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
 pub fn llvm_module_create_with_name_in_context(module_id: String, context: LLVMContextRef) -> LLVMModuleRef {
   let cstr = moonbit_str_to_c_str(module_id)
@@ -153,16 +214,23 @@ pub fn LLVMContextRef::module_create_with_name(self: LLVMContextRef, module_id: 
   llvm_module_create_with_name_in_context(module_id, self)
 }
 
+///| Return an exact copy of the specified module.
 pub extern "C" fn llvm_clone_module(m: LLVMModuleRef) -> LLVMModuleRef = "__llvm_clone_module"
 pub fn LLVMModuleRef::clone(self: LLVMModuleRef) -> LLVMModuleRef {
   llvm_clone_module(self)
 }
 
+///| Destroy a module instance.
+/// 
+/// This must be called for every created module or memory will be
+/// leaked.
+/// 
 pub extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
 pub fn LLVMModuleRef::dispose(self: LLVMModuleRef) -> Unit {
   llvm_dispose_module(self)
 }
 
+// Note: Soon to be deprecated
 extern "C" fn __llvm_is_new_dbg_info_format(m: LLVMModuleRef) -> LLVMBool = "__llvm_is_new_dbg_info_format"
 pub fn llvm_is_new_dbg_info_format(m: LLVMModuleRef) -> Bool {
   __llvm_is_new_dbg_info_format(m).to_moonbit_bool()
@@ -171,6 +239,7 @@ pub fn LLVMModuleRef::is_new_dbg_info_format(self: LLVMModuleRef) -> Bool {
   __llvm_is_new_dbg_info_format(self).to_moonbit_bool()
 }
 
+// Note: Soon to be deprecated
 extern "C" fn __llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: LLVMBool) = "__llvm_set_is_new_dbg_info_format"
 pub fn llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: Bool) -> Unit {
   __llvm_set_is_new_dbg_info_format(m, to_llvm_bool(use_new_format))
@@ -180,10 +249,36 @@ pub fn llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: Bool) -
 
 pub extern "C" fn llvm_set_module_identifier(m: LLVMModuleRef, ident: CStr, len: UInt64) = "__llvm_set_module_identifier"
 
+// /**
+//  * Obtain the module's original source file name.
+//  *
+//  * @param M Module to obtain the name of
+//  * @param Len Out parameter which holds the length of the returned string
+//  * @return The original source file name of M
+//  * @see Module::getSourceFileName()
+//  */
 // pub extern "C" fn llvm_get_source_file_name(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_source_file_name"
 
+// 
+// Set the original source file name of a module to a string Name with length
+// Len.
+// 
+// @param M The module to set the source file name of
+// @param Name The string to set M's source file name to
+// @param Len Length of Name
+// @see Module::setSourceFileName()
+// 
 pub extern "C" fn llvm_set_source_file_name(m: LLVMModuleRef, name: CStr, len: UInt64) = "__llvm_set_source_file_name"
 
+
+///| Obtain the data layout for a module.
+/// 
+/// see Module::getDataLayoutStr()
+/// 
+/// LLVMGetDataLayout is DEPRECATED, as the name is not only incorrect,
+/// but match the name of another method on the module. Prefer the use
+/// of LLVMGetDataLayoutStr, which is not ambiguous.
+/// 
 extern "C" fn __llvm_get_data_layout_str(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout_str"
 pub fn llvm_get_data_layout_str(m: LLVMModuleRef) -> String {
   let cstr = __llvm_get_data_layout_str(m)
@@ -202,6 +297,10 @@ pub fn LLVMModuleRef::get_data_layout(self: LLVMModuleRef) -> String {
   llvm_get_data_layout(self)
 }
 
+///| Set the data layout for a module.
+/// 
+/// see Module::setDataLayout()
+/// 
 extern "C" fn __llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: CStr) = "__llvm_set_data_layout"
 pub fn llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: String) -> Unit {
   let cstr = moonbit_str_to_c_str(data_layout_str)
@@ -210,7 +309,11 @@ pub fn llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: String) -> Unit {
 pub fn LLVMModuleRef::set_data_layout(self: LLVMModuleRef, data_layout_str: String) -> Unit {
   llvm_set_data_layout(self, data_layout_str)
 }
-
+// 
+// Obtain the target triple for a module.
+// 
+// @see Module::getTargetTriple()
+// 
 extern "C" fn __llvm_get_target(m: LLVMModuleRef) -> CStr = "__llvm_get_target"
 pub fn llvm_get_target(m: LLVMModuleRef) -> String {
   let cstr = __llvm_get_target(m)
@@ -220,6 +323,12 @@ pub fn LLVMModuleRef::get_target(self: LLVMModuleRef) -> String {
   llvm_get_target(self)
 }
 
+
+// /**
+//  * Set the target triple for a module.
+//  *
+//  * @see Module::setTargetTriple()
+//  */
 extern "C" fn __llvm_set_target(m: LLVMModuleRef, triple: CStr) = "__llvm_set_target"
 pub fn llvm_set_target(m: LLVMModuleRef, triple: String) -> Unit {
   let cstr = moonbit_str_to_c_str(triple)
@@ -229,27 +338,88 @@ pub fn LLVMModuleRef::set_target(self: LLVMModuleRef, triple: String) -> Unit {
   llvm_set_target(self, triple)
 }
 
+// /**
+//  * Returns the module flags as an array of flag-key-value triples.  The caller
+//  * is responsible for freeing this array by calling
+//  * \c LLVMDisposeModuleFlagsMetadata.
+//  *
+//  * @see Module::getModuleFlagsMetadata()
+//  */
 // pub extern "C" fn llvm_copy_module_flags_metadata(m: LLVMModuleRef, len: Ptr[UInt64]) -> Ptr[LLVMModuleFlagEntry] = "__llvm_copy_module_flags_metadata"
 
+
+// /**
+//  * Destroys module flags metadata entries.
+//  */
 // pub extern "C" fn llvm_dispose_module_flags_metadata(entries: Ptr[LLVMModuleFlagEntry]) = "__llvm_dispose_module_flags_metadata"
 
+
+// /**
+//  * Returns the flag behavior for a module flag entry at a specific index.
+//  *
+//  * @see Module::ModuleFlagEntry::Behavior
+//  */
 // pub extern "C" fn llvm_module_flag_entries_get_flag_behavior(entries: Ptr[LLVMModuleFlagEntry], index: UInt) -> LLVMModuleFlagBehavior = "__llvm_module_flag_entries_get_flag_behavior"
 
+
+// /**
+//  * Returns the key for a module flag entry at a specific index.
+//  *
+//  * @see Module::ModuleFlagEntry::Key
+//  */
 // pub extern "C" fn llvm_module_flag_entries_get_key(entries: Ptr[LLVMModuleFlagEntry], index: UInt, len: Ptr[UInt64]) -> CStr = "__llvm_module_flag_entries_get_key"
 
+
+// /**
+//  * Returns the metadata for a module flag entry at a specific index.
+//  *
+//  * @see Module::ModuleFlagEntry::Val
+//  */
 // pub extern "C" fn llvm_module_flag_entries_get_metadata(entries: Ptr[LLVMModuleFlagEntry], index: UInt) -> LLVMMetadataRef = "__llvm_module_flag_entries_get_metadata"
 
+
+// /**
+//  * Add a module-level flag to the module-level flags metadata if it doesn't
+//  * already exist.
+//  *
+//  * @see Module::getModuleFlag()
+//  */
 pub extern "C" fn llvm_get_module_flag(m: LLVMModuleRef, key: CStr, key_len: UInt64) -> LLVMMetadataRef = "__llvm_get_module_flag"
 
+
+// /**
+//  * Add a module-level flag to the module-level flags metadata if it doesn't
+//  * already exist.
+//  *
+//  * @see Module::addModuleFlag()
+//  */
 pub extern "C" fn llvm_add_module_flag(m: LLVMModuleRef, behavior: LLVMModuleFlagBehavior, key: CStr, key_len: UInt64, val: LLVMMetadataRef) = "__llvm_add_module_flag"
 
+
+// /**
+//  * Dump a representation of a module to stderr.
+//  *
+//  * @see Module::dump()
+//  */
 pub extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
 pub fn LLVMModuleRef::dump(self: LLVMModuleRef) -> Unit {
   llvm_dump_module(self)
 }
 
+// /**
+//  * Print a representation of a module to a file. The ErrorMessage needs to be
+//  * disposed with LLVMDisposeMessage. Returns 0 on success, 1 otherwise.
+//  *
+//  * @see Module::print()
+//  */
 // pub extern "C" fn llvm_print_module_to_file(m: LLVMModuleRef, filename: CStr, error_message: Ptr[CStr]) -> LLVMBool = "__llvm_print_module_to_file"
 
+// /**
+//  * Return a string representation of the module. Use
+//  * LLVMDisposeMessage to free the string.
+//  *
+//  * @see Module::print()
+//  */
 extern "C" fn __llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_print_module_to_string"
 pub fn llvm_print_module_to_string(m: LLVMModuleRef) -> String {
   let cstr = __llvm_print_module_to_string(m)
@@ -262,28 +432,75 @@ pub fn LLVMModuleRef::to_string(self: LLVMModuleRef) -> String {
   llvm_print_module_to_string(self)
 }
 
+// /**
+//  * Get inline assembly for a module.
+//  *
+//  * @see Module::getModuleInlineAsm()
+//  */
 // pub extern "C" fn llvm_get_module_inline_asm(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_inline_asm"
 
+
+// /**
+//  * Set inline assembly for a module.
+//  *
+//  * @see Module::setModuleInlineAsm()
+//  */
 pub extern "C" fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_set_module_inline_asm"
 
+// /**
+//  * Append inline assembly to a module.
+//  *
+//  * @see Module::appendModuleInlineAsm()
+//  */
 pub extern "C" fn llvm_append_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_append_module_inline_asm"
 
+
+// /**
+//  * Create the specified uniqued inline asm string.
+//  *
+//  * @see InlineAsm::get()
+//  */
 // pub extern "C" fn llvm_get_inline_asm(ty: LLVMTypeRef, asm_string: CStr, asm_string_size: UInt64, constraints: CStr, constraints_size: UInt64, has_side_effects: LLVMBool, is_align_stack: LLVMBool, dialect: LLVMInlineAsmDialect, can_throw: LLVMBool) -> LLVMValueRef = "__llvm_get_inline_asm"
 
+// /**
+//  * Get the template string used for an inline assembly snippet
+//  *
+//  */
 // pub extern "C" fn llvm_get_inline_asm_asm_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_asm_string"
 
+// /**
+//  * Get the raw constraint string for an inline assembly snippet
+//  *
+//  */
 // pub extern "C" fn llvm_get_inline_asm_constraint_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_constraint_string"
 
+
+// /**
+//  * Get the dialect used by the inline asm snippet
+//  *
+//  */
 pub extern "C" fn llvm_get_inline_asm_dialect(inline_asm_val: LLVMValueRef) -> LLVMInlineAsmDialect = "__llvm_get_inline_asm_dialect"
 pub fn LLVMValueRef::get_inline_asm_dialect(self: LLVMValueRef) -> LLVMInlineAsmDialect {
   llvm_get_inline_asm_dialect(self)
 }
 
+
+// /**
+//  * Get the function type of the inline assembly snippet. The same type that
+//  * was passed into LLVMGetInlineAsm originally
+//  *
+//  * @see LLVMGetInlineAsm
+//  *
+//  */
 pub extern "C" fn llvm_get_inline_asm_function_type(inline_asm_val: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_inline_asm_function_type"
 pub fn LLVMValueRef::get_inline_asm_function_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_get_inline_asm_function_type(self)
 }
 
+// /**
+//  * Get if the inline asm snippet has side effects
+//  *
+//  */
 extern "C" fn __llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_has_side_effects"
 pub fn llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_has_side_effects(inline_asm_val).to_moonbit_bool()
@@ -292,6 +509,10 @@ pub fn LLVMValueRef::get_inline_asm_has_side_effects(self: LLVMValueRef) -> Bool
   __llvm_get_inline_asm_has_side_effects(self).to_moonbit_bool()
 }
 
+// /**
+//  * Get if the inline asm snippet needs an aligned stack
+//  *
+//  */
 extern "C" fn __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_needs_aligned_stack"
 pub fn llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val).to_moonbit_bool()
@@ -300,6 +521,10 @@ pub fn LLVMValueRef::get_inline_asm_needs_aligned_stack(self: LLVMValueRef) -> B
   __llvm_get_inline_asm_needs_aligned_stack(self).to_moonbit_bool()
 }
 
+// /**
+//  * Get if the inline asm snippet may unwind the stack
+//  *
+//  */
 extern "C" fn __llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_can_unwind"
 pub fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_can_unwind(inline_asm_val).to_moonbit_bool()
@@ -307,7 +532,10 @@ pub fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> Bool {
 pub fn LLVMValueRef::get_inline_asm_can_unwind(self: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_can_unwind(self).to_moonbit_bool()
 }
-
+// /**
+//  * Obtain the context to which this module is associated.
+//  *
+//  * @see Module::getContext()
 pub extern "C" fn llvm_get_module_context(m: LLVMModuleRef) -> LLVMContextRef = "__llvm_get_module_context"
 
 extern "C" fn __llvm_get_type_by_name_in_module(m: LLVMModuleRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name_in_module"
@@ -319,16 +547,52 @@ pub fn LLVMModuleRef::get_type_by_name(self: LLVMModuleRef, name: String) -> LLV
   llvm_get_type_by_name_in_module(self, name)
 }
 
+// /**
+//  * Obtain an iterator to the first NamedMDNode in a Module.
+//  *
+//  * @see llvm::Module::named_metadata_begin()
+//  */
 pub extern "C" fn llvm_get_first_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_first_named_metadata"
 
+// /**
+//  * Obtain an iterator to the last NamedMDNode in a Module.
+//  *
+//  * @see llvm::Module::named_metadata_end()
+//  */
 pub extern "C" fn llvm_get_last_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_last_named_metadata"
 
+// /**
+//  * Advance a NamedMDNode iterator to the next NamedMDNode.
+//  *
+//  * Returns NULL if the iterator was already at the end and there are no more
+//  * named metadata nodes.
+//  */
 pub extern "C" fn llvm_get_next_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_next_named_metadata"
 
+
+// /**
+//  * Decrement a NamedMDNode iterator to the previous NamedMDNode.
+//  *
+//  * Returns NULL if the iterator was already at the beginning and there are
+//  * no previous named metadata nodes.
+//  */
 pub extern "C" fn llvm_get_previous_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_previous_named_metadata"
 
+
+// 
+// Retrieve a NamedMDNode with the given name, returning NULL if no such
+// node exists.
+// 
+// @see llvm::Module::getNamedMetadata()
+// 
 pub extern "C" fn llvm_get_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_named_metadata"
 
+// /**
+//  * Retrieve a NamedMDNode with the given name, creating a new node if no such
+//  * node exists.
+//  *
+//  * @see llvm::Module::getOrInsertNamedMetadata()
+//  */
 pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_or_insert_named_metadata"
 
 // pub extern "C" fn llvm_get_named_metadata_name(named_md: LLVMNamedMDNodeRef, name_len: Ptr[UInt64]) -> CStr = "__llvm_get_named_metadata_name"
