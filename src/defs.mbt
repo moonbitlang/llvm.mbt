@@ -13,12 +13,12 @@ pub fn LLVMAttributeIndex::new(idx: UInt) -> LLVMAttributeIndex {
   LLVMAttributeIndex(idx)
 }
 
-pub fn LLVMFastMathFlags::to_fast_math_flags(self: LLVMFastMathFlags) -> FastMathFlags {
+pub fn LLVMFastMathFlags::into(self: LLVMFastMathFlags) -> FastMathFlags {
   guard let LLVMFastMathFlags(f) = self
   FastMathFlags(f)
 }
 
-pub fn FastMathFlags::to_llvm_fast_math_flags(self: FastMathFlags) -> LLVMFastMathFlags {
+pub fn FastMathFlags::to_llvm(self: FastMathFlags) -> LLVMFastMathFlags {
   guard let FastMathFlags(f) = self
   LLVMFastMathFlags(f)
 }

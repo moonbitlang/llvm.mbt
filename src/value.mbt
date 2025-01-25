@@ -491,7 +491,7 @@ pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
 
 pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
   if self.get_opcode() == InstructionOpcode::Call {
-    llvm_is_tail_call(self.as_value_ref()) == 1
+    llvm_is_tail_call(self.as_value_ref())
   } else {
     false
   }
@@ -507,13 +507,13 @@ pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailC
 }
 
 pub fn InstructionValue::can_use_fast_math_flags(self: InstructionValue) -> Bool {
-  llvm_can_value_use_fast_math_flags(self.as_value_ref()) == 1
+  llvm_can_value_use_fast_math_flags(self.as_value_ref())
 }
 
 // ..... Need More
 pub fn InstructionValue::get_fast_math_flags(self: InstructionValue) -> FastMathFlags? {
   if self.can_use_fast_math_flags() {
-    Some(llvm_get_fast_math_flags(self.as_value_ref()).to_fast_math_flags())
+    Some(llvm_get_fast_math_flags(self.as_value_ref()).into())
   } else {
     None
   }
@@ -552,7 +552,7 @@ pub fn InstructionValue::get_volatile(self:InstructionValue)-> Result[Bool,Strin
     return Err("Value is not a load, store, atomicrmw or cmpxchg instruction")
   }
 
-  Ok(llvm_get_volatile(self.as_value_ref()) == 1)
+  Ok(llvm_get_volatile(self.as_value_ref()))
 }
 
 pub fn InstructionValue::set_volatile(self:InstructionValue, flag: Bool) -> Result[Unit,String] {
