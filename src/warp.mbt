@@ -6,22 +6,22 @@ extern "C" fn c_str_to_moonbit_str(
   s: CStr
 ) -> String = "c_str_to_moonbit_str"
 extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
-fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
+pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()
 }
 
 extern "C" fn llvm_value_is_null(ty: LLVMValueRef) -> LLVMBool = "__llvm_value_is_null"
-fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
+pub fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
   llvm_value_is_null(self).to_moonbit_bool()
 }
 
 extern "C" fn llvm_use_is_null(u: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
-fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
+pub fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
   llvm_use_is_null(self).to_moonbit_bool()
 }
 
 extern "C" fn llvm_bb_is_null(bb: LLVMBasicBlockRef) -> LLVMBool = "__llvm_bb_is_null"
-fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
+pub fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
   llvm_bb_is_null(self).to_moonbit_bool()
 }
 
@@ -45,15 +45,35 @@ pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "__llvm_get_glob
 // pub extern "C" fn llvm_context_set_yield_callback(context: LLVMContextRef, callback: LLVMYieldCallback, opaque_handle: Ptr[Void]) = "__llvm_context_set_yield_callback"
 
 pub extern "C" fn llvm_context_should_discard_value_names(context: LLVMContextRef) -> LLVMBool = "__llvm_context_should_discard_value_names"
+pub fn LLVMContextRef::should_discard_value_names(self: LLVMContextRef) -> Bool {
+  llvm_context_should_discard_value_names(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_context_set_discard_value_names(context: LLVMContextRef, discard: LLVMBool) = "__llvm_context_set_discard_value_names"
+extern "C" fn __llvm_context_set_discard_value_names(context: LLVMContextRef, discard: LLVMBool) = "__llvm_context_set_discard_value_names"
+pub fn llvm_context_set_discard_value_names(context: LLVMContextRef, discard: Bool) -> Unit {
+  __llvm_context_set_discard_value_names(context, to_llvm_bool(discard))
+}
+pub fn LLVMContextRef::set_discard_value_names(self: LLVMContextRef, discard: Bool) -> Unit {
+  __llvm_context_set_discard_value_names(self, to_llvm_bool(discard))
+}
 
 pub extern "C" fn llvm_context_dispose(context: LLVMContextRef) = "__llvm_context_dispose"
+pub fn LLVMContextRef::dispose(self: LLVMContextRef) -> Unit {
+  llvm_context_dispose(self)
+}
 
-pub extern "C" fn llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> CStr = "__llvm_get_diag_info_description"
+extern "C" fn __llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> CStr = "__llvm_get_diag_info_description"
+pub fn llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> String {
+  let cstr = __llvm_get_diag_info_description(di)
+  c_str_to_moonbit_str(cstr)
+}
 
 pub extern "C" fn llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity = "__llvm_get_diag_info_severity"
+pub fn LLVMDiagnosticInfoRef::get_severity(self: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity {
+  llvm_get_diag_info_severity(self)
+}
 
+// TODO: Warp it
 pub extern "C" fn llvm_get_md_kind_id_in_context(context: LLVMContextRef, name: CStr, s_len: UInt) -> UInt = "__llvm_get_md_kind_id_in_context"
 
 pub extern "C" fn llvm_get_md_kind_id(name: CStr, s_len: UInt) -> UInt = "__llvm_get_md_kind_id"
@@ -65,36 +85,96 @@ pub extern "C" fn llvm_get_last_enum_attribute_kind() -> UInt = "__llvm_get_last
 pub extern "C" fn llvm_create_enum_attribute(context: LLVMContextRef, kind_id: UInt, val: UInt64) -> LLVMAttributeRef = "__llvm_create_enum_attribute"
 
 pub extern "C" fn llvm_get_enum_attribute_kind(a: LLVMAttributeRef) -> UInt = "__llvm_get_enum_attribute_kind"
+pub fn LLVMAttributeRef::get_enum_attribute_kind(self: LLVMAttributeRef) -> UInt {
+  llvm_get_enum_attribute_kind(self)
+}
 
 pub extern "C" fn llvm_get_enum_attribute_value(a: LLVMAttributeRef) -> UInt64 = "__llvm_get_enum_attribute_value"
+pub fn LLVMAttributeRef::get_enum_attribute_value(self: LLVMAttributeRef) -> UInt64 {
+  llvm_get_enum_attribute_value(self)
+}
 
 pub extern "C" fn llvm_create_type_attribute(context: LLVMContextRef, kind_id: UInt, type_ref: LLVMTypeRef) -> LLVMAttributeRef = "__llvm_create_type_attribute"
 
 pub extern "C" fn llvm_get_type_attribute_value(a: LLVMAttributeRef) -> LLVMTypeRef = "__llvm_get_type_attribute_value"
+pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLVMTypeRef {
+  llvm_get_type_attribute_value(self)
+}
 
 // pub extern "C" fn llvm_get_string_attribute_kind(a: LLVMAttributeRef, length: Ptr[UInt]) -> CStr = "__llvm_get_string_attribute_kind"
 //
 // pub extern "C" fn llvm_get_string_attribute_value(a: LLVMAttributeRef, length: Ptr[UInt]) -> CStr = "__llvm_get_string_attribute_value"
 
-pub extern "C" fn llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_enum_attribute"
+extern "C" fn __llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_enum_attribute"
+pub fn llvm_is_enum_attribute(a: LLVMAttributeRef) -> Bool {
+  __llvm_is_enum_attribute(a).to_moonbit_bool()
+}
+pub fn LLVMAttributeRef::is_enum_attribute(self: LLVMAttributeRef) -> Bool {
+  __llvm_is_enum_attribute(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_is_string_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_string_attribute"
+extern "C" fn __llvm_is_string_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_string_attribute"
+pub fn llvm_is_string_attribute(a: LLVMAttributeRef) -> Bool {
+  __llvm_is_string_attribute(a).to_moonbit_bool()
+}
+pub fn LLVMAttributeRef::is_string_attribute(self: LLVMAttributeRef) -> Bool {
+  __llvm_is_string_attribute(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_is_type_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_type_attribute"
+extern "C" fn __llvm_is_type_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_type_attribute"
+pub fn llvm_is_type_attribute(a: LLVMAttributeRef) -> Bool {
+  __llvm_is_type_attribute(a).to_moonbit_bool()
+}
+pub fn LLVMAttributeRef::is_type_attribute(self: LLVMAttributeRef) -> Bool {
+  __llvm_is_type_attribute(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_get_type_by_name(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name"
+extern "C" fn __llvm_get_type_by_name(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name"
+pub fn llvm_get_type_by_name(context: LLVMContextRef, name: String) -> LLVMTypeRef {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_get_type_by_name(context, cstr)
+}
+pub fn LLVMContextRef::get_type_by_name(self: LLVMContextRef, name: String) -> LLVMTypeRef {
+  llvm_get_type_by_name(self, name)
+}
 
-pub extern "C" fn llvm_module_create_with_name(module_id: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
+extern "C" fn __llvm_module_create_with_name(module_id: CStr) -> LLVMModuleRef = "__llvm_module_create_with_name"
+pub fn llvm_module_create_with_name(module_id: String) -> LLVMModuleRef {
+  let cstr = moonbit_str_to_c_str(module_id)
+  __llvm_module_create_with_name(cstr)
+}
 
-pub extern "C" fn llvm_module_create_with_name_in_context(module_id: CStr, context: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
+extern "C" fn __llvm_module_create_with_name_in_context(module_id: CStr, context: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
+pub fn llvm_module_create_with_name_in_context(module_id: String, context: LLVMContextRef) -> LLVMModuleRef {
+  let cstr = moonbit_str_to_c_str(module_id)
+  __llvm_module_create_with_name_in_context(cstr, context)
+}
+pub fn LLVMContextRef::module_create_with_name(self: LLVMContextRef, module_id: String) -> LLVMModuleRef {
+  llvm_module_create_with_name_in_context(module_id, self)
+}
 
 pub extern "C" fn llvm_clone_module(m: LLVMModuleRef) -> LLVMModuleRef = "__llvm_clone_module"
+pub fn LLVMModuleRef::clone(self: LLVMModuleRef) -> LLVMModuleRef {
+  llvm_clone_module(self)
+}
 
 pub extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
+pub fn LLVMModuleRef::dispose(self: LLVMModuleRef) -> Unit {
+  llvm_dispose_module(self)
+}
 
-pub extern "C" fn llvm_is_new_dbg_info_format(m: LLVMModuleRef) -> LLVMBool = "__llvm_is_new_dbg_info_format"
+extern "C" fn __llvm_is_new_dbg_info_format(m: LLVMModuleRef) -> LLVMBool = "__llvm_is_new_dbg_info_format"
+pub fn llvm_is_new_dbg_info_format(m: LLVMModuleRef) -> Bool {
+  __llvm_is_new_dbg_info_format(m).to_moonbit_bool()
+}
+pub fn LLVMModuleRef::is_new_dbg_info_format(self: LLVMModuleRef) -> Bool {
+  __llvm_is_new_dbg_info_format(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: LLVMBool) = "__llvm_set_is_new_dbg_info_format"
+extern "C" fn __llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: LLVMBool) = "__llvm_set_is_new_dbg_info_format"
+pub fn llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: Bool) -> Unit {
+  __llvm_set_is_new_dbg_info_format(m, to_llvm_bool(use_new_format))
+}
 
 // pub extern "C" fn llvm_get_module_identifier(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_identifier"
 
@@ -104,15 +184,50 @@ pub extern "C" fn llvm_set_module_identifier(m: LLVMModuleRef, ident: CStr, len:
 
 pub extern "C" fn llvm_set_source_file_name(m: LLVMModuleRef, name: CStr, len: UInt64) = "__llvm_set_source_file_name"
 
-pub extern "C" fn llvm_get_data_layout_str(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout_str"
+extern "C" fn __llvm_get_data_layout_str(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout_str"
+pub fn llvm_get_data_layout_str(m: LLVMModuleRef) -> String {
+  let cstr = __llvm_get_data_layout_str(m)
+  c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMModuleRef::get_data_layout_str(self: LLVMModuleRef) -> String {
+  llvm_get_data_layout_str(self)
+}
 
-pub extern "C" fn llvm_get_data_layout(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout"
+extern "C" fn __llvm_get_data_layout(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout"
+pub fn llvm_get_data_layout(m: LLVMModuleRef) -> String {
+  let cstr = __llvm_get_data_layout(m)
+  c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMModuleRef::get_data_layout(self: LLVMModuleRef) -> String {
+  llvm_get_data_layout(self)
+}
 
-pub extern "C" fn llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: CStr) = "__llvm_set_data_layout"
+extern "C" fn __llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: CStr) = "__llvm_set_data_layout"
+pub fn llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(data_layout_str)
+  __llvm_set_data_layout(m, cstr)
+}
+pub fn LLVMModuleRef::set_data_layout(self: LLVMModuleRef, data_layout_str: String) -> Unit {
+  llvm_set_data_layout(self, data_layout_str)
+}
 
-pub extern "C" fn llvm_get_target(m: LLVMModuleRef) -> CStr = "__llvm_get_target"
+extern "C" fn __llvm_get_target(m: LLVMModuleRef) -> CStr = "__llvm_get_target"
+pub fn llvm_get_target(m: LLVMModuleRef) -> String {
+  let cstr = __llvm_get_target(m)
+  c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMModuleRef::get_target(self: LLVMModuleRef) -> String {
+  llvm_get_target(self)
+}
 
-pub extern "C" fn llvm_set_target(m: LLVMModuleRef, triple: CStr) = "__llvm_set_target"
+extern "C" fn __llvm_set_target(m: LLVMModuleRef, triple: CStr) = "__llvm_set_target"
+pub fn llvm_set_target(m: LLVMModuleRef, triple: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(triple)
+  __llvm_set_target(m, cstr)
+}
+pub fn LLVMModuleRef::set_target(self: LLVMModuleRef, triple: String) -> Unit {
+  llvm_set_target(self, triple)
+}
 
 // pub extern "C" fn llvm_copy_module_flags_metadata(m: LLVMModuleRef, len: Ptr[UInt64]) -> Ptr[LLVMModuleFlagEntry] = "__llvm_copy_module_flags_metadata"
 
@@ -129,6 +244,9 @@ pub extern "C" fn llvm_get_module_flag(m: LLVMModuleRef, key: CStr, key_len: UIn
 pub extern "C" fn llvm_add_module_flag(m: LLVMModuleRef, behavior: LLVMModuleFlagBehavior, key: CStr, key_len: UInt64, val: LLVMMetadataRef) = "__llvm_add_module_flag"
 
 pub extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
+pub fn LLVMModuleRef::dump(self: LLVMModuleRef) -> Unit {
+  llvm_dump_module(self)
+}
 
 // pub extern "C" fn llvm_print_module_to_file(m: LLVMModuleRef, filename: CStr, error_message: Ptr[CStr]) -> LLVMBool = "__llvm_print_module_to_file"
 
@@ -136,6 +254,12 @@ extern "C" fn __llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_
 pub fn llvm_print_module_to_string(m: LLVMModuleRef) -> String {
   let cstr = __llvm_print_module_to_string(m)
   c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMModuleRef::print_to_string(self: LLVMModuleRef) -> String {
+  llvm_print_module_to_string(self)
+}
+pub fn LLVMModuleRef::to_string(self: LLVMModuleRef) -> String {
+  llvm_print_module_to_string(self)
 }
 
 // pub extern "C" fn llvm_get_module_inline_asm(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_inline_asm"
@@ -151,18 +275,49 @@ pub extern "C" fn llvm_append_module_inline_asm(m: LLVMModuleRef, _asm: CStr, le
 // pub extern "C" fn llvm_get_inline_asm_constraint_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_constraint_string"
 
 pub extern "C" fn llvm_get_inline_asm_dialect(inline_asm_val: LLVMValueRef) -> LLVMInlineAsmDialect = "__llvm_get_inline_asm_dialect"
+pub fn LLVMValueRef::get_inline_asm_dialect(self: LLVMValueRef) -> LLVMInlineAsmDialect {
+  llvm_get_inline_asm_dialect(self)
+}
 
 pub extern "C" fn llvm_get_inline_asm_function_type(inline_asm_val: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_inline_asm_function_type"
+pub fn LLVMValueRef::get_inline_asm_function_type(self: LLVMValueRef) -> LLVMTypeRef {
+  llvm_get_inline_asm_function_type(self)
+}
 
-pub extern "C" fn llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_has_side_effects"
+extern "C" fn __llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_has_side_effects"
+pub fn llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_has_side_effects(inline_asm_val).to_moonbit_bool()
+}
+pub fn LLVMValueRef::get_inline_asm_has_side_effects(self: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_has_side_effects(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_needs_aligned_stack"
+extern "C" fn __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_needs_aligned_stack"
+pub fn llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val).to_moonbit_bool()
+}
+pub fn LLVMValueRef::get_inline_asm_needs_aligned_stack(self: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_needs_aligned_stack(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_can_unwind"
+extern "C" fn __llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_can_unwind"
+pub fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_can_unwind(inline_asm_val).to_moonbit_bool()
+}
+pub fn LLVMValueRef::get_inline_asm_can_unwind(self: LLVMValueRef) -> Bool {
+  __llvm_get_inline_asm_can_unwind(self).to_moonbit_bool()
+}
 
 pub extern "C" fn llvm_get_module_context(m: LLVMModuleRef) -> LLVMContextRef = "__llvm_get_module_context"
 
-pub extern "C" fn llvm_get_type_by_name_in_module(m: LLVMModuleRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name_in_module"
+extern "C" fn __llvm_get_type_by_name_in_module(m: LLVMModuleRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name_in_module"
+pub fn llvm_get_type_by_name_in_module(m: LLVMModuleRef, name: String) -> LLVMTypeRef {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_get_type_by_name_in_module(m, cstr)
+}
+pub fn LLVMModuleRef::get_type_by_name(self: LLVMModuleRef, name: String) -> LLVMTypeRef {
+  llvm_get_type_by_name_in_module(self, name)
+}
 
 pub extern "C" fn llvm_get_first_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_first_named_metadata"
 
@@ -178,31 +333,77 @@ pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr
 
 // pub extern "C" fn llvm_get_named_metadata_name(named_md: LLVMNamedMDNodeRef, name_len: Ptr[UInt64]) -> CStr = "__llvm_get_named_metadata_name"
 
-pub extern "C" fn llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: CStr) -> UInt = "__llvm_get_named_metadata_num_operands"
+extern "C" fn __llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: CStr) -> UInt = "__llvm_get_named_metadata_num_operands"
+pub fn llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: String) -> UInt {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_get_named_metadata_num_operands(m, cstr)
+}
+pub fn LLVMModuleRef::get_named_metadata_num_operands(self: LLVMModuleRef, name: String) -> UInt {
+  llvm_get_named_metadata_num_operands(self, name)
+}
 
 // pub extern "C" fn llvm_get_named_metadata_operands(m: LLVMModuleRef, name: CStr, dest: Ptr[LLVMValueRef]) = "__llvm_get_named_metadata_operands"
 
-pub extern "C" fn llvm_add_named_metadata_operand(m: LLVMModuleRef, name: CStr, val: LLVMValueRef) = "__llvm_add_named_metadata_operand"
-//
+extern "C" fn __llvm_add_named_metadata_operand(m: LLVMModuleRef, name: CStr, val: LLVMValueRef) = "__llvm_add_named_metadata_operand"
+pub fn llvm_add_named_metadata_operand(m: LLVMModuleRef, name: String, val: LLVMValueRef) -> Unit {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_add_named_metadata_operand(m, cstr, val)
+}
+pub fn LLVMModuleRef::add_named_metadata_operand(self: LLVMModuleRef, name: String, val: LLVMValueRef) -> Unit {
+  llvm_add_named_metadata_operand(self, name, val)
+}
+
 // pub extern "C" fn llvm_get_debug_loc_directory(val: LLVMValueRef, length: Ptr[UInt]) -> CStr = "__llvm_get_debug_loc_directory"
 
 // pub extern "C" fn llvm_get_debug_loc_filename(val: LLVMValueRef, length: Ptr[UInt]) -> CStr = "__llvm_get_debug_loc_filename"
 
 pub extern "C" fn llvm_get_debug_loc_line(val: LLVMValueRef) -> UInt = "__llvm_get_debug_loc_line"
+pub fn LLVMValueRef::get_debug_loc_line(self: LLVMValueRef) -> UInt {
+  llvm_get_debug_loc_line(self)
+}
 
 pub extern "C" fn llvm_get_debug_loc_column(val: LLVMValueRef) -> UInt = "__llvm_get_debug_loc_column"
+pub fn LLVMValueRef::get_debug_loc_column(self: LLVMValueRef) -> UInt {
+  llvm_get_debug_loc_column(self)
+}
 
-pub extern "C" fn llvm_add_function(m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_add_function"
+extern "C" fn __llvm_add_function(m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_add_function"
+pub fn llvm_add_function(m: LLVMModuleRef, name: String, function_ty: LLVMTypeRef) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_add_function(m, cstr, function_ty)
+}
+pub fn LLVMModuleRef::add_function(self: LLVMModuleRef, name: String, function_ty: LLVMTypeRef) -> LLVMValueRef {
+  llvm_add_function(self, name, function_ty)
+}
 
-pub extern "C" fn llvm_get_named_function(m: LLVMModuleRef, name: CStr) -> LLVMValueRef = "__llvm_get_named_function"
+extern "C" fn __llvm_get_named_function(m: LLVMModuleRef, name: CStr) -> LLVMValueRef = "__llvm_get_named_function"
+pub fn llvm_get_named_function(m: LLVMModuleRef, name: String) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_get_named_function(m, cstr)
+}
+pub fn LLVMModuleRef::get_named_function(self: LLVMModuleRef, name: String) -> LLVMValueRef {
+  llvm_get_named_function(self, name)
+}
 
 pub extern "C" fn llvm_get_first_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_first_function"
+pub fn LLVMModuleRef::get_first_function(self: LLVMModuleRef) -> LLVMValueRef {
+  llvm_get_first_function(self)
+}
 
 pub extern "C" fn llvm_get_last_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_last_function"
+pub fn LLVMModuleRef::get_last_function(self: LLVMModuleRef) -> LLVMValueRef {
+  llvm_get_last_function(self)
+}
 
 pub extern "C" fn llvm_get_next_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_function"
-//
+pub fn LLVMValueRef::get_next_function(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_next_function(self)
+}
+
 pub extern "C" fn llvm_get_previous_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_function"
+pub fn LLVMValueRef::get_previous_function(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_previous_function(self)
+}
 
 extern "C" fn __llvm_get_type_kind(ty: LLVMTypeRef) -> Int = "__llvm_get_type_kind"
 pub fn llvm_get_type_kind(ty: LLVMTypeRef) -> LLVMTypeKind {
@@ -221,165 +422,426 @@ pub fn LLVMTypeRef::get_context(self: LLVMTypeRef) -> LLVMContextRef {
 }
 
 pub extern "C" fn llvm_dump_type(val: LLVMTypeRef) = "__llvm_dump_type"
+pub fn LLVMTypeRef::dump(self: LLVMTypeRef) -> Unit {
+  llvm_dump_type(self)
+}
 
 extern "C" fn __llvm_print_type_to_string(val: LLVMTypeRef) -> CStr = "__llvm_print_type_to_string"
 pub fn llvm_print_type_to_string(val: LLVMTypeRef) -> String {
   let cstr = __llvm_print_type_to_string(val)
   c_str_to_moonbit_str(cstr)
 }
+pub fn LLVMTypeRef::print_to_string(self: LLVMTypeRef) -> String {
+  llvm_print_type_to_string(self)
+}
+pub fn LLVMTypeRef::to_string(self: LLVMTypeRef) -> String {
+  llvm_print_type_to_string(self)
+}
 
 pub extern "C" fn llvm_int1_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
+pub fn LLVMContextRef::int1_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int1_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int8_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
+pub fn LLVMContextRef::int8_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int8_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int16_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
+pub fn LLVMContextRef::int16_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int16_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int32_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
+pub fn LLVMContextRef::int32_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int32_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int64_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
+pub fn LLVMContextRef::int64_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int64_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
+pub fn LLVMContextRef::int128_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_int128_type_in_context(self)
+}
 
 pub extern "C" fn llvm_int_type_in_context(context: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type_in_context"
+pub fn LLVMContextRef::int_type(self: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef {
+  llvm_int_type_in_context(self, num_bits)
+}
 
 pub extern "C" fn llvm_int1_type() -> LLVMTypeRef = "__llvm_int1_type"
+pub fn LLVMTypeRef::int1_type() -> LLVMTypeRef {
+  llvm_int1_type()
+}
 
 pub extern "C" fn llvm_int8_type() -> LLVMTypeRef = "__llvm_int8_type"
+pub fn LLVMTypeRef::int8_type() -> LLVMTypeRef {
+  llvm_int8_type()
+}
 
 pub extern "C" fn llvm_int16_type() -> LLVMTypeRef = "__llvm_int16_type"
+pub fn LLVMTypeRef::int16_type() -> LLVMTypeRef {
+  llvm_int16_type()
+}
 
 pub extern "C" fn llvm_int32_type() -> LLVMTypeRef = "__llvm_int32_type"
+pub fn LLVMTypeRef::int32_type() -> LLVMTypeRef {
+  llvm_int32_type()
+}
 
 pub extern "C" fn llvm_int64_type() -> LLVMTypeRef = "__llvm_int64_type"
+pub fn LLVMTypeRef::int64_type() -> LLVMTypeRef {
+  llvm_int64_type()
+}
 
 pub extern "C" fn llvm_int128_type() -> LLVMTypeRef = "__llvm_int128_type"
+pub fn LLVMTypeRef::int128_type() -> LLVMTypeRef {
+  llvm_int128_type()
+}
 
 pub extern "C" fn llvm_int_type(num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type"
+pub fn LLVMTypeRef::int_type(num_bits: UInt) -> LLVMTypeRef {
+  llvm_int_type(num_bits)
+}
 
 pub extern "C" fn llvm_get_int_type_width(integer_ty: LLVMTypeRef) -> UInt = "__llvm_get_int_type_width"
+pub fn LLVMTypeRef::get_int_type_width(self: LLVMTypeRef) -> UInt {
+  llvm_get_int_type_width(self)
+}
 
 pub extern "C" fn llvm_half_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_half_type_in_context"
+pub fn LLVMContextRef::half_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_half_type_in_context(self)
+}
 
 pub extern "C" fn llvm_bfloat_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_bfloat_type_in_context"
+pub fn LLVMContextRef::bfloat_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_bfloat_type_in_context(self)
+}
 
 pub extern "C" fn llvm_float_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_float_type_in_context"
+pub fn LLVMContextRef::float_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_float_type_in_context(self)
+}
 
 pub extern "C" fn llvm_double_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_double_type_in_context"
+pub fn LLVMContextRef::double_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_double_type_in_context(self)
+}
 
 pub extern "C" fn llvm_x86_fp80_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_fp80_type_in_context"
+pub fn LLVMContextRef::x86_fp80_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_x86_fp80_type_in_context(self)
+}
 
 pub extern "C" fn llvm_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_fp128_type_in_context"
+pub fn LLVMContextRef::fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_fp128_type_in_context(self)
+}
 
 pub extern "C" fn llvm_ppc_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_ppc_fp128_type_in_context"
+pub fn LLVMContextRef::ppc_fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_ppc_fp128_type_in_context(self)
+}
 
 pub extern "C" fn llvm_half_type() -> LLVMTypeRef = "__llvm_half_type"
+pub fn LLVMTypeRef::half_type() -> LLVMTypeRef {
+  llvm_half_type()
+}
 
 pub extern "C" fn llvm_bfloat_type() -> LLVMTypeRef = "__llvm_bfloat_type"
+pub fn LLVMTypeRef::bfloat_type() -> LLVMTypeRef {
+  llvm_bfloat_type()
+}
 
 pub extern "C" fn llvm_float_type() -> LLVMTypeRef = "__llvm_float_type"
+pub fn LLVMTypeRef::float_type() -> LLVMTypeRef {
+  llvm_float_type()
+}
 
 pub extern "C" fn llvm_double_type() -> LLVMTypeRef = "__llvm_double_type"
+pub fn LLVMTypeRef::double_type() -> LLVMTypeRef {
+  llvm_double_type()
+}
 
 pub extern "C" fn llvm_x86_fp80_type() -> LLVMTypeRef = "__llvm_x86_fp80_type"
+pub fn LLVMTypeRef::x86_fp80_type() -> LLVMTypeRef {
+  llvm_x86_fp80_type()
+}
 
 pub extern "C" fn llvm_fp128_type() -> LLVMTypeRef = "__llvm_fp128_type"
+pub fn LLVMTypeRef::fp128_type() -> LLVMTypeRef {
+  llvm_fp128_type()
+}
 
 pub extern "C" fn llvm_ppc_fp128_type() -> LLVMTypeRef = "__llvm_ppc_fp128_type"
+pub fn LLVMTypeRef::ppc_fp128_type() -> LLVMTypeRef {
+  llvm_ppc_fp128_type()
+}
 
-pub extern "C" fn llvm_function_type(return_type: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: LLVMBool) -> LLVMTypeRef = "__llvm_function_type"
+extern "C" fn __llvm_function_type(return_type: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: LLVMBool) -> LLVMTypeRef = "__llvm_function_type"
+pub fn llvm_function_type(return_type: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> LLVMTypeRef {
+  __llvm_function_type(return_type, param_types, to_llvm_bool(is_var_arg))
+}
+pub fn LLVMTypeRef::function_type(self: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> LLVMTypeRef {
+  __llvm_function_type(self, param_types, to_llvm_bool(is_var_arg))
+}
 
 pub extern "C" fn llvm_is_function_var_arg(function_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_function_var_arg"
+pub fn LLVMTypeRef::is_function_var_arg(self: LLVMTypeRef) -> LLVMBool {
+  llvm_is_function_var_arg(self)
+}
 
 pub extern "C" fn llvm_get_return_type(function_ty: LLVMTypeRef) -> LLVMTypeRef = "__llvm_get_return_type"
+pub fn LLVMTypeRef::get_return_type(self: LLVMTypeRef) -> LLVMTypeRef {
+  llvm_get_return_type(self)
+}
 
 pub extern "C" fn llvm_count_param_types(function_ty: LLVMTypeRef) -> UInt = "__llvm_count_param_types"
+pub fn LLVMTypeRef::count_param_types(self: LLVMTypeRef) -> UInt {
+  llvm_count_param_types(self)
+}
 
 // pub extern "C" fn llvm_get_param_types(function_ty: LLVMTypeRef, dest: Ptr[LLVMTypeRef]) = "__llvm_get_param_types"
 
-pub extern "C" fn llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type_in_context"
+extern "C" fn __llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type_in_context"
+pub fn llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
+  __llvm_struct_type_in_context(context, element_types, to_llvm_bool(packed))
+}
+pub fn LLVMContextRef::struct_type(self: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
+  __llvm_struct_type_in_context(self, element_types, to_llvm_bool(packed))
+}
 
-pub extern "C" fn llvm_struct_type(element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type"
+extern "C" fn __llvm_struct_type(element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type"
+pub fn llvm_struct_type(element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
+  __llvm_struct_type(element_types, to_llvm_bool(packed))
+}
+pub fn LLVMTypeRef::struct_type(element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
+  __llvm_struct_type(element_types, to_llvm_bool(packed))
+}
 
-pub extern "C" fn llvm_struct_create_named(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_struct_create_named"
+extern "C" fn __llvm_struct_create_named(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_struct_create_named"
+pub fn llvm_struct_create_named(context: LLVMContextRef, name: String) -> LLVMTypeRef {
+  let cstr = moonbit_str_to_c_str(name)
+  __llvm_struct_create_named(context, cstr)
+}
+pub fn LLVMContextRef::struct_create_named(self: LLVMContextRef, name: String) -> LLVMTypeRef {
+  llvm_struct_create_named(self, name)
+}
 
-pub extern "C" fn llvm_get_struct_name(ty: LLVMTypeRef) -> CStr = "__llvm_get_struct_name"
+extern "C" fn __llvm_get_struct_name(ty: LLVMTypeRef) -> CStr = "__llvm_get_struct_name"
+pub fn llvm_get_struct_name(ty: LLVMTypeRef) -> String {
+  let cstr = __llvm_get_struct_name(ty)
+  c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMTypeRef::get_struct_name(self: LLVMTypeRef) -> String {
+  llvm_get_struct_name(self)
+}
 
-pub extern "C" fn llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) = "__llvm_struct_set_body"
+extern "C" fn __llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) = "__llvm_struct_set_body"
+pub fn llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: Bool) -> Unit {
+  __llvm_struct_set_body(struct_ty, element_types, to_llvm_bool(packed))
+}
+pub fn LLVMTypeRef::set_body(self: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: Bool) -> Unit {
+  llvm_struct_set_body(self, element_types, packed)
+}
 
 pub extern "C" fn llvm_count_struct_element_types(struct_ty: LLVMTypeRef) -> UInt = "__llvm_count_struct_element_types"
+pub fn LLVMTypeRef::count_struct_element_types(self: LLVMTypeRef) -> UInt {
+  llvm_count_struct_element_types(self)
+}
 
 // pub extern "C" fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef, dest: Ptr[LLVMTypeRef]) = "__llvm_get_struct_element_types"
 
 pub extern "C" fn llvm_struct_get_type_at_index(struct_ty: LLVMTypeRef, i: UInt) -> LLVMTypeRef = "__llvm_struct_get_type_at_index"
+pub fn LLVMTypeRef::get_type_at_index(self: LLVMTypeRef, i: UInt) -> LLVMTypeRef {
+  llvm_struct_get_type_at_index(self, i)
+}
 
-pub extern "C" fn llvm_is_packed_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_packed_struct"
+pub extern "C" fn __llvm_is_packed_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_packed_struct"
+pub fn LLVMTypeRef::is_packed(self: LLVMTypeRef) -> LLVMBool {
+  __llvm_is_packed_struct(self)
+}
 
-pub extern "C" fn llvm_is_opaque_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_opaque_struct"
+extern "C" fn __llvm_is_opaque_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_opaque_struct"
+pub fn llvm_is_opaque_struct(struct_ty: LLVMTypeRef) -> Bool {
+  __llvm_is_opaque_struct(struct_ty).to_moonbit_bool()
+}
+pub fn LLVMTypeRef::is_opaque_struct(self: LLVMTypeRef) -> Bool {
+  __llvm_is_opaque_struct(self).to_moonbit_bool()
+}
 
-pub extern "C" fn llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_literal_struct"
+extern "C" fn __llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_literal_struct"
+pub fn llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> Bool {
+  __llvm_is_literal_struct(struct_ty).to_moonbit_bool()
+}
+pub fn LLVMTypeRef::is_literal_struct(self: LLVMTypeRef) -> Bool {
+  __llvm_is_literal_struct(self).to_moonbit_bool()
+}
 
 pub extern "C" fn llvm_get_element_type(ty: LLVMTypeRef) -> LLVMTypeRef = "__llvm_get_element_type"
+pub fn LLVMTypeRef::get_element_type(self: LLVMTypeRef) -> LLVMTypeRef {
+  llvm_get_element_type(self)
+}
 
 // FIXME: Not implemented
 pub extern "C" fn llvm_get_subtypes(tp: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
+pub fn LLVMTypeRef::get_subtypes(self: LLVMTypeRef) -> Array[LLVMTypeRef] {
+  llvm_get_subtypes(self)
+}
 
 pub extern "C" fn llvm_get_num_contained_types(tp: LLVMTypeRef) -> UInt = "__llvm_get_num_contained_types"
+pub fn LLVMTypeRef::get_num_contained_types(self: LLVMTypeRef) -> UInt {
+  llvm_get_num_contained_types(self)
+}
 
 pub extern "C" fn llvm_array_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_array_type"
+pub fn LLVMTypeRef::array_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
+  llvm_array_type(self, element_count)
+}
 
 pub extern "C" fn llvm_array_type2(element_type: LLVMTypeRef, element_count: UInt64) -> LLVMTypeRef = "__llvm_array_type2"
 
 pub extern "C" fn llvm_get_array_length(array_ty: LLVMTypeRef) -> UInt = "__llvm_get_array_length"
+pub fn LLVMTypeRef::get_array_length(self: LLVMTypeRef) -> UInt {
+  llvm_get_array_length(self)
+}
 
 pub extern "C" fn llvm_get_array_length2(array_ty: LLVMTypeRef) -> UInt64 = "__llvm_get_array_length2"
+pub fn LLVMTypeRef::get_array_length2(self: LLVMTypeRef) -> UInt64 {
+  llvm_get_array_length2(self)
+}
 
 pub extern "C" fn llvm_pointer_type(element_type: LLVMTypeRef, address_space: AddressSpace) -> LLVMTypeRef = "__llvm_pointer_type"
+pub fn LLVMTypeRef::pointer_type(self: LLVMTypeRef, address_space: AddressSpace) -> LLVMTypeRef {
+  llvm_pointer_type(self, address_space)
+}
 
-pub extern "C" fn llvm_pointer_type_is_opaque(ty: LLVMTypeRef) -> LLVMBool = "__llvm_pointer_type_is_opaque"
+extern "C" fn __llvm_pointer_type_is_opaque(ty: LLVMTypeRef) -> LLVMBool = "__llvm_pointer_type_is_opaque"
+pub fn llvm_pointer_type_is_opaque(ty: LLVMTypeRef) -> Bool {
+  __llvm_pointer_type_is_opaque(ty).to_moonbit_bool()
+}
+pub fn LLVMTypeRef::pointer_type_is_opaque(self: LLVMTypeRef) -> Bool {
+  __llvm_pointer_type_is_opaque(self).to_moonbit_bool()
+}
 
 pub extern "C" fn llvm_pointer_type_in_context(context: LLVMContextRef, address_space: AddressSpace) -> LLVMTypeRef = "__llvm_pointer_type_in_context"
+pub fn LLVMContextRef::pointer_type(self: LLVMContextRef, address_space: AddressSpace) -> LLVMTypeRef {
+  llvm_pointer_type_in_context(self, address_space)
+}
 
 pub extern "C" fn llvm_get_pointer_address_space(pointer_ty: LLVMTypeRef) -> UInt = "__llvm_get_pointer_address_space"
+pub fn LLVMTypeRef::get_pointer_address_space(self: LLVMTypeRef) -> UInt {
+  llvm_get_pointer_address_space(self)
+}
 
 pub extern "C" fn llvm_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_vector_type"
+pub fn LLVMTypeRef::vector_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
+  llvm_vector_type(self, element_count)
+}
 
 pub extern "C" fn llvm_scalable_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_scalable_vector_type"
+pub fn LLVMTypeRef::scalable_vector_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
+  llvm_scalable_vector_type(self, element_count)
+}
 
 pub extern "C" fn llvm_get_vector_size(vector_ty: LLVMTypeRef) -> UInt = "__llvm_get_vector_size"
+pub fn LLVMTypeRef::get_vector_size(self: LLVMTypeRef) -> UInt {
+  llvm_get_vector_size(self)
+}
 
 pub extern "C" fn llvm_void_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_void_type_in_context"
+pub fn LLVMContextRef::void_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_void_type_in_context(self)
+}
 
 pub extern "C" fn llvm_label_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_label_type_in_context"
+pub fn LLVMContextRef::label_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_label_type_in_context(self)
+}
 
 pub extern "C" fn llvm_x86_mmx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_mmx_type_in_context"
+pub fn LLVMContextRef::x86_mmx_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_x86_mmx_type_in_context(self)
+}
 
 pub extern "C" fn llvm_x86_amx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_amx_type_in_context"
+pub fn LLVMContextRef::x86_amx_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_x86_amx_type_in_context(self)
+}
 
 pub extern "C" fn llvm_token_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_token_type_in_context"
+pub fn LLVMContextRef::token_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_token_type_in_context(self)
+}
 
 pub extern "C" fn llvm_metadata_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_metadata_type_in_context"
+pub fn LLVMContextRef::metadata_type(self: LLVMContextRef) -> LLVMTypeRef {
+  llvm_metadata_type_in_context(self)
+}
 
 pub extern "C" fn llvm_void_type() -> LLVMTypeRef = "__llvm_void_type"
+pub fn LLVMTypeRef::void_type() -> LLVMTypeRef {
+  llvm_void_type()
+}
 
 pub extern "C" fn llvm_label_type() -> LLVMTypeRef = "__llvm_label_type"
+pub fn LLVMTypeRef::label_type() -> LLVMTypeRef {
+  llvm_label_type()
+}
 
 pub extern "C" fn llvm_x86_mmx_type() -> LLVMTypeRef = "__llvm_x86_mmx_type"
+pub fn LLVMTypeRef::x86_mmx_type() -> LLVMTypeRef {
+  llvm_x86_mmx_type()
+}
 
 pub extern "C" fn llvm_x86_amx_type() -> LLVMTypeRef = "__llvm_x86_amx_type"
+pub fn LLVMTypeRef::x86_amx_type() -> LLVMTypeRef {
+  llvm_x86_amx_type()
+}
 
-pub extern "C" fn llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> CStr = "__llvm_get_target_ext_type_name"
+extern "C" fn __llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> CStr = "__llvm_get_target_ext_type_name"
+pub fn llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> String {
+  let cstr = __llvm_get_target_ext_type_name(target_ext_ty)
+  c_str_to_moonbit_str(cstr)
+}
+pub fn LLVMTypeRef::get_target_ext_type_name(self: LLVMTypeRef) -> String {
+  llvm_get_target_ext_type_name(self)
+}
 
 pub extern "C" fn llvm_get_target_ext_type_num_type_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_type_params"
+pub fn LLVMTypeRef::get_target_ext_type_num_type_params(self: LLVMTypeRef) -> UInt {
+  llvm_get_target_ext_type_num_type_params(self)
+}
 
 pub extern "C" fn llvm_get_target_ext_type_type_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> LLVMTypeRef = "__llvm_get_target_ext_type_type_param"
+pub fn LLVMTypeRef::get_target_ext_type_type_param(self: LLVMTypeRef, idx: UInt) -> LLVMTypeRef {
+  llvm_get_target_ext_type_type_param(self, idx)
+}
 
 pub extern "C" fn llvm_get_target_ext_type_num_int_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_int_params"
+pub fn LLVMTypeRef::get_target_ext_type_num_int_params(self: LLVMTypeRef) -> UInt {
+  llvm_get_target_ext_type_num_int_params(self)
+}
 
 pub extern "C" fn llvm_get_target_ext_type_int_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> UInt = "__llvm_get_target_ext_type_int_param"
+pub fn LLVMTypeRef::get_target_ext_type_int_param(self: LLVMTypeRef, idx: UInt) -> UInt {
+  llvm_get_target_ext_type_int_param(self, idx)
+}
 
 pub extern "C" fn llvm_type_of(val: LLVMValueRef) -> LLVMTypeRef = "__llvm_type_of"
+pub fn LLVMValueRef::type_of(self: LLVMValueRef) -> LLVMTypeRef {
+  llvm_type_of(self)
+}
 
 pub extern "C" fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind = "__llvm_get_value_kind"
+pub fn LLVMValueRef::get_value_kind(self: LLVMValueRef) -> LLVMValueKind {
+  llvm_get_value_kind(self)
+}
 
 // pub extern "C" fn llvm_get_value_name2(val: LLVMValueRef, length: Ptr[UInt64]) -> CStr = "__llvm_get_value_name2"
 
@@ -408,196 +870,491 @@ pub fn llvm_print_dbg_record_to_string(record: LLVMDbgRecordRef) -> String {
 }
 
 pub extern "C" fn llvm_replace_all_uses_with(old_val: LLVMValueRef, new_val: LLVMValueRef) = "__llvm_replace_all_uses_with"
+pub fn LLVMValueRef::replace_all_uses_with(self: LLVMValueRef, new_val: LLVMValueRef) -> Unit {
+  llvm_replace_all_uses_with(self, new_val)
+}
 
 pub extern "C" fn llvm_is_constant(val: LLVMValueRef) -> LLVMBool = "__llvm_is_constant"
+pub fn LLVMValueRef::is_constant(self: LLVMValueRef) -> LLVMBool {
+  llvm_is_constant(self)
+}
 
-pub extern "C" fn llvm_is_undef(val: LLVMValueRef) -> LLVMBool = "__llvm_is_undef"
+extern "C" fn __llvm_is_undef(val: LLVMValueRef) -> LLVMBool = "__llvm_is_undef"
+pub fn llvm_is_undef(val: LLVMValueRef) -> Bool {
+  __llvm_is_undef(val).to_moonbit_bool()
+}
+pub fn LLVMValueRef::is_undef(self: LLVMValueRef) -> Bool {
+  __llvm_is_undef(self).to_moonbit_bool()
+}
 
 pub extern "C" fn llvm_is_poison(val: LLVMValueRef) -> LLVMBool = "__llvm_is_poison"
+pub fn LLVMValueRef::is_poison(self: LLVMValueRef) -> LLVMBool {
+  llvm_is_poison(self)
+}
 
 pub extern "C" fn llvm_isa_argument(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_argument"
+pub fn LLVMValueRef::isa_argument(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_argument(self)
+}
 
 pub extern "C" fn llvm_isa_basic_block(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_basic_block"
+pub fn LLVMValueRef::isa_basic_block(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_basic_block(self)
+}
 
 pub extern "C" fn llvm_isa_inline_asm(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_inline_asm"
+pub fn LLVMValueRef::isa_inline_asm(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_inline_asm(self)
+}
 
 pub extern "C" fn llvm_isa_user(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_user"
+pub fn LLVMValueRef::isa_user(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_user(self)
+}
 
 pub extern "C" fn llvm_isa_constant(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant"
+pub fn LLVMValueRef::isa_constant(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant(self)
+}
 
 pub extern "C" fn llvm_isa_block_address(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_block_address"
+pub fn LLVMValueRef::isa_block_address(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_block_address(self)
+}
 
 pub extern "C" fn llvm_isa_constant_aggregate_zero(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_aggregate_zero"
+pub fn LLVMValueRef::isa_constant_aggregate_zero(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_aggregate_zero(self)
+}
 
 pub extern "C" fn llvm_isa_constant_array(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_array"
+pub fn LLVMValueRef::isa_constant_array(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_array(self)
+}
 
 pub extern "C" fn llvm_isa_constant_data_sequential(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_sequential"
+pub fn LLVMValueRef::isa_constant_data_sequential(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_data_sequential(self)
+}
 
 pub extern "C" fn llvm_isa_constant_data_array(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_array"
+pub fn LLVMValueRef::isa_constant_data_array(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_data_array(self)
+}
 
 pub extern "C" fn llvm_isa_constant_data_vector(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_vector"
+pub fn LLVMValueRef::isa_constant_data_vector(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_data_vector(self)
+}
 
 pub extern "C" fn llvm_isa_constant_expr(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_expr"
+pub fn LLVMValueRef::isa_constant_expr(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_expr(self)
+}
 
 pub extern "C" fn llvm_isa_constant_fp(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_fp"
+pub fn LLVMValueRef::isa_constant_fp(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_fp(self)
+}
 
 pub extern "C" fn llvm_isa_constant_int(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_int"
+pub fn LLVMValueRef::isa_constant_int(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_int(self)
+}
 
 pub extern "C" fn llvm_isa_constant_pointer_null(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_pointer_null"
+pub fn LLVMValueRef::isa_constant_pointer_null(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_pointer_null(self)
+}
+
 
 pub extern "C" fn llvm_isa_constant_struct(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_struct"
+pub fn LLVMValueRef::isa_constant_struct(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_struct(self)
+}
 
 pub extern "C" fn llvm_isa_constant_token_none(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_token_none"
+pub fn LLVMValueRef::isa_constant_token_none(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_token_none(self)
+}
+
 
 pub extern "C" fn llvm_isa_constant_vector(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_vector"
+pub fn LLVMValueRef::isa_constant_vector(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_constant_vector(self)
+}
 
 pub extern "C" fn llvm_isa_global_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_value"
+pub fn LLVMValueRef::isa_global_value(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_global_value(self)
+}
+
 
 pub extern "C" fn llvm_isa_global_alias(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_alias"
+pub fn LLVMValueRef::isa_global_alias(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_global_alias(self)
+}
 
 pub extern "C" fn llvm_isa_global_object(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_object"
+pub fn LLVMValueRef::isa_global_object(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_global_object(self)
+}
 
 pub extern "C" fn llvm_isa_function(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_function"
+pub fn LLVMValueRef::isa_function(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_function(self)
+}
 
 pub extern "C" fn llvm_isa_global_variable(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_variable"
+pub fn LLVMValueRef::isa_global_variable(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_global_variable(self)
+}
 
 pub extern "C" fn llvm_isa_global_ifunc(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_ifunc"
+pub fn LLVMValueRef::isa_global_ifunc(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_isa_undef_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_undef_value"
+pub fn LLVMValueRef::isa_undef_value(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_undef_value(self)
+}
 
 pub extern "C" fn llvm_isa_poison_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_poison_value"
+pub fn LLVMValueRef::isa_poison_value(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_poison_value(self)
+}
 
 pub extern "C" fn llvm_isa_instruction(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_instruction"
+pub fn LLVMValueRef::isa_instruction(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_instruction(self)
+}
 
 pub extern "C" fn llvm_isa_unary_operator(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unary_operator"
+pub fn LLVMValueRef::isa_unary_operator(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_unary_operator(self)
+}
 
 pub extern "C" fn llvm_isa_binary_operator(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_binary_operator"
+pub fn LLVMValueRef::isa_binary_operator(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_binary_operator(self)
+}
 
 pub extern "C" fn llvm_isa_call_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_call_inst"
+pub fn LLVMValueRef::isa_call_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_call_inst(self)
+}
 
 pub extern "C" fn llvm_isa_intrinsic_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_intrinsic_inst"
+pub fn LLVMValueRef::isa_intrinsic_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_intrinsic_inst(self)
+}
 
 pub extern "C" fn llvm_isa_dbg_info_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_info_intrinsic"
+pub fn LLVMValueRef::isa_dbg_info_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_dbg_info_intrinsic(self)
+}
 
 pub extern "C" fn llvm_isa_dbg_variable_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_variable_intrinsic"
+pub fn LLVMValueRef::isa_dbg_variable_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_dbg_variable_intrinsic(self)
+}
 
 pub extern "C" fn llvm_isa_dbg_declare_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_declare_inst"
+pub fn LLVMValueRef::isa_dbg_declare_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_dbg_declare_inst(self)
+}
 
 pub extern "C" fn llvm_isa_dbg_label_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_label_inst"
+pub fn LLVMValueRef::isa_dbg_label_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_dbg_label_inst(self)
+}
 
 pub extern "C" fn llvm_isa_mem_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_intrinsic"
+pub fn LLVMValueRef::isa_mem_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_mem_intrinsic(self)
+}
 
 pub extern "C" fn llvm_isa_mem_cpy_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_cpy_inst"
+pub fn LLVMValueRef::isa_mem_cpy_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_mem_cpy_inst(self)
+}
 
 pub extern "C" fn llvm_isa_mem_move_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_move_inst"
+pub fn LLVMValueRef::isa_mem_move_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_mem_move_inst(self)
+}
 
 pub extern "C" fn llvm_isa_mem_set_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_set_inst"
+pub fn LLVMValueRef::isa_mem_set_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_mem_set_inst(self)
+}
 
 pub extern "C" fn llvm_isa_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cmp_inst"
+pub fn LLVMValueRef::isa_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_cmp_inst(self)
+}
 
 pub extern "C" fn llvm_isa_f_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_f_cmp_inst"
+pub fn LLVMValueRef::isa_f_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_f_cmp_inst(self)
+}
 
 pub extern "C" fn llvm_isa_i_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_i_cmp_inst"
+pub fn LLVMValueRef::isa_i_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_i_cmp_inst(self)
+}
 
 pub extern "C" fn llvm_isa_extract_element_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_extract_element_inst"
+pub fn LLVMValueRef::isa_extract_element_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_extract_element_inst(self)
+}
 
 pub extern "C" fn llvm_isa_get_element_ptr_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_get_element_ptr_inst"
+pub fn LLVMValueRef::isa_get_element_ptr_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_get_element_ptr_inst(self)
+}
 
 pub extern "C" fn llvm_isa_insert_element_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_insert_element_inst"
+pub fn LLVMValueRef::isa_insert_element_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_insert_element_inst(self)
+}
 
 pub extern "C" fn llvm_isa_insert_value_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_insert_value_inst"
+pub fn LLVMValueRef::isa_insert_value_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_insert_value_inst(self)
+}
 
 pub extern "C" fn llvm_isa_landing_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_landing_pad_inst"
+pub fn LLVMValueRef::isa_landing_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_landing_pad_inst(self)
+}
 
 pub extern "C" fn llvm_isa_phi_node(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_phi_node"
+pub fn LLVMValueRef::isa_phi_node(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_phi_node(self)
+}
 
 pub extern "C" fn llvm_isa_select_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_select_inst"
+pub fn LLVMValueRef::isa_select_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_select_inst(self)
+}
 
 pub extern "C" fn llvm_isa_shuffle_vector_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_shuffle_vector_inst"
+pub fn LLVMValueRef::isa_shuffle_vector_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_shuffle_vector_inst(self)
+}
 
 pub extern "C" fn llvm_isa_store_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_store_inst"
+pub fn LLVMValueRef::isa_store_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_store_inst(self)
+}
 
 pub extern "C" fn llvm_isa_branch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_branch_inst"
+pub fn LLVMValueRef::isa_branch_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_branch_inst(self)
+}
 
 pub extern "C" fn llvm_isa_indirect_br_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_indirect_br_inst"
+pub fn LLVMValueRef::isa_indirect_br_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_indirect_br_inst(self)
+}
 
 pub extern "C" fn llvm_isa_invoke_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_invoke_inst"
+pub fn LLVMValueRef::isa_invoke_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_invoke_inst(self)
+}
 
 pub extern "C" fn llvm_isa_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_return_inst"
+pub fn LLVMValueRef::isa_return_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_return_inst(self)
+}
 
 pub extern "C" fn llvm_isa_switch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_switch_inst"
+pub fn LLVMValueRef::isa_switch_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_switch_inst(self)
+}
 
 pub extern "C" fn llvm_isa_unreachable_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unreachable_inst"
+pub fn LLVMValueRef::isa_unreachable_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_unreachable_inst(self)
+}
 
 pub extern "C" fn llvm_isa_resume_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_resume_inst"
+pub fn LLVMValueRef::isa_resume_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_resume_inst(self)
+}
 
 pub extern "C" fn llvm_isa_cleanup_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cleanup_return_inst"
+pub fn LLVMValueRef::isa_cleanup_return_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_cleanup_return_inst(self)
+}
 
 pub extern "C" fn llvm_isa_catch_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_return_inst"
+pub fn LLVMValueRef::isa_catch_return_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_catch_return_inst(self)
+}
 
 pub extern "C" fn llvm_isa_catch_switch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_switch_inst"
+pub fn LLVMValueRef::isa_catch_switch_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_catch_switch_inst(self)
+}
 
 pub extern "C" fn llvm_isa_call_br_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_call_br_inst"
+pub fn LLVMValueRef::isa_call_br_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_call_br_inst(self)
+}
 
 pub extern "C" fn llvm_isa_funclet_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_funclet_pad_inst"
+pub fn LLVMValueRef::isa_funclet_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_funclet_pad_inst(self)
+}
 
 pub extern "C" fn llvm_isa_catch_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_pad_inst"
+pub fn LLVMValueRef::isa_catch_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_catch_pad_inst(self)
+}
 
 pub extern "C" fn llvm_isa_cleanup_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cleanup_pad_inst"
+pub fn LLVMValueRef::isa_cleanup_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_cleanup_pad_inst(self)
+}
 
 pub extern "C" fn llvm_isa_unary_instruction(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unary_instruction"
+pub fn LLVMValueRef::isa_unary_instruction(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_unary_instruction(self)
+}
 
 pub extern "C" fn llvm_isa_alloca_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_alloca_inst"
+pub fn LLVMValueRef::isa_alloca_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_alloca_inst(self)
+}
 
 pub extern "C" fn llvm_isa_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cast_inst"
+pub fn LLVMValueRef::isa_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_cast_inst(self)
+}
 
 pub extern "C" fn llvm_isa_addr_space_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_addr_space_cast_inst"
+pub fn LLVMValueRef::isa_addr_space_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_addr_space_cast_inst(self)
+}
 
 pub extern "C" fn llvm_isa_bit_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_bit_cast_inst"
+pub fn LLVMValueRef::isa_bit_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_bit_cast_inst(self)
+}
 
 pub extern "C" fn llvm_isa_fp_ext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_ext_inst"
+pub fn LLVMValueRef::isa_fp_ext_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_fp_ext_inst(self)
+}
 
 pub extern "C" fn llvm_isa_fp_to_si_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_to_si_inst"
+pub fn LLVMValueRef::isa_fp_to_si_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_fp_to_si_inst(self)
+}
 
 pub extern "C" fn llvm_isa_fp_to_ui_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_to_ui_inst"
+pub fn LLVMValueRef::isa_fp_to_ui_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_fp_to_ui_inst(self)
+}
 
 pub extern "C" fn llvm_isa_fp_trunc_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_trunc_inst"
+pub fn LLVMValueRef::isa_fp_trunc_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_fp_trunc_inst(self)
+}
 
 pub extern "C" fn llvm_isa_int_to_ptr_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_int_to_ptr_inst"
+pub fn LLVMValueRef::isa_int_to_ptr_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_int_to_ptr_inst(self)
+}
 
 pub extern "C" fn llvm_isa_ptr_to_int_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_ptr_to_int_inst"
+pub fn LLVMValueRef::isa_ptr_to_int_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_ptr_to_int_inst(self)
+}
 
 pub extern "C" fn llvm_isa_sext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_sext_inst"
+pub fn LLVMValueRef::isa_sext_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_sext_inst(self)
+}
 
 pub extern "C" fn llvm_isa_si_to_fp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_si_to_fp_inst"
+pub fn LLVMValueRef::isa_si_to_fp_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_si_to_fp_inst(self)
+}
 
 pub extern "C" fn llvm_isa_trunc_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_trunc_inst"
+pub fn LLVMValueRef::isa_trunc_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_trunc_inst(self)
+}
 
 pub extern "C" fn llvm_isa_ui_to_fp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_ui_to_fp_inst"
+pub fn LLVMValueRef::isa_ui_to_fp_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_ui_to_fp_inst(self)
+}
 
 pub extern "C" fn llvm_isa_z_ext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_z_ext_inst"
+pub fn LLVMValueRef::isa_z_ext_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_z_ext_inst(self)
+}
 
 pub extern "C" fn llvm_isa_extract_value_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_extract_value_inst"
+pub fn LLVMValueRef::isa_extract_value_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_extract_value_inst(self)
+}
 
 pub extern "C" fn llvm_isa_load_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_load_inst"
+pub fn LLVMValueRef::isa_load_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_load_inst(self)
+}
 
 pub extern "C" fn llvm_isa_va_arg_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_va_arg_inst"
+pub fn LLVMValueRef::isa_va_arg_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_va_arg_inst(self)
+}
 
 pub extern "C" fn llvm_isa_freeze_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_freeze_inst"
+pub fn LLVMValueRef::isa_freeze_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_freeze_inst(self)
+}
 
 pub extern "C" fn llvm_isa_atomic_cmp_xchg_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_atomic_cmp_xchg_inst"
+pub fn LLVMValueRef::isa_atomic_cmp_xchg_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_atomic_cmp_xchg_inst(self)
+}
 
 pub extern "C" fn llvm_isa_atomic_rmw_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_atomic_rmw_inst"
+pub fn LLVMValueRef::isa_atomic_rmw_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_atomic_rmw_inst(self)
+}
 
 pub extern "C" fn llvm_isa_fence_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fence_inst"
+pub fn LLVMValueRef::isa_fence_inst(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_fence_inst(self)
+}
 
 pub extern "C" fn llvm_isa_md_node(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_md_node"
+pub fn LLVMValueRef::isa_md_node(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_md_node(self)
+}
 
 pub extern "C" fn llvm_isa_value_as_metadata(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_value_as_metadata"
+pub fn LLVMValueRef::isa_value_as_metadata(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_value_as_metadata(self)
+}
 
 pub extern "C" fn llvm_isa_md_string(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_md_string"
+pub fn LLVMValueRef::isa_md_string(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_isa_md_string(self)
+}
 
 pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_value_name"
+pub fn LLVMValueRef::get_value_name(self: LLVMValueRef) -> String {
+  let cstr = llvm_get_value_name(self)
+  c_str_to_moonbit_str(cstr)
+}
 
 // deprecated
 // pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "__llvm_set_value_name"
@@ -608,32 +1365,74 @@ pub fn LLVMValueRef::get_first_use(self: LLVMValueRef) -> LLVMUseRef {
 }
 
 pub extern "C" fn llvm_get_next_use(u: LLVMUseRef) -> LLVMUseRef = "__llvm_get_next_use"
+pub fn LLVMUseRef::get_next_use(self: LLVMUseRef) -> LLVMUseRef {
+  llvm_get_next_use(self)
+}
 
 pub extern "C" fn llvm_get_user(u: LLVMUseRef) -> LLVMValueRef = "__llvm_get_user"
+pub fn LLVMUseRef::get_user(self: LLVMUseRef) -> LLVMValueRef {
+  llvm_get_user(self)
+}
 
 pub extern "C" fn llvm_get_used_value(u: LLVMUseRef) -> LLVMValueRef = "__llvm_get_used_value"
+pub fn LLVMUseRef::get_used_value(self: LLVMUseRef) -> LLVMValueRef {
+  llvm_get_used_value(self)
+}
 
 pub extern "C" fn llvm_get_operand(val: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_operand"
+pub fn LLVMValueRef::get_operand(self: LLVMValueRef, index: UInt) -> LLVMValueRef {
+  llvm_get_operand(self, index)
+}
 
 pub extern "C" fn llvm_get_operand_use(val: LLVMValueRef, index: UInt) -> LLVMUseRef = "__llvm_get_operand_use"
+pub fn LLVMValueRef::get_operand_use(self: LLVMValueRef, index: UInt) -> LLVMUseRef {
+  llvm_get_operand_use(self, index)
+}
 
 pub extern "C" fn llvm_set_operand(user: LLVMValueRef, index: UInt, val: LLVMValueRef) = "__llvm_set_operand"
+pub fn LLVMValueRef::set_operand(self: LLVMValueRef, index: UInt, val: LLVMValueRef) -> Unit {
+  llvm_set_operand(self, index, val)
+}
 
 pub extern "C" fn llvm_get_num_operands(val: LLVMValueRef) -> Int = "__llvm_get_num_operands"
+pub fn LLVMValueRef::get_num_operands(self: LLVMValueRef) -> Int {
+  llvm_get_num_operands(self)
+}
 
 pub extern "C" fn llvm_const_null(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_null"
+pub fn LLVMTypeRef::const_null(self: LLVMTypeRef) -> LLVMValueRef {
+  llvm_const_null(self)
+}
 
 pub extern "C" fn llvm_const_all_ones(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_all_ones"
+pub fn LLVMTypeRef::const_all_ones(self: LLVMTypeRef) -> LLVMValueRef {
+  llvm_const_all_ones(self)
+}
 
 pub extern "C" fn llvm_get_undef(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_undef"
+pub fn LLVMTypeRef::get_undef(self: LLVMTypeRef) -> LLVMValueRef {
+  llvm_get_undef(self)
+}
 
 pub extern "C" fn llvm_get_poison(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_poison"
+pub fn LLVMTypeRef::get_poison(self: LLVMTypeRef) -> LLVMValueRef {
+  llvm_get_poison(self)
+}
 
 pub extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 
 pub extern "C" fn llvm_const_pointer_null(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_pointer_null"
+pub fn LLVMTypeRef::const_pointer_null(self: LLVMTypeRef) -> LLVMValueRef {
+  llvm_const_pointer_null(self)
+}
 
-pub extern "C" fn llvm_const_int(int_ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) -> LLVMValueRef = "__llvm_const_int"
+extern "C" fn __llvm_const_int(int_ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) -> LLVMValueRef = "__llvm_const_int"
+pub fn llvm_const_int(int_ty: LLVMTypeRef, n: UInt64, sign_extend: Bool) -> LLVMValueRef {
+  __llvm_const_int(int_ty, n, to_llvm_bool(sign_extend))
+}
+pub fn LLVMTypeRef::const_int(self: LLVMTypeRef, n: UInt64, sign_extend: Bool) -> LLVMValueRef {
+  __llvm_const_int(self, n, to_llvm_bool(sign_extend))
+}
 
 // pub extern "C" fn llvm_const_int_of_string(int_ty: LLVMTypeRef, text: CStr, radix: UInt8) -> LLVMValueRef = "__llvm_const_int_of_string"
 

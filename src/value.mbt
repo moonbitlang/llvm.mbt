@@ -47,7 +47,7 @@ pub fn Value::get_name(self: Value) -> String {
 }
 
 fn Value::is_undef(self: Value) -> Bool {
-  llvm_is_undef(self.as_value_ref()) == 1
+  self.as_value_ref().is_undef()
 }
 
 fn Value::get_type(self: Value) -> Type {

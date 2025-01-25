@@ -41,7 +41,6 @@ pub fn Type::fn_type(
   let ret_ty = self.as_type_ref()
   // let type_refs = param_types.map(fn (t) {t.as_type_ref()})
   let type_refs = param_types
-  let is_var_arg = to_llvm_bool(is_var_arg)
   let fty_ref = llvm_function_type(ret_ty, type_refs, is_var_arg)
   FunctionType::new(fty_ref)
 }
@@ -121,7 +120,7 @@ pub fn IntType::const_all_ones(self: IntType) -> IntValue {
 
 // TODO: Maybe better explain signextension
 pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
-  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, to_llvm_bool(sign_extend))
+  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, sign_extend)
   IntValue::new(llvm_val_ref)
 }
 
@@ -401,7 +400,7 @@ pub impl TypeRef for StructType with as_type_ref(
 }
 
 pub fn StructType::is_opaque(self: StructType) -> Bool {
-  llvm_is_opaque_struct(self.as_type_ref()) == 1
+  llvm_is_opaque_struct(self.as_type_ref())
 }
 
 pub fn StructType::count_fields(self: StructType) -> UInt {

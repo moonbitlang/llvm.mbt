@@ -113,9 +113,8 @@ pub fn Context::f64_type(self: Context) -> FloatType {
 
 
 pub fn create_module(self: Context, name: String) -> Module {
-  let cname = moonbit_str_to_c_str(name)
   let ctx_ref = self.as_context_ref()
-  Module::new(llvm_module_create_with_name_in_context(cname, ctx_ref))
+  Module::new(ctx_ref.module_create_with_name(name))
 }
 
 pub fn create_builder(self: Context) -> Builder {
