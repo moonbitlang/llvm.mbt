@@ -5,6 +5,10 @@ extern "C" fn moonbit_str_to_c_str(
 extern "C" fn c_str_to_moonbit_str(
   s: CStr
 ) -> String = "c_str_to_moonbit_str"
+extern "C" fn c_str_to_moonbit_str_with_length(
+  s: CStr,
+  len: UInt
+) -> String = "c_str_to_moonbit_str_with_length"
 extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
 pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()
@@ -255,7 +259,7 @@ pub extern "C" fn llvm_set_module_identifier(m: LLVMModuleRef, ident: CStr, len:
 //  * @param M Module to obtain the name of
 //  * @param Len Out parameter which holds the length of the returned string
 //  * @return The original source file name of M
-//  * @see Module::getSourceFileName()
+//  * see Module::getSourceFileName()
 //  */
 // pub extern "C" fn llvm_get_source_file_name(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_source_file_name"
 
@@ -266,7 +270,7 @@ pub extern "C" fn llvm_set_module_identifier(m: LLVMModuleRef, ident: CStr, len:
 // @param M The module to set the source file name of
 // @param Name The string to set M's source file name to
 // @param Len Length of Name
-// @see Module::setSourceFileName()
+// see Module::setSourceFileName()
 // 
 pub extern "C" fn llvm_set_source_file_name(m: LLVMModuleRef, name: CStr, len: UInt64) = "__llvm_set_source_file_name"
 
@@ -309,11 +313,11 @@ pub fn llvm_set_data_layout(m: LLVMModuleRef, data_layout_str: String) -> Unit {
 pub fn LLVMModuleRef::set_data_layout(self: LLVMModuleRef, data_layout_str: String) -> Unit {
   llvm_set_data_layout(self, data_layout_str)
 }
-// 
-// Obtain the target triple for a module.
-// 
-// @see Module::getTargetTriple()
-// 
+
+///| Obtain the target triple for a module.
+/// 
+/// see Module::getTargetTriple()
+/// 
 extern "C" fn __llvm_get_target(m: LLVMModuleRef) -> CStr = "__llvm_get_target"
 pub fn llvm_get_target(m: LLVMModuleRef) -> String {
   let cstr = __llvm_get_target(m)
@@ -324,11 +328,10 @@ pub fn LLVMModuleRef::get_target(self: LLVMModuleRef) -> String {
 }
 
 
-// /**
-//  * Set the target triple for a module.
-//  *
-//  * @see Module::setTargetTriple()
-//  */
+///| Set the target triple for a module.
+/// 
+/// see Module::setTargetTriple()
+/// 
 extern "C" fn __llvm_set_target(m: LLVMModuleRef, triple: CStr) = "__llvm_set_target"
 pub fn llvm_set_target(m: LLVMModuleRef, triple: String) -> Unit {
   let cstr = moonbit_str_to_c_str(triple)
@@ -338,13 +341,13 @@ pub fn LLVMModuleRef::set_target(self: LLVMModuleRef, triple: String) -> Unit {
   llvm_set_target(self, triple)
 }
 
-// /**
-//  * Returns the module flags as an array of flag-key-value triples.  The caller
-//  * is responsible for freeing this array by calling
-//  * \c LLVMDisposeModuleFlagsMetadata.
-//  *
-//  * @see Module::getModuleFlagsMetadata()
-//  */
+// 
+// Returns the module flags as an array of flag-key-value triples.  The caller
+// is responsible for freeing this array by calling
+// \c LLVMDisposeModuleFlagsMetadata.
+// 
+// see Module::getModuleFlagsMetadata()
+// 
 // pub extern "C" fn llvm_copy_module_flags_metadata(m: LLVMModuleRef, len: Ptr[UInt64]) -> Ptr[LLVMModuleFlagEntry] = "__llvm_copy_module_flags_metadata"
 
 
@@ -354,72 +357,64 @@ pub fn LLVMModuleRef::set_target(self: LLVMModuleRef, triple: String) -> Unit {
 // pub extern "C" fn llvm_dispose_module_flags_metadata(entries: Ptr[LLVMModuleFlagEntry]) = "__llvm_dispose_module_flags_metadata"
 
 
-// /**
-//  * Returns the flag behavior for a module flag entry at a specific index.
-//  *
-//  * @see Module::ModuleFlagEntry::Behavior
-//  */
+// 
+// Returns the flag behavior for a module flag entry at a specific index.
+// 
+// see Module::ModuleFlagEntry::Behavior
+// 
 // pub extern "C" fn llvm_module_flag_entries_get_flag_behavior(entries: Ptr[LLVMModuleFlagEntry], index: UInt) -> LLVMModuleFlagBehavior = "__llvm_module_flag_entries_get_flag_behavior"
 
 
-// /**
-//  * Returns the key for a module flag entry at a specific index.
-//  *
-//  * @see Module::ModuleFlagEntry::Key
-//  */
+// 
+// Returns the key for a module flag entry at a specific index.
+// 
+// see Module::ModuleFlagEntry::Key
+// 
 // pub extern "C" fn llvm_module_flag_entries_get_key(entries: Ptr[LLVMModuleFlagEntry], index: UInt, len: Ptr[UInt64]) -> CStr = "__llvm_module_flag_entries_get_key"
 
 
-// /**
-//  * Returns the metadata for a module flag entry at a specific index.
-//  *
-//  * @see Module::ModuleFlagEntry::Val
-//  */
+// 
+// Returns the metadata for a module flag entry at a specific index.
+// 
+// see Module::ModuleFlagEntry::Val
+// 
 // pub extern "C" fn llvm_module_flag_entries_get_metadata(entries: Ptr[LLVMModuleFlagEntry], index: UInt) -> LLVMMetadataRef = "__llvm_module_flag_entries_get_metadata"
 
 
-// /**
-//  * Add a module-level flag to the module-level flags metadata if it doesn't
-//  * already exist.
-//  *
-//  * @see Module::getModuleFlag()
-//  */
+/// Add a module-level flag to the module-level flags metadata if it doesn't already exist.
+/// 
+/// see Module::getModuleFlag()
 pub extern "C" fn llvm_get_module_flag(m: LLVMModuleRef, key: CStr, key_len: UInt64) -> LLVMMetadataRef = "__llvm_get_module_flag"
 
 
-// /**
-//  * Add a module-level flag to the module-level flags metadata if it doesn't
-//  * already exist.
-//  *
-//  * @see Module::addModuleFlag()
-//  */
+/// Add a module-level flag to the module-level flags metadata if it doesn't already exist.
+/// 
+/// see Module::addModuleFlag()
+/// 
 pub extern "C" fn llvm_add_module_flag(m: LLVMModuleRef, behavior: LLVMModuleFlagBehavior, key: CStr, key_len: UInt64, val: LLVMMetadataRef) = "__llvm_add_module_flag"
 
 
-// /**
-//  * Dump a representation of a module to stderr.
-//  *
-//  * @see Module::dump()
-//  */
+///| Dump a representation of a module to stderr.
+/// 
+/// see Module::dump()
 pub extern "C" fn llvm_dump_module(m: LLVMModuleRef) = "__llvm_dump_module"
 pub fn LLVMModuleRef::dump(self: LLVMModuleRef) -> Unit {
   llvm_dump_module(self)
 }
 
-// /**
-//  * Print a representation of a module to a file. The ErrorMessage needs to be
-//  * disposed with LLVMDisposeMessage. Returns 0 on success, 1 otherwise.
-//  *
-//  * @see Module::print()
-//  */
+// Print a representation of a module to a file. The ErrorMessage needs to be
+// disposed with LLVMDisposeMessage. Returns 0 on success, 1 otherwise.
+// 
+// see Module::print()
+// 
 // pub extern "C" fn llvm_print_module_to_file(m: LLVMModuleRef, filename: CStr, error_message: Ptr[CStr]) -> LLVMBool = "__llvm_print_module_to_file"
 
-// /**
-//  * Return a string representation of the module. Use
-//  * LLVMDisposeMessage to free the string.
-//  *
-//  * @see Module::print()
-//  */
+///| Return a string representation of the module.
+///
+/// Return a string representation of the module. Use
+/// LLVMDisposeMessage to free the string.
+/// 
+/// see Module::print()
 extern "C" fn __llvm_print_module_to_string(m: LLVMModuleRef) -> CStr = "__llvm_print_module_to_string"
 pub fn llvm_print_module_to_string(m: LLVMModuleRef) -> String {
   let cstr = __llvm_print_module_to_string(m)
@@ -432,75 +427,55 @@ pub fn LLVMModuleRef::to_string(self: LLVMModuleRef) -> String {
   llvm_print_module_to_string(self)
 }
 
-// /**
-//  * Get inline assembly for a module.
-//  *
-//  * @see Module::getModuleInlineAsm()
-//  */
+// Get inline assembly for a module.
+// 
+// see Module::getModuleInlineAsm()
 // pub extern "C" fn llvm_get_module_inline_asm(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_inline_asm"
 
 
-// /**
-//  * Set inline assembly for a module.
-//  *
-//  * @see Module::setModuleInlineAsm()
-//  */
+///| Set inline assembly for a module.
+/// 
+/// see Module::setModuleInlineAsm()
 pub extern "C" fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_set_module_inline_asm"
 
-// /**
-//  * Append inline assembly to a module.
-//  *
-//  * @see Module::appendModuleInlineAsm()
-//  */
+///| Append inline assembly to a module.
+/// 
+/// see Module::appendModuleInlineAsm()
 pub extern "C" fn llvm_append_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_append_module_inline_asm"
 
 
-// /**
-//  * Create the specified uniqued inline asm string.
-//  *
-//  * @see InlineAsm::get()
-//  */
+// Create the specified uniqued inline asm string.
+// 
+// see InlineAsm::get()
+// 
 // pub extern "C" fn llvm_get_inline_asm(ty: LLVMTypeRef, asm_string: CStr, asm_string_size: UInt64, constraints: CStr, constraints_size: UInt64, has_side_effects: LLVMBool, is_align_stack: LLVMBool, dialect: LLVMInlineAsmDialect, can_throw: LLVMBool) -> LLVMValueRef = "__llvm_get_inline_asm"
 
-// /**
-//  * Get the template string used for an inline assembly snippet
-//  *
-//  */
+// Get the template string used for an inline assembly snippet
 // pub extern "C" fn llvm_get_inline_asm_asm_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_asm_string"
 
-// /**
-//  * Get the raw constraint string for an inline assembly snippet
-//  *
-//  */
+// Get the raw constraint string for an inline assembly snippet
 // pub extern "C" fn llvm_get_inline_asm_constraint_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_constraint_string"
 
 
-// /**
-//  * Get the dialect used by the inline asm snippet
-//  *
-//  */
+///| Get the dialect used by the inline asm snippet
 pub extern "C" fn llvm_get_inline_asm_dialect(inline_asm_val: LLVMValueRef) -> LLVMInlineAsmDialect = "__llvm_get_inline_asm_dialect"
 pub fn LLVMValueRef::get_inline_asm_dialect(self: LLVMValueRef) -> LLVMInlineAsmDialect {
   llvm_get_inline_asm_dialect(self)
 }
 
 
-// /**
-//  * Get the function type of the inline assembly snippet. The same type that
-//  * was passed into LLVMGetInlineAsm originally
-//  *
-//  * @see LLVMGetInlineAsm
-//  *
-//  */
+///| Get the function type of the inline assembly snippet.
+///
+/// Get the function type of the inline assembly snippet. The same type that
+/// was passed into LLVMGetInlineAsm originally
+/// 
+/// see LLVMGetInlineAsm
 pub extern "C" fn llvm_get_inline_asm_function_type(inline_asm_val: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_inline_asm_function_type"
 pub fn LLVMValueRef::get_inline_asm_function_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_get_inline_asm_function_type(self)
 }
 
-// /**
-//  * Get if the inline asm snippet has side effects
-//  *
-//  */
+///| Get if the inline asm snippet has side effects
 extern "C" fn __llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_has_side_effects"
 pub fn llvm_get_inline_asm_has_side_effects(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_has_side_effects(inline_asm_val).to_moonbit_bool()
@@ -509,10 +484,7 @@ pub fn LLVMValueRef::get_inline_asm_has_side_effects(self: LLVMValueRef) -> Bool
   __llvm_get_inline_asm_has_side_effects(self).to_moonbit_bool()
 }
 
-// /**
-//  * Get if the inline asm snippet needs an aligned stack
-//  *
-//  */
+///| Get if the inline asm snippet needs an aligned stack
 extern "C" fn __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_needs_aligned_stack"
 pub fn llvm_get_inline_asm_needs_aligned_stack(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_needs_aligned_stack(inline_asm_val).to_moonbit_bool()
@@ -521,10 +493,7 @@ pub fn LLVMValueRef::get_inline_asm_needs_aligned_stack(self: LLVMValueRef) -> B
   __llvm_get_inline_asm_needs_aligned_stack(self).to_moonbit_bool()
 }
 
-// /**
-//  * Get if the inline asm snippet may unwind the stack
-//  *
-//  */
+///| Get if the inline asm snippet may unwind the stack
 extern "C" fn __llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> LLVMBool = "__llvm_get_inline_asm_can_unwind"
 pub fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_can_unwind(inline_asm_val).to_moonbit_bool()
@@ -532,10 +501,10 @@ pub fn llvm_get_inline_asm_can_unwind(inline_asm_val: LLVMValueRef) -> Bool {
 pub fn LLVMValueRef::get_inline_asm_can_unwind(self: LLVMValueRef) -> Bool {
   __llvm_get_inline_asm_can_unwind(self).to_moonbit_bool()
 }
-// /**
-//  * Obtain the context to which this module is associated.
-//  *
-//  * @see Module::getContext()
+
+///| Obtain the context to which this module is associated.
+/// 
+/// see Module::getContext()
 pub extern "C" fn llvm_get_module_context(m: LLVMModuleRef) -> LLVMContextRef = "__llvm_get_module_context"
 
 extern "C" fn __llvm_get_type_by_name_in_module(m: LLVMModuleRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name_in_module"
@@ -547,56 +516,51 @@ pub fn LLVMModuleRef::get_type_by_name(self: LLVMModuleRef, name: String) -> LLV
   llvm_get_type_by_name_in_module(self, name)
 }
 
-// /**
-//  * Obtain an iterator to the first NamedMDNode in a Module.
-//  *
-//  * @see llvm::Module::named_metadata_begin()
-//  */
+///| Obtain an iterator to the first NamedMDNode in a Module.
+/// 
+/// see llvm::Module::named_metadata_begin()
 pub extern "C" fn llvm_get_first_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_first_named_metadata"
 
-// /**
-//  * Obtain an iterator to the last NamedMDNode in a Module.
-//  *
-//  * @see llvm::Module::named_metadata_end()
-//  */
+///| Obtain an iterator to the last NamedMDNode in a Module.
+/// 
+/// see llvm::Module::named_metadata_end()
+/// 
 pub extern "C" fn llvm_get_last_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_last_named_metadata"
 
-// /**
-//  * Advance a NamedMDNode iterator to the next NamedMDNode.
-//  *
-//  * Returns NULL if the iterator was already at the end and there are no more
-//  * named metadata nodes.
-//  */
+///| Advance a NamedMDNode iterator to the next NamedMDNode.
+/// 
+/// Returns NULL if the iterator was already at the end and there are no more
+/// named metadata nodes.
 pub extern "C" fn llvm_get_next_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_next_named_metadata"
 
 
-// /**
-//  * Decrement a NamedMDNode iterator to the previous NamedMDNode.
-//  *
-//  * Returns NULL if the iterator was already at the beginning and there are
-//  * no previous named metadata nodes.
-//  */
+///| Decrement a NamedMDNode iterator to the previous NamedMDNode.
+/// 
+/// Returns NULL if the iterator was already at the beginning and there are
+/// no previous named metadata nodes.
+/// 
 pub extern "C" fn llvm_get_previous_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_previous_named_metadata"
 
 
-// 
-// Retrieve a NamedMDNode with the given name, returning NULL if no such
-// node exists.
-// 
-// @see llvm::Module::getNamedMetadata()
-// 
+///| Retrieve a NamedMDNode with the given name.
+///
+/// Retrieve a NamedMDNode with the given name, returning NULL if no such
+/// node exists.
+/// 
+/// see llvm::Module::getNamedMetadata()
 pub extern "C" fn llvm_get_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_named_metadata"
 
-// /**
-//  * Retrieve a NamedMDNode with the given name, creating a new node if no such
-//  * node exists.
-//  *
-//  * @see llvm::Module::getOrInsertNamedMetadata()
-//  */
+///| Retrieve a NamedMDNode with the given name, creating a new node if no such node exists.
+/// 
+/// see llvm::Module::getOrInsertNamedMetadata()
 pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_or_insert_named_metadata"
 
 // pub extern "C" fn llvm_get_named_metadata_name(named_md: LLVMNamedMDNodeRef, name_len: Ptr[UInt64]) -> CStr = "__llvm_get_named_metadata_name"
 
+///| Retrieve the name of a NamedMDNode.
+/// 
+/// see llvm::NamedMDNode::getName()
+/// 
 extern "C" fn __llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: CStr) -> UInt = "__llvm_get_named_metadata_num_operands"
 pub fn llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: String) -> UInt {
   let cstr = moonbit_str_to_c_str(name)
@@ -606,8 +570,17 @@ pub fn LLVMModuleRef::get_named_metadata_num_operands(self: LLVMModuleRef, name:
   llvm_get_named_metadata_num_operands(self, name)
 }
 
+// 
+// Obtain the number of operands for named metadata in a module.
+// 
+// see llvm::Module::getNamedMetadata()
+// 
 // pub extern "C" fn llvm_get_named_metadata_operands(m: LLVMModuleRef, name: CStr, dest: Ptr[LLVMValueRef]) = "__llvm_get_named_metadata_operands"
 
+///| Add an operand to named metadata.
+/// 
+/// see llvm::Module::getNamedMetadata()
+/// see llvm::MDNode::addOperand()
 extern "C" fn __llvm_add_named_metadata_operand(m: LLVMModuleRef, name: CStr, val: LLVMValueRef) = "__llvm_add_named_metadata_operand"
 pub fn llvm_add_named_metadata_operand(m: LLVMModuleRef, name: String, val: LLVMValueRef) -> Unit {
   let cstr = moonbit_str_to_c_str(name)
@@ -617,20 +590,56 @@ pub fn LLVMModuleRef::add_named_metadata_operand(self: LLVMModuleRef, name: Stri
   llvm_add_named_metadata_operand(self, name, val)
 }
 
+// Return the directory of the debug location for this value, which must be
+// an llvm::Instruction, llvm::GlobalVariable, or llvm::Function.
+// 
+// see llvm::Instruction::getDebugLoc()
+// see llvm::GlobalVariable::getDebugInfo()
+// see llvm::Function::getSubprogram()
+// 
 // pub extern "C" fn llvm_get_debug_loc_directory(val: LLVMValueRef, length: Ptr[UInt]) -> CStr = "__llvm_get_debug_loc_directory"
 
+
+// 
+// Return the filename of the debug location for this value, which must be
+// an llvm::Instruction, llvm::GlobalVariable, or llvm::Function.
+// 
+// see llvm::Instruction::getDebugLoc()
+// see llvm::GlobalVariable::getDebugInfo()
+// see llvm::Function::getSubprogram()
+// 
 // pub extern "C" fn llvm_get_debug_loc_filename(val: LLVMValueRef, length: Ptr[UInt]) -> CStr = "__llvm_get_debug_loc_filename"
 
+
+///| Return the line number of the debug location for this value.
+///
+/// Return the line number of the debug location for this value, which must be
+/// an llvm::Instruction, llvm::GlobalVariable, or llvm::Function.
+/// 
+/// see llvm::Instruction::getDebugLoc()
+/// see llvm::GlobalVariable::getDebugInfo()
+/// see llvm::Function::getSubprogram()
 pub extern "C" fn llvm_get_debug_loc_line(val: LLVMValueRef) -> UInt = "__llvm_get_debug_loc_line"
 pub fn LLVMValueRef::get_debug_loc_line(self: LLVMValueRef) -> UInt {
   llvm_get_debug_loc_line(self)
 }
 
+///| Return the column number of the debug location for this value
+///
+/// Return the column number of the debug location for this value, which must be
+/// an llvm::Instruction.
+/// 
+/// see llvm::Instruction::getDebugLoc()
+/// 
 pub extern "C" fn llvm_get_debug_loc_column(val: LLVMValueRef) -> UInt = "__llvm_get_debug_loc_column"
 pub fn LLVMValueRef::get_debug_loc_column(self: LLVMValueRef) -> UInt {
   llvm_get_debug_loc_column(self)
 }
 
+///| Add a function to a module under a specified name.
+/// 
+/// see llvm::Function::Create()
+/// 
 extern "C" fn __llvm_add_function(m: LLVMModuleRef, name: CStr, function_ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_add_function"
 pub fn llvm_add_function(m: LLVMModuleRef, name: String, function_ty: LLVMTypeRef) -> LLVMValueRef {
   let cstr = moonbit_str_to_c_str(name)
@@ -640,6 +649,12 @@ pub fn LLVMModuleRef::add_function(self: LLVMModuleRef, name: String, function_t
   llvm_add_function(self, name, function_ty)
 }
 
+
+///| Obtain a Function value from a Module by its name.
+/// 
+/// The returned value corresponds to a llvm::Function value.
+/// 
+/// see llvm::Module::getFunction()
 extern "C" fn __llvm_get_named_function(m: LLVMModuleRef, name: CStr) -> LLVMValueRef = "__llvm_get_named_function"
 pub fn llvm_get_named_function(m: LLVMModuleRef, name: String) -> LLVMValueRef {
   let cstr = moonbit_str_to_c_str(name)
@@ -649,47 +664,95 @@ pub fn LLVMModuleRef::get_named_function(self: LLVMModuleRef, name: String) -> L
   llvm_get_named_function(self, name)
 }
 
+///| Obtain an iterator to the first Function in a Module.
+/// 
+/// see llvm::Module::begin()
 pub extern "C" fn llvm_get_first_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_first_function"
 pub fn LLVMModuleRef::get_first_function(self: LLVMModuleRef) -> LLVMValueRef {
   llvm_get_first_function(self)
 }
 
+
+///| Obtain an iterator to the last Function in a Module.
+/// 
+/// see llvm::Module::end()
+/// 
 pub extern "C" fn llvm_get_last_function(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_last_function"
 pub fn LLVMModuleRef::get_last_function(self: LLVMModuleRef) -> LLVMValueRef {
   llvm_get_last_function(self)
 }
 
+
+///| Advance a Function iterator to the next Function.
+/// 
+/// Returns NULL if the iterator was already at the end and there are no more
+/// functions.
+/// 
 pub extern "C" fn llvm_get_next_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_function"
 pub fn LLVMValueRef::get_next_function(self: LLVMValueRef) -> LLVMValueRef {
   llvm_get_next_function(self)
 }
 
+
+///| Decrement a Function iterator to the previous Function.
+/// 
+/// Returns NULL if the iterator was already at the beginning and there are
+/// no previous functions.
+/// 
 pub extern "C" fn llvm_get_previous_function(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_function"
 pub fn LLVMValueRef::get_previous_function(self: LLVMValueRef) -> LLVMValueRef {
   llvm_get_previous_function(self)
 }
 
+
+///| Obtain the enumerated type of a Type instance.
+/// 
+/// see llvm::Type:getTypeID()
 extern "C" fn __llvm_get_type_kind(ty: LLVMTypeRef) -> Int = "__llvm_get_type_kind"
 pub fn llvm_get_type_kind(ty: LLVMTypeRef) -> LLVMTypeKind {
   let idx = __llvm_get_type_kind(ty);
   LLVMTypeKind::from_int(idx)
 }
 
+
+///| Whether the type has a known size.
+/// 
+/// Things that don't have a size are abstract types, labels, and void.a
+/// 
+/// see llvm::Type::isSized()
+/// 
 pub extern "C" fn llvm_type_is_sized(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_sized"
 pub fn LLVMTypeRef::is_sized(self: LLVMTypeRef) -> LLVMBool {
   llvm_type_is_sized(self)
 }
 
+
+///| Obtain the context to which this type instance is associated.
+/// 
+/// see llvm::Type::getContext()
+/// 
 pub extern "C" fn llvm_get_type_context(ty: LLVMTypeRef) -> LLVMContextRef = "__llvm_get_type_context"
 pub fn LLVMTypeRef::get_context(self: LLVMTypeRef) -> LLVMContextRef {
   llvm_get_type_context(self)
 }
 
+///| Dump a representation of a type to stderr.
+/// 
+/// see llvm::Type::dump()
+/// 
 pub extern "C" fn llvm_dump_type(val: LLVMTypeRef) = "__llvm_dump_type"
 pub fn LLVMTypeRef::dump(self: LLVMTypeRef) -> Unit {
   llvm_dump_type(self)
 }
 
+
+///| Return a string representation of the type.
+///
+/// Return a string representation of the type. Use
+/// LLVMDisposeMessage to free the string.
+/// 
+/// see llvm::Type::print()
+/// 
 extern "C" fn __llvm_print_type_to_string(val: LLVMTypeRef) -> CStr = "__llvm_print_type_to_string"
 pub fn llvm_print_type_to_string(val: LLVMTypeRef) -> String {
   let cstr = __llvm_print_type_to_string(val)
@@ -702,151 +765,185 @@ pub fn LLVMTypeRef::to_string(self: LLVMTypeRef) -> String {
   llvm_print_type_to_string(self)
 }
 
+///| Obtain an interger type with 1 bit.
 pub extern "C" fn llvm_int1_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
 pub fn LLVMContextRef::int1_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int1_type_in_context(self)
 }
 
+///| Obtain an interger type with 8 bits.
 pub extern "C" fn llvm_int8_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
 pub fn LLVMContextRef::int8_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int8_type_in_context(self)
 }
 
+///| Obtain an interger type with 16 bits.
 pub extern "C" fn llvm_int16_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
 pub fn LLVMContextRef::int16_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int16_type_in_context(self)
 }
 
+///| Obtain an interger type with 32 bits.
 pub extern "C" fn llvm_int32_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
 pub fn LLVMContextRef::int32_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int32_type_in_context(self)
 }
 
+///| Obtain an interger type with 64 bits.
 pub extern "C" fn llvm_int64_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
 pub fn LLVMContextRef::int64_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int64_type_in_context(self)
 }
 
+///| Obtain an interger type with 128 bits.
 pub extern "C" fn llvm_int128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
 pub fn LLVMContextRef::int128_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int128_type_in_context(self)
 }
 
+///| Obtain an interger type with the specified number of bits.
 pub extern "C" fn llvm_int_type_in_context(context: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type_in_context"
 pub fn LLVMContextRef::int_type(self: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef {
   llvm_int_type_in_context(self, num_bits)
 }
 
+///| Obtain an integer type from the global context with 1 bit.
 pub extern "C" fn llvm_int1_type() -> LLVMTypeRef = "__llvm_int1_type"
 pub fn LLVMTypeRef::int1_type() -> LLVMTypeRef {
   llvm_int1_type()
 }
 
+///| Obtain an integer type from the global context with 8 bits.
 pub extern "C" fn llvm_int8_type() -> LLVMTypeRef = "__llvm_int8_type"
 pub fn LLVMTypeRef::int8_type() -> LLVMTypeRef {
   llvm_int8_type()
 }
 
+///| Obtain an integer type from the global context with 16 bits.
 pub extern "C" fn llvm_int16_type() -> LLVMTypeRef = "__llvm_int16_type"
 pub fn LLVMTypeRef::int16_type() -> LLVMTypeRef {
   llvm_int16_type()
 }
 
+///| Obtain an integer type from the global context with 32 bits.
 pub extern "C" fn llvm_int32_type() -> LLVMTypeRef = "__llvm_int32_type"
 pub fn LLVMTypeRef::int32_type() -> LLVMTypeRef {
   llvm_int32_type()
 }
 
+///| Obtain an integer type from the global context with 64 bits.
 pub extern "C" fn llvm_int64_type() -> LLVMTypeRef = "__llvm_int64_type"
 pub fn LLVMTypeRef::int64_type() -> LLVMTypeRef {
   llvm_int64_type()
 }
 
+///| Obtain an integer type from the global context with 128 bits.
 pub extern "C" fn llvm_int128_type() -> LLVMTypeRef = "__llvm_int128_type"
 pub fn LLVMTypeRef::int128_type() -> LLVMTypeRef {
   llvm_int128_type()
 }
 
+///| Obtain an integer type from the global context with the specified number of bits.
 pub extern "C" fn llvm_int_type(num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type"
 pub fn LLVMTypeRef::int_type(num_bits: UInt) -> LLVMTypeRef {
   llvm_int_type(num_bits)
 }
 
+///| Return the number of bits in an integer type.
 pub extern "C" fn llvm_get_int_type_width(integer_ty: LLVMTypeRef) -> UInt = "__llvm_get_int_type_width"
 pub fn LLVMTypeRef::get_int_type_width(self: LLVMTypeRef) -> UInt {
   llvm_get_int_type_width(self)
 }
 
+///| Obtain a 16-bit floating point type from a context.
 pub extern "C" fn llvm_half_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_half_type_in_context"
 pub fn LLVMContextRef::half_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_half_type_in_context(self)
 }
 
+///| Obtain a 16-bit brain floating point type from a context.
 pub extern "C" fn llvm_bfloat_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_bfloat_type_in_context"
 pub fn LLVMContextRef::bfloat_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_bfloat_type_in_context(self)
 }
 
+///| Obtain a 32-bit floating point type from a context.
 pub extern "C" fn llvm_float_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_float_type_in_context"
 pub fn LLVMContextRef::float_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_float_type_in_context(self)
 }
 
+///| Obtain a 64-bit floating point type from a context.
 pub extern "C" fn llvm_double_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_double_type_in_context"
 pub fn LLVMContextRef::double_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_double_type_in_context(self)
 }
 
+///| Obtain a 80-bit floating point type (X87) from a context.
 pub extern "C" fn llvm_x86_fp80_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_fp80_type_in_context"
 pub fn LLVMContextRef::x86_fp80_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_x86_fp80_type_in_context(self)
 }
 
+///| Obtain a 128-bit floating point type (112-bit mantissa) from a context.
 pub extern "C" fn llvm_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_fp128_type_in_context"
 pub fn LLVMContextRef::fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_fp128_type_in_context(self)
 }
 
+///| Obtain a 128-bit floating point type (two 64-bits) from a context.
 pub extern "C" fn llvm_ppc_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_ppc_fp128_type_in_context"
 pub fn LLVMContextRef::ppc_fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_ppc_fp128_type_in_context(self)
 }
 
+///| Obtain a 16-bit floating point type from global context.
 pub extern "C" fn llvm_half_type() -> LLVMTypeRef = "__llvm_half_type"
 pub fn LLVMTypeRef::half_type() -> LLVMTypeRef {
   llvm_half_type()
 }
 
+///| Obtain a 16-bit brain floating point type from global context.
 pub extern "C" fn llvm_bfloat_type() -> LLVMTypeRef = "__llvm_bfloat_type"
 pub fn LLVMTypeRef::bfloat_type() -> LLVMTypeRef {
   llvm_bfloat_type()
 }
 
+///| Obtain a 32-bit floating point type from global context.
 pub extern "C" fn llvm_float_type() -> LLVMTypeRef = "__llvm_float_type"
 pub fn LLVMTypeRef::float_type() -> LLVMTypeRef {
   llvm_float_type()
 }
 
+///| Obtain a 64-bit floating point type from global context.
 pub extern "C" fn llvm_double_type() -> LLVMTypeRef = "__llvm_double_type"
 pub fn LLVMTypeRef::double_type() -> LLVMTypeRef {
   llvm_double_type()
 }
 
+///| Obtain a 80-bit floating point type (X87) from global context.
 pub extern "C" fn llvm_x86_fp80_type() -> LLVMTypeRef = "__llvm_x86_fp80_type"
 pub fn LLVMTypeRef::x86_fp80_type() -> LLVMTypeRef {
   llvm_x86_fp80_type()
 }
 
+///| Obtain a 128-bit floating point type (112-bit mantissa) from global context.
 pub extern "C" fn llvm_fp128_type() -> LLVMTypeRef = "__llvm_fp128_type"
 pub fn LLVMTypeRef::fp128_type() -> LLVMTypeRef {
   llvm_fp128_type()
 }
 
+///| Obtain a 128-bit floating point type (two 64-bits) from global context.
 pub extern "C" fn llvm_ppc_fp128_type() -> LLVMTypeRef = "__llvm_ppc_fp128_type"
 pub fn LLVMTypeRef::ppc_fp128_type() -> LLVMTypeRef {
   llvm_ppc_fp128_type()
 }
 
+///| Obtain a function type consisting of a specified signature.
+/// 
+/// The function is defined as a tuple of a return Type, a list of
+/// parameter types, and whether the function is variadic.
+/// 
 extern "C" fn __llvm_function_type(return_type: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: LLVMBool) -> LLVMTypeRef = "__llvm_function_type"
 pub fn llvm_function_type(return_type: LLVMTypeRef, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> LLVMTypeRef {
   __llvm_function_type(return_type, param_types, to_llvm_bool(is_var_arg))
@@ -855,23 +952,45 @@ pub fn LLVMTypeRef::function_type(self: LLVMTypeRef, param_types: Array[LLVMType
   __llvm_function_type(self, param_types, to_llvm_bool(is_var_arg))
 }
 
+///| Returns whether a function type is variadic.
 pub extern "C" fn llvm_is_function_var_arg(function_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_function_var_arg"
 pub fn LLVMTypeRef::is_function_var_arg(self: LLVMTypeRef) -> LLVMBool {
   llvm_is_function_var_arg(self)
 }
 
+///| Obtain the Type this function Type returns.
 pub extern "C" fn llvm_get_return_type(function_ty: LLVMTypeRef) -> LLVMTypeRef = "__llvm_get_return_type"
 pub fn LLVMTypeRef::get_return_type(self: LLVMTypeRef) -> LLVMTypeRef {
   llvm_get_return_type(self)
 }
 
+///| Obtain the number of parameters this function accepts.
 pub extern "C" fn llvm_count_param_types(function_ty: LLVMTypeRef) -> UInt = "__llvm_count_param_types"
 pub fn LLVMTypeRef::count_param_types(self: LLVMTypeRef) -> UInt {
   llvm_count_param_types(self)
 }
 
+// 
+// Obtain the types of a function's parameters.
+// 
+// The Dest parameter should point to a pre-allocated array of
+// LLVMTypeRef at least LLVMCountParamTypes() large. On return, the
+// first LLVMCountParamTypes() entries in the array will be populated
+// with LLVMTypeRef instances.
+// 
+// @param FunctionTy The function type to operate on.
+// @param Dest Memory address of an array to be filled with result.
+// 
 // pub extern "C" fn llvm_get_param_types(function_ty: LLVMTypeRef, dest: Ptr[LLVMTypeRef]) = "__llvm_get_param_types"
 
+
+///| Create a new structure type in a context.
+/// 
+/// A structure is specified by a list of inner elements/types and
+/// whether these can be packed together.
+/// 
+/// see llvm::StructType::create()
+/// 
 extern "C" fn __llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type_in_context"
 pub fn llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
   __llvm_struct_type_in_context(context, element_types, to_llvm_bool(packed))
@@ -880,6 +999,10 @@ pub fn LLVMContextRef::struct_type(self: LLVMContextRef, element_types: Array[LL
   __llvm_struct_type_in_context(self, element_types, to_llvm_bool(packed))
 }
 
+///| Create a new structure type in the global context.
+/// 
+/// see llvm::StructType::create()
+/// 
 extern "C" fn __llvm_struct_type(element_types: Array[LLVMTypeRef], packed: LLVMBool) -> LLVMTypeRef = "__llvm_struct_type"
 pub fn llvm_struct_type(element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
   __llvm_struct_type(element_types, to_llvm_bool(packed))
@@ -888,6 +1011,10 @@ pub fn LLVMTypeRef::struct_type(element_types: Array[LLVMTypeRef], packed: Bool)
   __llvm_struct_type(element_types, to_llvm_bool(packed))
 }
 
+///| Create an empty structure in a context having a specified name.
+/// 
+/// see llvm::StructType::create()
+/// 
 extern "C" fn __llvm_struct_create_named(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_struct_create_named"
 pub fn llvm_struct_create_named(context: LLVMContextRef, name: String) -> LLVMTypeRef {
   let cstr = moonbit_str_to_c_str(name)
@@ -906,6 +1033,9 @@ pub fn LLVMTypeRef::get_struct_name(self: LLVMTypeRef) -> String {
   llvm_get_struct_name(self)
 }
 
+///| Obtain the name of a structure.
+/// 
+/// see llvm::StructType::getName()
 extern "C" fn __llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: LLVMBool) = "__llvm_struct_set_body"
 pub fn llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: Bool) -> Unit {
   __llvm_struct_set_body(struct_ty, element_types, to_llvm_bool(packed))
@@ -914,23 +1044,46 @@ pub fn LLVMTypeRef::set_body(self: LLVMTypeRef, element_types: Array[LLVMTypeRef
   llvm_struct_set_body(self, element_types, packed)
 }
 
+///| Get the number of elements defined inside the structure.
+/// 
+/// see llvm::StructType::getNumElements()
+/// 
 pub extern "C" fn llvm_count_struct_element_types(struct_ty: LLVMTypeRef) -> UInt = "__llvm_count_struct_element_types"
 pub fn LLVMTypeRef::count_struct_element_types(self: LLVMTypeRef) -> UInt {
   llvm_count_struct_element_types(self)
 }
 
-// pub extern "C" fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef, dest: Ptr[LLVMTypeRef]) = "__llvm_get_struct_element_types"
+///| Get the elements within a structure.
+/// 
+/// The function is passed the address of a pre-allocated array of
+/// LLVMTypeRef at least LLVMCountStructElementTypes() long. After
+/// invocation, this array will be populated with the structure's
+/// elements. The objects in the destination array will have a lifetime
+/// of the structure type itself, which is the lifetime of the context it
+/// is contained in.
+pub extern "C" fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] = "__llvm_get_struct_element_types"
 
+///| Get the type of the element at a given index in the structure.
+/// 
+/// see llvm::StructType::getTypeAtIndex()
+/// 
 pub extern "C" fn llvm_struct_get_type_at_index(struct_ty: LLVMTypeRef, i: UInt) -> LLVMTypeRef = "__llvm_struct_get_type_at_index"
 pub fn LLVMTypeRef::get_type_at_index(self: LLVMTypeRef, i: UInt) -> LLVMTypeRef {
   llvm_struct_get_type_at_index(self, i)
 }
 
+///| Determine whether a structure is packed.
+/// 
+/// see llvm::StructType::isPacked()
 pub extern "C" fn __llvm_is_packed_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_packed_struct"
 pub fn LLVMTypeRef::is_packed(self: LLVMTypeRef) -> LLVMBool {
   __llvm_is_packed_struct(self)
 }
 
+///| Determine whether a structure is opaque.
+/// 
+/// see llvm::StructType::isOpaque()
+/// 
 extern "C" fn __llvm_is_opaque_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_opaque_struct"
 pub fn llvm_is_opaque_struct(struct_ty: LLVMTypeRef) -> Bool {
   __llvm_is_opaque_struct(struct_ty).to_moonbit_bool()
@@ -939,6 +1092,10 @@ pub fn LLVMTypeRef::is_opaque_struct(self: LLVMTypeRef) -> Bool {
   __llvm_is_opaque_struct(self).to_moonbit_bool()
 }
 
+///| Determine whether a structure is literal.
+/// 
+/// see llvm::StructType::isLiteral()
+/// 
 extern "C" fn __llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_literal_struct"
 pub fn llvm_is_literal_struct(struct_ty: LLVMTypeRef) -> Bool {
   __llvm_is_literal_struct(struct_ty).to_moonbit_bool()
@@ -947,44 +1104,103 @@ pub fn LLVMTypeRef::is_literal_struct(self: LLVMTypeRef) -> Bool {
   __llvm_is_literal_struct(self).to_moonbit_bool()
 }
 
+///| Obtain the element type of an array or vector type.
+/// 
+/// see llvm::SequentialType::getElementType()
+/// 
 pub extern "C" fn llvm_get_element_type(ty: LLVMTypeRef) -> LLVMTypeRef = "__llvm_get_element_type"
 pub fn LLVMTypeRef::get_element_type(self: LLVMTypeRef) -> LLVMTypeRef {
   llvm_get_element_type(self)
 }
 
+// 
+// Returns type's subtypes
+// 
+// @see llvm::Type::subtypes()
 // FIXME: Not implemented
 pub extern "C" fn llvm_get_subtypes(tp: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
 pub fn LLVMTypeRef::get_subtypes(self: LLVMTypeRef) -> Array[LLVMTypeRef] {
   llvm_get_subtypes(self)
 }
 
+////| Return the number of types in the derived type.
+/// 
+/// see llvm::Type::getNumContainedTypes()
+/// 
 pub extern "C" fn llvm_get_num_contained_types(tp: LLVMTypeRef) -> UInt = "__llvm_get_num_contained_types"
 pub fn LLVMTypeRef::get_num_contained_types(self: LLVMTypeRef) -> UInt {
   llvm_get_num_contained_types(self)
 }
 
+// TODO: soon to be removed
+///| Create a fixed size array type that refers to a specific type.
+/// 
+/// The created type will exist in the context that its element type
+/// exists in.
+/// 
+/// @deprecated LLVMArrayType is deprecated in favor of the API accurate
+/// LLVMArrayType2
+/// see llvm::ArrayType::get()
+/// 
 pub extern "C" fn llvm_array_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_array_type"
 pub fn LLVMTypeRef::array_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
   llvm_array_type(self, element_count)
 }
 
+
+///| Create a fixed size array type that refers to a specific type.
+/// 
+/// The created type will exist in the context that its element type
+/// exists in.
+/// 
+/// see llvm::ArrayType::get()
 pub extern "C" fn llvm_array_type2(element_type: LLVMTypeRef, element_count: UInt64) -> LLVMTypeRef = "__llvm_array_type2"
 
+
+///| Obtain the length of an array type.
+/// 
+/// This only works on types that represent arrays.
+/// 
+/// @deprecated LLVMGetArrayLength is deprecated in favor of the API accurate
+/// LLVMGetArrayLength2
+/// see llvm::ArrayType::getNumElements()
+/// 
 pub extern "C" fn llvm_get_array_length(array_ty: LLVMTypeRef) -> UInt = "__llvm_get_array_length"
 pub fn LLVMTypeRef::get_array_length(self: LLVMTypeRef) -> UInt {
   llvm_get_array_length(self)
 }
 
+
+///| Obtain the length of an array type.
+/// 
+/// This only works on types that represent arrays.
+/// 
+/// see llvm::ArrayType::getNumElements()
+/// 
 pub extern "C" fn llvm_get_array_length2(array_ty: LLVMTypeRef) -> UInt64 = "__llvm_get_array_length2"
 pub fn LLVMTypeRef::get_array_length2(self: LLVMTypeRef) -> UInt64 {
   llvm_get_array_length2(self)
 }
 
+
+///| Create a pointer type that points to a defined type.
+/// 
+/// The created type will exist in the context that its pointee type
+/// exists in.
+/// 
+/// see llvm::PointerType::get()
+/// 
 pub extern "C" fn llvm_pointer_type(element_type: LLVMTypeRef, address_space: AddressSpace) -> LLVMTypeRef = "__llvm_pointer_type"
 pub fn LLVMTypeRef::pointer_type(self: LLVMTypeRef, address_space: AddressSpace) -> LLVMTypeRef {
   llvm_pointer_type(self, address_space)
 }
 
+///| Determine whether a pointer is opaque.
+/// 
+/// True if this is an instance of an opaque PointerType.
+/// 
+/// see llvm::Type::isOpaquePointerTy()
+/// 
 extern "C" fn __llvm_pointer_type_is_opaque(ty: LLVMTypeRef) -> LLVMBool = "__llvm_pointer_type_is_opaque"
 pub fn llvm_pointer_type_is_opaque(ty: LLVMTypeRef) -> Bool {
   __llvm_pointer_type_is_opaque(ty).to_moonbit_bool()
@@ -993,81 +1209,136 @@ pub fn LLVMTypeRef::pointer_type_is_opaque(self: LLVMTypeRef) -> Bool {
   __llvm_pointer_type_is_opaque(self).to_moonbit_bool()
 }
 
+
+///| Create an opaque pointer type in a context.
+/// 
+/// see llvm::PointerType::get()
+/// 
 pub extern "C" fn llvm_pointer_type_in_context(context: LLVMContextRef, address_space: AddressSpace) -> LLVMTypeRef = "__llvm_pointer_type_in_context"
 pub fn LLVMContextRef::pointer_type(self: LLVMContextRef, address_space: AddressSpace) -> LLVMTypeRef {
   llvm_pointer_type_in_context(self, address_space)
 }
 
+
+///| Obtain the address space of a pointer type.
+/// 
+/// This only works on types that represent pointers.
+/// 
+/// see llvm::PointerType::getAddressSpace()
+/// 
 pub extern "C" fn llvm_get_pointer_address_space(pointer_ty: LLVMTypeRef) -> UInt = "__llvm_get_pointer_address_space"
 pub fn LLVMTypeRef::get_pointer_address_space(self: LLVMTypeRef) -> UInt {
   llvm_get_pointer_address_space(self)
 }
 
+
+///| Create a vector type that contains a defined type and has a specific number of elements.
+/// 
+/// The created type will exist in the context thats its element type
+/// exists in.
+/// 
+/// see llvm::VectorType::get()
+/// 
 pub extern "C" fn llvm_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_vector_type"
 pub fn LLVMTypeRef::vector_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
   llvm_vector_type(self, element_count)
 }
 
+
+
+///| Create a vector type that contains a defined type and has a scalable number of elements.
+/// 
+/// The created type will exist in the context thats its element type
+/// exists in.
+/// 
+/// see llvm::ScalableVectorType::get()
 pub extern "C" fn llvm_scalable_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_scalable_vector_type"
 pub fn LLVMTypeRef::scalable_vector_type(self: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef {
   llvm_scalable_vector_type(self, element_count)
 }
 
+
+///| Obtain the (possibly scalable) number of elements in a vector type.
+/// 
+/// This only works on types that represent vectors (fixed or scalable).
+/// 
+/// see llvm::VectorType::getNumElements()
 pub extern "C" fn llvm_get_vector_size(vector_ty: LLVMTypeRef) -> UInt = "__llvm_get_vector_size"
 pub fn LLVMTypeRef::get_vector_size(self: LLVMTypeRef) -> UInt {
   llvm_get_vector_size(self)
 }
 
+///| Create a void type in a context.
 pub extern "C" fn llvm_void_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_void_type_in_context"
 pub fn LLVMContextRef::void_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_void_type_in_context(self)
 }
 
+///| Create a label type in a context.
 pub extern "C" fn llvm_label_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_label_type_in_context"
 pub fn LLVMContextRef::label_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_label_type_in_context(self)
 }
 
+///| Create an X86 AMX type in a context.
 pub extern "C" fn llvm_x86_mmx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_mmx_type_in_context"
 pub fn LLVMContextRef::x86_mmx_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_x86_mmx_type_in_context(self)
 }
 
+///| Create an X86 AMX type in a context.
 pub extern "C" fn llvm_x86_amx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_amx_type_in_context"
 pub fn LLVMContextRef::x86_amx_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_x86_amx_type_in_context(self)
 }
 
+///| Create a token type in a context.
 pub extern "C" fn llvm_token_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_token_type_in_context"
 pub fn LLVMContextRef::token_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_token_type_in_context(self)
 }
 
+///| Create a metadata type in a context.
 pub extern "C" fn llvm_metadata_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_metadata_type_in_context"
 pub fn LLVMContextRef::metadata_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_metadata_type_in_context(self)
 }
 
+///| Create a void type in the global context.
 pub extern "C" fn llvm_void_type() -> LLVMTypeRef = "__llvm_void_type"
 pub fn LLVMTypeRef::void_type() -> LLVMTypeRef {
   llvm_void_type()
 }
 
+///| Create a label type in the global context.
 pub extern "C" fn llvm_label_type() -> LLVMTypeRef = "__llvm_label_type"
 pub fn LLVMTypeRef::label_type() -> LLVMTypeRef {
   llvm_label_type()
 }
 
+///| Create an X86 AMX type in the global context.
 pub extern "C" fn llvm_x86_mmx_type() -> LLVMTypeRef = "__llvm_x86_mmx_type"
 pub fn LLVMTypeRef::x86_mmx_type() -> LLVMTypeRef {
   llvm_x86_mmx_type()
 }
 
+///| Create an X86 AMX type in the global context.
 pub extern "C" fn llvm_x86_amx_type() -> LLVMTypeRef = "__llvm_x86_amx_type"
 pub fn LLVMTypeRef::x86_amx_type() -> LLVMTypeRef {
   llvm_x86_amx_type()
 }
 
+// Create a target extension type in LLVM context.
+// LLVMTypeRef LLVMTargetExtTypeInContext(LLVMContextRef C, const char *Name,
+//                                        LLVMTypeRef *TypeParams,
+//                                        unsigned TypeParamCount,
+//                                        unsigned *IntParams,
+//                                        unsigned IntParamCount);
+
+///| Obtain the name for this target extension type.
+/// 
+/// see llvm::TargetExtType::getName()
+/// 
 extern "C" fn __llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> CStr = "__llvm_get_target_ext_type_name"
 pub fn llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> String {
   let cstr = __llvm_get_target_ext_type_name(target_ext_ty)
@@ -1077,38 +1348,73 @@ pub fn LLVMTypeRef::get_target_ext_type_name(self: LLVMTypeRef) -> String {
   llvm_get_target_ext_type_name(self)
 }
 
+
+///| Obtain the number of type parameters for this target extension type.
+/// 
+/// see llvm::TargetExtType::getNumTypeParameters()
+/// 
 pub extern "C" fn llvm_get_target_ext_type_num_type_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_type_params"
 pub fn LLVMTypeRef::get_target_ext_type_num_type_params(self: LLVMTypeRef) -> UInt {
   llvm_get_target_ext_type_num_type_params(self)
 }
 
+
+///| Get the type parameter at the given index for the target extension type.
+/// 
+/// see llvm::TargetExtType::getTypeParameter()
+/// 
 pub extern "C" fn llvm_get_target_ext_type_type_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> LLVMTypeRef = "__llvm_get_target_ext_type_type_param"
 pub fn LLVMTypeRef::get_target_ext_type_type_param(self: LLVMTypeRef, idx: UInt) -> LLVMTypeRef {
   llvm_get_target_ext_type_type_param(self, idx)
 }
 
+
+///| Obtain the number of int parameters for this target extension type.
+/// 
+/// see llvm::TargetExtType::getNumIntParameters()
+/// 
 pub extern "C" fn llvm_get_target_ext_type_num_int_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_int_params"
 pub fn LLVMTypeRef::get_target_ext_type_num_int_params(self: LLVMTypeRef) -> UInt {
   llvm_get_target_ext_type_num_int_params(self)
 }
 
+
+///| Get the int parameter at the given index for the target extension type.
+/// 
+/// see llvm::TargetExtType::getIntParameter()
+/// 
 pub extern "C" fn llvm_get_target_ext_type_int_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> UInt = "__llvm_get_target_ext_type_int_param"
 pub fn LLVMTypeRef::get_target_ext_type_int_param(self: LLVMTypeRef, idx: UInt) -> UInt {
   llvm_get_target_ext_type_int_param(self, idx)
 }
 
+///| Obtain the type of a value.
+/// 
+/// see llvm::Value::getType()
 pub extern "C" fn llvm_type_of(val: LLVMValueRef) -> LLVMTypeRef = "__llvm_type_of"
 pub fn LLVMValueRef::type_of(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_type_of(self)
 }
 
+
+/// Obtain the enumerated type of a Value instance.
+/// 
+/// see llvm::Value::getValueID()
 pub extern "C" fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind = "__llvm_get_value_kind"
 pub fn LLVMValueRef::get_value_kind(self: LLVMValueRef) -> LLVMValueKind {
   llvm_get_value_kind(self)
 }
 
+// /**
+//  * Obtain the string name of a value.
+//  *
+//  * @see llvm::Value::getName()
+//  */
 // pub extern "C" fn llvm_get_value_name2(val: LLVMValueRef, length: Ptr[UInt64]) -> CStr = "__llvm_get_value_name2"
 
+/// Set the string name of a value.
+/// 
+/// see llvm::Value::setName()
 extern "C" fn __llvm_set_value_name(val: LLVMValueRef, name: CStr, name_len: Int) = "__llvm_set_value_name2"
 pub fn llvm_set_value_name(val: LLVMValueRef, name: String) -> Unit {
   let cstr = moonbit_str_to_c_str(name)
@@ -1119,30 +1425,49 @@ pub fn LLVMValueRef::set_name(self: LLVMValueRef, name: String) -> Unit {
   llvm_set_value_name(self, name)
 }
 
+///| Dump a representation of a value to stderr.
+/// 
+/// see llvm::Value::dump()
 pub extern "C" fn llvm_dump_value(val: LLVMValueRef) = "__llvm_dump_value"
 
+
+/// Return a string representation of the value. Use
+/// LLVMDisposeMessage to free the string.
+/// 
+/// see llvm::Value::print()
 extern "C" fn __llvm_print_value_to_string(val: LLVMValueRef) -> CStr = "__llvm_print_value_to_string"
 pub fn llvm_print_value_to_string(val: LLVMValueRef) -> String {
   let cstr = __llvm_print_value_to_string(val)
   c_str_to_moonbit_str(cstr)
 }
 
+///| Return a string representation of the DbgRecord. Use
+/// LLVMDisposeMessage to free the string.
+/// 
+/// see llvm::DbgRecord::print()
+/// 
 extern "C" fn __llvm_print_dbg_record_to_string(record: LLVMDbgRecordRef) -> CStr = "__llvm_print_dbg_record_to_string"
 pub fn llvm_print_dbg_record_to_string(record: LLVMDbgRecordRef) -> String {
   let cstr = __llvm_print_dbg_record_to_string(record)
   c_str_to_moonbit_str(cstr)
 }
 
+///| Replace all uses of a value with another one.
+/// 
+/// see llvm::Value::replaceAllUsesWith()
+/// 
 pub extern "C" fn llvm_replace_all_uses_with(old_val: LLVMValueRef, new_val: LLVMValueRef) = "__llvm_replace_all_uses_with"
 pub fn LLVMValueRef::replace_all_uses_with(self: LLVMValueRef, new_val: LLVMValueRef) -> Unit {
   llvm_replace_all_uses_with(self, new_val)
 }
 
+///| Determine whether the specified value instance is constant.
 pub extern "C" fn llvm_is_constant(val: LLVMValueRef) -> LLVMBool = "__llvm_is_constant"
 pub fn LLVMValueRef::is_constant(self: LLVMValueRef) -> LLVMBool {
   llvm_is_constant(self)
 }
 
+///| Determine whether a value instance is undefined.
 extern "C" fn __llvm_is_undef(val: LLVMValueRef) -> LLVMBool = "__llvm_is_undef"
 pub fn llvm_is_undef(val: LLVMValueRef) -> Bool {
   __llvm_is_undef(val).to_moonbit_bool()
@@ -1151,469 +1476,563 @@ pub fn LLVMValueRef::is_undef(self: LLVMValueRef) -> Bool {
   __llvm_is_undef(self).to_moonbit_bool()
 }
 
+///| Determine whether a value instance is poisonous.
 pub extern "C" fn llvm_is_poison(val: LLVMValueRef) -> LLVMBool = "__llvm_is_poison"
 pub fn LLVMValueRef::is_poison(self: LLVMValueRef) -> LLVMBool {
   llvm_is_poison(self)
 }
 
+///| Convert value to argument, equivalent to `llvm::dyn_cast_or_null<Argument>`
 pub extern "C" fn llvm_isa_argument(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_argument"
 pub fn LLVMValueRef::isa_argument(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_argument(self)
 }
 
+///| Convert value to basic block, equivalent to `llvm::dyn_cast_or_null<BasicBlock>`
 pub extern "C" fn llvm_isa_basic_block(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_basic_block"
 pub fn LLVMValueRef::isa_basic_block(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_basic_block(self)
 }
 
+///| Convert value to inline asm, equivalent to `llvm::dyn_cast_or_null<InlineAsm>`
 pub extern "C" fn llvm_isa_inline_asm(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_inline_asm"
 pub fn LLVMValueRef::isa_inline_asm(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_inline_asm(self)
 }
 
+///| Convert value to user, equivalent to `llvm::dyn_cast_or_null<User>`
 pub extern "C" fn llvm_isa_user(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_user"
 pub fn LLVMValueRef::isa_user(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_user(self)
 }
 
+///| Convert value to constant, equivalent to `llvm::dyn_cast_or_null<Constant>`
 pub extern "C" fn llvm_isa_constant(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant"
 pub fn LLVMValueRef::isa_constant(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant(self)
 }
 
+///| Convert value to block address, equivalent to `llvm::dyn_cast_or_null<BlockAddress>`
 pub extern "C" fn llvm_isa_block_address(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_block_address"
 pub fn LLVMValueRef::isa_block_address(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_block_address(self)
 }
 
+///| Convert value to constant aggregate zero, equivalent to `llvm::dyn_cast_or_null<ConstantAggregateZero>`
 pub extern "C" fn llvm_isa_constant_aggregate_zero(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_aggregate_zero"
 pub fn LLVMValueRef::isa_constant_aggregate_zero(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_aggregate_zero(self)
 }
 
+///| Convert value to constant array, equivalent to `llvm::dyn_cast_or_null<ConstantArray>`
 pub extern "C" fn llvm_isa_constant_array(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_array"
 pub fn LLVMValueRef::isa_constant_array(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_array(self)
 }
 
+///| Convert value to constant data sequential, equivalent to `llvm::dyn_cast_or_null<ConstantDataSequential>`
 pub extern "C" fn llvm_isa_constant_data_sequential(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_sequential"
 pub fn LLVMValueRef::isa_constant_data_sequential(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_data_sequential(self)
 }
 
+///| Convert value to constant data array, equivalent to `llvm::dyn_cast_or_null<ConstantDataArray>`
 pub extern "C" fn llvm_isa_constant_data_array(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_array"
 pub fn LLVMValueRef::isa_constant_data_array(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_data_array(self)
 }
 
+///| Convert value to constant data vector, equivalent to `llvm::dyn_cast_or_null<ConstantDataVector>`
 pub extern "C" fn llvm_isa_constant_data_vector(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_data_vector"
 pub fn LLVMValueRef::isa_constant_data_vector(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_data_vector(self)
 }
 
+///| Convert value to constant expr, equivalent to `llvm::dyn_cast_or_null<ConstantExpr>`
 pub extern "C" fn llvm_isa_constant_expr(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_expr"
 pub fn LLVMValueRef::isa_constant_expr(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_expr(self)
 }
 
+///| Convert value to constant fp, equivalent to `llvm::dyn_cast_or_null<ConstantFP>`
 pub extern "C" fn llvm_isa_constant_fp(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_fp"
 pub fn LLVMValueRef::isa_constant_fp(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_fp(self)
 }
 
+///| Convert value to constant int, equivalent to `llvm::dyn_cast_or_null<ConstantInt>`
 pub extern "C" fn llvm_isa_constant_int(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_int"
 pub fn LLVMValueRef::isa_constant_int(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_int(self)
 }
 
+///| Convert value to constant pointer null, equivalent to `llvm::dyn_cast_or_null<ConstantPointerNull>`
 pub extern "C" fn llvm_isa_constant_pointer_null(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_pointer_null"
 pub fn LLVMValueRef::isa_constant_pointer_null(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_pointer_null(self)
 }
 
 
+///| Convert value to constant struct, equivalent to `llvm::dyn_cast_or_null<ConstantStruct>`
 pub extern "C" fn llvm_isa_constant_struct(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_struct"
 pub fn LLVMValueRef::isa_constant_struct(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_struct(self)
 }
 
+///| Convert value to constant token none, equivalent to `llvm::dyn_cast_or_null<ConstantTokenNone>`
 pub extern "C" fn llvm_isa_constant_token_none(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_token_none"
 pub fn LLVMValueRef::isa_constant_token_none(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_token_none(self)
 }
 
 
+///| Convert value to constant vector, equivalent to `llvm::dyn_cast_or_null<ConstantVector>`
 pub extern "C" fn llvm_isa_constant_vector(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_constant_vector"
 pub fn LLVMValueRef::isa_constant_vector(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_constant_vector(self)
 }
 
+///| Convert value to constant data, equivalent to `llvm::dyn_cast_or_null<ConstantData>`
 pub extern "C" fn llvm_isa_global_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_value"
 pub fn LLVMValueRef::isa_global_value(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_global_value(self)
 }
 
-
+///| Convert value to global alias, equivalent to `llvm::dyn_cast_or_null<GlobalAlias>`
 pub extern "C" fn llvm_isa_global_alias(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_alias"
 pub fn LLVMValueRef::isa_global_alias(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_global_alias(self)
 }
 
+///| Convert value to global object, equivalent to `llvm::dyn_cast_or_null<GlobalObject>`
 pub extern "C" fn llvm_isa_global_object(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_object"
 pub fn LLVMValueRef::isa_global_object(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_global_object(self)
 }
 
+///| Convert value to global variable, equivalent to `llvm::dyn_cast_or_null<GlobalVariable>`
 pub extern "C" fn llvm_isa_function(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_function"
 pub fn LLVMValueRef::isa_function(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_function(self)
 }
 
+///| Convert value to global variable, equivalent to `llvm::dyn_cast_or_null<GlobalVariable>`
 pub extern "C" fn llvm_isa_global_variable(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_variable"
 pub fn LLVMValueRef::isa_global_variable(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_global_variable(self)
 }
 
+///| Convert value to global ifunc, equivalent to `llvm::dyn_cast_or_null<GlobalIFunc>`
 pub extern "C" fn llvm_isa_global_ifunc(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_global_ifunc"
 pub fn LLVMValueRef::isa_global_ifunc(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_global_ifunc(self)
 }
 
+///| Convert value to undef value, equivalent to `llvm::dyn_cast_or_null<UndefValue>`
 pub extern "C" fn llvm_isa_undef_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_undef_value"
 pub fn LLVMValueRef::isa_undef_value(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_undef_value(self)
 }
 
+///| Convert value to poison value, equivalent to `llvm::dyn_cast_or_null<PoisonValue>`
 pub extern "C" fn llvm_isa_poison_value(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_poison_value"
 pub fn LLVMValueRef::isa_poison_value(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_poison_value(self)
 }
 
+///| Convert value to instruction, equivalent to `llvm::dyn_cast_or_null<Instruction>`
 pub extern "C" fn llvm_isa_instruction(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_instruction"
 pub fn LLVMValueRef::isa_instruction(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_instruction(self)
 }
 
+///| Convert value to unary operator, equivalent to `llvm::dyn_cast_or_null<UnaryOperator>`
 pub extern "C" fn llvm_isa_unary_operator(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unary_operator"
 pub fn LLVMValueRef::isa_unary_operator(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_unary_operator(self)
 }
 
+///| Convert value to binary operator, equivalent to `llvm::dyn_cast_or_null<BinaryOperator>`
 pub extern "C" fn llvm_isa_binary_operator(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_binary_operator"
 pub fn LLVMValueRef::isa_binary_operator(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_binary_operator(self)
 }
 
+///| Convert value to cast instruction, equivalent to `llvm::dyn_cast_or_null<CastInst>`
 pub extern "C" fn llvm_isa_call_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_call_inst"
 pub fn LLVMValueRef::isa_call_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_call_inst(self)
 }
 
+///| Convert value to intrinsic instruction, equivalent to `llvm::dyn_cast_or_null<IntrinsicInst>`
 pub extern "C" fn llvm_isa_intrinsic_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_intrinsic_inst"
 pub fn LLVMValueRef::isa_intrinsic_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_intrinsic_inst(self)
 }
 
+///| Convert value to debug info intrinsic, equivalent to `llvm::dyn_cast_or_null<DbgInfoIntrinsic>`
 pub extern "C" fn llvm_isa_dbg_info_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_info_intrinsic"
 pub fn LLVMValueRef::isa_dbg_info_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_dbg_info_intrinsic(self)
 }
 
+///| Convert value to debug variable intrinsic, equivalent to `llvm::dyn_cast_or_null<DbgVariableIntrinsic>`
 pub extern "C" fn llvm_isa_dbg_variable_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_variable_intrinsic"
 pub fn LLVMValueRef::isa_dbg_variable_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_dbg_variable_intrinsic(self)
 }
 
+///| Convert value to dbg declare inst, equivalent to `llvm::dyn_cast_or_null<DbgDeclareInst>`
 pub extern "C" fn llvm_isa_dbg_declare_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_declare_inst"
 pub fn LLVMValueRef::isa_dbg_declare_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_dbg_declare_inst(self)
 }
 
+///| Convert value to dbg label inst, equivalent to `llvm::dyn_cast_or_null<DbgLabelInst>`
 pub extern "C" fn llvm_isa_dbg_label_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_dbg_label_inst"
 pub fn LLVMValueRef::isa_dbg_label_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_dbg_label_inst(self)
 }
 
+///| Convert value to memory intrinsic, equivalent to `llvm::dyn_cast_or_null<MemIntrinsic>`
 pub extern "C" fn llvm_isa_mem_intrinsic(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_intrinsic"
 pub fn LLVMValueRef::isa_mem_intrinsic(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_mem_intrinsic(self)
 }
 
+///| Convert value to memory copy inst, equivalent to `llvm::dyn_cast_or_null<MemCpyInst>`
 pub extern "C" fn llvm_isa_mem_cpy_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_cpy_inst"
 pub fn LLVMValueRef::isa_mem_cpy_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_mem_cpy_inst(self)
 }
 
+///| Convert value to memory move inst, equivalent to `llvm::dyn_cast_or_null<MemMoveInst>`
 pub extern "C" fn llvm_isa_mem_move_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_move_inst"
 pub fn LLVMValueRef::isa_mem_move_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_mem_move_inst(self)
 }
 
+///| Convert value to memory set inst, equivalent to `llvm::dyn_cast_or_null<MemSetInst>`
 pub extern "C" fn llvm_isa_mem_set_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_mem_set_inst"
 pub fn LLVMValueRef::isa_mem_set_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_mem_set_inst(self)
 }
 
+///| Convert value to compare instruction, equivalent to `llvm::dyn_cast_or_null<CmpInst>`
 pub extern "C" fn llvm_isa_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cmp_inst"
 pub fn LLVMValueRef::isa_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_cmp_inst(self)
 }
 
+///| Convert value to float compare instruction, equivalent to `llvm::dyn_cast_or_null<FCmpInst>`
 pub extern "C" fn llvm_isa_f_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_f_cmp_inst"
 pub fn LLVMValueRef::isa_f_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_f_cmp_inst(self)
 }
 
+///| Convert value to integer compare instruction, equivalent to `llvm::dyn_cast_or_null<ICmpInst>`
 pub extern "C" fn llvm_isa_i_cmp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_i_cmp_inst"
 pub fn LLVMValueRef::isa_i_cmp_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_i_cmp_inst(self)
 }
 
+///| Convert value to extract element inst, equivalent to `llvm::dyn_cast_or_null<ExtractElementInst>`
 pub extern "C" fn llvm_isa_extract_element_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_extract_element_inst"
 pub fn LLVMValueRef::isa_extract_element_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_extract_element_inst(self)
 }
 
+///| Convert value to extract value inst, equivalent to `llvm::dyn_cast_or_null<ExtractValueInst>`
 pub extern "C" fn llvm_isa_get_element_ptr_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_get_element_ptr_inst"
 pub fn LLVMValueRef::isa_get_element_ptr_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_get_element_ptr_inst(self)
 }
 
+///| Convert value to insert element inst, equivalent to `llvm::dyn_cast_or_null<InsertElementInst>`
 pub extern "C" fn llvm_isa_insert_element_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_insert_element_inst"
 pub fn LLVMValueRef::isa_insert_element_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_insert_element_inst(self)
 }
 
+///| Convert value to insert value inst, equivalent to `llvm::dyn_cast_or_null<InsertValueInst>`
 pub extern "C" fn llvm_isa_insert_value_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_insert_value_inst"
 pub fn LLVMValueRef::isa_insert_value_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_insert_value_inst(self)
 }
 
+///| Convert value to landing pad inst, equivalent to `llvm::dyn_cast_or_null<LandingPadInst>`
 pub extern "C" fn llvm_isa_landing_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_landing_pad_inst"
 pub fn LLVMValueRef::isa_landing_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_landing_pad_inst(self)
 }
 
+///| Convert value to phi node, equivalent to `llvm::dyn_cast_or_null<PHINode>`
 pub extern "C" fn llvm_isa_phi_node(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_phi_node"
 pub fn LLVMValueRef::isa_phi_node(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_phi_node(self)
 }
 
+///| Convert value to select inst, equivalent to `llvm::dyn_cast_or_null<SelectInst>`
 pub extern "C" fn llvm_isa_select_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_select_inst"
 pub fn LLVMValueRef::isa_select_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_select_inst(self)
 }
 
+///| Convert value to shuffle vector inst, equivalent to `llvm::dyn_cast_or_null<ShuffleVectorInst>`
 pub extern "C" fn llvm_isa_shuffle_vector_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_shuffle_vector_inst"
 pub fn LLVMValueRef::isa_shuffle_vector_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_shuffle_vector_inst(self)
 }
 
+///| Convert value to store inst, equivalent to `llvm::dyn_cast_or_null<StoreInst>`
 pub extern "C" fn llvm_isa_store_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_store_inst"
 pub fn LLVMValueRef::isa_store_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_store_inst(self)
 }
 
+///| Convert value to branch inst, equivalent to `llvm::dyn_cast_or_null<BranchInst>`
 pub extern "C" fn llvm_isa_branch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_branch_inst"
 pub fn LLVMValueRef::isa_branch_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_branch_inst(self)
 }
 
+///| Convert value to indirect branch inst, equivalent to `llvm::dyn_cast_or_null<IndirectBrInst>`
 pub extern "C" fn llvm_isa_indirect_br_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_indirect_br_inst"
 pub fn LLVMValueRef::isa_indirect_br_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_indirect_br_inst(self)
 }
 
+///| Convert value to invoke inst, equivalent to `llvm::dyn_cast_or_null<InvokeInst>`
 pub extern "C" fn llvm_isa_invoke_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_invoke_inst"
 pub fn LLVMValueRef::isa_invoke_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_invoke_inst(self)
 }
 
+///| Convert value to return inst, equivalent to `llvm::dyn_cast_or_null<ReturnInst>`
 pub extern "C" fn llvm_isa_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_return_inst"
 pub fn LLVMValueRef::isa_return_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_return_inst(self)
 }
 
+///| Convert value to switch inst, equivalent to `llvm::dyn_cast_or_null<SwitchInst>`
 pub extern "C" fn llvm_isa_switch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_switch_inst"
 pub fn LLVMValueRef::isa_switch_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_switch_inst(self)
 }
 
+///| Convert value to unreachable inst, equivalent to `llvm::dyn_cast_or_null<UnreachableInst>`
 pub extern "C" fn llvm_isa_unreachable_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unreachable_inst"
 pub fn LLVMValueRef::isa_unreachable_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_unreachable_inst(self)
 }
 
+///| Convert value to resume inst, equivalent to `llvm::dyn_cast_or_null<ResumeInst>`
 pub extern "C" fn llvm_isa_resume_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_resume_inst"
 pub fn LLVMValueRef::isa_resume_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_resume_inst(self)
 }
 
+///| Convert value to cleanup return inst, equivalent to `llvm::dyn_cast_or_null<CleanupReturnInst>`
 pub extern "C" fn llvm_isa_cleanup_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cleanup_return_inst"
 pub fn LLVMValueRef::isa_cleanup_return_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_cleanup_return_inst(self)
 }
 
+///| Convert value to catch return inst, equivalent to `llvm::dyn_cast_or_null<CatchReturnInst>`
 pub extern "C" fn llvm_isa_catch_return_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_return_inst"
 pub fn LLVMValueRef::isa_catch_return_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_catch_return_inst(self)
 }
 
+///| Convert value to catch switch inst, equivalent to `llvm::dyn_cast_or_null<CatchSwitchInst>`
 pub extern "C" fn llvm_isa_catch_switch_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_switch_inst"
 pub fn LLVMValueRef::isa_catch_switch_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_catch_switch_inst(self)
 }
 
+///| Convert value to call br inst, equivalent to `llvm::dyn_cast_or_null<CallBrInst>`
 pub extern "C" fn llvm_isa_call_br_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_call_br_inst"
 pub fn LLVMValueRef::isa_call_br_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_call_br_inst(self)
 }
 
+///| Convert value to funclet pad inst, equivalent to `llvm::dyn_cast_or_null<FuncletPadInst>`
 pub extern "C" fn llvm_isa_funclet_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_funclet_pad_inst"
 pub fn LLVMValueRef::isa_funclet_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_funclet_pad_inst(self)
 }
 
+///| Convert value to catch pad inst, equivalent to `llvm::dyn_cast_or_null<CatchPadInst>`
 pub extern "C" fn llvm_isa_catch_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_catch_pad_inst"
 pub fn LLVMValueRef::isa_catch_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_catch_pad_inst(self)
 }
 
+///| Convert value to cleanup pad inst, equivalent to `llvm::dyn_cast_or_null<CleanupPadInst>`
 pub extern "C" fn llvm_isa_cleanup_pad_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cleanup_pad_inst"
 pub fn LLVMValueRef::isa_cleanup_pad_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_cleanup_pad_inst(self)
 }
 
+///| Convert value to unary instruction, equivalent to `llvm::dyn_cast_or_null<UnaryInstruction>`
 pub extern "C" fn llvm_isa_unary_instruction(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_unary_instruction"
 pub fn LLVMValueRef::isa_unary_instruction(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_unary_instruction(self)
 }
 
+///| Convert value to alloca inst, equivalent to `llvm::dyn_cast_or_null<AllocaInst>`
 pub extern "C" fn llvm_isa_alloca_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_alloca_inst"
 pub fn LLVMValueRef::isa_alloca_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_alloca_inst(self)
 }
 
+///| Convert value to cast inst, equivalent to `llvm::dyn_cast_or_null<CastInst>`
 pub extern "C" fn llvm_isa_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_cast_inst"
 pub fn LLVMValueRef::isa_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_cast_inst(self)
 }
 
+///| Convert value to addr space cast inst, equivalent to `llvm::dyn_cast_or_null<AddrSpaceCastInst>`
 pub extern "C" fn llvm_isa_addr_space_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_addr_space_cast_inst"
 pub fn LLVMValueRef::isa_addr_space_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_addr_space_cast_inst(self)
 }
 
+///| Convert value to bit cast inst, equivalent to `llvm::dyn_cast_or_null<BitCastInst>`
 pub extern "C" fn llvm_isa_bit_cast_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_bit_cast_inst"
 pub fn LLVMValueRef::isa_bit_cast_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_bit_cast_inst(self)
 }
 
+///| Convert value to fp ext inst, equivalent to `llvm::dyn_cast_or_null<FPExtInst>`
 pub extern "C" fn llvm_isa_fp_ext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_ext_inst"
 pub fn LLVMValueRef::isa_fp_ext_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_fp_ext_inst(self)
 }
 
+///| Convert value to fp to si inst, equivalent to `llvm::dyn_cast_or_null<FPToSIInst>`
 pub extern "C" fn llvm_isa_fp_to_si_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_to_si_inst"
 pub fn LLVMValueRef::isa_fp_to_si_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_fp_to_si_inst(self)
 }
 
+///| Convert value to fp to ui inst, equivalent to `llvm::dyn_cast_or_null<FPToUIInst>`
 pub extern "C" fn llvm_isa_fp_to_ui_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_to_ui_inst"
 pub fn LLVMValueRef::isa_fp_to_ui_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_fp_to_ui_inst(self)
 }
 
+///| Convert value to fp trunc inst, equivalent to `llvm::dyn_cast_or_null<FPTruncInst>`
 pub extern "C" fn llvm_isa_fp_trunc_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fp_trunc_inst"
 pub fn LLVMValueRef::isa_fp_trunc_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_fp_trunc_inst(self)
 }
 
+///| Convert value to int to ptr inst, equivalent to `llvm::dyn_cast_or_null<IntToPtrInst>`
 pub extern "C" fn llvm_isa_int_to_ptr_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_int_to_ptr_inst"
 pub fn LLVMValueRef::isa_int_to_ptr_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_int_to_ptr_inst(self)
 }
 
+///| Convert value to ptr to int inst, equivalent to `llvm::dyn_cast_or_null<PtrToIntInst>`
 pub extern "C" fn llvm_isa_ptr_to_int_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_ptr_to_int_inst"
 pub fn LLVMValueRef::isa_ptr_to_int_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_ptr_to_int_inst(self)
 }
 
+///| Convert value to sext inst, equivalent to `llvm::dyn_cast_or_null<SExtInst>`
 pub extern "C" fn llvm_isa_sext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_sext_inst"
 pub fn LLVMValueRef::isa_sext_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_sext_inst(self)
 }
 
+///| Convert value to si to fp inst, equivalent to `llvm::dyn_cast_or_null<SIToFPInst>`
 pub extern "C" fn llvm_isa_si_to_fp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_si_to_fp_inst"
 pub fn LLVMValueRef::isa_si_to_fp_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_si_to_fp_inst(self)
 }
 
+///| Convert value to trunc inst, equivalent to `llvm::dyn_cast_or_null<TruncInst>`
 pub extern "C" fn llvm_isa_trunc_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_trunc_inst"
 pub fn LLVMValueRef::isa_trunc_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_trunc_inst(self)
 }
 
+///| Convert value to ui to fp inst, equivalent to `llvm::dyn_cast_or_null<UIToFPInst>`
 pub extern "C" fn llvm_isa_ui_to_fp_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_ui_to_fp_inst"
 pub fn LLVMValueRef::isa_ui_to_fp_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_ui_to_fp_inst(self)
 }
 
+///| Convert value to z ext inst, equivalent to `llvm::dyn_cast_or_null<ZExtInst>`
 pub extern "C" fn llvm_isa_z_ext_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_z_ext_inst"
 pub fn LLVMValueRef::isa_z_ext_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_z_ext_inst(self)
 }
 
+///| Convert value to extract value inst, equivalent to `llvm::dyn_cast_or_null<ExtractValueInst>`
 pub extern "C" fn llvm_isa_extract_value_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_extract_value_inst"
 pub fn LLVMValueRef::isa_extract_value_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_extract_value_inst(self)
 }
 
+///| Convert value to load inst, equivalent to `llvm::dyn_cast_or_null<LoadInst>`
 pub extern "C" fn llvm_isa_load_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_load_inst"
 pub fn LLVMValueRef::isa_load_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_load_inst(self)
 }
 
+///| Convert value to va arg inst, equivalent to `llvm::dyn_cast_or_null<VAArgInst>`
 pub extern "C" fn llvm_isa_va_arg_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_va_arg_inst"
 pub fn LLVMValueRef::isa_va_arg_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_va_arg_inst(self)
 }
 
+///| Convert value to freeze inst, equivalent to `llvm::dyn_cast_or_null<FreezeInst>`
 pub extern "C" fn llvm_isa_freeze_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_freeze_inst"
 pub fn LLVMValueRef::isa_freeze_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_freeze_inst(self)
 }
 
+///| Convert value to atomic cmp xchg inst, equivalent to `llvm::dyn_cast_or_null<AtomicCmpXchgInst>`
 pub extern "C" fn llvm_isa_atomic_cmp_xchg_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_atomic_cmp_xchg_inst"
 pub fn LLVMValueRef::isa_atomic_cmp_xchg_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_atomic_cmp_xchg_inst(self)
 }
 
+///| Convert value to atomic rmw inst, equivalent to `llvm::dyn_cast_or_null<AtomicRMWInst>`
 pub extern "C" fn llvm_isa_atomic_rmw_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_atomic_rmw_inst"
 pub fn LLVMValueRef::isa_atomic_rmw_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_atomic_rmw_inst(self)
 }
 
+///| Convert value to fence inst, equivalent to `llvm::dyn_cast_or_null<FenceInst>`
 pub extern "C" fn llvm_isa_fence_inst(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_fence_inst"
 pub fn LLVMValueRef::isa_fence_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_fence_inst(self)
 }
 
+///| Convert value to md node, equivalent to `llvm::dyn_cast_or_null<MDNode>`
 pub extern "C" fn llvm_isa_md_node(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_md_node"
 pub fn LLVMValueRef::isa_md_node(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_md_node(self)
 }
 
+///| Convert value to metadata, equivalent to `llvm::dyn_cast_or_null<Metadata>`
 pub extern "C" fn llvm_isa_value_as_metadata(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_value_as_metadata"
 pub fn LLVMValueRef::isa_value_as_metadata(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_value_as_metadata(self)
 }
 
+///| Convert value to md string, equivalent to `llvm::dyn_cast_or_null<MDString>`
 pub extern "C" fn llvm_isa_md_string(val: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_md_string"
 pub fn LLVMValueRef::isa_md_string(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_md_string(self)
 }
 
+///| Obtain the string name of a value.
+/// 
+/// see llvm::Value::getName()
 pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_value_name"
 pub fn LLVMValueRef::get_value_name(self: LLVMValueRef) -> String {
   let cstr = llvm_get_value_name(self)
@@ -1623,74 +2042,153 @@ pub fn LLVMValueRef::get_value_name(self: LLVMValueRef) -> String {
 // deprecated
 // pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "__llvm_set_value_name"
 
+///| Obtain the first use of a value.
+/// 
+/// Uses are obtained in an iterator fashion. First, call this function
+/// to obtain a reference to the first use. Then, call LLVMGetNextUse()
+/// on that instance and all subsequently obtained instances until
+/// LLVMGetNextUse() returns NULL.
+/// 
+/// see llvm::Value::use_begin()
 pub extern "C" fn llvm_get_first_use(val: LLVMValueRef) -> LLVMUseRef = "__llvm_get_first_use"
 pub fn LLVMValueRef::get_first_use(self: LLVMValueRef) -> LLVMUseRef {
   llvm_get_first_use(self)
 }
 
+///| Obtain the next use of a value.
+/// 
+/// This effectively advances the iterator. It returns NULL if you are on
+/// the final use and no more are available.
+/// 
 pub extern "C" fn llvm_get_next_use(u: LLVMUseRef) -> LLVMUseRef = "__llvm_get_next_use"
 pub fn LLVMUseRef::get_next_use(self: LLVMUseRef) -> LLVMUseRef {
   llvm_get_next_use(self)
 }
 
+///| Obtain the user value for a user.
+/// 
+/// The returned value corresponds to a llvm::User type.
+/// 
+/// see llvm::Use::getUser()
+/// 
 pub extern "C" fn llvm_get_user(u: LLVMUseRef) -> LLVMValueRef = "__llvm_get_user"
 pub fn LLVMUseRef::get_user(self: LLVMUseRef) -> LLVMValueRef {
   llvm_get_user(self)
 }
 
+///| Obtain the value this use corresponds to.
+/// 
+/// see llvm::Use::get().
 pub extern "C" fn llvm_get_used_value(u: LLVMUseRef) -> LLVMValueRef = "__llvm_get_used_value"
 pub fn LLVMUseRef::get_used_value(self: LLVMUseRef) -> LLVMValueRef {
   llvm_get_used_value(self)
 }
 
+///| Obtain an operand at a specific index in a llvm::User value.
+/// 
+/// see llvm::User::getOperand()
+/// 
 pub extern "C" fn llvm_get_operand(val: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_operand"
 pub fn LLVMValueRef::get_operand(self: LLVMValueRef, index: UInt) -> LLVMValueRef {
   llvm_get_operand(self, index)
 }
 
+///| Obtain the use of an operand at a specific index in a llvm::User value.
+/// 
+/// see llvm::User::getOperandUse()
 pub extern "C" fn llvm_get_operand_use(val: LLVMValueRef, index: UInt) -> LLVMUseRef = "__llvm_get_operand_use"
 pub fn LLVMValueRef::get_operand_use(self: LLVMValueRef, index: UInt) -> LLVMUseRef {
   llvm_get_operand_use(self, index)
 }
 
+///| Set an operand at a specific index in a llvm::User value.
+/// 
+/// see llvm::User::setOperand()
+/// 
 pub extern "C" fn llvm_set_operand(user: LLVMValueRef, index: UInt, val: LLVMValueRef) = "__llvm_set_operand"
 pub fn LLVMValueRef::set_operand(self: LLVMValueRef, index: UInt, val: LLVMValueRef) -> Unit {
   llvm_set_operand(self, index, val)
 }
 
+///| Obtain the number of operands in a llvm::User value.
+/// 
+/// see llvm::User::getNumOperands()
 pub extern "C" fn llvm_get_num_operands(val: LLVMValueRef) -> Int = "__llvm_get_num_operands"
 pub fn LLVMValueRef::get_num_operands(self: LLVMValueRef) -> Int {
   llvm_get_num_operands(self)
 }
 
+///| Obtain a constant value referring to the null instance of a type.
+/// 
+/// see llvm::Constant::getNullValue()
+/// 
 pub extern "C" fn llvm_const_null(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_null"
 pub fn LLVMTypeRef::const_null(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_const_null(self)
 }
 
+///| Obtain a constant value referring to the instance of a type consisting of all ones.
+/// 
+/// This is only valid for integer types.
+/// 
+/// see llvm::Constant::getAllOnesValue()
 pub extern "C" fn llvm_const_all_ones(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_all_ones"
 pub fn LLVMTypeRef::const_all_ones(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_const_all_ones(self)
 }
 
+///| Obtain a constant value referring to an undefined value of a type.
+/// 
+/// see llvm::UndefValue::get()
+/// 
 pub extern "C" fn llvm_get_undef(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_undef"
 pub fn LLVMTypeRef::get_undef(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_get_undef(self)
 }
 
+
+///| Obtain a constant value referring to a poison value of a type.
+/// 
+/// see llvm::PoisonValue::get()
 pub extern "C" fn llvm_get_poison(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_get_poison"
 pub fn LLVMTypeRef::get_poison(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_get_poison(self)
 }
 
+///| Determine whether a value instance is null.
+/// 
+/// see llvm::Constant::isNullValue()
+/// 
 pub extern "C" fn llvm_is_null(val: LLVMValueRef) -> LLVMBool = "__llvm_is_null"
 
+
+///| Obtain a constant that is a constant pointer pointing to NULL for a specified type.
 pub extern "C" fn llvm_const_pointer_null(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_const_pointer_null"
 pub fn LLVMTypeRef::const_pointer_null(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_const_pointer_null(self)
 }
 
+
+///| Obtain a constant value for an integer type.
+/// 
+/// The returned value corresponds to a llvm::ConstantInt.
+/// 
+/// see llvm::ConstantInt::get()
+/// 
+/// - @param IntTy Integer type to obtain value of.
+/// - @param N The value the returned instance should refer to.
+/// - @param SignExtend Whether to sign extend the produced value.
 extern "C" fn __llvm_const_int(int_ty: LLVMTypeRef, n: UInt64, sign_extend: LLVMBool) -> LLVMValueRef = "__llvm_const_int"
+
+///| Obtain a constant value for an integer type.
+/// 
+/// The returned value corresponds to a llvm::ConstantInt.
+/// 
+/// see llvm::ConstantInt::get()
+/// 
+/// - @param IntTy Integer type to obtain value of.
+/// - @param N The value the returned instance should refer to.
+/// - @param SignExtend Whether to sign extend the produced value.
 pub fn llvm_const_int(int_ty: LLVMTypeRef, n: UInt64, sign_extend: Bool) -> LLVMValueRef {
   __llvm_const_int(int_ty, n, to_llvm_bool(sign_extend))
 }
@@ -1698,15 +2196,45 @@ pub fn LLVMTypeRef::const_int(self: LLVMTypeRef, n: UInt64, sign_extend: Bool) -
   __llvm_const_int(self, n, to_llvm_bool(sign_extend))
 }
 
-// pub extern "C" fn llvm_const_int_of_string(int_ty: LLVMTypeRef, text: CStr, radix: UInt8) -> LLVMValueRef = "__llvm_const_int_of_string"
+// /**
+//  * Obtain a constant value for an integer of arbitrary precision.
+//  *
+//  * @see llvm::ConstantInt::get()
+//  */
+// LLVMValueRef LLVMConstIntOfArbitraryPrecision(LLVMTypeRef IntTy,
+//                                               unsigned NumWords,
+//                                               const uint64_t Words[]);
 
-// pub extern "C" fn llvm_const_int_of_string_and_size(int_ty: LLVMTypeRef, text: CStr, s_len: UInt, radix: UInt8) -> LLVMValueRef = "__llvm_const_int_of_string_and_size"
+extern "C" fn __llvm_const_int_of_string(int_ty: LLVMTypeRef, text: CStr, radix: Int) -> LLVMValueRef = "__llvm_const_int_of_string"
+///| Obtain a constant value for an integer parsed from a string.
+/// 
+/// A similar API, LLVMConstIntOfStringAndSize is also available. If the
+/// string's length is available, it is preferred to call that function
+/// instead.
+/// 
+/// see llvm::ConstantInt::get()
+// TODO: use llvm_const_int_of_string_and_size instead
+pub fn llvm_const_int_of_string(int_ty: LLVMTypeRef, text: String, radix: Int) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(text);
+  __llvm_const_int_of_string(int_ty, cstr, radix)
+}
+pub fn LLVMTypeRef::const_int_of_string(self: LLVMTypeRef, text: String, radix: Int) -> LLVMValueRef {
+  llvm_const_int_of_string(self, text, radix)
+}
 
+pub extern "C" fn llvm_const_int_of_string_and_size(int_ty: LLVMTypeRef, text: CStr, s_len: Int, radix: Int) -> LLVMValueRef = "__llvm_const_int_of_string_and_size"
+
+///| Obtain a constant value referring to a double floating point value.
 pub extern "C" fn llvm_const_real(real_ty: LLVMTypeRef, n: Double) -> LLVMValueRef = "__llvm_const_real"
 pub fn LLVMTypeRef::const_real(self: LLVMTypeRef, n: Double) -> LLVMValueRef {
   llvm_const_real(self, n)
 }
 
+///| Obtain a constant for a floating point value parsed from a string.
+/// 
+/// A similar API, LLVMConstRealOfStringAndSize is also available. It
+/// should be used if the input string's length is known.
+// TODO: use llvm_const_real_of_string_and_size instead
 extern "C" fn __llvm_const_real_of_string(real_ty: LLVMTypeRef, text: CStr) -> LLVMValueRef = "__llvm_const_real_of_string"
 pub fn llvm_const_real_of_string(real_ty: LLVMTypeRef, text: String) -> LLVMValueRef {
   let cstr = moonbit_str_to_c_str(text);
@@ -1716,26 +2244,89 @@ pub fn LLVMTypeRef::const_real_of_string(self: LLVMTypeRef, text: String) -> LLV
   llvm_const_real_of_string(self, text)
 }
 
+///| Obtain a constant for a floating point value parsed from a string.
 pub extern "C" fn llvm_const_real_of_string_and_size(real_ty: LLVMTypeRef, text: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_const_real_of_string_and_size"
 
+///| Obtain the zero extended value for an integer constant value.
+/// 
+/// see llvm::ConstantInt::getZExtValue()
 pub extern "C" fn llvm_const_int_get_z_ext_value(constant_val: LLVMValueRef) -> UInt64 = "__llvm_const_int_get_z_ext_value"
 pub fn LLVMValueRef::const_int_get_z_ext_value(self: LLVMValueRef) -> UInt64 {
   llvm_const_int_get_z_ext_value(self)
 }
 
+///| Obtain the sign extended value for an integer constant value.
+/// 
+/// see llvm::ConstantInt::getSExtValue()
 pub extern "C" fn llvm_const_int_get_s_ext_value(constant_val: LLVMValueRef) -> Int64 = "__llvm_const_int_get_s_ext_value"
 pub fn LLVMValueRef::const_int_get_s_ext_value(self: LLVMValueRef) -> Int64 {
   llvm_const_int_get_s_ext_value(self)
 }
 
-// pub extern "C" fn llvm_const_real_get_double(constant_val: LLVMValueRef, loses_info: Ptr[LLVMBool]) -> Double = "__llvm_const_real_get_double"
+///| Obtain the double value for an floating point constant value.
+///
+/// losesInfo indicates if some precision was lost in the conversion.
+/// 
+/// see llvm::ConstantFP::getDoubleValue
+extern "C" fn __llvm_const_real_get_double(constant_val: LLVMValueRef, loses_info: Array[LLVMBool]) -> Double = "__llvm_const_real_get_double"
 
-pub extern "C" fn llvm_const_string_in_context(context: LLVMContextRef, str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context"
+///| Obtain the double value for an floating point constant value.
+///
+/// losesInfo indicates if some precision was lost in the conversion.
+/// 
+/// see llvm::ConstantFP::getDoubleValue
+pub fn llvm_const_real_get_double(constant_val: LLVMValueRef, loses_info: Array[Bool]) -> Double {
+  let loses_info = loses_info.map(to_llvm_bool);
+  __llvm_const_real_get_double(constant_val, loses_info)
+}
 
-pub extern "C" fn llvm_const_string_in_context2(context: LLVMContextRef, str: CStr, length: UInt64, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context2"
+///| Create a ConstantDataSequential and initialize it with a string.
+/// 
+/// @deprecated LLVMConstStringInContext is deprecated in favor of the API
+/// accurate LLVMConstStringInContext2
+/// see llvm::ConstantDataArray::getString()
+/// 
+// TODO: use llvm_const_string_in_context2 instead
+extern "C" fn __llvm_const_string_in_context(context: LLVMContextRef, str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context"
+pub fn llvm_const_string_in_context(context: LLVMContextRef, str: String, dont_null_terminate: Bool) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(str);
+  let length = str.length().reinterpret_as_uint()
+  let dont_null_terminate = to_llvm_bool(dont_null_terminate);
+  __llvm_const_string_in_context(context, cstr, length, dont_null_terminate)
+}
+pub fn LLVMContextRef::const_string(self: LLVMContextRef, str: String, dont_null_terminate: Bool) -> LLVMValueRef {
+  llvm_const_string_in_context(self, str, dont_null_terminate)
+}
 
+///| Create a ConstantDataSequential and initialize it with a string.
+/// 
+/// see llvm::ConstantDataArray::getString()
+extern "C" fn __llvm_const_string_in_context2(context: LLVMContextRef, str: CStr, length: UInt64, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context2"
+///| Create a ConstantDataSequential and initialize it with a string.
+/// 
+/// see llvm::ConstantDataArray::getString()
+pub fn llvm_const_string_in_context2(context: LLVMContextRef, str: String, dont_null_terminate: Bool) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(str);
+  let length = str.length().to_uint64()
+  let dont_null_terminate = to_llvm_bool(dont_null_terminate);
+  __llvm_const_string_in_context2(context, cstr, length, dont_null_terminate)
+}
+pub fn LLVMContextRef::const_string2(self: LLVMContextRef, str: String, dont_null_terminate: Bool) -> LLVMValueRef {
+  llvm_const_string_in_context2(self, str, dont_null_terminate)
+}
+
+///| Create a ConstantDataSequential with string content in the global context.
+/// 
+/// This is the same as LLVMConstStringInContext except it operates on the
+/// global context.
+/// 
+/// see LLVMConstStringInContext()
+/// see llvm::ConstantDataArray::getString()
 pub extern "C" fn llvm_const_string(str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string"
 
+///| Returns true if the specified constant is an array of i8.
+/// 
+/// see ConstantDataSequential::getAsString()
 extern "C" fn __llvm_is_constant_string(c: LLVMValueRef) -> LLVMBool = "__llvm_is_constant_string"
 pub fn llvm_is_constant_string(c: LLVMValueRef) -> Bool {
   __llvm_is_constant_string(c).to_moonbit_bool()
@@ -1744,8 +2335,18 @@ pub fn LLVMValueRef::is_constant_string(self: LLVMValueRef) -> Bool {
   __llvm_is_constant_string(self).to_moonbit_bool()
 }
 
-// pub extern "C" fn llvm_get_as_string(c: LLVMValueRef, length: Ptr[UInt64]) -> CStr = "__llvm_get_as_string"
+/// Get the given constant data sequential as a string.
+/// 
+/// see ConstantDataSequential::getAsString()
+extern "C" fn __llvm_get_as_string(c: LLVMValueRef) -> (CStr, UInt) = "__llvm_get_as_string"
+pub fn llvm_get_as_string(c: LLVMValueRef) -> String {
+  let (cstr, length) = __llvm_get_as_string(c);
+  c_str_to_moonbit_str_with_length(cstr, length)
+}
 
+///| Create an anonymous ConstantStruct with the specified values.
+/// 
+/// see llvm::ConstantStruct::getAnon()
 extern "C" fn __llvm_const_struct_in_context(context: LLVMContextRef, constant_vals: Array[LLVMValueRef], packed: LLVMBool) -> LLVMValueRef = "__llvm_const_struct_in_context"
 pub fn llvm_const_struct_in_context(context: LLVMContextRef, constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
   __llvm_const_struct_in_context(context, constant_vals, to_llvm_bool(packed))
@@ -1754,6 +2355,12 @@ pub fn LLVMContextRef::const_struct(self: LLVMContextRef, constant_vals: Array[L
   __llvm_const_struct_in_context(self, constant_vals, to_llvm_bool(packed))
 }
 
+///| Create a ConstantStruct in the global Context.
+/// 
+/// This is the same as LLVMConstStructInContext except it operates on the
+/// global Context.
+/// 
+/// see LLVMConstStructInContext()
 extern "C" fn __llvm_const_struct(constant_vals: Array[LLVMValueRef], packed: LLVMBool) -> LLVMValueRef = "__llvm_const_struct"
 pub fn llvm_const_struct(constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
   __llvm_const_struct(constant_vals, to_llvm_bool(packed))
@@ -1762,57 +2369,86 @@ pub fn LLVMValueRef::const_struct(constant_vals: Array[LLVMValueRef], packed: Bo
   __llvm_const_struct(constant_vals, to_llvm_bool(packed))
 }
 
+///| Create a ConstantArray from values.
+/// 
+/// @deprecated LLVMConstArray is deprecated in favor of the API accurate
+/// LLVMConstArray2
+///
+/// see llvm::ConstantArray::get()
 extern "C" fn llvm_const_array(element_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef = "__llvm_const_array"
 pub fn LLVMValueRef::const_array(self: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
   llvm_const_array(self, constant_vals)
 }
 
+///| Create a ConstantArray from values.
+/// 
+/// see llvm::ConstantArray::get()
 pub extern "C" fn llvm_const_array2(element_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef = "__llvm_const_array2"
 pub fn LLVMValueRef::const_array2(self: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
   llvm_const_array2(self, constant_vals)
 }
 
+///| Create a non-anonymous ConstantStruct from values.
+/// 
+/// see llvm::ConstantStruct::get()
 pub extern "C" fn llvm_const_named_struct(struct_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef = "__llvm_const_named_struct"
 pub fn LLVMValueRef::const_named_struct(self: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
   llvm_const_named_struct(self, constant_vals)
 }
 
+///| Get element of a constant aggregate (struct, array or vector) at the specified index.
+///
+/// Get element of a constant aggregate (struct, array or vector) at the
+/// specified index. Returns null if the index is out of range, or it's not
+/// possible to determine the element (e.g., because the constant is a
+/// constant expression.)
+/// 
+/// see llvm::Constant::getAggregateElement()
 pub extern "C" fn llvm_get_aggregate_element(c: LLVMValueRef, idx: UInt) -> LLVMValueRef = "__llvm_get_aggregate_element"
 pub fn LLVMValueRef::get_aggregate_element(self: LLVMValueRef, idx: UInt) -> LLVMValueRef {
   llvm_get_aggregate_element(self, idx)
 }
 
+///| Create a ConstantVector from values.
+/// 
+/// see llvm::ConstantVector::get()
 pub extern "C" fn llvm_const_vector(scalar_constant_vals: Array[LLVMValueRef]) -> LLVMValueRef = "__llvm_const_vector"
 pub fn LLVMValueRef::const_vector(self: Array[LLVMValueRef]) -> LLVMValueRef {
   llvm_const_vector(self)
 }
 
+///| Get const opcode of a constant value.
 extern "C" fn __llvm_get_const_opcode(constant_val: LLVMValueRef) -> Int = "__llvm_get_const_opcode"
 pub fn llvm_get_const_opcode(constant_val: LLVMValueRef) -> LLVMOpcode {
   let opcode = __llvm_get_const_opcode(constant_val);
   LLVMOpcode::from_int(opcode)
 }
 
+///| Get alignment of a constant value.
 pub extern "C" fn llvm_align_of(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_align_of"
 pub fn LLVMTypeRef::align_of(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_align_of(self)
 }
 
+///| Get size of a constant value.
 pub extern "C" fn llvm_size_of(ty: LLVMTypeRef) -> LLVMValueRef = "__llvm_size_of"
 pub fn LLVMTypeRef::size_of(self: LLVMTypeRef) -> LLVMValueRef {
   llvm_size_of(self)
 }
 
+///| Return negative value of a constant value.
 pub extern "C" fn llvm_const_neg(constant_val: LLVMValueRef) -> LLVMValueRef = "__llvm_const_neg"
 pub fn LLVMValueRef::const_neg(self: LLVMValueRef) -> LLVMValueRef {
   llvm_const_neg(self)
 }
 
+///| Return negative value of a constant value with NSW flag.
 pub extern "C" fn llvm_const_nsw_neg(constant_val: LLVMValueRef) -> LLVMValueRef = "__llvm_const_nsw_neg"
 pub fn LLVMValueRef::const_nsw_neg(self: LLVMValueRef) -> LLVMValueRef {
   llvm_const_nsw_neg(self)
 }
 
+///| Return not value of a constant value.
 pub extern "C" fn llvm_const_not(constant_val: LLVMValueRef) -> LLVMValueRef = "__llvm_const_not"
 pub fn LLVMValueRef::const_not(self: LLVMValueRef) -> LLVMValueRef {
   llvm_const_not(self)
@@ -2019,38 +2655,66 @@ pub fn LLVMValueRef::set_unnamed_addr(self: LLVMValueRef, has_unnamed_addr: Bool
   __llvm_set_unnamed_addr(self, to_llvm_bool(has_unnamed_addr))
 }
 
+//| Obtain the preferred alignment of the value.
+//
+// - see llvm::AllocaInst::getAlignment()
+// - see llvm::LoadInst::getAlignment()
+// - see llvm::StoreInst::getAlignment()
+// - see llvm::AtomicRMWInst::setAlignment()
+// - see llvm::AtomicCmpXchgInst::setAlignment()
+// - see llvm::GlobalValue::getAlignment()
 pub extern "C" fn llvm_get_alignment(v: LLVMValueRef) -> UInt = "__llvm_get_alignment"
 pub fn LLVMValueRef::get_alignment(self: LLVMValueRef) -> UInt {
   llvm_get_alignment(self)
 }
 
+/// Set the preferred alignment of the value.
+///
+/// - see llvm::AllocaInst::setAlignment()
+/// - see llvm::LoadInst::setAlignment()
+/// - see llvm::StoreInst::setAlignment()
+/// - see llvm::AtomicRMWInst::setAlignment()
+/// - see llvm::AtomicCmpXchgInst::setAlignment()
+/// - see llvm::GlobalValue::setAlignment()
 pub extern "C" fn llvm_set_alignment(v: LLVMValueRef, bytes: UInt) = "__llvm_set_alignment"
 pub fn LLVMValueRef::set_alignment(self: LLVMValueRef, bytes: UInt) -> Unit {
   llvm_set_alignment(self, bytes)
 }
 
+///| Sets a metadata attachment.
+///
+/// Sets a metadata attachment, erasing the existing metadata attachment if
+/// it already exists for the given kind.
+/// 
+/// see llvm::GlobalObject::setMetadata()
 pub extern "C" fn llvm_global_set_metadata(global: LLVMValueRef, kind: UInt, md: LLVMMetadataRef) = "__llvm_global_set_metadata"
 pub fn LLVMValueRef::global_set_metadata(self: LLVMValueRef, kind: UInt, md: LLVMMetadataRef) -> Unit {
   llvm_global_set_metadata(self, kind, md)
 }
 
+///| Erases a metadata attachment of the given kind if it exists.
+/// 
+/// see llvm::GlobalObject::eraseMetadata()
 pub extern "C" fn llvm_global_erase_metadata(global: LLVMValueRef, kind: UInt) = "__llvm_global_erase_metadata"
 pub fn LLVMValueRef::global_erase_metadata(self: LLVMValueRef, kind: UInt) -> Unit {
   llvm_global_erase_metadata(self, kind)
 }
 
+///| Removes all metadata attachments from this value.
+/// 
+/// see llvm::GlobalObject::clearMetadata()
 pub extern "C" fn llvm_global_clear_metadata(global: LLVMValueRef) = "__llvm_global_clear_metadata"
 pub fn LLVMValueRef::global_clear_metadata(self: LLVMValueRef) -> Unit {
   llvm_global_clear_metadata(self)
 }
 
-// pub extern "C" fn llvm_global_copy_all_metadata(value: LLVMValueRef, num_entries: Ptr[UInt64]) -> Ptr[LLVMValueMetadataEntry] = "__llvm_global_copy_all_metadata"
+// pub extern "C" fn llvm_global_copy_all_metadata(value: LLVMValueRef) -> Array[LLVMValueMetadataEntry] = "__llvm_global_copy_all_metadata"
 
-// pub extern "C" fn llvm_dispose_value_metadata_entries(entries: Ptr[LLVMValueMetadataEntry]) = "__llvm_dispose_value_metadata_entries"
+// pub extern "C" fn llvm_dispose_value_metadata_entries(entries: Array[LLVMValueMetadataEntry]) = "__llvm_dispose_value_metadata_entries"
 
-// pub extern "C" fn llvm_value_metadata_entries_get_kind(entries: Ptr[LLVMValueMetadataEntry], index: UInt) -> UInt = "__llvm_value_metadata_entries_get_kind"
+// pub extern "C" fn llvm_value_metadata_entries_get_kind(entries: Array[LLVMValueMetadataEntry], index: UInt) -> UInt = "__llvm_value_metadata_entries_get_kind"
 
-// pub extern "C" fn llvm_value_metadata_entries_get_metadata(entries: Ptr[LLVMValueMetadataEntry], index: UInt) -> LLVMMetadataRef = "__llvm_value_metadata_entries_get_metadata"
+// pub extern "C" fn llvm_value_metadata_entries_get_metadata(entries: Array[LLVMValueMetadataEntry], index: UInt) -> LLVMMetadataRef = "__llvm_value_metadata_entries_get_metadata"
 
 pub extern "C" fn llvm_add_global(m: LLVMModuleRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_add_global"
 
@@ -2088,164 +2752,550 @@ pub extern "C" fn llvm_is_externally_initialized(global_var: LLVMValueRef) -> LL
 
 pub extern "C" fn llvm_set_externally_initialized(global_var: LLVMValueRef, is_ext_init: LLVMBool) = "__llvm_set_externally_initialized"
 
-pub extern "C" fn llvm_add_alias2(m: LLVMModuleRef, value_ty: LLVMTypeRef, addr_space: UInt, aliasee: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_add_alias2"
 
+/// Add a GlobalAlias with the given value type, address space and aliasee.
+/// 
+/// see llvm::GlobalAlias::create()
+pub extern "C" fn __llvm_add_alias2(m: LLVMModuleRef, value_ty: LLVMTypeRef, addr_space: UInt, aliasee: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_add_alias2"
+pub fn llvm_add_alias2(m: LLVMModuleRef, value_ty: LLVMTypeRef, addr_space: UInt, aliasee: LLVMValueRef, name: String) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_add_alias2(m, value_ty, addr_space, aliasee, cstr)
+}
+
+
+///| Obtain a GlobalAlias value from a Module by its name.
+/// 
+/// The returned value corresponds to a llvm::GlobalAlias value.
+/// 
+/// see llvm::Module::getNamedAlias()
 pub extern "C" fn llvm_get_named_global_alias(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMValueRef = "__llvm_get_named_global_alias"
 
+
+///| Obtain an iterator to the first GlobalAlias in a Module.
+/// 
+/// see llvm::Module::alias_begin()
 pub extern "C" fn llvm_get_first_global_alias(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_first_global_alias"
 
+
+///| Obtain an iterator to the last GlobalAlias in a Module.
+/// 
+/// see llvm::Module::alias_end()
 pub extern "C" fn llvm_get_last_global_alias(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_last_global_alias"
 
+
+///| Advance a GlobalAlias iterator to the next GlobalAlias.
+/// 
+/// Returns NULL if the iterator was already at the end and there are no more
+/// global aliases.
 pub extern "C" fn llvm_get_next_global_alias(ga: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_global_alias"
 
+///| Decrement a GlobalAlias iterator to the previous GlobalAlias.
+/// 
+/// Returns NULL if the iterator was already at the beginning and there are
+/// no previous global aliases.
 pub extern "C" fn llvm_get_previous_global_alias(ga: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_global_alias"
 
+///| Retrieve the target value of an alias.
 pub extern "C" fn llvm_alias_get_aliasee(alias_ref: LLVMValueRef) -> LLVMValueRef = "__llvm_alias_get_aliasee"
 
+
+///| Set the target value of an alias.
 pub extern "C" fn llvm_alias_set_aliasee(alias_ref: LLVMValueRef, aliasee: LLVMValueRef) = "__llvm_alias_set_aliasee"
 
+
+///| Remove a function from its containing module and deletes it.
+/// 
+/// see llvm::Function::eraseFromParent()
 pub extern "C" fn llvm_delete_function(func: LLVMValueRef) = "__llvm_delete_function"
-//
+
+///| Check whether the given function has a personality function.
+/// 
+/// see llvm::Function::hasPersonalityFn()
 pub extern "C" fn llvm_has_personality_fn(func: LLVMValueRef) -> LLVMBool = "__llvm_has_personality_fn"
-//
+
+///| Obtain the personality function attached to the function.
+/// 
+/// see llvm::Function::getPersonalityFn()
 pub extern "C" fn llvm_get_personality_fn(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_personality_fn"
-//
+
+
+///| Set the personality function attached to the function.
+/// 
+/// see llvm::Function::setPersonalityFn()
 pub extern "C" fn llvm_set_personality_fn(func: LLVMValueRef, personality_fn: LLVMValueRef) = "__llvm_set_personality_fn"
-//
+
+///| Obtain the intrinsic ID number which matches the given function name.
+/// 
+/// see llvm::Intrinsic::lookupIntrinsicID()
 pub extern "C" fn llvm_lookup_intrinsic_id(name: CStr, name_len: UInt64) -> UInt = "__llvm_lookup_intrinsic_id"
-//
+
+
+///| Obtain the ID number from a function instance.
+/// 
+/// see llvm::Function::getIntrinsicID()
 pub extern "C" fn llvm_get_intrinsic_id(func: LLVMValueRef) -> UInt = "__llvm_get_intrinsic_id"
 
+
+///| Get or insert the declaration of an intrinsic.
+///
+/// Get or insert the declaration of an intrinsic.  For overloaded intrinsics,
+/// parameter types must be provided to uniquely identify an overload.
+/// 
+/// see llvm::Intrinsic::getOrInsertDeclaration()
 pub extern "C" fn llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMValueRef = "__llvm_get_intrinsic_declaration"
 
+///| Retrieves the type of an intrinsic.
+///
+/// Retrieves the type of an intrinsic.  For overloaded intrinsics, parameter
+/// types must be provided to uniquely identify an overload.
+/// 
+/// see llvm::Intrinsic::getType()
 pub extern "C" fn llvm_intrinsic_get_type(ctx: LLVMContextRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMTypeRef = "__llvm_intrinsic_get_type"
+pub fn LLVMContextRef::intrinsic_get_type(self: LLVMContextRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMTypeRef {
+  llvm_intrinsic_get_type(self, id, param_types)
+}
 
-// pub extern "C" fn llvm_intrinsic_get_name(id: UInt, name_length: Ptr[UInt64]) -> CStr = "__llvm_intrinsic_get_name"
+///| Retrieves the name of an intrinsic.
+/// 
+/// see llvm::Intrinsic::getName()
+extern "C" fn __llvm_intrinsic_get_name(id: UInt) -> (CStr, UInt64) = "__llvm_intrinsic_get_name"
 
-pub extern "C" fn llvm_intrinsic_copy_overloaded_name(id: UInt, param_types: Array[LLVMTypeRef]) -> CStr = "__llvm_intrinsic_copy_overloaded_name"
+///| Retrieves the name of an intrinsic.
+/// 
+/// see llvm::Intrinsic::getName()
+pub fn llvm_intrinsic_get_name(id: UInt) -> String {
+  let (cstr, len) = __llvm_intrinsic_get_name(id)
+  let len = len.to_uint();
+  c_str_to_moonbit_str_with_length(cstr, len)
+}
 
-pub extern "C" fn llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> CStr = "__llvm_intrinsic_copy_overloaded_name2"
+// Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead. 
+extern "C" fn __llvm_intrinsic_copy_overloaded_name(id: UInt, param_types: Array[LLVMTypeRef]) -> CStr = "__llvm_intrinsic_copy_overloaded_name"
+pub fn llvm_intrinsic_copy_overloaded_name(id: UInt, param_types: Array[LLVMTypeRef]) -> String {
+  let cstr = __llvm_intrinsic_copy_overloaded_name(id, param_types);
+  c_str_to_moonbit_str(cstr)
+}
 
-pub extern "C" fn llvm_intrinsic_is_overloaded(id: UInt) -> LLVMBool = "__llvm_intrinsic_is_overloaded"
+/// Copies the name of an overloaded intrinsic identified by a given list of parameter types.
+/// 
+/// Unlike LLVMIntrinsicGetName, the caller is responsible for freeing the
+/// returned string.
+/// 
+/// This version also supports unnamed types.
+/// 
+/// see llvm::Intrinsic::getName()
+extern "C" fn __llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> CStr = "__llvm_intrinsic_copy_overloaded_name2"
+pub fn llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> String {
+  let cstr = __llvm_intrinsic_copy_overloaded_name2(mod, id, param_types);
+  c_str_to_moonbit_str(cstr)
+}
 
+
+///| Obtain if the intrinsic identified by the given ID is overloaded.
+/// 
+/// see llvm::Intrinsic::isOverloaded()
+extern "C" fn __llvm_intrinsic_is_overloaded(id: UInt) -> LLVMBool = "__llvm_intrinsic_is_overloaded"
+
+///| Obtain if the intrinsic identified by the given ID is overloaded.
+/// 
+/// see llvm::Intrinsic::isOverloaded()
+pub fn llvm_intrinsic_is_overloaded(id: UInt) -> Bool {
+  __llvm_intrinsic_is_overloaded(id).to_moonbit_bool()
+}
+
+
+///| Obtain the calling function of a function.
+/// 
+/// The returned value corresponds to the LLVMCallConv enumeration.
+/// 
+/// see llvm::Function::getCallingConv()
 pub extern "C" fn llvm_get_function_call_conv(func: LLVMValueRef) -> UInt = "__llvm_get_function_call_conv"
 
+///| Set the calling convention of a function.
+/// 
+/// see llvm::Function::setCallingConv()
+/// 
+/// - param Fn Function to operate on
+/// - param CC LLVMCallConv to set calling convention to
 pub extern "C" fn llvm_set_function_call_conv(func: LLVMValueRef, cc: UInt) = "__llvm_set_function_call_conv"
 
-pub extern "C" fn llvm_get_gc(func: LLVMValueRef) -> CStr = "__llvm_get_gc"
 
-pub extern "C" fn llvm_set_gc(func: LLVMValueRef, name: CStr) = "__llvm_set_gc"
+///| Obtain the name of the garbage collector to use during code generation.
+/// 
+/// see llvm::Function::getGC()
+extern "C" fn __llvm_get_gc(func: LLVMValueRef) -> CStr = "__llvm_get_gc"
+pub fn llvm_get_gc(func: LLVMValueRef) -> String {
+  let cstr = __llvm_get_gc(func);
+  c_str_to_moonbit_str(cstr)
+}
 
+///| Define the garbage collector to use during code generation.
+/// 
+/// see llvm::Function::setGC()
+extern "C" fn __llvm_set_gc(func: LLVMValueRef, name: CStr) = "__llvm_set_gc"
+pub fn llvm_set_gc(func: LLVMValueRef, name: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_set_gc(func, cstr)
+}
+
+///| Gets the prefix data associated with a function.
+///
+/// Gets the prefix data associated with a function. Only valid on functions, and
+/// only if LLVMHasPrefixData returns true.
+/// See https://llvm.org/docs/LangRef.html#prefix-data
 pub extern "C" fn llvm_get_prefix_data(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prefix_data"
 
-pub extern "C" fn llvm_has_prefix_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prefix_data"
+///| Check if a given function has prefix data.
+///
+/// Check if a given function has prefix data. Only valid on functions.
+/// See https://llvm.org/docs/LangRef.html#prefix-data
+extern "C" fn __llvm_has_prefix_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prefix_data"
+pub fn llvm_has_prefix_data(func: LLVMValueRef) -> Bool {
+  __llvm_has_prefix_data(func).to_moonbit_bool()
+}
 
+///| Sets the prefix data for the function.
+///
+/// Sets the prefix data for the function. Only valid on functions.
+/// See https://llvm.org/docs/LangRef.html#prefix-data
 pub extern "C" fn llvm_set_prefix_data(func: LLVMValueRef, prefix_data: LLVMValueRef) = "__llvm_set_prefix_data"
 
+
+///| Gets the prologue data associated with a function.
+/// 
+/// Gets the prologue data associated with a function. Only valid on functions,
+/// and only if LLVMHasPrologueData returns true.
+///
+/// See https://llvm.org/docs/LangRef.html#prologue-data
 pub extern "C" fn llvm_get_prologue_data(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_prologue_data"
 
-pub extern "C" fn llvm_has_prologue_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prologue_data"
+///| Check if a given function has prologue data.
+/// 
+/// Check if a given function has prologue data. Only valid on functions.
+///
+/// See https://llvm.org/docs/LangRef.html#prologue-data
+extern "C" fn __llvm_has_prologue_data(func: LLVMValueRef) -> LLVMBool = "__llvm_has_prologue_data"
+pub fn llvm_has_prologue_data(func: LLVMValueRef) -> Bool {
+  __llvm_has_prologue_data(func).to_moonbit_bool()
+}
 
+///| Sets the prologue data for the function.
+///
+/// Sets the prologue data for the function. Only valid on functions.
+///
+/// See https://llvm.org/docs/LangRef.html#prologue-data
 pub extern "C" fn llvm_set_prologue_data(func: LLVMValueRef, prologue_data: LLVMValueRef) = "__llvm_set_prologue_data"
 
+///| Add an attribute to a function.
+/// 
+/// see llvm::Function::addAttribute()
 pub extern "C" fn llvm_add_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, a: LLVMAttributeRef) = "__llvm_add_attribute_at_index"
 
 pub extern "C" fn llvm_get_attribute_count_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex) -> UInt = "__llvm_get_attribute_count_at_index"
 
-// pub extern "C" fn llvm_get_attributes_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, attrs: Ptr[LLVMAttributeRef]) = "__llvm_get_attributes_at_index"
+pub extern "C" fn llvm_get_attributes_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, attrs: Array[LLVMAttributeRef]) = "__llvm_get_attributes_at_index"
 
 pub extern "C" fn llvm_get_enum_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "__llvm_get_enum_attribute_at_index"
 
-pub extern "C" fn llvm_get_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_string_attribute_at_index"
+extern "C" fn __llvm_get_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_string_attribute_at_index"
+pub fn llvm_get_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> LLVMAttributeRef {
+  let cstr = moonbit_str_to_c_str(k);
+  let len = k.length().reinterpret_as_uint();
+  __llvm_get_string_attribute_at_index(f, idx, cstr, len)
+}
 
 pub extern "C" fn llvm_remove_enum_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) = "__llvm_remove_enum_attribute_at_index"
 
-pub extern "C" fn llvm_remove_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_string_attribute_at_index"
+extern "C" fn __llvm_remove_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_string_attribute_at_index"
+pub fn llvm_remove_string_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(k);
+  let len = k.length().reinterpret_as_uint();
+  __llvm_remove_string_attribute_at_index(f, idx, cstr, len)
+}
 
-pub extern "C" fn llvm_add_target_dependent_function_attr(func: LLVMValueRef, a: CStr, v: CStr) = "__llvm_add_target_dependent_function_attr"
 
+///| Add a target-dependent attribute to a function
+///
+/// see llvm::AttrBuilder::addAttribute()
+extern "C" fn __llvm_add_target_dependent_function_attr(func: LLVMValueRef, a: CStr, v: CStr) = "__llvm_add_target_dependent_function_attr"
+pub fn llvm_add_target_dependent_function_attr(func: LLVMValueRef, a: String, v: String) -> Unit {
+  let attr = moonbit_str_to_c_str(a);
+  let val = moonbit_str_to_c_str(v);
+  __llvm_add_target_dependent_function_attr(func, attr, val)
+}
+
+///| Obtain the number of parameters in a function.
+/// 
+/// see llvm::Function::arg_size()
 pub extern "C" fn llvm_count_params(func: LLVMValueRef) -> UInt = "__llvm_count_params"
 
+
+///| Obtain the parameters in a function.
+/// 
+/// The takes a pointer to a pre-allocated array of LLVMValueRef that is
+/// at least LLVMCountParams() long. This array will be filled with
+/// LLVMValueRef instances which correspond to the parameters the
+/// function receives. Each LLVMValueRef corresponds to a llvm::Argument
+/// instance.
+/// 
+/// see llvm::Function::arg_begin()
+/// 
 // FIXME: Not implemented
 pub extern "C" fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_params"
+pub fn LLVMValueRef::get_params(self: LLVMValueRef) -> Array[LLVMValueRef] {
+  llvm_get_params(self)
+}
 
+///| Obtain the parameter at the specified index.
+/// 
+/// Parameters are indexed from 0.
+/// 
+/// see llvm::Function::arg_begin()
 pub extern "C" fn llvm_get_param(func: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_param"
+pub fn LLVMValueRef::get_param(self: LLVMValueRef, index: UInt) -> LLVMValueRef {
+  llvm_get_param(self, index)
+}
 
+///| Obtain the function to which this argument belongs.
+/// 
+/// Unlike other functions in this group, this one takes an LLVMValueRef
+/// that corresponds to a llvm::Attribute.
+/// 
+/// The returned LLVMValueRef is the llvm::Function to which this
+/// argument belongs.
 pub extern "C" fn llvm_get_param_parent(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_param_parent"
+pub fn LLVMValueRef::get_param_parent(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_param_parent(self)
+}
 
+///| Obtain the first parameter to a function.
+/// 
+/// see llvm::Function::arg_begin()
 pub extern "C" fn llvm_get_first_param(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_first_param"
+pub fn LLVMValueRef::get_first_param(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_first_param(self)
+}
 
+
+///| Obtain the last parameter to a function.
+/// 
+/// see llvm::Function::arg_end()
 pub extern "C" fn llvm_get_last_param(func: LLVMValueRef) -> LLVMValueRef = "__llvm_get_last_param"
+pub fn LLVMValueRef::get_last_param(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_last_param(self)
+}
 
+
+///| Obtain the next parameter to a function.
+/// 
+/// This takes an LLVMValueRef obtained from LLVMGetFirstParam() (which is
+/// actually a wrapped iterator) and obtains the next parameter from the
+/// underlying iterator.
 pub extern "C" fn llvm_get_next_param(arg: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_param"
+pub fn LLVMValueRef::get_next_param(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_next_param(self)
+}
 
+///| Obtain the previous parameter to a function.
+/// 
+/// This is the opposite of LLVMGetNextParam().
 pub extern "C" fn llvm_get_previous_param(arg: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_param"
+pub fn LLVMValueRef::get_previous_param(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_previous_param(self)
+}
 
+///| Set the alignment for a function parameter.
+/// 
+/// see llvm::Argument::addAttr()
+/// see llvm::AttrBuilder::addAlignmentAttr()
+/// 
 pub extern "C" fn llvm_set_param_alignment(arg: LLVMValueRef, align: UInt) = "__llvm_set_param_alignment"
+pub fn LLVMValueRef::set_param_alignment(self: LLVMValueRef, align: UInt) -> Unit {
+  llvm_set_param_alignment(self, align)
+}
 
-pub extern "C" fn llvm_add_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64, ty: LLVMTypeRef, addr_space: UInt, resolver: LLVMValueRef) -> LLVMValueRef = "__llvm_add_global_ifunc"
 
-pub extern "C" fn llvm_get_named_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMValueRef = "__llvm_get_named_global_ifunc"
+///| Add a global indirect function to a module under a specified name.
+/// 
+/// see llvm::GlobalIFunc::create()
+extern "C" fn __llvm_add_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64, ty: LLVMTypeRef, addr_space: UInt, resolver: LLVMValueRef) -> LLVMValueRef = "__llvm_add_global_ifunc"
+pub fn llvm_add_global_ifunc(m: LLVMModuleRef, name: String, ty: LLVMTypeRef, addr_space: UInt, resolver: LLVMValueRef) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_add_global_ifunc(m, cstr, name.length().to_uint64(), ty, addr_space, resolver)
+}
+pub fn LLVMModuleRef::add_global_ifunc(self: LLVMModuleRef, name: String, ty: LLVMTypeRef, addr_space: UInt, resolver: LLVMValueRef) -> LLVMValueRef {
+  llvm_add_global_ifunc(self, name, ty, addr_space, resolver)
+}
+
+extern "C" fn __llvm_get_named_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMValueRef = "__llvm_get_named_global_ifunc"
+pub fn llvm_get_named_global_ifunc(m: LLVMModuleRef, name: String) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_get_named_global_ifunc(m, cstr, name.length().to_uint64())
+}
+pub fn LLVMModuleRef::get_named_global_ifunc(self: LLVMModuleRef, name: String) -> LLVMValueRef {
+  llvm_get_named_global_ifunc(self, name)
+}
 
 pub extern "C" fn llvm_get_first_global_ifunc(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_first_global_ifunc"
+pub fn LLVMModuleRef::get_first_global_ifunc(self: LLVMModuleRef) -> LLVMValueRef {
+  llvm_get_first_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_get_last_global_ifunc(m: LLVMModuleRef) -> LLVMValueRef = "__llvm_get_last_global_ifunc"
+pub fn LLVMModuleRef::get_last_global_ifunc(self: LLVMModuleRef) -> LLVMValueRef {
+  llvm_get_last_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_get_next_global_ifunc(ifunc: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_global_ifunc"
+pub fn LLVMValueRef::get_next_global_ifunc(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_next_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_get_previous_global_ifunc(ifunc: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_global_ifunc"
+pub fn LLVMValueRef::get_previous_global_ifunc(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_previous_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_get_global_ifunc_resolver(ifunc: LLVMValueRef) -> LLVMValueRef = "__llvm_get_global_ifunc_resolver"
+pub fn LLVMValueRef::get_global_ifunc_resolver(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_global_ifunc_resolver(self)
+}
 
 pub extern "C" fn llvm_set_global_ifunc_resolver(ifunc: LLVMValueRef, resolver: LLVMValueRef) = "__llvm_set_global_ifunc_resolver"
+pub fn LLVMValueRef::set_global_ifunc_resolver(self: LLVMValueRef, resolver: LLVMValueRef) -> Unit {
+  llvm_set_global_ifunc_resolver(self, resolver)
+}
 
 pub extern "C" fn llvm_erase_global_ifunc(ifunc: LLVMValueRef) = "__llvm_erase_global_ifunc"
+pub fn LLVMValueRef::erase_global_ifunc(self: LLVMValueRef) -> Unit {
+  llvm_erase_global_ifunc(self)
+}
 
 pub extern "C" fn llvm_remove_global_ifunc(ifunc: LLVMValueRef) = "__llvm_remove_global_ifunc"
+pub fn LLVMValueRef::remove_global_ifunc(self: LLVMValueRef) -> Unit {
+  llvm_remove_global_ifunc(self)
+}
 
-pub extern "C" fn llvm_md_string_in_context2(context: LLVMContextRef, str: CStr, s_len: UInt64) -> LLVMMetadataRef = "__llvm_md_string_in_context2"
+extern "C" fn __llvm_md_string_in_context2(context: LLVMContextRef, str: CStr, s_len: UInt64) -> LLVMMetadataRef = "__llvm_md_string_in_context2"
+pub fn llvm_md_string_in_context2(context: LLVMContextRef, str: String) -> LLVMMetadataRef {
+  let cstr = moonbit_str_to_c_str(str);
+  __llvm_md_string_in_context2(context, cstr, str.length().to_uint64())
+}
+pub fn LLVMContextRef::md_string_in_context2(self: LLVMContextRef, str: String) -> LLVMMetadataRef {
+  llvm_md_string_in_context2(self, str)
+}
 
 pub extern "C" fn llvm_md_node_in_context2(context: LLVMContextRef, mds: Array[LLVMMetadataRef]) -> LLVMMetadataRef = "__llvm_md_node_in_context2"
+pub fn LLVMContextRef::md_node_in_context2(self: LLVMContextRef, mds: Array[LLVMMetadataRef]) -> LLVMMetadataRef {
+  llvm_md_node_in_context2(self, mds)
+}
 
 pub extern "C" fn llvm_metadata_as_value(context: LLVMContextRef, md: LLVMMetadataRef) -> LLVMValueRef = "__llvm_metadata_as_value"
 
 pub extern "C" fn llvm_value_as_metadata(val: LLVMValueRef) -> LLVMMetadataRef = "__llvm_value_as_metadata"
+pub fn LLVMValueRef::as_metadata(self: LLVMValueRef) -> LLVMMetadataRef {
+  llvm_value_as_metadata(self)
+}
 
-// pub extern "C" fn llvm_get_md_string(v: LLVMValueRef, length: Ptr[UInt]) -> CStr = "__llvm_get_md_string"
+// FIXME: Not implemented
+extern "C" fn __llvm_get_md_string(v: LLVMValueRef) -> (CStr, UInt) = "__llvm_get_md_string"
+pub fn llvm_get_md_string(v: LLVMValueRef) -> String {
+  let (cstr, len) = __llvm_get_md_string(v);
+  c_str_to_moonbit_str_with_length(cstr, len)
+}
+pub fn LLVMValueRef::get_md_string(self: LLVMValueRef) -> String {
+  llvm_get_md_string(self)
+}
 
 pub extern "C" fn llvm_get_md_node_num_operands(v: LLVMValueRef) -> UInt = "__llvm_get_md_node_num_operands"
+pub fn LLVMValueRef::get_md_node_num_operands(self: LLVMValueRef) -> UInt {
+  llvm_get_md_node_num_operands(self)
+}
 
 // FIXME: Not implemented
 pub extern "C" fn llvm_get_md_node_operands(v: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_md_node_operands" 
+pub fn LLVMValueRef::get_md_node_operands(self: LLVMValueRef) -> Array[LLVMValueRef] {
+  llvm_get_md_node_operands(self)
+}
 
 pub extern "C" fn llvm_replace_md_node_operand_with(v: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) = "__llvm_replace_md_node_operand_with"
+pub fn LLVMValueRef::replace_md_node_operand_with(self: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) -> Unit {
+  llvm_replace_md_node_operand_with(self, index, replacement)
+}
 
-pub extern "C" fn llvm_md_string_in_context(context: LLVMContextRef, str: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_md_string_in_context"
+extern "C" fn __llvm_md_string_in_context(context: LLVMContextRef, str: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_md_string_in_context"
+pub fn llvm_md_string_in_context(context: LLVMContextRef, str: String) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(str);
+  __llvm_md_string_in_context(context, cstr, str.length().reinterpret_as_uint())
+}
+pub fn LLVMContextRef::md_string_in_context(self: LLVMContextRef, str: String) -> LLVMValueRef {
+  llvm_md_string_in_context(self, str)
+}
 
-pub extern "C" fn llvm_md_string(str: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_md_string"
+extern "C" fn __llvm_md_string(str: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_md_string"
+pub fn llvm_md_string(str: String) -> LLVMValueRef {
+  let cstr = moonbit_str_to_c_str(str);
+  __llvm_md_string(cstr, str.length().reinterpret_as_uint())
+}
+pub fn LLVMValueRef::md_string(self: String) -> LLVMValueRef {
+  llvm_md_string(self)
+}
 
 pub extern "C" fn llvm_md_node_in_context(context: LLVMContextRef, vals: Array[LLVMValueRef]) -> LLVMValueRef = "__llvm_md_node_in_context"
+pub fn LLVMContextRef::md_node_in_context(self: LLVMContextRef, vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  llvm_md_node_in_context(self, vals)
+}
 
 pub extern "C" fn llvm_md_node(vals: Array[LLVMValueRef], count: UInt) -> LLVMValueRef = "__llvm_md_node"
+pub fn LLVMValueRef::md_node(self: Array[LLVMValueRef], count: UInt) -> LLVMValueRef {
+  llvm_md_node(self, count)
+}
 
-pub extern "C" fn llvm_create_operand_bundle(tag: CStr, tag_len: UInt64, args: Array[LLVMValueRef]) -> LLVMOperandBundleRef = "__llvm_create_operand_bundle"
+extern "C" fn __llvm_create_operand_bundle(tag: CStr, tag_len: UInt64, args: Array[LLVMValueRef]) -> LLVMOperandBundleRef = "__llvm_create_operand_bundle"
+pub fn llvm_create_operand_bundle(tag: String, args: Array[LLVMValueRef]) -> LLVMOperandBundleRef {
+  let cstr = moonbit_str_to_c_str(tag);
+  __llvm_create_operand_bundle(cstr, tag.length().to_uint64(), args)
+}
 
 pub extern "C" fn llvm_dispose_operand_bundle(bundle: LLVMOperandBundleRef) = "__llvm_dispose_operand_bundle"
+pub fn LLVMOperandBundleRef::dispose(self: LLVMOperandBundleRef) -> Unit {
+  llvm_dispose_operand_bundle(self)
+}
 
-// pub extern "C" fn llvm_get_operand_bundle_tag(bundle: LLVMOperandBundleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_operand_bundle_tag"
+// FIXME: Not implemented
+extern "C" fn __llvm_get_operand_bundle_tag(bundle: LLVMOperandBundleRef) -> (CStr, UInt64) = "__llvm_get_operand_bundle_tag"
+pub fn llvm_get_operand_bundle_tag(bundle: LLVMOperandBundleRef) -> String {
+  let (cstr, len) = __llvm_get_operand_bundle_tag(bundle);
+  c_str_to_moonbit_str_with_length(cstr, len.to_uint())
+}
 
 pub extern "C" fn llvm_get_num_operand_bundle_args(bundle: LLVMOperandBundleRef) -> UInt = "__llvm_get_num_operand_bundle_args"
+pub fn LLVMOperandBundleRef::get_num_args(self: LLVMOperandBundleRef) -> UInt {
+  llvm_get_num_operand_bundle_args(self)
+}
 
 pub extern "C" fn llvm_get_operand_bundle_arg_at_index(bundle: LLVMOperandBundleRef, index: UInt) -> LLVMValueRef = "__llvm_get_operand_bundle_arg_at_index"
+pub fn LLVMOperandBundleRef::get_arg(self: LLVMOperandBundleRef, index: UInt) -> LLVMValueRef {
+  llvm_get_operand_bundle_arg_at_index(self, index)
+}
 
 pub extern "C" fn llvm_basic_block_as_value(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_basic_block_as_value"
 pub fn LLVMBasicBlockRef::as_value_ref(self: LLVMBasicBlockRef) -> LLVMValueRef {
   llvm_basic_block_as_value(self)
 }
 
-pub extern "C" fn llvm_value_is_basic_block(val: LLVMValueRef) -> LLVMBool = "__llvm_value_is_basic_block"
+extern "C" fn __llvm_value_is_basic_block(val: LLVMValueRef) -> LLVMBool = "__llvm_value_is_basic_block"
+pub fn llvm_value_is_basic_block(val: LLVMValueRef) -> Bool {
+  __llvm_value_is_basic_block(val).to_moonbit_bool()
+}
+pub fn LLVMValueRef::is_basic_block(self: LLVMValueRef) -> Bool {
+  llvm_value_is_basic_block(self)
+}
 
 pub extern "C" fn llvm_value_as_basic_block(val: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_value_as_basic_block"
+pub fn LLVMValueRef::as_basic_block(self: LLVMValueRef) -> LLVMBasicBlockRef {
+  llvm_value_as_basic_block(self)
+}
 
 extern "C" fn __llvm_get_basic_block_name(bb: LLVMBasicBlockRef) -> CStr = "__llvm_get_basic_block_name"
 pub fn llvm_get_basic_block_name(bb: LLVMBasicBlockRef) -> String {
@@ -2267,103 +3317,288 @@ pub fn LLVMBasicBlockRef::get_terminator(self: LLVMBasicBlockRef) -> LLVMValueRe
 }
 
 pub extern "C" fn llvm_count_basic_blocks(func: LLVMValueRef) -> UInt = "__llvm_count_basic_blocks"
+pub fn LLVMValueRef::count_basic_blocks(self: LLVMValueRef) -> UInt {
+  llvm_count_basic_blocks(self)
+}
 
 pub extern "C" fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[BasicBlock] = "__llvm_get_basic_blocks"
+pub fn LLVMValueRef::get_basic_blocks(self: LLVMValueRef) -> Array[BasicBlock] {
+  llvm_get_basic_blocks(self)
+}
 
 pub extern "C" fn llvm_get_first_basic_block(func: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_first_basic_block"
+pub fn LLVMValueRef::get_first_basic_block(self: LLVMValueRef) -> LLVMBasicBlockRef {
+  llvm_get_first_basic_block(self)
+}
 
 pub extern "C" fn llvm_get_last_basic_block(func: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_last_basic_block"
+pub fn LLVMValueRef::get_last_basic_block(self: LLVMValueRef) -> LLVMBasicBlockRef {
+  llvm_get_last_basic_block(self)
+}
 
 pub extern "C" fn llvm_get_next_basic_block(bb: LLVMBasicBlockRef) -> LLVMBasicBlockRef = "__llvm_get_next_basic_block"
+pub fn LLVMBasicBlockRef::get_next_basic_block(self: LLVMBasicBlockRef) -> LLVMBasicBlockRef {
+  llvm_get_next_basic_block(self)
+}
+
 
 pub extern "C" fn llvm_get_previous_basic_block(bb: LLVMBasicBlockRef) -> LLVMBasicBlockRef = "__llvm_get_previous_basic_block"
+pub fn LLVMBasicBlockRef::get_previous_basic_block(self: LLVMBasicBlockRef) -> LLVMBasicBlockRef {
+  llvm_get_previous_basic_block(self)
+}
 
 pub extern "C" fn llvm_get_entry_basic_block(func: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_entry_basic_block"
+pub fn LLVMValueRef::get_entry_basic_block(self: LLVMValueRef) -> LLVMBasicBlockRef {
+  llvm_get_entry_basic_block(self)
+}
 
 pub extern "C" fn llvm_insert_existing_basic_block_after_insert_block(builder: LLVMBuilderRef, bb: LLVMBasicBlockRef) = "__llvm_insert_existing_basic_block_after_insert_block"
+pub fn LLVMBuilderRef::insert_existing_basic_block_after_insert_block(self: LLVMBuilderRef, bb: LLVMBasicBlockRef) -> Unit {
+  llvm_insert_existing_basic_block_after_insert_block(self, bb)
+}
 
 pub extern "C" fn llvm_append_existing_basic_block(func: LLVMValueRef, bb: LLVMBasicBlockRef) = "__llvm_append_existing_basic_block"
+pub fn LLVMValueRef::append_existing_basic_block(self: LLVMValueRef, bb: LLVMBasicBlockRef) -> Unit {
+  llvm_append_existing_basic_block(self, bb)
+}
 
-pub extern "C" fn llvm_create_basic_block_in_context(context: LLVMContextRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_create_basic_block_in_context"
+extern "C" fn __llvm_create_basic_block_in_context(context: LLVMContextRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_create_basic_block_in_context"
+pub fn llvm_create_basic_block_in_context(context: LLVMContextRef, name: String) -> LLVMBasicBlockRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_create_basic_block_in_context(context, cstr)
+}
 
-pub extern "C" fn llvm_append_basic_block_in_context(context: LLVMContextRef, func: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block_in_context"
+extern "C" fn __llvm_append_basic_block_in_context(context: LLVMContextRef, func: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block_in_context"
+pub fn llvm_append_basic_block_in_context(context: LLVMContextRef, func: LLVMValueRef, name: String) -> LLVMBasicBlockRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_append_basic_block_in_context(context, func, cstr)
+}
 
-pub extern "C" fn llvm_append_basic_block(func: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block"
+extern "C" fn __llvm_append_basic_block(func: LLVMValueRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_append_basic_block"
+pub fn llvm_append_basic_block(func: LLVMValueRef, name: String) -> LLVMBasicBlockRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_append_basic_block(func, cstr)
+}
 
-pub extern "C" fn llvm_insert_basic_block_in_context(context: LLVMContextRef, bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block_in_context"
+extern "C" fn __llvm_insert_basic_block_in_context(context: LLVMContextRef, bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block_in_context"
+pub fn llvm_insert_basic_block_in_context(context: LLVMContextRef, bb: LLVMBasicBlockRef, name: String) -> LLVMBasicBlockRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_insert_basic_block_in_context(context, bb, cstr)
+}
 
-pub extern "C" fn llvm_insert_basic_block(insert_before_bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block"
+extern "C" fn __llvm_insert_basic_block(insert_before_bb: LLVMBasicBlockRef, name: CStr) -> LLVMBasicBlockRef = "__llvm_insert_basic_block"
+pub fn llvm_insert_basic_block(insert_before_bb: LLVMBasicBlockRef, name: String) -> LLVMBasicBlockRef {
+  let cstr = moonbit_str_to_c_str(name);
+  __llvm_insert_basic_block(insert_before_bb, cstr)
+}
 
 pub extern "C" fn llvm_delete_basic_block(bb: LLVMBasicBlockRef) = "__llvm_delete_basic_block"
+pub fn LLVMBasicBlockRef::delete(self: LLVMBasicBlockRef) -> Unit {
+  llvm_delete_basic_block(self)
+}
 
 pub extern "C" fn llvm_remove_basic_block_from_parent(bb: LLVMBasicBlockRef) = "__llvm_remove_basic_block_from_parent"
+pub fn LLVMBasicBlockRef::remove_from_parent(self: LLVMBasicBlockRef) -> Unit {
+  llvm_remove_basic_block_from_parent(self)
+}
 
 pub extern "C" fn llvm_move_basic_block_before(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_before"
+pub fn LLVMBasicBlockRef::move_before(self: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) -> Unit {
+  llvm_move_basic_block_before(self, move_pos)
+}
 
 pub extern "C" fn llvm_move_basic_block_after(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_after"
+pub fn LLVMBasicBlockRef::move_after(self: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) -> Unit {
+  llvm_move_basic_block_after(self, move_pos)
+}
 
 pub extern "C" fn llvm_get_first_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_first_instruction"
+pub fn LLVMBasicBlockRef::get_first_instruction(self: LLVMBasicBlockRef) -> LLVMValueRef {
+  llvm_get_first_instruction(self)
+}
 
 pub extern "C" fn llvm_get_last_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_last_instruction"
+pub fn LLVMBasicBlockRef::get_last_instruction(self: LLVMBasicBlockRef) -> LLVMValueRef {
+  llvm_get_last_instruction(self)
+}
 
-pub extern "C" fn llvm_has_metadata(val: LLVMValueRef) -> Int = "__llvm_has_metadata"
+pub extern "C" fn llvm_has_metadata(val: LLVMValueRef) -> LLVMBool = "__llvm_has_metadata"
+pub fn LLVMValueRef::has_metadata(self: LLVMValueRef) -> Bool {
+  llvm_has_metadata(self).to_moonbit_bool()
+}
 
 pub extern "C" fn llvm_get_metadata(val: LLVMValueRef, kind_id: UInt) -> LLVMValueRef = "__llvm_get_metadata"
+pub fn LLVMValueRef::get_metadata(self: LLVMValueRef, kind_id: UInt) -> LLVMValueRef {
+  llvm_get_metadata(self, kind_id)
+}
 
 pub extern "C" fn llvm_set_metadata(val: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) = "__llvm_set_metadata"
+pub fn LLVMValueRef::set_metadata(self: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) -> Unit {
+  llvm_set_metadata(self, kind_id, node)
+}
 
 // pub extern "C" fn llvm_instruction_get_all_metadata_other_than_debug_loc(instr: LLVMValueRef, num_entries: Ptr[UInt64]) -> Ptr[LLVMValueMetadataEntry] = "__llvm_instruction_get_all_metadata_other_than_debug_loc"
 
 pub extern "C" fn llvm_get_instruction_parent(inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_instruction_parent"
+pub fn LLVMValueRef::get_instruction_parent(self: LLVMValueRef) -> LLVMBasicBlockRef {
+  llvm_get_instruction_parent(self)
+}
 
 pub extern "C" fn llvm_get_next_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_instruction"
+pub fn LLVMValueRef::get_next_instruction(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_next_instruction(self)
+}
 
 pub extern "C" fn llvm_get_previous_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_instruction"
+pub fn LLVMValueRef::get_previous_instruction(self: LLVMValueRef) -> LLVMValueRef {
+  llvm_get_previous_instruction(self)
+}
 
 pub extern "C" fn llvm_instruction_remove_from_parent(inst: LLVMValueRef) = "__llvm_instruction_remove_from_parent"
+pub fn LLVMValueRef::instruction_remove_from_parent(self: LLVMValueRef) -> Unit {
+  llvm_instruction_remove_from_parent(self)
+}
 
 pub extern "C" fn llvm_instruction_erase_from_parent(inst: LLVMValueRef) = "__llvm_instruction_erase_from_parent"
+pub fn LLVMValueRef::instruction_erase_from_parent(self: LLVMValueRef) -> Unit {
+  llvm_instruction_erase_from_parent(self)
+}
 
 pub extern "C" fn llvm_delete_instruction(inst: LLVMValueRef) = "__llvm_delete_instruction"
+pub fn LLVMValueRef::delete_instruction(self: LLVMValueRef) -> Unit {
+  llvm_delete_instruction(self)
+}
 
+
+///| Obtain the code opcode for an individual instruction.
+/// 
+/// see llvm::Instruction::getOpCode()
 extern "C" fn __llvm_get_instruction_opcode(inst: LLVMValueRef) -> Int = "__llvm_get_instruction_opcode"
 pub fn llvm_get_instruction_opcode(inst: LLVMValueRef) -> LLVMOpcode {
   let opcode = __llvm_get_instruction_opcode(inst);
   LLVMOpcode::from_int(opcode)
 }
 
+
+///| Obtain the predicate of an instruction.
+/// 
+/// This is only valid for instructions that correspond to llvm::ICmpInst.
+/// 
+/// see llvm::ICmpInst::getPredicate()
 extern "C" fn __llvm_get_icmp_predicate(inst: LLVMValueRef) -> Int = "__llvm_get_icmp_predicate"
 pub fn llvm_get_icmp_predicate(inst: LLVMValueRef) -> LLVMIntPredicate {
   let predicate = __llvm_get_icmp_predicate(inst);
   LLVMIntPredicate::from_int(predicate)
 }
 
+
+///| Obtain the float predicate of an instruction.
+/// 
+/// This is only valid for instructions that correspond to llvm::FCmpInst.
+/// 
+/// see llvm::FCmpInst::getPredicate()
 extern "C" fn __llvm_get_fcmp_predicate(inst: LLVMValueRef) -> Int = "__llvm_get_fcmp_predicate"
 pub fn llvm_get_fcmp_predicate(inst: LLVMValueRef) -> LLVMRealPredicate {
   let predicate = __llvm_get_fcmp_predicate(inst);
   LLVMRealPredicate::from_int(predicate)
 }
 
+///| Create a copy of 'this' instruction that is identical in all ways
+/// except the following:
+///   * The instruction has no parent
+///   * The instruction has no name
+/// 
+/// see llvm::Instruction::clone()
 pub extern "C" fn llvm_instruction_clone(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_instruction_clone"
 pub fn LLVMValueRef::instruction_clone(self: LLVMValueRef) -> LLVMValueRef {
   llvm_instruction_clone(self)
 }
 
+///| Determine whether an instruction is a terminator.
+///
+/// Determine whether an instruction is a terminator. This routine is named to
+/// be compatible with historical functions that did this by querying the
+/// underlying C++ type.
+/// 
+/// see llvm::Instruction::isTerminator()
 pub extern "C" fn llvm_isa_terminator_inst(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_terminator_inst"
 pub fn LLVMValueRef::isa_terminator_inst(self: LLVMValueRef) -> LLVMValueRef {
   llvm_isa_terminator_inst(self)
 }
 
+///| Obtain the first debug record attached to an instruction.
+/// 
+/// Use LLVMGetNextDbgRecord() and LLVMGetPreviousDbgRecord() to traverse the
+/// sequence of DbgRecords.
+/// 
+/// Return the first DbgRecord attached to Inst or NULL if there are none.
+/// 
+/// see llvm::Instruction::getDbgRecordRange()
+pub extern "C" fn llvm_get_first_dbg_record(inst: LLVMValueRef) -> LLVMDbgRecordRef = "__llvm_get_first_dbg_record"
+pub fn LLVMValueRef::get_first_dbg_record(self: LLVMValueRef) -> LLVMDbgRecordRef {
+  llvm_get_first_dbg_record(self)
+}
+
+///| Obtain the last debug record attached to an instruction.
+/// 
+/// Return the last DbgRecord attached to Inst or NULL if there are none.
+/// 
+/// see llvm::Instruction::getDbgRecordRange()
+pub extern "C" fn llvm_get_last_dbg_record(inst: LLVMValueRef) -> LLVMDbgRecordRef = "__llvm_get_last_dbg_record"
+pub fn LLVMValueRef::get_last_dbg_record(self: LLVMValueRef) -> LLVMDbgRecordRef {
+  llvm_get_last_dbg_record(self)
+}
+
+///| Obtain the next DbgRecord in the sequence or NULL if there are no more.
+/// 
+/// see llvm::Instruction::getDbgRecordRange()
+pub extern "C" fn llvm_get_next_dbg_record(dbr: LLVMDbgRecordRef) -> LLVMDbgRecordRef = "__llvm_get_next_dbg_record"
+pub fn LLVMDbgRecordRef::get_next_dbg_record(self: LLVMDbgRecordRef) -> LLVMDbgRecordRef {
+  llvm_get_next_dbg_record(self)
+}
+
+///| Obtain the previous DbgRecord in the sequence or NULL if there are no more.
+/// 
+/// see llvm::Instruction::getDbgRecordRange()
+pub extern "C" fn llvm_get_previous_dbg_record(dbr: LLVMDbgRecordRef) -> LLVMDbgRecordRef = "__llvm_get_previous_dbg_record"
+pub fn LLVMDbgRecordRef::get_previous_dbg_record(self: LLVMDbgRecordRef) -> LLVMDbgRecordRef {
+  llvm_get_previous_dbg_record(self)
+}
+
+
+///| Obtain the argument count for a call instruction.
+/// 
+/// This expects an LLVMValueRef that corresponds to a llvm::CallInst,
+/// llvm::InvokeInst, or llvm:FuncletPadInst.
+/// 
+/// - see llvm::CallInst::getNumArgOperands()
+/// - see llvm::InvokeInst::getNumArgOperands()
+/// - see llvm::FuncletPadInst::getNumArgOperands()
 pub extern "C" fn llvm_get_num_arg_operands(instr: LLVMValueRef) -> UInt = "__llvm_get_num_arg_operands"
 pub fn LLVMValueRef::get_num_arg_operands(self: LLVMValueRef) -> UInt {
   llvm_get_num_arg_operands(self)
 }
 
+
+///| Set the calling convention for a call instruction.
+/// 
+/// This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+/// llvm::InvokeInst.
+/// 
+/// - see llvm::CallInst::setCallingConv()
+/// - see llvm::InvokeInst::setCallingConv()
+/// 
 pub extern "C" fn llvm_set_instruction_call_conv(instr: LLVMValueRef, cc: UInt) = "__llvm_set_instruction_call_conv"
 pub fn LLVMValueRef::set_instruction_call_conv(self: LLVMValueRef, cc: UInt) -> Unit {
   llvm_set_instruction_call_conv(self, cc)
 }
 
+///| Obtain the calling convention for a call instruction.
+/// 
+/// This is the opposite of LLVMSetInstructionCallConv(). Reads its
+/// usage.
+/// 
+/// see LLVMSetInstructionCallConv()
 pub extern "C" fn llvm_get_instruction_call_conv(instr: LLVMValueRef) -> UInt = "__llvm_get_instruction_call_conv"
 pub fn LLVMValueRef::get_instruction_call_conv(self: LLVMValueRef) -> UInt {
   llvm_get_instruction_call_conv(self)
@@ -2388,26 +3623,52 @@ pub extern "C" fn llvm_remove_call_site_enum_attribute(c: LLVMValueRef, idx: LLV
 
 pub extern "C" fn llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_call_site_string_attribute"
 
+///| Obtain the function type called by this instruction.
+/// 
+/// see llvm::CallBase::getFunctionType()
 pub extern "C" fn llvm_get_called_function_type(c: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_called_function_type"
 pub fn LLVMValueRef::get_called_function_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_get_called_function_type(self)
 }
 
+///| Obtain the pointer to the function invoked by this instruction.
+/// 
+/// This expects an LLVMValueRef that corresponds to a llvm::CallInst or
+/// llvm::InvokeInst.
+/// 
+/// - see llvm::CallInst::getCalledOperand()
+/// - see llvm::InvokeInst::getCalledOperand()
 pub extern "C" fn llvm_get_called_value(instr: LLVMValueRef) -> LLVMValueRef = "__llvm_get_called_value"
 pub fn LLVMValueRef::get_called_value(self: LLVMValueRef) -> LLVMValueRef {
   llvm_get_called_value(self)
 }
 
+///| Obtain the number of operand bundles attached to this instruction.
+/// 
+/// This only works on llvm::CallInst and llvm::InvokeInst instructions.
+/// 
+/// - see llvm::CallBase::getNumOperandBundles()
 pub extern "C" fn llvm_get_num_operand_bundles(c: LLVMValueRef) -> UInt = "__llvm_get_num_operand_bundles"
 pub fn LLVMValueRef::get_num_operand_bundles(self: LLVMValueRef) -> UInt {
   llvm_get_num_operand_bundles(self)
 }
 
+///| Obtain the operand bundle attached to this instruction at the given index.
+///
+/// Use LLVMDisposeOperandBundle to free the operand bundle.
+/// 
+/// This only works on llvm::CallInst and llvm::InvokeInst instructions.
 pub extern "C" fn llvm_get_operand_bundle_at_index(c: LLVMValueRef, index: UInt) -> LLVMOperandBundleRef = "__llvm_get_operand_bundle_at_index"
 pub fn LLVMValueRef::get_operand_bundle_at_index(self: LLVMValueRef, index: UInt) -> LLVMOperandBundleRef {
   llvm_get_operand_bundle_at_index(self, index)
 }
 
+
+///| Obtain whether a call instruction is a tail call.
+/// 
+/// This only works on llvm::CallInst instructions.
+/// 
+/// see llvm::CallInst::isTailCall()
 extern "C" fn __llvm_is_tail_call(call_inst: LLVMValueRef) -> LLVMBool = "__llvm_is_tail_call"
 pub fn llvm_is_tail_call(call_inst: LLVMValueRef) -> Bool {
   __llvm_is_tail_call(call_inst).to_moonbit_bool()
@@ -2416,6 +3677,11 @@ pub fn LLVMValueRef::is_tail_call(self: LLVMValueRef) -> Bool {
   __llvm_is_tail_call(self).to_moonbit_bool()
 }
 
+///| Set whether a call instruction is a tail call.
+/// 
+/// This only works on llvm::CallInst instructions.
+/// 
+/// - see llvm::CallInst::setTailCall()
 extern "C" fn __llvm_set_tail_call(call_inst: LLVMValueRef, is_tail_call: LLVMBool) = "__llvm_set_tail_call"
 pub fn llvm_set_tail_call(call_inst: LLVMValueRef, is_tail_call: Bool) -> Unit {
   __llvm_set_tail_call(call_inst, to_llvm_bool(is_tail_call))
@@ -2424,12 +3690,27 @@ pub fn LLVMValueRef::set_tail_call(self: LLVMValueRef, is_tail_call: Bool) -> Un
   __llvm_set_tail_call(self, to_llvm_bool(is_tail_call))
 }
 
+
+///| Obtain a tail call kind of the call instruction.
+/// 
+/// see llvm::CallInst::setTailCallKind()
 extern "C" fn __llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> Int = "__llvm_get_tail_call_kind"
+
+///| Obtain a tail call kind of the call instruction.
+/// 
+/// see llvm::CallInst::setTailCallKind()
 pub fn llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> LLVMTailCallKind {
   LLVMTailCallKind::from_int(__llvm_get_tail_call_kind(call_inst))
 }
 
+///| Set the call kind of the call instruction.
+/// 
+/// see llvm::CallInst::getTailCallKind()
 extern "C" fn __llvm_set_tail_call_kind(call_inst: LLVMValueRef, kind: Int) = "__llvm_set_tail_call_kind"
+
+///| Set the call kind of the call instruction.
+/// 
+/// see llvm::CallInst::getTailCallKind()
 pub fn llvm_set_tail_call_kind(call_inst: LLVMValueRef, kind: LLVMTailCallKind) -> Unit {
   __llvm_set_tail_call_kind(call_inst, kind.to_int())
 }
@@ -2437,120 +3718,215 @@ pub fn LLVMValueRef::set_tail_call_kind(self: LLVMValueRef, kind: LLVMTailCallKi
   __llvm_set_tail_call_kind(self, kind.to_int())
 }
 
+///| Return the normal destination basic block.
+/// 
+/// This only works on llvm::InvokeInst instructions.
+/// 
+/// see llvm::InvokeInst::getNormalDest()
 pub extern "C" fn llvm_get_normal_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_normal_dest"
 pub fn LLVMValueRef::get_normal_dest(self: LLVMValueRef) -> LLVMBasicBlockRef {
   llvm_get_normal_dest(self)
 }
 
+
+///| Return the unwind destination basic block.
+/// 
+/// Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+/// llvm::CatchSwitchInst instructions.
+/// 
+/// - see llvm::InvokeInst::getUnwindDest()
+/// - see llvm::CleanupReturnInst::getUnwindDest()
+/// - see llvm::CatchSwitchInst::getUnwindDest()
 pub extern "C" fn llvm_get_unwind_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_unwind_dest"
 pub fn LLVMValueRef::get_unwind_dest(self: LLVMValueRef) -> LLVMBasicBlockRef {
   llvm_get_unwind_dest(self)
 }
 
+///| Set the normal destination basic block.
+/// 
+/// This only works on llvm::InvokeInst instructions.
+/// 
+/// see llvm::InvokeInst::setNormalDest()
 pub extern "C" fn llvm_set_normal_dest(invoke_inst: LLVMValueRef, b: LLVMBasicBlockRef) = "__llvm_set_normal_dest"
 pub fn LLVMValueRef::set_normal_dest(self: LLVMValueRef, b: LLVMBasicBlockRef) -> Unit {
   llvm_set_normal_dest(self, b)
 }
 
+///| Set the unwind destination basic block.
+/// 
+/// Works on llvm::InvokeInst, llvm::CleanupReturnInst, and
+/// llvm::CatchSwitchInst instructions.
+/// 
+/// - see llvm::InvokeInst::setUnwindDest()
+/// - see llvm::CleanupReturnInst::setUnwindDest()
+/// - see llvm::CatchSwitchInst::setUnwindDest()
 pub extern "C" fn llvm_set_unwind_dest(invoke_inst: LLVMValueRef, b: LLVMBasicBlockRef) = "__llvm_set_unwind_dest"
 pub fn LLVMValueRef::set_unwind_dest(self: LLVMValueRef, b: LLVMBasicBlockRef) -> Unit {
   llvm_set_unwind_dest(self, b)
 }
 
+///| Get the default destination of a CallBr instruction.
+/// 
+/// see llvm::CallBrInst::getDefaultDest()
 pub extern "C" fn llvm_get_call_br_default_dest(call_br: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_call_br_default_dest"
 pub fn LLVMValueRef::get_call_br_default_dest(self: LLVMValueRef) -> LLVMBasicBlockRef {
   llvm_get_call_br_default_dest(self)
 }
 
+///| Get the number of indirect destinations of a CallBr instruction.
+/// 
+/// see llvm::CallBrInst::getNumIndirectDests()
 pub extern "C" fn llvm_get_call_br_num_indirect_dests(call_br: LLVMValueRef) -> UInt = "__llvm_get_call_br_num_indirect_dests"
 pub fn LLVMValueRef::get_call_br_num_indirect_dests(self: LLVMValueRef) -> UInt {
   llvm_get_call_br_num_indirect_dests(self)
 }
 
+///| Get the indirect destination of a CallBr instruction at the given index.
+/// 
+/// see llvm::CallBrInst::getIndirectDest()
 pub extern "C" fn llvm_get_call_br_indirect_dest(call_br: LLVMValueRef, idx: UInt) -> LLVMBasicBlockRef = "__llvm_get_call_br_indirect_dest"
 pub fn LLVMValueRef::get_call_br_indirect_dest(self: LLVMValueRef, idx: UInt) -> LLVMBasicBlockRef {
   llvm_get_call_br_indirect_dest(self, idx)
 }
 
+
+///| Return the number of successors that this terminator has.
+/// 
+/// see llvm::Instruction::getNumSuccessors
 pub extern "C" fn llvm_get_num_successors(term: LLVMValueRef) -> UInt = "__llvm_get_num_successors"
 pub fn LLVMValueRef::get_num_successors(self: LLVMValueRef) -> UInt {
   llvm_get_num_successors(self)
 }
 
+///| Return the specified successor.
+/// 
+/// see llvm::Instruction::getSuccessor
 pub extern "C" fn llvm_get_successor(term: LLVMValueRef, i: UInt) -> LLVMBasicBlockRef = "__llvm_get_successor"
 pub fn LLVMValueRef::get_successor(self: LLVMValueRef, i: UInt) -> LLVMBasicBlockRef {
   llvm_get_successor(self, i)
 }
 
+///| Update the specified successor to point at the provided block.
+/// 
+/// see llvm::Instruction::setSuccessor
 pub extern "C" fn llvm_set_successor(term: LLVMValueRef, i: UInt, block: LLVMBasicBlockRef) = "__llvm_set_successor"
 pub fn LLVMValueRef::set_successor(self: LLVMValueRef, i: UInt, block: LLVMBasicBlockRef) -> Unit {
   llvm_set_successor(self, i, block)
 }
 
+///| Return if a branch is conditional.
+/// 
+/// This only works on llvm::BranchInst instructions.
+/// 
+/// see llvm::BranchInst::isConditional
 pub extern "C" fn llvm_is_conditional(branch: LLVMValueRef) -> LLVMBool = "__llvm_is_conditional"
 pub fn LLVMValueRef::is_conditional(self: LLVMValueRef) -> Bool {
   llvm_is_conditional(self).to_moonbit_bool()
 }
 
+///| Return the condition of a branch instruction.
+/// 
+/// This only works on llvm::BranchInst instructions.
+/// 
+/// see llvm::BranchInst::getCondition
 pub extern "C" fn llvm_get_condition(branch: LLVMValueRef) -> LLVMValueRef = "__llvm_get_condition"
 pub fn LLVMValueRef::get_condition(self: LLVMValueRef) -> LLVMValueRef {
   llvm_get_condition(self)
 }
 
+///| Set the condition of a branch instruction.
+/// 
+/// This only works on llvm::BranchInst instructions.
+/// 
+/// see llvm::BranchInst::setCondition
 pub extern "C" fn llvm_set_condition(branch: LLVMValueRef, cond: LLVMValueRef) = "__llvm_set_condition"
 pub fn LLVMValueRef::set_condition(self: LLVMValueRef, cond: LLVMValueRef) -> Unit {
   llvm_set_condition(self, cond)
 }
 
+///| Obtain the default destination basic block of a switch instruction.
+/// 
+/// This only works on llvm::SwitchInst instructions.
+/// 
+/// see llvm::SwitchInst::getDefaultDest()
 pub extern "C" fn llvm_get_switch_default_dest(switch_instr: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_switch_default_dest"
 pub fn LLVMValueRef::get_switch_default_dest(self: LLVMValueRef) -> LLVMBasicBlockRef {
   llvm_get_switch_default_dest(self)
 }
 
+///| Obtain the type that is being allocated by the alloca instruction.
 pub extern "C" fn llvm_get_allocated_type(alloca: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_allocated_type"
 pub fn LLVMValueRef::get_allocated_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_get_allocated_type(self)
 }
 
+///| Check whether the given GEP operator is inbounds.
 extern "C" fn __llvm_is_in_bounds(gep: LLVMValueRef) -> LLVMBool = "__llvm_is_in_bounds"
 pub fn llvm_is_in_bounds(gep: LLVMValueRef) -> Bool {
   __llvm_is_in_bounds(gep).to_moonbit_bool()
 }
 
+///| Set the given GEP instruction to be inbounds or not.
 pub extern "C" fn llvm_set_is_in_bounds(gep: LLVMValueRef, in_bounds: LLVMBool) = "__llvm_set_is_in_bounds"
 pub fn LLVMValueRef::set_is_in_bounds(self: LLVMValueRef, in_bounds: Bool) -> Unit {
   llvm_set_is_in_bounds(self, to_llvm_bool(in_bounds))
 }
 
+///| Get the source element type of the given GEP operator.
 pub extern "C" fn llvm_get_gep_source_element_type(gep: LLVMValueRef) -> LLVMTypeRef = "__llvm_get_gep_source_element_type"
 pub fn LLVMValueRef::get_gep_source_element_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_get_gep_source_element_type(self)
 }
 
+// /**
+//  * Get the no-wrap related flags for the given GEP instruction.
+//  *
+//  * @see llvm::GetElementPtrInst::getNoWrapFlags
+//  */
+// LLVMGEPNoWrapFlags LLVMGEPGetNoWrapFlags(LLVMValueRef GEP);
+//
+// /**
+//  * Set the no-wrap related flags for the given GEP instruction.
+//  *
+//  * @see llvm::GetElementPtrInst::setNoWrapFlags
+//  */
+// void LLVMGEPSetNoWrapFlags(LLVMValueRef GEP, LLVMGEPNoWrapFlags NoWrapFlags);
+
+
+///| Add an incoming value to the end of a PHI list.
 pub extern "C" fn llvm_add_incoming(phi_node: LLVMValueRef, incoming_values: Array[LLVMValueRef], incoming_blocks: Array[LLVMBasicBlockRef], count: UInt) = "__llvm_add_incoming"
 
+///| Obtain the number of incoming basic blocks to a PHI node.
 pub extern "C" fn llvm_count_incoming(phi_node: LLVMValueRef) -> UInt = "__llvm_count_incoming"
 pub fn LLVMValueRef::count_incoming(self: LLVMValueRef) -> UInt {
   llvm_count_incoming(self)
 }
 
+///| Obtain an incoming value to a PHI node as an LLVMValueRef.
 pub extern "C" fn llvm_get_incoming_value(phi_node: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_incoming_value"
 pub fn LLVMValueRef::get_incoming_value(self: LLVMValueRef, index: UInt) -> LLVMValueRef {
   llvm_get_incoming_value(self, index)
 }
 
+///| Obtain an incoming value to a PHI node as an LLVMBasicBlockRef.
 pub extern "C" fn llvm_get_incoming_block(phi_node: LLVMValueRef, index: UInt) -> LLVMBasicBlockRef = "__llvm_get_incoming_block"
 pub fn LLVMValueRef::get_incoming_block(self: LLVMValueRef, index: UInt) -> LLVMBasicBlockRef {
   llvm_get_incoming_block(self, index)
 }
 
+///| Obtain the number of indices.
+///
+/// NB: This also works on GEP operators.
 pub extern "C" fn llvm_get_num_indices(inst: LLVMValueRef) -> UInt = "__llvm_get_num_indices"
 pub fn LLVMValueRef::get_num_indices(self: LLVMValueRef) -> UInt {
   llvm_get_num_indices(self)
 }
 
+///| Obtain the indices as an array.
 // FIXME: Not implemented
 pub extern "C" fn llvm_get_indices(inst: LLVMValueRef) -> Array[UInt] = "__llvm_get_indices"
+
+///| Obtain the indices as an array.
 pub fn LLVMValueRef::get_indices(self: LLVMValueRef) -> Array[UInt] {
   llvm_get_indices(self)
 }
@@ -2565,21 +3941,27 @@ pub fn LLVMBuilderRef::create() -> LLVMBuilderRef {
   llvm_create_builder()
 }
 
+/// Set the builder position before Instr but after any attached debug records,
+/// or if Instr is null set the position to the end of Block.
 pub extern "C" fn llvm_position_builder(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, instr: LLVMValueRef) = "__llvm_position_builder"
 pub fn LLVMBuilderRef::position(self: LLVMBuilderRef, block: LLVMBasicBlockRef, instr: LLVMValueRef) -> Unit {
   llvm_position_builder(self, block, instr)
 }
 
+/// Set the builder position before Instr and any attached debug records,
+/// or if Instr is null set the position to the end of Block.
 pub extern "C" fn llvm_position_builder_before_dbg_records(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, inst: LLVMValueRef) = "__llvm_position_builder_before_dbg_records"
 pub fn LLVMBuilderRef::position_before_dbg_records(self: LLVMBuilderRef, block: LLVMBasicBlockRef, inst: LLVMValueRef) -> Unit {
   llvm_position_builder_before_dbg_records(self, block, inst)
 }
 
+///| Set the builder position before Instr but after any attached debug records.
 pub extern "C" fn llvm_position_builder_before(builder: LLVMBuilderRef, instr: LLVMValueRef) = "__llvm_position_builder_before"
 pub fn LLVMBuilderRef::position_before(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit {
   llvm_position_builder_before(self, instr)
 }
 
+///| Set the builder position before Instr and any attached debug records.
 pub extern "C" fn llvm_position_builder_before_instr_and_dbg_records(builder: LLVMBuilderRef, instr: LLVMValueRef) = "__llvm_position_builder_before_instr_and_dbg_records"
 pub fn LLVMBuilderRef::position_before_instr_and_dbg_records(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit {
   llvm_position_builder_before_instr_and_dbg_records(self, instr)
@@ -2616,45 +3998,78 @@ pub fn LLVMBuilderRef::dispose(self: LLVMBuilderRef) -> Unit {
   llvm_dispose_builder(self)
 }
 
+///| Get location information used by debugging information.
+/// 
+/// see llvm::IRBuilder::getCurrentDebugLocation()
 pub extern "C" fn llvm_get_current_debug_location2(builder: LLVMBuilderRef) -> LLVMMetadataRef = "__llvm_get_current_debug_location2"
 pub fn LLVMBuilderRef::get_current_debug_location2(self: LLVMBuilderRef) -> LLVMMetadataRef {
   llvm_get_current_debug_location2(self)
 }
 
+
+///| Set location information used by debugging information.
+/// 
+/// To clear the location metadata of the given instruction, pass NULL to \p Loc.
+/// 
+/// see llvm::IRBuilder::SetCurrentDebugLocation()
 pub extern "C" fn llvm_set_current_debug_location2(builder: LLVMBuilderRef, loc: LLVMMetadataRef) = "__llvm_set_current_debug_location2"
 pub fn LLVMBuilderRef::set_current_debug_location2(self: LLVMBuilderRef, loc: LLVMMetadataRef) -> Unit {
   llvm_set_current_debug_location2(self, loc)
 }
 
+/// Attempts to set the debug location for the given instruction using the
+/// current debug location for the given builder.  If the builder has no current
+/// debug location, this function is a no-op.
+/// 
+/// @deprecated LLVMSetInstDebugLocation is deprecated in favor of the more general
+///             LLVMAddMetadataToInst.
+/// 
+/// see llvm::IRBuilder::SetInstDebugLocation()
+/// 
 pub extern "C" fn llvm_set_inst_debug_location(builder: LLVMBuilderRef, inst: LLVMValueRef) = "__llvm_set_inst_debug_location"
 pub fn LLVMBuilderRef::set_inst_debug_location(self: LLVMBuilderRef, inst: LLVMValueRef) -> Unit {
   llvm_set_inst_debug_location(self, inst)
 }
 
+
+///| Adds the metadata registered with the given builder to the given instruction.
+/// 
+/// see llvm::IRBuilder::AddMetadataToInst()
 pub extern "C" fn llvm_add_metadata_to_inst(builder: LLVMBuilderRef, inst: LLVMValueRef) = "__llvm_add_metadata_to_inst"
 pub fn LLVMBuilderRef::add_metadata_to_inst(self: LLVMBuilderRef, inst: LLVMValueRef) -> Unit {
   llvm_add_metadata_to_inst(self, inst)
 }
 
+///| Get the dafult floating-point math metadata for a given builder.
+/// 
+/// see llvm::IRBuilder::getDefaultFPMathTag()
 pub extern "C" fn llvm_builder_get_default_fp_math_tag(builder: LLVMBuilderRef) -> LLVMMetadataRef = "__llvm_builder_get_default_fp_math_tag"
 pub fn LLVMBuilderRef::get_default_fp_math_tag(self: LLVMBuilderRef) -> LLVMMetadataRef {
   llvm_builder_get_default_fp_math_tag(self)
 }
 
+
+///| Set the default floating-point math metadata for the given builder.
+/// 
+/// To clear the metadata, pass NULL to \p FPMathTag.
+/// 
+/// see llvm::IRBuilder::setDefaultFPMathTag()
 pub extern "C" fn llvm_builder_set_default_fp_math_tag(builder: LLVMBuilderRef, fp_math_tag: LLVMMetadataRef) = "__llvm_builder_set_default_fp_math_tag"
 pub fn LLVMBuilderRef::set_default_fp_math_tag(self: LLVMBuilderRef, fp_math_tag: LLVMMetadataRef) -> Unit {
   llvm_builder_set_default_fp_math_tag(self, fp_math_tag)
 }
 
-pub extern "C" fn llvm_set_current_debug_location(builder: LLVMBuilderRef, l: LLVMValueRef) = "__llvm_set_current_debug_location"
-pub fn LLVMBuilderRef::set_current_debug_location(self: LLVMBuilderRef, l: LLVMValueRef) -> Unit {
-  llvm_set_current_debug_location(self, l)
-}
+// Deprecated
+// pub extern "C" fn llvm_set_current_debug_location(builder: LLVMBuilderRef, l: LLVMValueRef) = "__llvm_set_current_debug_location"
+// pub fn LLVMBuilderRef::set_current_debug_location(self: LLVMBuilderRef, l: LLVMValueRef) -> Unit {
+//   llvm_set_current_debug_location(self, l)
+// }
 
-pub extern "C" fn llvm_get_current_debug_location(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_get_current_debug_location"
-pub fn LLVMBuilderRef::get_current_debug_location(self: LLVMBuilderRef) -> LLVMValueRef {
-  llvm_get_current_debug_location(self)
-}
+// Deprecated
+// pub extern "C" fn llvm_get_current_debug_location(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_get_current_debug_location"
+// pub fn LLVMBuilderRef::get_current_debug_location(self: LLVMBuilderRef) -> LLVMValueRef {
+//   llvm_get_current_debug_location(self)
+// }
 
 pub extern "C" fn llvm_build_ret_void(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_build_ret_void"
 pub fn LLVMBuilderRef::build_ret_void(self: LLVMBuilderRef) -> LLVMValueRef {
@@ -2768,47 +4183,86 @@ pub fn LLVMBuilderRef::build_catch_switch(self: LLVMBuilderRef, parent_pad: LLVM
   llvm_build_catch_switch(self, parent_pad, unwind_bb, num_handlers, name)
 }
 
+///| Add a case to the switch instruction.
 pub extern "C" fn llvm_add_case(_switch: LLVMValueRef, on_val: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_case"
 pub fn LLVMValueRef::add_case(self: LLVMValueRef, on_val: LLVMValueRef, dest: LLVMBasicBlockRef) -> Unit {
   llvm_add_case(self, on_val, dest)
 }
 
+///| Add a destination to the indirectbr instruction.
 pub extern "C" fn llvm_add_destination(indirect_br: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_destination"
 pub fn LLVMValueRef::add_destination(self: LLVMValueRef, dest: LLVMBasicBlockRef) -> Unit {
   llvm_add_destination(self, dest)
 }
 
+///| Get the number of clauses on the landingpad instruction.
 pub extern "C" fn llvm_get_num_clauses(landing_pad: LLVMValueRef) -> UInt = "__llvm_get_num_clauses"
 pub fn LLVMValueRef::get_num_clauses(self: LLVMValueRef) -> UInt {
   llvm_get_num_clauses(self)
 }
 
+///| Get the value of the clause at index Idx on the landingpad instruction.
 pub extern "C" fn llvm_get_clause(landing_pad: LLVMValueRef, idx: UInt) -> LLVMValueRef = "__llvm_get_clause"
 pub fn LLVMValueRef::get_clause(self: LLVMValueRef, idx: UInt) -> LLVMValueRef {
   llvm_get_clause(self, idx)
 }
 
+///| Add a catch or filter clause to the landingpad instruction.
 pub extern "C" fn llvm_add_clause(landing_pad: LLVMValueRef, clause_val: LLVMValueRef) = "__llvm_add_clause"
 pub fn LLVMValueRef::add_clause(self: LLVMValueRef, clause_val: LLVMValueRef) -> Unit {
   llvm_add_clause(self, clause_val)
 }
 
+///| Get the 'cleanup' flag in the landingpad instruction.
 extern "C" fn __llvm_is_cleanup(landing_pad: LLVMValueRef) -> LLVMBool = "__llvm_is_cleanup"
+pub fn llvm_is_cleanup(landing_pad: LLVMValueRef) -> Bool {
+  __llvm_is_cleanup(landing_pad).to_moonbit_bool()
+}
 
+///| Set the 'cleanup' flag in the landingpad instruction.
 extern "C" fn __llvm_set_cleanup(landing_pad: LLVMValueRef, val: LLVMBool) = "__llvm_set_cleanup"
+pub fn llvm_set_cleanup(landing_pad: LLVMValueRef, val: Bool) -> Unit {
+  __llvm_set_cleanup(landing_pad, to_llvm_bool(val))
+}
 
+///| Add a destination to the catchswitch instruction.
 pub extern "C" fn llvm_add_handler(catch_switch: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_handler"
 
+///| Get the number of handlers on the catchswitch instruction.
 pub extern "C" fn llvm_get_num_handlers(catch_switch: LLVMValueRef) -> UInt = "__llvm_get_num_handlers"
 
+///| Obtain the basic blocks acting as handlers for a catchswitch instruction.
+/// 
+/// The Handlers parameter should point to a pre-allocated array of
+/// LLVMBasicBlockRefs at least LLVMGetNumHandlers() large. On return, the
+/// first LLVMGetNumHandlers() entries in the array will be populated
+/// with LLVMBasicBlockRef instances.
+/// 
+/// @param CatchSwitch The catchswitch instruction to operate on.
+/// @param Handlers Memory address of an array to be filled with basic blocks.
+/// 
 pub extern "C" fn llvm_get_handlers(catch_switch: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "__llvm_get_handlers"
 
+///| Get the number of funcletpad arguments.
 pub extern "C" fn llvm_get_arg_operand(funclet: LLVMValueRef, i: UInt) -> LLVMValueRef = "__llvm_get_arg_operand"
 
+///| Set a funcletpad argument at the given index.
 pub extern "C" fn llvm_set_arg_operand(funclet: LLVMValueRef, i: UInt, value: LLVMValueRef) = "__llvm_set_arg_operand"
 
+
+/// Get the parent catchswitch instruction of a catchpad instruction.
+/// 
+/// This only works on llvm::CatchPadInst instructions.
+/// 
+/// see llvm::CatchPadInst::getCatchSwitch()
 pub extern "C" fn llvm_get_parent_catch_switch(catch_pad: LLVMValueRef) -> LLVMValueRef = "__llvm_get_parent_catch_switch"
 
+
+///| Set the parent catchswitch instruction of a catchpad instruction.
+/// 
+/// This only works on llvm::CatchPadInst instructions.
+/// 
+/// see llvm::CatchPadInst::setCatchSwitch()
 pub extern "C" fn llvm_set_parent_catch_switch(catch_pad: LLVMValueRef, catch_switch: LLVMValueRef) = "__llvm_set_parent_catch_switch"
 
 extern "C" fn __llvm_build_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_add"
@@ -3028,6 +4482,9 @@ pub fn LLVMValueRef::set_exact(self: LLVMValueRef, is_exact: Bool) -> Unit {
   llvm_set_exact(self, is_exact)
 }
 
+///| Gets if the instruction has the non-negative flag set.
+///
+/// Only valid for zext instructions.
 extern "C" fn __llvm_get_n_neg(non_neg_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_n_neg"
 pub fn llvm_get_n_neg(non_neg_inst: LLVMValueRef) -> Bool {
   let is_non_neg = __llvm_get_n_neg(non_neg_inst);
@@ -3038,6 +4495,9 @@ pub fn LLVMValueRef::get_n_neg(self: LLVMValueRef) -> Bool {
   to_moonbit_bool(is_non_neg)
 }
 
+///| Sets the non-negative flag for the instruction.
+///
+/// Only valid for zext instructions.
 extern "C" fn __llvm_set_n_neg(non_neg_inst: LLVMValueRef, is_non_neg: LLVMBool) = "__llvm_set_n_neg"
 pub fn llvm_set_n_neg(non_neg_inst: LLVMValueRef, is_non_neg: Bool) -> Unit {
   __llvm_set_n_neg(non_neg_inst, to_llvm_bool(is_non_neg))
@@ -3046,16 +4506,30 @@ pub fn LLVMValueRef::set_n_neg(self: LLVMValueRef, is_non_neg: Bool) -> Unit {
   llvm_set_n_neg(self, is_non_neg)
 }
 
+///| Get the flags for which fast-math-style optimizations are allowed for this value.
+/// 
+/// Only valid on floating point instructions.
+/// see LLVMCanValueUseFastMathFlags
 extern "C" fn llvm_get_fast_math_flags(fp_math_inst: LLVMValueRef) -> LLVMFastMathFlags = "__llvm_get_fast_math_flags"
 pub fn LLVMValueRef::get_fast_math_flags(self: LLVMValueRef) -> LLVMFastMathFlags {
   llvm_get_fast_math_flags(self)
 }
 
+///| Sets the flags for which fast-math-style optimizations are allowed for this value.
+/// 
+/// Only valid on floating point instructions.
+///
+/// see LLVMCanValueUseFastMathFlags
 extern "C" fn llvm_set_fast_math_flags(fp_math_inst: LLVMValueRef, fmf: LLVMFastMathFlags) = "__llvm_set_fast_math_flags"
 pub fn LLVMValueRef::set_fast_math_flags(self: LLVMValueRef, fmf: LLVMFastMathFlags) -> Unit {
   llvm_set_fast_math_flags(self, fmf)
 }
 
+///| Check if a given value can potentially have fast math flags.
+/// 
+/// Will return true for floating point arithmetic instructions, and for select,
+/// phi, and call instructions whose type is a floating point type, or a vector
+/// or array thereof. See https://llvm.org/docs/LangRef.html#fast-math-flags
 extern "C" fn __llvm_can_value_use_fast_math_flags(inst: LLVMValueRef) -> LLVMBool = "__llvm_can_value_use_fast_math_flags"
 pub fn llvm_can_value_use_fast_math_flags(inst: LLVMValueRef) -> Bool {
   let can_use = __llvm_can_value_use_fast_math_flags(inst);
@@ -3065,12 +4539,18 @@ pub fn LLVMValueRef::can_use_fast_math_flags(self: LLVMValueRef) -> Bool {
   llvm_can_value_use_fast_math_flags(self)
 }
 
+///| Gets whether the instruction has the disjoint flag set.
+/// 
+/// Only valid for or instructions.
 extern "C" fn __llvm_get_is_disjoint(inst: LLVMValueRef) -> LLVMBool = "__llvm_get_is_disjoint"
 pub fn LLVMValueRef::get_is_disjoint(self: LLVMValueRef) -> Bool {
   let is_disjoint = __llvm_get_is_disjoint(self);
   to_moonbit_bool(is_disjoint)
 }
 
+///| Sets the disjoint flag for the instruction.
+/// 
+/// Only valid for or instructions.
 extern "C" fn __llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: LLVMBool) = "__llvm_set_is_disjoint"
 pub fn llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: Bool) -> Unit {
   __llvm_set_is_disjoint(inst, to_llvm_bool(is_disjoint))
@@ -3088,17 +4568,29 @@ pub fn LLVMBuilderRef::build_malloc(self: LLVMBuilderRef, ty: LLVMTypeRef, name:
 }
 
 extern "C" fn __llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_array_malloc"
+pub fn llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
+  __llvm_build_array_malloc(builder, ty, val, moonbit_str_to_c_str(name))
+}
 
+///| Creates and inserts a memset to the specified pointer and the specified value.
+/// 
+/// see llvm::IRRBuilder::CreateMemSet()
 pub extern "C" fn llvm_build_mem_set(builder: LLVMBuilderRef, ptr: LLVMValueRef, val: LLVMValueRef, len: LLVMValueRef, align: UInt) -> LLVMValueRef = "__llvm_build_mem_set"
 pub fn LLVMBuilderRef::build_mem_set(self: LLVMBuilderRef, ptr: LLVMValueRef, val: LLVMValueRef, len: LLVMValueRef, align: UInt) -> LLVMValueRef {
   llvm_build_mem_set(self, ptr, val, len, align)
 }
 
+///| Creates and inserts a memcpy between the specified pointers.
+/// 
+/// see llvm::IRRBuilder::CreateMemCpy()
 pub extern "C" fn llvm_build_mem_cpy(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "__llvm_build_mem_cpy"
 pub fn LLVMBuilderRef::build_mem_cpy(self: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef {
   llvm_build_mem_cpy(self, dst, dst_align, src, src_align, size)
 }
 
+///| Creates and inserts a memmove between the specified pointers.
+/// 
+/// see llvm::IRRBuilder::CreateMemMove()
 pub extern "C" fn llvm_build_mem_move(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "__llvm_build_mem_move"
 pub fn LLVMBuilderRef::build_mem_move(self: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef {
   llvm_build_mem_move(self, dst, dst_align, src, src_align, size)
@@ -3153,6 +4645,18 @@ pub fn llvm_build_in_bounds_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, point
 pub fn LLVMBuilderRef::build_in_bounds_gep2(self: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, indices: Array[LLVMValueRef], name: String) -> LLVMValueRef {
   llvm_build_in_bounds_gep2(self, ty, pointer, indices, name)
 }
+
+// /**
+//  * Creates a GetElementPtr instruction. Similar to LLVMBuildGEP2, but allows
+//  * specifying the no-wrap flags.
+//  *
+//  * @see llvm::IRBuilder::CreateGEP()
+//  */
+// LLVMValueRef LLVMBuildGEPWithNoWrapFlags(LLVMBuilderRef B, LLVMTypeRef Ty,
+//                                          LLVMValueRef Pointer,
+//                                          LLVMValueRef *Indices,
+//                                          unsigned NumIndices, const char *Name,
+//                                          LLVMGEPNoWrapFlags NoWrapFlags);
 
 extern "C" fn __llvm_build_struct_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, idx: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_struct_gep2"
 pub fn llvm_build_struct_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, idx: UInt, name: String) -> LLVMValueRef {
@@ -3581,18 +5085,40 @@ pub fn llvm_build_atomic_cmp_xchg(builder: LLVMBuilderRef, ptr: LLVMValueRef, cm
   __llvm_build_atomic_cmp_xchg(builder, ptr, cmp, _new, success_ordering, failure_ordering, single_thread)
 }
 
+///| Get the number of elements in the mask of a ShuffleVector instruction.
 pub extern "C" fn llvm_get_num_mask_elements(shuffle_vector_inst: LLVMValueRef) -> UInt = "__llvm_get_num_mask_elements"
 pub fn LLVMValueRef::get_num_mask_elements(self: LLVMValueRef) -> UInt {
   llvm_get_num_mask_elements(self)
 }
 
-// TODO: check if this is correct
+
+// 
+// returns a constant that specifies that the result of a ShuffleVectorInst
+// is undefined.
+// 
 pub extern "C" fn llvm_get_undef_mask_elem() -> Int = "__llvm_get_undef_mask_elem"
 
+
+// Get the mask value at position Elt in the mask of a ShuffleVector
+// instruction.
+// 
+// Returns the result of LLVMGetUndefMaskElem() if the mask value is
+// poison at that position.
 pub extern "C" fn llvm_get_mask_value(shuffle_vector_inst: LLVMValueRef, elt: UInt) -> Int = "__llvm_get_mask_value"
 pub fn LLVMValueRef::get_mask_value(self: LLVMValueRef, elt: UInt) -> Int {
   llvm_get_mask_value(self, elt)
 }
+
+///| Returns whether an instruction is an atomic instruction.
+///
+/// Returns whether an instruction is an atomic instruction, e.g., atomicrmw,
+/// cmpxchg, fence, or loads and stores with atomic ordering.
+extern "C" fn __llvm_is_atomic(inst: LLVMValueRef) -> LLVMBool = "__llvm_is_atomic"
+pub fn llvm_is_atomic(inst: LLVMValueRef) -> Bool {
+  __llvm_is_atomic(inst).to_moonbit_bool()
+}
+
+
 
 pub extern "C" fn llvm_is_atomic_single_thread(atomic_inst: LLVMValueRef) -> LLVMBool = "__llvm_is_atomic_single_thread"
 pub fn LLVMValueRef::is_atomic_single_thread(self: LLVMValueRef) -> Bool {
@@ -3634,8 +5160,12 @@ pub fn llvm_set_cmp_xchg_failure_ordering(cmp_xchg_inst: LLVMValueRef, ordering:
   __llvm_set_cmp_xchg_failure_ordering(cmp_xchg_inst, idx)
 }
 
+/// Changes the type of M so it can be passed to FunctionPassManagers and the
+/// JIT.  They take ModuleProviders for historical reasons.
 pub extern "C" fn llvm_create_module_provider_for_existing_module(m: LLVMModuleRef) -> LLVMModuleProviderRef = "__llvm_create_module_provider_for_existing_module"
 
+
+///| Destroys the module M.
 pub extern "C" fn llvm_dispose_module_provider(m: LLVMModuleProviderRef) = "__llvm_dispose_module_provider"
 
 extern "C" fn __llvm_create_memory_buffer_with_contents_of_file(path: CStr, out_mem_buf: LLVMMemoryBufferRef, out_message: CStr) -> LLVMBool = "__llvm_create_memory_buffer_with_contents_of_file"
@@ -3673,53 +5203,104 @@ pub fn LLVMMemoryBufferRef::dispose_memory_buffer(self: LLVMMemoryBufferRef) -> 
   llvm_dispose_memory_buffer(self)
 }
 
+///| Constructs a new whole-module pass pipeline.
+///
+/// This type of pipeline is suitable for link-time optimization
+/// and whole-module transformations.
+///
+/// see llvm::PassManager::PassManager
 pub extern "C" fn llvm_create_pass_manager() -> LLVMPassManagerRef = "__llvm_create_pass_manager"
 pub fn LLVMPassManagerRef::create() -> LLVMPassManagerRef {
   llvm_create_pass_manager()
 }
 
+///| Constructs a new function-by-function pass pipeline over the module
+///
+/// Constructs a new function-by-function pass pipeline over the module
+/// provider. It does not take ownership of the module provider. This type of
+/// pipeline is suitable for code generation and JIT compilation tasks.
+///
+/// see llvm::FunctionPassManager::FunctionPassManager
 pub extern "C" fn llvm_create_function_pass_manager_for_module(m: LLVMModuleRef) -> LLVMPassManagerRef = "__llvm_create_function_pass_manager_for_module"
 pub fn LLVMModuleRef::create_function_pass_manager(self: LLVMModuleRef) -> LLVMPassManagerRef {
   llvm_create_function_pass_manager_for_module(self)
 }
 
-pub extern "C" fn llvm_create_function_pass_manager(mp: LLVMModuleProviderRef) -> LLVMPassManagerRef = "__llvm_create_function_pass_manager"
-pub fn LLVMModuleProviderRef::create_function_pass_manager(self: LLVMModuleProviderRef) -> LLVMPassManagerRef {
-  llvm_create_function_pass_manager(self)
-}
+// Deprecated
+// pub extern "C" fn llvm_create_function_pass_manager(mp: LLVMModuleProviderRef) -> LLVMPassManagerRef = "__llvm_create_function_pass_manager"
+// pub fn LLVMModuleProviderRef::create_function_pass_manager(self: LLVMModuleProviderRef) -> LLVMPassManagerRef {
+//   llvm_create_function_pass_manager(self)
+// }
 
+///| Run the pass manager.
+///
+/// Initializes, executes on the provided module, and finalizes all of the
+/// passes scheduled in the pass manager. Returns 1 if any of the passes
+/// modified the module, 0 otherwise.
+///
+/// see llvm::PassManager::run(Module&)
 pub extern "C" fn llvm_run_pass_manager(pm: LLVMPassManagerRef, m: LLVMModuleRef) -> LLVMBool = "__llvm_run_pass_manager"
 pub fn LLVMPassManagerRef::run(self: LLVMPassManagerRef, m: LLVMModuleRef) -> Bool {
   llvm_run_pass_manager(self, m).to_moonbit_bool()
 }
 
+///| Initialize a function pass manager.
+///
+///  Initializes all of the function passes scheduled in the function pass
+///  manager. Returns 1 if any of the passes modified the module, 0 otherwise.
+///
+///  see llvm::FunctionPassManager::doInitialization.
 pub extern "C" fn llvm_initialize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "__llvm_initialize_function_pass_manager"
 pub fn LLVMPassManagerRef::initialize_function_pass_manager(self: LLVMPassManagerRef) -> Bool {
   llvm_initialize_function_pass_manager(self).to_moonbit_bool()
 }
 
+///| Run the function pass manager on a given function.
+///
+/// Executes all of the function passes scheduled in the function pass manager
+/// on the provided function. Returns 1 if any of the passes modified the
+/// function, false otherwise.
+///
+/// see llvm::FunctionPassManager::run(Function&)
 pub extern "C" fn llvm_run_function_pass_manager(fpm: LLVMPassManagerRef, f: LLVMValueRef) -> LLVMBool = "__llvm_run_function_pass_manager"
 pub fn LLVMPassManagerRef::run_function_pass_manager(self: LLVMPassManagerRef, f: LLVMValueRef) -> Bool {
   llvm_run_function_pass_manager(self, f).to_moonbit_bool()
 }
 
+///| Finalizes all of the function passes scheduled in the function pass manager.
+///
+/// Returns 1 if any of the passes modified the module, 0 otherwise.
+///
+/// see llvm::FunctionPassManager::doFinalization.
 pub extern "C" fn llvm_finalize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "__llvm_finalize_function_pass_manager"
 pub fn LLVMPassManagerRef::finalize_function_pass_manager(self: LLVMPassManagerRef) -> Bool {
   llvm_finalize_function_pass_manager(self).to_moonbit_bool()
 }
 
+
+///| Frees the memory of a pass pipeline.
+///
+/// Frees the memory of a pass pipeline. For function pipelines, does not free
+/// the module provider.
+///
+/// see llvm::PassManagerBase::~PassManagerBase.
 pub extern "C" fn llvm_dispose_pass_manager(pm: LLVMPassManagerRef) = "__llvm_dispose_pass_manager"
 pub fn LLVMPassManagerRef::dispose_pass_manager(self: LLVMPassManagerRef) -> Unit {
   llvm_dispose_pass_manager(self)
 }
 
-extern "C" fn __llvm_start_multithreaded() -> LLVMBool = "__llvm_start_multithreaded"
-pub fn llvm_start_multithreaded() -> Bool {
-  __llvm_start_multithreaded().to_moonbit_bool()
-}
+// Deprecated
+// extern "C" fn __llvm_start_multithreaded() -> LLVMBool = "__llvm_start_multithreaded"
+// pub fn llvm_start_multithreaded() -> Bool {
+//   __llvm_start_multithreaded().to_moonbit_bool()
+// }
 
-pub extern "C" fn llvm_stop_multithreaded() = "__llvm_stop_multithreaded"
+// Deprecated
+// pub extern "C" fn llvm_stop_multithreaded() = "__llvm_stop_multithreaded"
 
+///| Check whether LLVM is executing in thread-safe mode or not.
+///
+/// see llvm::llvm_is_multithreaded.
 extern "C" fn __llvm_is_multithreaded() -> LLVMBool = "__llvm_is_multithreaded"
 pub fn llvm_is_multithreaded() -> Bool {
   __llvm_is_multithreaded().to_moonbit_bool()

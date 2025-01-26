@@ -126,8 +126,7 @@ pub fn append_basic_block(
 ) -> BasicBlock {
   let ctx_ref = self.as_context_ref()
   let fn_val_ref = function.as_value_ref()
-  let cname = moonbit_str_to_c_str(name)
   
-  let bb_ref = llvm_append_basic_block_in_context(ctx_ref, fn_val_ref, cname)
+  let bb_ref = llvm_append_basic_block_in_context(ctx_ref, fn_val_ref, name)
   BasicBlock::new(bb_ref).unwrap()
 }
