@@ -1,11 +1,11 @@
 // extern types
 type CStr
 type LLVMBool Int derive(Eq)
-type LLVMAttributeIndex UInt derive(Eq)
-type LLVMFastMathFlags UInt derive(Eq)
+pub type LLVMAttributeIndex UInt derive(Eq)
+pub type LLVMFastMathFlags UInt derive(Eq)
 
-type AddressSpace UInt derive(Eq)
-type FastMathFlags UInt derive(Eq)
+pub type AddressSpace UInt derive(Eq)
+pub type FastMathFlags UInt derive(Eq)
 
 // Dummpy function, only for eliminate warning
 // FIXME: Remove this function
@@ -23,30 +23,61 @@ pub fn FastMathFlags::to_llvm(self: FastMathFlags) -> LLVMFastMathFlags {
   LLVMFastMathFlags(f)
 }
 
-type LLVMMemoryBufferRef
-type LLVMContextRef
-type LLVMModuleRef
-type LLVMBasicBlockRef
-type LLVMMetadataRef
-type LLVMNamedMDNodeRef
-// type LLVMValueMetadataEntry
-type LLVMBuilderRef
-// type LLVMDIBuilderRef
-type LLVMModuleProviderRef
-type LLVMPassManagerRef
-type LLVMUseRef
-type LLVMValueRef
-type LLVMTypeRef
-type LLVMOperandBundleRef
-type LLVMAttributeRef
-type LLVMDiagnosticInfoRef
-// type LLVMComdatRef
-// type LLVMModuleFlagEntry
-// type LLVMJITEventListenerRef
-// type LLVMBinaryRef
-type LLVMDbgRecordRef
+///| llvm memory buffer
+pub type LLVMMemoryBufferRef
 
+///| llvm context
+pub type LLVMContextRef
 
+///| llvm module
+pub type LLVMModuleRef
+
+///| llvm BasicBlock
+pub type LLVMBasicBlockRef
+
+///| llvm metadata
+pub type LLVMMetadataRef
+
+///| llvm md node
+pub type LLVMNamedMDNodeRef
+// pub type LLVMValueMetadataEntry
+
+///| llvm builder
+pub type LLVMBuilderRef
+// pub type LLVMDIBuilderRef
+
+///| llvm module provider
+pub type LLVMModuleProviderRef
+
+///| llvm pass manager
+pub type LLVMPassManagerRef
+
+///| llvm use
+pub type LLVMUseRef
+
+///| llvm values
+pub type LLVMValueRef
+
+///| llvm types
+pub type LLVMTypeRef
+
+///| llvm operand bundles
+pub type LLVMOperandBundleRef
+
+///| llvm attributes
+pub type LLVMAttributeRef
+
+///| llvm diagnostic info
+pub type LLVMDiagnosticInfoRef
+// pub type LLVMComdatRef
+// pub type LLVMModuleFlagEntry
+// pub type LLVMJITEventListenerRef
+// pub type LLVMBinaryRef
+
+///| llvm debug record refs
+pub type LLVMDbgRecordRef
+
+///| Instruction opcodes
 pub enum LLVMOpcode {
   LLVMRet
   LLVMBr
