@@ -42,8 +42,8 @@ pub fn Value::set_name(self: Value, name: String) -> Unit {
 
 // TODO: This API use `LLVMGetValueName2` possibly problematic
 pub fn Value::get_name(self: Value) -> String {
-  let c_str = llvm_get_value_name(self.as_value_ref())
-  c_str_to_moonbit_str(c_str)
+  self.as_value_ref().get_name()
+
 }
 
 fn Value::is_undef(self: Value) -> Bool {
