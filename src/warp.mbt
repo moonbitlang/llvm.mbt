@@ -2088,7 +2088,7 @@ pub extern "C" fn llvm_type_of(val: LLVMValueRef) -> LLVMTypeRef = "__llvm_type_
 ///| Obtain the type of a value.
 /// 
 /// - see llvm::Value::getType()
-pub fn LLVMValueRef::type_of(self: LLVMValueRef) -> LLVMTypeRef {
+pub fn LLVMValueRef::get_type(self: LLVMValueRef) -> LLVMTypeRef {
   llvm_type_of(self)
 }
 

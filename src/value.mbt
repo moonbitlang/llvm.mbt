@@ -5,7 +5,7 @@ pub struct Value {
   value_ref: LLVMValueRef
 }
 
-trait ValueRef {
+trait AsValueRef {
   as_value_ref(Self) -> LLVMValueRef;
 }
 
@@ -20,7 +20,7 @@ pub fn Value::new(value_ref: LLVMValueRef) -> Value {
   }
 }
 
-impl ValueRef for Value with as_value_ref(self: Value) -> LLVMValueRef {
+impl AsValueRef for Value with as_value_ref(self: Value) -> LLVMValueRef {
   self.value_ref
 }
 
@@ -99,8 +99,20 @@ pub fn IntValue::new(value_ref: LLVMValueRef) -> IntValue {
   }
 }
 
-pub impl ValueRef for IntValue with as_value_ref(self: IntValue) -> LLVMValueRef {
+pub impl AsValueRef for IntValue with as_value_ref(self: IntValue) -> LLVMValueRef {
   self.value.as_value_ref()
+}
+
+pub impl AnyValue for IntValue with as_any_value_enum(self: IntValue) -> AnyValueEnum {
+  AnyValueEnum::IntValue(self)
+}
+
+pub impl BasicValue for IntValue with as_basic_value_enum(self: IntValue) -> BasicValueEnum {
+  BasicValueEnum::IntValue(self)
+}
+
+pub impl BasicMetadataValue for IntValue with as_basic_metadata_value_enum(self: IntValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::IntValue(self)
 }
 
 pub fn IntValue::get_name(self: IntValue) -> String {
@@ -266,6 +278,22 @@ pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
   }
 }
 
+pub impl AsValueRef for FloatValue with as_value_ref(self: FloatValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl AnyValue for FloatValue with as_any_value_enum(self: FloatValue) -> AnyValueEnum {
+  AnyValueEnum::FloatValue(self)
+}
+
+pub impl BasicValue for FloatValue with as_basic_value_enum(self: FloatValue) -> BasicValueEnum {
+  BasicValueEnum::FloatValue(self)
+}
+
+pub impl BasicMetadataValue for FloatValue with as_basic_metadata_value_enum(self: FloatValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::FloatValue(self)
+}
+
 pub fn FloatValue::get_name(self: FloatValue) -> String {
   self.value.get_name()
 }
@@ -329,8 +357,20 @@ pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
   }
 }
 
-pub impl ValueRef for PointerValue with as_value_ref(self: PointerValue) -> LLVMValueRef {
+pub impl AsValueRef for PointerValue with as_value_ref(self: PointerValue) -> LLVMValueRef {
   self.value.as_value_ref()
+}
+
+pub impl AnyValue for PointerValue with as_any_value_enum(self: PointerValue) -> AnyValueEnum {
+  AnyValueEnum::PointerValue(self)
+}
+
+pub impl BasicValue for PointerValue with as_basic_value_enum(self: PointerValue) -> BasicValueEnum {
+  BasicValueEnum::PointerValue(self)
+}
+
+pub impl BasicMetadataValue for PointerValue with as_basic_metadata_value_enum(self: PointerValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::PointerValue(self)
 }
 
 pub fn PointerValue::get_name(self: PointerValue) -> String {
@@ -396,8 +436,12 @@ pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
   }
 }
 
-pub impl ValueRef for InstructionValue with as_value_ref(self: InstructionValue) -> LLVMValueRef {
+pub impl AsValueRef for InstructionValue with as_value_ref(self: InstructionValue) -> LLVMValueRef {
   self.value.as_value_ref()
+}
+
+pub impl AnyValue for InstructionValue with as_any_value_enum(self: InstructionValue) -> AnyValueEnum {
+  AnyValueEnum::InstructionValue(self)
 }
 
 pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
@@ -691,8 +735,20 @@ pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
   }
 }
 
-pub impl ValueRef for StructValue with as_value_ref(self: StructValue) -> LLVMValueRef {
+pub impl AsValueRef for StructValue with as_value_ref(self: StructValue) -> LLVMValueRef {
   self.value.as_value_ref()
+}
+
+pub impl AnyValue for StructValue with as_any_value_enum(self: StructValue) -> AnyValueEnum {
+  AnyValueEnum::StructValue(self)
+}
+
+pub impl BasicValue for StructValue with as_basic_value_enum(self: StructValue) -> BasicValueEnum {
+  BasicValueEnum::StructValue(self)
+}
+
+pub impl BasicMetadataValue for StructValue with as_basic_metadata_value_enum(self: StructValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::StructValue(self)
 }
 
 // pub fn StructValue::get_field_at_index(self: StructValue, index: Int) -> BasicValueEnum? {
@@ -767,7 +823,7 @@ pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue? {
   Some(fv)
 }
 
-impl ValueRef for FunctionValue with as_value_ref(
+impl AsValueRef for FunctionValue with as_value_ref(
   self: FunctionValue
 ) -> LLVMValueRef {
   self.value.as_value_ref()

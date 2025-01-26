@@ -5,7 +5,7 @@ pub struct Type {
   type_ref: LLVMTypeRef
 }
 
-trait TypeRef {
+trait AsTypeRef {
   as_type_ref(Self) -> LLVMTypeRef
 }
 
@@ -20,7 +20,7 @@ pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
   }
 }
 
-pub impl TypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
+pub impl AsTypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
@@ -96,7 +96,7 @@ pub struct IntType {
   ty: Type
 }
 
-pub impl TypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
+pub impl AsTypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
@@ -188,7 +188,7 @@ pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
   }
 }
 
-pub impl TypeRef for FloatType with as_type_ref(
+pub impl AsTypeRef for FloatType with as_type_ref(
   self: FloatType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
@@ -266,7 +266,7 @@ pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
   }
 }
 
-pub impl TypeRef for VoidType with as_type_ref(
+pub impl AsTypeRef for VoidType with as_type_ref(
   self: VoidType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
@@ -312,7 +312,7 @@ pub fn PointerType::new(type_ref: LLVMTypeRef) -> PointerType {
   }
 }
 
-pub impl TypeRef for PointerType with as_type_ref(
+pub impl AsTypeRef for PointerType with as_type_ref(
   self: PointerType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
@@ -393,7 +393,7 @@ pub fn StructType::new(type_ref: LLVMTypeRef) -> StructType {
   }
 }
 
-pub impl TypeRef for StructType with as_type_ref(
+pub impl AsTypeRef for StructType with as_type_ref(
   self: StructType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
@@ -435,7 +435,7 @@ pub struct FunctionType {
   ty: Type
 }
 
-pub impl TypeRef for FunctionType with as_type_ref(
+pub impl AsTypeRef for FunctionType with as_type_ref(
   self: FunctionType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
@@ -459,4 +459,80 @@ pub fn FunctionType::dump(self: FunctionType) -> Unit {
 
 pub impl Show for FunctionType with output(self: FunctionType, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+// ===========================================
+// ArrayType
+// ===========================================
+pub struct ArrayType {
+  ty: Type
+}
+
+pub fn ArrayType::new(type_ref: LLVMTypeRef) -> ArrayType {
+  assert_not(type_ref.is_null())
+
+  ArrayType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl AsTypeRef for ArrayType with as_type_ref(
+  self: ArrayType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub fn ArrayType::get_alignment(self: ArrayType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn ArrayType::get_context(self: ArrayType) -> Context {
+  self.ty.get_context()
+}
+
+// ===========================================
+// VectorType
+// ===========================================
+pub struct VectorType {
+  ty: Type
+}
+
+pub fn VectorType::new(type_ref: LLVMTypeRef) -> VectorType {
+  assert_not(type_ref.is_null())
+
+  VectorType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl AsTypeRef for VectorType with as_type_ref(
+  self: VectorType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub fn VectorType::size_of(self: VectorType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub fn VectorType::get_alignment(self: VectorType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn VectorType::get_size(self: VectorType) -> UInt {
+  llvm_get_vector_size(self.as_type_ref())
+}
+
+// pub fn VectorType::const_vector
+
+// pub fn VectorType::const_zero(self: VectorType) -> VectorValue {
+//   VectorValue::new(llvm_const_zero(self.as_type_ref()))
+// }
+
+pub fn VectorType::get_context(self: VectorType) -> Context {
+  self.ty.get_context()
 }

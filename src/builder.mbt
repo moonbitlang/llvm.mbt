@@ -13,7 +13,7 @@ fn as_builder_ref(self: Builder) -> LLVMBuilderRef {
   self.builder_ref
 }
 
-pub fn build_return[T: ValueRef](self: Builder, val~:T?=None) -> Unit {
+pub fn build_return(self: Builder, val~:&BasicValue? = None) -> Unit {
   let builder_ref = self.as_builder_ref()
   match val {
     Some(val) => {
