@@ -24,8 +24,17 @@ impl AsValueRef for Value with as_value_ref(self: Value) -> LLVMValueRef {
   self.value_ref
 }
 
-// pub fn Value::is_instruction(self: Value) -> Bool;
-// pub fn Value::as_instruction(self: Value) -> InstructionValue;
+pub fn Value::is_instruction(self: Value) -> Bool {
+  llvm_isa_instruction(self.as_value_ref()).is_null()
+}
+
+pub fn Value::as_instruction(self: Value) -> InstructionValue? {
+  if not(self.is_instruction()) {
+    return None
+  }
+
+  Some(InstructionValue::new(self.as_value_ref()))
+}
 
 pub fn Value::is_null(self: Value) -> Bool {
   llvm_is_null(self.as_value_ref()) == 1
@@ -71,6 +80,14 @@ pub fn Value::get_first_use(self: Value) -> BasicValueUse? {
 
 // pub fn get_section(self: Value) -> String?
 // pub fn set_section(self: Value) -> String?
+
+pub fn Value::print_to_stderr(self: Value) -> Unit {
+  llvm_dump_value(self.as_value_ref())
+}
+
+pub fn Value::print_to_string(self: Value) -> String {
+  llvm_print_value_to_string(self.as_value_ref())
+}
 
 pub fn Value::to_string(self: Value) -> String {
   llvm_print_value_to_string(self.as_value_ref())
@@ -251,6 +268,14 @@ pub fn IntValue::replace_all_uses_with(self: IntValue, new_value: IntValue) -> U
   self.value.replace_all_uses_with(new_value.value)
 }
 
+pub fn IntValue::print_to_stderr(self: IntValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn IntValue::print_to_string(self: IntValue) -> String {
+  self.value.print_to_string()
+}
+
 pub fn IntValue::to_string(self: IntValue) -> String {
   self.value.to_string()
 }
@@ -328,6 +353,14 @@ pub fn FloatValue::is_const(self: FloatValue) -> Bool {
 
 pub fn FloatValue::replace_all_uses_with(self: FloatValue, new_value: FloatValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn FloatValue::print_to_stderr(self: FloatValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn FloatValue::print_to_string(self: FloatValue) -> String {
+  self.value.print_to_string()
 }
 
 pub fn FloatValue::to_string(self: FloatValue) -> String {
@@ -417,8 +450,24 @@ pub fn PointerValue::replace_all_uses_with(self: PointerValue, new_value: Pointe
   self.value.replace_all_uses_with(new_value.value)
 }
 
+pub fn PointerValue::print_to_stderr(self: PointerValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn PointerValue::print_to_string(self: PointerValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn PointerValue::to_string(self: PointerValue) -> String {
+  self.value.to_string()
+}
+
 pub fn PointerValue::dump(self: PointerValue) -> Unit {
   self.value.dump()
+}
+
+pub impl Show for PointerValue with output(self: PointerValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 // ============================================
@@ -708,6 +757,14 @@ pub fn InstructionValue::is_const(self: InstructionValue) -> Bool {
   self.value.is_const()
 }
 
+pub fn InstructionValue::print_to_stderr(self: InstructionValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn InstructionValue::print_to_string(self: InstructionValue) -> String {
+  self.value.print_to_string()
+}
+
 pub fn InstructionValue::to_string(self: InstructionValue) -> String {
   self.value.to_string()
 }
@@ -793,6 +850,15 @@ pub fn StructValue::is_const(self: StructValue) -> Bool {
   self.value.is_const()
 }
 
+
+pub fn StructValue::print_to_stderr(self: StructValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn StructValue::print_to_string(self: StructValue) -> String {
+  self.value.print_to_string()
+}
+
 pub fn StructValue::to_string(self: StructValue) -> String {
   self.value.to_string()
 }
@@ -829,8 +895,32 @@ impl AsValueRef for FunctionValue with as_value_ref(
   self.value.as_value_ref()
 }
 
+pub fn FunctionValue::get_name(self: FunctionValue) -> String {
+  self.value.get_name()
+}
+
 pub fn FunctionValue::set_name(self: FunctionValue, name: String) -> Unit {
   self.value.set_name(name)
+}
+
+pub fn FunctionValue::get_type(self: FunctionValue) -> FunctionType {
+  FunctionType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn FunctionValue::is_null(self: FunctionValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn FunctionValue::is_undef(self: FunctionValue) -> Bool {
+  self.value.is_undef()
+}
+
+pub fn FunctionValue::print_to_stderr(self: FunctionValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn FunctionValue::print_to_string(self: FunctionValue) -> String {
+  self.value.print_to_string()
 }
 
 pub fn FunctionValue::to_string(self: FunctionValue) -> String {
@@ -842,5 +932,419 @@ pub fn FunctionValue::dump(self: FunctionValue) -> Unit {
 }
 
 pub impl Show for FunctionValue with output(self: FunctionValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// ArrayValue
+// ============================================
+pub struct ArrayValue {
+  value: Value
+}
+
+pub fn ArrayValue::new(value_ref: LLVMValueRef) -> ArrayValue {
+  assert_not(value_ref.is_null())
+
+  ArrayValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl AsValueRef for ArrayValue with as_value_ref(self: ArrayValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl AnyValue for ArrayValue with as_any_value_enum(self: ArrayValue) -> AnyValueEnum {
+  AnyValueEnum::ArrayValue(self)
+}
+
+pub impl BasicValue for ArrayValue with as_basic_value_enum(self: ArrayValue) -> BasicValueEnum {
+  BasicValueEnum::ArrayValue(self)
+}
+
+pub impl BasicMetadataValue for ArrayValue with as_basic_metadata_value_enum(self: ArrayValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::ArrayValue(self)
+}
+
+pub fn ArrayValue::get_name(self: ArrayValue) -> String {
+  self.value.get_name()
+}
+
+pub fn ArrayValue::set_name(self: ArrayValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+pub fn ArrayValue::get_type(self: ArrayValue) -> ArrayType {
+  ArrayType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn ArrayValue::is_null(self: ArrayValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn ArrayValue::is_undef(self: ArrayValue) -> Bool {
+  self.value.is_undef()
+}
+
+// pub fn ArrayValue::as_instruction(self: ArrayValue) -> InstructionValue? {
+//   self.as_value_ref().as_instruction()
+// }
+
+pub fn ArrayValue::replace_all_uses_with(self: ArrayValue, new_value: ArrayValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn ArrayValue::is_const(self: ArrayValue) -> Bool {
+  self.value.is_const()
+}
+
+// TODO: Check if it is correct
+pub fn ArrayValue::is_const_string(self: ArrayValue) -> Bool {
+  // llvm_is_constant_string(self.as_value_ref())
+  self.as_value_ref().is_constant_string()
+}
+
+pub fn ArrayValue::print_to_stderr(self: ArrayValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn ArrayValue::print_to_string(self: ArrayValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn ArrayValue::to_string(self: ArrayValue) -> String {
+  self.value.to_string()
+}
+
+pub fn ArrayValue::dump(self: ArrayValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for ArrayValue with output(self: ArrayValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// VectorValue
+// ============================================
+pub struct VectorValue {
+  value: Value
+}
+
+pub fn VectorValue::new(value_ref: LLVMValueRef) -> VectorValue {
+  assert_not(value_ref.is_null())
+
+  VectorValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl AsValueRef for VectorValue with as_value_ref(self: VectorValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl AnyValue for VectorValue with as_any_value_enum(self: VectorValue) -> AnyValueEnum {
+  AnyValueEnum::VectorValue(self)
+}
+
+pub impl BasicValue for VectorValue with as_basic_value_enum(self: VectorValue) -> BasicValueEnum {
+  BasicValueEnum::VectorValue(self)
+}
+
+pub impl BasicMetadataValue for VectorValue with as_basic_metadata_value_enum(self: VectorValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::VectorValue(self)
+}
+
+pub fn VectorValue::is_const(self: VectorValue) -> Bool {
+  self.value.is_const()
+}
+
+pub fn VectorValue::is_constant_vector(self: VectorValue) -> Bool {
+  llvm_isa_constant_vector(self.as_value_ref()).is_null()
+}
+
+pub fn VectorValue::is_constant_data_vector(self: VectorValue) -> Bool {
+  llvm_isa_constant_data_vector(self.as_value_ref()).is_null()
+}
+
+pub fn VectorValue::get_name(self: VectorValue) -> String {
+  self.value.get_name()
+}
+
+pub fn VectorValue::set_name(self: VectorValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+pub fn VectorValue::get_type(self: VectorValue) -> VectorType {
+  VectorType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn VectorValue::is_null(self: VectorValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn VectorValue::is_undef(self: VectorValue) -> Bool {
+  self.value.is_undef()
+}
+
+pub fn VectorValue::as_instruction(self: VectorValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
+
+pub fn VectorValue::replace_all_uses_with(self: VectorValue, new_value: VectorValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn VectorValue::const_shuffle_vector(self: VectorValue, right: VectorValue, mask: VectorValue) -> VectorValue {
+  VectorValue::new(llvm_const_shuffle_vector(self.as_value_ref(), right.as_value_ref(), mask.as_value_ref()))
+}
+
+pub fn VectorValue::print_to_stderr(self: VectorValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn VectorValue::print_to_string(self: VectorValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn VectorValue::to_string(self: VectorValue) -> String {
+  self.value.to_string()
+}
+
+pub fn VectorValue::dump(self: VectorValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for VectorValue with output(self: VectorValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// PhiValue
+// ============================================
+pub struct PhiValue {
+  value: Value
+}
+
+pub fn PhiValue::new(value_ref: LLVMValueRef) -> PhiValue {
+  assert_not(value_ref.is_null())
+
+  PhiValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl AsValueRef for PhiValue with as_value_ref(self: PhiValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl AnyValue for PhiValue with as_any_value_enum(self: PhiValue) -> AnyValueEnum {
+  AnyValueEnum::PhiValue(self)
+}
+
+// TODO: need check, in inkwell, BasicValueEnum is not implemented for PhiValue
+// pub impl BasicValue for PhiValue with as_basic_value_enum(self: PhiValue) -> BasicValueEnum {
+//   BasicValueEnum::PhiValue(self)
+// }
+
+pub fn PhiValue::add_incoming(self: PhiValue, incoming: Array[(&BasicValue, BasicBlock)]) -> Unit {
+  let values = incoming.iter().map(fn (pair) {pair.0.as_value_ref()}).collect()
+  let bbs = incoming.iter().map(fn (pair) {pair.1.as_bb_ref()}).collect()
+  let cnt = incoming.length()
+
+  llvm_add_incoming(self.as_value_ref(), values, bbs, cnt.reinterpret_as_uint())
+}
+
+pub fn PhiValue::count_incoming(self: PhiValue) -> UInt {
+  llvm_count_incoming(self.as_value_ref())
+}
+
+pub fn PhiValue::get_name(self: PhiValue) -> String {
+  self.value.get_name()
+}
+
+pub fn PhiValue::set_name(self: PhiValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+pub fn PhiValue::is_null(self: PhiValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn PhiValue::is_undef(self: PhiValue) -> Bool {
+  self.value.is_undef()
+}
+
+pub fn PhiValue::print_to_stderr(self: PhiValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn PhiValue::print_to_string(self: PhiValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn PhiValue::to_string(self: PhiValue) -> String {
+  self.value.to_string()
+}
+
+pub fn PhiValue::dump(self: PhiValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for PhiValue with output(self: PhiValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// ScalableVectorValue
+// ============================================
+pub struct ScalableVectorValue {
+  value: Value
+}
+
+pub fn ScalableVectorValue::new(value_ref: LLVMValueRef) -> ScalableVectorValue {
+  assert_not(value_ref.is_null())
+
+  ScalableVectorValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl AsValueRef for ScalableVectorValue with as_value_ref(self: ScalableVectorValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl AnyValue for ScalableVectorValue with as_any_value_enum(self: ScalableVectorValue) -> AnyValueEnum {
+  AnyValueEnum::ScalableVectorValue(self)
+}
+
+pub impl BasicValue for ScalableVectorValue with as_basic_value_enum(self: ScalableVectorValue) -> BasicValueEnum {
+  BasicValueEnum::ScalableVectorValue(self)
+}
+
+pub impl BasicMetadataValue for ScalableVectorValue with as_basic_metadata_value_enum(self: ScalableVectorValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::ScalableVectorValue(self)
+}
+
+pub fn ScalableVectorValue::is_const(self: ScalableVectorValue) -> Bool {
+  self.value.is_const()
+}
+
+pub fn ScalableVectorValue::get_name(self: ScalableVectorValue) -> String {
+  self.value.get_name()
+}
+
+pub fn ScalableVectorValue::set_name(self: ScalableVectorValue, name: String) -> Unit {
+  self.value.set_name(name)
+}
+
+pub fn ScalableVectorValue::get_type(self: ScalableVectorValue) -> ScalableVectorType {
+  ScalableVectorType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn ScalableVectorValue::is_null(self: ScalableVectorValue) -> Bool {
+  self.value.is_null()
+}
+
+pub fn ScalableVectorValue::is_undef(self: ScalableVectorValue) -> Bool {
+  self.value.is_undef()
+}
+
+pub fn ScalableVectorValue::as_instruction(self: ScalableVectorValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
+
+// pub fn const_extract_element(self: ScalableVectorValue, index: IntValue) -> BasicValueEnum {
+//   BasicValueEnum::new(llvm_const_extract_element(self.as_value_ref(), index.as_value_ref()))
+// }
+
+// pub fn ScalableVectorValue::const_insert_element(self: ScalableVectorValue, element: BasicValue, index: IntValue) -> BasicValueEnum {
+//   BasicValueEnum::new(llvm_const_insert_element(self.as_value_ref(), element.as_value_ref(), index.as_value_ref()))
+// }
+
+pub fn ScalableVectorValue::replace_all_uses_with(self: ScalableVectorValue, new_value: ScalableVectorValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn ScalableVectorValue::const_shuffle_vector(self: ScalableVectorValue, right: ScalableVectorValue, mask: ScalableVectorValue) -> ScalableVectorValue {
+  ScalableVectorValue::new(llvm_const_shuffle_vector(self.as_value_ref(), right.as_value_ref(), mask.as_value_ref()))
+}
+
+pub fn ScalableVectorValue::print_to_stderr(self: ScalableVectorValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn ScalableVectorValue::print_to_string(self: ScalableVectorValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn ScalableVectorValue::to_string(self: ScalableVectorValue) -> String {
+  self.value.to_string()
+}
+
+pub fn ScalableVectorValue::dump(self: ScalableVectorValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for ScalableVectorValue with output(self: ScalableVectorValue, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// MetadataValue
+// ============================================
+pub struct MetadataValue {
+  value: Value
+}
+
+pub impl AsValueRef for MetadataValue with as_value_ref(self: MetadataValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub impl BasicMetadataValue for MetadataValue with as_basic_metadata_value_enum(self: MetadataValue) -> BasicMetadataValueEnum {
+  BasicMetadataValueEnum::MetadataValue(self)
+}
+
+pub fn MetadataValue::new(value_ref: LLVMValueRef) -> MetadataValue {
+  assert_not(value_ref.is_null())
+  assert_not(llvm_isa_md_node(value_ref).is_null())
+  assert_not(llvm_isa_md_string(value_ref).is_null())
+
+  MetadataValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub fn MetadataValue::as_metadata_ref(self: MetadataValue) -> LLVMMetadataRef {
+  llvm_value_as_metadata(self.as_value_ref())
+}
+
+pub fn MetadataValue::get_name(self: MetadataValue) -> String {
+  self.value.get_name()
+}
+
+// Need more
+
+pub fn MetadataValue::replace_all_uses_with(self: MetadataValue, new_value: MetadataValue) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn MetadataValue::print_to_stderr(self: MetadataValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn MetadataValue::print_to_string(self: MetadataValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn MetadataValue::to_string(self: MetadataValue) -> String {
+  self.value.to_string()
+}
+
+pub fn MetadataValue::dump(self: MetadataValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for MetadataValue with output(self: MetadataValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }

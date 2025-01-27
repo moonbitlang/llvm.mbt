@@ -77,6 +77,14 @@ fn Type::size_of(self: Type) -> IntValue? {
   Some(v)
 }
 
+fn Type::print_to_stderr(self: Type) -> Unit {
+  llvm_dump_type(self.as_type_ref())
+}
+
+fn Type::print_to_string(self: Type) -> String {
+  llvm_print_type_to_string(self.as_type_ref())
+}
+
 fn Type::to_string(self: Type) -> String {
   llvm_print_type_to_string(self.as_type_ref())
 }
@@ -161,6 +169,14 @@ pub fn IntType::get_poison(self: IntType) -> IntValue {
   IntValue::new(self.ty.get_poison())
 }
 
+pub fn IntType::print_to_stderr(self: IntType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn IntType::print_to_string(self: IntType) -> String {
+  self.ty.print_to_string()
+}
+
 pub fn IntType::to_string(self: IntType) -> String {
   self.ty.to_string()
 }
@@ -238,6 +254,14 @@ pub fn get_poison(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())
 }
 
+pub fn FloatType::print_to_stderr(self: FloatType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn FloatType::print_to_string(self: FloatType) -> String {
+  self.ty.print_to_string()
+}
+
 pub fn FloatType::to_string(self: FloatType) -> String {
   self.ty.to_string()
 }
@@ -283,6 +307,18 @@ pub fn VoidType::get_context(self: VoidType) -> Context {
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn VoidType::fn_type(self: VoidType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn VoidType::get_alignment(self: VoidType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn VoidType::print_to_stderr(self: VoidType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn VoidType::print_to_string(self: VoidType) -> String {
+  self.ty.print_to_string()
 }
 
 pub fn VoidType::to_string(self: VoidType) -> String {
@@ -366,6 +402,14 @@ pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
 // pub fn scalable_vec_type(self: PointerType) -> ScalableVectorType
 // pub fn get_element_type(self: PointerType) -> ...
 
+pub fn PointerType::print_to_stderr(self: PointerType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn PointerType::print_to_string(self: PointerType) -> String {
+  self.ty.print_to_string()
+}
+
 pub fn PointerType::to_string(self: PointerType) -> String {
   self.ty.to_string()
 }
@@ -415,6 +459,14 @@ pub fn StructType::get_poison(self: StructType) -> StructValue {
   StructValue::new(llvm_get_poison(self.as_type_ref()))
 }
 
+pub fn StructType::print_to_stderr(self: StructType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn StructType::print_to_string(self: StructType) -> String {
+  self.ty.print_to_string()
+}
+
 pub fn StructType::to_string(self: StructType) -> String {
   self.ty.to_string()
 }
@@ -447,6 +499,14 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   FunctionType::{
     ty: Type::new(type_ref)
   }
+}
+
+pub fn FunctionType::print_to_stderr(self: FunctionType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn FunctionType::print_to_string(self: FunctionType) -> String {
+  self.ty.print_to_string()
 }
 
 pub fn FunctionType::to_string(self: FunctionType) -> String {
@@ -494,6 +554,26 @@ pub fn ArrayType::get_context(self: ArrayType) -> Context {
   self.ty.get_context()
 }
 
+pub fn ArrayType::print_to_stderr(self: ArrayType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn ArrayType::print_to_string(self: ArrayType) -> String {
+  self.ty.print_to_string()
+}
+
+pub fn ArrayType::to_string(self: ArrayType) -> String {
+  self.ty.to_string()
+}
+
+pub fn ArrayType::dump(self: ArrayType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for ArrayType with output(self: ArrayType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 // ===========================================
 // VectorType
 // ===========================================
@@ -535,4 +615,159 @@ pub fn VectorType::get_size(self: VectorType) -> UInt {
 
 pub fn VectorType::get_context(self: VectorType) -> Context {
   self.ty.get_context()
+}
+
+pub fn VectorType::print_to_stderr(self: VectorType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn VectorType::print_to_string(self: VectorType) -> String {
+  self.ty.print_to_string()
+}
+
+pub fn VectorType::to_string(self: VectorType) -> String {
+  self.ty.to_string()
+}
+
+pub fn VectorType::dump(self: VectorType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for VectorType with output(self: VectorType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ===========================================
+// ScalableVectorType
+// ===========================================
+pub struct ScalableVectorType {
+  ty: Type
+}
+
+pub fn ScalableVectorType::new(type_ref: LLVMTypeRef) -> ScalableVectorType {
+  assert_not(type_ref.is_null())
+
+  ScalableVectorType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl AsTypeRef for ScalableVectorType with as_type_ref(
+  self: ScalableVectorType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub fn ScalableVectorType::size_of(self: ScalableVectorType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub fn ScalableVectorType::get_alignment(self: ScalableVectorType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn ScalableVectorType::get_size(self: ScalableVectorType) -> UInt {
+  llvm_get_vector_size(self.as_type_ref())
+}
+
+// pub fn ScalableVectorType::const_zero(self: ScalableVectorType) -> ScalableVectorValue {
+//  ScalableVectorValue::new(self.ty.const_zero())
+// }
+
+// pub fn ScalableVectorType::get_undef(self: ScalableVectorType) -> ScalableVectorValue {
+//   ScalableVectorValue::new(self.ty.get_undef())
+// }
+
+// pub fn ScalableVectorType::get_poison(self: ScalableVectorType) -> ScalableVectorValue {
+//   ScalableVectorValue::new(self.ty.get_poison())
+// }
+
+// pub fn ScalableVectorType::get_element_type(self: ScalableVectorType) -> BasicTypeEnum {
+//   self.ty.get_element_type().as_basic_type_enum()
+// }
+
+// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+pub fn ScalableVectorType::fn_type(self: ScalableVectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+// pub fn ScalableVectorType::array_type(self: ScalableVectorType, size: UInt) -> ArrayType {
+//   self.ty.array_type(size)
+// }
+
+// pub fn ScalableVectorType::const_array(self: ScalableVectorType, values: Array[ScalableVectorValue]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
+
+pub fn ScalableVectorType::get_context(self: ScalableVectorType) -> Context {
+  self.ty.get_context()
+}
+
+pub fn ScalableVectorType::print_to_stderr(self: ScalableVectorType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn ScalableVectorType::print_to_string(self: ScalableVectorType) -> String {
+  self.ty.print_to_string()
+}
+
+pub fn ScalableVectorType::to_string(self: ScalableVectorType) -> String {
+  self.ty.to_string()
+}
+
+pub fn ScalableVectorType::dump(self: ScalableVectorType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for ScalableVectorType with output(self: ScalableVectorType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ===========================================
+// MeteadataType
+// ===========================================
+pub struct MetadataType {
+  ty: Type
+}
+
+pub fn MetadataType::new(type_ref: LLVMTypeRef) -> MetadataType {
+  assert_not(type_ref.is_null())
+
+  MetadataType::{
+    ty: Type::new(type_ref)
+  }
+}
+
+pub impl AsTypeRef for MetadataType with as_type_ref(
+  self: MetadataType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub fn MetadataType::fn_type(self: MetadataType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn MetadataType::get_context(self: MetadataType) -> Context {
+  self.ty.get_context()
+}
+
+pub fn MetadataType::print_to_stderr(self: MetadataType) -> Unit {
+  self.ty.print_to_stderr()
+}
+
+pub fn MetadataType::print_to_string(self: MetadataType) -> String {
+  self.ty.print_to_string()
+}
+
+pub fn MetadataType::to_string(self: MetadataType) -> String {
+  self.ty.to_string()
+}
+
+pub fn MetadataType::dump(self: MetadataType) -> Unit {
+  self.ty.dump()
+}
+
+pub impl Show for MetadataType with output(self: MetadataType, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
