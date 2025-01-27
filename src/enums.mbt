@@ -508,7 +508,7 @@ pub fn BasicMetadataValueEnum::to_string(self: BasicMetadataValueEnum) -> String
 // AnyType
 //=========================================================
 
-trait AnyType : AsTypeRef {
+pub trait AnyType : AsTypeRef {
   as_any_type_enum(Self) -> AnyTypeEnum;
 }
 
@@ -528,21 +528,22 @@ pub enum AnyTypeEnum {
 pub fn AnyTypeEnum::new(type_ref: LLVMTypeRef) -> AnyTypeEnum {
   let kind : LLVMTypeKind = llvm_get_type_kind(type_ref);
   match kind {
-    LLVMVoidTypeKind => AnyTypeEnum::VoidType(VoidType::new(type_ref))
+    LLVMVoidTypeKind =>VoidType(VoidType::new(type_ref))
     LLVMHalfTypeKind | 
     LLVMFloatTypeKind | 
     LLVMDoubleTypeKind | 
     LLVMX86_FP80TypeKind |
     LLVMFP128TypeKind |
-    LLVMPPC_FP128TypeKind => AnyTypeEnum::FloatType(FloatType::new(type_ref))
-    LLVMIntegerTypeKind => AnyTypeEnum::IntType(IntType::new(type_ref))
-    LLVMFunctionTypeKind => AnyTypeEnum::FunctionType(FunctionType::new(type_ref))
-    LLVMStructTypeKind => AnyTypeEnum::StructType(StructType::new(type_ref))
-    LLVMArrayTypeKind => AnyTypeEnum::ArrayType(ArrayType::new(type_ref))
-    LLVMVectorTypeKind => AnyTypeEnum::VectorType(VectorType::new(type_ref))
-    LLVMPointerTypeKind => AnyTypeEnum::PointerType(PointerType::new(type_ref))
+    LLVMPPC_FP128TypeKind => FloatType(FloatType::new(type_ref))
+    LLVMIntegerTypeKind => IntType(IntType::new(type_ref))
+    LLVMFunctionTypeKind => FunctionType(FunctionType::new(type_ref))
+    LLVMStructTypeKind => StructType(StructType::new(type_ref))
+    LLVMArrayTypeKind => ArrayType(ArrayType::new(type_ref))
+    LLVMVectorTypeKind => VectorType(VectorType::new(type_ref))
+    LLVMScalableVectorTypeKind => ScalableVectorType(ScalableVectorType::new(type_ref))
+    LLVMPointerTypeKind => PointerType(PointerType::new(type_ref))
     _ => {
-      abort("Unsupported type kind");
+      abort("Unsupported type kind \{kind}");
     }
   }
 }
@@ -704,7 +705,7 @@ pub fn AnyTypeEnum::to_string(self: AnyTypeEnum) -> String {
 // BasicType
 //=========================================================
 
-trait BasicType : AnyType {
+pub trait BasicType : AnyType {
   as_basic_type_enum(Self) -> BasicTypeEnum;
 }
 
@@ -755,6 +756,10 @@ impl AsTypeRef for BasicTypeEnum with as_type_ref(self: BasicTypeEnum) -> LLVMTy
 // BasicMetadataType
 //=========================================================
 
+pub trait BasicMetadataType {
+  as_basic_metadata_type_enum(Self) -> BasicMetadataTypeEnum;
+}
+
 pub enum BasicMetadataTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
@@ -787,3 +792,12 @@ pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnu
     }
   }
 }
+
+
+// pub enum StringRadix {
+//   Binary;
+//   Octal;
+//   Decimal;
+//   Hexadecimal;
+//   Alphabetic;
+// }

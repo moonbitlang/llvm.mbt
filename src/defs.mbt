@@ -315,7 +315,7 @@ pub enum LLVMTypeKind {
   LLVMBFloatTypeKind
   LLVMX86_AMXTypeKind
   LLVMTargetExtTypeKind
-}
+} derive(Show, Eq)
 
 fn LLVMTypeKind::to_int(self: LLVMTypeKind) -> Int {
   match self {

@@ -24,13 +24,40 @@ pub impl AsTypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
+
+pub fn Type::const_zero(self: Type) -> LLVMValueRef {
+  let val_ref = self.type_ref
+  let k = llvm_get_type_kind(val_ref)
+  match k {
+    LLVMMetadataTypeKind => llvm_const_pointer_null(val_ref)
+    _ => llvm_const_null(val_ref)
+  }
+}
+
 pub fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
-// pub fn vec_type(self: Type, size: UInt) -> VectorType;
+pub fn vec_type(self: Type, size: UInt) -> VectorType {
+  if size == 0 {
+    abort("Vector size must be greater than 0")
+  }
 
-// pub fn scalable_vec_type(self: Type) -> ScalableVectorType;
+  // let r = llvm_vector_type(self.as_type_ref(), size)
+  let r = self.as_type_ref().vector_type(size)
+  VectorType::new(r)
+}
+
+pub fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
+  if size == 0 {
+    abort("Vector size must be greater than 0")
+  }
+
+  // let r = llvm_scalable_vector_type(self.as_type_ref(), size)
+  let r = self.as_type_ref().scalable_vector_type(size)
+  ScalableVectorType::new(r)
+
+}
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn Type::fn_type(
@@ -45,7 +72,11 @@ pub fn Type::fn_type(
   FunctionType::new(fty_ref)
 }
 
-// pub fn array_type(self: Type, size: UInt) -> ArrayType;
+// REVIEW: Why not check size is zero?
+pub fn array_type(self: Type, size: UInt) -> ArrayType {
+  let r = llvm_array_type(self.as_type_ref(), size)
+  ArrayType::new(r)
+}
 
 fn Type::get_undef(self: Type) -> LLVMValueRef {
   llvm_get_undef(self.as_type_ref())
@@ -75,6 +106,11 @@ fn Type::size_of(self: Type) -> IntValue? {
 
   let v = IntValue::new(llvm_size_of(self.as_type_ref()))
   Some(v)
+}
+
+pub fn Type::get_element_type(self: Type) -> AnyTypeEnum {
+  let element_type_ref = self.as_type_ref().get_element_type()
+  AnyTypeEnum::new(element_type_ref)
 }
 
 fn Type::print_to_stderr(self: Type) -> Unit {
@@ -108,6 +144,18 @@ pub impl AsTypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for IntType with as_any_type_enum(self: IntType) -> AnyTypeEnum {
+  AnyTypeEnum::IntType(self)
+}
+
+pub impl BasicType for IntType with as_basic_type_enum(self: IntType) -> BasicTypeEnum {
+  BasicTypeEnum::IntType(self)
+}
+
+pub impl BasicMetadataType for IntType with as_basic_metadata_type_enum(self: IntType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::IntType(self)
+}
+
 pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   assert_not(type_ref.is_null())
 
@@ -116,20 +164,28 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   }
 }
 
+// TODO: Maybe better explain signextension
+pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
+  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, sign_extend)
+  IntValue::new(llvm_val_ref)
+}
+
+// pub fn IntType::const_int_from_string(self: IntType, slice: String, radix: StringRaidx) -> IntValue? {
+//
+// }
+
+pub fn IntType::const_int_of_arbitrary_precision(self: IntType, words: Array[UInt64]) -> IntValue {
+  let llvm_val_ref = llvm_const_int_of_arbitrary_precision(self.as_type_ref(), words)
+  IntValue::new(llvm_val_ref)
+}
+
 pub fn IntType::const_all_ones(self: IntType) -> IntValue {
   let llvm_val_ref = llvm_const_all_ones(self.as_type_ref())
   IntValue::new(llvm_val_ref)
 }
 
-// pub fn const_zero(self: IntType) -> IntValue {
-//   let llvm_val_ref = llvm_const_zero(self.as_type_ref())
-//   IntValue::new(llvm_val_ref)
-// }
-
-// TODO: Maybe better explain signextension
-pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
-  let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, sign_extend)
-  IntValue::new(llvm_val_ref)
+pub fn const_zero(self: IntType) -> IntValue {
+  IntValue::new(self.ty.const_zero())
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
@@ -137,9 +193,17 @@ pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_a
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-// pub fn array_type(self: IntType, size: UInt) -> ArrayType;
-// pub fn vec_type(self: IntType, size: UInt) -> VectorType;
-// pub fn scalable_vec_type(self: IntType) -> ScalableVectorType;
+pub fn IntType::array_type(self: IntType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub fn IntType::vec_type(self: IntType, size: UInt) -> VectorType {
+  self.ty.vec_type(size)
+}
+
+pub fn IntType::scalable_vec_type(self: IntType, size: UInt) -> ScalableVectorType {
+  self.ty.scalable_vec_type(size)
+}
 
 pub fn IntType::get_context(self: IntType) -> Context {
   self.ty.get_context()
@@ -168,6 +232,16 @@ pub fn IntType::get_undef(self: IntType) -> IntValue {
 pub fn IntType::get_poison(self: IntType) -> IntValue {
   IntValue::new(self.ty.get_poison())
 }
+
+// pub fn IntType::create_generic_value(self: IntType, value: UInt64, is_signed: Bool) -> GenericValue {
+//   let gv = llvm_create_generic_value_of_int(self.as_type_ref(), value, is_signed)
+//   GenericValue::new(gv)
+// }
+
+// TODO: enable this after `new_const_array` is implemented
+// pub fn IntType::const_array(self: IntType, values: Arrayp[IntValue]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
 
 pub fn IntType::print_to_stderr(self: IntType) -> Unit {
   self.ty.print_to_stderr()
@@ -210,14 +284,34 @@ pub impl AsTypeRef for FloatType with as_type_ref(
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for FloatType with as_any_type_enum(self: FloatType) -> AnyTypeEnum {
+  AnyTypeEnum::FloatType(self)
+}
+
+pub impl BasicType for FloatType with as_basic_type_enum(self: FloatType) -> BasicTypeEnum {
+  BasicTypeEnum::FloatType(self)
+}
+
+pub impl BasicMetadataType for FloatType with as_basic_metadata_type_enum(self: FloatType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::FloatType(self)
+}
+
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn FloatType::fn_type(self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-// pub fn array_type(self: FloatType, size: UInt) -> ArrayType;
-// pub fn vec_type(self: FloatType, size: UInt) -> VectorType;
-// pub fn scalable_vec_type(self: FloatType) -> ScalableVectorType;
+pub fn FloatType::farray_type(self: FloatType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub fn FloatType::vec_type(self: FloatType, size: UInt) -> VectorType {
+  self.ty.vec_type(size)
+}
+
+pub fn FloatType::scalable_vec_type(self: FloatType, size: UInt) -> ScalableVectorType {
+  self.ty.scalable_vec_type(size)
+}
 
 // use llvm_const_real
 pub fn FloatType::const_float(self: FloatType, val: Double) -> FloatValue {
@@ -225,10 +319,19 @@ pub fn FloatType::const_float(self: FloatType, val: Double) -> FloatValue {
   FloatValue::new(llvm_val_ref)
 }
 
-// pub fn Float::const_zero(self: FloatType) -> FloatValue {
-//   let llvm_val_ref = llvm_const_zero(self.as_type_ref())
-//   FloatValue::new(llvm_val_ref)
-// }
+pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> FloatValue {
+  if slice.is_empty() {
+    abort("Float string is empty")
+  }
+
+  // TODO: use `llvm_const_real_of_string` instead
+  let r = llvm_const_real_of_string_and_size(self.as_type_ref(), slice)
+  FloatValue::new(r)
+}
+
+pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
+  FloatValue::new(self.ty.const_zero())
+}
 
 pub fn FloatType::size_of(self: FloatType) -> IntValue {
   self.ty.size_of().unwrap()
@@ -253,6 +356,16 @@ pub fn get_undef(self: FloatType) -> FloatValue {
 pub fn get_poison(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())
 }
+
+// pub fn FloatType::create_generic_value(self: FloatType, value: Double) -> GenericValue {
+//   let gv = llvm_create_generic_value_of_float(self.as_type_ref(), value)
+//   GenericValue::new(gv)
+// }
+
+// TODO: enable this after `new_const_array` is implemented
+// pub fn FloatType::const_array(self: FloatType, values: Array[FloatValue]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
 
 pub fn FloatType::print_to_stderr(self: FloatType) -> Unit {
   self.ty.print_to_stderr()
@@ -296,6 +409,11 @@ pub impl AsTypeRef for VoidType with as_type_ref(
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for VoidType with as_any_type_enum(self: VoidType) -> AnyTypeEnum {
+  AnyTypeEnum::VoidType(self)
+}
+
+// REVIEW: Does it always retturn false?
 pub fn VoidType::is_sized(self: VoidType) -> Bool {
   self.ty.is_sized()
 }
@@ -354,6 +472,18 @@ pub impl AsTypeRef for PointerType with as_type_ref(
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for PointerType with as_any_type_enum(self: PointerType) -> AnyTypeEnum {
+  AnyTypeEnum::PointerType(self)
+}
+
+pub impl BasicType for PointerType with as_basic_type_enum(self: PointerType) -> BasicTypeEnum {
+  BasicTypeEnum::PointerType(self)
+}
+
+pub impl BasicMetadataType for PointerType with as_basic_metadata_type_enum(self: PointerType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::PointerType(self)
+}
+
 pub fn PointerType::size_of(self: PointerType) -> IntValue {
   self.ty.size_of().unwrap()
 }
@@ -370,25 +500,28 @@ pub fn PointerType::get_context(self: PointerType) -> Context {
   self.ty.get_context()
 }
 
-pub fn fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+pub fn PointerType::fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-// pub fn array_type(self: PointerType, size: UInt) -> ArrayType;
-pub fn get_address_space(self: PointerType) -> AddressSpace {
+pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
   let addr_space = llvm_get_pointer_address_space(self.as_type_ref())
 
   AddressSpace(addr_space)
 }
 
 
-pub fn const_null(self: PointerType) -> PointerValue {
+pub fn PointerType::const_null(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_null(self.as_type_ref()))
 }
 
-// pub fn const_zero(self: PointerType) -> PointerValue {
-//   PointerValue::new(llvm_const_zero(self.as_type_ref()))
-// }
+pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
+  PointerValue::new(self.ty.const_zero())
+}
 
 pub fn PointerType::get_undef(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_get_undef(self.as_type_ref()))
@@ -398,9 +531,25 @@ pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_get_poison(self.as_type_ref()))
 }
 
-// pub fn vec_type(self: PointerType, size: UInt) -> VectorType
-// pub fn scalable_vec_type(self: PointerType) -> ScalableVectorType
-// pub fn get_element_type(self: PointerType) -> ...
+pub fn PointerType::vec_type(self: PointerType, size: UInt) -> VectorType {
+  self.ty.vec_type(size)
+}
+pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> ScalableVectorType {
+  self.ty.scalable_vec_type(size)
+}
+
+// Note: Check if `llvm_get_element_type` is unavailable in llvm-19
+// pub fn PointerType::get_element_type(self: PointerType) -> ...
+
+// TODO: enable this after `new_const_array` is implemented
+// pub fn PointerType::const_array(self: PointerType, values: Array[PointerValue]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
+
+// NOTE: above llvm-15
+pub fn PointerType::is_opaque(self: PointerType) -> Bool {
+  llvm_pointer_type_is_opaque(self.as_type_ref())
+}
 
 pub fn PointerType::print_to_stderr(self: PointerType) -> Unit {
   self.ty.print_to_stderr()
@@ -443,6 +592,72 @@ pub impl AsTypeRef for StructType with as_type_ref(
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for StructType with as_any_type_enum(self: StructType) -> AnyTypeEnum {
+  AnyTypeEnum::StructType(self)
+}
+
+pub impl BasicType for StructType with as_basic_type_enum(self: StructType) -> BasicTypeEnum {
+  BasicTypeEnum::StructType(self)
+}
+
+pub impl BasicMetadataType for StructType with as_basic_metadata_type_enum(self: StructType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::StructType(self)
+}
+
+pub fn StructType::get_field_type_at_index(self: StructType, index: UInt) -> BasicTypeEnum? {
+  // TODOL: need to think about how to handle this when `opaque` is true
+  if self.is_opaque() {
+    return None
+  }
+
+  if index >= self.count_fields() {
+    return None
+  }
+
+  let t = llvm_struct_get_type_at_index(self.as_type_ref(), index)
+  let t = BasicTypeEnum::new(t)
+  Some(t)
+}
+
+pub fn StructType::const_named_struct(self: StructType, values: Array[BasicValueEnum]) -> StructValue {
+  let args = values.map(fn (v) {v.as_value_ref()})
+  let vref = llvm_const_named_struct(self.as_type_ref(), args)
+  StructValue::new(vref)
+}
+
+pub fn StructType::const_zero(self: StructType) -> StructValue {
+  StructValue::new(self.ty.const_zero())
+}
+
+pub fn StructType::size_of(self: StructType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub fn StructType::get_alignment(self: StructType) -> IntValue {
+  self.ty.get_alignment()
+}
+
+pub fn StructType::get_context(self: StructType) -> Context {
+  self.ty.get_context()
+}
+
+// NOTE: It's different with `inkwell`, need to check if it is corrent for anonymous struct
+pub fn StructType::get_name(self: StructType) -> String {
+  llvm_get_struct_name(self.as_type_ref())
+}
+
+pub fn StructType::fn_type(self: StructType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn StructType::array_type(self: StructType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub fn StructType::is_packed(self: StructType) -> Bool {
+  llvm_is_packed_struct(self.as_type_ref())
+}
+
 pub fn StructType::is_opaque(self: StructType) -> Bool {
   llvm_is_opaque_struct(self.as_type_ref())
 }
@@ -451,13 +666,38 @@ pub fn StructType::count_fields(self: StructType) -> UInt {
   llvm_count_struct_element_types(self.as_type_ref())
 }
 
-// pub fn StructType::get_field_types(self: StructType) -> Array[BaiscTypeEnum] {
-//
-// }
+// REVIEW: Possible unsafe
+pub fn StructType::get_field_types(self: StructType) -> Array[BasicTypeEnum] {
+  let ele_tys = llvm_get_struct_element_types(self.as_type_ref())
+
+  let ele_tys = ele_tys.map(fn (t) {
+    BasicTypeEnum::new(t)
+  })
+
+  ele_tys
+}
+
+pub fn StructType::get_undef(self: StructType) -> StructValue {
+  StructValue::new(self.ty.get_undef())
+}
 
 pub fn StructType::get_poison(self: StructType) -> StructValue {
   StructValue::new(llvm_get_poison(self.as_type_ref()))
 }
+
+pub fn StructType::set_body(self: StructType, field_types: Array[BasicTypeEnum], packed: Bool) -> Bool {
+  let is_opaque = self.is_opaque()
+  let field_types =  field_types.map(fn (t) {t.as_type_ref()})
+
+  llvm_struct_set_body(self.as_type_ref(), field_types, packed)
+
+  is_opaque
+}
+
+// TODO: enable this after `new_const_array` is implemented
+// pub fn StructType::const_array(self: StructType, values: Array[StructValue]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
 
 pub fn StructType::print_to_stderr(self: StructType) -> Unit {
   self.ty.print_to_stderr()
@@ -487,12 +727,6 @@ pub struct FunctionType {
   ty: Type
 }
 
-pub impl AsTypeRef for FunctionType with as_type_ref(
-  self: FunctionType
-) -> LLVMTypeRef {
-  self.ty.as_type_ref()
-}
-
 pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   assert_not(type_ref.is_null())
 
@@ -500,6 +734,17 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
     ty: Type::new(type_ref)
   }
 }
+
+pub impl AsTypeRef for FunctionType with as_type_ref(
+  self: FunctionType
+) -> LLVMTypeRef {
+  self.ty.as_type_ref()
+}
+
+pub impl AnyType for FunctionType with as_any_type_enum(self: FunctionType) -> AnyTypeEnum {
+  AnyTypeEnum::FunctionType(self)
+}
+
 
 pub fn FunctionType::print_to_stderr(self: FunctionType) -> Unit {
   self.ty.print_to_stderr()
@@ -540,6 +785,18 @@ pub impl AsTypeRef for ArrayType with as_type_ref(
   self: ArrayType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
+}
+
+pub impl AnyType for ArrayType with as_any_type_enum(self: ArrayType) -> AnyTypeEnum {
+  AnyTypeEnum::ArrayType(self)
+}
+
+pub impl BasicType for ArrayType with as_basic_type_enum(self: ArrayType) -> BasicTypeEnum {
+  BasicTypeEnum::ArrayType(self)
+}
+
+pub impl BasicMetadataType for ArrayType with as_basic_metadata_type_enum(self: ArrayType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::ArrayType(self)
 }
 
 pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
@@ -593,6 +850,18 @@ pub impl AsTypeRef for VectorType with as_type_ref(
   self: VectorType
 ) -> LLVMTypeRef {
   self.ty.as_type_ref()
+}
+
+pub impl AnyType for VectorType with as_any_type_enum(self: VectorType) -> AnyTypeEnum {
+  AnyTypeEnum::VectorType(self)
+}
+
+pub impl BasicType for VectorType with as_basic_type_enum(self: VectorType) -> BasicTypeEnum {
+  BasicTypeEnum::VectorType(self)
+}
+
+pub impl BasicMetadataType for VectorType with as_basic_metadata_type_enum(self: VectorType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::VectorType(self)
 }
 
 pub fn VectorType::size_of(self: VectorType) -> IntValue? {
@@ -658,6 +927,18 @@ pub impl AsTypeRef for ScalableVectorType with as_type_ref(
   self.ty.as_type_ref()
 }
 
+pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVectorType) -> AnyTypeEnum {
+  AnyTypeEnum::ScalableVectorType(self)
+}
+
+pub impl BasicType for ScalableVectorType with as_basic_type_enum(self: ScalableVectorType) -> BasicTypeEnum {
+  BasicTypeEnum::ScalableVectorType(self)
+}
+
+pub impl BasicMetadataType for ScalableVectorType with as_basic_metadata_type_enum(self: ScalableVectorType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::ScalableVectorType(self)
+}
+
 pub fn ScalableVectorType::size_of(self: ScalableVectorType) -> IntValue? {
   self.ty.size_of()
 }
@@ -670,17 +951,17 @@ pub fn ScalableVectorType::get_size(self: ScalableVectorType) -> UInt {
   llvm_get_vector_size(self.as_type_ref())
 }
 
-// pub fn ScalableVectorType::const_zero(self: ScalableVectorType) -> ScalableVectorValue {
-//  ScalableVectorValue::new(self.ty.const_zero())
-// }
+pub fn ScalableVectorType::const_zero(self: ScalableVectorType) -> ScalableVectorValue {
+ ScalableVectorValue::new(self.ty.const_zero())
+}
 
-// pub fn ScalableVectorType::get_undef(self: ScalableVectorType) -> ScalableVectorValue {
-//   ScalableVectorValue::new(self.ty.get_undef())
-// }
+pub fn ScalableVectorType::get_undef(self: ScalableVectorType) -> ScalableVectorValue {
+  ScalableVectorValue::new(self.ty.get_undef())
+}
 
-// pub fn ScalableVectorType::get_poison(self: ScalableVectorType) -> ScalableVectorValue {
-//   ScalableVectorValue::new(self.ty.get_poison())
-// }
+pub fn ScalableVectorType::get_poison(self: ScalableVectorType) -> ScalableVectorValue {
+  ScalableVectorValue::new(self.ty.get_poison())
+}
 
 // pub fn ScalableVectorType::get_element_type(self: ScalableVectorType) -> BasicTypeEnum {
 //   self.ty.get_element_type().as_basic_type_enum()
@@ -691,10 +972,11 @@ pub fn ScalableVectorType::fn_type(self: ScalableVectorType, param_types: Array[
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-// pub fn ScalableVectorType::array_type(self: ScalableVectorType, size: UInt) -> ArrayType {
-//   self.ty.array_type(size)
-// }
+pub fn ScalableVectorType::array_type(self: ScalableVectorType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
 
+// TODO: enable this after `new_const_array` is implemented
 // pub fn ScalableVectorType::const_array(self: ScalableVectorType, values: Array[ScalableVectorValue]) -> ArrayValue {
 //   ArrayValue::new_const_array(self, values)
 // }

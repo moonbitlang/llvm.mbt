@@ -1348,3 +1348,51 @@ pub fn MetadataValue::dump(self: MetadataValue) -> Unit {
 pub impl Show for MetadataValue with output(self: MetadataValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
+
+// ============================================
+// CallSiteValue
+// ============================================
+pub struct CallSiteValue {
+  value: Value
+}
+
+pub fn CallSiteValue::new(value_ref: LLVMValueRef) -> CallSiteValue {
+  assert_not(value_ref.is_null())
+
+  CallSiteValue::{
+    value: Value::new(value_ref)
+  }
+}
+
+pub impl AsValueRef for CallSiteValue with as_value_ref(self: CallSiteValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+pub fn CallSiteValue::set_tail_call(self: CallSiteValue, tail_call: Bool) -> Unit {
+  self.as_value_ref().set_tail_call(tail_call)
+}
+
+pub fn CallSiteValue::is_tail_call(self: CallSiteValue) -> Bool {
+  self.as_value_ref().is_tail_call()
+}
+
+
+pub fn CallSiteValue::get_tail_call_kind(self: CallSiteValue) -> LLVMTailCallKind {
+  self.as_value_ref().get_tail_call_kind()
+}
+
+pub fn CallSiteValue::set_tail_call_kind(self: CallSiteValue, kind: LLVMTailCallKind) -> Unit {
+  self.as_value_ref().set_tail_call_kind(kind)
+}
+
+///| Try to convert this `CallSiteValue` to a `BasicValueEnum` if not a void return type.
+pub fn CallSiteValue::try_as_basic_value(
+  self: CallSiteValue
+) -> Either[BasicValueEnum, InstructionValue] {
+  let kind = llvm_get_type_kind(llvm_type_of(self.as_value_ref()))
+
+  match kind {
+    LLVMTypeKind::LLVMVoidTypeKind => Right(InstructionValue::new(self.as_value_ref()))
+    _ => Left(BasicValueEnum::new(self.as_value_ref()))
+  }
+}

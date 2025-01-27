@@ -20,7 +20,7 @@ fn main {
   let bb = context.append_basic_block(func, "entry")
   builder.position_at_end(bb)
   let ret_val = i32_ty.const_int(42, false)
-  builder.build_return(val=Some(ret_val))
+  let _ = builder.build_return?(val=Some(ret_val))
   let s = llvm_module.to_string()
   println(s)
   // llvm_module.dump()

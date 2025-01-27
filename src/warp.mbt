@@ -194,9 +194,17 @@ pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLV
   llvm_get_type_attribute_value(self)
 }
 
-// pub extern "C" fn llvm_get_string_attribute_kind(a: LLVMAttributeRef, length: Ptr[UInt]) -> CStr = "__llvm_get_string_attribute_kind"
-//
-// pub extern "C" fn llvm_get_string_attribute_value(a: LLVMAttributeRef, length: Ptr[UInt]) -> CStr = "__llvm_get_string_attribute_value"
+pub extern "C" fn __llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_kind"
+pub fn llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> String {
+  let (cstr, len) = __llvm_get_string_attribute_kind(a)
+  c_str_to_moonbit_str_with_length(cstr, len)
+}
+
+pub extern "C" fn __llvm_get_string_attribute_value(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_value"
+pub fn llvm_get_string_attribute_value(a: LLVMAttributeRef) -> String {
+  let (cstr, len) = __llvm_get_string_attribute_value(a)
+  c_str_to_moonbit_str_with_length(cstr, len)
+}
 
 ///| Check if the attribute is an enum attribute.
 extern "C" fn __llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_enum_attribute"
@@ -3238,14 +3246,13 @@ pub fn LLVMTypeRef::const_int(self: LLVMTypeRef, n: UInt64, sign_extend: Bool) -
   __llvm_const_int(self, n, to_llvm_bool(sign_extend))
 }
 
-// /**
-//  * Obtain a constant value for an integer of arbitrary precision.
-//  *
-//  * @- see llvm::ConstantInt::get()
-//  */
+// Obtain a constant value for an integer of arbitrary precision.
+// 
+// - see llvm::ConstantInt::get()
 // LLVMValueRef LLVMConstIntOfArbitraryPrecision(LLVMTypeRef IntTy,
 //                                               unsigned NumWords,
 //                                               const uint64_t Words[]);
+pub extern "C" fn llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, words: Array[UInt64]) -> LLVMValueRef = "__llvm_const_int_of_arbitrary_precision"
 
 
 ///| Obtain a constant value for an integer parsed from a string.
@@ -5464,6 +5471,13 @@ extern "C" fn __llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> Int = "__llv
 /// - see llvm::CallInst::setTailCallKind()
 pub fn llvm_get_tail_call_kind(call_inst: LLVMValueRef) -> LLVMTailCallKind {
   LLVMTailCallKind::from_int(__llvm_get_tail_call_kind(call_inst))
+}
+
+///| Obtain a tail call kind of the call instruction.
+/// 
+/// - see llvm::CallInst::setTailCallKind()
+pub fn LLVMValueRef::get_tail_call_kind(self: LLVMValueRef) -> LLVMTailCallKind {
+  LLVMTailCallKind::from_int(__llvm_get_tail_call_kind(self))
 }
 
 ///| Set the call kind of the call instruction.
