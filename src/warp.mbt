@@ -194,13 +194,13 @@ pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLV
   llvm_get_type_attribute_value(self)
 }
 
-pub extern "C" fn __llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_kind"
+extern "C" fn __llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_kind"
 pub fn llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> String {
   let (cstr, len) = __llvm_get_string_attribute_kind(a)
   c_str_to_moonbit_str_with_length(cstr, len)
 }
 
-pub extern "C" fn __llvm_get_string_attribute_value(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_value"
+extern "C" fn __llvm_get_string_attribute_value(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_value"
 pub fn llvm_get_string_attribute_value(a: LLVMAttributeRef) -> String {
   let (cstr, len) = __llvm_get_string_attribute_value(a)
   c_str_to_moonbit_str_with_length(cstr, len)

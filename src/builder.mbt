@@ -46,6 +46,22 @@ pub type! BuilderError {
   GEPIndex
 }
 
+// FIXME: Dummy function, just for stopping warning eliminate when all done
+pub fn raise_builder_error(i: Int) -> Int!BuilderError {
+  match i {
+    0 => raise UnsetPosition
+    1 => raise AlignmentError("Alignment error")
+    2 => raise ExtractOutOfRange
+    3 => raise BitwidthError("Bitwidth of a value is incorrect")
+    4 => raise PointeeTypeMismatch("Pointee type does not match the value's type")
+    5 => raise ValueTypeMismatch("Values do not have the same type")
+    6 => raise OrderingError("Ordering error or mismatch")
+    7 => raise GEPPointee
+    8 => raise GEPIndex
+    _ => return i
+  }
+}
+
 
 pub struct Builder {
   builder_ref: LLVMBuilderRef
@@ -90,7 +106,8 @@ pub fn Builder::build_return(
 pub fn Builder::build_aggregate_return(
   self: Builder, values: Array[BasicValueEnum]
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() == PositionState::NotSet {
+  if self.get_positioned() != PositionState::Set {
+  // if self.get_positioned() == PositionState::NotSet {
     raise UnsetPosition
   }
 
@@ -127,7 +144,7 @@ pub fn Builder::build_aggregate_return(
 //   self.build_call_help(func, args, name)
 // }
 
-// pub fn Builder::build_call_help(func: FunctionValue, args: Array[BasicValueEnum], name: String) -> Ca
+// pub fn Builder::build_call_help(func: FunctionValue, args: Array[BasicValueEnum], name: String) -> 
 
 pub fn position_at_end(self: Builder, bb: BasicBlock) -> Unit {
   let builder_ref = self.builder_ref
