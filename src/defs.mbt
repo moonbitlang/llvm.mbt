@@ -40,11 +40,11 @@ pub type LLVMMetadataRef
 
 ///| llvm md node
 pub type LLVMNamedMDNodeRef
-// pub type LLVMValueMetadataEntry
+pub type LLVMValueMetadataEntry
 
 ///| llvm builder
 pub type LLVMBuilderRef
-// pub type LLVMDIBuilderRef
+pub type LLVMDIBuilderRef
 
 ///| llvm module provider
 pub type LLVMModuleProviderRef
@@ -69,10 +69,11 @@ pub type LLVMAttributeRef
 
 ///| llvm diagnostic info
 pub type LLVMDiagnosticInfoRef
-// pub type LLVMComdatRef
-// pub type LLVMModuleFlagEntry
-// pub type LLVMJITEventListenerRef
-// pub type LLVMBinaryRef
+pub type LLVMComdatRef
+pub type LLVMModuleFlagEntry
+pub type LLVMJITEventListenerRef
+pub type LLVMBinaryRef
+pub type LLVMTargetRef
 
 ///| llvm debug record refs
 pub type LLVMDbgRecordRef

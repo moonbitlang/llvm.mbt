@@ -1254,13 +1254,15 @@ pub fn ScalableVectorValue::as_instruction(self: ScalableVectorValue) -> Instruc
   self.value.as_instruction()
 }
 
-// pub fn const_extract_element(self: ScalableVectorValue, index: IntValue) -> BasicValueEnum {
-//   BasicValueEnum::new(llvm_const_extract_element(self.as_value_ref(), index.as_value_ref()))
-// }
+pub fn  ScalableVectorValue::const_extract_element(
+  self: ScalableVectorValue, index: IntValue
+) -> BasicValueEnum {
+  BasicValueEnum::new(llvm_const_extract_element(self.as_value_ref(), index.as_value_ref()))
+}
 
-// pub fn ScalableVectorValue::const_insert_element(self: ScalableVectorValue, element: BasicValue, index: IntValue) -> BasicValueEnum {
-//   BasicValueEnum::new(llvm_const_insert_element(self.as_value_ref(), element.as_value_ref(), index.as_value_ref()))
-// }
+pub fn ScalableVectorValue::const_insert_element(self: ScalableVectorValue, element: &BasicValue, index: IntValue) -> BasicValueEnum {
+  BasicValueEnum::new(llvm_const_insert_element(self.as_value_ref(), element.as_value_ref(), index.as_value_ref()))
+}
 
 pub fn ScalableVectorValue::replace_all_uses_with(self: ScalableVectorValue, new_value: ScalableVectorValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
@@ -1396,3 +1398,117 @@ pub fn CallSiteValue::try_as_basic_value(
     _ => Left(BasicValueEnum::new(self.as_value_ref()))
   }
 }
+
+pub fn CallSiteValue::add_attribute(
+  self: CallSiteValue, loc: AttributeLoc, attribute: Attribute
+) -> Unit {
+  llvm_add_call_site_attribute(self.as_value_ref(), loc.get_index(), attribute.attribute)
+}
+
+pub fn CallSiteValue::get_called_fn_value(self: CallSiteValue) -> FunctionValue {
+  FunctionValue::new(llvm_get_called_value(self.as_value_ref())).unwrap()
+}
+
+pub fn CallSiteValue::count_attributes(self: CallSiteValue, loc: AttributeLoc) -> UInt {
+  llvm_get_call_site_attribute_count(self.as_value_ref(), loc.get_index())
+}
+
+// REVIEW: Possibly need to check attr_refs is null or not
+pub fn CallSiteValue::attributes(self: CallSiteValue, loc: AttributeLoc) -> Array[Attribute] {
+  let attr_refs = llvm_get_call_site_attributes(self.as_value_ref(), loc.get_index())
+  attr_refs.map(fn (r) {Attribute::new(r)})
+}
+
+// REVIEW: Possibly need to check attr_ref is null or not
+pub fn CallSiteValue::get_enum_attribute(
+  self: CallSiteValue, loc: AttributeLoc, kind_id: UInt
+) -> Attribute? {
+  let attr_ref = llvm_get_call_site_enum_attribute(self.as_value_ref(), loc.get_index(), kind_id)
+  Some(Attribute::new(attr_ref))
+}
+
+// REVIEW: Possibly need to check attr_ref is null or not
+pub fn CallSiteValue::get_string_attribute(
+  self: CallSiteValue, loc: AttributeLoc, key: String
+) -> Attribute? {
+  let attr_ref = llvm_get_call_site_string_attribute(self.as_value_ref(), loc.get_index(), key)
+  Some(Attribute::new(attr_ref))
+}
+
+pub fn CallSiteValue::remove_attribute(
+  self: CallSiteValue, loc: AttributeLoc, kind_id: UInt
+) ->  Unit {
+  llvm_remove_call_site_enum_attribute(self.as_value_ref(), loc.get_index(), kind_id)
+}
+
+pub fn CallSiteValue::remove_string_attribute(
+  self: CallSiteValue, loc: AttributeLoc, key: String
+) -> Unit {
+  llvm_remove_call_site_string_attribute(self.as_value_ref(), loc.get_index(), key)
+}
+
+pub fn CallSiteValue::count_arguments(self: CallSiteValue) -> UInt {
+  llvm_get_num_arg_operands(self.as_value_ref())
+}
+
+pub fn CallSiteValue::get_call_convention(
+  self: CallSiteValue
+) -> UInt {
+  llvm_get_instruction_call_conv(self.as_value_ref())
+}
+
+pub fn CallSiteValue::set_call_convention(
+  self: CallSiteValue, call_conv: UInt
+) -> Unit {
+  llvm_set_instruction_call_conv(self.as_value_ref(), call_conv)
+}
+
+pub fn CallSiteValue::set_alignment_attribute(
+  self: CallSiteValue, loc: AttributeLoc, alignment: UInt
+) -> Unit {
+  // assert alignment.count_ones()
+
+  llvm_set_instr_param_alignment(self.as_value_ref(), loc.get_index(), alignment)
+}
+
+// pub fn CallSiteValue::get_operand_bundles(self: CallSiteValue) -> Array[OperandBundle] {
+//   let bundle_refs = llvm_get_instruction_operand_bundles(self.as_value_ref())
+//   bundle_refs.map(fn (r) {OperandBundle::new(r)})
+// }
+
+
+pub fn CallSiteValue::print_to_stderr(self: CallSiteValue) -> Unit {
+  self.value.print_to_stderr()
+}
+
+pub fn CallSiteValue::print_to_string(self: CallSiteValue) -> String {
+  self.value.print_to_string()
+}
+
+pub fn CallSiteValue::to_string(self: CallSiteValue) -> String {
+  self.value.to_string()
+}
+
+pub fn CallSiteValue::dump(self: CallSiteValue) -> Unit {
+  self.value.dump()
+}
+
+pub impl Show for CallSiteValue with output(
+  self: CallSiteValue, logger: &Logger
+) -> Unit {
+  logger.write_string(self.to_string())
+}
+
+// ============================================
+// CallableValue
+// ============================================
+// pub struct CallableValue {
+//   either_value: Either[FunctionValue, PointerValue]
+// }
+//
+// pub impl AsValueRef for CallableValue with as_value_ref(self: CallableValue) -> LLVMValueRef {
+//   match self.either_value {
+//     Left(f) => f.as_value_ref()
+//     Right(p) => p.as_value_ref()
+//   }
+// }

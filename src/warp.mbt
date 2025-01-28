@@ -4260,7 +4260,12 @@ pub extern "C" fn llvm_set_personality_fn(func: LLVMValueRef, personality_fn: LL
 ///| Obtain the intrinsic ID number which matches the given function name.
 /// 
 /// - see llvm::Intrinsic::lookupIntrinsicID()
-pub extern "C" fn llvm_lookup_intrinsic_id(name: CStr, name_len: UInt64) -> UInt = "__llvm_lookup_intrinsic_id"
+extern "C" fn __llvm_lookup_intrinsic_id(name: CStr, name_len: UInt64) -> UInt = "__llvm_lookup_intrinsic_id"
+pub fn llvm_lookup_intrinsic_id(name: String) -> UInt {
+  let len = name.length().to_uint64();
+  let name = moonbit_str_to_c_str(name);
+  __llvm_lookup_intrinsic_id(name, len)
+}
 
 
 ///| Obtain the ID number from a function instance.
@@ -5335,15 +5340,23 @@ pub extern "C" fn llvm_add_call_site_attribute(c: LLVMValueRef, idx: LLVMAttribu
 
 pub extern "C" fn llvm_get_call_site_attribute_count(c: LLVMValueRef, idx: LLVMAttributeIndex) -> UInt = "__llvm_get_call_site_attribute_count"
 
-// pub extern "C" fn llvm_get_call_site_attributes(c: LLVMValueRef, idx: LLVMAttributeIndex, attrs: Ptr[LLVMAttributeRef]) = "__llvm_get_call_site_attributes"
+pub extern "C" fn llvm_get_call_site_attributes(c: LLVMValueRef, idx: LLVMAttributeIndex) -> Array[LLVMAttributeRef] = "__llvm_get_call_site_attributes"
 
 pub extern "C" fn llvm_get_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_enum_attribute"
 
-pub extern "C" fn llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_string_attribute"
+extern "C" fn __llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_string_attribute"
+pub fn llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> LLVMAttributeRef {
+  let cstr = moonbit_str_to_c_str(k);
+  __llvm_get_call_site_string_attribute(c, idx, cstr, k.length().reinterpret_as_uint())
+}
 
 pub extern "C" fn llvm_remove_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) = "__llvm_remove_call_site_enum_attribute"
 
-pub extern "C" fn llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_call_site_string_attribute"
+extern "C" fn __llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_call_site_string_attribute"
+pub fn llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(k);
+  __llvm_remove_call_site_string_attribute(c, idx, cstr, k.length().reinterpret_as_uint())
+}
 
 ///| Obtain the function type called by this instruction.
 /// 
@@ -7678,22 +7691,36 @@ pub extern "C" fn llvm_create_module_provider_for_existing_module(m: LLVMModuleR
 pub extern "C" fn llvm_dispose_module_provider(m: LLVMModuleProviderRef) = "__llvm_dispose_module_provider"
 
 ///| Create a new memory buffer with the contents of a file.
-extern "C" fn __llvm_create_memory_buffer_with_contents_of_file(path: CStr, out_mem_buf: LLVMMemoryBufferRef, out_message: CStr) -> LLVMBool = "__llvm_create_memory_buffer_with_contents_of_file"
+// FIXME: Not implemented
+extern "C" fn __llvm_create_memory_buffer_with_contents_of_file(path: CStr) -> (LLVMMemoryBufferRef, CStr, LLVMBool) = "__llvm_create_memory_buffer_with_contents_of_file"
 
 ///| Create a new memory buffer with the contents of a file.
-pub fn llvm_create_memory_buffer_with_contents_of_file(path: String, out_mem_buf: LLVMMemoryBufferRef, out_message: String) -> LLVMBool {
-  let path = moonbit_str_to_c_str(path)
-  let out_message = moonbit_str_to_c_str(out_message)
-  __llvm_create_memory_buffer_with_contents_of_file(path, out_mem_buf, out_message)
+///
+/// Return the memory buffer, the error message and a boolean indicating if the operation was successful.
+pub fn llvm_create_memory_buffer_with_contents_of_file(path: String) -> (LLVMMemoryBufferRef, String, Bool) {
+  let cpath = moonbit_str_to_c_str(path)
+  let (mbuf, cstr, is_ok) = __llvm_create_memory_buffer_with_contents_of_file(cpath)
+  let is_ok = is_ok.to_moonbit_bool()
+  if is_ok {
+    (mbuf, c_str_to_moonbit_str(cstr), is_ok)
+  } else {
+    (mbuf, "", is_ok)
+  }
 }
 
 ///| Create a memory buffer with stdin as input.
-extern "C" fn __llvm_create_memory_buffer_with_stdin(out_mem_buf: LLVMMemoryBufferRef, out_message: CStr) -> LLVMBool = "__llvm_create_memory_buffer_with_stdin"
+// FIXME: Not implemented
+extern "C" fn __llvm_create_memory_buffer_with_stdin() -> (LLVMMemoryBufferRef, CStr, LLVMBool) = "__llvm_create_memory_buffer_with_stdin"
 
 ///| Create a memory buffer with stdin as input.
-pub fn llvm_create_memory_buffer_with_stdin(out_mem_buf: LLVMMemoryBufferRef, out_message: String) -> LLVMBool {
-  let out_message = moonbit_str_to_c_str(out_message)
-  __llvm_create_memory_buffer_with_stdin(out_mem_buf, out_message)
+pub fn llvm_create_memory_buffer_with_stdin() -> (LLVMMemoryBufferRef, String, Bool) {
+  let (mbuf, cstr, is_ok) = __llvm_create_memory_buffer_with_stdin()
+  let is_ok = is_ok.to_moonbit_bool()
+  if is_ok {
+    (mbuf, c_str_to_moonbit_str(cstr), is_ok)
+  } else {
+    (mbuf, "", is_ok)
+  }
 }
 
 ///| Create a new memory buffer with the contents of a memory range.

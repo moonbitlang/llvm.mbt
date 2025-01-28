@@ -8,6 +8,10 @@ pub fn Module::new(module_ref: LLVMModuleRef) -> Module {
   }
 }
 
+pub fn Module::as_mod_ref(self: Module) -> LLVMModuleRef {
+  self.module_ref
+}
+
 pub fn add_function(
   self: Module, 
   name: String, 
