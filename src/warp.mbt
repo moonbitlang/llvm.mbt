@@ -29,6 +29,11 @@ fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
   llvm_bb_is_null(self).to_moonbit_bool()
 }
 
+extern "C" fn llvm_attr_is_null(attr: LLVMAttributeRef) -> LLVMBool = "__llvm_attr_is_null"
+fn LLVMAttributeRef::is_null(self: LLVMAttributeRef) -> Bool {
+  llvm_attr_is_null(self).to_moonbit_bool()
+}
+
 // enums
 ///| Instruction opcodes
 pub enum LLVMOpcode {
@@ -1453,7 +1458,11 @@ pub fn llvm_set_is_new_dbg_info_format(m: LLVMModuleRef, use_new_format: Bool) -
   __llvm_set_is_new_dbg_info_format(m, to_llvm_bool(use_new_format))
 }
 
-// pub extern "C" fn llvm_get_module_identifier(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_identifier"
+extern "C" fn __llvm_get_module_identifier(m: LLVMModuleRef) -> (CStr, UInt64) = "__llvm_get_module_identifier"
+pub fn llvm_get_module_identifier(m: LLVMModuleRef) -> String {
+  let (cstr, len) = __llvm_get_module_identifier(m)
+  c_str_to_moonbit_str_with_length(cstr, len.to_uint())
+}
 
 extern "C" fn __llvm_set_module_identifier(m: LLVMModuleRef, ident: CStr, len: UInt64) = "__llvm_set_module_identifier"
 pub fn llvm_set_module_identifier(m: LLVMModuleRef, ident: String) -> Unit {
@@ -1724,16 +1733,31 @@ pub fn LLVMModuleRef::to_string(self: LLVMModuleRef) -> String {
   llvm_print_module_to_string(self)
 }
 
-// Get inline assembly for a module.
-// 
-// - see Module::getModuleInlineAsm()
-// pub extern "C" fn llvm_get_module_inline_asm(m: LLVMModuleRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_module_inline_asm"
+///| Get inline assembly for a module.
+/// 
+/// - see Module::getModuleInlineAsm()
+extern "C" fn __llvm_get_module_inline_asm(m: LLVMModuleRef) -> (CStr, UInt64) = "__llvm_get_module_inline_asm"
 
+///| Get inline assembly for a module.
+/// 
+/// - see Module::getModuleInlineAsm()
+pub fn llvm_get_module_inline_asm(m: LLVMModuleRef) -> String {
+  let (cstr, len) = __llvm_get_module_inline_asm(m)
+  c_str_to_moonbit_str_with_length(cstr, len.to_uint())
+}
 
 ///| Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
-pub extern "C" fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_set_module_inline_asm"
+extern "C" fn __llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_set_module_inline_asm"
+
+///| Set inline assembly for a module.
+/// 
+/// - see Module::setModuleInlineAsm()
+pub fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: String) -> Unit {
+  let cstr = moonbit_str_to_c_str(_asm)
+  __llvm_set_module_inline_asm(m, cstr, _asm.length().to_uint64())
+}
 
 ///| Append inline assembly to a module.
 /// 
@@ -5345,7 +5369,14 @@ pub extern "C" fn llvm_delete_function(func: LLVMValueRef) = "__llvm_delete_func
 ///| Check whether the given function has a personality function.
 /// 
 /// - see llvm::Function::hasPersonalityFn()
-pub extern "C" fn llvm_has_personality_fn(func: LLVMValueRef) -> LLVMBool = "__llvm_has_personality_fn"
+extern "C" fn __llvm_has_personality_fn(func: LLVMValueRef) -> LLVMBool = "__llvm_has_personality_fn"
+
+///| Check whether the given function has a personality function.
+/// 
+/// - see llvm::Function::hasPersonalityFn()
+pub fn llvm_has_personality_fn(func: LLVMValueRef) -> Bool {
+  __llvm_has_personality_fn(func).to_moonbit_bool()
+}
 
 ///| Obtain the personality function attached to the function.
 /// 
@@ -5548,7 +5579,7 @@ pub extern "C" fn llvm_add_attribute_at_index(f: LLVMValueRef, idx: LLVMAttribut
 
 pub extern "C" fn llvm_get_attribute_count_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex) -> UInt = "__llvm_get_attribute_count_at_index"
 
-pub extern "C" fn llvm_get_attributes_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, attrs: Array[LLVMAttributeRef]) = "__llvm_get_attributes_at_index"
+pub extern "C" fn llvm_get_attributes_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex) -> Array[LLVMAttributeRef] = "__llvm_get_attributes_at_index"
 
 pub extern "C" fn llvm_get_enum_attribute_at_index(f: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "__llvm_get_enum_attribute_at_index"
 
@@ -5990,10 +6021,10 @@ pub fn LLVMValueRef::count_basic_blocks(self: LLVMValueRef) -> UInt {
 }
 
 ///| Get all basic blocks in a function.
-pub extern "C" fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[BasicBlock] = "__llvm_get_basic_blocks"
+pub extern "C" fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "__llvm_get_basic_blocks"
 
 ///| Get all basic blocks in a function.
-pub fn LLVMValueRef::get_basic_blocks(self: LLVMValueRef) -> Array[BasicBlock] {
+pub fn LLVMValueRef::get_basic_blocks(self: LLVMValueRef) -> Array[LLVMBasicBlockRef] {
   llvm_get_basic_blocks(self)
 }
 

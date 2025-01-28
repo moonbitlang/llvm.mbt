@@ -895,16 +895,12 @@ impl AsValueRef for FunctionValue with as_value_ref(
   self.value.as_value_ref()
 }
 
-pub fn FunctionValue::get_name(self: FunctionValue) -> String {
-  self.value.get_name()
+pub fn FunctionValue::get_linkage(self: FunctionValue) -> Linkage {
+  llvm_get_linkage(self.as_value_ref()).into()
 }
 
-pub fn FunctionValue::set_name(self: FunctionValue, name: String) -> Unit {
-  self.value.set_name(name)
-}
-
-pub fn FunctionValue::get_type(self: FunctionValue) -> FunctionType {
-  FunctionType::new(self.value.get_type().as_type_ref())
+pub fn FunctionValue::set_linkage(self: FunctionValue, linkage: Linkage) -> Unit {
+  llvm_set_linkage(self.as_value_ref(), linkage.into())
 }
 
 pub fn FunctionValue::is_null(self: FunctionValue) -> Bool {
@@ -913,6 +909,225 @@ pub fn FunctionValue::is_null(self: FunctionValue) -> Bool {
 
 pub fn FunctionValue::is_undef(self: FunctionValue) -> Bool {
   self.value.is_undef()
+}
+
+// pub fn FunctionValue::verify
+
+pub fn FunctionValue::get_next_function(self: FunctionValue) -> FunctionValue? {
+  FunctionValue::new(llvm_get_next_function(self.as_value_ref()))
+}
+
+pub fn FunctionValue::get_previous_function(self: FunctionValue) -> FunctionValue? {
+  FunctionValue::new(llvm_get_previous_function(self.as_value_ref()))
+}
+
+pub fn FunctionValue::get_first_param(self: FunctionValue) -> BasicValueEnum?{
+  let param = llvm_get_first_param(self.as_value_ref())
+
+  if param.is_null() {
+    None
+  } else {
+    Some(BasicValueEnum::new(param))
+  }
+}
+
+pub fn FunctionValue::get_last_param(self: FunctionValue) -> BasicValueEnum? {
+  let param = llvm_get_last_param(self.as_value_ref())
+
+  if param.is_null() {
+    None
+  } else {
+    Some(BasicValueEnum::new(param))
+  }
+}
+
+pub fn FunctionValue::get_first_basic_block(self: FunctionValue) -> BasicBlock? {
+  let bb = llvm_get_first_basic_block(self.as_value_ref())
+
+  BasicBlock::new(bb)
+}
+
+pub fn FunctionValue::get_last_basic_block(self: FunctionValue) -> BasicBlock? {
+  let bb = llvm_get_last_basic_block(self.as_value_ref())
+
+  BasicBlock::new(bb)
+}
+
+pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValueEnum? {
+  let cnt = self.count_params()
+
+  if nth >= cnt {
+    None
+  } else {
+    Some(BasicValueEnum::new(llvm_get_param(self.as_value_ref(), nth)))
+  }
+}
+
+pub fn FunctionValue::count_params(self: FunctionValue) -> UInt {
+  llvm_count_params(self.as_value_ref())
+}
+
+pub fn FunctionValue::get_basic_blocks(self: FunctionValue) -> Array[BasicBlock] {
+  let bb_refs : Array[LLVMBasicBlockRef] = llvm_get_basic_blocks(self.as_value_ref())
+  bb_refs.map(fn (bb_ref) { BasicBlock::new(bb_ref).unwrap() })
+}
+
+pub fn FunctionValue::get_params(self: FunctionValue) -> Array[BasicValueEnum] {
+  let param_refs : Array[LLVMValueRef] = llvm_get_params(self.as_value_ref())
+  param_refs.map(fn (param_ref) { BasicValueEnum::new(param_ref) })
+}
+
+
+pub fn FunctionValue::get_name(self: FunctionValue) -> String {
+  self.value.get_name()
+}
+
+// pub fn FunctionValue::view_function_cfg(self: FunctionValue) -> Unit {
+//   llvm_view_function_cfg(self.as_value_ref())
+// }
+//
+// pub fn FunctionValue::view_function_cfg_only(self: FunctionValue) -> Unit {
+//   llvm_view_function_cfg_only(self.as_value_ref())
+// }
+
+// NOTE: `inkwell` does not provide this function
+// pub fn FunctionValue::set_name(self: FunctionValue, name: String) -> Unit {
+//   self.value.set_name(name)
+// }
+
+pub fn FunctionValue::get_type(self: FunctionValue) -> FunctionType {
+  FunctionType::new(self.value.get_type().as_type_ref())
+}
+
+pub fn FunctionValue::has_personality_function(self: FunctionValue) -> Bool {
+  llvm_has_personality_fn(self.as_value_ref())
+}
+
+pub fn FunctionValue::get_personality_function(self: FunctionValue) -> FunctionValue? {
+  if not(self.has_personality_function()) {
+    return None
+  }
+
+  FunctionValue::new(llvm_get_personality_fn(self.as_value_ref()))
+}
+
+pub fn FunctionValue::set_personality_function(self: FunctionValue, personality_fn: FunctionValue) -> Unit {
+  llvm_set_personality_fn(self.as_value_ref(), personality_fn.as_value_ref())
+}
+
+pub fn FunctionValue::get_intrinsic_id(self: FunctionValue) -> UInt {
+  llvm_get_intrinsic_id(self.as_value_ref())
+}
+
+// REVIEW: Possibly we need to use `CallConv` enum, rather than `UInt`
+pub fn FunctionValue::get_call_convention(self: FunctionValue) -> UInt {
+  llvm_get_function_call_conv(self.as_value_ref())
+}
+
+// REVIEW: Possibly we need to use `CallConv` enum, rather than `UInt`
+pub fn FunctionValue::set_call_convention(self: FunctionValue, call_conv: UInt) -> Unit {
+  llvm_set_function_call_conv(self.as_value_ref(), call_conv)
+}
+
+pub fn FunctionValue::get_gc(self: FunctionValue) -> String {
+  llvm_get_gc(self.as_value_ref())
+}
+
+pub fn FunctionValue::replace_all_uses_with(
+  self: FunctionValue, new_value: FunctionValue
+) -> Unit {
+  self.value.replace_all_uses_with(new_value.value)
+}
+
+pub fn FunctionValue::add_attribute(
+  self: FunctionValue, loc: AttributeLoc, attribute: Attribute
+) -> Unit {
+  llvm_add_attribute_at_index(self.as_value_ref(), loc.get_index(), attribute.attribute)
+}
+
+pub fn FunctionValue::count_attributes(self: FunctionValue, loc: AttributeLoc) -> UInt {
+  llvm_get_attribute_count_at_index(self.as_value_ref(), loc.get_index())
+}
+
+pub fn FunctionValue::attributes(
+  self: FunctionValue, loc: AttributeLoc
+) -> Array[Attribute] {
+  let attr_refs = llvm_get_attributes_at_index(self.as_value_ref(), loc.get_index())
+
+  attr_refs.map(fn (attr_ref) { Attribute::new(attr_ref) })
+}
+
+pub fn FunctionValue::remove_string_attribute(
+  self: FunctionValue, loc: AttributeLoc, key: String
+) -> Unit {
+  llvm_remove_string_attribute_at_index(self.as_value_ref(), loc.get_index(), key)
+}
+
+pub fn FunctionValue::remove_enum_attribute(
+  self: FunctionValue, loc: AttributeLoc, kind_id: UInt
+) -> Unit {
+  llvm_remove_enum_attribute_at_index(self.as_value_ref(), loc.get_index(), kind_id)
+}
+
+pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc, kind_id: UInt) -> Attribute? {
+  let attr_ref = llvm_get_enum_attribute_at_index(self.as_value_ref(), loc.get_index(), kind_id)
+
+  if attr_ref.is_null() {
+    None
+  } else {
+    Some(Attribute::new(attr_ref))
+  }
+}
+
+pub fn FunctionValue::get_string_attribute(self: FunctionValue, loc: AttributeLoc, key: String) -> Attribute? {
+  let attr_ref = llvm_get_string_attribute_at_index(self.as_value_ref(), loc.get_index(), key)
+
+  if attr_ref.is_null() {
+    None
+  } else {
+    Some(Attribute::new(attr_ref))
+  }
+}
+
+pub fn FunctionValue::set_param_alignment(
+  self: FunctionValue, param_index: UInt, alignment: UInt
+) -> Unit {
+  match self.get_nth_param(param_index) {
+    Some(param) => {
+      llvm_set_param_alignment(param.as_value_ref(), alignment)
+    }
+    _ => ()
+  }
+}
+
+pub fn FunctionValue::as_global_value(self: FunctionValue) -> GlobalValue {
+  GlobalValue::new(self.as_value_ref())
+}
+
+// pub fn FunctionValue::set_subprogram(self: FunctionValue, subprogram: DISubprogram) -> Unit {
+//   llvm_set_subprogram(self.as_value_ref(), subprogram.as_metadata_ref())
+// }
+
+// pub fn FunctionValue::get_subprogram(self: FunctionValue) -> DISubprogram? {
+//   let subprogram = llvm_get_subprogram(self.as_value_ref())
+//
+//   if subprogram.is_null() {
+//     None
+//   } else {
+//     Some(DISubprogram::new(subprogram))
+//   }
+// }
+
+// pub fn FunctionValue::get_section(self: FunctionValue) -> String {
+//   self.value.get_section()
+// }
+//
+// pub fn FunctionValue::set_section(self: FunctionValue, section: String) -> Unit {
+//   self.value.set_section(section)
+// }
+
+pub fn FunctionValue::delete(self: FunctionValue) -> Unit {
+  llvm_delete_function(self.as_value_ref())
 }
 
 pub fn FunctionValue::print_to_stderr(self: FunctionValue) -> Unit {
@@ -934,6 +1149,7 @@ pub fn FunctionValue::dump(self: FunctionValue) -> Unit {
 pub impl Show for FunctionValue with output(self: FunctionValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
+
 
 // ============================================
 // ArrayValue

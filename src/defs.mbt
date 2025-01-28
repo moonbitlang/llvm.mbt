@@ -789,3 +789,34 @@ pub fn InlineAsmDialect::into(self: InlineAsmDialect) -> LLVMInlineAsmDialect {
     Intel => LLVMInlineAsmDialectIntel
   }
 }
+
+pub enum FlagBehavior {
+  Error
+  Warning
+  Require
+  Override
+  Append
+  AppendUnique
+}
+
+pub fn LLVMModuleFlagBehavior::into(self: LLVMModuleFlagBehavior) -> FlagBehavior {
+  match self {
+    LLVMModuleFlagBehaviorError => Error
+    LLVMModuleFlagBehaviorWarning => Warning
+    LLVMModuleFlagBehaviorRequire => Require
+    LLVMModuleFlagBehaviorOverride => Override
+    LLVMModuleFlagBehaviorAppend => Append
+    LLVMModuleFlagBehaviorAppendUnique => AppendUnique
+  }
+}
+
+pub fn FlagBehavior::into(self: FlagBehavior) -> LLVMModuleFlagBehavior {
+  match self {
+    Error => LLVMModuleFlagBehaviorError
+    Warning => LLVMModuleFlagBehaviorWarning
+    Require => LLVMModuleFlagBehaviorRequire
+    Override => LLVMModuleFlagBehaviorOverride
+    Append => LLVMModuleFlagBehaviorAppend
+    AppendUnique => LLVMModuleFlagBehaviorAppendUnique
+  }
+}
