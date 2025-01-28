@@ -165,12 +165,33 @@ pub fn Context::prepend_basic_block(
   BasicBlock::new(val_ref).unwrap()
 }
 
-// pub fn get_kind_id
-// pub fn create_enum_attribute
-// pub fn create_string_attribute
-// pub fn create_type_attribute
-// pub fn const_string
-// pub fn set_diagnostic_handler
+pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
+  llvm_get_md_kind_id_in_context(self.as_ctx_ref(), key)
+}
+
+pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64) -> Attribute {
+  let attr_ref = llvm_create_enum_attribute(self.as_ctx_ref(), kind_id, val)
+  Attribute::new(attr_ref)
+}
+
+pub fn Context::create_string_attribute(self: Context, key: String, val: String) -> Attribute {
+  let attr_ref = llvm_create_string_attribute(self.as_ctx_ref(), key, val)
+  Attribute::new(attr_ref)
+}
+
+pub fn Context::create_type_attribute(
+  self: Context, kind_id: UInt, ty: AnyTypeEnum
+) -> Attribute {
+  let attr = llvm_create_type_attribute(self.as_ctx_ref(), kind_id, ty.as_type_ref())
+  Attribute::new(attr)
+}
+
+pub fn Context::const_string(self: Context, s: String, null_terminated: Bool) -> ArrayValue {
+  let val_ref = llvm_const_string_in_context(self.as_ctx_ref(), s, null_terminated)
+  ArrayValue::new(val_ref)
+}
+
+// pub fn Context::set_diagnostic_handler
 
 pub fn Context::create_module(self: Context, name: String) -> Module {
   let ctx_ref = self.as_ctx_ref()

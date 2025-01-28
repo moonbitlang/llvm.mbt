@@ -548,6 +548,20 @@ pub fn AnyTypeEnum::new(type_ref: LLVMTypeRef) -> AnyTypeEnum {
   }
 }
 
+pub fn AnyTypeEnum::as_type_ref(self: AnyTypeEnum) -> LLVMTypeRef {
+  match self {
+    AnyTypeEnum::ArrayType(v) => v.as_type_ref()
+    AnyTypeEnum::FloatType(v) => v.as_type_ref()
+    AnyTypeEnum::FunctionType(v) => v.as_type_ref()
+    AnyTypeEnum::IntType(v) => v.as_type_ref()
+    AnyTypeEnum::PointerType(v) => v.as_type_ref()
+    AnyTypeEnum::StructType(v) => v.as_type_ref()
+    AnyTypeEnum::VectorType(v) => v.as_type_ref()
+    AnyTypeEnum::ScalableVectorType(v) => v.as_type_ref()
+    AnyTypeEnum::VoidType(v) => v.as_type_ref()
+  }
+}
+
 pub fn AnyTypeEnum::is_array_type(self: AnyTypeEnum) -> Bool {
   match self {
     AnyTypeEnum::ArrayType(_) => true

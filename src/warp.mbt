@@ -1278,6 +1278,19 @@ pub fn LLVMAttributeRef::get_type_attribute_value(self: LLVMAttributeRef) -> LLV
   llvm_get_type_attribute_value(self)
 }
 
+///| Create a string attribute.
+extern "C" fn __llvm_create_string_attribute(ctx: LLVMContextRef, k: CStr, k_len: UInt, v: CStr, v_len: UInt) -> LLVMAttributeRef = "__llvm_create_string_attribute"
+
+///| Create a string attribute.
+pub fn llvm_create_string_attribute(ctx: LLVMContextRef, k: String, v: String) -> LLVMAttributeRef {
+  let k_cstr = moonbit_str_to_c_str(k)
+  let v_cstr = moonbit_str_to_c_str(v)
+  let k_len = k.length().reinterpret_as_uint()
+  let v_len = v.length().reinterpret_as_uint()
+  __llvm_create_string_attribute(ctx, k_cstr, k_len, v_cstr, v_len)
+}
+
+
 extern "C" fn __llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> (CStr, UInt) = "__llvm_get_string_attribute_kind"
 pub fn llvm_get_string_attribute_kind(a: LLVMAttributeRef) -> String {
   let (cstr, len) = __llvm_get_string_attribute_kind(a)
