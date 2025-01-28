@@ -1,8 +1,5 @@
 // extern types
 type CStr
-type LLVMBool Int derive(Eq)
-pub type LLVMAttributeIndex UInt derive(Eq)
-pub type LLVMFastMathFlags UInt derive(Eq)
 
 pub type AddressSpace UInt derive(Eq)
 pub type FastMathFlags UInt derive(Eq)
@@ -18,66 +15,10 @@ pub fn LLVMFastMathFlags::into(self: LLVMFastMathFlags) -> FastMathFlags {
   FastMathFlags(f)
 }
 
-pub fn FastMathFlags::to_llvm(self: FastMathFlags) -> LLVMFastMathFlags {
+pub fn FastMathFlags::into(self: FastMathFlags) -> LLVMFastMathFlags {
   guard let FastMathFlags(f) = self
   LLVMFastMathFlags(f)
 }
-
-///| llvm memory buffer
-pub type LLVMMemoryBufferRef
-
-///| llvm context
-pub type LLVMContextRef
-
-///| llvm module
-pub type LLVMModuleRef
-
-///| llvm BasicBlock
-pub type LLVMBasicBlockRef
-
-///| llvm metadata
-pub type LLVMMetadataRef
-
-///| llvm md node
-pub type LLVMNamedMDNodeRef
-pub type LLVMValueMetadataEntry
-
-///| llvm builder
-pub type LLVMBuilderRef
-pub type LLVMDIBuilderRef
-
-///| llvm module provider
-pub type LLVMModuleProviderRef
-
-///| llvm pass manager
-pub type LLVMPassManagerRef
-
-///| llvm use
-pub type LLVMUseRef
-
-///| llvm values
-pub type LLVMValueRef
-
-///| llvm types
-pub type LLVMTypeRef
-
-///| llvm operand bundles
-pub type LLVMOperandBundleRef
-
-///| llvm attributes
-pub type LLVMAttributeRef
-
-///| llvm diagnostic info
-pub type LLVMDiagnosticInfoRef
-pub type LLVMComdatRef
-pub type LLVMModuleFlagEntry
-pub type LLVMJITEventListenerRef
-pub type LLVMBinaryRef
-pub type LLVMTargetRef
-
-///| llvm debug record refs
-pub type LLVMDbgRecordRef
-
 
 pub enum IntPredicate {
   // Equal

@@ -6,9 +6,6 @@
 //   SameSize
 // }
 
-
-
-
 pub struct Comdat{
   comdat_ref : LLVMComdatRef
 }
