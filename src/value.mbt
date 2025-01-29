@@ -508,7 +508,7 @@ pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
 pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
   llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_null()
 }
-//
+
 pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
   llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_null()
 }
@@ -517,17 +517,37 @@ pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
   llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_null()
 }
 
-pub fn InstructionValue::get_name(self: InstructionValue) -> String {
-  self.value.get_name()
+pub fn InstructionValue::explicit_clone(self: InstructionValue) -> InstructionValue {
+  InstructionValue::new(llvm_instruction_clone(self.as_value_ref()))
+}
+
+pub fn InstructionValue::get_name(self: InstructionValue) -> String? {
+  // self.value.get_name()
+  if self.get_type().is_void_type() {
+    None
+  } else {
+    Some(self.value.get_name())
+  }
 }
 
 pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
-// pub fn get_instruction_with_name(self: InstructionValue) -> String {
-//   ""
-// }
+pub fn InstructionValue::get_instruction_with_name(
+  self: InstructionValue, name: String
+) -> String? {
+  match self.get_name() {
+    Some(this_name) => if this_name == name {
+      return Some(this_name)
+    }
+    None => ()
+  }
+  match self.get_next_instruction() {
+    Some(next_inst) => next_inst.get_instruction_with_name(name)
+    None => None
+  }
+}
 
 pub fn InstructionValue::get_type(self: InstructionValue) -> AnyTypeEnum {
   AnyTypeEnum::new(self.value.get_type().as_type_ref())
@@ -572,15 +592,13 @@ pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
   llvm_isa_terminator_inst(self.as_value_ref()).is_null()
 }
 
-// pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
-//   // Only apply to terminators
-//   if self.is_terminator() {
-//     // it is `is` not `isa`
-//     llvm_is_conditional(self.as_value_ref()) == 1
-//   } else {
-//     false
-//   }
-// }
+pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
+  if self.is_terminator() {
+    llvm_is_conditional(self.as_value_ref())
+  } else {
+    false
+  }
+}
 
 pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
   if self.get_opcode() == InstructionOpcode::Call {
@@ -705,7 +723,32 @@ pub fn InstructionValue::get_atomic_ordering(self: InstructionValue) -> Result[A
   Ok(llvm_get_ordering(self.as_value_ref()).into())
 }
 
-// pub fn set_atomic_ordering()
+pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: AtomicOrdering) -> Result[Unit, String] {
+  if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
+    return Err("Value is not a load or store instruction")
+  }
+
+  match ordering {
+    AtomicOrdering::Release  => {
+      if self.is_a_load_inst() {
+        return Err("The release ordering is not valid on load instructions")
+      }
+    }
+    AtomicOrdering::AcquireRelease => {
+      return Err("The acq_rel ordering is not valid on load or store instructions")
+    }
+    AtomicOrdering::Acquire  => {
+      if self.is_a_store_inst() {
+        return Err("The acquire ordering is not valid on store instructions")
+      }
+    }
+    _ => ()
+  }
+
+  llvm_set_ordering(self.as_value_ref(), ordering.into())
+
+  Ok(())
+}
 // pub fn get_operand()
 
 // ...
@@ -731,16 +774,16 @@ pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPred
   }
 }
 
-// pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> MetadataValue? {
-//   let metadata = llvm_get_metadata(self.as_value_ref(), kind_id)
-//
-//   if metadata.is_null() {
-//     None
-//   } else {
-//     Some(MetadataValue::new(metadata))
-//   }
-// }
-//
+pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> MetadataValue? {
+  let metadata = llvm_get_metadata(self.as_value_ref(), kind_id)
+
+  if metadata.is_null() {
+    None
+  } else {
+    Some(MetadataValue::new(metadata))
+  }
+}
+
 // pub fn InstructionValue::set_metadata(self: InstructionValue, metadata: MetadataValue, kind_id: UInt) -> Result[Unit, String] {
 //   if not(metadata.is_node()) {
 //     return Err("Metadata is expected to be a node.")

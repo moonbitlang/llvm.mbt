@@ -5679,7 +5679,16 @@ pub fn LLVMValueRef::set_successor(self: LLVMValueRef, i: UInt, block: LLVMBasic
 /// This only works on llvm::BranchInst instructions.
 /// 
 /// - see llvm::BranchInst::isConditional
-pub extern "C" fn llvm_is_conditional(branch: LLVMValueRef) -> LLVMBool = "__llvm_is_conditional"
+extern "C" fn __llvm_is_conditional(branch: LLVMValueRef) -> LLVMBool = "__llvm_is_conditional"
+
+///| Return if a branch is conditional.
+/// 
+/// This only works on llvm::BranchInst instructions.
+/// 
+/// - see llvm::BranchInst::isConditional
+pub fn llvm_is_conditional(branch: LLVMValueRef) -> Bool {
+  __llvm_is_conditional(branch).to_moonbit_bool()
+}
 
 ///| Return if a branch is conditional.
 /// 
@@ -5687,7 +5696,7 @@ pub extern "C" fn llvm_is_conditional(branch: LLVMValueRef) -> LLVMBool = "__llv
 /// 
 /// - see llvm::BranchInst::isConditional
 pub fn LLVMValueRef::is_conditional(self: LLVMValueRef) -> Bool {
-  llvm_is_conditional(self).to_moonbit_bool()
+  __llvm_is_conditional(self).to_moonbit_bool()
 }
 
 ///| Return the condition of a branch instruction.
