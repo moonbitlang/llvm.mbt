@@ -820,3 +820,93 @@ pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnu
 //   Hexadecimal;
 //   Alphabetic;
 // }
+
+//=========================================================
+// IntMathType
+//=========================================================
+// pub trait IntMathType : BasicType {
+// }
+
+//=========================================================
+// IntMathValue
+//=========================================================
+pub trait IntMathValue : BasicValue {
+  new(LLVMValueRef) -> Self;
+}
+
+pub impl IntMathValue for IntValue with new(val_ref: LLVMValueRef) -> IntValue {
+  IntValue::new(val_ref)
+}
+
+pub impl IntMathValue for PointerValue with new(val_ref: LLVMValueRef) -> PointerValue {
+  PointerValue::new(val_ref)
+}
+
+pub impl IntMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
+  VectorValue::new(val_ref)
+}
+
+pub impl IntMathValue for ScalableVectorValue with new(
+  val_ref: LLVMValueRef
+) -> ScalableVectorValue {
+  ScalableVectorValue::new(val_ref)
+}
+
+//=========================================================
+// FloatMathValue
+//=========================================================
+pub trait FloatMathValue : BasicValue {
+  new(LLVMValueRef) -> Self;
+}
+
+pub impl FloatMathValue for FloatValue with new(val_ref: LLVMValueRef) -> FloatValue {
+  FloatValue::new(val_ref)
+}
+
+pub impl FloatMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
+  VectorValue::new(val_ref)
+}
+
+pub impl FloatMathValue for ScalableVectorValue with new(
+  val_ref: LLVMValueRef
+) -> ScalableVectorValue {
+  ScalableVectorValue::new(val_ref)
+}
+
+//=========================================================
+// PointerMathValue
+//=========================================================
+pub trait PointerMathValue : BasicValue {
+  new(LLVMValueRef) -> Self;
+}
+
+pub impl PointerMathValue for PointerValue with new(val_ref: LLVMValueRef) -> PointerValue {
+  PointerValue::new(val_ref)
+}
+
+pub impl PointerMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
+  VectorValue::new(val_ref)
+}
+
+pub impl PointerMathValue for ScalableVectorValue with new(
+  val_ref: LLVMValueRef
+) -> ScalableVectorValue {
+  ScalableVectorValue::new(val_ref)
+}
+
+//=========================================================
+// VectorBaseValue
+//=========================================================
+pub trait VectorBaseValue : BasicValue {
+  new(LLVMValueRef) -> Self;
+}
+
+pub impl VectorBaseValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
+  VectorValue::new(val_ref)
+}
+
+pub impl VectorBaseValue for ScalableVectorValue with new(
+  val_ref: LLVMValueRef
+) -> ScalableVectorValue {
+  ScalableVectorValue::new(val_ref)
+}

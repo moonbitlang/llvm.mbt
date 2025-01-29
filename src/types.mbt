@@ -967,6 +967,34 @@ pub fn ArrayType::get_alignment(self: ArrayType) -> IntValue {
   self.ty.get_alignment()
 }
 
+// pub fn ArrayType::const_array(self: ArrayType, values: Array[BasicValueEnum]) -> ArrayValue {
+//   ArrayValue::new_const_array(self, values)
+// }
+
+pub fn ArrayType::const_zero(self: ArrayType) -> ArrayValue {
+  ArrayValue::new(self.ty.const_zero())
+}
+
+pub fn ArrayType::length(self: ArrayType) -> UInt {
+  llvm_get_array_length(self.as_type_ref())
+}
+
+pub fn ArrayType::is_empty(self: ArrayType) -> Bool {
+  self.length() == 0
+}
+
+pub fn ArrayType::get_undef(self: ArrayType) -> ArrayValue {
+  ArrayValue::new(self.ty.get_undef())
+}
+
+pub fn ArrayType::get_poison(self: ArrayType) -> ArrayValue {
+  ArrayValue::new(llvm_get_poison(self.as_type_ref()))
+}
+
+// pub fn ArrayType::get_element_type(self: ArrayType) -> BasicTypeEnum {
+//   self.ty.get_element_type().as_basic_type_enum()
+// }
+
 pub fn ArrayType::get_context(self: ArrayType) -> Context {
   self.ty.get_context()
 }

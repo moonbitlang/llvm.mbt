@@ -6562,11 +6562,15 @@ pub fn llvm_build_bin_op(builder: LLVMBuilderRef, op: LLVMOpcode, lhs: LLVMValue
 }
 
 ///| Build negation instruction.
-extern "C" fn llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_neg"
+extern "C" fn __llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_neg"
+
+pub fn llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
+  __llvm_build_neg(builder, v, moonbit_str_to_c_str(name))
+}
 
 ///| Build negation instruction.
 pub fn LLVMBuilderRef::build_neg(self: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
-  llvm_build_neg(self, v, moonbit_str_to_c_str(name))
+  __llvm_build_neg(self, v, moonbit_str_to_c_str(name))
 }
 
 ///| Build negation instruction with nsw flag.
@@ -6581,6 +6585,20 @@ pub fn llvm_build_nsw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String
 pub fn LLVMBuilderRef::build_nsw_neg(self: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
   llvm_build_nsw_neg(self, v, name)
 }
+
+///| Build negation instruction with nuw flag.
+extern "C" fn __llvm_build_nuw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nuw_neg"
+
+///| Build negation instruction with nuw flag.
+pub fn llvm_build_nuw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
+  __llvm_build_nuw_neg(builder, v, moonbit_str_to_c_str(name))
+}
+
+///| Build negation instruction with nuw flag.
+pub fn LLVMBuilderRef::build_nuw_neg(self: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
+  llvm_build_nuw_neg(self, v, name)
+}
+
 
 ///| Build floating-point negation instruction.
 extern "C" fn __llvm_build_f_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_neg"
