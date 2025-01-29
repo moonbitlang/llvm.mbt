@@ -189,11 +189,15 @@ pub fn const_zero(self: IntType) -> IntValue {
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
-pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+pub impl BasicType for IntType with fn_type(
+  self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub fn IntType::array_type(self: IntType, size: UInt) -> ArrayType {
+pub impl BasicType for IntType with array_type(
+  self: IntType, size: UInt
+) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -213,11 +217,23 @@ pub fn IntType::size_of(self: IntType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
+pub impl BasicType for IntType with size_of(self: IntType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for IntType with is_sized(self: IntType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn IntType::get_alignment(self: IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
 pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
+
+pub impl BasicType for IntType with ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -301,7 +317,19 @@ pub fn FloatType::fn_type(self: FloatType, param_types: Array[LLVMTypeRef], is_v
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub fn FloatType::farray_type(self: FloatType, size: UInt) -> ArrayType {
+pub impl BasicType for FloatType with fn_type(
+  self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn FloatType::array_type(self: FloatType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for FloatType with array_type(
+  self: FloatType, size: UInt
+) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -337,6 +365,14 @@ pub fn FloatType::size_of(self: FloatType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
+pub impl BasicType for FloatType with size_of(self: FloatType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for FloatType with is_sized(self: FloatType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
   self.ty.get_alignment()
 }
@@ -346,6 +382,10 @@ pub fn FloatType::get_context(self: FloatType) -> Context {
 }
 
 pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
+
+pub impl BasicType for FloatType with ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -488,11 +528,23 @@ pub fn PointerType::size_of(self: PointerType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
+pub impl BasicType for PointerType with size_of(self: PointerType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for PointerType with is_sized(self: PointerType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
   self.ty.get_alignment()
 }
 
 pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
+
+pub impl BasicType for PointerType with ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -504,7 +556,19 @@ pub fn PointerType::fn_type(self: PointerType, param_types: Array[LLVMTypeRef], 
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+pub impl BasicType for PointerType with fn_type(
+  self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
 pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for PointerType with array_type(
+  self: PointerType, size: UInt
+) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -633,6 +697,14 @@ pub fn StructType::size_of(self: StructType) -> IntValue? {
   self.ty.size_of()
 }
 
+pub impl BasicType for StructType with size_of(self: StructType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for StructType with is_sized(self: StructType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn StructType::get_alignment(self: StructType) -> IntValue {
   self.ty.get_alignment()
 }
@@ -650,8 +722,26 @@ pub fn StructType::fn_type(self: StructType, param_types: Array[LLVMTypeRef], is
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+pub impl BasicType for StructType with fn_type(
+  self: StructType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
 pub fn StructType::array_type(self: StructType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
+}
+
+pub impl BasicType for StructType with array_type(
+  self: StructType, size: UInt
+) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for StructType with ptr_type(
+  self: StructType, address_space: AddressSpace
+) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
 pub fn StructType::is_packed(self: StructType) -> Bool {
@@ -745,6 +835,42 @@ pub impl AnyType for FunctionType with as_any_type_enum(self: FunctionType) -> A
   AnyTypeEnum::FunctionType(self)
 }
 
+pub fn FunctionType::ptr_type(self: FunctionType, address_space: AddressSpace) -> PointerType {
+  self.ty.ptr_type(address_space)
+}
+
+pub fn FunctionType::is_var_arg(self: FunctionType) -> Bool {
+  llvm_is_function_var_arg(self.as_type_ref())
+}
+
+pub fn FunctionType::get_param_types(self: FunctionType) -> Array[BasicTypeEnum] {
+  // let cnt = llvm_count_param_types(self.as_type_ref())
+
+  let param_types = llvm_get_param_types(self.as_type_ref())
+
+  param_types.map(fn (t) {BasicTypeEnum::new(t)})
+}
+
+pub fn FunctionType::count_param_types(self: FunctionType) -> UInt {
+  llvm_count_param_types(self.as_type_ref())
+}
+
+pub fn FunctionType::is_sized(self: FunctionType) -> Bool {
+  self.ty.is_sized()
+}
+
+pub fn FunctionType::get_context(self: FunctionType) -> Context {
+  self.ty.get_context()
+}
+
+pub fn FunctionType::get_return_type(self: FunctionType) -> BasicTypeEnum? {
+  let ty = llvm_get_return_type(self.as_type_ref())
+  let kind = llvm_get_type_kind(ty)
+  match kind {
+    LLVMVoidTypeKind => None
+    _ => Some(BasicTypeEnum::new(ty))
+  }
+}
 
 pub fn FunctionType::print_to_stderr(self: FunctionType) -> Unit {
   self.ty.print_to_stderr()
@@ -801,6 +927,40 @@ pub impl BasicMetadataType for ArrayType with as_basic_metadata_type_enum(self: 
 
 pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
   self.ty.size_of()
+}
+
+pub impl BasicType for ArrayType with size_of(self: ArrayType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for ArrayType with is_sized(self: ArrayType) -> Bool {
+  self.ty.is_sized()
+}
+
+pub fn ArrayType::fn_type(self: ArrayType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub impl BasicType for ArrayType with fn_type(
+  self: ArrayType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn ArrayType::array_type(self: ArrayType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for ArrayType with array_type(
+  self: ArrayType, size: UInt
+) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for ArrayType with ptr_type(
+  self: ArrayType, address_space: AddressSpace
+) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
 pub fn ArrayType::get_alignment(self: ArrayType) -> IntValue {
@@ -868,12 +1028,48 @@ pub fn VectorType::size_of(self: VectorType) -> IntValue? {
   self.ty.size_of()
 }
 
+pub impl BasicType for VectorType with size_of(self: VectorType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for VectorType with is_sized(self: VectorType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn VectorType::get_alignment(self: VectorType) -> IntValue {
   self.ty.get_alignment()
 }
 
 pub fn VectorType::get_size(self: VectorType) -> UInt {
   llvm_get_vector_size(self.as_type_ref())
+}
+
+pub fn VectorType::fn_type(self: VectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub impl BasicType for VectorType with fn_type(
+  self: VectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
+pub fn VectorType::array_type(self: VectorType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for VectorType with array_type(
+  self: VectorType, size: UInt
+) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub fn VectorType::ptr_type(self: VectorType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
+}
+
+pub impl BasicType for VectorType with ptr_type(self: VectorType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
 // pub fn VectorType::const_vector
@@ -943,6 +1139,14 @@ pub fn ScalableVectorType::size_of(self: ScalableVectorType) -> IntValue? {
   self.ty.size_of()
 }
 
+pub impl BasicType for ScalableVectorType with size_of(self: ScalableVectorType) -> IntValue? {
+  self.ty.size_of()
+}
+
+pub impl BasicType for ScalableVectorType with is_sized(self: ScalableVectorType) -> Bool {
+  self.ty.is_sized()
+}
+
 pub fn ScalableVectorType::get_alignment(self: ScalableVectorType) -> IntValue {
   self.ty.get_alignment()
 }
@@ -972,8 +1176,26 @@ pub fn ScalableVectorType::fn_type(self: ScalableVectorType, param_types: Array[
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+pub impl BasicType for ScalableVectorType with fn_type(
+  self: ScalableVectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg)
+}
+
 pub fn ScalableVectorType::array_type(self: ScalableVectorType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
+}
+
+pub impl BasicType for ScalableVectorType with array_type(
+  self: ScalableVectorType, size: UInt
+) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for ScalableVectorType with ptr_type(
+  self: ScalableVectorType, address_space: AddressSpace
+) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
 // TODO: enable this after `new_const_array` is implemented

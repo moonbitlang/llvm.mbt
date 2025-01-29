@@ -721,6 +721,11 @@ pub fn AnyTypeEnum::to_string(self: AnyTypeEnum) -> String {
 
 pub trait BasicType : AnyType {
   as_basic_type_enum(Self) -> BasicTypeEnum;
+  fn_type(Self, Array[LLVMTypeRef], Bool) -> FunctionType;
+  is_sized(Self) -> Bool;
+  size_of(Self) -> IntValue?;
+  array_type(Self, UInt) -> ArrayType;
+  ptr_type(Self, AddressSpace) -> PointerType;
 }
 
 pub enum BasicTypeEnum {

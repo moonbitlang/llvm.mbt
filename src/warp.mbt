@@ -1406,11 +1406,16 @@ pub fn LLVMTypeRef::function_type(self: LLVMTypeRef, param_types: Array[LLVMType
 }
 
 ///| Returns whether a function type is variadic.
-pub extern "C" fn llvm_is_function_var_arg(function_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_function_var_arg"
+extern "C" fn __llvm_is_function_var_arg(function_ty: LLVMTypeRef) -> LLVMBool = "__llvm_is_function_var_arg"
 
 ///| Returns whether a function type is variadic.
-pub fn LLVMTypeRef::is_function_var_arg(self: LLVMTypeRef) -> LLVMBool {
-  llvm_is_function_var_arg(self)
+pub fn llvm_is_function_var_arg(function_ty: LLVMTypeRef) -> Bool {
+  __llvm_is_function_var_arg(function_ty).to_moonbit_bool()
+}
+
+///| Returns whether a function type is variadic.
+pub fn LLVMTypeRef::is_function_var_arg(self: LLVMTypeRef) -> Bool {
+  __llvm_is_function_var_arg(self).to_moonbit_bool()
 }
 
 ///| Obtain the Type this function Type returns.
@@ -1429,18 +1434,16 @@ pub fn LLVMTypeRef::count_param_types(self: LLVMTypeRef) -> UInt {
   llvm_count_param_types(self)
 }
 
-// 
-// Obtain the types of a function's parameters.
-// 
-// The Dest parameter should point to a pre-allocated array of
-// LLVMTypeRef at least LLVMCountParamTypes() large. On return, the
-// first LLVMCountParamTypes() entries in the array will be populated
-// with LLVMTypeRef instances.
-// 
-// @param FunctionTy The function type to operate on.
-// @param Dest Memory address of an array to be filled with result.
-// 
-// pub extern "C" fn llvm_get_param_types(function_ty: LLVMTypeRef, dest: Ptr[LLVMTypeRef]) = "__llvm_get_param_types"
+///| Obtain the types of a function's parameters.
+/// 
+/// The Dest parameter should point to a pre-allocated array of
+/// LLVMTypeRef at least LLVMCountParamTypes() large. On return, the
+/// first LLVMCountParamTypes() entries in the array will be populated
+/// with LLVMTypeRef instances.
+/// 
+/// - param FunctionTy The function type to operate on.
+/// - param Dest Memory address of an array to be filled with result.
+pub extern "C" fn llvm_get_param_types(function_ty: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_param_types"
 
 
 ///| Create a new structure type in a context.

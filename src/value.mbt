@@ -684,9 +684,6 @@ pub fn InstructionValue::get_alignment(self: InstructionValue) -> Result[UInt, S
 }
 
 pub fn InstructionValue::set_alignment(self: InstructionValue, alignment: UInt) -> Result[Unit, String] {
-  fn is_power_of_two(value: UInt) -> Bool {
-    (value & (value - 1)) == 0
-  }
 
   if not(is_power_of_two(alignment)) && alignment != 0 {
     return Err("Alignment must be a power of two")
