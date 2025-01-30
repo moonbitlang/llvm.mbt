@@ -107,6 +107,7 @@ LLVMTypeKind llvm_type_kind_from_int(int32_t k) {
     return LLVMTargetExtTypeKind;
   default:
     panic("Error during Moonbit Convert to LLVMTypeKind");
+    return LLVMVoidTypeKind;
   }
 }
 
@@ -248,6 +249,7 @@ int llvm_opcode_to_int(LLVMOpcode self) {
     return 66;
   default:
     panic("Unknown Error happened, loc: llvm_opcode_to_int");
+    return -1;
   }
 }
 
@@ -389,6 +391,7 @@ LLVMOpcode llvm_opcode_from_int(int idx) {
     return LLVMCatchSwitch;
   default:
     panic("Unknown Error happened, loc: llvm_opcode_from_int");
+    return LLVMRet;
   }
 }
 
@@ -430,6 +433,7 @@ int llvm_linkage_to_int(LLVMLinkage self) {
     return 16;
   default:
     panic("Unknown Error happened, loc: llvm_linkage_to_int");
+    return -1;
   }
 }
 
@@ -471,6 +475,7 @@ LLVMLinkage llvm_linkage_from_int(int idx) {
     return LLVMLinkerPrivateWeakLinkage;
   default:
     panic("Unknown Error happened, loc: llvm_linkage_from_int");
+    return LLVMExternalLinkage;
   }
 }
 
@@ -484,6 +489,7 @@ int llvm_visibility_to_int(LLVMVisibility self) {
     return 2;
   default:
     panic("Unknown Error happened, loc: llvm_visibility_to_int");
+    return -1;
   }
 }
 
@@ -497,6 +503,7 @@ LLVMVisibility llvm_visibility_from_int(int idx) {
     return LLVMProtectedVisibility;
   default:
     panic("Unknown Error happened, loc: llvm_visibility_from_int");
+    return LLVMDefaultVisibility;
   }
 }
 
@@ -510,6 +517,7 @@ int llvm_unnamed_addr_to_int(LLVMUnnamedAddr self) {
     return 2;
   default:
     panic("Unknown Error happened, loc: llvm_unnamed_addr_to_int");
+    return -1;
   }
 }
 
@@ -523,6 +531,7 @@ LLVMUnnamedAddr llvm_unnamed_addr_from_int(int idx) {
     return LLVMGlobalUnnamedAddr;
   default:
     panic("Unknown Error happened, loc: llvm_unnamed_addr_from_int");
+    return LLVMNoUnnamedAddr;
   }
 }
 
@@ -536,6 +545,7 @@ int llvm_dll_storage_class_to_int(LLVMDLLStorageClass self) {
     return 2;
   default:
     panic("Unknown Error happened, loc: llvm_dll_storage_class_to_int");
+    return -1;
   }
 }
 
@@ -549,6 +559,7 @@ LLVMDLLStorageClass llvm_dll_storage_class_from_int(int idx) {
     return LLVMDLLExportStorageClass;
   default:
     panic("Unknown Error happened, loc: llvm_dll_storage_class_from_int");
+    return LLVMDefaultStorageClass;
   }
 }
 
@@ -638,6 +649,7 @@ int llvm_call_conv_to_int(LLVMCallConv self) {
     return 40;
   default:
     panic("Unknown Error happened, loc: llvm_call_conv_to_int");
+    return -1;
   }
 }
 
@@ -727,6 +739,7 @@ LLVMCallConv llvm_call_conv_from_int(int idx) {
     return LLVMAMDGPUESCallConv;
   default:
     panic("Unknown Error happened, loc: llvm_call_conv_from_int");
+    return LLVMCCallConv;
   }
 }
 
@@ -788,6 +801,7 @@ int llvm_value_kind_to_int(LLVMValueKind self) {
     return 26;
   default:
     panic("Unknown Error happened, loc: llvm_value_kind_to_int");
+    return -1;
   }
 }
 
@@ -849,6 +863,7 @@ LLVMValueKind llvm_value_kind_from_int(int idx) {
     return LLVMConstantTargetNoneValueKind;
   default:
     panic("Unknown Error happened, loc: llvm_value_kind_from_int");
+    return LLVMArgumentValueKind;
   }
 }
 
@@ -876,6 +891,7 @@ int llvm_int_predicate_to_int(LLVMIntPredicate self) {
     return 9;
   default:
     panic("Unknown Error happened, loc: llvm_int_predicate_to_int");
+    return -1;
   }
 }
 
@@ -903,6 +919,7 @@ LLVMIntPredicate llvm_int_predicate_from_int(int idx) {
     return LLVMIntSLE;
   default:
     panic("Unknown Error happened, loc: llvm_int_predicate_from_int");
+    return LLVMIntEQ;
   }
 }
 
@@ -942,6 +959,7 @@ int llvm_real_predicate_to_int(LLVMRealPredicate self) {
     return 15;
   default:
     panic("Unknown Error happened, loc: llvm_real_predicate_to_int");
+    return -1;
   }
 }
 
@@ -981,6 +999,7 @@ LLVMRealPredicate llvm_real_predicate_from_int(int idx) {
     return LLVMRealPredicateTrue;
   default:
     panic("Unknown Error happened, loc: llvm_real_predicate_from_int");
+    return LLVMRealPredicateFalse;
   }
 }
 
@@ -1037,6 +1056,17 @@ typedef struct ArrayLLVMOperandBundleRef {
 struct UnsafedArrayLLVMOperandBundleRef {
   struct moonbit_object header;
   void *data[0];
+};
+
+typedef struct ArrayUInt64_t {
+  struct moonbit_object header;
+  int32_t $1;
+  struct UnsafedArrayUInt64_t *$0;
+} ArrayUInt64_t;
+
+struct UnsafedArrayUInt64_t {
+  struct moonbit_object header;
+  uint64_t data[0];
 };
 
 LLVMBool __llvm_value_is_null(void *val) {
@@ -2246,14 +2276,13 @@ void *__llvm_const_int(void *int_ty, unsigned long long n,
   return (LLVMValueRef)LLVMConstInt((LLVMTypeRef)int_ty, n, sign_extend);
 }
 
-// void *__llvm_const_int_of_arbitrary_precision(void *int_ty, unsigned
-// num_words,
-//                                               ArrayUint64_t *words) {
-//   const uint64_t *llvm_words = (const uint64_t *)words->$0->data;
-//   return (LLVMValueRef)LLVMConstIntOfArbitraryPrecision((LLVMTypeRef)int_ty,
-//                                                         num_words,
-//                                                         llvm_words);
-// }
+void *__llvm_const_int_of_arbitrary_precision(void *int_ty,
+                                              ArrayUInt64_t *words) {
+  const uint64_t *llvm_words = (const uint64_t *)words->$0->data;
+  unsigned num_words = words->$1;
+  return (LLVMValueRef)LLVMConstIntOfArbitraryPrecision((LLVMTypeRef)int_ty,
+                                                        num_words, llvm_words);
+}
 
 void *__llvm_const_int_of_string(void *int_ty, void *text, uint8_t radix) {
   return (LLVMValueRef)LLVMConstIntOfString((LLVMTypeRef)int_ty,

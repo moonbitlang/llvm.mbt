@@ -3255,12 +3255,9 @@ pub fn LLVMTypeRef::const_int(self: LLVMTypeRef, n: UInt64, sign_extend: Bool) -
   __llvm_const_int(self, n, to_llvm_bool(sign_extend))
 }
 
-// Obtain a constant value for an integer of arbitrary precision.
-// 
-// - see llvm::ConstantInt::get()
-// LLVMValueRef LLVMConstIntOfArbitraryPrecision(LLVMTypeRef IntTy,
-//                                               unsigned NumWords,
-//                                               const uint64_t Words[]);
+///| Obtain a constant value for an integer of arbitrary precision.
+/// 
+/// - see llvm::ConstantInt::get()
 pub extern "C" fn llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, words: Array[UInt64]) -> LLVMValueRef = "__llvm_const_int_of_arbitrary_precision"
 
 

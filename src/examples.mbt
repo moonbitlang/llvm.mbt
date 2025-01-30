@@ -13,6 +13,8 @@
 //   llvm_module.to_string()
 // }
 
+fn main{}
+
 test "Basic type and Basic value" {
   let context = Context::create()
 

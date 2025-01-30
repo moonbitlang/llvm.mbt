@@ -1,11 +1,11 @@
 // ==========================================
 // Types
 // ==========================================
-pub struct Type {
+struct Type {
   type_ref: LLVMTypeRef
 }
 
-pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
+fn Type::new(type_ref: LLVMTypeRef) -> Type {
   if type_ref.is_null() {
     println("Type is null")
     panic()
@@ -16,11 +16,11 @@ pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
   }
 }
 
-pub fn Type::as_type_ref(self: Type) -> LLVMTypeRef {
+fn Type::as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
-pub fn Type::const_zero(self: Type) -> LLVMValueRef {
+fn Type::const_zero(self: Type) -> LLVMValueRef {
   let val_ref = self.type_ref
   let k = llvm_get_type_kind(val_ref)
   match k {
@@ -29,11 +29,11 @@ pub fn Type::const_zero(self: Type) -> LLVMValueRef {
   }
 }
 
-pub fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType {
+fn ptr_type(self: Type, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
-pub fn vec_type(self: Type, size: UInt) -> VectorType {
+fn vec_type(self: Type, size: UInt) -> VectorType {
   if size == 0 {
     abort("Vector size must be greater than 0")
   }
@@ -43,7 +43,7 @@ pub fn vec_type(self: Type, size: UInt) -> VectorType {
   VectorType::new(r)
 }
 
-pub fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
+fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
   if size == 0 {
     abort("Vector size must be greater than 0")
   }
@@ -55,7 +55,7 @@ pub fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
-pub fn Type::fn_type(
+fn Type::fn_type(
   self: Type,
   param_types: Array[LLVMTypeRef],
   is_var_arg: Bool
@@ -68,7 +68,7 @@ pub fn Type::fn_type(
 }
 
 // REVIEW: Why not check size is zero?
-pub fn array_type(self: Type, size: UInt) -> ArrayType {
+fn array_type(self: Type, size: UInt) -> ArrayType {
   let r = llvm_array_type(self.as_type_ref(), size)
   ArrayType::new(r)
 }
@@ -103,7 +103,7 @@ fn Type::size_of(self: Type) -> IntValue? {
   Some(v)
 }
 
-pub fn Type::get_element_type(self: Type) -> AnyTypeEnum {
+fn Type::get_element_type(self: Type) -> AnyTypeEnum {
   let element_type_ref = self.as_type_ref().get_element_type()
   AnyTypeEnum::new(element_type_ref)
 }
@@ -139,7 +139,9 @@ pub struct IntType {
   ty: Type
 }
 
-
+///| Create `IntType` from `LLVMTypeRef`
+///
+/// **Unsafe**: Undefined behavior if `type_ref` is not int type.
 pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   assert_not(type_ref.is_null())
 
@@ -148,10 +150,21 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   }
 }
 
+///| Return `LLVMTypeRef` of `IntType`
 pub fn IntType::as_type_ref(self: IntType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
+///| Creates an `IntValue` representing a constant value of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create()
+/// let i32_type = IntType::i32_type(context)
+/// let i32_val = i32_type.const_int(42, false)
+/// inspect!(i32_val, "i32 42")
+/// ```
 // TODO: Maybe better explain signextension
 pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
   let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, sign_extend)
@@ -162,20 +175,58 @@ pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntV
 //
 // }
 
-pub fn IntType::const_int_of_arbitrary_precision(self: IntType, words: Array[UInt64]) -> IntValue {
+///| Create a constant `IntValue` of arbitrary precision.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create()
+/// let i64_type = context.i64_type();
+/// let i64_val = i64_type.const_int_arbitrary_precision([1, 2]);
+/// ```
+pub fn IntType::const_int_arbitrary_precision(self: IntType, words: Array[UInt64]) -> IntValue {
   let llvm_val_ref = llvm_const_int_of_arbitrary_precision(self.as_type_ref(), words)
   IntValue::new(llvm_val_ref)
 }
 
+///| Creates an `IntValue` representing a constant value of all one bits of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
+///
+/// ## Example (Not Tested)
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_ptr_value = i32_type.const_all_ones();
+/// inspect!(i32_ptr_value, "i32 -1")
+/// ```
 pub fn IntType::const_all_ones(self: IntType) -> IntValue {
   let llvm_val_ref = llvm_const_all_ones(self.as_type_ref())
   IntValue::new(llvm_val_ref)
 }
 
+
+///| Creates a constant zero value of this `IntType`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i8_type = context.i8_type();
+/// let i8_zero = i8_type.const_zero();
+/// inspect!(i8_zero, "i8 0")
+/// ```
 pub fn const_zero(self: IntType) -> IntValue {
   IntValue::new(self.ty.const_zero())
 }
 
+///| Creates a `FunctionType` with this `IntType` for its return type.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i8_type = context.i8_type();
+/// let fn_type = i8_type.fn_type([]:Array[IntValue], false);
+/// ```
 pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
