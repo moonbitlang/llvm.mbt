@@ -5,10 +5,6 @@ pub struct Type {
   type_ref: LLVMTypeRef
 }
 
-trait AsTypeRef {
-  as_type_ref(Self) -> LLVMTypeRef
-}
-
 pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
   if type_ref.is_null() {
     println("Type is null")
@@ -20,10 +16,9 @@ pub fn Type::new(type_ref: LLVMTypeRef) -> Type {
   }
 }
 
-pub impl AsTypeRef for Type with as_type_ref(self: Type) -> LLVMTypeRef {
+pub fn Type::as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
-
 
 pub fn Type::const_zero(self: Type) -> LLVMValueRef {
   let val_ref = self.type_ref
@@ -133,6 +128,10 @@ impl Show for Type with output(self: Type, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
+impl Show for Type with to_string(self: Type) -> String {
+  self.to_string()
+}
+
 // ===============================================
 // IntType
 // ===============================================
@@ -140,21 +139,6 @@ pub struct IntType {
   ty: Type
 }
 
-pub impl AsTypeRef for IntType with as_type_ref(self: IntType) -> LLVMTypeRef {
-  self.ty.as_type_ref()
-}
-
-pub impl AnyType for IntType with as_any_type_enum(self: IntType) -> AnyTypeEnum {
-  AnyTypeEnum::IntType(self)
-}
-
-pub impl BasicType for IntType with as_basic_type_enum(self: IntType) -> BasicTypeEnum {
-  BasicTypeEnum::IntType(self)
-}
-
-pub impl BasicMetadataType for IntType with as_basic_metadata_type_enum(self: IntType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::IntType(self)
-}
 
 pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   assert_not(type_ref.is_null())
@@ -162,6 +146,10 @@ pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
   IntType::{
     ty: Type::new(type_ref)
   }
+}
+
+pub fn IntType::as_type_ref(self: IntType) -> LLVMTypeRef {
+  self.ty.as_type_ref()
 }
 
 // TODO: Maybe better explain signextension
@@ -188,16 +176,11 @@ pub fn const_zero(self: IntType) -> IntValue {
   IntValue::new(self.ty.const_zero())
 }
 
-// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
-pub impl BasicType for IntType with fn_type(
-  self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
+pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for IntType with array_type(
-  self: IntType, size: UInt
-) -> ArrayType {
+pub fn IntType::array_type(self: IntType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -213,27 +196,20 @@ pub fn IntType::get_context(self: IntType) -> Context {
   self.ty.get_context()
 }
 
-pub fn IntType::size_of(self: IntType) -> IntValue {
-  self.ty.size_of().unwrap()
-}
-
-pub impl BasicType for IntType with size_of(self: IntType) -> IntValue? {
+pub fn IntType::size_of(self: IntType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for IntType with is_sized(self: IntType) -> Bool {
+pub fn IntType::is_sized(self: IntType) -> Bool {
   self.ty.is_sized()
 }
+
 
 pub fn IntType::get_alignment(self: IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
 pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-}
-
-pub impl BasicType for IntType with ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -279,6 +255,10 @@ pub impl Show for IntType with output(self: IntType, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
+pub impl Show for IntType with to_string(self: IntType) -> String {
+  self.to_string()
+}
+
 // ==============================================
 // FloatType
 // ==============================================
@@ -294,22 +274,8 @@ pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
   }
 }
 
-pub impl AsTypeRef for FloatType with as_type_ref(
-  self: FloatType
-) -> LLVMTypeRef {
+pub fn FloatType::as_type_ref(self: FloatType) -> LLVMTypeRef {
   self.ty.as_type_ref()
-}
-
-pub impl AnyType for FloatType with as_any_type_enum(self: FloatType) -> AnyTypeEnum {
-  AnyTypeEnum::FloatType(self)
-}
-
-pub impl BasicType for FloatType with as_basic_type_enum(self: FloatType) -> BasicTypeEnum {
-  BasicTypeEnum::FloatType(self)
-}
-
-pub impl BasicMetadataType for FloatType with as_basic_metadata_type_enum(self: FloatType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::FloatType(self)
 }
 
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
@@ -317,19 +283,8 @@ pub fn FloatType::fn_type(self: FloatType, param_types: Array[LLVMTypeRef], is_v
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for FloatType with fn_type(
-  self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
 
 pub fn FloatType::array_type(self: FloatType, size: UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for FloatType with array_type(
-  self: FloatType, size: UInt
-) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -361,15 +316,11 @@ pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
 
-pub fn FloatType::size_of(self: FloatType) -> IntValue {
-  self.ty.size_of().unwrap()
+pub fn FloatType::size_of(self: FloatType) -> IntValue? {
+  self.size_of()
 }
 
-pub impl BasicType for FloatType with size_of(self: FloatType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for FloatType with is_sized(self: FloatType) -> Bool {
+pub fn FloatType::is_sized(self: FloatType) -> Bool {
   self.ty.is_sized()
 }
 
@@ -382,10 +333,6 @@ pub fn FloatType::get_context(self: FloatType) -> Context {
 }
 
 pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-}
-
-pub impl BasicType for FloatType with ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -427,6 +374,9 @@ pub impl Show for FloatType with output(self: FloatType, logger: &Logger) -> Uni
   logger.write_string(self.to_string())
 }
 
+pub impl Show for FloatType with to_string(self: FloatType) -> String {
+  self.to_string()
+}
 
 // ==============================================
 // VoidType
@@ -443,14 +393,8 @@ pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
   }
 }
 
-pub impl AsTypeRef for VoidType with as_type_ref(
-  self: VoidType
-) -> LLVMTypeRef {
+pub fn VoidType::as_type_ref(self: VoidType) -> LLVMTypeRef {
   self.ty.as_type_ref()
-}
-
-pub impl AnyType for VoidType with as_any_type_enum(self: VoidType) -> AnyTypeEnum {
-  AnyTypeEnum::VoidType(self)
 }
 
 // REVIEW: Does it always retturn false?
@@ -491,6 +435,10 @@ pub impl Show for VoidType with output(self: VoidType, logger: &Logger) -> Unit 
   logger.write_string(self.to_string())
 }
 
+pub impl Show for VoidType with to_string(self: VoidType) -> String {
+  self.to_string()
+}
+
 // ===========================================
 // PointerType
 // ===========================================
@@ -506,35 +454,18 @@ pub fn PointerType::new(type_ref: LLVMTypeRef) -> PointerType {
   }
 }
 
-pub impl AsTypeRef for PointerType with as_type_ref(
-  self: PointerType
-) -> LLVMTypeRef {
+pub fn PointerType::as_type_ref(self: PointerType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AnyType for PointerType with as_any_type_enum(self: PointerType) -> AnyTypeEnum {
-  AnyTypeEnum::PointerType(self)
-}
-
-pub impl BasicType for PointerType with as_basic_type_enum(self: PointerType) -> BasicTypeEnum {
-  BasicTypeEnum::PointerType(self)
-}
-
-pub impl BasicMetadataType for PointerType with as_basic_metadata_type_enum(self: PointerType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::PointerType(self)
-}
-
-pub fn PointerType::size_of(self: PointerType) -> IntValue {
-  self.ty.size_of().unwrap()
-}
-
-pub impl BasicType for PointerType with size_of(self: PointerType) -> IntValue? {
+pub fn PointerType::size_of(self: PointerType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for PointerType with is_sized(self: PointerType) -> Bool {
+pub fn PointerType::is_sized(self: PointerType) -> Bool {
   self.ty.is_sized()
 }
+
 
 pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
   self.ty.get_alignment()
@@ -544,21 +475,11 @@ pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> 
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
-pub impl BasicType for PointerType with ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-}
-
 pub fn PointerType::get_context(self: PointerType) -> Context {
   self.ty.get_context()
 }
 
 pub fn PointerType::fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
-
-pub impl BasicType for PointerType with fn_type(
-  self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
@@ -577,7 +498,6 @@ pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
 
   AddressSpace(addr_space)
 }
-
 
 pub fn PointerType::const_null(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_null(self.as_type_ref()))
@@ -635,6 +555,10 @@ pub impl Show for PointerType with output(self: PointerType, logger: &Logger) ->
   logger.write_string(self.to_string())
 }
 
+pub impl Show for PointerType with to_string(self: PointerType) -> String {
+  self.to_string()
+}
+
 // ===========================================
 // StructType
 // ===========================================
@@ -650,23 +574,11 @@ pub fn StructType::new(type_ref: LLVMTypeRef) -> StructType {
   }
 }
 
-pub impl AsTypeRef for StructType with as_type_ref(
-  self: StructType
-) -> LLVMTypeRef {
+pub fn StructType::as_type_ref(self: StructType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AnyType for StructType with as_any_type_enum(self: StructType) -> AnyTypeEnum {
-  AnyTypeEnum::StructType(self)
-}
 
-pub impl BasicType for StructType with as_basic_type_enum(self: StructType) -> BasicTypeEnum {
-  BasicTypeEnum::StructType(self)
-}
-
-pub impl BasicMetadataType for StructType with as_basic_metadata_type_enum(self: StructType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::StructType(self)
-}
 
 pub fn StructType::get_field_type_at_index(self: StructType, index: UInt) -> BasicTypeEnum? {
   // TODOL: need to think about how to handle this when `opaque` is true
@@ -697,11 +609,7 @@ pub fn StructType::size_of(self: StructType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for StructType with size_of(self: StructType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for StructType with is_sized(self: StructType) -> Bool {
+pub fn StructType::is_sized(self: StructType) -> Bool {
   self.ty.is_sized()
 }
 
@@ -722,25 +630,11 @@ pub fn StructType::fn_type(self: StructType, param_types: Array[LLVMTypeRef], is
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for StructType with fn_type(
-  self: StructType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
-
 pub fn StructType::array_type(self: StructType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
-pub impl BasicType for StructType with array_type(
-  self: StructType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for StructType with ptr_type(
-  self: StructType, address_space: AddressSpace
-) -> PointerType {
+pub fn StructType::ptr_type(self: StructType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -809,6 +703,9 @@ pub impl Show for StructType with output(self: StructType, logger: &Logger) -> U
   logger.write_string(self.to_string())
 }
 
+pub impl Show for StructType with to_string(self: StructType) -> String {
+  self.to_string()
+}
 
 // ===========================================
 // FunctionType
@@ -825,14 +722,8 @@ pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
   }
 }
 
-pub impl AsTypeRef for FunctionType with as_type_ref(
-  self: FunctionType
-) -> LLVMTypeRef {
+pub fn FunctionType::as_type_ref(self: FunctionType) -> LLVMTypeRef {
   self.ty.as_type_ref()
-}
-
-pub impl AnyType for FunctionType with as_any_type_enum(self: FunctionType) -> AnyTypeEnum {
-  AnyTypeEnum::FunctionType(self)
 }
 
 pub fn FunctionType::ptr_type(self: FunctionType, address_space: AddressSpace) -> PointerType {
@@ -892,6 +783,9 @@ pub impl Show for FunctionType with output(self: FunctionType, logger: &Logger) 
   logger.write_string(self.to_string())
 }
 
+pub impl Show for FunctionType with to_string(self: FunctionType) -> String {
+  self.to_string()
+}
 // ===========================================
 // ArrayType
 // ===========================================
@@ -907,61 +801,29 @@ pub fn ArrayType::new(type_ref: LLVMTypeRef) -> ArrayType {
   }
 }
 
-pub impl AsTypeRef for ArrayType with as_type_ref(
-  self: ArrayType
-) -> LLVMTypeRef {
+pub fn ArrayType::as_type_ref(self: ArrayType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AnyType for ArrayType with as_any_type_enum(self: ArrayType) -> AnyTypeEnum {
-  AnyTypeEnum::ArrayType(self)
-}
-
-pub impl BasicType for ArrayType with as_basic_type_enum(self: ArrayType) -> BasicTypeEnum {
-  BasicTypeEnum::ArrayType(self)
-}
-
-pub impl BasicMetadataType for ArrayType with as_basic_metadata_type_enum(self: ArrayType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::ArrayType(self)
-}
 
 pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for ArrayType with size_of(self: ArrayType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for ArrayType with is_sized(self: ArrayType) -> Bool {
+pub fn ArrayType::is_sized(self: ArrayType) -> Bool {
   self.ty.is_sized()
 }
+
 
 pub fn ArrayType::fn_type(self: ArrayType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for ArrayType with fn_type(
-  self: ArrayType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
 
 pub fn ArrayType::array_type(self: ArrayType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
-pub impl BasicType for ArrayType with array_type(
-  self: ArrayType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for ArrayType with ptr_type(
-  self: ArrayType, address_space: AddressSpace
-) -> PointerType {
-  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-}
 
 pub fn ArrayType::get_alignment(self: ArrayType) -> IntValue {
   self.ty.get_alignment()
@@ -1019,6 +881,9 @@ pub impl Show for ArrayType with output(self: ArrayType, logger: &Logger) -> Uni
   logger.write_string(self.to_string())
 }
 
+pub impl Show for ArrayType with to_string(self: ArrayType) -> String {
+  self.to_string()
+}
 // ===========================================
 // VectorType
 // ===========================================
@@ -1130,6 +995,10 @@ pub impl Show for VectorType with output(self: VectorType, logger: &Logger) -> U
   logger.write_string(self.to_string())
 }
 
+pub impl Show for VectorType with to_string(self: VectorType) -> String {
+  self.to_string()
+}
+
 // ===========================================
 // ScalableVectorType
 // ===========================================
@@ -1145,35 +1014,18 @@ pub fn ScalableVectorType::new(type_ref: LLVMTypeRef) -> ScalableVectorType {
   }
 }
 
-pub impl AsTypeRef for ScalableVectorType with as_type_ref(
-  self: ScalableVectorType
-) -> LLVMTypeRef {
+pub fn ScalableVectorType::as_type_ref(self: ScalableVectorType) -> LLVMTypeRef {
   self.ty.as_type_ref()
-}
-
-pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVectorType) -> AnyTypeEnum {
-  AnyTypeEnum::ScalableVectorType(self)
-}
-
-pub impl BasicType for ScalableVectorType with as_basic_type_enum(self: ScalableVectorType) -> BasicTypeEnum {
-  BasicTypeEnum::ScalableVectorType(self)
-}
-
-pub impl BasicMetadataType for ScalableVectorType with as_basic_metadata_type_enum(self: ScalableVectorType) -> BasicMetadataTypeEnum {
-  BasicMetadataTypeEnum::ScalableVectorType(self)
 }
 
 pub fn ScalableVectorType::size_of(self: ScalableVectorType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for ScalableVectorType with size_of(self: ScalableVectorType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for ScalableVectorType with is_sized(self: ScalableVectorType) -> Bool {
+pub fn ScalableVectorType::is_sized(self: ScalableVectorType) -> Bool {
   self.ty.is_sized()
 }
+
 
 pub fn ScalableVectorType::get_alignment(self: ScalableVectorType) -> IntValue {
   self.ty.get_alignment()
@@ -1204,25 +1056,11 @@ pub fn ScalableVectorType::fn_type(self: ScalableVectorType, param_types: Array[
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for ScalableVectorType with fn_type(
-  self: ScalableVectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
-
 pub fn ScalableVectorType::array_type(self: ScalableVectorType, size: UInt) -> ArrayType {
-  self.ty.array_type(size)
+  self.array_type(size)
 }
 
-pub impl BasicType for ScalableVectorType with array_type(
-  self: ScalableVectorType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for ScalableVectorType with ptr_type(
-  self: ScalableVectorType, address_space: AddressSpace
-) -> PointerType {
+pub fn ScalableVectorType::ptr_type(self: ScalableVectorType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
@@ -1255,6 +1093,10 @@ pub impl Show for ScalableVectorType with output(self: ScalableVectorType, logge
   logger.write_string(self.to_string())
 }
 
+pub impl Show for ScalableVectorType with to_string(self: ScalableVectorType) -> String {
+  self.to_string()
+}
+
 // ===========================================
 // MeteadataType
 // ===========================================
@@ -1270,9 +1112,7 @@ pub fn MetadataType::new(type_ref: LLVMTypeRef) -> MetadataType {
   }
 }
 
-pub impl AsTypeRef for MetadataType with as_type_ref(
-  self: MetadataType
-) -> LLVMTypeRef {
+pub fn MetadataType::as_type_ref(self: MetadataType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
@@ -1302,4 +1142,8 @@ pub fn MetadataType::dump(self: MetadataType) -> Unit {
 
 pub impl Show for MetadataType with output(self: MetadataType, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for MetadataType with to_string(self: MetadataType) -> String {
+  self.to_string()
 }

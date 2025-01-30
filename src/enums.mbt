@@ -1,10 +1,6 @@
 //=========================================================
 // AggregateValueEnum
 //=========================================================
-pub trait AggregateValue : AnyValue {
-  as_aggregate_value_enum(Self) -> AggregateValueEnum;
-}
-
 pub enum AggregateValueEnum {
   ArrayValue(ArrayValue);
   StructValue(StructValue);
@@ -65,12 +61,8 @@ pub fn AggregateValueEnum::to_string(self: AggregateValueEnum) -> String {
 
 
 //=========================================================
-// AnyValue
+// AnyValueEnum
 //=========================================================
-pub trait AnyValue : AsValueRef {
-  as_any_value_enum(Self) -> AnyValueEnum;
-}
-
 pub enum AnyValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
@@ -145,11 +137,6 @@ pub fn AnyValueEnum::is_array_value(self: AnyValueEnum) -> Bool {
 //=========================================================
 // BasicValue
 //=========================================================
-
-pub trait BasicValue : AnyValue {
-  as_basic_value_enum(Self) -> BasicValueEnum;
-}
-
 pub enum BasicValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
@@ -326,7 +313,7 @@ pub fn BasicValueEnum::into_scalable_vector_value(self: BasicValueEnum) -> Scala
 }
 
 
-pub fn  BasicValueEnum :: to_string(self: BasicValueEnum) -> String {
+pub fn  BasicValueEnum::to_string(self: BasicValueEnum) -> String {
   match self {
     BasicValueEnum::ArrayValue(v) => v.to_string()
     BasicValueEnum::IntValue(v) => v.to_string()
@@ -339,13 +326,8 @@ pub fn  BasicValueEnum :: to_string(self: BasicValueEnum) -> String {
 }
 
 //=========================================================
-// BasicMetadataValue
+// BasicMetadataValueEnum
 //=========================================================
-
-pub trait BasicMetadataValue : AnyValue {
-  as_basic_metadata_value_enum(Self) -> BasicMetadataValueEnum;
-}
-
 pub enum BasicMetadataValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
@@ -505,13 +487,8 @@ pub fn BasicMetadataValueEnum::to_string(self: BasicMetadataValueEnum) -> String
 }
 
 //=========================================================
-// AnyType
+// AnyTypeEnum
 //=========================================================
-
-pub trait AnyType : AsTypeRef {
-  as_any_type_enum(Self) -> AnyTypeEnum;
-}
-
 pub enum AnyTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
@@ -718,16 +695,6 @@ pub fn AnyTypeEnum::to_string(self: AnyTypeEnum) -> String {
 //=========================================================
 // BasicType
 //=========================================================
-
-pub trait BasicType : AnyType {
-  as_basic_type_enum(Self) -> BasicTypeEnum;
-  fn_type(Self, Array[LLVMTypeRef], Bool) -> FunctionType;
-  is_sized(Self) -> Bool;
-  size_of(Self) -> IntValue?;
-  array_type(Self, UInt) -> ArrayType;
-  ptr_type(Self, AddressSpace) -> PointerType;
-}
-
 pub enum BasicTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
@@ -772,13 +739,8 @@ impl AsTypeRef for BasicTypeEnum with as_type_ref(self: BasicTypeEnum) -> LLVMTy
 }
 
 //=========================================================
-// BasicMetadataType
+// BasicMetadataTypeEnum
 //=========================================================
-
-pub trait BasicMetadataType {
-  as_basic_metadata_type_enum(Self) -> BasicMetadataTypeEnum;
-}
-
 pub enum BasicMetadataTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
@@ -827,86 +789,3 @@ pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnu
 // pub trait IntMathType : BasicType {
 // }
 
-//=========================================================
-// IntMathValue
-//=========================================================
-pub trait IntMathValue : BasicValue {
-  new(LLVMValueRef) -> Self;
-}
-
-pub impl IntMathValue for IntValue with new(val_ref: LLVMValueRef) -> IntValue {
-  IntValue::new(val_ref)
-}
-
-pub impl IntMathValue for PointerValue with new(val_ref: LLVMValueRef) -> PointerValue {
-  PointerValue::new(val_ref)
-}
-
-pub impl IntMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
-  VectorValue::new(val_ref)
-}
-
-pub impl IntMathValue for ScalableVectorValue with new(
-  val_ref: LLVMValueRef
-) -> ScalableVectorValue {
-  ScalableVectorValue::new(val_ref)
-}
-
-//=========================================================
-// FloatMathValue
-//=========================================================
-pub trait FloatMathValue : BasicValue {
-  new(LLVMValueRef) -> Self;
-}
-
-pub impl FloatMathValue for FloatValue with new(val_ref: LLVMValueRef) -> FloatValue {
-  FloatValue::new(val_ref)
-}
-
-pub impl FloatMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
-  VectorValue::new(val_ref)
-}
-
-pub impl FloatMathValue for ScalableVectorValue with new(
-  val_ref: LLVMValueRef
-) -> ScalableVectorValue {
-  ScalableVectorValue::new(val_ref)
-}
-
-//=========================================================
-// PointerMathValue
-//=========================================================
-pub trait PointerMathValue : BasicValue {
-  new(LLVMValueRef) -> Self;
-}
-
-pub impl PointerMathValue for PointerValue with new(val_ref: LLVMValueRef) -> PointerValue {
-  PointerValue::new(val_ref)
-}
-
-pub impl PointerMathValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
-  VectorValue::new(val_ref)
-}
-
-pub impl PointerMathValue for ScalableVectorValue with new(
-  val_ref: LLVMValueRef
-) -> ScalableVectorValue {
-  ScalableVectorValue::new(val_ref)
-}
-
-//=========================================================
-// VectorBaseValue
-//=========================================================
-pub trait VectorBaseValue : BasicValue {
-  new(LLVMValueRef) -> Self;
-}
-
-pub impl VectorBaseValue for VectorValue with new(val_ref: LLVMValueRef) -> VectorValue {
-  VectorValue::new(val_ref)
-}
-
-pub impl VectorBaseValue for ScalableVectorValue with new(
-  val_ref: LLVMValueRef
-) -> ScalableVectorValue {
-  ScalableVectorValue::new(val_ref)
-}

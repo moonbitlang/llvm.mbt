@@ -5,10 +5,6 @@ pub struct Value {
   value_ref: LLVMValueRef
 }
 
-trait AsValueRef {
-  as_value_ref(Self) -> LLVMValueRef;
-}
-
 pub fn Value::new(value_ref: LLVMValueRef) -> Value {
   if llvm_is_null(value_ref) == 1 {
     println("Value is null")
@@ -20,7 +16,7 @@ pub fn Value::new(value_ref: LLVMValueRef) -> Value {
   }
 }
 
-impl AsValueRef for Value with as_value_ref(self: Value) -> LLVMValueRef {
+pub fn Value::as_value_ref(self: Value) -> LLVMValueRef {
   self.value_ref
 }
 
@@ -116,20 +112,8 @@ pub fn IntValue::new(value_ref: LLVMValueRef) -> IntValue {
   }
 }
 
-pub impl AsValueRef for IntValue with as_value_ref(self: IntValue) -> LLVMValueRef {
+pub fn IntValue::as_value_ref(self: IntValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for IntValue with as_any_value_enum(self: IntValue) -> AnyValueEnum {
-  AnyValueEnum::IntValue(self)
-}
-
-pub impl BasicValue for IntValue with as_basic_value_enum(self: IntValue) -> BasicValueEnum {
-  BasicValueEnum::IntValue(self)
-}
-
-pub impl BasicMetadataValue for IntValue with as_basic_metadata_value_enum(self: IntValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::IntValue(self)
 }
 
 pub fn IntValue::get_name(self: IntValue) -> String {
@@ -152,7 +136,9 @@ pub fn IntValue::is_undef(self: IntValue) -> Bool {
   self.value.is_undef()
 }
 
-// pub fn as_instruction(self: IntValue) -> InstructionValue?
+pub fn IntValue::as_instruction(self: IntValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
 
 pub fn IntValue::const_not(self: IntValue) -> IntValue {
   let value_ref = llvm_const_not(self.as_value_ref())
@@ -303,22 +289,6 @@ pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
   }
 }
 
-pub impl AsValueRef for FloatValue with as_value_ref(self: FloatValue) -> LLVMValueRef {
-  self.value.as_value_ref()
-}
-
-pub impl AnyValue for FloatValue with as_any_value_enum(self: FloatValue) -> AnyValueEnum {
-  AnyValueEnum::FloatValue(self)
-}
-
-pub impl BasicValue for FloatValue with as_basic_value_enum(self: FloatValue) -> BasicValueEnum {
-  BasicValueEnum::FloatValue(self)
-}
-
-pub impl BasicMetadataValue for FloatValue with as_basic_metadata_value_enum(self: FloatValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::FloatValue(self)
-}
-
 pub fn FloatValue::get_name(self: FloatValue) -> String {
   self.value.get_name()
 }
@@ -342,7 +312,6 @@ pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
 // -----------------------
 // TODO: const ops: add, sub, mul ...
 // -----------------------
-
 // pub fn FloatValue::const_compare(self: FloatValue, op: FloatPredicate, rhs: FloatValue) -> IntValue {
 //   IntValue::new(llvm_const_fcmp(op.into(). self.as_value_ref(), rhs.as_value_ref())
 // }
@@ -390,20 +359,8 @@ pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
   }
 }
 
-pub impl AsValueRef for PointerValue with as_value_ref(self: PointerValue) -> LLVMValueRef {
+pub fn PointerValue::as_value_ref(self: PointerValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for PointerValue with as_any_value_enum(self: PointerValue) -> AnyValueEnum {
-  AnyValueEnum::PointerValue(self)
-}
-
-pub impl BasicValue for PointerValue with as_basic_value_enum(self: PointerValue) -> BasicValueEnum {
-  BasicValueEnum::PointerValue(self)
-}
-
-pub impl BasicMetadataValue for PointerValue with as_basic_metadata_value_enum(self: PointerValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::PointerValue(self)
 }
 
 pub fn PointerValue::get_name(self: PointerValue) -> String {
@@ -430,9 +387,25 @@ pub fn PointerValue::is_const(self: PointerValue) -> Bool {
   self.value.is_const()
 }
 
-// pub fn as_instruction(self: PointerValue) -> InstructionValue?
-// pub fn const_gep
-// pub fn const_in_bounds_gep
+pub fn PointerValue::as_instruction(self: PointerValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
+
+pub fn PointerValue::const_gep(
+  self: PointerValue, ty: &BasicType, ordered_indices: Array[IntValue]
+) -> PointerValue {
+  let indices = ordered_indices.map(fn (index) { index.as_value_ref() })
+  let value_ref = llvm_const_gep2(ty.as_type_ref(), self.as_value_ref(), indices)
+  PointerValue::new(value_ref)
+}
+
+pub fn PointerValue::const_in_bounds_gep(
+  self: PointerValue, ty: &BasicType, ordered_indices: Array[IntValue]
+) -> PointerValue {
+  let indices = ordered_indices.map(fn (index) { index.as_value_ref() })
+  let value_ref = llvm_const_in_bounds_gep2(ty.as_type_ref(), self.as_value_ref(), indices)
+  PointerValue::new(value_ref)
+}
 
 pub fn PointerValue::const_to_int(self: PointerValue, int_type: IntType) -> IntValue {
   IntValue::new(llvm_const_ptr_to_int(self.as_value_ref(), int_type.as_type_ref()))
@@ -485,12 +458,8 @@ pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
   }
 }
 
-pub impl AsValueRef for InstructionValue with as_value_ref(self: InstructionValue) -> LLVMValueRef {
+pub fn InstructionValue::as_value_ref(self: InstructionValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for InstructionValue with as_any_value_enum(self: InstructionValue) -> AnyValueEnum {
-  AnyValueEnum::InstructionValue(self)
 }
 
 pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
@@ -647,8 +616,8 @@ pub fn InstructionValue::set_disjoint_flag(self: InstructionValue, flag: Bool) -
   }
 }
 
-pub fn InstructionValue::get_num_operands(self: InstructionValue) -> Int {
-  llvm_get_num_operands(self.as_value_ref())
+pub fn InstructionValue::get_num_operands(self: InstructionValue) -> UInt {
+  llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
 }
 
 pub fn InstructionValue::replace_all_uses_with(self: InstructionValue, new_value: InstructionValue) -> Unit {
@@ -749,7 +718,53 @@ pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: A
 
   Ok(())
 }
-// pub fn get_operand()
+
+pub fn InstructionValue::get_operand(self: InstructionValue, index: UInt) -> Either[BasicValueEnum, BasicBlock]? {
+  let num_operands = self.get_num_operands()
+
+  if index >= num_operands {
+    return None
+  }
+
+  self.get_operand_unchecked(index)
+}
+
+pub fn InstructionValue::get_operand_unchecked(
+  self: InstructionValue, index: UInt
+) -> Either[BasicValueEnum, BasicBlock]? {
+  let operand = llvm_get_operand(self.as_value_ref(), index)
+
+  if operand.is_null() {
+    return None
+  }
+
+  let is_basic_block = llvm_isa_basic_block(operand).is_null() |> not
+
+  if is_basic_block {
+    let bb_ref = llvm_value_as_basic_block(operand)
+    let bb = match BasicBlock::new(bb_ref) {
+      Some(bb) => bb
+      None => abort("BasicBlock should always be valid")
+    }
+    Some(Right(bb))
+  } else {
+    let value = BasicValueEnum::new(operand)
+    Some(Left(value))
+  }
+}
+
+// REVIEW: here use `bool` as return type, maybe we need to use `Result`?
+pub fn InstructionValue::set_operand(self: InstructionValue, index: UInt, val: &BasicValue) -> Bool {
+  let num_operands = self.get_num_operands()
+
+  if index >= num_operands {
+    return false
+  }
+
+  llvm_set_operand(self.as_value_ref(), index, val.as_value_ref())
+
+  true
+}
 
 // ...
 
@@ -832,20 +847,8 @@ pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
   }
 }
 
-pub impl AsValueRef for StructValue with as_value_ref(self: StructValue) -> LLVMValueRef {
+pub fn StructValue::as_value_ref(self: StructValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for StructValue with as_any_value_enum(self: StructValue) -> AnyValueEnum {
-  AnyValueEnum::StructValue(self)
-}
-
-pub impl BasicValue for StructValue with as_basic_value_enum(self: StructValue) -> BasicValueEnum {
-  BasicValueEnum::StructValue(self)
-}
-
-pub impl BasicMetadataValue for StructValue with as_basic_metadata_value_enum(self: StructValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::StructValue(self)
 }
 
 // pub fn StructValue::get_field_at_index(self: StructValue, index: Int) -> BasicValueEnum? {
@@ -929,9 +932,7 @@ pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue? {
   Some(fv)
 }
 
-impl AsValueRef for FunctionValue with as_value_ref(
-  self: FunctionValue
-) -> LLVMValueRef {
+pub fn FunctionValue::as_value_ref(self: FunctionValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
@@ -1206,20 +1207,16 @@ pub fn ArrayValue::new(value_ref: LLVMValueRef) -> ArrayValue {
   }
 }
 
-pub impl AsValueRef for ArrayValue with as_value_ref(self: ArrayValue) -> LLVMValueRef {
+pub fn ArrayValue::new_const_array[T: AsTypeRef, V: AsValueRef](
+  ty: T, values: Array[V]
+) -> ArrayValue {
+  let value_refs = values.map(fn (v) { v.as_value_ref() })
+  let value_ref = llvm_const_array(ty.as_type_ref(), value_refs)
+  ArrayValue::new(value_ref)
+}
+
+pub fn ArrayValue::as_value_ref(self: ArrayValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for ArrayValue with as_any_value_enum(self: ArrayValue) -> AnyValueEnum {
-  AnyValueEnum::ArrayValue(self)
-}
-
-pub impl BasicValue for ArrayValue with as_basic_value_enum(self: ArrayValue) -> BasicValueEnum {
-  BasicValueEnum::ArrayValue(self)
-}
-
-pub impl BasicMetadataValue for ArrayValue with as_basic_metadata_value_enum(self: ArrayValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::ArrayValue(self)
 }
 
 pub fn ArrayValue::get_name(self: ArrayValue) -> String {
@@ -1295,20 +1292,8 @@ pub fn VectorValue::new(value_ref: LLVMValueRef) -> VectorValue {
   }
 }
 
-pub impl AsValueRef for VectorValue with as_value_ref(self: VectorValue) -> LLVMValueRef {
+pub fn VectorValue::as_value_ref(self: VectorValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for VectorValue with as_any_value_enum(self: VectorValue) -> AnyValueEnum {
-  AnyValueEnum::VectorValue(self)
-}
-
-pub impl BasicValue for VectorValue with as_basic_value_enum(self: VectorValue) -> BasicValueEnum {
-  BasicValueEnum::VectorValue(self)
-}
-
-pub impl BasicMetadataValue for VectorValue with as_basic_metadata_value_enum(self: VectorValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::VectorValue(self)
 }
 
 pub fn VectorValue::is_const(self: VectorValue) -> Bool {
@@ -1390,12 +1375,8 @@ pub fn PhiValue::new(value_ref: LLVMValueRef) -> PhiValue {
   }
 }
 
-pub impl AsValueRef for PhiValue with as_value_ref(self: PhiValue) -> LLVMValueRef {
+pub fn PhiValue::as_value_ref(self: PhiValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for PhiValue with as_any_value_enum(self: PhiValue) -> AnyValueEnum {
-  AnyValueEnum::PhiValue(self)
 }
 
 // TODO: need check, in inkwell, BasicValueEnum is not implemented for PhiValue
@@ -1466,20 +1447,8 @@ pub fn ScalableVectorValue::new(value_ref: LLVMValueRef) -> ScalableVectorValue 
   }
 }
 
-pub impl AsValueRef for ScalableVectorValue with as_value_ref(self: ScalableVectorValue) -> LLVMValueRef {
+pub fn ScalableVectorValue::as_value_ref(self: ScalableVectorValue) -> LLVMValueRef {
   self.value.as_value_ref()
-}
-
-pub impl AnyValue for ScalableVectorValue with as_any_value_enum(self: ScalableVectorValue) -> AnyValueEnum {
-  AnyValueEnum::ScalableVectorValue(self)
-}
-
-pub impl BasicValue for ScalableVectorValue with as_basic_value_enum(self: ScalableVectorValue) -> BasicValueEnum {
-  BasicValueEnum::ScalableVectorValue(self)
-}
-
-pub impl BasicMetadataValue for ScalableVectorValue with as_basic_metadata_value_enum(self: ScalableVectorValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::ScalableVectorValue(self)
 }
 
 pub fn ScalableVectorValue::is_const(self: ScalableVectorValue) -> Bool {
@@ -1561,10 +1530,6 @@ pub fn GlobalValue::new(value_ref: LLVMValueRef) -> GlobalValue {
   GlobalValue::{
     value: Value::new(value_ref)
   }
-}
-
-pub impl AsValueRef for GlobalValue with as_value_ref(self: GlobalValue) -> LLVMValueRef {
-  self.value.as_value_ref()
 }
 
 pub fn GlobalValue::get_name(self: GlobalValue) -> String {
@@ -1758,14 +1723,6 @@ pub struct MetadataValue {
   value: Value
 }
 
-pub impl AsValueRef for MetadataValue with as_value_ref(self: MetadataValue) -> LLVMValueRef {
-  self.value.as_value_ref()
-}
-
-pub impl BasicMetadataValue for MetadataValue with as_basic_metadata_value_enum(self: MetadataValue) -> BasicMetadataValueEnum {
-  BasicMetadataValueEnum::MetadataValue(self)
-}
-
 pub fn MetadataValue::new(value_ref: LLVMValueRef) -> MetadataValue {
   assert_not(value_ref.is_null())
   assert_not(llvm_isa_md_node(value_ref).is_null())
@@ -1774,6 +1731,10 @@ pub fn MetadataValue::new(value_ref: LLVMValueRef) -> MetadataValue {
   MetadataValue::{
     value: Value::new(value_ref)
   }
+}
+
+pub fn MetadataValue::as_value_ref(self: MetadataValue) -> LLVMValueRef {
+  self.value.as_value_ref()
 }
 
 pub fn MetadataValue::as_metadata_ref(self: MetadataValue) -> LLVMMetadataRef {
@@ -1825,7 +1786,7 @@ pub fn CallSiteValue::new(value_ref: LLVMValueRef) -> CallSiteValue {
   }
 }
 
-pub impl AsValueRef for CallSiteValue with as_value_ref(self: CallSiteValue) -> LLVMValueRef {
+pub fn CallSiteValue::as_value_ref(self: CallSiteValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
