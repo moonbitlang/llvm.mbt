@@ -14,8 +14,8 @@ fn main {
   let context = @llvm.Context::create()
   // let llvm_module = context.create_module("demo")
   // let builder = context.create_builder()
-  let f64_ty = context.i32_type()
-  let res = f64_ty.const_zero();
+  let void_ty = context.void_type()
+  let res = void_ty.get_alignment();
   // let i64_type = context.i64_type();
   // println(i64_type)
   println(res)

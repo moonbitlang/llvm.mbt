@@ -105,7 +105,7 @@ pub struct IntValue {
 }
 
 pub fn IntValue::new(value_ref: LLVMValueRef) -> IntValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   IntValue::{
     value: Value::new(value_ref)
@@ -282,7 +282,7 @@ pub struct FloatValue {
 }
 
 pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   FloatValue::{
     value: Value::new(value_ref)
@@ -352,7 +352,7 @@ pub struct PointerValue {
 }
 
 pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   PointerValue::{
     value: Value::new(value_ref)
@@ -451,7 +451,7 @@ pub struct InstructionValue {
 }
 
 pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   InstructionValue::{
     value: Value::new(value_ref)
@@ -840,7 +840,7 @@ pub struct StructValue {
 }
 
 pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   StructValue::{
     value: Value::new(value_ref)
@@ -1200,7 +1200,7 @@ pub struct ArrayValue {
 }
 
 pub fn ArrayValue::new(value_ref: LLVMValueRef) -> ArrayValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   ArrayValue::{
     value: Value::new(value_ref)
@@ -1285,7 +1285,7 @@ pub struct VectorValue {
 }
 
 pub fn VectorValue::new(value_ref: LLVMValueRef) -> VectorValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   VectorValue::{
     value: Value::new(value_ref)
@@ -1368,7 +1368,7 @@ pub struct PhiValue {
 }
 
 pub fn PhiValue::new(value_ref: LLVMValueRef) -> PhiValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   PhiValue::{
     value: Value::new(value_ref)
@@ -1440,7 +1440,7 @@ pub struct ScalableVectorValue {
 }
 
 pub fn ScalableVectorValue::new(value_ref: LLVMValueRef) -> ScalableVectorValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   ScalableVectorValue::{
     value: Value::new(value_ref)
@@ -1525,7 +1525,7 @@ pub struct GlobalValue {
 }
 
 pub fn GlobalValue::new(value_ref: LLVMValueRef) -> GlobalValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   GlobalValue::{
     value: Value::new(value_ref)
@@ -1724,9 +1724,9 @@ pub struct MetadataValue {
 }
 
 pub fn MetadataValue::new(value_ref: LLVMValueRef) -> MetadataValue {
-  assert_not(value_ref.is_null())
-  assert_not(llvm_isa_md_node(value_ref).is_null())
-  assert_not(llvm_isa_md_string(value_ref).is_null())
+  assert_val_ref(value_ref)
+  assert_val_ref(llvm_isa_md_node(value_ref))
+  assert_val_ref(llvm_isa_md_string(value_ref))
 
   MetadataValue::{
     value: Value::new(value_ref)
@@ -1779,7 +1779,7 @@ pub struct CallSiteValue {
 }
 
 pub fn CallSiteValue::new(value_ref: LLVMValueRef) -> CallSiteValue {
-  assert_not(value_ref.is_null())
+  assert_val_ref(value_ref)
 
   CallSiteValue::{
     value: Value::new(value_ref)

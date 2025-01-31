@@ -529,6 +529,10 @@ pub impl BasicType for PointerType with ptr_type(self: PointerType, address_spac
   self.ptr_type(address_space)
 }
 
+pub impl BasicType for PointerType with array_type(self: PointerType, size: UInt) -> ArrayType {
+  self.ty.array_type(size)
+}
+
 pub impl BasicType for StructType with as_basic_type_enum(self: StructType) -> BasicTypeEnum {
   BasicTypeEnum::StructType(self)
 }

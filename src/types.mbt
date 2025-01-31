@@ -147,7 +147,7 @@ pub struct IntType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not int type.
 pub fn IntType::new(type_ref: LLVMTypeRef) -> IntType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   IntType::{
     ty: Type::new(type_ref)
@@ -278,6 +278,7 @@ pub fn IntType::scalable_vec_type(self: IntType, size: UInt) -> ScalableVectorTy
 }
 
 
+///| Gets a reference to the `Context` this `IntType` was created in.
 pub fn IntType::get_context(self: IntType) -> Context {
   self.ty.get_context()
 }
@@ -419,7 +420,7 @@ pub struct FloatType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not float type.
 pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   FloatType::{
     ty: Type::new(type_ref)
@@ -521,6 +522,8 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
 
 ///| Creates a constant zero value of this `FloatType`.
 ///
+/// **Note: This API is problematic**
+///
 /// ## Example (Not Tested)
 ///
 /// ```moonbit
@@ -548,26 +551,69 @@ pub fn FloatType::size_of(self: FloatType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
+///| Returns whether this `FloatType` is sized. **Always returns `true`.**
 pub fn FloatType::is_sized(self: FloatType) -> Bool {
   self.ty.is_sized()
 }
 
+///| Gets the alignment of this `FloatType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_align = f64_type.get_alignment();
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, double }, ptr null, i64 0, i32 1) to i64)"
+/// inspect!(f64_align, content=expect)
+/// ```
 pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
   self.ty.get_alignment()
 }
 
+///| Gets a reference to the `Context` this `FloatType` was created in.
 pub fn FloatType::get_context(self: FloatType) -> Context {
   self.ty.get_context()
 }
 
+///| Creates a `PointerType` with this `FloatType` for its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let ptr_type = f64_type.ptr_type(AddressSpace::default());
+/// inspect!(ptr_type, "ptr")
+/// ```
 pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
+///| Creates an undefined instance of a `FloatType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_undef = f64_type.get_undef();
+/// inspect!(f64_undef, "double undef")
+/// ```
 pub fn get_undef(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_undef())
 }
 
+///| Creates a poison instance of a `FloatType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_poison = f64_type.get_poison();
+/// inspect!(f64_poison, "double poison")
+/// ```
 pub fn get_poison(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())
 }
@@ -613,8 +659,11 @@ pub struct VoidType {
   ty : Type
 }
 
+///| Create `VoidType` from `LLVMTypeRef`
+///
+/// **Unsafe**: Undefined behavior if `type_ref` is not void type.
 pub fn VoidType::new(type_ref: LLVMTypeRef) -> VoidType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   VoidType::{
     ty: Type::new(type_ref)
@@ -625,20 +674,42 @@ pub fn VoidType::as_type_ref(self: VoidType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-// REVIEW: Does it always retturn false?
+///| Return whether this `VoidType` is sized. **Always returns `false`.**
 pub fn VoidType::is_sized(self: VoidType) -> Bool {
   self.ty.is_sized()
 }
 
+///| Gets a reference to the `Context` this `VoidType` was created in.
 pub fn VoidType::get_context(self: VoidType) -> Context {
   self.ty.get_context()
 }
 
-// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+///| Creates a `FunctionType` with this `VoidType` for its return type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let void_type = context.void_type();
+/// let i32_type = context.i32_type();
+/// let fn_type = void_type.fn_type([i32_type.as_type_ref()], false);
+/// inspect!(fn_type, "void (i32)")
+/// ```
 pub fn VoidType::fn_type(self: VoidType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+///| Gets the alignment of this `VoidType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let void_type = context.void_type();
+/// let void_align = void_type.get_alignment();
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, void }, ptr null, i64 0, i32 1) to i64)"
+/// inspect!(void_align, content=expect)
+/// ```
 pub fn VoidType::get_alignment(self: VoidType) -> IntValue {
   self.ty.get_alignment()
 }
@@ -674,8 +745,11 @@ pub struct PointerType {
   ty: Type
 }
 
+///| Create `PointerType` from `LLVMTypeRef`
+///
+/// **Unsafe**: Undefined behavior if `type_ref` is not pointer type.
 pub fn PointerType::new(type_ref: LLVMTypeRef) -> PointerType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   PointerType::{
     ty: Type::new(type_ref)
@@ -686,66 +760,199 @@ pub fn PointerType::as_type_ref(self: PointerType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
+///| Gets the size of this `PointerType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let ptr_sz = ptr_type.size_of();
+/// let expect = "";
+/// inspect!(ptr_sz, content=expect)
+/// ```
 pub fn PointerType::size_of(self: PointerType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
+///| Returns whether this `PointerType` is sized. **Always returns `true`.**
 pub fn PointerType::is_sized(self: PointerType) -> Bool {
   self.ty.is_sized()
 }
 
-
+///| Gets the alignment of this `PointerType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let ptr_align = ptr_type.get_alignment();
+/// let expect = "";
+/// inspect!(ptr_align, content=expect)
+/// ```
 pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
   self.ty.get_alignment()
 }
 
+///| Creates a `PointerType` with this `PointerType` for its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let ptr_ptr_type = ptr_type.ptr_type(AddressSpace::default());
+/// inspect!(ptr_ptr_type, "ptr")
+/// ```
 pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
+///| Gets a reference to the `Context` this `PointerType` was created in.
 pub fn PointerType::get_context(self: PointerType) -> Context {
   self.ty.get_context()
 }
 
+///| Creates a `FunctionType` with this `PointerType` for its return type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let fn_type = ptr_type.fn_type([i32_type.as_type_ref()], false);
+/// inspect!(fn_type, "ptr (i32)")
+/// ```
 pub fn PointerType::fn_type(self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+///| Creates an `ArrayType` with this `PointerType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let array_type = ptr_type.array_type(16);
+/// inspect!(array_type, "[16 x ptr]")
+/// ```
 pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
-pub impl BasicType for PointerType with array_type(
-  self: PointerType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
+///| Gets the `AddressSpace` a `PointerType` was created with.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let addr_space = ptr_type.get_address_space();
+/// inspect!(addr_space, "")
+/// ```
 pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
   let addr_space = llvm_get_pointer_address_space(self.as_type_ref())
 
   AddressSpace(addr_space)
 }
 
+///| Creates a null `PointerValue` of this `PointerType`.
+/// It will be automatically assigned this `PointerType`'s `Context`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let null_ptr = ptr_type.const_null();
+/// inspect!(null_ptr, "")
+/// ```
 pub fn PointerType::const_null(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_null(self.as_type_ref()))
 }
 
+///| Creates a constant null value of this `PointerType`.
+/// This is practically the same as calling `const_null` for this particular type and
+/// so this function may be removed in the future.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let null_ptr = ptr_type.const_null();
+/// inspect!(null_ptr, "")
+/// ```
 pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
   PointerValue::new(self.ty.const_zero())
 }
 
+///| Creates an undefined instance of a `PointerType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let ptr_undef = ptr_type.get_undef();
+/// inspect!(ptr_undef, "ptr undef")
+/// ```
 pub fn PointerType::get_undef(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_get_undef(self.as_type_ref()))
 }
 
+///| Creates a poison instance of a `PointerType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let ptr_poison = ptr_type.get_poison();
+/// inspect!(ptr_poison, "ptr poison")
+/// ```
 pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_get_poison(self.as_type_ref()))
 }
 
+///| Creates a `VectorType` with this `PointerType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let vector_type = ptr_type.vec_type(16);
+/// inspect!(vector_type, "<16 x ptr>")
+/// ```
 pub fn PointerType::vec_type(self: PointerType, size: UInt) -> VectorType {
   self.ty.vec_type(size)
 }
+
+///| Creates a `ScalableVectorType` with this `PointerType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let vscale_type = ptr_type.scalable_vec_type(16);
+/// inspect!(vscale_type, "<vscale x 16 x ptr>")
+/// ```
 pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> ScalableVectorType {
   self.ty.scalable_vec_type(size)
 }
@@ -758,6 +965,8 @@ pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> Scalable
 //   ArrayValue::new_const_array(self, values)
 // }
 
+
+///| Determine whether this pointer is opaque.
 // NOTE: above llvm-15
 pub fn PointerType::is_opaque(self: PointerType) -> Bool {
   llvm_pointer_type_is_opaque(self.as_type_ref())
@@ -795,7 +1004,7 @@ pub struct StructType {
 }
 
 pub fn StructType::new(type_ref: LLVMTypeRef) -> StructType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   StructType::{
     ty: Type::new(type_ref)
@@ -806,10 +1015,8 @@ pub fn StructType::as_type_ref(self: StructType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-
-
 pub fn StructType::get_field_type_at_index(self: StructType, index: UInt) -> BasicTypeEnum? {
-  // TODOL: need to think about how to handle this when `opaque` is true
+  // TODO: need to think about how to handle this when `opaque` is true
   if self.is_opaque() {
     return None
   }
@@ -943,7 +1150,7 @@ pub struct FunctionType {
 }
 
 pub fn FunctionType::new(type_ref: LLVMTypeRef) -> FunctionType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   FunctionType::{
     ty: Type::new(type_ref)
@@ -1022,7 +1229,7 @@ pub struct ArrayType {
 }
 
 pub fn ArrayType::new(type_ref: LLVMTypeRef) -> ArrayType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   ArrayType::{
     ty: Type::new(type_ref)
@@ -1120,7 +1327,7 @@ pub struct VectorType {
 }
 
 pub fn VectorType::new(type_ref: LLVMTypeRef) -> VectorType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   VectorType::{
     ty: Type::new(type_ref)
@@ -1209,7 +1416,7 @@ pub struct ScalableVectorType {
 }
 
 pub fn ScalableVectorType::new(type_ref: LLVMTypeRef) -> ScalableVectorType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   ScalableVectorType::{
     ty: Type::new(type_ref)
@@ -1307,7 +1514,7 @@ pub struct MetadataType {
 }
 
 pub fn MetadataType::new(type_ref: LLVMTypeRef) -> MetadataType {
-  assert_not(type_ref.is_null())
+  assert_type_ref(type_ref)
 
   MetadataType::{
     ty: Type::new(type_ref)
