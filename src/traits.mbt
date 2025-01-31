@@ -383,6 +383,10 @@ pub impl AsTypeRef for ArrayType with as_type_ref(self: ArrayType) -> LLVMTypeRe
   self.as_type_ref()
 }
 
+pub impl AsTypeRef for VectorType with as_type_ref(self: VectorType) -> LLVMTypeRef {
+  self.as_type_ref()
+}
+
 pub impl AsTypeRef for ScalableVectorType with as_type_ref(
   self: ScalableVectorType
 ) -> LLVMTypeRef {
@@ -427,6 +431,10 @@ pub impl AnyType for ArrayType with as_any_type_enum(self: ArrayType) -> AnyType
   AnyTypeEnum::ArrayType(self)
 }
 
+pub impl AnyType for VectorType with as_any_type_enum(self: VectorType) -> AnyTypeEnum {
+  AnyTypeEnum::VectorType(self)
+}
+
 pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVectorType) -> AnyTypeEnum {
   AnyTypeEnum::ScalableVectorType(self)
 }
@@ -465,7 +473,7 @@ pub impl BasicType for IntType with ptr_type(self: IntType, address_space: Addre
 }
 
 pub impl BasicType for IntType with size_of(self: IntType) -> IntValue? {
-  self.size_of()
+  Some(self.size_of())
 }
 
 pub impl BasicType for IntType with is_sized(self: IntType) -> Bool {
@@ -487,7 +495,7 @@ pub impl BasicType for FloatType with array_type(self: FloatType, size: UInt) ->
 }
 
 pub impl BasicType for FloatType with size_of(self: FloatType) -> IntValue? {
-  self.size_of()
+  Some(self.size_of())
 }
 
 pub impl BasicType for FloatType with is_sized(self: FloatType) -> Bool {
@@ -510,7 +518,7 @@ pub impl BasicType for PointerType with fn_type(
 
 
 pub impl BasicType for PointerType with size_of(self: PointerType) -> IntValue? {
-  self.size_of()
+  Some(self.size_of())
 }
 
 pub impl BasicType for PointerType with is_sized(self: PointerType) -> Bool {
@@ -578,8 +586,36 @@ pub impl BasicType for ArrayType with ptr_type(self: ArrayType, address_space: A
   self.ptr_type(address_space)
 }
 
+pub impl BasicType for VectorType with as_basic_type_enum(self: VectorType) -> BasicTypeEnum {
+  BasicTypeEnum::VectorType(self)
+}
+
 pub impl BasicType for ScalableVectorType with as_basic_type_enum(self: ScalableVectorType) -> BasicTypeEnum {
   BasicTypeEnum::ScalableVectorType(self)
+}
+
+pub impl BasicType for VectorType with size_of(self: VectorType) -> IntValue? {
+  self.size_of()
+}
+
+pub impl BasicType for VectorType with is_sized(self: VectorType) -> Bool {
+  self.is_sized()
+}
+
+pub impl BasicType for VectorType with fn_type(
+  self: VectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
+) -> FunctionType {
+  self.fn_type(param_types, is_var_arg)
+}
+
+pub impl BasicType for VectorType with array_type(
+  self: VectorType, size: UInt
+) -> ArrayType {
+  self.ty.array_type(size)
+}
+
+pub impl BasicType for VectorType with ptr_type(self: VectorType, address_space: AddressSpace) -> PointerType {
+  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
 pub impl BasicType for ScalableVectorType with size_of(self: ScalableVectorType) -> IntValue? {

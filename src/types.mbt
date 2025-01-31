@@ -20,12 +20,16 @@ fn Type::as_type_ref(self: Type) -> LLVMTypeRef {
   self.type_ref
 }
 
+// FIXME: link error
 fn Type::const_zero(self: Type) -> LLVMValueRef {
   let val_ref = self.type_ref
   let k = llvm_get_type_kind(val_ref)
+
   match k {
     LLVMMetadataTypeKind => llvm_const_pointer_null(val_ref)
-    _ => llvm_const_null(val_ref)
+    _ => {
+      llvm_const_null(val_ref)
+    }
   }
 }
 
@@ -157,7 +161,7 @@ pub fn IntType::as_type_ref(self: IntType) -> LLVMTypeRef {
 
 ///| Creates an `IntValue` representing a constant value of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create()
@@ -191,7 +195,7 @@ pub fn IntType::const_int_arbitrary_precision(self: IntType, words: Array[UInt64
 
 ///| Creates an `IntValue` representing a constant value of all one bits of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
@@ -203,10 +207,9 @@ pub fn IntType::const_all_ones(self: IntType) -> IntValue {
   IntValue::new(llvm_val_ref)
 }
 
-
 ///| Creates a constant zero value of this `IntType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -214,64 +217,159 @@ pub fn IntType::const_all_ones(self: IntType) -> IntValue {
 /// let i8_zero = i8_type.const_zero();
 /// inspect!(i8_zero, "i8 0")
 /// ```
-pub fn const_zero(self: IntType) -> IntValue {
+pub fn IntType::const_zero(self: IntType) -> IntValue {
   IntValue::new(self.ty.const_zero())
 }
 
 ///| Creates a `FunctionType` with this `IntType` for its return type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let i8_type = context.i8_type();
-/// let fn_type = i8_type.fn_type([]:Array[IntValue], false);
+/// let i32_type = context.i32_type();
+/// let fn_type = i32_type.fn_type([], false);
+/// inspect!(fn_type, "i32 ()")
 /// ```
 pub fn IntType::fn_type(self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+///| Creates an `ArrayType` with this `IntType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let array_type = i32_type.array_type(16);
+/// inspect!(array_type, "[16 x i32]")
+/// ```
 pub fn IntType::array_type(self: IntType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
+///| Creates a `VectorType` with this `IntType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let vector_type = i32_type.vec_type(16);
+/// inspect!(vector_type, "<16 x i32>")
+/// ```
 pub fn IntType::vec_type(self: IntType, size: UInt) -> VectorType {
   self.ty.vec_type(size)
 }
 
+///| Creates a `ScalableVectorType` with this `IntType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let vscale_type = i32_type.scalable_vec_type(16);
+/// inspect!(vscale_type, "<vscale x 16 x i32>")
+/// ```
 pub fn IntType::scalable_vec_type(self: IntType, size: UInt) -> ScalableVectorType {
   self.ty.scalable_vec_type(size)
 }
+
 
 pub fn IntType::get_context(self: IntType) -> Context {
   self.ty.get_context()
 }
 
-pub fn IntType::size_of(self: IntType) -> IntValue? {
-  self.ty.size_of()
+///| Gets the size of this `IntType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_sz = i32_type.size_of();
+/// let expect = "i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)";
+/// inspect!(i32_sz, content=expect)
+/// ```
+pub fn IntType::size_of(self: IntType) -> IntValue {
+  self.ty.size_of().unwrap()
 }
 
+///| Returns whether this `IntType` is sized. **Always returns `true`.**
 pub fn IntType::is_sized(self: IntType) -> Bool {
   self.ty.is_sized()
 }
 
 
+///| Gets the alignment of this `IntType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_align = i32_type.get_alignment();
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, i32 }, ptr null, i64 0, i32 1) to i64)"
+/// inspect!(i32_align, content=expect)
+/// ```
 pub fn IntType::get_alignment(self: IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
+///| Creates a `PointerType` with this `IntType` for its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// inspect!(ptr_type, "ptr")
+/// ```
 pub fn IntType::ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
+///| Gets the bit width of an `IntType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_width = i32_type.get_bit_width();
+/// inspect!(i32_width, "32")
+/// ```
 pub fn IntType::get_bit_width(self: IntType) -> UInt {
   llvm_get_int_type_width(self.as_type_ref())
 }
 
+///| Creates an undefined instance of an `IntType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_undef = i32_type.get_undef();
+/// inspect!(i32_undef, "i32 undef")
+/// ```
 pub fn IntType::get_undef(self: IntType) -> IntValue {
   IntValue::new(self.ty.get_undef())
 }
 
+///| Creates a poison instance of an `IntType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_poison = i32_type.get_poison();
+/// inspect!(i32_poison, "i32 poison")
+/// ```
 pub fn IntType::get_poison(self: IntType) -> IntValue {
   IntValue::new(self.ty.get_poison())
 }
@@ -317,6 +415,9 @@ pub struct FloatType {
   ty: Type
 }
 
+///| Create `FloatType` from `LLVMTypeRef`
+///
+/// **Unsafe**: Undefined behavior if `type_ref` is not float type.
 pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
   assert_not(type_ref.is_null())
 
@@ -325,34 +426,89 @@ pub fn FloatType::new(type_ref: LLVMTypeRef) -> FloatType {
   }
 }
 
+// use get_kind to check if it is float type
+// pub fn FloatType::safe_new(type_ref: LLVMTypeRef) -> Option[FloatType];
+
+///| Return `LLVMTypeRef` of `FloatType`
 pub fn FloatType::as_type_ref(self: FloatType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
+///| Creates a constant `FloatValue` of this `FloatType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f32_type = context.f32_type();
+/// let i32_type = context.i32_type();
+/// let fn_val = f32_type.fn_type([i32_type.as_type_ref()], false);
+/// inspect!(fn_val, "float (i32)")
+/// ```
 // TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub fn FloatType::fn_type(self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-
+///| Creates an `ArrayType` with this `FloatType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f32_type = context.f32_type();
+/// let array_type = f32_type.array_type(16);
+/// inspect!(array_type, "[16 x float]")
+/// ```
 pub fn FloatType::array_type(self: FloatType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
+///| Creates a `VectorType` with this `FloatType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f32_type = context.f32_type();
+/// let vector_type = f32_type.vec_type(16);
+/// inspect!(vector_type, "<16 x float>")
+/// ```
 pub fn FloatType::vec_type(self: FloatType, size: UInt) -> VectorType {
   self.ty.vec_type(size)
 }
 
+///| Creates a `ScalableVectorType` with this `FloatType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f32_type = context.f32_type();
+/// let vscale_type = f32_type.scalable_vec_type(16);
+/// inspect!(vscale_type, "<vscale x 16 x float>")
+/// ```
 pub fn FloatType::scalable_vec_type(self: FloatType, size: UInt) -> ScalableVectorType {
   self.ty.scalable_vec_type(size)
 }
 
-// use llvm_const_real
+///| Creates a `FloatValue` representing a constant value of this `FloatType`.
+/// It will be automatically assigned this `FloatType`'s `Context`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let pi = f64_type.const_float(3.1415926);
+/// inspect!(pi, "double 0x400921FB4D12D84A")
+/// ```
 pub fn FloatType::const_float(self: FloatType, val: Double) -> FloatValue {
   let llvm_val_ref = llvm_const_real(self.as_type_ref(), val)
   FloatValue::new(llvm_val_ref)
 }
 
+// FIXME: untested
 pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> FloatValue {
   if slice.is_empty() {
     abort("Float string is empty")
@@ -363,12 +519,33 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
   FloatValue::new(r)
 }
 
+///| Creates a constant zero value of this `FloatType`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_zero = f64_type.const_zero();
+/// inspect!(f64_zero, "double 0.0")
+/// ```
 pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
 
-pub fn FloatType::size_of(self: FloatType) -> IntValue? {
-  self.size_of()
+///| Gets the size of this `FloatType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_sz = f64_type.size_of();
+/// let expect = "i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)";
+/// inspect!(f64_sz, content=expect)
+/// ```
+pub fn FloatType::size_of(self: FloatType) -> IntValue {
+  self.ty.size_of().unwrap()
 }
 
 pub fn FloatType::is_sized(self: FloatType) -> Bool {
@@ -509,8 +686,8 @@ pub fn PointerType::as_type_ref(self: PointerType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub fn PointerType::size_of(self: PointerType) -> IntValue? {
-  self.ty.size_of()
+pub fn PointerType::size_of(self: PointerType) -> IntValue {
+  self.ty.size_of().unwrap()
 }
 
 pub fn PointerType::is_sized(self: PointerType) -> Bool {
@@ -950,19 +1127,11 @@ pub fn VectorType::new(type_ref: LLVMTypeRef) -> VectorType {
   }
 }
 
-pub impl AsTypeRef for VectorType with as_type_ref(
-  self: VectorType
-) -> LLVMTypeRef {
+pub fn VectorType::as_type_ref(self: VectorType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AnyType for VectorType with as_any_type_enum(self: VectorType) -> AnyTypeEnum {
-  AnyTypeEnum::VectorType(self)
-}
 
-pub impl BasicType for VectorType with as_basic_type_enum(self: VectorType) -> BasicTypeEnum {
-  BasicTypeEnum::VectorType(self)
-}
 
 pub impl BasicMetadataType for VectorType with as_basic_metadata_type_enum(self: VectorType) -> BasicMetadataTypeEnum {
   BasicMetadataTypeEnum::VectorType(self)
@@ -972,13 +1141,10 @@ pub fn VectorType::size_of(self: VectorType) -> IntValue? {
   self.ty.size_of()
 }
 
-pub impl BasicType for VectorType with size_of(self: VectorType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for VectorType with is_sized(self: VectorType) -> Bool {
+pub fn VectorType::is_sized(self: VectorType) -> Bool {
   self.ty.is_sized()
 }
+
 
 pub fn VectorType::get_alignment(self: VectorType) -> IntValue {
   self.ty.get_alignment()
@@ -992,19 +1158,7 @@ pub fn VectorType::fn_type(self: VectorType, param_types: Array[LLVMTypeRef], is
   self.ty.fn_type(param_types, is_var_arg)
 }
 
-pub impl BasicType for VectorType with fn_type(
-  self: VectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg)
-}
-
 pub fn VectorType::array_type(self: VectorType, size: UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for VectorType with array_type(
-  self: VectorType, size: UInt
-) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -1012,9 +1166,6 @@ pub fn VectorType::ptr_type(self: VectorType, address_space: AddressSpace) -> Po
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }
 
-pub impl BasicType for VectorType with ptr_type(self: VectorType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
-}
 
 // pub fn VectorType::const_vector
 

@@ -14,11 +14,11 @@ fn main {
   let context = @llvm.Context::create()
   // let llvm_module = context.create_module("demo")
   // let builder = context.create_builder()
-  // let i32_ty = context.i32_type()
-  let i64_type = context.i64_type();
-  let i64_val = i64_type.const_int_arbitrary_precision([1, 2]);
-  println(i64_type)
-  println(i64_val)
+  let f64_ty = context.i32_type()
+  let res = f64_ty.const_zero();
+  // let i64_type = context.i64_type();
+  // println(i64_type)
+  println(res)
   // let fn_ty = i32_ty.fn_type([i32_ty.as_type_ref(), i32_ty.as_type_ref()], false)
   // let func = llvm_module.add_function("main", fn_ty)
   // let bb = context.append_basic_block(func, "entry")

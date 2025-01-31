@@ -4,6 +4,10 @@ type CStr
 pub type AddressSpace UInt derive(Eq)
 pub type FastMathFlags UInt derive(Eq)
 
+pub fn AddressSpace::default() -> AddressSpace {
+  AddressSpace(0)
+}
+
 // Dummpy function, only for eliminate warning
 // FIXME: Remove this function
 pub fn LLVMAttributeIndex::new(idx: UInt) -> LLVMAttributeIndex {
