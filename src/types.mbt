@@ -217,6 +217,7 @@ pub fn IntType::const_all_ones(self: IntType) -> IntValue {
 /// let i8_zero = i8_type.const_zero();
 /// inspect!(i8_zero, "i8 0")
 /// ```
+/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn IntType::const_zero(self: IntType) -> IntValue {
   IntValue::new(self.ty.const_zero())
 }
@@ -532,6 +533,7 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
 /// let f64_zero = f64_type.const_zero();
 /// inspect!(f64_zero, "double 0.0")
 /// ```
+/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
@@ -769,7 +771,7 @@ pub fn PointerType::as_type_ref(self: PointerType) -> LLVMTypeRef {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_sz = ptr_type.size_of();
-/// let expect = "";
+/// let expect = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)";
 /// inspect!(ptr_sz, content=expect)
 /// ```
 pub fn PointerType::size_of(self: PointerType) -> IntValue {
@@ -790,7 +792,7 @@ pub fn PointerType::is_sized(self: PointerType) -> Bool {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_align = ptr_type.get_alignment();
-/// let expect = "";
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)";
 /// inspect!(ptr_align, content=expect)
 /// ```
 pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
@@ -856,7 +858,7 @@ pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let addr_space = ptr_type.get_address_space();
-/// inspect!(addr_space, "")
+/// inspect!(addr_space, "AddressSpace(0)")
 /// ```
 pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
   let addr_space = llvm_get_pointer_address_space(self.as_type_ref())
@@ -876,6 +878,8 @@ pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
 /// let null_ptr = ptr_type.const_null();
 /// inspect!(null_ptr, "")
 /// ```
+///
+/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn PointerType::const_null(self: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_null(self.as_type_ref()))
 }
@@ -893,6 +897,8 @@ pub fn PointerType::const_null(self: PointerType) -> PointerValue {
 /// let null_ptr = ptr_type.const_null();
 /// inspect!(null_ptr, "")
 /// ```
+///
+/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
   PointerValue::new(self.ty.const_zero())
 }
@@ -966,8 +972,8 @@ pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> Scalable
 // }
 
 
-///| Determine whether this pointer is opaque.
 // NOTE: above llvm-15
+///| Determine whether this pointer is opaque.
 pub fn PointerType::is_opaque(self: PointerType) -> Bool {
   llvm_pointer_type_is_opaque(self.as_type_ref())
 }
@@ -1003,6 +1009,9 @@ pub struct StructType {
   ty: Type
 }
 
+///| Create `StructType` from `LLVMTypeRef`
+///
+/// **Unsafe**: Undefined behavior if `type_ref` is not struct type.
 pub fn StructType::new(type_ref: LLVMTypeRef) -> StructType {
   assert_type_ref(type_ref)
 
@@ -1015,6 +1024,18 @@ pub fn StructType::as_type_ref(self: StructType) -> LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
+///| Gets the type of a field belonging to this `StructType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let field_type = struct_type.get_field_type_at_index(1);
+/// inspect!(field_type.unwrap(), "i64")
+/// ```
 pub fn StructType::get_field_type_at_index(self: StructType, index: UInt) -> BasicTypeEnum? {
   // TODO: need to think about how to handle this when `opaque` is true
   if self.is_opaque() {
@@ -1040,14 +1061,57 @@ pub fn StructType::const_zero(self: StructType) -> StructValue {
   StructValue::new(self.ty.const_zero())
 }
 
+///| Gets the size of this `StructType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let struct_sz = struct_type.size_of().unwrap();
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i32, i64 }, ptr null, i32 1) to i64)"
+/// inspect!(struct_sz, content=expect)
+/// ```
 pub fn StructType::size_of(self: StructType) -> IntValue? {
   self.ty.size_of()
 }
 
+///| Returns whether this `StructType` is sized. **Always returns `true`.**
+///
+/// ## Note
+///
+/// This function always returns `true` even the struct is opaque.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let opaque_struct = context.struct_type([]);
+/// inspect!(struct_type.is_sized(), content="true")
+/// inspect!(opaque_struct.is_sized(), content="true")
+/// ```
 pub fn StructType::is_sized(self: StructType) -> Bool {
   self.ty.is_sized()
 }
 
+///| Returns the alignment of this `StructType`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let struct_align = struct_type.get_alignment();
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, { i32, i64 } }, ptr null, i64 0, i32 1) to i64)"
+/// inspect!(struct_align, content=expect)
+/// ```
 pub fn StructType::get_alignment(self: StructType) -> IntValue {
   self.ty.get_alignment()
 }
@@ -1065,10 +1129,34 @@ pub fn StructType::fn_type(self: StructType, param_types: Array[LLVMTypeRef], is
   self.ty.fn_type(param_types, is_var_arg)
 }
 
+///| Creates an `ArrayType` with this `StructType` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let array_type = struct_type.array_type(8);
+/// inspect!(array_type, "[8 x { i32, i64 }]")
+/// ```
 pub fn StructType::array_type(self: StructType, size: UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
+///| Creates a `PointerType` with this `StructType` for its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i64_type = context.i64_type();
+/// let struct_type = context.struct_type([i32_type, i64_type]);
+/// let ptr_ty = struct_type.ptr_type(AddressSpace::default());
+/// inspect!(ptr_ty, "ptr")
+/// ```
 pub fn StructType::ptr_type(self: StructType, address_space: AddressSpace) -> PointerType {
   PointerType::new(llvm_pointer_type(self.as_type_ref(), address_space))
 }

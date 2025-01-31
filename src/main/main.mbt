@@ -14,11 +14,23 @@ fn main {
   let context = @llvm.Context::create()
   // let llvm_module = context.create_module("demo")
   // let builder = context.create_builder()
-  let void_ty = context.void_type()
-  let res = void_ty.get_alignment();
+  // let i32_type = context.i32_type();
+  // let ptr_type = i32_type.ptr_type(@llvm.AddressSpace::default());
+  // let res = ptr_type.size_of();
   // let i64_type = context.i64_type();
   // println(i64_type)
-  println(res)
+  let i32_ty = context.i32_type().as_type_ref()
+  let i64_ty = context.i64_type().as_type_ref()
+  let struct_ty = context.struct_type_unsafe([i32_ty, i64_ty])
+  println(struct_ty.size_of())
+  println(struct_ty.is_sized())
+  println(struct_ty.get_alignment())
+  let arr_struct_ty = struct_ty.array_type(8)
+  println(arr_struct_ty)
+  let ptr = struct_ty.ptr_type(@llvm.AddressSpace::default())
+  println(ptr)
+
+
   // let fn_ty = i32_ty.fn_type([i32_ty.as_type_ref(), i32_ty.as_type_ref()], false)
   // let func = llvm_module.add_function("main", fn_ty)
   // let bb = context.append_basic_block(func, "entry")

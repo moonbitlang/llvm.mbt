@@ -1,7 +1,7 @@
 // extern types
 type CStr
 
-pub type AddressSpace UInt derive(Eq)
+pub type AddressSpace UInt derive(Eq, Show)
 pub type FastMathFlags UInt derive(Eq)
 
 pub fn AddressSpace::default() -> AddressSpace {

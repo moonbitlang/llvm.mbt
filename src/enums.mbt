@@ -52,11 +52,15 @@ pub fn AggregateValueEnum::as_value_ref(self: AggregateValueEnum) -> LLVMValueRe
   }
 }
 
-pub fn AggregateValueEnum::to_string(self: AggregateValueEnum) -> String {
+pub impl Show for AggregateValueEnum with to_string(self: AggregateValueEnum) -> String {
   match self {
     AggregateValueEnum::ArrayValue(v) => v.to_string()
     AggregateValueEnum::StructValue(v) => v.to_string()
   }
+}
+
+pub impl Show for AggregateValueEnum with output(self: AggregateValueEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 
@@ -132,6 +136,26 @@ pub fn AnyValueEnum::is_array_value(self: AnyValueEnum) -> Bool {
     AnyValueEnum::ArrayValue(_) => true
     _ => false
   }
+}
+
+pub impl Show for AnyValueEnum with to_string(self: AnyValueEnum) -> String {
+  match self {
+    AnyValueEnum::ArrayValue(v) => v.to_string()
+    AnyValueEnum::IntValue(v) => v.to_string()
+    AnyValueEnum::FloatValue(v) => v.to_string()
+    AnyValueEnum::PhiValue(v) => v.to_string()
+    AnyValueEnum::FunctionValue(v) => v.to_string()
+    AnyValueEnum::PointerValue(v) => v.to_string()
+    AnyValueEnum::StructValue(v) => v.to_string()
+    AnyValueEnum::VectorValue(v) => v.to_string()
+    AnyValueEnum::ScalableVectorValue(v) => v.to_string()
+    AnyValueEnum::InstructionValue(v) => v.to_string()
+    AnyValueEnum::MetadataValue(v) => v.to_string()
+  }
+}
+
+pub impl Show for AnyValueEnum with output(self: AnyValueEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 //=========================================================
@@ -312,8 +336,7 @@ pub fn BasicValueEnum::into_scalable_vector_value(self: BasicValueEnum) -> Scala
   }
 }
 
-
-pub fn  BasicValueEnum::to_string(self: BasicValueEnum) -> String {
+pub impl Show for BasicValueEnum with to_string(self: BasicValueEnum) -> String {
   match self {
     BasicValueEnum::ArrayValue(v) => v.to_string()
     BasicValueEnum::IntValue(v) => v.to_string()
@@ -323,6 +346,10 @@ pub fn  BasicValueEnum::to_string(self: BasicValueEnum) -> String {
     BasicValueEnum::VectorValue(v) => v.to_string()
     BasicValueEnum::ScalableVectorValue(v) => v.to_string()
   }
+}
+
+pub impl Show for BasicValueEnum with output(self: BasicValueEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 //=========================================================
@@ -473,7 +500,7 @@ pub fn BasicMetadataValueEnum::into_vector_value(self: BasicMetadataValueEnum) -
 
 // into ScalableVectorValue, MetadataValue
 
-pub fn BasicMetadataValueEnum::to_string(self: BasicMetadataValueEnum) -> String {
+pub impl Show for BasicMetadataValueEnum with to_string(self: BasicMetadataValueEnum) -> String {
   match self {
     ArrayValue(v) => v.to_string()
     IntValue(v) => v.to_string()
@@ -484,6 +511,10 @@ pub fn BasicMetadataValueEnum::to_string(self: BasicMetadataValueEnum) -> String
     ScalableVectorValue(v) => v.to_string()
     MetadataValue(v) => v.to_string()
   }
+}
+
+pub impl Show for BasicMetadataValueEnum with output(self: BasicMetadataValueEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 //=========================================================
@@ -678,7 +709,7 @@ pub fn AnyTypeEnum::into_void_type(self: AnyTypeEnum) -> VoidType {
 //   }
 // }
 
-pub fn AnyTypeEnum::to_string(self: AnyTypeEnum) -> String {
+pub impl Show for AnyTypeEnum with to_string(self: AnyTypeEnum) -> String {
   match self {
     AnyTypeEnum::ArrayType(v) => v.to_string()
     AnyTypeEnum::FloatType(v) => v.to_string()
@@ -690,6 +721,10 @@ pub fn AnyTypeEnum::to_string(self: AnyTypeEnum) -> String {
     AnyTypeEnum::ScalableVectorType(v) => v.to_string()
     AnyTypeEnum::VoidType(v) => v.to_string()
   }
+}
+
+pub impl Show for AnyTypeEnum with output(self: AnyTypeEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 //=========================================================
@@ -738,6 +773,22 @@ impl AsTypeRef for BasicTypeEnum with as_type_ref(self: BasicTypeEnum) -> LLVMTy
   }
 }
 
+pub impl Show for BasicTypeEnum with to_string(self: BasicTypeEnum) -> String {
+  match self {
+    BasicTypeEnum::ArrayType(t) => t.to_string()
+    BasicTypeEnum::FloatType(t) => t.to_string()
+    BasicTypeEnum::IntType(t) => t.to_string()
+    BasicTypeEnum::PointerType(t) => t.to_string()
+    BasicTypeEnum::StructType(t) => t.to_string()
+    BasicTypeEnum::VectorType(t) => t.to_string()
+    BasicTypeEnum::ScalableVectorType(t) => t.to_string()
+  }
+}
+
+pub impl Show for BasicTypeEnum with output(self: BasicTypeEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
+}
+
 //=========================================================
 // BasicMetadataTypeEnum
 //=========================================================
@@ -772,6 +823,23 @@ pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnu
       abort("Unsupported type kind");
     }
   }
+}
+
+pub impl Show for BasicMetadataTypeEnum with to_string(self: BasicMetadataTypeEnum) -> String {
+  match self {
+    BasicMetadataTypeEnum::ArrayType(v) => v.to_string()
+    BasicMetadataTypeEnum::FloatType(v) => v.to_string()
+    BasicMetadataTypeEnum::IntType(v) => v.to_string()
+    BasicMetadataTypeEnum::PointerType(v) => v.to_string()
+    BasicMetadataTypeEnum::StructType(v) => v.to_string()
+    BasicMetadataTypeEnum::VectorType(v) => v.to_string()
+    BasicMetadataTypeEnum::ScalableVectorType(v) => v.to_string()
+    BasicMetadataTypeEnum::MetadataType(v) => v.to_string()
+  }
+}
+
+pub impl Show for BasicMetadataTypeEnum with output(self: BasicMetadataTypeEnum, logger: &Logger) -> Unit {
+  logger.write_string(self.to_string())
 }
 
 
