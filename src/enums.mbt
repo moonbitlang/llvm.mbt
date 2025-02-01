@@ -825,6 +825,19 @@ pub fn BasicMetadataTypeEnum::new(type_ref: LLVMTypeRef) -> BasicMetadataTypeEnu
   }
 }
 
+pub fn BasicMetadataTypeEnum::as_type_ref(self: BasicMetadataTypeEnum) -> LLVMTypeRef {
+  match self {
+    BasicMetadataTypeEnum::ArrayType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::FloatType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::IntType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::PointerType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::StructType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::VectorType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::ScalableVectorType(t) => t.as_type_ref()
+    BasicMetadataTypeEnum::MetadataType(t) => t.as_type_ref()
+  }
+}
+
 pub impl Show for BasicMetadataTypeEnum with to_string(self: BasicMetadataTypeEnum) -> String {
   match self {
     BasicMetadataTypeEnum::ArrayType(v) => v.to_string()

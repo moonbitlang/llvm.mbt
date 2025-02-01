@@ -1081,6 +1081,18 @@ LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
 
 LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 
+void *__llvm_new_null_type_ref() { return (LLVMTypeRef)NULL; }
+
+// ty1: LLVMTypeRef, ty2: LLVMTypeRef
+LLVMBool __llvm_same_type_ref(void *ty1, void *ty2) {
+  return ty1 == ty2 ? 1 : 0;
+}
+
+// val1: LLVMValueRef, val2: LLVMValueRef
+LLVMBool __llvm_same_value_ref(void *val1, void *val2) {
+  return val1 == val2 ? 1 : 0;
+}
+
 void __llvm_shutdown() { LLVMShutdown(); }
 
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {
@@ -1663,8 +1675,12 @@ unsigned __llvm_count_struct_element_types(void *struct_ty) {
   return LLVMCountStructElementTypes((LLVMTypeRef)struct_ty);
 }
 
-void __llvm_get_struct_element_types(void *struct_ty, void *dest) {
-  LLVMGetStructElementTypes((LLVMTypeRef)struct_ty, (LLVMTypeRef *)dest);
+ArrayLLVMValueRef *__llvm_get_struct_element_types(void *struct_ty,
+                                                   unsigned cnt,
+                                                   ArrayLLVMValueRef *arr) {
+  LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)arr->$0->data;
+  LLVMGetStructElementTypes((LLVMTypeRef)struct_ty, llvm_element_types);
+  return arr;
 }
 
 void *__llvm_struct_get_type_at_index(void *struct_ty, unsigned i) {
@@ -2613,7 +2629,8 @@ LLVMDLLStorageClass __llvm_get_dll_storage_class(void *global) {
   return LLVMGetDLLStorageClass((LLVMValueRef)global);
 }
 
-// void __llvm_set_dll_storage_class(void *global, LLVMDLLStorageClass class) {
+// void __llvm_set_dll_storage_class(void *global, LLVMDLLStorageClass class)
+// {
 //   LLVMSetDLLStorageClass((LLVMValueRef)global, class);
 // }
 

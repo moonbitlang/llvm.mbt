@@ -76,6 +76,14 @@ pub type LLVMGenericValueRef
 pub type LVMExecutionEngineRef
 pub type LVMMCJITMemoryManagerRef
 
+pub impl Eq for LLVMTypeRef with op_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
+  self.is_equal(other)
+}
+
+pub impl Eq for LLVMValueRef with op_equal(self: LLVMValueRef, other: LLVMValueRef) -> Bool {
+  self.is_equal(other)
+}
+
 pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
   guard let LLVMDWARFTypeEncoding(u) = self
   u

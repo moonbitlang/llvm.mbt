@@ -20,17 +20,13 @@ fn main {
   // let i64_type = context.i64_type();
   // println(i64_type)
   let i32_ty = context.i32_type().as_type_ref()
-  let i64_ty = context.i64_type().as_type_ref()
-  let struct_ty = context.struct_type_unsafe([i32_ty, i64_ty])
-  println(struct_ty.size_of())
-  println(struct_ty.is_sized())
-  println(struct_ty.get_alignment())
-  let arr_struct_ty = struct_ty.array_type(8)
-  println(arr_struct_ty)
-  let ptr = struct_ty.ptr_type(@llvm.AddressSpace::default())
-  println(ptr)
-
-
+  let f64_ty = context.f64_type().as_type_ref()
+  let opaque_struct = context.opaque_struct_type("opaque_struct");
+  println(opaque_struct)
+  println(opaque_struct.is_opaque())
+  let _ = opaque_struct.set_body_unsafe([i32_ty, f64_ty]);
+  println(opaque_struct)
+  println(opaque_struct.is_opaque())
   // let fn_ty = i32_ty.fn_type([i32_ty.as_type_ref(), i32_ty.as_type_ref()], false)
   // let func = llvm_module.add_function("main", fn_ty)
   // let bb = context.append_basic_block(func, "entry")

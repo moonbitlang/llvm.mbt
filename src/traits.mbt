@@ -444,7 +444,8 @@ pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVect
 //=========================================================
 pub trait BasicType : AnyType {
   as_basic_type_enum(Self) -> BasicTypeEnum;
-  fn_type(Self, Array[LLVMTypeRef], Bool) -> FunctionType;
+  fn_type(Self, Array[&BasicMetadataType], Bool) -> FunctionType;
+  fn_type_unsafe(Self, Array[LLVMTypeRef], Bool) -> FunctionType;
   array_type(Self, UInt) -> ArrayType;
   ptr_type(Self, AddressSpace) -> PointerType;
   is_sized(Self) -> Bool;
@@ -455,11 +456,16 @@ pub impl BasicType for IntType with as_basic_type_enum(self: IntType) -> BasicTy
   BasicTypeEnum::IntType(self)
 }
 
-// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
 pub impl BasicType for IntType with fn_type(
+  self: IntType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for IntType with fn_type_unsafe(
   self: IntType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for IntType with array_type(
@@ -485,9 +491,15 @@ pub impl BasicType for FloatType with as_basic_type_enum(self: FloatType) -> Bas
 }
 
 pub impl BasicType for FloatType with fn_type(
+  self: FloatType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for FloatType with fn_type_unsafe(
   self: FloatType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for FloatType with array_type(self: FloatType, size: UInt) -> ArrayType {
@@ -511,9 +523,15 @@ pub impl BasicType for PointerType with as_basic_type_enum(self: PointerType) ->
 }
 
 pub impl BasicType for PointerType with fn_type(
+  self: PointerType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for PointerType with fn_type_unsafe(
   self: PointerType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 
@@ -538,9 +556,15 @@ pub impl BasicType for StructType with as_basic_type_enum(self: StructType) -> B
 }
 
 pub impl BasicType for StructType with fn_type(
+  self: StructType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for StructType with fn_type_unsafe(
   self: StructType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for StructType with size_of(self: StructType) -> IntValue? {
@@ -569,9 +593,15 @@ pub impl BasicType for ArrayType with as_basic_type_enum(self: ArrayType) -> Bas
 }
 
 pub impl BasicType for ArrayType with fn_type(
+  self: ArrayType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for ArrayType with fn_type_unsafe(
   self: ArrayType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for ArrayType with size_of(self: ArrayType) -> IntValue? {
@@ -607,9 +637,15 @@ pub impl BasicType for VectorType with is_sized(self: VectorType) -> Bool {
 }
 
 pub impl BasicType for VectorType with fn_type(
+  self: VectorType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for VectorType with fn_type_unsafe(
   self: VectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for VectorType with array_type(
@@ -631,9 +667,15 @@ pub impl BasicType for ScalableVectorType with is_sized(self: ScalableVectorType
 }
 
 pub impl BasicType for ScalableVectorType with fn_type(
+  self: ScalableVectorType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
+) -> FunctionType {
+  self.fn_type(param_types, is_var_arg=is_var_arg)
+}
+
+pub impl BasicType for ScalableVectorType with fn_type_unsafe(
   self: ScalableVectorType, param_types: Array[LLVMTypeRef], is_var_arg: Bool
 ) -> FunctionType {
-  self.fn_type(param_types, is_var_arg)
+  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 pub impl BasicType for ScalableVectorType with array_type(
@@ -651,7 +693,7 @@ pub impl BasicType for ScalableVectorType with ptr_type(
 //=========================================================
 // BasicMetadataType
 //=========================================================
-pub trait BasicMetadataType {
+pub trait BasicMetadataType : AnyType {
   as_basic_metadata_type_enum(Self) -> BasicMetadataTypeEnum;
 }
 
@@ -673,6 +715,10 @@ pub impl BasicMetadataType for StructType with as_basic_metadata_type_enum(self:
 
 pub impl BasicMetadataType for ArrayType with as_basic_metadata_type_enum(self: ArrayType) -> BasicMetadataTypeEnum {
   BasicMetadataTypeEnum::ArrayType(self)
+}
+
+pub impl BasicMetadataType for VectorType with as_basic_metadata_type_enum(self: VectorType) -> BasicMetadataTypeEnum {
+  BasicMetadataTypeEnum::VectorType(self)
 }
 
 pub impl BasicMetadataType for ScalableVectorType with as_basic_metadata_type_enum(self: ScalableVectorType) -> BasicMetadataTypeEnum {

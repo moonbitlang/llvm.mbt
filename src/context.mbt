@@ -249,7 +249,6 @@ pub fn Context::ptr_type(self: Context, addr_space: AddressSpace) -> PointerType
 /// inspect!(struct_ty, "{ i32, i64 }")
 /// ```
 /// @alert CompilerBug "This function is not working due to a bug in the compiler."
-// TODO: use BasicType trait instead of BasicTypeEnum
 pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], packed~: Bool = false) -> StructType {
   let field_types = field_types.map(fn (v) {v.as_type_ref()})
 
@@ -269,7 +268,7 @@ pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], packe
 /// let struct_ty = context.struct_type_unsafe([i32_ty, i64_ty], false)
 /// inspect!(struct_ty, "{ i32, i64 }")
 /// ```
-/// @alert WillRemove "This function will be removed once the bug in the compiler is fixed."
+// @alert WillRemove "This function will be removed once the bug in the compiler is fixed."
 pub fn Context::struct_type_unsafe(self: Context, field_types: Array[LLVMTypeRef], packed~: Bool = false) -> StructType {
   let val_ref = llvm_struct_type_in_context(self.as_ctx_ref(), field_types, packed)
 
@@ -294,6 +293,16 @@ pub fn Context::const_struct(
   StructValue::new(val_ref)
 }
 
+///| Create an opaque struct type in the context, with the given name.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create()
+/// let opaque_struct_ty = context.opaque_struct_type("opaque_struct")
+/// inspect!(opaque_struct_ty, "%opaque_struct = type opaque")
+/// assert_true(opaque_struct_ty.is_opaque())
+/// ```
 pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
   let val_ref = llvm_struct_create_named(self.as_ctx_ref(), name)
   StructType::new(val_ref)

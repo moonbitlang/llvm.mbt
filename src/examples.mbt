@@ -93,15 +93,15 @@ test "Basic type and Basic value" {
 
   // TODO: For following func type test, eliminate `as_type_ref` after compiler bug fixed.
   // (Int, Int) -> Int
-  let fty1 = i32_ty.fn_type([i32_ty.as_type_ref(), i32_ty.as_type_ref()], false)
+  let fty1 = i32_ty.fn_type_unsafe([i32_ty.as_type_ref(), i32_ty.as_type_ref()])
   inspect!(fty1, content="i32 (i32, i32)")
 
   // (Double, Int) -> Double
-  let fty2 = f64_ty.fn_type([i32_ty.as_type_ref(), f64_ty.as_type_ref()], false)
+  let fty2 = f64_ty.fn_type_unsafe([i32_ty.as_type_ref(), f64_ty.as_type_ref()])
   inspect!(fty2, content="double (i32, double)")
 
   // () -> Int
-  let fty3 = i32_ty.fn_type([], false)
+  let fty3 = i32_ty.fn_type_unsafe([])
   inspect!(fty3, content="i32 ()")
 
   context.drop()

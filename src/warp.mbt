@@ -1,4 +1,41 @@
 
+// Eliminate it when `Array::make` compiler bug fixed
+fn LLVMTypeRef::make(cnt: Int, ty_ref: LLVMTypeRef) -> Array[LLVMTypeRef] {
+  match cnt {
+    0 => []
+    1 => [ty_ref]
+    2 => [ty_ref, ty_ref]
+    3 => [ty_ref, ty_ref, ty_ref]
+    4 => [ty_ref, ty_ref, ty_ref, ty_ref]
+    5 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    6 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    7 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    8 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    9 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    10 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
+    _ => {
+      println("Over 10 elemnts of LLVMTypeRef is not supported currently.")
+      println("Need to wait Compiler bug fixed.")
+      panic()
+    }
+      
+  }
+}
+
+extern "C" fn llvm_new_null_type_ref() -> LLVMTypeRef = "__llvm_new_null_type_ref"
+
+extern "C" fn llvm_same_type_ref(ty1: LLVMTypeRef, ty2: LLVMTypeRef) -> LLVMBool = "__llvm_same_type_ref"
+fn LLVMTypeRef::is_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
+  llvm_same_type_ref(self, other).to_moonbit_bool()
+}
+
+extern "C" fn llvm_same_value_ref(val1: LLVMValueRef, val2: LLVMValueRef) -> LLVMBool = "__llvm_same_value_ref"
+fn LLVMValueRef::is_equal(self: LLVMValueRef, other: LLVMValueRef) -> Bool {
+  llvm_same_value_ref(self, other).to_moonbit_bool()
+}
+
+// extern "C" fn llvm_new_null_value_ref() -> LLVMValueRef = "__llvm_new_null_value_ref"
+
 pub extern "C" fn llvm_shutdown() = "__llvm_shutdown"
 
 // FIXME: Not implemented
@@ -1569,7 +1606,27 @@ pub fn LLVMTypeRef::count_struct_element_types(self: LLVMTypeRef) -> UInt {
 /// elements. The objects in the destination array will have a lifetime
 /// of the structure type itself, which is the lifetime of the context it
 /// is contained in.
-pub extern "C" fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] = "__llvm_get_struct_element_types"
+extern "C" fn __llvm_get_struct_element_types(
+  struct_ty: LLVMTypeRef,
+  num_fields: UInt,
+  fields: Array[LLVMTypeRef]
+)-> Array[LLVMTypeRef] = "__llvm_get_struct_element_types"
+
+///| Get the elements within a structure.
+/// 
+/// The function is passed the address of a pre-allocated array of
+/// LLVMTypeRef at least LLVMCountStructElementTypes() long. After
+/// invocation, this array will be populated with the structure's
+/// elements. The objects in the destination array will have a lifetime
+/// of the structure type itself, which is the lifetime of the context it
+/// is contained in.
+pub fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] {
+  let field_count = llvm_count_struct_element_types(struct_ty)
+  let null_ref = llvm_new_null_type_ref()
+  // FIXME: Use `Array::make` once compiler bug is fixed
+  let null_refs = LLVMTypeRef::make(field_count.reinterpret_as_int(), null_ref)
+  __llvm_get_struct_element_types(struct_ty, field_count, null_refs)
+}
 
 ///| Get the elements within a structure.
 /// 
