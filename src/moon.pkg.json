@@ -1,2 +1,9 @@
 {
+  "link" :{
+    "native" : {
+      "cc" : "gcc",
+      "cc-flags" : "./src/warp.c ./src/utils.c -I/opt/homebrew/Cellar/llvm/19.1.7/include  -D__STDC_CONSTANT_MACROS -D__STDC_FORMAT_MACROS -D__STDC_LIMIT_MACROS",
+      "cc-link-flags" : "-L/opt/homebrew/Cellar/llvm/19.1.7/lib -Wl,-search_paths_first -Wl,-headerpad_max_install_names -lLLVM-19"
+    } 
+  }
 }

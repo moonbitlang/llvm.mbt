@@ -1093,6 +1093,11 @@ LLVMBool __llvm_same_value_ref(void *val1, void *val2) {
   return val1 == val2 ? 1 : 0;
 }
 
+// ctx1: LLVMContextRef, ctx2: LLVMContextRef
+LLVMBool __llvm_same_ctx_ref(void *ctx1, void *ctx2) {
+  return ctx1 == ctx2 ? 1 : 0;
+}
+
 void __llvm_shutdown() { LLVMShutdown(); }
 
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {

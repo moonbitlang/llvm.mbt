@@ -84,6 +84,10 @@ pub impl Eq for LLVMValueRef with op_equal(self: LLVMValueRef, other: LLVMValueR
   self.is_equal(other)
 }
 
+pub impl Eq for LLVMContextRef with op_equal(self: LLVMContextRef, other: LLVMContextRef) -> Bool {
+  self.is_equal(other)
+}
+
 pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
   guard let LLVMDWARFTypeEncoding(u) = self
   u

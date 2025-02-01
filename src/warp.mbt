@@ -34,6 +34,11 @@ fn LLVMValueRef::is_equal(self: LLVMValueRef, other: LLVMValueRef) -> Bool {
   llvm_same_value_ref(self, other).to_moonbit_bool()
 }
 
+extern "C" fn llvm_same_ctx_ref(ctx1: LLVMContextRef, ctx2: LLVMContextRef) -> LLVMBool = "__llvm_same_ctx_ref"
+fn LLVMContextRef::is_equal(self: LLVMContextRef, other: LLVMContextRef) -> Bool {
+  llvm_same_ctx_ref(self, other).to_moonbit_bool()
+}
+
 // extern "C" fn llvm_new_null_value_ref() -> LLVMValueRef = "__llvm_new_null_value_ref"
 
 pub extern "C" fn llvm_shutdown() = "__llvm_shutdown"

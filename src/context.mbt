@@ -1,7 +1,7 @@
 // Context
 struct Context {
   ctx_ref: LLVMContextRef
-}
+} derive(Eq)
 
 pub fn Context::new(ctx_ref: LLVMContextRef) -> Context {
   Context :: {

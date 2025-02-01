@@ -30,7 +30,7 @@ pub fn IntType::as_type_ref(self: IntType) -> LLVMTypeRef {
 /// inspect!(i32_val, "i32 42")
 /// ```
 // TODO: Maybe better explain signextension
-pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend: Bool) -> IntValue {
+pub fn IntType::const_int(self: IntType, val: UInt64, sign_extend~: Bool = true) -> IntValue {
   let llvm_val_ref = llvm_const_int(self.as_type_ref(), val, sign_extend)
   IntValue::new(llvm_val_ref)
 }
@@ -59,8 +59,8 @@ pub fn IntType::const_int_arbitrary_precision(self: IntType, words: Array[UInt64
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let i32_ptr_value = i32_type.const_all_ones();
-/// inspect!(i32_ptr_value, "i32 -1")
+/// let all_ones_val = i32_type.const_all_ones();
+/// inspect!(all_ones_val, "i32 -1")
 /// ```
 pub fn IntType::const_all_ones(self: IntType) -> IntValue {
   let llvm_val_ref = llvm_const_all_ones(self.as_type_ref())
@@ -271,18 +271,30 @@ pub fn IntType::const_array(self: IntType, values: Array[IntValue]) -> ArrayValu
   ArrayValue::new_const_array(self, values)
 }
 
+///| Dumps the `IntType` to stderr.
+///
+/// It's equivalent to `IntType::print_to_stderr`.
 pub fn IntType::print_to_stderr(self: IntType) -> Unit {
   self.ty.print_to_stderr()
 }
 
+///| Dumps the `IntType` to a string.
+///
+/// It's equivalent to `IntType::to_string`.
 pub fn IntType::print_to_string(self: IntType) -> String {
   self.ty.print_to_string()
 }
 
+///| Dumps the `IntType` to stderr.
+///
+/// It's equivalent to `IntType::print_to_string`.
 pub fn IntType::to_string(self: IntType) -> String {
   self.ty.to_string()
 }
 
+///| Dumps the `IntType` to stderr.
+///
+/// It's equivalent to `IntType::print_to_stderr`.
 pub fn IntType::dump(self: IntType) -> Unit {
   self.ty.dump()
 }

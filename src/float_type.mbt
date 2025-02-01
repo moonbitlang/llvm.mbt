@@ -241,7 +241,6 @@ pub fn get_poison(self: FloatType) -> FloatValue {
 //   GenericValue::new(gv)
 // }
 
-// TODO: enable this after `new_const_array` is implemented
 pub fn FloatType::const_array(self: FloatType, values: Array[FloatValue]) -> ArrayValue {
   ArrayValue::new_const_array(self, values)
 }
