@@ -8130,7 +8130,7 @@ pub extern "C" fn llvm_get_first_target() -> LLVMTargetRef = "__llvm_get_first_t
 pub extern "C" fn llvm_get_next_target(t: LLVMTargetRef) -> LLVMTargetRef = "__llvm_get_next_target"
 
 ///|  Finds the target corresponding to the given name.
-pub extern "C" fn __llvm_get_target_from_name(name: CStr) -> LLVMTargetRef = "__llvm_get_target_from_name"
+extern "C" fn __llvm_get_target_from_name(name: CStr) -> LLVMTargetRef = "__llvm_get_target_from_name"
 pub fn llvm_get_target_from_name(name: String) -> LLVMTargetRef {
   let name = moonbit_str_to_c_str(name)
   __llvm_get_target_from_name(name)
@@ -8140,7 +8140,11 @@ pub fn llvm_get_target_from_name(name: String) -> LLVMTargetRef {
 /// Returns 0 on success. Optionally returns any error in ErrorMessage.
 /// Use LLVMDisposeMessage to dispose the message.
 // TODO: check if this is correct
-pub extern "C" fn __llvm_get_target_from_triple(triple: CStr) -> (LLVMTargetRef, CStr, LLVMBool) = "__llvm_get_target_from_triple"
+extern "C" fn __llvm_get_target_from_triple(triple: CStr) -> (LLVMTargetRef, CStr, LLVMBool) = "__llvm_get_target_from_triple"
+
+/// Finds the target corresponding to the given triple and stores it in `T`.
+/// Returns 0 on success. Optionally returns any error in ErrorMessage.
+/// Use LLVMDisposeMessage to dispose the message.
 pub fn llvm_get_target_from_triple(triple: String) -> (LLVMTargetRef, String, Bool) {
   let triple = moonbit_str_to_c_str(triple)
   let (target, cstr, is_ok) = __llvm_get_target_from_triple(triple)

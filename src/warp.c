@@ -1081,6 +1081,8 @@ LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
 
 LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 
+LLVMBool __llvm_comdat_is_null(void *comdat) { return comdat == NULL ? 1 : 0; }
+
 void *__llvm_new_null_type_ref() { return (LLVMTypeRef)NULL; }
 
 // ty1: LLVMTypeRef, ty2: LLVMTypeRef

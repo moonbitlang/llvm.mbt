@@ -135,6 +135,11 @@ fn LLVMAttributeRef::is_null(self: LLVMAttributeRef) -> Bool {
   llvm_attr_is_null(self).to_moonbit_bool()
 }
 
+extern "C" fn llvm_comdat_is_null(comdat: LLVMComdatRef) -> LLVMBool = "__llvm_comdat_is_null"
+fn LLVMComdatRef::is_null(self: LLVMComdatRef) -> Bool {
+  llvm_comdat_is_null(self).to_moonbit_bool()
+}
+
 // enums
 ///| Instruction opcodes
 pub enum LLVMOpcode {
