@@ -773,6 +773,20 @@ impl AsTypeRef for BasicTypeEnum with as_type_ref(self: BasicTypeEnum) -> LLVMTy
   }
 }
 
+// only check class type
+pub impl Eq for BasicTypeEnum with op_equal(self: BasicTypeEnum, other: BasicTypeEnum) -> Bool {
+  match (self, other) {
+    (ArrayType(_), ArrayType(_)) => true
+    (FloatType(_), FloatType(_)) => true
+    (IntType(_), IntType(_)) => true
+    (PointerType(_), PointerType(_)) => true
+    (StructType(_), StructType(_)) => true
+    (VectorType(_), VectorType(_)) => true
+    (ScalableVectorType(_), ScalableVectorType(_)) => true
+    _ => false
+  }
+}
+
 pub impl Show for BasicTypeEnum with to_string(self: BasicTypeEnum) -> String {
   match self {
     BasicTypeEnum::ArrayType(t) => t.to_string()

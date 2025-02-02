@@ -100,13 +100,14 @@ pub impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
 // =========================================
 // IntValue
 // =========================================
-///| Get a value from an `LLVMValueRef`.
-///
-/// **unsafe**: Undefined behavior if `value_ref` is not an `IntValue`.
+///| An `IntValue` is a value that represents an integer.
 pub struct IntValue {
   value: Value
 }
 
+///| Get a value from an `LLVMValueRef`.
+///
+/// **unsafe**: Undefined behavior if `value_ref` is not an `IntValue`.
 pub fn IntValue::new(value_ref: LLVMValueRef) -> IntValue {
   assert_val_ref(value_ref)
 
@@ -274,7 +275,7 @@ pub fn IntValue::const_bit_cast(self: IntValue, int_tyep: IntType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```mnoonbit
+/// ```moonbit
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -290,7 +291,7 @@ pub fn IntValue::is_const(self: IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```mnoonbit
+/// ```moonbit
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -385,13 +386,21 @@ pub impl Show for IntValue with output(self: IntValue, logger: &Logger) -> Unit 
   logger.write_string(self.to_string())
 }
 
+pub impl Show for IntValue with to_string(self: IntValue) -> String {
+  self.to_string()
+}
+
 // ============================================
 // FloatValue
 // ============================================
+///| A `FloatValue` is a value that represents a floating point number.
 pub struct FloatValue {
   value: Value
 }
 
+///| Get a value from an `LLVMValueRef`.
+///
+/// **unsafe**: Undefined behavior if `value_ref` is not a `FloatValue`.
 pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
   assert_val_ref(value_ref)
 
@@ -400,24 +409,73 @@ pub fn FloatValue::new(value_ref: LLVMValueRef) -> FloatValue {
   }
 }
 
+///| Gets name of the `FloatValue`.
+/// If the value is a constant, this will return an empty string.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let pi = f64_type.const_float(3.14);
+/// inspect!(pi.get_name(), "");
+/// pi.set_name("pi");
+/// inspect!(pi.get_name(), "pi");
+/// ```
 pub fn FloatValue::get_name(self: FloatValue) -> String {
   self.value.get_name()
 }
 
+///| Set name of the `FloatValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let pi = f64_type.const_float(3.14);
+/// pi.set_name("pi");
+/// inspect!(pi.get_name(), "pi");
+/// ```
 pub fn FloatValue::set_name(self: FloatValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
+///| Gets the type of the `FloatValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let pi = f64_type.const_float(3.14);
+/// inspect!(pi.get_type(), "float");
+/// ```
 pub fn FloatValue::get_type(self: FloatValue) -> FloatType {
   FloatType::new(self.value.get_type().as_type_ref())
 }
 
+///| Returns whether or not the `FloatValue` is null.
 pub fn FloatValue::is_null(self: FloatValue) -> Bool {
   self.value.is_null()
 }
 
+///| Returns whether or not the `FloatValue` is undefined.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let undef = f64_type.get_undef();
+/// assert_true!(undef.is_undef());
+/// ```
 pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
   self.value.is_undef()
+}
+
+pub fn FloatValue::as_instruction(self: FloatValue) -> InstructionValue? {
+  self.value.as_instruction()
 }
 
 // -----------------------
@@ -427,26 +485,70 @@ pub fn FloatValue::is_undef(self: FloatValue) -> Bool {
 //   IntValue::new(llvm_const_fcmp(op.into(). self.as_value_ref(), rhs.as_value_ref())
 // }
 
+///| Determines whether or not a `FloatValue` is a constant.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let f64_val = f64_type.const_float(1.2);
+/// assert_true!(f64_val.is_const());
+/// ```
 pub fn FloatValue::is_const(self: FloatValue) -> Bool {
   self.value.is_const()
 }
 
+///| Obtains a constant `FloatValue`'s value and whether or not it lost info.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f64_type = context.f64_type();
+/// let pi = f64_type.const_float(3.14);
+///
+/// inspect!(pi.get_constant(), "Some((3.14, false))");
+/// ```
+pub fn FloatValue::get_constant(self: FloatValue) -> (Double, Bool)? {
+  if not(self.is_const()) {
+    return None
+  }
+
+  let (v, lossy) = llvm_const_real_get_double(self.as_value_ref())
+
+  Some((v, lossy))
+}
+
+///| Replaces all uses of a `FloatValue` with another `FloatValue`.
 pub fn FloatValue::replace_all_uses_with(self: FloatValue, new_value: FloatValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Dumps the `FloatValue` to stderr.
+///
+/// It's equivalent to `FloatValue::dump`.
 pub fn FloatValue::print_to_stderr(self: FloatValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dumps the `FloatValue` to a string.
+///
+/// It's equivalent to `FloatValue::to_string`.
 pub fn FloatValue::print_to_string(self: FloatValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dumps the `FloatValue` to a string.
+///
+/// It's equivalent to `FloatValue::print_to_string`.
 pub fn FloatValue::to_string(self: FloatValue) -> String {
   self.value.to_string()
 }
 
+///| Dump the `FloatValue` to stderr.
+///
+/// It's equivalent to `FloatValue::print_to_stderr`.
 pub fn FloatValue::dump(self: FloatValue) -> Unit {
   self.value.dump()
 }
@@ -455,13 +557,21 @@ pub impl Show for FloatValue with output(self: FloatValue, logger: &Logger) -> U
   logger.write_string(self.to_string())
 }
 
+pub impl Show for FloatValue with to_string(self: FloatValue) -> String {
+  self.to_string()
+}
+
 // ============================================
 // PointerValue
 // ============================================
+///| A `PointerValue` is a value that represents a pointer.
 pub struct PointerValue {
   value: Value
 }
 
+///| Get a value from an `LLVMValueRef`.
+///
+/// **unsafe**: Undefined behavior if `value_ref` is not a `PointerValue`.
 pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
   assert_val_ref(value_ref)
 
@@ -470,38 +580,79 @@ pub fn PointerValue::new(value_ref: LLVMValueRef) -> PointerValue {
   }
 }
 
+///| Returns the `LLVMValueRef` that this `PointerValue` wraps.
 pub fn PointerValue::as_value_ref(self: PointerValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
+///| Gets the name of a `PointerValue`.
+/// If the value is a constant, this will return an empty string.
 pub fn PointerValue::get_name(self: PointerValue) -> String {
   self.value.get_name()
 }
 
+///| Set name of the `PointerValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i64_type = context.i64_type();
+/// let i64_val = i64_type.const_int(42);
+/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
+/// ptr_type.set_name("forty_two");
+/// inspect!(ptr_type.get_name(), "forty_two");
+/// ```
 pub fn PointerValue::set_name(self: PointerValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
+///| Gets the type of a `PointerValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i64_type = context.i64_type();
+/// let i64_val = i64_type.const_int(42);
+/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
+/// inspect!(ptr_type.get_type(), "ptr");
+/// ```
 pub fn PointerValue::get_type(self: PointerValue) -> PointerType {
   PointerType::new(self.value.get_type().as_type_ref())
 }
 
+///| Returns whether or not the `PointerValue` is null.
 pub fn PointerValue::is_null(self: PointerValue) -> Bool {
   self.value.is_null()
 }
 
+///| Returns whether or not the `PointerValue` is undefined.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i64_type = context.i64_type();
+/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
+/// let undef = ptr_type.get_undef();
+/// assert_true!(undef.is_undef());
+/// ```
 pub fn PointerValue::is_undef(self: PointerValue) -> Bool {
   self.value.is_undef()
 }
 
+///| Returns whether or not the `PointerValue` is a constant.
 pub fn PointerValue::is_const(self: PointerValue) -> Bool {
   self.value.is_const()
 }
 
+///| Converts the `PointerValue` into an `InstructionValue` if it is an instruction.
 pub fn PointerValue::as_instruction(self: PointerValue) -> InstructionValue? {
   self.value.as_instruction()
 }
 
+///| Creates a `PointerValue` that applies a `getelementptr` operation to the `PointerValue`.
 pub fn PointerValue::const_gep(
   self: PointerValue, ty: &BasicType, ordered_indices: Array[IntValue]
 ) -> PointerValue {
@@ -510,6 +661,7 @@ pub fn PointerValue::const_gep(
   PointerValue::new(value_ref)
 }
 
+///| Creates a `PointerValue` that applies a `getelementptr` operation to the `PointerValue`.
 pub fn PointerValue::const_in_bounds_gep(
   self: PointerValue, ty: &BasicType, ordered_indices: Array[IntValue]
 ) -> PointerValue {
@@ -518,18 +670,22 @@ pub fn PointerValue::const_in_bounds_gep(
   PointerValue::new(value_ref)
 }
 
+///| Converts the `PointerValue` into an `IntValue`.
 pub fn PointerValue::const_to_int(self: PointerValue, int_type: IntType) -> IntValue {
   IntValue::new(llvm_const_ptr_to_int(self.as_value_ref(), int_type.as_type_ref()))
 }
 
+///| Casts the `PointerValue` to a new `PointerType` with different data type.
 pub fn PointerValue::const_cast(self: PointerValue, ptr_type: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_pointer_cast(self.as_value_ref(), ptr_type.as_type_ref()))
 }
 
+///| Casts the `PointerValue` to a new `PointerType` with different address space.
 pub fn const_address_space_cast(self: PointerValue, ptr_type: PointerType) -> PointerValue {
   PointerValue::new(llvm_const_addr_space_cast(self.as_value_ref(), ptr_type.as_type_ref()))
 }
 
+///| Replaces all uses of a `PointerValue` with another `PointerValue`.
 pub fn PointerValue::replace_all_uses_with(self: PointerValue, new_value: PointerValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
@@ -554,13 +710,19 @@ pub impl Show for PointerValue with output(self: PointerValue, logger: &Logger) 
   logger.write_string(self.to_string())
 }
 
+pub impl Show for PointerValue with to_string(self: PointerValue) -> String {
+  self.to_string()
+}
+
 // ============================================
 // InstructionValue
 // ============================================
+///| An `InstructionValue` is a value that represents an instruction.
 pub struct InstructionValue {
   value: Value
 }
 
+///| Get a value from an `LLVMValueRef`.
 pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
   assert_val_ref(value_ref)
 
@@ -569,38 +731,48 @@ pub fn InstructionValue::new(value_ref: LLVMValueRef) -> InstructionValue {
   }
 }
 
+///| Returns the `LLVMValueRef` that this `InstructionValue` wraps.
 pub fn InstructionValue::as_value_ref(self: InstructionValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
+///| Returns whether or not the `InstructionValue` is a load instruction.
 pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
   llvm_isa_load_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns whether or not the `InstructionValue` is a store instruction.
 pub fn InstructionValue::is_a_store_inst(self: InstructionValue) -> Bool {
   llvm_isa_store_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns whether or not the `InstructionValue` is an alloca instruction.
 pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
   llvm_isa_alloca_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns whether or not the `InstructionValue` is a getelementptr instruction.
 pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
   llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns whether or not the `InstructionValue` is a call instruction.
 pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
   llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns whether or not the `InstructionValue` is a cmpxchg instruction.
 pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
   llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_null()
 }
 
+///| Creates a clone of this `InstructionValue`, and returns it.
+/// The clone will have no parent, and no name.
 pub fn InstructionValue::explicit_clone(self: InstructionValue) -> InstructionValue {
   InstructionValue::new(llvm_instruction_clone(self.as_value_ref()))
 }
 
+///| Gets the name of an `InstructionValue`.
 pub fn InstructionValue::get_name(self: InstructionValue) -> String? {
   // self.value.get_name()
   if self.get_type().is_void_type() {
@@ -610,10 +782,13 @@ pub fn InstructionValue::get_name(self: InstructionValue) -> String? {
   }
 }
 
+///| Set name of the `InstructionValue`.
 pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
+///| Get a instruction with it's name.
+/// Compares against all instructions after self, and self.
 pub fn InstructionValue::get_instruction_with_name(
   self: InstructionValue, name: String
 ) -> String? {
@@ -629,16 +804,19 @@ pub fn InstructionValue::get_instruction_with_name(
   }
 }
 
+///| Get type of the `InstructionValue`.
 pub fn InstructionValue::get_type(self: InstructionValue) -> AnyTypeEnum {
   AnyTypeEnum::new(self.value.get_type().as_type_ref())
 }
 
+///| Get the opcode of the `InstructionValue`.
 pub fn InstructionValue::get_opcode(self: InstructionValue) -> InstructionOpcode {
   let opcode = llvm_get_instruction_opcode(self.as_value_ref())
 
   opcode.into()
 }
 
+///| Get the previous instruction of the current instruction.
 pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> InstructionValue? {
   let value_ref = llvm_get_previous_instruction(self.as_value_ref())
   
@@ -649,6 +827,7 @@ pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> Ins
   }
 }
 
+///| Get the next instruction of the current instruction.
 pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> InstructionValue? {
   let value_ref = llvm_get_next_instruction(self.as_value_ref())
   
@@ -659,19 +838,30 @@ pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> Instruc
   }
 }
 
-// TODO: need review, possibly unsafe
+// REVIEW: need review, possibly unsafe
+// REVIEW: what's different with `remove_from_basic_block`?
+///| Erase the instruction from the basic block.
 pub fn InstructionValue::erase_from_basic_block(self: InstructionValue) -> Unit {
   llvm_instruction_erase_from_parent(self.as_value_ref())
 }
 
+///| Remove the instruction from the basic block.
 pub fn InstructionValue::remove_from_basic_block(self: InstructionValue) -> Unit {
   llvm_instruction_remove_from_parent(self.as_value_ref())
 }
 
+///| Get the parent of the instruction.
+// REVIEW: what happen if the parent been deleted?
+pub fn InstructionValue::get_parent(self: InstructionValue) -> BasicBlock? {
+  BasicBlock::new(llvm_get_instruction_parent(self.as_value_ref()))
+}
+
+///| Returns if the instruction is a terminator
 pub fn InstructionValue::is_terminator(self: InstructionValue) -> Bool {
   llvm_isa_terminator_inst(self.as_value_ref()).is_null()
 }
 
+///| Returns if a **terminator** is conditional or not
 pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
   if self.is_terminator() {
     llvm_is_conditional(self.as_value_ref())
@@ -680,6 +870,7 @@ pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
   }
 }
 
+///| Returns if the instruction is tail call or not.
 pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
   if self.get_opcode() == InstructionOpcode::Call {
     llvm_is_tail_call(self.as_value_ref())
@@ -688,7 +879,9 @@ pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
   }
 }
 
-// Only llvm 18..
+///| Returns the tail call kind on call instructions.
+///
+/// Other instructions return `None`.
 pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailCallKind? {
   if self.get_opcode() == InstructionOpcode::Call {
     Some(llvm_get_tail_call_kind(self.as_value_ref()))
@@ -697,11 +890,18 @@ pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> LLVMTailC
   }
 }
 
+///| Check whether this instructions supports `fast math flags`.
+///
+/// Reference: https://llvm.org/docs/LangRef.html#fast-math-flags
 pub fn InstructionValue::can_use_fast_math_flags(self: InstructionValue) -> Bool {
   llvm_can_value_use_fast_math_flags(self.as_value_ref())
 }
 
-// ..... Need More
+///| Get `fast math flags` of supported instructions.
+///
+/// Calling this on unsupported instructions is safe and returns `None`.
+///
+/// Reference: https://llvm.org/docs/LangRef.html#fast-math-flags
 pub fn InstructionValue::get_fast_math_flags(self: InstructionValue) -> FastMathFlags? {
   if self.can_use_fast_math_flags() {
     Some(llvm_get_fast_math_flags(self.as_value_ref()).into())
@@ -710,9 +910,42 @@ pub fn InstructionValue::get_fast_math_flags(self: InstructionValue) -> FastMath
   }
 }
 
-// pub fn get_non_negative_flag(self: InstructionValue) -> Bool?
-// pub fn set_non_negative_flag(self: InstructionValue, flag: Bool) -> Unit
+///| Set `fast math flags` of supported instructions.
+///
+/// Calling this on unsupported instructions is safe and returns `None`.
+///
+/// Reference: https://llvm.org/docs/LangRef.html#fast-math-flags
+pub fn InstructionValue::set_fast_math_flags(self: InstructionValue, flags: FastMathFlags) -> Unit {
+  if self.can_use_fast_math_flags() {
+    llvm_set_fast_math_flags(self.as_value_ref(), flags.into())
+  }
+}
 
+
+///| Get the non-negative flag on `zext` instructions.
+///
+/// Calling this function on other instructions is safe and results in a no-op.
+pub fn InstructionValue::get_non_negative_flag(self: InstructionValue) -> Bool? {
+  match self.get_opcode() {
+    InstructionOpcode::ZExt => Some(llvm_get_n_neg(self.as_value_ref()))
+    _ => None
+  }
+}
+
+///| Set the non-negative flag on `zext` instructions.
+///
+/// Calling this function on other instructions is safe and results in a no-op.
+pub fn InstructionValue::set_non_negative_flag(self: InstructionValue, flag: Bool) -> Unit {
+  match self.get_opcode() {
+    InstructionOpcode::ZExt => llvm_set_n_neg(self.as_value_ref(), flag)
+    _ => ()
+  }
+}
+
+
+/// Checks if an `or` instruction has the `disjoint` flag set.
+///
+/// Calling this function on other instructions is safe and returns `None`.
 pub fn InstructionValue::get_disjoint_flag(self: InstructionValue) -> Bool? {
   if self.get_opcode() == InstructionOpcode::Or {
     Some(self.as_value_ref().get_is_disjoint())
@@ -721,20 +954,22 @@ pub fn InstructionValue::get_disjoint_flag(self: InstructionValue) -> Bool? {
   }
 }
 
+///| Set the `disjoint` flag on `or` instructions.
+///
+/// Calling this function on other instructions is safe and results in a no-op.
 pub fn InstructionValue::set_disjoint_flag(self: InstructionValue, flag: Bool) -> Unit {
   if self.get_opcode() == InstructionOpcode::Or {
     self.as_value_ref().set_is_disjoint(flag)
   }
 }
 
-pub fn InstructionValue::get_num_operands(self: InstructionValue) -> UInt {
-  llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
-}
-
+///| Replace all uses of an `InstructionValue` with another `InstructionValue`.
 pub fn InstructionValue::replace_all_uses_with(self: InstructionValue, new_value: InstructionValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Returns whether or not a memory access instruction is volatile.
+/// SubTypes: Only apply to memory access instructions
 pub fn InstructionValue::get_volatile(self:InstructionValue)-> Result[Bool,String] {
   if not(self.is_a_load_inst()) &&
      not(self.is_a_store_inst()) &&
@@ -746,6 +981,8 @@ pub fn InstructionValue::get_volatile(self:InstructionValue)-> Result[Bool,Strin
   Ok(llvm_get_volatile(self.as_value_ref()))
 }
 
+///| Sets whether or not a memory access instruction is volatile.
+/// SubTypes: Only apply to memory access instructions
 pub fn InstructionValue::set_volatile(self:InstructionValue, flag: Bool) -> Result[Unit,String] {
   if not(self.is_a_load_inst()) &&
      not(self.is_a_store_inst()) &&
@@ -758,6 +995,8 @@ pub fn InstructionValue::set_volatile(self:InstructionValue, flag: Bool) -> Resu
   Ok(())
 }
 
+///| Returns the type that is allocated by the alloca instruction.
+/// SubTypes: Only apply to alloca instruction
 pub fn InstructionValue::get_allocated_type(self: InstructionValue) -> Result[BasicTypeEnum, String] {
   if not(self.is_a_alloca_inst()) {
     return Err("Value is not an alloca instruction")
@@ -766,6 +1005,8 @@ pub fn InstructionValue::get_allocated_type(self: InstructionValue) -> Result[Ba
   Ok(BasicTypeEnum::new(llvm_get_allocated_type(self.as_value_ref())))
 }
 
+///| Returns the source element type of the given GEP.
+/// SubTypes: Only apply to GetElementPtr instruction
 pub fn InstructionValue::get_gep_source_element_type(self: InstructionValue) -> Result[BasicTypeEnum, String] {
   if not(self.is_a_getelementptr_inst()) {
     return Err("Value is not a getelementptr instruction")
@@ -773,6 +1014,8 @@ pub fn InstructionValue::get_gep_source_element_type(self: InstructionValue) -> 
   Ok(BasicTypeEnum::new(llvm_get_gep_source_element_type(self.as_value_ref())))
 }
 
+///| Returns alignment on a memory access instruction or alloca.
+/// SubTypes: Only apply to memory access and alloca instructions
 pub fn InstructionValue::get_alignment(self: InstructionValue) -> Result[UInt, String] {
   if not(self.is_a_alloca_inst()) && not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
     return Err("Value is not a load, store or alloca instruction")
@@ -781,6 +1024,8 @@ pub fn InstructionValue::get_alignment(self: InstructionValue) -> Result[UInt, S
   Ok(llvm_get_alignment(self.as_value_ref()))
 }
 
+///| Returns alignment on a memory access instruction or alloca.
+/// SubTypes: Only apply to memory access and alloca instructions
 pub fn InstructionValue::set_alignment(self: InstructionValue, alignment: UInt) -> Result[Unit, String] {
 
   if not(is_power_of_two(alignment)) && alignment != 0 {
@@ -795,6 +1040,8 @@ pub fn InstructionValue::set_alignment(self: InstructionValue, alignment: UInt) 
   Ok(())
 }
 
+///| Returns atomic ordering on a memory access instruction.
+/// SubTypes: Only apply to memory access instructions
 pub fn InstructionValue::get_atomic_ordering(self: InstructionValue) -> Result[AtomicOrdering, String] {
   if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
     return Err("Value is not a load or store instruction")
@@ -803,6 +1050,8 @@ pub fn InstructionValue::get_atomic_ordering(self: InstructionValue) -> Result[A
   Ok(llvm_get_ordering(self.as_value_ref()).into())
 }
 
+///| Sets atomic ordering on a memory access instruction.
+/// SubTypes: Only apply to memory access instructions
 pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: AtomicOrdering) -> Result[Unit, String] {
   if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
     return Err("Value is not a load or store instruction")
@@ -830,6 +1079,121 @@ pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: A
   Ok(())
 }
 
+///| Obtains the number of operands an `InstructionValue` has.
+/// An operand is a `BasicValue` used in an IR instruction.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type(&[f32_ptr_type.into()], false);
+///
+/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_pointer_value();
+/// let f32_val = f32_type.const_float(@math.PI);
+/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let return_instruction = builder.build_return().unwrap();
+///
+/// assert_eq!(store_instruction.get_num_operands(), 2);
+/// assert_eq!(free_instruction.get_num_operands(), 2);
+/// assert_eq!(return_instruction.get_num_operands(), 0);
+/// ```
+///
+/// will generate LLVM IR roughly like (varying slightly across LLVM versions):
+///
+/// ```llvm
+/// ; ModuleID = 'ivs'
+/// source_filename = "ivs"
+///
+/// define void @take_f32_ptr(float* %0) {
+/// entry:
+///   store float 0x400921FB60000000, float* %0
+///   %1 = bitcast float* %0 to i8*
+///   tail call void @free(i8* %1)
+///   ret void
+/// }
+///
+/// declare void @free(i8*)
+/// ```
+///
+/// which makes the number of instruction operands clear:
+/// 1) Store has two: a const float and a variable float pointer %0
+/// 2) Bitcast has one: a variable float pointer %0
+/// 3) Function call has two: i8 pointer %1 argument, and the free function itself
+/// 4) Void return has zero: void is not a value and does not count as an operand
+/// even though the return instruction can take values.
+pub fn InstructionValue::get_num_operands(self: InstructionValue) -> UInt {
+  llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
+}
+
+/// Obtains the operand an `InstructionValue` has at a given index if any.
+/// An operand is a `BasicValue` used in an IR instruction.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
+///
+/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_pointer_value();
+/// let f32_val = f32_type.const_float(@math.PI);
+/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let return_instruction = builder.build_return(None).unwrap();
+///
+/// assert_true!(store_instruction.get_operand(0).is_some());
+/// assert_true!(store_instruction.get_operand(1).is_some());
+/// assert_true!(store_instruction.get_operand(2).is_none());
+/// assert_true!(free_instruction.get_operand(0).is_some());
+/// assert_true!(free_instruction.get_operand(1).is_some());
+/// assert_true!(free_instruction.get_operand(2).is_none());
+/// assert_true!(return_instruction.get_operand(0).is_none());
+/// assert_true!(return_instruction.get_operand(1).is_none());
+/// ```
+///
+/// will generate LLVM IR roughly like (varying slightly across LLVM versions):
+///
+/// ```ir
+/// ; ModuleID = 'ivs'
+/// source_filename = "ivs"
+///
+/// define void @take_f32_ptr(float* %0) {
+/// entry:
+///   store float 0x400921FB60000000, float* %0
+///   %1 = bitcast float* %0 to i8*
+///   tail call void @free(i8* %1)
+///   ret void
+/// }
+///
+/// declare void @free(i8*)
+/// ```
+///
+/// which makes the instruction operands clear:
+/// 1) Store has two: a const float and a variable float pointer %0
+/// 2) Bitcast has one: a variable float pointer %0
+/// 3) Function call has two: i8 pointer %1 argument, and the free function itself
+/// 4) Void return has zero: void is not a value and does not count as an operand
+/// even though the return instruction can take values.
 pub fn InstructionValue::get_operand(self: InstructionValue, index: UInt) -> Either[BasicValueEnum, BasicBlock]? {
   let num_operands = self.get_num_operands()
 
@@ -840,7 +1204,7 @@ pub fn InstructionValue::get_operand(self: InstructionValue, index: UInt) -> Eit
   self.get_operand_unchecked(index)
 }
 
-pub fn InstructionValue::get_operand_unchecked(
+fn InstructionValue::get_operand_unchecked(
   self: InstructionValue, index: UInt
 ) -> Either[BasicValueEnum, BasicBlock]? {
   let operand = llvm_get_operand(self.as_value_ref(), index)
@@ -864,6 +1228,39 @@ pub fn InstructionValue::get_operand_unchecked(
   }
 }
 
+// TODO: should return array or iter?
+// pub fn InstructionValue::get_operands()
+
+///| Sets the operand an `InstructionValue` has at a given index if possible.
+/// An operand is a `BasicValue` used in an IR instruction.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
+///
+/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_pointer_value();
+/// let f32_val = f32_type.const_float(@math.PI);
+/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let return_instruction = builder.build_return(None).unwrap();
+///
+/// // This will produce invalid IR:
+/// free_instruction.set_operand(0, f32_val);
+///
+/// assert_eq!(free_instruction.get_operand(0).unwrap().left().unwrap(), f32_val);
+/// ```
 // REVIEW: here use `bool` as return type, maybe we need to use `Result`?
 pub fn InstructionValue::set_operand(self: InstructionValue, index: UInt, val: &BasicValue) -> Bool {
   let num_operands = self.get_num_operands()
@@ -877,13 +1274,109 @@ pub fn InstructionValue::set_operand(self: InstructionValue, index: UInt, val: &
   true
 }
 
-// ...
+///| Gets the use of an operand(`BasicValue`), if any.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([f32_ptr_type], false);
+///
+/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_pointer_value();
+/// let f32_val = f32_type.const_float(@math.PI);
+/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let return_instruction = builder.build_return(None).unwrap();
+///
+/// assert_eq!(store_instruction.get_operand_use(1), arg1.get_first_use());
+/// ```
+pub fn InstructionValue::get_oprand_use(self: InstructionValue, index: UInt) -> BasicValueUse? {
+  let num_operands = self.get_num_operands()
+
+  if index >= num_operands {
+    return None
+  }
+
+  self.get_oprand_use_unchecked(index)
+}
+
+fn InstructionValue::get_oprand_use_unchecked(
+  self: InstructionValue, index: UInt
+) -> BasicValueUse? {
+  let use_ = llvm_get_operand_use(self.as_value_ref(), index)
+
+  if use_.is_null() {
+    return None
+  }
+
+  Some(BasicValueUse::new(use_))
+}
+
+// TODO: should return array or iter?
+// pub fn InstructionValue::get_oprand_uses(self: InstructionValue) -> 
 
 
+///| Gets the first use of an `InstructionValue` if any.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
+///
+/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_pointer_value();
+/// let f32_val = f32_type.const_float(@math.PI);
+/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let return_instruction = builder.build_return(None).unwrap();
+///
+/// assert!(arg1.get_first_use().is_some());
+/// ```
 pub fn InstructionValue::get_first_use(self: InstructionValue) -> BasicValueUse? {
   self.value.get_first_use()
 }
 
+///| Gets the predicate of an `ICmp` `InstructionValue`.
+/// If the instruction is not an `ICmp`, this returns None.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let fn_type = i32_type.fn_type([i32_type, i32_type], false);
+///
+/// let function = module.add_function("less", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_int_value();
+/// let arg2 = function.get_nth_param(1).unwrap().into_int_value();
+/// let slt = builder.build_int_compare(IntPredicate::SLT, arg1, arg2, "less_than").unwrap();
+///
+/// inspect!(slt.get_icmp_predicate().unwrap(), "SLT");
+/// ```
 pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredicate? {
   if self.get_opcode() == InstructionOpcode::ICmp {
     Some(llvm_get_icmp_predicate(self.as_value_ref()).into())
@@ -892,6 +1385,31 @@ pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredic
   }
 }
 
+///| Gets the predicate of an `ICmp` `InstructionValue`.
+/// If the instruction is not an `ICmp`, this returns None.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ivs");
+/// let builder = context.create_builder();
+/// let bool_type = context.bool_type();
+/// let f32_type = context.i32_type();
+/// let fn_type = bool_type.fn_type([f32_type, f32_type]);
+///
+/// let function = module.add_function("less", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let arg1 = function.get_first_param().unwrap().into_float_value();
+/// let arg2 = function.get_nth_param(1).unwrap().into_float_value();
+/// let olt_pred = FloatPredicate::OLT;
+/// let fcmp = builder.build_float_compare(olt_pred, arg1, arg2, "less_than").unwrap();
+///
+/// inspect!(fcmp.get_fcmp_predicate().unwrap(), "OLT");
+/// ```
 pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPredicate? {
   if self.get_opcode() == InstructionOpcode::FCmp {
     Some(llvm_get_fcmp_predicate(self.as_value_ref()).into())
@@ -900,6 +1418,12 @@ pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPred
   }
 }
 
+///| Determines whether or not this `Instruction` has any associated metadata.
+pub fn InstructionValue::has_metadata(self: InstructionValue) -> Bool {
+  llvm_has_metadata(self.as_value_ref())
+}
+
+///| Gets the `MetadataValue` associated with this `Instruction` at a specific `kind_id`.
 pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> MetadataValue? {
   let metadata = llvm_get_metadata(self.as_value_ref(), kind_id)
 
@@ -919,22 +1443,30 @@ pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> 
 //   Ok(())
 // }
 
-pub fn InstructionValue::is_const(self: InstructionValue) -> Bool {
-  self.value.is_const()
-}
-
+///| Dumps the `InstructionValue` to stderr.
+///
+/// It's equivalent to `InstructionValue::dump`.
 pub fn InstructionValue::print_to_stderr(self: InstructionValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dumps the `InstructionValue` to a string.
+///
+/// It's equivalent to `InstructionValue::to_string`.
 pub fn InstructionValue::print_to_string(self: InstructionValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dumps the `InstructionValue` to a string.
+///
+/// It's equivalent to `InstructionValue::print_to_string`.
 pub fn InstructionValue::to_string(self: InstructionValue) -> String {
   self.value.to_string()
 }
 
+///| Dumps the `InstructionValue` to stderr.
+///
+/// It's equivalent to `InstructionValue::print_to_stderr`.
 pub fn InstructionValue::dump(self: InstructionValue) -> Unit {
   self.value.dump()
 }
@@ -943,13 +1475,21 @@ pub impl Show for InstructionValue with output(self: InstructionValue, logger: &
   logger.write_string(self.to_string())
 }
 
+pub impl Show for InstructionValue with to_string(self: InstructionValue) -> String {
+  self.to_string()
+}
+
 // ============================================
 // StructValue
 // ============================================
+///| A `StructValue` is a value that represents a struct.
 pub struct StructValue {
   value: Value
 }
 
+///| Get a value from an `LLVMValueRef`.
+///
+/// **unsafe**: Undefined behavior if `value_ref` is not a struct.
 pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
   assert_val_ref(value_ref)
 
@@ -958,65 +1498,156 @@ pub fn StructValue::new(value_ref: LLVMValueRef) -> StructValue {
   }
 }
 
+///| Returns the `LLVMValueRef` that this `StructValue` wraps.
 pub fn StructValue::as_value_ref(self: StructValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
-// pub fn StructValue::get_field_at_index(self: StructValue, index: Int) -> BasicValueEnum? {
-//   if index >= self.count_fields() {
-//     return None
-//   }
-//
-//   let v = llvm_get_operand(self.as_value_ref(), index)
-//
-//   Some(BasicValueEnum::new(v))
-// }
+///| Gets the value of a field belonging to this `StructValue`.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i8_type = context.i8_type();
+/// let i8_val = i8_type.const_all_ones();
+/// let i32_val = i32_type.const_all_ones();
+/// let struct_type = context.struct_type([i8_type, i32_type], false);
+/// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
+///
+/// assert!(struct_val.get_field_at_index(0).is_some());
+/// assert!(struct_val.get_field_at_index(1).is_some());
+/// assert!(struct_val.get_field_at_index(3).is_none());
+/// assert!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+/// ```
+pub fn StructValue::get_field_at_index(self: StructValue, index: UInt) -> BasicValueEnum? {
+  if index >= self.count_fields() {
+    return None
+  }
 
+  Some(self.get_field_at_index_unchecked(index))
+}
+
+
+fn StructValue::get_field_at_index_unchecked(
+  self: StructValue, index: UInt
+) -> BasicValueEnum {
+  let v = llvm_get_operand(self.as_value_ref(), index)
+
+  BasicValueEnum::new(v)
+}
+
+// pub fn StructValue::get_fields
+
+///| Sets the value of a field belonging to this `StructValue`.
+pub fn StructValue::set_field_at_index(
+  self: StructValue,
+  index: UInt,
+  val: &BasicValue
+) ->Bool {
+  if self.get_type()
+         .get_field_type_at_index(index)
+         .map(fn (t) {t == val.as_basic_value_enum().get_type()}) != Some(true) {
+    return false
+  }
+
+  llvm_set_operand(self.as_value_ref(), index, val.as_value_ref())
+  true
+}
+
+///| Counts the number of fields.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i8_type = context.i8_type();
+/// let i8_val = i8_type.const_all_ones();
+/// let i32_val = i32_type.const_all_ones();
+/// let struct_type = context.struct_type([i8_type, i32_type], false);
+/// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
+///
+/// assert_eq!(struct_val.count_fields(), 2);
+/// assert_eq!(struct_val.count_fields(), struct_type.count_fields());
+/// ```
+pub fn StructValue::count_fields(self: StructValue) -> UInt {
+  llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
+}
+
+///| Gets the name of a `StructValue`.
+/// If the value is a constant, this will return an empty string.
 pub fn get_name(self: StructValue) -> String {
   self.value.get_name()
 }
 
+///| Set name of the `StructValue`.
 pub fn set_name(self: StructValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
+///| Get the type of the `StructValue`.
 pub fn get_type(self: StructValue) -> StructType {
   StructType::new(self.value.get_type().as_type_ref())
 }
 
+///| Determines whether or not this `StructValue` is null.
 pub fn is_null(self: StructValue) -> Bool {
   self.value.is_null()
 }
 
+///| Determines whether or not this `StructValue` is undefined.
 pub fn is_undef(self: StructValue) -> Bool {
   self.value.is_undef()
 }
 
-// pub fn as_instruction(self: StructValue) -> InstructionValue? {
-//   self.value.as_instruction()
-// }
+// REVIEW: Does this alwyas return `None`?
+///| Converts a struct value to an instruction value.
+pub fn as_instruction(self: StructValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
 
+///| Replace all uses of an `StructValue` with another `StructValue`.
 pub fn StructValue::replace_all_uses_with(self: StructValue, new_value: StructValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Determines whether or not this `StructValue` is constant.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i64_type = context.i64_type();
+/// let i64_val = i64_type.const_int(23, false).as_basic_value_enum();
+/// let struct_val = context.const_struct([i64_val, i64_val], false);
+/// assert!(struct_val.is_const());
+/// ```
 pub fn StructValue::is_const(self: StructValue) -> Bool {
   self.value.is_const()
 }
 
-
+///| Dump the `StructValue` to stderr.
+///
+/// It's equivalent to `StructValue::dump`.
 pub fn StructValue::print_to_stderr(self: StructValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dump the `StructValue` to a string.
+///
+/// It's equivalent to `StructValue::print_to_string`.
 pub fn StructValue::print_to_string(self: StructValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dump the `StructValue` to a string.
+///
+/// It's equivalent to `StructValue::print_to_string`.
 pub fn StructValue::to_string(self: StructValue) -> String {
   self.value.to_string()
 }
 
+///| Dump the `StructValue` to stderr
+///
+/// It's equivalent to `StructValue::print_to_stderr`.
 pub fn StructValue::dump(self: StructValue) -> Unit {
   self.value.dump()
 }
@@ -1028,10 +1659,12 @@ pub impl Show for StructValue with output(self: StructValue, logger: &Logger) ->
 // ============================================
 // FunctionValue
 // ============================================
+///| A `FunctionValue` is a value that represents a function.
 pub struct FunctionValue {
   value: Value
 }
 
+///| Creates a new `FunctionValue` from an `LLVMValueRef`.
 pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue? {
   if value_ref.is_null() {
     return None
@@ -1043,36 +1676,54 @@ pub fn FunctionValue::new(value_ref: LLVMValueRef) -> FunctionValue? {
   Some(fv)
 }
 
+///| Returns the `LLVMValueRef` that this `FunctionValue` wraps.
 pub fn FunctionValue::as_value_ref(self: FunctionValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
+///| Get the linkage of the function.
 pub fn FunctionValue::get_linkage(self: FunctionValue) -> Linkage {
   llvm_get_linkage(self.as_value_ref()).into()
 }
 
+///| Set the linkage of the function.
 pub fn FunctionValue::set_linkage(self: FunctionValue, linkage: Linkage) -> Unit {
   llvm_set_linkage(self.as_value_ref(), linkage.into())
 }
 
+///| Determines whether or not this `FunctionValue` is null.
 pub fn FunctionValue::is_null(self: FunctionValue) -> Bool {
   self.value.is_null()
 }
 
+///| Determines whether or not this `FunctionValue` is undefined.
 pub fn FunctionValue::is_undef(self: FunctionValue) -> Bool {
   self.value.is_undef()
 }
 
-// pub fn FunctionValue::verify
+// pub fn FunctionValue::verify(self: FunctionValue, print: Bool) -> Bool {
+//   let action = if print {
+//       LLVMVerifierFailureAction::LLVMPrintMessageAction
+//   } else {
+//       LLVMVerifierFailureAction::LLVMReturnStatusAction
+//   }
+//
+//   let code = llvm_verify_function(self.as_value_ref(), action)
+//
+//   code != 1
+// }
 
+///| Get the next function in the module.
 pub fn FunctionValue::get_next_function(self: FunctionValue) -> FunctionValue? {
   FunctionValue::new(llvm_get_next_function(self.as_value_ref()))
 }
 
+///| Get the previous function in the module.
 pub fn FunctionValue::get_previous_function(self: FunctionValue) -> FunctionValue? {
   FunctionValue::new(llvm_get_previous_function(self.as_value_ref()))
 }
 
+///| Get the first parameter of the function.
 pub fn FunctionValue::get_first_param(self: FunctionValue) -> BasicValueEnum?{
   let param = llvm_get_first_param(self.as_value_ref())
 
@@ -1083,6 +1734,7 @@ pub fn FunctionValue::get_first_param(self: FunctionValue) -> BasicValueEnum?{
   }
 }
 
+///| Get the last parameter of the function.
 pub fn FunctionValue::get_last_param(self: FunctionValue) -> BasicValueEnum? {
   let param = llvm_get_last_param(self.as_value_ref())
 
@@ -1093,18 +1745,21 @@ pub fn FunctionValue::get_last_param(self: FunctionValue) -> BasicValueEnum? {
   }
 }
 
+///| Get the first basic block of the function.
 pub fn FunctionValue::get_first_basic_block(self: FunctionValue) -> BasicBlock? {
   let bb = llvm_get_first_basic_block(self.as_value_ref())
 
   BasicBlock::new(bb)
 }
 
+///| Get the last basic block of the function.
 pub fn FunctionValue::get_last_basic_block(self: FunctionValue) -> BasicBlock? {
   let bb = llvm_get_last_basic_block(self.as_value_ref())
 
   BasicBlock::new(bb)
 }
 
+///| Get the n-th parameter of the function.
 pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValueEnum? {
   let cnt = self.count_params()
 
@@ -1115,21 +1770,24 @@ pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValu
   }
 }
 
+///| Returns the number of parameters this `FunctionValue` has.
 pub fn FunctionValue::count_params(self: FunctionValue) -> UInt {
   llvm_count_params(self.as_value_ref())
 }
 
+///| Get basic blocks of the function.
 pub fn FunctionValue::get_basic_blocks(self: FunctionValue) -> Array[BasicBlock] {
   let bb_refs : Array[LLVMBasicBlockRef] = llvm_get_basic_blocks(self.as_value_ref())
   bb_refs.map(fn (bb_ref) { BasicBlock::new(bb_ref).unwrap() })
 }
 
+///| Get parameters of the function.
 pub fn FunctionValue::get_params(self: FunctionValue) -> Array[BasicValueEnum] {
   let param_refs : Array[LLVMValueRef] = llvm_get_params(self.as_value_ref())
   param_refs.map(fn (param_ref) { BasicValueEnum::new(param_ref) })
 }
 
-
+///| Get the name of the function.
 pub fn FunctionValue::get_name(self: FunctionValue) -> String {
   self.value.get_name()
 }
@@ -1142,11 +1800,17 @@ pub fn FunctionValue::get_name(self: FunctionValue) -> String {
 //   llvm_view_function_cfg_only(self.as_value_ref())
 // }
 
+///| Free the function.
+pub fn FunctionValue::delete(self: FunctionValue) -> Unit {
+  llvm_delete_function(self.as_value_ref())
+}
+
 // NOTE: `inkwell` does not provide this function
 // pub fn FunctionValue::set_name(self: FunctionValue, name: String) -> Unit {
 //   self.value.set_name(name)
 // }
 
+///| Get the type of the function.
 pub fn FunctionValue::get_type(self: FunctionValue) -> FunctionType {
   FunctionType::new(self.value.get_type().as_type_ref())
 }
@@ -1185,22 +1849,75 @@ pub fn FunctionValue::get_gc(self: FunctionValue) -> String {
   llvm_get_gc(self.as_value_ref())
 }
 
+///| Replace all uses of a `FunctionValue` with another `FunctionValue`.
 pub fn FunctionValue::replace_all_uses_with(
   self: FunctionValue, new_value: FunctionValue
 ) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Adds an `Attribute` to a particular location in this `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let string_attribute = context.create_string_attribute("my_key", "my_val");
+/// let enum_attribute = context.create_enum_attribute(1, 1);
+///
+/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
+/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+/// ```
 pub fn FunctionValue::add_attribute(
   self: FunctionValue, loc: AttributeLoc, attribute: Attribute
 ) -> Unit {
   llvm_add_attribute_at_index(self.as_value_ref(), loc.get_index(), attribute.attribute)
 }
 
+///| Counts the number of `Attribute`s belonging to the specified location in this `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let string_attribute = context.create_string_attribute("my_key", "my_val");
+/// let enum_attribute = context.create_enum_attribute(1, 1);
+///
+/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
+/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+///
+/// assert_eq!(fn_value.count_attributes(AttributeLoc::Return), 2);
+/// ```
 pub fn FunctionValue::count_attributes(self: FunctionValue, loc: AttributeLoc) -> UInt {
   llvm_get_attribute_count_at_index(self.as_value_ref(), loc.get_index())
 }
 
+///| Get all `Attribute`s belonging to the specified location in this `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let string_attribute = context.create_string_attribute("my_key", "my_val");
+/// let enum_attribute = context.create_enum_attribute(1, 1);
+///
+/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
+/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+///
+/// assert_eq!(fn_value.attributes(AttributeLoc::Return), [string_attribute, enum_attribute]);
+/// ```
 pub fn FunctionValue::attributes(
   self: FunctionValue, loc: AttributeLoc
 ) -> Array[Attribute] {
@@ -1209,18 +1926,65 @@ pub fn FunctionValue::attributes(
   attr_refs.map(fn (attr_ref) { Attribute::new(attr_ref) })
 }
 
+
+///| Removes a string `Attribute` belonging to the specified location in this `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let string_attribute = context.create_string_attribute("my_key", "my_val");
+///
+/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
+/// fn_value.remove_string_attribute(AttributeLoc::Return, "my_key");
+/// ```
 pub fn FunctionValue::remove_string_attribute(
   self: FunctionValue, loc: AttributeLoc, key: String
 ) -> Unit {
   llvm_remove_string_attribute_at_index(self.as_value_ref(), loc.get_index(), key)
 }
 
+///| Removes an enum `Attribute` belonging to the specified location in this `FunctionValue`.
+///
+/// # Example (Not Tested)
+///
+/// ```no_run
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let enum_attribute = context.create_enum_attribute(1, 1);
+///
+/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+/// fn_value.remove_enum_attribute(AttributeLoc::Return, 1);
+/// ```
 pub fn FunctionValue::remove_enum_attribute(
   self: FunctionValue, loc: AttributeLoc, kind_id: UInt
 ) -> Unit {
   llvm_remove_enum_attribute_at_index(self.as_value_ref(), loc.get_index(), kind_id)
 }
 
+///| Gets an enum `Attribute` belonging to the specified location in this `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let enum_attribute = context.create_enum_attribute(1, 1);
+///
+/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+///
+/// assert_eq!(fn_value.get_enum_attribute(AttributeLoc::Return, 1), Some(enum_attribute));
+/// ```
 pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc, kind_id: UInt) -> Attribute? {
   let attr_ref = llvm_get_enum_attribute_at_index(self.as_value_ref(), loc.get_index(), kind_id)
 
@@ -1231,6 +1995,22 @@ pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc,
   }
 }
 
+///| Gets a string `Attribute` belonging to the specified location in this `FunctionValue`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let string_attribute = context.create_string_attribute("my_key", "my_val");
+///
+/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
+///
+/// assert_eq!(fn_value.get_string_attribute(AttributeLoc::Return, "my_key"), Some(string_attribute));
+/// ```
 pub fn FunctionValue::get_string_attribute(self: FunctionValue, loc: AttributeLoc, key: String) -> Attribute? {
   let attr_ref = llvm_get_string_attribute_at_index(self.as_value_ref(), loc.get_index(), key)
 
@@ -1241,6 +2021,7 @@ pub fn FunctionValue::get_string_attribute(self: FunctionValue, loc: AttributeLo
   }
 }
 
+///| Sets the alignment of a parameter at a given index.
 pub fn FunctionValue::set_param_alignment(
   self: FunctionValue, param_index: UInt, alignment: UInt
 ) -> Unit {
@@ -1252,6 +2033,9 @@ pub fn FunctionValue::set_param_alignment(
   }
 }
 
+///| Gets the `GlobalValue` version of this `FunctionValue`.
+/// This allows you to further inspect its global properties or even
+/// convert it to a `PointerValue`.
 pub fn FunctionValue::as_global_value(self: FunctionValue) -> GlobalValue {
   GlobalValue::new(self.as_value_ref())
 }
@@ -1270,30 +2054,40 @@ pub fn FunctionValue::as_global_value(self: FunctionValue) -> GlobalValue {
 //   }
 // }
 
+// Get the section to which this function belongs
 // pub fn FunctionValue::get_section(self: FunctionValue) -> String {
 //   self.value.get_section()
 // }
 //
+// Set the section to which this function should belong
 // pub fn FunctionValue::set_section(self: FunctionValue, section: String) -> Unit {
 //   self.value.set_section(section)
 // }
 
-pub fn FunctionValue::delete(self: FunctionValue) -> Unit {
-  llvm_delete_function(self.as_value_ref())
-}
-
+///| Dumps the `FunctionValue` to stderr.
+///
+/// It's equivalent to `FunctionValue::dump`.
 pub fn FunctionValue::print_to_stderr(self: FunctionValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dumps the `FunctionValue` to a string.
+///
+/// It's equivalent to `FunctionValue::print_to_string`.
 pub fn FunctionValue::print_to_string(self: FunctionValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dumps the `FunctionValue` to a string.
+///
+/// It's equivalent to `FunctionValue::print_to_string`.
 pub fn FunctionValue::to_string(self: FunctionValue) -> String {
   self.value.to_string()
 }
 
+///| Dumps the `FunctionValue` to stderr.
+///
+/// It's equivalent to `FunctionValue::print_to_stderr`.
 pub fn FunctionValue::dump(self: FunctionValue) -> Unit {
   self.value.dump()
 }
@@ -1302,14 +2096,19 @@ pub impl Show for FunctionValue with output(self: FunctionValue, logger: &Logger
   logger.write_string(self.to_string())
 }
 
+pub impl Show for FunctionValue with to_string(self: FunctionValue) -> String {
+  self.to_string()
+}
 
 // ============================================
 // ArrayValue
 // ============================================
+///| An `ArrayValue` is a value that represents an array.
 pub struct ArrayValue {
   value: Value
 }
 
+///| Creates a new `ArrayValue` from an `LLVMValueRef`.
 pub fn ArrayValue::new(value_ref: LLVMValueRef) -> ArrayValue {
   assert_val_ref(value_ref)
 
@@ -1318,6 +2117,12 @@ pub fn ArrayValue::new(value_ref: LLVMValueRef) -> ArrayValue {
   }
 }
 
+///| Returns the `LLVMValueRef` that this `ArrayValue` wraps.
+pub fn ArrayValue::as_value_ref(self: ArrayValue) -> LLVMValueRef {
+  self.value.as_value_ref()
+}
+
+///| Creates a new constant `ArrayValue` with the given type and values.
 pub fn ArrayValue::new_const_array[T: AsTypeRef, V: AsValueRef](
   ty: T, values: Array[V]
 ) -> ArrayValue {
@@ -1326,60 +2131,117 @@ pub fn ArrayValue::new_const_array[T: AsTypeRef, V: AsValueRef](
   ArrayValue::new(value_ref)
 }
 
-pub fn ArrayValue::as_value_ref(self: ArrayValue) -> LLVMValueRef {
-  self.value.as_value_ref()
-}
-
+///| Get the name of the `ArrayValue`.
 pub fn ArrayValue::get_name(self: ArrayValue) -> String {
   self.value.get_name()
 }
 
+///| Set name of the `ArrayValue`.
 pub fn ArrayValue::set_name(self: ArrayValue, name: String) -> Unit {
   self.value.set_name(name)
 }
 
+///| Get the type of the `ArrayValue`.
 pub fn ArrayValue::get_type(self: ArrayValue) -> ArrayType {
   ArrayType::new(self.value.get_type().as_type_ref())
 }
 
+///| Determines whether or not this `ArrayValue` is null.
 pub fn ArrayValue::is_null(self: ArrayValue) -> Bool {
   self.value.is_null()
 }
 
+///| Determines whether or not this `ArrayValue` is undefined.
 pub fn ArrayValue::is_undef(self: ArrayValue) -> Bool {
   self.value.is_undef()
 }
 
-// pub fn ArrayValue::as_instruction(self: ArrayValue) -> InstructionValue? {
-//   self.as_value_ref().as_instruction()
-// }
+///| Attempt to convert this `ArrayValue` to an `InstructionValue`, if possible.
+pub fn ArrayValue::as_instruction(self: ArrayValue) -> InstructionValue? {
+  self.value.as_instruction()
+}
 
+///| Replaces all uses of this value with another value of the same type.
+/// If used incorrectly this may result in invalid IR.
 pub fn ArrayValue::replace_all_uses_with(self: ArrayValue, new_value: ArrayValue) -> Unit {
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Determines whether or not an `ArrayValue` is a constant.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let i64_type = context.i64_type();
+/// let i64_val = i64_type.const_int(23, false);
+/// let array_val = i64_type.const_array([i64_val]);
+/// assert_true!(array_val.is_const());
+/// ```
 pub fn ArrayValue::is_const(self: ArrayValue) -> Bool {
   self.value.is_const()
 }
 
-// TODO: Check if it is correct
+///| Determines whether or not an `ArrayValue` represents a constant array of `i8`s.
+///
+/// # Example (Not Tested)
+///
+/// ```moonbit
+/// use inkwell::context::Context;
+///
+/// let context = Context::create();
+/// let string = context.const_string(b"my_string", false);
+///
+/// assert!(string.is_const_string());
+/// ```
 pub fn ArrayValue::is_const_string(self: ArrayValue) -> Bool {
   // llvm_is_constant_string(self.as_value_ref())
   self.as_value_ref().is_constant_string()
 }
 
+///| Obtain the string from the ArrayValue
+/// if the value points to a constant string.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let string = context.const_string(b"hello!", true);
+///
+/// assert_eq!(string.get_string_constant(), Some(result));
+/// ```
+pub fn ArrayValue::get_string_constant(self: ArrayValue) -> String? {
+  let s = llvm_get_as_string(self.as_value_ref())
+  if s.is_empty() {
+    None
+  } else {
+    Some(s)
+  }
+}
+
+///| Dumps the `ArrayValue` to stderr.
+///
+/// It's equivalent to `ArrayValue::dump`.
 pub fn ArrayValue::print_to_stderr(self: ArrayValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dumps the `ArrayValue` to a string.
+///
+/// It's equivalent to `ArrayValue::print_to_string`.
 pub fn ArrayValue::print_to_string(self: ArrayValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dumps the `ArrayValue` to a string.
+///
+/// It's equivalent to `ArrayValue::print_to_string`.
 pub fn ArrayValue::to_string(self: ArrayValue) -> String {
   self.value.to_string()
 }
 
+///| Dumps the `ArrayValue` to stderr.
+///
+/// It's equivalent to `ArrayValue::print_to_stderr`.
 pub fn ArrayValue::dump(self: ArrayValue) -> Unit {
   self.value.dump()
 }
@@ -1388,13 +2250,18 @@ pub impl Show for ArrayValue with output(self: ArrayValue, logger: &Logger) -> U
   logger.write_string(self.to_string())
 }
 
+pub impl Show for ArrayValue with to_string(self: ArrayValue) -> String {
+  self.to_string()
+}
 // ============================================
 // VectorValue
 // ============================================
+///| A `VectorValue` is a value that represents a vector.
 pub struct VectorValue {
   value: Value
 }
 
+///| Creates a new `VectorValue` from an `LLVMValueRef`.
 pub fn VectorValue::new(value_ref: LLVMValueRef) -> VectorValue {
   assert_val_ref(value_ref)
 
@@ -1403,10 +2270,23 @@ pub fn VectorValue::new(value_ref: LLVMValueRef) -> VectorValue {
   }
 }
 
+///| Returns the `LLVMValueRef` that this `VectorValue` wraps.
 pub fn VectorValue::as_value_ref(self: VectorValue) -> LLVMValueRef {
   self.value.as_value_ref()
 }
 
+///| Determines whether or not a `VectorValue` is a constant.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i8_type = context.i8_type();
+/// let i8_vec_type = i8_type.vec_type(3);
+/// let i8_vec_zero = i8_vec_type.const_zero();
+///
+/// assert_true!(i8_vec_zero.is_const());
+/// ```
 pub fn VectorValue::is_const(self: VectorValue) -> Bool {
   self.value.is_const()
 }
@@ -1419,10 +2299,13 @@ pub fn VectorValue::is_constant_data_vector(self: VectorValue) -> Bool {
   llvm_isa_constant_data_vector(self.as_value_ref()).is_null()
 }
 
+///| Gets the name of a `VectorValue`.
+/// If the value is a constant, this will return an empty string.
 pub fn VectorValue::get_name(self: VectorValue) -> String {
   self.value.get_name()
 }
 
+///| Set name of the `VectorValue`.
 pub fn VectorValue::set_name(self: VectorValue, name: String) -> Unit {
   self.value.set_name(name)
 }
@@ -1469,6 +2352,10 @@ pub fn VectorValue::dump(self: VectorValue) -> Unit {
 
 pub impl Show for VectorValue with output(self: VectorValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for VectorValue with to_string(self: VectorValue) -> String {
+  self.to_string()
 }
 
 // ============================================
@@ -1541,6 +2428,10 @@ pub fn PhiValue::dump(self: PhiValue) -> Unit {
 
 pub impl Show for PhiValue with output(self: PhiValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for PhiValue with to_string(self: PhiValue) -> String {
+  self.to_string()
 }
 
 // ============================================
@@ -1626,6 +2517,10 @@ pub fn ScalableVectorValue::dump(self: ScalableVectorValue) -> Unit {
 
 pub impl Show for ScalableVectorValue with output(self: ScalableVectorValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for ScalableVectorValue with to_string(self: ScalableVectorValue) -> String {
+  self.to_string()
 }
 
 // ============================================
@@ -1827,6 +2722,10 @@ pub impl Show for GlobalValue with output(self: GlobalValue, logger: &Logger) ->
   logger.write_string(self.to_string())
 }
 
+pub impl Show for GlobalValue with to_string(self: GlobalValue) -> String {
+  self.to_string()
+}
+
 // ============================================
 // MetadataValue
 // ============================================
@@ -1880,6 +2779,10 @@ pub fn MetadataValue::dump(self: MetadataValue) -> Unit {
 
 pub impl Show for MetadataValue with output(self: MetadataValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for MetadataValue with to_string(self: MetadataValue) -> String {
+  self.to_string()
 }
 
 // ============================================
@@ -2028,6 +2931,10 @@ pub impl Show for CallSiteValue with output(
   self: CallSiteValue, logger: &Logger
 ) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl Show for CallSiteValue with to_string(self: CallSiteValue) -> String {
+  self.to_string()
 }
 
 // ============================================

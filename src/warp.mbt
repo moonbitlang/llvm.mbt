@@ -3425,16 +3425,16 @@ pub fn LLVMValueRef::const_int_get_s_ext_value(self: LLVMValueRef) -> Int64 {
 /// losesInfo indicates if some precision was lost in the conversion.
 /// 
 /// - see llvm::ConstantFP::getDoubleValue
-extern "C" fn __llvm_const_real_get_double(constant_val: LLVMValueRef, loses_info: Array[LLVMBool]) -> Double = "__llvm_const_real_get_double"
+extern "C" fn __llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Double, LLVMBool) = "__llvm_const_real_get_double"
 
 ///| Obtain the double value for an floating point constant value.
 ///
 /// losesInfo indicates if some precision was lost in the conversion.
 /// 
 /// - see llvm::ConstantFP::getDoubleValue
-pub fn llvm_const_real_get_double(constant_val: LLVMValueRef, loses_info: Array[Bool]) -> Double {
-  let loses_info = loses_info.map(to_llvm_bool);
-  __llvm_const_real_get_double(constant_val, loses_info)
+pub fn llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Double, Bool) {
+  let (v, loses_info) = __llvm_const_real_get_double(constant_val)
+  (v, loses_info.to_moonbit_bool())
 }
 
 ///| Create a ConstantDataSequential and initialize it with a string.
@@ -5121,11 +5121,16 @@ pub fn LLVMBasicBlockRef::get_last_instruction(self: LLVMBasicBlockRef) -> LLVMV
 }
 
 /// Check if the value has metadata attached.
-pub extern "C" fn llvm_has_metadata(val: LLVMValueRef) -> LLVMBool = "__llvm_has_metadata"
+extern "C" fn __llvm_has_metadata(val: LLVMValueRef) -> LLVMBool = "__llvm_has_metadata"
+
+/// Check if the value has metadata attached.
+pub fn llvm_has_metadata(val: LLVMValueRef) -> Bool {
+  __llvm_has_metadata(val).to_moonbit_bool()
+}
 
 /// Check if the value has metadata attached.
 pub fn LLVMValueRef::has_metadata(self: LLVMValueRef) -> Bool {
-  llvm_has_metadata(self).to_moonbit_bool()
+  __llvm_has_metadata(self).to_moonbit_bool()
 }
 
 ///| Get the metadata of a value.
