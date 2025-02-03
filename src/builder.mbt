@@ -4,27 +4,6 @@ enum PositionState {
     Set
 } derive(Eq)
 
-// pub enum BuilderError {
-//     #[error("Builder position is not set")]
-//     UnsetPosition
-//     #[error("Alignment error")]
-//     AlignmentError(&'static str)
-//     #[error("Aggregate extract index out of range")]
-//     ExtractOutOfRange
-//     #[error("Bitwidth of a value is incorrect")]
-//     BitwidthError(&'static str)
-//     #[error("Pointee type does not match the value's type")]
-//     PointeeTypeMismatch(&'static str)
-//     #[error("Values do not have the same type")]
-//     ValueTypeMismatch(&'static str)
-//     #[error("Ordering error or mismatch")]
-//     OrderingError(&'static str)
-//     #[error("GEP pointee is not a struct")]
-//     GEPPointee
-//     #[error("GEP index out of range")]
-//     GEPIndex
-// }
-
 pub type! BuilderError {
   // Builder position is not set
   UnsetPosition
@@ -483,6 +462,7 @@ pub fn Builder::build_invoke(
   self.build_direct_invoke!(func, args, then_block, catch_block, name)
 }
 
+///| Build a direct invoke instruction.
 pub fn Builder::build_direct_invoke(
   self: Builder,
   func: FunctionValue,
@@ -500,6 +480,7 @@ pub fn Builder::build_direct_invoke(
   self.build_invoke_help!(fty, fn_val, args, then_block, catch_block, name)
 }
 
+///| Build an indirect invoke instruction.
 pub fn Builder::build_indirect_invoke(
   self: Builder,
   fn_ty: FunctionType,
@@ -516,7 +497,7 @@ pub fn Builder::build_indirect_invoke(
   self.build_invoke_help!(fn_ty, fn_ptr.value, args, then_block, catch_block, name)
 }
 
-pub fn Builder::build_invoke_help(
+fn Builder::build_invoke_help(
   self: Builder,
   fn_ty: FunctionType,
   fn_val: Value,
@@ -782,6 +763,7 @@ pub fn Builder::build_resume(
   InstructionValue::new(inst)
 }
 
+///| Build a `getelementptr` instruction.
 pub fn Builder::build_gep(
   self: Builder,
   pointee_ty: &BasicType,
@@ -805,6 +787,7 @@ pub fn Builder::build_gep(
   BasicValueEnum::new(value)
 }
 
+///| Build a `getelementptr` instruction with inbounds flag.
 pub fn Builder::build_in_bounds_gep(
   self: Builder,
   pointee_ty: &BasicType,
@@ -936,6 +919,7 @@ pub fn Builder::build_ptr_diff(
   IntValue::new(value)
 }
 
+///| Builds a `phi` node.
 pub fn Builder::build_phi(self: Builder, ty: &BasicType, name: String) -> PhiValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1008,6 +992,7 @@ pub fn Builder::build_load(self: Builder, pointee_ty: &BasicType, ptr: PointerVa
   BasicValueEnum::new(value)
 }
 
+///| Build an `alloca` instruction, allocating memory on the stack.
 pub fn Builder::build_alloca(
   self: Builder, ty: &BasicType, name: String
 ) -> PointerValue!BuilderError {
@@ -1019,6 +1004,7 @@ pub fn Builder::build_alloca(
   PointerValue::new(value)
 }
 
+///| Build an `alloca` instruction, allocating memory on the stack.
 pub fn Builder::build_array_alloca(
   self: Builder,
   ty: &BasicType,
@@ -1155,6 +1141,7 @@ pub fn Builder::build_memset(
   PointerValue::new(value)
 }
 
+///| Build a malloc instruction. Allocates memory on the heap.
 pub fn Builder::build_malloc(
   self: Builder,
   ty: &BasicType,
@@ -1172,6 +1159,7 @@ pub fn Builder::build_malloc(
   PointerValue::new(value)
 }
 
+///| Build a malloc instruction. Allocates memory on the heap.
 pub fn Builder::build_array_malloc(
   self: Builder,
   ty: &BasicType,
@@ -1193,6 +1181,7 @@ pub fn Builder::build_array_malloc(
   PointerValue::new(value)
 }
 
+///| Build a free instruction. Frees memory allocated by malloc.
 pub fn Builder::build_free(
   self: Builder,
   ptr: PointerValue
@@ -1205,6 +1194,7 @@ pub fn Builder::build_free(
   InstructionValue::new(value)
 }
 
+///| Insert an instruction after the given instruction.
 pub fn Builder::insert_instruction(
   self: Builder, inst: InstructionValue, name: String?
 ) -> Unit {
@@ -1312,6 +1302,48 @@ pub fn Builder::build_address_space_cast(
 
   PointerValue::new(value)
 }
+
+///| Builds a bitcast instruction.
+/// A bitcast reinterprets the bits of one value into a value
+/// of another type which has the same bit width.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("bc");
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let i32_type = context.i32_type();
+/// let arg_types = [i32_type];
+/// let fn_type = void_type.fn_type(arg_types, false);
+/// let fn_value = module.add_function("bc", fn_type, None);
+/// let builder = context.create_builder();
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_arg = fn_value.get_first_param().unwrap();
+///
+/// builder.position_at_end(entry);
+///
+/// builder.build_bit_cast(i32_arg, f32_type, "i32tof32").unwrap();
+/// builder.build_return(None).unwrap();
+///
+/// assert_true!(module.verify().is_ok());
+/// ```
+pub fn Builder::build_bit_cast(
+  self: Builder, val:&BasicValue, ty:&BasicType, name: String
+) -> BasicValueEnum!BuilderError {
+  if self.get_positioned() != PositionState::Set {
+    raise UnsetPosition
+  }
+
+  let builder_ref = self.as_builder_ref()
+  let val_ref = val.as_value_ref()
+  let ty_ref = ty.as_type_ref()
+  let value = llvm_build_bit_cast(builder_ref, val_ref, ty_ref, name)
+
+  BasicValueEnum::new(value)
+}
+
 
 // pub fn build_int_s_extend_or_bit_cast<T: IntMathValue<'ctx>>(
 // pub fn build_int_z_extend<T: IntMathValue<'ctx>>(
@@ -1446,7 +1478,29 @@ pub fn Builder::build_or[T: IntMathValue](
   T::new(value)
 }
 
-// left shift
+///| Builds an `IntValue` containing the result of a logical left shift instruction.
+/// A logical left shift is an operation in which an integer value's bits are shifted left by N number of positions.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_module");
+/// let builder = context.create_builder();
+/// let i8_type = context.i8_type();
+/// let fn_type = i8_type.fn_type([i8_type, i8_type], false);
+///
+/// let function = module.add_function("left_shift", fn_type, None);
+/// let value = function.get_first_param().unwrap().into_int_value();
+/// let n = function.get_nth_param(1).unwrap().into_int_value();
+/// let entry_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(entry_block);
+///
+/// let shift = builder.build_left_shift(value, n, "left_shift").unwrap();
+///
+/// builder.build_return(Some(shift)).unwrap();
+/// ```
 pub fn Builder::build_left_shift[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name: String
 ) -> T!BuilderError {
@@ -1460,7 +1514,31 @@ pub fn Builder::build_left_shift[T: IntMathValue](
   T::new(value)
 }
 
-// right shift
+///| Builds an `IntValue` containing the result of a right shift instruction.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_module");
+/// let builder = context.create_builder();
+/// let i8_type = context.i8_type();
+/// let fn_type = i8_type.fn_type(&[i8_type.into(), i8_type.into()], false);
+///
+/// // Function Definition
+/// let function = module.add_function("right_shift", fn_type, None);
+/// let value = function.get_first_param().unwrap().into_int_value();
+/// let n = function.get_nth_param(1).unwrap().into_int_value();
+/// let entry_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(entry_block);
+///
+/// // Whether or not your right shift is sign extended (true) or logical (false) depends
+/// // on the boolean input parameter:
+/// let shift = builder.build_right_shift(value, n, false, "right_shift").unwrap(); // value >> n
+///
+/// builder.build_return(Some(shift)).unwrap();
+/// ```
 pub fn Builder::build_right_shift[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, sign_extend: Bool, name: String
 ) -> T!BuilderError {
@@ -1815,6 +1893,45 @@ pub fn position_at_end(self: Builder, bb: BasicBlock) -> Unit {
   llvm_position_builder_at_end(builder_ref, bb_ref)
 }
 
+///| Builds an extract value instruction which extracts a `BasicValueEnum` from a struct or array.
+///
+/// Raise `Err(BuilderError::ExtractOutOfRange)` if the provided index is out of bounds of the aggregate value length.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("av");
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let i32_type = context.i32_type();
+/// let struct_type = context.struct_type([i32_type, f32_type], false);
+/// let array_type = i32_type.array_type(3);
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("av_fn", fn_type, None);
+/// let builder = context.create_builder();
+/// let entry = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry);
+///
+/// let array_alloca = builder.build_alloca(array_type, "array_alloca").unwrap();
+///
+/// let array = builder.build_load(i32_type, array_alloca, "array_load").unwrap().into_array_value();
+///
+/// let const_int1 = i32_type.const_int(2, false);
+/// let const_int2 = i32_type.const_int(5, false);
+/// let const_int3 = i32_type.const_int(6, false);
+///
+/// assert_true!(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+///
+/// assert_true!(builder.build_extract_value(array, 0, "extract").unwrap().is_int_value());
+/// assert_true!(builder.build_extract_value(array, 1, "extract").unwrap().is_int_value());
+/// assert_true!(builder.build_extract_value(array, 2, "extract").unwrap().is_int_value());
+/// assert_true!(builder.build_extract_value(array, 3, "extract").is_err());
+/// ```
 pub fn Builder::build_extract_value[AV: AggregateValue](
   self: Builder, agg: AV, index: UInt, name: String
 ) -> BasicValueEnum!BuilderError {
@@ -1841,6 +1958,40 @@ pub fn Builder::build_extract_value[AV: AggregateValue](
   BasicValueEnum::new(value)
 }
 
+/// Builds an insert value instruction which inserts a `BasicValue` into a struct
+/// or array and returns the resulting aggregate value.
+///
+/// Returns `Err(BuilderError::ExtractOutOfRange)` if the provided index is out of bounds of the aggregate value length.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("av");
+/// let void_type = context.void_type();
+/// let f32_type = context.f32_type();
+/// let i32_type = context.i32_type();
+/// let struct_type = context.struct_type([i32_type, f32_type], false);
+/// let array_type = i32_type.array_type(3);
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("av_fn", fn_type, None);
+/// let builder = context.create_builder();
+/// let entry = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry);
+///
+/// let array_alloca = builder.build_alloca(array_type, "array_alloca").unwrap();
+/// let array = builder.build_load(i32_type, array_alloca, "array_load").unwrap().into_array_value();
+///
+/// let const_int1 = i32_type.const_int(2, false);
+/// let const_int2 = i32_type.const_int(5, false);
+/// let const_int3 = i32_type.const_int(6, false);
+///
+/// assert_true!(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
+/// assert_true!(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+/// ```
 pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
   self: Builder, agg: AV, value: BV, index: UInt, name: String
 ) -> AggregateValueEnum!BuilderError {
@@ -1868,6 +2019,28 @@ pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
   AggregateValueEnum::new(value)
 }
 
+///| Builds an extract element instruction which extracts a `BasicValueEnum` from a vector.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("av");
+/// let i32_type = context.i32_type();
+/// let i32_zero = i32_type.const_int(0, false);
+/// let vec_type = i32_type.vec_type(2);
+/// let fn_type = i32_type.fn_type([vec_type], false);
+/// let fn_value = module.add_function("vec_fn", fn_type, None);
+/// let builder = context.create_builder();
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
+///
+/// builder.position_at_end(entry);
+///
+/// let extracted = builder.build_extract_element(vector_param, i32_zero, "insert").unwrap();
+///
+/// builder.build_return(Some(extracted)).unwrap();
+/// ```
 pub fn Builder::build_extract_element(
   self: Builder, vector: VectorValue, index: IntValue, name: String
 ) -> BasicValueEnum!BuilderError {
@@ -1885,6 +2058,28 @@ pub fn Builder::build_extract_element(
   BasicValueEnum::new(value)
 }
 
+///| Builds an insert element instruction which inserts a `BasicValue` into a vector and returns the resulting vector.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("av");
+/// let void_type = context.void_type();
+/// let i32_type = context.i32_type();
+/// let i32_zero = i32_type.const_int(0, false);
+/// let i32_seven = i32_type.const_int(7, false);
+/// let vec_type = i32_type.vec_type(2);
+/// let fn_type = void_type.fn_type([vec_type], false);
+/// let fn_value = module.add_function("vec_fn", fn_type, None);
+/// let builder = context.create_builder();
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
+///
+/// builder.position_at_end(entry);
+/// builder.build_insert_element(vector_param, i32_seven, i32_zero, "insert").unwrap();
+/// builder.build_return(None).unwrap();
+/// ```
 pub fn Builder::build_insert_element[V: BasicValue, W: VectorBaseValue](
   self: Builder, vector: W, element: V, index: IntValue, name: String
 ) -> W!BuilderError {
@@ -1902,7 +2097,6 @@ pub fn Builder::build_insert_element[V: BasicValue, W: VectorBaseValue](
 
   W::new(value)
 }
-
 
 pub fn Builder::build_unreachable(self: Builder) -> InstructionValue!BuilderError {
   if self.get_positioned() != PositionState::Set {

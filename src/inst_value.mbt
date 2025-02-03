@@ -75,10 +75,10 @@ pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit 
 /// Compares against all instructions after self, and self.
 pub fn InstructionValue::get_instruction_with_name(
   self: InstructionValue, name: String
-) -> String? {
+) -> InstructionValue? {
   match self.get_name() {
     Some(this_name) => if this_name == name {
-      return Some(this_name)
+      return Some(self)
     }
     None => ()
   }

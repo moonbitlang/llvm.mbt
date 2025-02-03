@@ -127,18 +127,30 @@ pub fn PointerValue::replace_all_uses_with(self: PointerValue, new_value: Pointe
   self.value.replace_all_uses_with(new_value.value)
 }
 
+///| Dumps the `PointerValue` to stderr.
+///
+/// It's equivalent to `PointerValue::dump`.
 pub fn PointerValue::print_to_stderr(self: PointerValue) -> Unit {
   self.value.print_to_stderr()
 }
 
+///| Dumps the `PointerValue` to a string.
+///
+/// It's equivalent to `PointerValue::to_string`.
 pub fn PointerValue::print_to_string(self: PointerValue) -> String {
   self.value.print_to_string()
 }
 
+///| Dumps the `PointerValue` to stderr.
+///
+/// It's equivalent to `PointerValue::print_to_string`.
 pub fn PointerValue::to_string(self: PointerValue) -> String {
   self.value.to_string()
 }
 
+///| Dumps the `PointerValue` to stderr.
+///
+/// It's equivalent to `PointerValue::print_to_stderr`.
 pub fn PointerValue::dump(self: PointerValue) -> Unit {
   self.value.dump()
 }

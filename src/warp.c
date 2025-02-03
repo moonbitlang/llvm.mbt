@@ -1100,6 +1100,11 @@ LLVMBool __llvm_same_ctx_ref(void *ctx1, void *ctx2) {
   return ctx1 == ctx2 ? 1 : 0;
 }
 
+// attr1: LLVMAttributeRef, attr2: LLVMAttributeRef
+LLVMBool __llvm_same_attr_ref(void *attr1, void *attr2) {
+  return attr1 == attr2 ? 1 : 0;
+}
+
 void __llvm_shutdown() { LLVMShutdown(); }
 
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {

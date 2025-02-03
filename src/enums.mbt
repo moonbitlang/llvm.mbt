@@ -570,6 +570,21 @@ pub fn AnyTypeEnum::as_type_ref(self: AnyTypeEnum) -> LLVMTypeRef {
   }
 }
 
+pub impl Eq for AnyTypeEnum with op_equal(self: AnyTypeEnum, other: AnyTypeEnum) -> Bool {
+  match (self, other) {
+    (ArrayType(_), ArrayType(_)) => true
+    (FloatType(_), FloatType(_)) => true
+    (FunctionType(_), FunctionType(_)) => true
+    (IntType(_), IntType(_)) => true
+    (PointerType(_), PointerType(_)) => true
+    (StructType(_), StructType(_)) => true
+    (VectorType(_), VectorType(_)) => true
+    (ScalableVectorType(_), ScalableVectorType(_)) => true
+    (VoidType(_), VoidType(_)) => true
+    _ => false
+  }
+}
+
 pub fn AnyTypeEnum::is_array_type(self: AnyTypeEnum) -> Bool {
   match self {
     AnyTypeEnum::ArrayType(_) => true
