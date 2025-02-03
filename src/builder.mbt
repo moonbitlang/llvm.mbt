@@ -62,12 +62,13 @@ pub fn raise_builder_error(i: Int) -> Int!BuilderError {
   }
 }
 
-
+///| IR Builder
 pub struct Builder {
   builder_ref: LLVMBuilderRef
   mut positioned: PositionState
 }
 
+///| Create an IR builder given `LLVMBuilderRef`
 pub fn Builder::new(builder_ref: LLVMBuilderRef) -> Builder {
   Builder::{
     builder_ref: builder_ref,
@@ -75,6 +76,7 @@ pub fn Builder::new(builder_ref: LLVMBuilderRef) -> Builder {
   }
 }
 
+///| Return the `LLVMBuilderRef` that this builder wraps.
 fn Builder::as_builder_ref(self: Builder) -> LLVMBuilderRef {
   self.builder_ref
 }
@@ -83,6 +85,26 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
   self.positioned
 }
 
+///| Builds a function return instruction.
+/// It should be provided with `None` if the return type
+/// is void otherwise `Some(&value)` should be provided.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let arg_types = [i32_type.into()];
+/// let fn_type = i32_type.fn_type(arg_types, false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_arg = fn_value.get_first_param().unwrap();
+///
+/// builder.position_at_end(entry);
+/// builder.build_return?(val=Some(i32_arg)).unwrap();
+/// ```
 pub fn Builder::build_return(
   self: Builder, val~:&BasicValue? = None
 ) -> InstructionValue!BuilderError {
@@ -103,6 +125,26 @@ pub fn Builder::build_return(
   InstructionValue::new(inst)
 }
 
+///| Builds a function return instruction for a return type which is an aggregate type (ie structs and arrays).
+/// It is not necessary to use this over `build_return` but may be more convenient to use.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let i32_three = i32_type.const_int(3, false);
+/// let i32_seven = i32_type.const_int(7, false);
+/// let struct_type = context.struct_type([i32_type, i32_type], false);
+/// let fn_type = struct_type.fn_type([], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry);
+/// builder.build_aggregate_return([i32_three, i32_seven]).unwrap();
+/// ```
 pub fn Builder::build_aggregate_return(
   self: Builder, values: Array[BasicValueEnum]
 ) -> InstructionValue!BuilderError {
@@ -118,6 +160,35 @@ pub fn Builder::build_aggregate_return(
   InstructionValue::new(ret_v)
 }
 
+///| Builds a function call instruction.
+/// `FunctionValue`s can be implicitly converted into a `CallableValue`.
+/// See `CallableValue` for details on calling a `PointerValue` that points to a function.
+///
+/// `FunctionValue`: crate::values::FunctionValue
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let fn_type = i32_type.fn_type([i32_type], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_arg = fn_value.get_first_param().unwrap();
+/// let md_string = context.metadata_string("a metadata");
+///
+/// builder.position_at_end(entry);
+///
+/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], "call")
+///     .unwrap()
+///     .try_as_basic_value()
+///     .left()
+///     .unwrap();
+///
+/// builder.build_return(Some(&ret_val)).unwrap();
+/// ```
 pub fn Builder::build_call(
   self: Builder, 
   func: FunctionValue, 
@@ -131,6 +202,32 @@ pub fn Builder::build_call(
   self.build_direct_call!(func, args, name)
 }
 
+///| Builds a function call instruction. The function being called is known at compile time. If
+/// you want to call a function pointer, see [Builder::build_indirect_call].
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let fn_type = i32_type.fn_type([i32_type.into()], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_arg = fn_value.get_first_param().unwrap();
+/// let md_string = context.metadata_string("a metadata");
+///
+/// builder.position_at_end(entry);
+///
+/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], "call")
+///     .unwrap()
+///     .try_as_basic_value()
+///     .left()
+///     .unwrap();
+///
+/// builder.build_return(val=Some(ret_val)).unwrap();
+/// ```
 pub fn Builder::build_direct_call(
   self: Builder, 
   func: FunctionValue, 
@@ -146,7 +243,35 @@ pub fn Builder::build_direct_call(
   self.build_call_help!(fty, fn_val, args, name)
 }
 
-
+///| Build a function call instruction, with attached operand bundles.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("call_with_op_bundles");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+///
+/// // declare i32 @func(i32)
+/// let fn_type = i32_type.fn_type([i32_type], false);
+/// let fn_value = module.add_function("func", fn_type, None);
+///
+/// let basic_block = context.append_basic_block(fn_value, "entry");
+/// builder.position_at_end(basic_block);
+///
+/// // %func_ret = call i32 @func(i32 0) [ "tag"(i32 0) ]
+/// let ret_val = builder.build_direct_call_with_operand_bundles(
+///     fn_value,
+///     [i32_type.const_zero()],
+///     [OperandBundle::create("tag", [i32_type.const_zero()])],
+///     "func_ret"
+/// )
+///     .unwrap()
+///     .try_as_basic_value()
+///     .unwrap_left();
+/// builder.build_return(val=Some(ret_val)).unwrap();
+/// ```
 pub fn Builder::build_direct_call_with_operand_bundles(
   self: Builder,
   func: FunctionValue,
@@ -159,6 +284,40 @@ pub fn Builder::build_direct_call_with_operand_bundles(
   self.build_call_with_operand_bundles_help!(fty, fn_val, args, operand_bundles, name)
 }
 
+///| Call a function pointer. Because a pointer does not carry a type, the type of the function
+/// must be specified explicitly.
+///
+/// See [Context::create_inline_asm] for a practical example. Basic usage looks like this:
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let fn_type = i32_type.fn_type([i32_type], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_arg = fn_value.get_first_param().unwrap();
+/// let md_string = context.metadata_string("a metadata");
+///
+/// builder.position_at_end(entry);
+///
+/// let function_pointer = fn_value.as_global_value().as_pointer_value();
+/// let ret_val = builder.build_indirect_call(
+///   fn_value.get_type(),
+///   function_pointer,
+///   [i32_arg, md_string],
+///   "call")
+///     .unwrap()
+///     .try_as_basic_value()
+///     .left()
+///     .unwrap();
+///
+/// builder.build_return(val=Some(ret_val)).unwrap();
+/// ```
+///
 pub fn Builder::build_indirect_call(
   self: Builder,
   fn_type: FunctionType,
@@ -173,6 +332,10 @@ pub fn Builder::build_indirect_call(
   self.build_call_help!(fn_type, fn_ptr.value, args, name)
 }
 
+///| Build a call instruction to a function pointer, with attached operand bundles.
+///
+/// See [Builder::build_direct_call_with_operand_bundles] for a usage example
+/// with operand bundles.
 pub fn Builder::build_indirect_call_with_operand_bundles(
   self: Builder,
   fn_type: FunctionType,
@@ -226,6 +389,85 @@ fn Builder::build_call_with_operand_bundles_help(
   CallSiteValue::new(r)
 }
 
+///| An invoke is similar to a normal function call, but used to
+/// call functions that may throw an exception, and then respond to the exception.
+///
+/// When the called function returns normally, the `then` block is evaluated next. If instead
+/// the function threw an exception, the `catch` block is entered. The first non-phi
+/// instruction of the catch block must be a `landingpad` instruction. See also
+/// [`Builder::build_landing_pad`].
+///
+/// The [`add_prune_eh_pass`] turns an invoke into a call when the called function is
+/// guaranteed to never throw an exception.
+///
+/// [`add_prune_eh_pass`]: crate::passes::PassManager::add_prune_eh_pass
+///
+/// This example catches C++ exceptions of type `int`, and returns `0` if an exceptions is thrown.
+/// For usage of a cleanup landing pad and the `resume` instruction, see [`Builder::build_resume`]
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// let f32_type = context.f32_type();
+/// let fn_type = f32_type.fn_type(&[], false);
+///
+/// // we will pretend this function can throw an exception
+/// let function = module.add_function("bomb", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let pi = f32_type.const_float(@math.PI);
+///
+/// builder.build_return(val=Some(pi)).unwrap();
+///
+/// let function2 = module.add_function("wrapper", fn_type, None);
+/// let basic_block2 = context.append_basic_block(function2, "entry");
+///
+/// builder.position_at_end(basic_block2);
+///
+/// let then_block = context.append_basic_block(function2, "then_block");
+/// let catch_block = context.append_basic_block(function2, "catch_block");
+///
+/// let call_site = builder.build_invoke(
+///   function, [], then_block, catch_block, "get_pi").unwrap();
+///
+/// {
+///     builder.position_at_end(then_block);
+///
+///     // in the then_block, the `call_site` value is defined and can be used
+///     let result = call_site.try_as_basic_value().left().unwrap();
+///
+///     builder.build_return(val=Some(result)).unwrap();
+/// }
+///
+/// {
+///     builder.position_at_end(catch_block);
+///
+///     // the personality function used by C++
+///     let personality_function = {
+///         let name = "__gxx_personality_v0";
+///         let linkage = Some(Linkage::External);
+///
+///         module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///     };
+///
+///     // type of an exception in C++
+///     let ptr_type = context.ptr_type(AddressSpace::default());
+///     let i32_type = context.i32_type();
+///     let exception_type = context.struct_type([ptr_type, i32_type], false);
+///
+///     let null = ptr_type.const_zero();
+///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, "res").unwrap();
+///
+///     // we handle the exception by returning a default value
+///     builder.build_return(val=Some(f32_type.const_zero())).unwrap();
+/// }
+/// ```
 pub fn Builder::build_invoke(
   self: Builder,
   func: FunctionValue,
@@ -309,6 +551,127 @@ pub fn Builder::build_invoke_help(
 }
 
 
+///| Landing pads are places where control flow jumps to if a [`Builder::build_invoke`] triggered an exception.
+/// The landing pad will match the exception against its *clauses*. Depending on the clause
+/// that is matched, the exception can then be handled, or resumed after some optional cleanup,
+/// causing the exception to bubble up.
+///
+/// Exceptions in LLVM are designed based on the needs of a C++ compiler, but can be used more generally.
+/// Here are some specific examples of landing pads. For a full example of handling an exception, see [`Builder::build_invoke`].
+///
+/// * **cleanup**: a cleanup landing pad is always visited when unwinding the stack.
+///   A cleanup is extra code that needs to be run when unwinding a scope. C++ destructors are a typical example.
+///   In a language with reference counting, the cleanup block can decrement the refcount of values in scope.
+///   The [`Builder::build_resume`] function has a full example using a cleanup lading pad.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// // type of an exception in C++
+/// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
+/// let i32_type = context.i32_type();
+/// let exception_type = context.struct_type(&[i8_ptr_type.into(), i32_type.into()], false);
+///
+/// // the personality function used by C++
+/// let personality_function = {
+///     let name = "__gxx_personality_v0";
+///     let linkage = Some(Linkage::External);
+///
+///     module.add_function(name, context.i64_type().fn_type(&[], false), linkage)
+/// };
+///
+/// // make the cleanup landing pad
+/// let res = builder.build_landing_pad( exception_type, personality_function, &[], true, "res").unwrap();
+/// ```
+///
+/// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
+/// A catch clause with a NULL pointer value will match anything.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// // type of an exception in C++
+/// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
+/// let i32_type = context.i32_type();
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+///
+/// // the personality function used by C++
+/// let personality_function = {
+///     let name = "__gxx_personality_v0";
+///     let linkage = Some(Linkage::External);
+///
+///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+/// };
+///
+/// // make a null pointer of type i8
+/// let null = i8_ptr_type.const_zero();
+///
+/// // make the catch all landing pad
+/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, "res").unwrap();
+/// ```
+///
+/// * **catch a type of exception**: Catch a specific type of exception. The example uses C++'s type info.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// // type of an exception in C++
+/// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
+/// let i32_type = context.i32_type();
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+///
+/// // the personality function used by C++
+/// let personality_function = {
+///     let name = "__gxx_personality_v0";
+///     let linkage = Some(Linkage::External);
+///
+///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+/// };
+///
+/// // link in the C++ type info for the `int` type
+/// let type_info_int = module.add_global(i8_ptr_type, Some(AddressSpace::default()), "_ZTIi");
+/// type_info_int.set_linkage(Linkage::External);
+///
+/// // make the catch landing pad
+/// let clause = type_info_int.as_basic_value_enum();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [clause], false, "res").unwrap();
+/// ```
+///
+/// * **filter**: A filter clause encodes that only some types of exceptions are valid at this
+/// point. A filter clause is made by constructing a clause from a constant array.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// // type of an exception in C++
+/// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
+/// let i32_type = context.i32_type();
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+///
+/// // the personality function used by C++
+/// let personality_function = {
+///     let name = "__gxx_personality_v0";
+///     let linkage = Some(Linkage::External);
+///
+///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+/// };
+///
+/// // link in the C++ type info for the `int` type
+/// let type_info_int = module.add_global(i8_ptr_type, Some(AddressSpace::default()), "_ZTIi");
+/// type_info_int.set_linkage(Linkage::External);
+///
+/// // make the filter landing pad
+/// let filter_pattern = i8_ptr_type.const_array(&[type_info_int.as_any_value_enum().into_pointer_value()]);
+/// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, "res").unwrap();
+/// ```
 pub fn Builder::build_landing_pad(
   self: Builder,
   exception_type: &BasicType,
@@ -340,6 +703,73 @@ pub fn Builder::build_landing_pad(
   BasicValueEnum::new(value)
 }
 
+///| Resume propagation of an existing (in-flight) exception whose unwinding was interrupted with a landingpad instruction.
+///
+/// This example uses a cleanup landing pad. A cleanup is extra code that needs to be run when
+/// unwinding a scope. C++ destructors are a typical example. In a language with reference counting,
+/// the cleanup block can decrement the refcount of values in scope.
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("sum");
+/// let builder = context.create_builder();
+///
+/// let f32_type = context.f32_type();
+/// let fn_type = f32_type.fn_type([], false);
+///
+/// // we will pretend this function can throw an exception
+/// let function = module.add_function("bomb", fn_type, None);
+/// let basic_block = context.append_basic_block(function, "entry");
+///
+/// builder.position_at_end(basic_block);
+///
+/// let pi = f32_type.const_float(@math.PI);
+///
+/// builder.build_return(val=Some(pi)).unwrap();
+///
+/// let function2 = module.add_function("wrapper", fn_type, None);
+/// let basic_block2 = context.append_basic_block(function2, "entry");
+///
+/// builder.position_at_end(basic_block2);
+///
+/// let then_block = context.append_basic_block(function2, "then_block");
+/// let catch_block = context.append_basic_block(function2, "catch_block");
+///
+/// let call_site = builder.build_invoke(function, [], then_block, catch_block, "get_pi").unwrap();
+///
+/// {
+///     builder.position_at_end(then_block);
+///
+///     // in the then_block, the `call_site` value is defined and can be used
+///     let result = call_site.try_as_basic_value().left().unwrap();
+///
+///     builder.build_return(val=Some(result)).unwrap();
+/// }
+///
+/// {
+///     builder.position_at_end(catch_block);
+///
+///     // the personality function used by C++
+///     let personality_function = {
+///         let name = "__gxx_personality_v0";
+///         let linkage = Some(Linkage::External);
+///
+///         module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///     };
+///
+///     // type of an exception in C++
+///     let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
+///     let i32_type = context.i32_type();
+///     let exception_type = context.struct_type(&[i8_ptr_type, i32_type], false);
+///
+///     // make the landing pad; must give a concrete type to the slice
+///     let res = builder.build_landing_pad(exception_type, personality_function, [], true, "res").unwrap();
+///
+///     // do cleanup ...
+///
+///     builder.build_resume(res).unwrap();
+/// }
+/// ```
 pub fn Builder::build_resume(
   self: Builder, value: &BasicValue
 ) -> InstructionValue!BuilderError {
@@ -398,6 +828,36 @@ pub fn Builder::build_in_bounds_gep(
   PointerValue::new(value)
 }
 
+///| Builds a GEP instruction on a struct pointer. Returns `Err` `BuilderError::GEPPointee` or `BuilderError::GEPIndex` if input `PointerValue` doesn't
+/// point to a struct or if index is out of bounds.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let builder = context.create_builder();
+/// let module = context.create_module("struct_gep");
+/// let void_type = context.void_type();
+/// let i32_ty = context.i32_type();
+/// let i32_ptr_ty = i32_ty.ptr_type(AddressSpace::default());
+/// let field_types = &[i32_ty.into(), i32_ty.into()];
+/// let struct_ty = context.struct_type(field_types, false);
+/// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty], false);
+/// let fn_value = module.add_function("", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry);
+///
+/// let i32_ptr = fn_value.get_first_param().unwrap().into_pointer_value();
+/// let struct_ptr = fn_value.get_last_param().unwrap().into_pointer_value();
+///
+/// assert!(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
+/// assert!(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
+/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
+/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
+/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
+/// ```
 pub fn Builder::build_struct_gep(
   self: Builder,
   pointee_ty: &BasicType,
@@ -432,6 +892,27 @@ pub fn Builder::build_struct_gep(
   PointerValue::new(value)
 }
 
+///| Builds an instruction which calculates the difference of two pointers.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let i32_type = context.i32_type();
+/// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let fn_type = void_type.fn_type([i32_ptr_type, i32_ptr_type], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_ptr_param1 = fn_value.get_first_param().unwrap().into_pointer_value();
+/// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
+///
+/// builder.position_at_end(entry);
+/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2, "diff").unwrap();
+/// builder.build_return().unwrap();
+/// ```
 pub fn Builder::build_ptr_diff(
   self: Builder,
   pointee_ty: &BasicType,
@@ -464,6 +945,27 @@ pub fn Builder::build_phi(self: Builder, ty: &BasicType, name: String) -> PhiVal
   PhiValue::new(value)
 }
 
+///| Builds a store instruction. It allows you to store a value of type `T` in a pointer to a type `T`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let void_type = context.void_type();
+/// let i32_type = context.i32_type();
+/// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let i32_seven = i32_type.const_int(7, false);
+/// let fn_type = void_type.fn_type([i32_ptr_type], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
+///
+/// builder.position_at_end(entry);
+/// builder.build_store(i32_ptr_param, i32_seven).unwrap();
+/// builder.build_return(None).unwrap();
+/// ```
 pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) -> InstructionValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -475,6 +977,27 @@ pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) 
   InstructionValue::new(inst)
 }
 
+///| Builds a load2 instruction. It allows you to retrieve a value of type `T` from a pointer to a type `T`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("ret");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let fn_type = i32_type.fn_type([i32_ptr_type], false);
+/// let fn_value = module.add_function("ret", fn_type, None);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
+///
+/// builder.position_at_end(entry);
+///
+/// let pointee = builder.build_load(i32_type, i32_ptr_param, "load2").unwrap();
+///
+/// builder.build_return(Some(&pointee)).unwrap();
+/// ```
 pub fn Builder::build_load(self: Builder, pointee_ty: &BasicType, ptr: PointerValue, name: String) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -511,6 +1034,16 @@ pub fn Builder::build_array_alloca(
   PointerValue::new(value)
 }
 
+///| Build a [memcpy](https://llvm.org/docs/LangRef.html#llvm-memcpy-intrinsic) instruction.
+///
+/// Alignment arguments are specified in bytes, and should always be
+/// both a power of 2 and under 2^64.
+///
+/// The final argument should be a pointer-sized integer.
+///
+/// Returns an `Err(BuilderError::AlignmentError)` if the source or destination alignments are not a power of 2.
+///
+/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memcpy(
   self: Builder,
   dest: PointerValue,
@@ -544,6 +1077,16 @@ pub fn Builder::build_memcpy(
   PointerValue::new(value)
 }
 
+///| Build a [memmove](http://llvm.org/docs/LangRef.html#llvm-memmove-intrinsic) instruction.
+///
+/// Alignment arguments are specified in bytes, and should always be
+/// both a power of 2 and under 2^64.
+///
+/// The final argument should be a pointer-sized integer.
+///
+/// Returns an `Err(BuilderError::AlignmentError)` if the source or destination alignments are not a power of 2 under 2^64.
+///
+/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memove(
   self: Builder,
   dest: PointerValue,
@@ -576,6 +1119,16 @@ pub fn Builder::build_memove(
   PointerValue::new(value)
 }
 
+///| Build a [memset](http://llvm.org/docs/LangRef.html#llvm-memset-intrinsics) instruction.
+///
+/// Alignment arguments are specified in bytes, and should always be
+/// both a power of 2 and under 2^64.
+///
+/// The final argument should be a pointer-sized integer.
+///
+/// Returns an `Err(BuilderError::AlignmentError)` if the source alignment is not a power of 2 under 2^64.
+///
+/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memset(
   self: Builder,
   dest: PointerValue,

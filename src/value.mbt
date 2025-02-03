@@ -1,11 +1,11 @@
 // ===================================
 // Values
 // ===================================
-pub struct Value {
+struct Value {
   value_ref: LLVMValueRef
 }
 
-pub fn Value::new(value_ref: LLVMValueRef) -> Value {
+fn Value::new(value_ref: LLVMValueRef) -> Value {
   if llvm_is_null(value_ref) == 1 {
     println("Value is null")
     panic()
@@ -16,15 +16,15 @@ pub fn Value::new(value_ref: LLVMValueRef) -> Value {
   }
 }
 
-pub fn Value::as_value_ref(self: Value) -> LLVMValueRef {
+fn Value::as_value_ref(self: Value) -> LLVMValueRef {
   self.value_ref
 }
 
-pub fn Value::is_instruction(self: Value) -> Bool {
+fn Value::is_instruction(self: Value) -> Bool {
   llvm_isa_instruction(self.as_value_ref()).is_null()
 }
 
-pub fn Value::as_instruction(self: Value) -> InstructionValue? {
+fn Value::as_instruction(self: Value) -> InstructionValue? {
   if not(self.is_instruction()) {
     return None
   }
@@ -32,21 +32,21 @@ pub fn Value::as_instruction(self: Value) -> InstructionValue? {
   Some(InstructionValue::new(self.as_value_ref()))
 }
 
-pub fn Value::is_null(self: Value) -> Bool {
+fn Value::is_null(self: Value) -> Bool {
   llvm_is_null(self.as_value_ref()) == 1
 }
 
-pub fn Value::is_const(self: Value) -> Bool {
+fn Value::is_const(self: Value) -> Bool {
   llvm_is_constant(self.as_value_ref())
 }
 
-pub fn Value::set_name(self: Value, name: String) -> Unit {
+fn Value::set_name(self: Value, name: String) -> Unit {
   let value_ref = self.as_value_ref()
   llvm_set_value_name(value_ref, name)
 }
 
 // TODO: This API use `LLVMGetValueName2` possibly problematic
-pub fn Value::get_name(self: Value) -> String {
+fn Value::get_name(self: Value) -> String {
   self.as_value_ref().get_name()
 
 }
@@ -64,7 +64,7 @@ fn Value::replace_all_uses_with(self: Value, new_value: Value) -> Unit {
   llvm_replace_all_uses_with(self.as_value_ref(), new_value.as_value_ref())
 }
 
-pub fn Value::get_first_use(self: Value) -> BasicValueUse? {
+fn Value::get_first_use(self: Value) -> BasicValueUse? {
   let use_ = llvm_get_first_use(self.as_value_ref())
 
   if use_.is_null() {
@@ -77,23 +77,23 @@ pub fn Value::get_first_use(self: Value) -> BasicValueUse? {
 // pub fn get_section(self: Value) -> String?
 // pub fn set_section(self: Value) -> String?
 
-pub fn Value::print_to_stderr(self: Value) -> Unit {
+fn Value::print_to_stderr(self: Value) -> Unit {
   llvm_dump_value(self.as_value_ref())
 }
 
-pub fn Value::print_to_string(self: Value) -> String {
+fn Value::print_to_string(self: Value) -> String {
   llvm_print_value_to_string(self.as_value_ref())
 }
 
-pub fn Value::to_string(self: Value) -> String {
+fn Value::to_string(self: Value) -> String {
   llvm_print_value_to_string(self.as_value_ref())
 }
 
-pub fn Value::dump(self: Value) -> Unit {
+fn Value::dump(self: Value) -> Unit {
   llvm_dump_value(self.as_value_ref())
 }
 
-pub impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
+impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 

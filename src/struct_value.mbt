@@ -174,5 +174,3 @@ pub fn StructValue::dump(self: StructValue) -> Unit {
 pub impl Show for StructValue with output(self: StructValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
-
-

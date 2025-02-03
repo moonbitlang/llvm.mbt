@@ -1,8 +1,14 @@
 // Context
+///| A `Context` is a container for all LLVM entities including `Module`s.
 struct Context {
   ctx_ref: LLVMContextRef
 } derive(Eq)
 
+///| Creates a new `Context` from [`LLVMContextRef`].
+///
+/// **unsafe**: This function is exposed only for interoperability
+/// with other LLVM IR libraries. It's not intended to be used by
+/// most users, hence marked as unsafe.
 pub fn Context::new(ctx_ref: LLVMContextRef) -> Context {
   Context :: {
     ctx_ref: ctx_ref
@@ -10,16 +16,58 @@ pub fn Context::new(ctx_ref: LLVMContextRef) -> Context {
 }
 
 // NOTE: currently need free memory by hand to avoid memory leak
+///| Drops the `Context` and frees the memory.
+///
+/// Currently, for big projects, users need to free memory by hand
+/// to avoid memory leaks, until the compiler supports automatic
+/// memory management.
 pub fn Context::drop(self: Context) -> Unit {
   llvm_context_dispose(self.as_ctx_ref())
 }
 
+///| Returns the inner `LLVMContextRef`.
 fn Context::as_ctx_ref(self: Context) -> LLVMContextRef {
   self.ctx_ref
 }
 
+///| Creates a new `Context`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// context.drop();
+/// ```
 pub fn Context::create() -> Context {
   Context::new(llvm_context_create())
+}
+
+
+pub fn Context::create_builder(self: Context) -> Builder {
+  Builder::new(llvm_create_builder_in_context(self.as_ctx_ref()))
+}
+
+
+pub fn Context::create_module(self: Context, name: String) -> Module {
+  let ctx_ref = self.as_ctx_ref()
+  Module::new(ctx_ref.module_create_with_name(name))
+}
+
+// pub fn create_module_from_ir
+// pub fn create_inline_asm
+
+///| Create `void` type in the context.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create()
+/// let void_ty = context.void_type()
+/// inspect!(void_ty, "void")
+/// ```
+pub fn Context::void_type(self: Context) -> VoidType {
+  let type_ref = llvm_void_type_in_context(self.as_ctx_ref())
+  VoidType::new(type_ref)
 }
 
 ///| Create `i1` type in the context.
@@ -106,25 +154,32 @@ pub fn Context::i128_type(self: Context) -> IntType {
   IntType::new(type_ref)
 }
 
-///| Create `void` type in the context.
+
+///| Gets the `IntType` representing a custom bit width. It will be assigned the current context.
 ///
-/// ## Example
+/// ## Example (Not Tested)
 ///
 /// ```moonbit
-/// let context = Context::create()
-/// let void_ty = context.void_type()
-/// inspect!(void_ty, "void")
+/// let context = Context::create();
+/// let i48_type = context.custom_width_int_type(48);
+///
+/// assert_eq!(i42_type.get_bit_width(), 42);
 /// ```
-pub fn Context::void_type(self: Context) -> VoidType {
-  let type_ref = llvm_void_type_in_context(self.as_ctx_ref())
-  VoidType::new(type_ref)
-}
-
 pub fn Context::custom_width_int_type(self: Context, bits: UInt) -> IntType {
   let type_ref = llvm_int_type_in_context(self.as_ctx_ref(), bits)
   IntType::new(type_ref)
 }
 
+///| Gets the `MetadataType` representing 128 bit width. It will be assigned the current context.
+///
+/// ## Example (Not Tested)
+///
+/// ```
+/// let context = Context::create();
+/// let md_type = context.metadata_type();
+///
+/// assert_true!(md_type.get_context() == context);
+/// ```
 pub fn Context::metadata_type(self: Context) -> MetadataType {
   let mref = llvm_metadata_type_in_context(self.as_ctx_ref())
   MetadataType::new(mref)
@@ -275,6 +330,16 @@ pub fn Context::struct_type_unsafe(self: Context, field_types: Array[LLVMTypeRef
   StructType::new(val_ref)
 }
 
+///| Gets a named `StructType` from this `Context`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// inspect!(context.get_struct_type("foo"), content="None");
+/// let opaque = context.opaque_struct_type("foo");
+/// inspect!(context.get_struct_type("foo").unwrap(), content="%foo = type opaque");
+/// ```
 pub fn Context::get_struct_type(self: Context, name: String) -> StructType? {
   let ty = llvm_get_type_by_name(self.as_ctx_ref(), name)
   if ty.is_null() {
@@ -284,6 +349,20 @@ pub fn Context::get_struct_type(self: Context, name: String) -> StructType? {
   Some(StructType::new(ty))
 }
 
+///| Creates a constant `StructValue` from constant values.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let f32_type = context.f32_type();
+/// let i16_type = context.i16_type();
+/// let f32_one = f32_type.const_float(1.);
+/// let i16_two = i16_type.const_int(2, false);
+/// let const_struct = context.const_struct([i16_two, f32_one], false);
+///
+/// assert_eq!(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
+/// ```
 pub fn Context::const_struct(
   self: Context, values: Array[BasicValueEnum], packed: Bool
 ) -> StructValue {
@@ -308,6 +387,26 @@ pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
   StructType::new(val_ref)
 }
 
+///| Append a named `BasicBlock` at the end of the referenced `FunctionValue`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 1);
+///
+/// let last_basic_block = context.append_basic_block(fn_value, "last");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 2);
+/// assert_eq!(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
+/// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// ```
 pub fn Context::append_basic_block(
   self: Context, function: FunctionValue, name: String
 ) -> BasicBlock {
@@ -318,11 +417,60 @@ pub fn Context::append_basic_block(
   BasicBlock::new(bb_ref).unwrap()
 }
 
-// pub fn Context::insert_basic_block_after(
-//   self: Context, basic_block: BasicBlock, name: String
-// ) -> BasicBlock {
-// }
+///| Append a named `BasicBlock` after the referenced `BasicBlock`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 1);
+///
+/// let last_basic_block = context.insert_basic_block_after(entry_basic_block, "last");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 2);
+/// assert_eq!(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
+/// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// ```
+pub fn Context::insert_basic_block_after(
+  self: Context, basic_block: BasicBlock, name: String
+) -> BasicBlock {
+  match basic_block.get_next_basic_block() {
+    Some(next_bb) => {
+      self.prepend_basic_block(next_bb, name)
+    }
+    None => {
+      let parent_fn = basic_block.get_parent().unwrap()
+      self.append_basic_block(parent_fn, name)
+    }
+  }
+}
 
+///| Prepend a named `BasicBlock` before the referenced `BasicBlock`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([], false);
+/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 1);
+///
+/// let first_basic_block = context.prepend_basic_block(entry_basic_block, "first");
+///
+/// assert_eq!(fn_value.count_basic_blocks(), 2);
+/// assert_eq!(fn_value.get_first_basic_block().unwrap(), first_basic_block);
+/// assert_eq!(fn_value.get_last_basic_block().unwrap(), entry_basic_block);
+/// ```
 pub fn Context::prepend_basic_block(
   self: Context, basic_block: BasicBlock, name: String
 ) -> BasicBlock {
@@ -331,20 +479,140 @@ pub fn Context::prepend_basic_block(
   BasicBlock::new(val_ref).unwrap()
 }
 
+///| Creates a `MetadataValue` tuple of heterogeneous types (a "Node") for the current context. It can be assigned to a value.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i8_type = context.i8_type();
+/// let i8_two = i8_type.const_int(2, false);
+/// let f32_type = context.f32_type();
+/// let f32_zero = f32_type.const_float(0.);
+/// let md_node = context.metadata_node([i8_two, f32_zero]);
+/// let f32_one = f32_type.const_float(1.);
+/// let void_type = context.void_type();
+///
+/// let builder = context.create_builder();
+/// let module = context.create_module("my_mod");
+/// let fn_type = void_type.fn_type([f32_type.into()], false);
+/// let fn_value = module.add_function("my_func", fn_type, None);
+/// let entry_block = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry_block);
+///
+/// let ret_instr = builder.build_return(None).unwrap();
+///
+/// assert!(md_node.is_node());
+///
+/// ret_instr.set_metadata(md_node, 0);
+/// ```
+pub fn Context::metadata_node(
+  self: Context,
+  values: Array[&BasicMetadataValue]
+) -> MetadataValue {
+  let values = values.map(fn (v) {v.as_value_ref()})
+  let val_ref = llvm_md_node_in_context(self.as_ctx_ref(), values)
+  MetadataValue::new(val_ref)
+}
+
+///| Creates a `MetadataValue` string for the current context. It can be assigned to a value.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let md_string = context.metadata_string("Floats are awesome!");
+/// let f32_type = context.f32_type();
+/// let f32_one = f32_type.const_float(1.);
+/// let void_type = context.void_type();
+///
+/// let builder = context.create_builder();
+/// let module = context.create_module("my_mod");
+/// let fn_type = void_type.fn_type([f32_type], false);
+/// let fn_value = module.add_function("my_func", fn_type, None);
+/// let entry_block = context.append_basic_block(fn_value, "entry");
+///
+/// builder.position_at_end(entry_block);
+///
+/// let ret_instr = builder.build_return(None).unwrap();
+///
+/// assert!(md_string.is_string());
+///
+/// ret_instr.set_metadata(md_string, 0);
+/// ```
+pub fn Context::metadata_string(self: Context, s: String) -> MetadataValue {
+  let val_ref = llvm_md_string_in_context(self.as_ctx_ref(), s)
+  MetadataValue::new(val_ref)
+}
+
+///| Obtains the index of a metadata kind id. If the string doesn't exist, LLVM will add it at index `FIRST_CUSTOM_METADATA_KIND_ID` onward.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+///
+/// assert_eq!(context.get_kind_id("dbg"), 0);
+/// assert_eq!(context.get_kind_id("tbaa"), 1);
+/// assert_eq!(context.get_kind_id("prof"), 2);
+///
+/// // Custom kind id doesn't exist in LLVM until now:
+/// assert_eq!(context.get_kind_id("foo"), FIRST_CUSTOM_METADATA_KIND_ID);
+/// ```
 pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
   llvm_get_md_kind_id_in_context(self.as_ctx_ref(), key)
 }
 
+///| Creates an enum `Attribute` in this `Context`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// use inkwell::context::Context;
+///
+/// let context = Context::create();
+/// let enum_attribute = context.create_enum_attribute(0, 10);
+///
+/// assert!(enum_attribute.is_enum());
+/// ```
 pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64) -> Attribute {
   let attr_ref = llvm_create_enum_attribute(self.as_ctx_ref(), kind_id, val)
   Attribute::new(attr_ref)
 }
 
+///| Creates a string `Attribute` in this `Context`.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let string_attribute = context.create_string_attribute("my_key_123", "my_val");
+///
+/// assert!(string_attribute.is_string());
+/// ```
 pub fn Context::create_string_attribute(self: Context, key: String, val: String) -> Attribute {
   let attr_ref = llvm_create_string_attribute(self.as_ctx_ref(), key, val)
   Attribute::new(attr_ref)
 }
 
+///| Create an enum `Attribute` with an `AnyTypeEnum` attached to it.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let kind_id = Attribute::get_named_enum_kind_id("sret");
+/// let any_type = context.i32_type().as_any_type_enum();
+/// let type_attribute = context.create_type_attribute(
+///     kind_id,
+///     any_type,
+/// );
+///
+/// assert!(type_attribute.is_type());
+/// assert_eq!(type_attribute.get_type_value(), any_type);
+/// assert_ne!(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
+/// ```
 pub fn Context::create_type_attribute(
   self: Context, kind_id: UInt, ty: AnyTypeEnum
 ) -> Attribute {
@@ -352,6 +620,16 @@ pub fn Context::create_type_attribute(
   Attribute::new(attr)
 }
 
+///| Creates a const string which may be null terminated.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let string = context.const_string(b"my_string", false);
+///
+/// assert_eq!(string.print_to_string().to_string(), "[9 x i8] my_string");
+/// ```
 pub fn Context::const_string(self: Context, s: String, null_terminated: Bool) -> ArrayValue {
   let val_ref = llvm_const_string_in_context(self.as_ctx_ref(), s, null_terminated)
   ArrayValue::new(val_ref)
@@ -359,14 +637,3 @@ pub fn Context::const_string(self: Context, s: String, null_terminated: Bool) ->
 
 // pub fn Context::set_diagnostic_handler
 
-pub fn Context::create_module(self: Context, name: String) -> Module {
-  let ctx_ref = self.as_ctx_ref()
-  Module::new(ctx_ref.module_create_with_name(name))
-}
-
-pub fn Context::create_builder(self: Context) -> Builder {
-  Builder::new(llvm_create_builder_in_context(self.as_ctx_ref()))
-}
-
-// pub fn create_module_from_ir
-// pub fn create_inline_asm
