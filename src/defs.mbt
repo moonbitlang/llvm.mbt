@@ -765,3 +765,40 @@ pub fn FlagBehavior::into(self: FlagBehavior) -> LLVMModuleFlagBehavior {
     AppendUnique => LLVMModuleFlagBehaviorAppendUnique
   }
 }
+
+pub enum ComdatSelectionKind {
+  /// The linker may choose any COMDAT.
+  Any
+
+  /// The data referenced by the COMDAT must be the same.
+  ExactMatch
+
+  /// The linker will choose the largest COMDAT.
+  Largest
+
+  /// No other Module may specify this COMDAT.
+  NoDuplicates
+
+  /// The data referenced by the COMDAT must be the same size.
+  SameSize
+}
+
+pub fn LLVMComdatSelectionKind::into(self: LLVMComdatSelectionKind) -> ComdatSelectionKind {
+  match self {
+    LLVMAnyComdatSelectionKind => Any
+    LLVMExactMatchComdatSelectionKind => ExactMatch
+    LLVMLargestComdatSelectionKind => Largest
+    LLVMNoDeduplicateComdatSelectionKind => NoDuplicates
+    LLVMSameSizeComdatSelectionKind => SameSize
+  }
+}
+
+pub fn ComdatSelectionKind::into(self: ComdatSelectionKind) -> LLVMComdatSelectionKind {
+  match self {
+    Any => LLVMAnyComdatSelectionKind
+    ExactMatch => LLVMExactMatchComdatSelectionKind
+    Largest => LLVMLargestComdatSelectionKind
+    NoDuplicates => LLVMNoDeduplicateComdatSelectionKind
+    SameSize => LLVMSameSizeComdatSelectionKind
+  }
+}

@@ -95,12 +95,12 @@ fn struct_test() -> Unit!Error {
 }
 
 fn main {
-  // match struct_test?() {
-  //   Ok(_) => println("All tests passed")
-  //   Err(_) => println("Some tests failed")
-  // }
-  let context = @llvm.Context::create()
-  let i32_ty = context.i32_type()
-  let arr_ty = i32_ty.array_type(8)
-  println(arr_ty.size_of().unwrap())
+  match struct_test?() {
+    Ok(_) => println("All tests passed")
+    Err(_) => println("Some tests failed")
+  }
+  // let context = @llvm.Context::create()
+  // let i32_ty = context.i32_type()
+  // let arr_ty = i32_ty.array_type(8)
+  // println(arr_ty.size_of().unwrap())
 }
