@@ -28,7 +28,7 @@ pub fn ArrayType::as_type_ref(self: ArrayType) -> LLVMTypeRef {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_sz = array_type.size_of().unwrap();
-/// let expect = ""
+/// let expect = "i64 ptrtoint (ptr getelementptr ([8 x i32], ptr null, i32 1) to i64)"
 /// inspect!(array_sz, content=expect)
 /// ```
 pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
@@ -44,7 +44,7 @@ pub fn ArrayType::size_of(self: ArrayType) -> IntValue? {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_align = array_type.get_alignment();
-/// let expect = ""
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, [8 x i32] }, ptr null, i64 0, i32 1) to i64)"
 /// inspect!(array_align, content=expect)
 /// ```
 pub fn ArrayType::get_alignment(self: ArrayType) -> IntValue {

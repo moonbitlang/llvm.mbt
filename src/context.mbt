@@ -300,14 +300,14 @@ pub fn Context::ptr_type(self: Context, addr_space: AddressSpace) -> PointerType
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// let i64_ty = context.i64_type()
-/// let struct_ty = context.struct_type([i32_ty, i64_ty], false)
+/// let struct_ty = context.struct_type([i32_ty, i64_ty])
 /// inspect!(struct_ty, "{ i32, i64 }")
 /// ```
 /// @alert CompilerBug "This function is not working due to a bug in the compiler."
-pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], packed~: Bool = false) -> StructType {
+pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], is_packed~: Bool = false) -> StructType {
   let field_types = field_types.map(fn (v) {v.as_type_ref()})
 
-  let val_ref = llvm_struct_type_in_context(self.as_ctx_ref(), field_types, packed)
+  let val_ref = llvm_struct_type_in_context(self.as_ctx_ref(), field_types, is_packed)
 
   StructType::new(val_ref)
 } 
@@ -320,12 +320,12 @@ pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], packe
 /// let context = Context::create()
 /// let i32_ty = context.i32_type().as_type_ref()
 /// let i64_ty = context.i64_type().as_type_ref()
-/// let struct_ty = context.struct_type_unsafe([i32_ty, i64_ty], false)
+/// let struct_ty = context.struct_type_unsafe([i32_ty, i64_ty])
 /// inspect!(struct_ty, "{ i32, i64 }")
 /// ```
 // @alert WillRemove "This function will be removed once the bug in the compiler is fixed."
-pub fn Context::struct_type_unsafe(self: Context, field_types: Array[LLVMTypeRef], packed~: Bool = false) -> StructType {
-  let val_ref = llvm_struct_type_in_context(self.as_ctx_ref(), field_types, packed)
+pub fn Context::struct_type_unsafe(self: Context, field_types: Array[LLVMTypeRef], is_packed~: Bool = false) -> StructType {
+  let val_ref = llvm_struct_type_in_context(self.as_ctx_ref(), field_types, is_packed)
 
   StructType::new(val_ref)
 }
