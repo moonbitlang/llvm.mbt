@@ -6,5 +6,4 @@
   "license": "Apache-2.0",
   "keywords": ["compiler", "llvm"],
   "description": "Write real llvm in moonbit",
-  "source": "src"
 }
