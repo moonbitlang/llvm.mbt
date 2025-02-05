@@ -21,14 +21,14 @@ pub fn VectorType::as_type_ref(self: VectorType) -> @unsafe.LLVMTypeRef {
 
 ///| Gets the size of this `VectorType`. Value may vary depending on the target architecture.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vector_type(8);
 /// let vector_sz = vector_type.size_of().unwrap();
-/// let expect = ""
+/// let expect = "i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)"
 /// inspect!(vector_sz, content=expect)
 pub fn VectorType::size_of(self: VectorType) -> IntValue? {
   self.ty.size_of()
@@ -50,14 +50,14 @@ pub fn VectorType::is_sized(self: VectorType) -> Bool {
 
 ///| Gets the alignment of this `VectorType`. Value may vary depending on the target architecture.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vector_type(8);
 /// let vector_align = vector_type.get_alignment();
-/// let expect = ""
+/// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, <8 x i32> }, ptr null, i64 0, i32 1) to i64)"
 /// inspect!(vector_align, content=expect)
 /// ```
 pub fn VectorType::get_alignment(self: VectorType) -> IntValue {
@@ -66,7 +66,7 @@ pub fn VectorType::get_alignment(self: VectorType) -> IntValue {
 
 ///| Gets the size of this `VectorType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -87,7 +87,7 @@ pub fn VectorType::get_size(self: VectorType) -> UInt {
 
 ///| Creates an undefined instance of a `VectorType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -102,7 +102,7 @@ pub fn VectorType::get_undef(self: VectorType) -> VectorValue {
 
 ///| Creates a poison instance of a `VectorType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -117,7 +117,7 @@ pub fn VectorType::get_poison(self: VectorType) -> VectorValue {
 
 ///| Gets the element type of this `VectorType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -133,7 +133,7 @@ pub fn VectorType::get_element_type(self: VectorType) -> BasicTypeEnum {
 
 ///| Creates a `PointerType` with this `VectorType` for its element type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -148,7 +148,7 @@ pub fn VectorType::ptr_type(self: VectorType, address_space: AddressSpace) -> Po
 
 ///| Creates a `FunctionType` with this `VectorType` for its return type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -163,7 +163,7 @@ pub fn VectorType::fn_type(self: VectorType, param_types: Array[&BasicMetadataTy
 
 ///| Creates a `FunctionType` with this `VectorType` for its return type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -209,14 +209,14 @@ pub fn VectorType::const_array(self: VectorType, values: Array[VectorValue]) -> 
 
 ///| Gets a reference to the `Context` this `VectorType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vector_type(8);
 /// let vector_ctx = vector_type.get_context();
-/// assert_eq!(context, vector_ctx);
+/// assert_true!(context == vector_ctx);
 /// ```
 pub fn VectorType::get_context(self: VectorType) -> Context {
   self.ty.get_context()
@@ -255,5 +255,3 @@ pub impl Show for VectorType with output(self: VectorType, logger: &Logger) -> U
 pub impl Show for VectorType with to_string(self: VectorType) -> String {
   self.to_string()
 }
-
-

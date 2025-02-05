@@ -23,6 +23,7 @@ struct moonbit_string *c_str_to_moonbit_str(void *ptr) {
   for (int i = 0; i < len; i++) {
     ms->data[i] = (uint16_t)cptr[i];
   }
+  // free(ptr);
   return ms;
 }
 
@@ -33,5 +34,6 @@ struct moonbit_string *c_str_to_moonbit_str_with_length(void *ptr,
   for (int i = 0; i < len; i++) {
     ms->data[i] = (uint16_t)cptr[i];
   }
+  // free(ptr);
   return ms;
 }

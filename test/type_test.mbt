@@ -556,3 +556,62 @@ test "Array Type Test" {
 
   context.drop()
 }
+
+test "Vector Type Test" {
+  let context = @llvm.Context::create()
+
+  let i32_ty = context.i32_type()
+  let i32_vty = i32_ty.vec_type(8)
+
+  // print
+  inspect!(i32_vty, content="<8 x i32>")
+
+  // size_of
+  inspect!(
+    i32_vty.size_of().unwrap(),
+    content="i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)"
+  )
+
+  // is_sized
+  assert_true!(i32_vty.is_sized())
+
+  // get_alignment
+  inspect!(
+    i32_vty.get_alignment(),
+    content="i64 ptrtoint (ptr getelementptr ({ i1, <8 x i32> }, ptr null, i64 0, i32 1) to i64)"
+  )
+
+  // get_size
+  assert_eq!(i32_vty.get_size(), 8)
+
+  // get_undef
+  inspect!(i32_vty.get_undef(), content="<8 x i32> undef")
+
+  // get_poison
+  inspect!(i32_vty.get_poison(), content="<8 x i32> poison")
+
+  // get_element_type
+  inspect!(i32_vty.get_element_type(), content="i32")
+
+  // get_ptr
+  let addr_space = @llvm.AddressSpace::default()
+  inspect!(i32_vty.ptr_type(addr_space), content="ptr")
+
+  // fn_type
+  // let fty1 = i32_ty.fn_type([i32_vty])
+  // let fty2 = i32_vty.fn_type([i32_ty])
+  let fty1 = i32_ty.fn_type_unsafe([i32_vty.as_type_ref()])
+  let fty2 = i32_vty.fn_type_unsafe([i32_ty.as_type_ref()])
+  inspect!(fty1, content="i32 (<8 x i32>)")
+  inspect!(fty2, content="<8 x i32> (i32)")
+
+  let arr_ty = i32_vty.array_type(4)
+  inspect!(arr_ty, content="[4 x <8 x i32>]")
+
+  // const_array
+
+  // get_context
+  assert_true!(i32_vty.get_context() == context)
+
+  context.drop()
+}

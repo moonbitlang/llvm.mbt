@@ -1069,6 +1069,16 @@ struct UnsafedArrayUInt64_t {
   uint64_t data[0];
 };
 
+typedef struct TupleCStrUInt64 {
+  struct moonbit_object header;
+  void *$0;
+  uint64_t $1;
+} TupleCStrUInt64;
+
+void *new_null_cstr() { return (char *)NULL; }
+
+void free_cstr(void *cstr) { free(cstr); }
+
 LLVMBool __llvm_value_is_null(void *val) {
   return LLVMIsNull((LLVMValueRef)val);
 }
@@ -1843,8 +1853,14 @@ LLVMValueKind __llvm_get_value_kind(void *val) {
   return LLVMGetValueKind((LLVMValueRef)val);
 }
 
-void *__llvm_get_value_name2(void *val, size_t *length) {
-  return (char *)LLVMGetValueName2((LLVMValueRef)val, length);
+// void *__llvm_get_value_name2(void *val, size_t *length) {
+//   return (char *)LLVMGetValueName2((LLVMValueRef)val, length);
+// }
+
+TupleCStrUInt64 *__llvm_get_value_name2(void *val, TupleCStrUInt64 *input) {
+  const char *s = LLVMGetValueName2((LLVMValueRef)val, &(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
 void __llvm_set_value_name2(void *val, void *name, size_t name_len) {

@@ -101,13 +101,29 @@ impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
 // ============================================
 // CallableValue
 // ============================================
-// pub struct CallableValue {
-//   either_value: Either[FunctionValue, PointerValue]
-// }
-//
-// pub impl AsValueRef for CallableValue with as_value_ref(self: CallableValue) -> @unsafe.LLVMValueRef {
-//   match self.either_value {
-//     Left(f) => f.as_value_ref()
-//     Right(p) => p.as_value_ref()
-//   }
-// }
+pub struct CallableValue {
+  either_value: Either[FunctionValue, PointerValue]
+}
+
+pub fn CallableValue::as_value_ref(self: CallableValue) -> @unsafe.LLVMValueRef {
+  match self.either_value {
+    Left(f) => f.as_value_ref()
+    Right(p) => p.as_value_ref()
+  }
+}
+
+pub fn CallableValue::fromf(f: FunctionValue) -> CallableValue {
+  CallableValue::{
+    either_value: Left(f)
+  }
+}
+
+pub fn CallableValue::fromp(p: PointerValue) -> CallableValue {
+  CallableValue::{
+    either_value: Right(p)
+  }
+}
+
+pub impl AsValueRef for CallableValue with as_value_ref(self: CallableValue) -> @unsafe.LLVMValueRef {
+  self.as_value_ref()
+}

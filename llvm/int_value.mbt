@@ -34,16 +34,48 @@ pub fn IntValue::set_name(self: IntValue, name: String) -> Unit {
 }
 
 ///| Gets the type of an `IntValue`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_val = i32_type.const_int(42);
+/// inspect!(i32_val.get_type(), content="i32");
+/// ```
 pub fn IntValue::get_type(self: IntValue) -> IntType {
   IntType::new(self.value.get_type().as_type_ref())
 }
 
 ///| Returns whether or not the `IntValue` is null.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_val = i32_type.const_int(42);
+/// assert_false!(i32_val.is_null());
+/// ```
 pub fn IntValue::is_null(self: IntValue) -> Bool {
   self.value.is_null()
 }
 
 ///| Returns whether or not the `IntValue` is undefined.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i32_val = i32_type.const_int(42);
+/// let undef_v = i32_type.get_undef();
+/// let poison = i32_type.get_poison();
+///
+/// assert_false!(i32_val.is_null());
+/// assert_true!(undef_v.is_undef());
+/// assert_true!(poison.is_undef());
+/// ```
 pub fn IntValue::is_undef(self: IntValue) -> Bool {
   self.value.is_undef()
 }
@@ -55,18 +87,45 @@ pub fn IntValue::as_instruction(self: IntValue) -> InstructionValue? {
 }
 
 ///| Returns the not of the constant `IntValue`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// inspect!(forty_two.const_not(), content="i32 -43");
+/// ```
 pub fn IntValue::const_not(self: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_not(self.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the negation of the constant `IntValue`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// inspect!(forty_two.const_neg(), content="i32 -42");
+/// ```
 pub fn IntValue::const_neg(self: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_neg(self.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the negation of the constant `IntValue` with NSW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// inspect!(forty_two.const_nsg_neg(), content="i32 -42");
+/// ```
 pub fn IntValue::const_nsw_neg(self: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nsw_neg(self.as_value_ref())
   IntValue::new(value_ref)
@@ -79,59 +138,150 @@ pub fn IntValue::const_nsw_neg(self: IntValue) -> IntValue {
 // }
 
 ///| Returns the addition of two constant `IntValue`s.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_add(thirty_tri), content="i32 75");
+/// ```
 pub fn IntValue::const_add(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_add(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the addition of two constant `IntValue`s with NSW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nsw_add(thirty_tri), content="i32 75");
+/// ```
 pub fn IntValue::const_nsw_add(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nsw_add(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the addition of two constant `IntValue`s with NUW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nuw_add(thirty_tri), content="i32 75");
+/// ```
 pub fn IntValue::const_nuw_add(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nuw_add(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the subtraction of two constant `IntValue`s.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_sub(thirty_tri), content="i32 9");
+/// ```
 pub fn IntValue::const_sub(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_sub(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the subtraction of two constant `IntValue`s with NSW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nsw_sub(thirty_tri), content="i32 9");
+/// ```
 pub fn IntValue::const_nsw_sub(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nsw_sub(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the subtraction of two constant `IntValue`s with NUW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nuw_sub(thirty_tri), content="i32 9");
+/// ```
 pub fn IntValue::const_nuw_sub(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nuw_sub(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the multiplication of two constant `IntValue`s.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_mul(thirty_tri), content="i32 1386");
+/// ```
 pub fn IntValue::const_mul(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_mul(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the multiplication of two constant `IntValue`s with NSW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nsw_mul(thirty_tri), content="i32 1386");
+/// ```
 pub fn IntValue::const_nsw_mul(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nsw_mul(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
 ///| Returns the multiplication of two constant `IntValue`s with NUW flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_nuw_mul(thirty_tri), content="i32 1386");
+/// ```
 pub fn IntValue::const_nuw_mul(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_nuw_mul(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
 }
 
+// LLVM-19 didn't provide the following
 // pub fn IntValue::const_and(self: IntValue, rhs: IntValue) -> IntValue {
 //   let value_ref = @unsafe.llvm_const_and(self.as_value_ref(), rhs.as_value_ref())
 //   IntValue::new(value_ref)
@@ -143,6 +293,16 @@ pub fn IntValue::const_nuw_mul(self: IntValue, rhs: IntValue) -> IntValue {
 // }
 
 ///| Returns the XOR of two constant `IntValue`s.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let forty_two = i32_type.const_int(42);
+/// let thirty_tri = i32_type.const_int(33);
+/// inspect!(forty_two.const_xor(thirty_tri), content="i32 11");
+/// ```
 pub fn IntValue::const_xor(self: IntValue, rhs: IntValue) -> IntValue {
   let value_ref = @unsafe.llvm_const_xor(self.as_value_ref(), rhs.as_value_ref())
   IntValue::new(value_ref)
@@ -158,16 +318,31 @@ pub fn IntValue::const_to_pointer(self: IntValue, ptr_type: PointerType) -> Poin
   PointerValue::new(@unsafe.llvm_const_int_to_ptr(self.as_value_ref(), ptr_type.as_type_ref()))
 }
 
+///| Returns the truncation of a constant `IntValue` to another `IntType`.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let i16_type = context.i16_type();
+/// let max_u16p2 = i32_type.const_int(0x10001);
+/// inspect!(max_u16p2.const_truncate(i16_type), content="i16 1");
+/// ```
 pub fn IntValue::const_truncate(self: IntValue, int_type: IntType) -> IntValue {
   IntValue::new(@unsafe.llvm_const_trunc(self.as_value_ref(), int_type.as_type_ref()))
 }
+
 pub fn IntValue::const_truncate_or_bit_cast(self: IntValue, int_type: IntType) -> IntValue {
   IntValue::new(@unsafe.llvm_const_trunc_or_bit_cast(self.as_value_ref(), int_type.as_type_ref()))
 }
+
 pub fn IntValue::const_bit_cast(self: IntValue, int_tyep: IntType) -> IntValue {
   IntValue::new(@unsafe.llvm_const_bit_cast(self.as_value_ref(), int_tyep.as_type_ref()))
 }
-// const_int_compare
+
+// llvm-19 didn't provide LLVMConstICmp
+// pub fn IntValue::const_int_compare
 
 ///| Determines whether or not an `IntValue` is an `llvm::Constant`.
 ///
@@ -199,7 +374,7 @@ pub fn IntValue::is_const(self: IntValue) -> Bool {
 /// assert_true!(i64_val.is_constant_int());
 /// ```
 pub fn IntValue::is_constant_int(self: IntValue) -> Bool {
-  @unsafe.llvm_isa_constant_int(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_constant_int(self.as_value_ref()).is_null() |> not
 }
 
 ///| Obtains a constant `IntValue`'s zero extended value.
