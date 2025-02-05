@@ -21,7 +21,7 @@ pub fn FunctionType::as_type_ref(self: FunctionType) -> @unsafe.LLVMTypeRef {
 
 ///| Creates a `PointerType` with this `FunctionType` for its element type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -36,7 +36,7 @@ pub fn FunctionType::ptr_type(self: FunctionType, address_space: AddressSpace) -
 
 ///| Determines whether or not a `FunctionType` is a variadic function.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -68,7 +68,7 @@ pub fn FunctionType::get_param_types(self: FunctionType) -> Array[BasicTypeEnum]
 
 ///| Counts the number of param types this `FunctionType` has.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -85,13 +85,13 @@ pub fn FunctionType::count_param_types(self: FunctionType) -> UInt {
 // REVIEW: Seems it always return false
 /// Gets whether or not this `FunctionType` is sized or not.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
-/// inspect!(fn_type.is_sized(), content="false")
+/// assert_false!(fn_type.is_sized())
 /// ```
 pub fn FunctionType::is_sized(self: FunctionType) -> Bool {
   self.ty.is_sized()
@@ -99,14 +99,14 @@ pub fn FunctionType::is_sized(self: FunctionType) -> Bool {
 
 ///| Gets a reference to the `Context` this `FunctionType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_context = fn_type.get_context();
-/// assert_eq!(fn_context, context)
+/// assert_true!(fn_context == context)
 /// ```
 pub fn FunctionType::get_context(self: FunctionType) -> Context {
   self.ty.get_context()
@@ -114,7 +114,7 @@ pub fn FunctionType::get_context(self: FunctionType) -> Context {
 
 ///| Gets the return type of this `FunctionType`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();

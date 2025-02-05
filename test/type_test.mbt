@@ -1,13 +1,4 @@
-// test "Basic type and Basic value" {
-//   let context = @llvm.Context::create()
-//
-//   let void_ty = context.void_type()
-//   inspect!(void_ty, content="void")
-//
-//   context.drop()
-// }
-
-test "integer type" {
+test "Integer Type Test" {
   let context = @llvm.Context::create()
 
   let bool_ty = context.bool_type()
@@ -179,7 +170,7 @@ test "integer type" {
 }
 
 // TODO: test `fn_type`, `const_array`, `const_float_from_string`.
-test "floating-point type" {
+test "Floating-point Type Test" {
   let context = @llvm.Context::create()
 
   let half_ty = context.f16_type()
@@ -342,7 +333,7 @@ test "floating-point type" {
   context.drop()
 }
 
-test "void type" {
+test "Void Type Test" {
   let context = @llvm.Context::create()
 
   let void_ty = context.void_type()
@@ -362,7 +353,7 @@ test "void type" {
   context.drop()
 }
 
-test "struct type" {
+test "Struct Type Test" {
   let context = @llvm.Context::create()
 
   let i32_ty = context.i32_type()
@@ -455,6 +446,64 @@ test "struct type" {
   inspect!(struct_ty.get_field_types(), content="[i32, i64]")
   inspect!(opaque_struct_ty.get_field_types(), content="[i64, double]")
   inspect!(opaque_struct_ty.get_undef(), content="%foo undef")
+
+  context.drop()
+}
+
+test "Function Type Test" {
+  let context = @llvm.Context::create()
+
+  let i32_ty = context.i32_type()
+  let f32_ty = context.f32_type()
+  let f64_ty = context.f64_type()
+
+  // let foo = i32_ty.fn_type([])
+  // let bar = i32_ty.fn_type([i32_ty])
+  // let baz = i32_ty.fn_type([i32_ty, i32_ty])
+  let foo = i32_ty.fn_type_unsafe([])
+  let bar = f32_ty.fn_type_unsafe([i32_ty.as_type_ref()])
+  let baz = f64_ty.fn_type_unsafe([i32_ty.as_type_ref(), i32_ty.as_type_ref()])
+
+  // print
+  inspect!(foo, content ="i32 ()")
+  inspect!(bar, content = "float (i32)")
+  inspect!(baz, content = "double (i32, i32)")
+
+  // is_var_arg
+  assert_false!(foo.is_var_arg())
+  assert_false!(bar.is_var_arg())
+  assert_false!(baz.is_var_arg())
+
+  // get_param_types
+  // inspect!(foo.get_param_types(), content="[]")
+  // inspect!(bar.get_param_types(), content="[i32]")
+  // inspect!(baz.get_param_types(), content="[i32, i32]")
+
+  // ptr_type
+  let addr_space = @llvm.AddressSpace::default()
+  inspect!(foo.ptr_type(addr_space), content="ptr")
+  inspect!(bar.ptr_type(addr_space), content="ptr")
+  inspect!(baz.ptr_type(addr_space), content="ptr")
+
+  // count_param_types
+  assert_eq!(foo.count_param_types(), 0)
+  assert_eq!(bar.count_param_types(), 1)
+  assert_eq!(baz.count_param_types(), 2)
+
+  // is_sized
+  assert_false!(foo.is_sized())
+  assert_false!(bar.is_sized())
+  assert_false!(baz.is_sized())
+
+  // get_context
+  assert_true!(foo.get_context() == context)
+  assert_true!(bar.get_context() == context)
+  assert_true!(baz.get_context() == context)
+
+  // get_return_type
+  inspect!(foo.get_return_type().unwrap(), content="i32")
+  inspect!(bar.get_return_type().unwrap(), content="float")
+  inspect!(baz.get_return_type().unwrap(), content="double")
 
   context.drop()
 }
