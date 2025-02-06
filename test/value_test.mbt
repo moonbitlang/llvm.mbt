@@ -77,8 +77,7 @@ test "Floating-Point Value Test" {
   let context = @llvm.Context::create()
   let f64_ty = context.f64_type()
   let one = f64_ty.const_float(1.0)
-  // let undef = f64_ty.get_undef()
-  // let poison = f64_ty.get_poison()
+  let undef = f64_ty.get_undef()
 
   // print
   inspect!(one, content="double 1.000000e+00")
@@ -87,4 +86,78 @@ test "Floating-Point Value Test" {
 
   // get_type
   inspect!(one.get_type(), content="double")
+
+  // is_null
+  assert_false!(one.is_null())
+
+  // is_undef
+  assert_false!(one.is_undef())
+  assert_true!(undef.is_undef())
+
+  // get_constant
+  inspect!(one.get_constant(), content="Some((1, false))")
+
+  context.drop()
+}
+
+test "Function Value Test" {
+
+  let context = @llvm.Context::create()
+  let llvm_module = context.create_module("demo")
+
+  let bool_ty = context.bool_type()
+  let i32_ty = context.i32_type()
+  let f64_ty = context.f64_type()
+
+  let foo_ty = i32_ty.fn_type_unsafe([
+    f64_ty.as_type_ref(), bool_ty.as_type_ref()])
+  let foo_val = llvm_module.add_function("foo", foo_ty)
+
+  // get_linkage
+  inspect!(foo_val.get_linkage(), content="External")
+
+  // set_linkage
+  foo_val.set_linkage(@llvm.Linkage::Internal)
+  inspect!(foo_val.get_linkage(), content="Internal")
+  foo_val.set_linkage(@llvm.Linkage::External)
+
+  // is_null
+  assert_false!(foo_val.is_null())
+
+  // get_first param and get_last_param
+  inspect!(foo_val.get_first_param(), content="Some(double %0)")
+  inspect!(foo_val.get_last_param(), content="Some(i1 %1)")
+
+  // get_nth_param
+  inspect!(foo_val.get_nth_param(0), content="Some(double %0)")
+  inspect!(foo_val.get_nth_param(1), content="Some(i1 %1)")
+  inspect!(foo_val.get_nth_param(2), content="None")
+
+  // count_params
+  assert_eq!(foo_val.count_params(), 2)
+
+  // get_params
+  inspect!(foo_val.get_params(), content = "[double %0, i1 %1]")
+
+  // get_name
+  inspect!(foo_val.get_name(), content="foo")
+
+  // get_type
+  inspect!(foo_val.get_type(), content="ptr")
+
+  // Attributes
+  let string_attribute = context.create_string_attribute("my_key", "my_val");
+  let enum_attribute = context.create_enum_attribute(1, 1);
+  let attr_ret = @llvm.AttributeLoc::Return;
+  foo_val.add_attribute(attr_ret, string_attribute);
+  foo_val.add_attribute(attr_ret, enum_attribute);
+
+  // count_attributes
+  assert_eq!(foo_val.count_attributes(attr_ret), 2)
+
+  // TODO: Test Attributes
+  // TODO: Test BasicBlocks
+
+  llvm_module.drop()
+  context.drop()
 }

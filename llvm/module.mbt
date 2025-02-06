@@ -609,6 +609,10 @@ pub fn Module::set_source_filename(self: Module, name: String) -> Unit {
 //   @unsafe.llvm_get_module_debug_metadata_version(self.module_ref)
 // }
 
+pub fn Module::drop(self: Module) -> Unit {
+  @unsafe.llvm_dispose_module(self.module_ref)
+}
+
 ///| Dumps the `Module` to stderr.
 ///
 /// It's equivalent to `Module::dump`.

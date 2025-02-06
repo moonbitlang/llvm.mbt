@@ -1,7 +1,7 @@
 //=========================================================
 // AggregateValueEnum
 //=========================================================
-pub enum AggregateValueEnum {
+pub(all) enum AggregateValueEnum {
   ArrayValue(ArrayValue);
   StructValue(StructValue);
 }
@@ -67,7 +67,7 @@ pub impl Show for AggregateValueEnum with output(self: AggregateValueEnum, logge
 //=========================================================
 // AnyValueEnum
 //=========================================================
-pub enum AnyValueEnum {
+pub(all) enum AnyValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
   FloatValue(FloatValue);
@@ -161,7 +161,7 @@ pub impl Show for AnyValueEnum with output(self: AnyValueEnum, logger: &Logger) 
 //=========================================================
 // BasicValue
 //=========================================================
-pub enum BasicValueEnum {
+pub(all) enum BasicValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
   FloatValue(FloatValue);
@@ -355,7 +355,7 @@ pub impl Show for BasicValueEnum with output(self: BasicValueEnum, logger: &Logg
 //=========================================================
 // BasicMetadataValueEnum
 //=========================================================
-pub enum BasicMetadataValueEnum {
+pub(all) enum BasicMetadataValueEnum {
   ArrayValue(ArrayValue);
   IntValue(IntValue);
   FloatValue(FloatValue);
@@ -520,7 +520,7 @@ pub impl Show for BasicMetadataValueEnum with output(self: BasicMetadataValueEnu
 //=========================================================
 // AnyTypeEnum
 //=========================================================
-pub enum AnyTypeEnum {
+pub(all) enum AnyTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
   FunctionType(FunctionType);
@@ -745,7 +745,7 @@ pub impl Show for AnyTypeEnum with output(self: AnyTypeEnum, logger: &Logger) ->
 //=========================================================
 // BasicType
 //=========================================================
-pub enum BasicTypeEnum {
+pub(all) enum BasicTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
   IntType(IntType);
@@ -821,7 +821,7 @@ pub impl Show for BasicTypeEnum with output(self: BasicTypeEnum, logger: &Logger
 //=========================================================
 // BasicMetadataTypeEnum
 //=========================================================
-pub enum BasicMetadataTypeEnum {
+pub(all) enum BasicMetadataTypeEnum {
   ArrayType(ArrayType);
   FloatType(FloatType);
   IntType(IntType);

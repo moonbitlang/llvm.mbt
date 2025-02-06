@@ -1069,6 +1069,11 @@ struct UnsafedArrayUInt64_t {
   uint64_t data[0];
 };
 
+typedef struct RefLLVMBool {
+  struct moonbit_object header;
+  int32_t data;
+} RefLLVMBool;
+
 typedef struct TupleCStrUInt64 {
   struct moonbit_object header;
   void *$0;
@@ -1094,6 +1099,8 @@ LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 LLVMBool __llvm_comdat_is_null(void *comdat) { return comdat == NULL ? 1 : 0; }
 
 void *__llvm_new_null_type_ref() { return (LLVMTypeRef)NULL; }
+
+void *__llvm_new_null_value_ref() { return (LLVMValueRef)NULL; }
 
 // ty1: LLVMTypeRef, ty2: LLVMTypeRef
 LLVMBool __llvm_same_type_ref(void *ty1, void *ty2) {
@@ -1230,14 +1237,12 @@ void *__llvm_get_type_attribute_value(void *a) {
 //       llvm_upper_words);
 // }
 
-// void *__llvm_create_string_attribute(void *context, void *k, unsigned
-// k_length,
-//                                      void *v, unsigned v_length) {
-//   return (LLVMAttributeRef)LLVMCreateStringAttribute((LLVMContextRef)context,
-//                                                      (const char *)k,
-//                                                      k_length, (const char
-//                                                      *)v, v_length);
-// }
+void *__llvm_create_string_attribute(void *context, void *k, unsigned k_length,
+                                     void *v, unsigned v_length) {
+  return (LLVMAttributeRef)LLVMCreateStringAttribute((LLVMContextRef)context,
+                                                     (const char *)k, k_length,
+                                                     (const char *)v, v_length);
+}
 
 void *__llvm_get_string_attribute_kind(void *a, unsigned *length) {
   return (char *)LLVMGetStringAttributeKind((LLVMAttributeRef)a, length);
@@ -2362,8 +2367,10 @@ long long __llvm_const_int_get_s_ext_value(void *constant_val) {
   return LLVMConstIntGetSExtValue((LLVMValueRef)constant_val);
 }
 
-double __llvm_const_real_get_double(void *constant_val, LLVMBool *loses_info) {
-  return LLVMConstRealGetDouble((LLVMValueRef)constant_val, loses_info);
+double __llvm_const_real_get_double(void *constant_val,
+                                    RefLLVMBool *loses_info) {
+  return LLVMConstRealGetDouble((LLVMValueRef)constant_val,
+                                &(loses_info->data));
 }
 
 void *__llvm_const_string_in_context(void *context, void *str, unsigned length,
@@ -2980,8 +2987,10 @@ unsigned __llvm_count_params(void *fn) {
   return LLVMCountParams((LLVMValueRef)fn);
 }
 
-void __llvm_get_params(void *fn, void *params) {
-  LLVMGetParams((LLVMValueRef)fn, (LLVMValueRef *)params);
+ArrayLLVMValueRef *__llvm_get_params(void *fn, ArrayLLVMValueRef *param_arr) {
+  LLVMValueRef *params = (LLVMValueRef *)param_arr->$0->data;
+  LLVMGetParams((LLVMValueRef)fn, params);
+  return param_arr;
 }
 
 void *__llvm_get_param(void *fn, unsigned index) {

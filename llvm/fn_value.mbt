@@ -24,22 +24,79 @@ pub fn FunctionValue::as_value_ref(self: FunctionValue) -> @unsafe.LLVMValueRef 
 }
 
 ///| Get the linkage of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_linkage(), content="External")
+/// ```
 pub fn FunctionValue::get_linkage(self: FunctionValue) -> Linkage {
   let link = @unsafe.llvm_get_linkage(self.as_value_ref())
   Linkage::from(link)
 }
 
 ///| Set the linkage of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_value = lmodule.add_function(
+///   "foo", fn_type,
+///   linkage=Some(@llvm.Linkage::Common)
+/// );
+///
+/// inspect!(fn_value.get_linkage(), content="Common")
+/// fn_value.set_linkage(Private);
+/// inspect!(fn_value.get_linkage(), content="Private")
+/// ```
 pub fn FunctionValue::set_linkage(self: FunctionValue, linkage: Linkage) -> Unit {
   @unsafe.llvm_set_linkage(self.as_value_ref(), linkage.into())
 }
 
 ///| Determines whether or not this `FunctionValue` is null.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// assert_false!(fn_value.is_null());
+/// ```
 pub fn FunctionValue::is_null(self: FunctionValue) -> Bool {
   self.value.is_null()
 }
 
 ///| Determines whether or not this `FunctionValue` is undefined.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// assert_false!(fn_value.is_undef());
+/// ```
 pub fn FunctionValue::is_undef(self: FunctionValue) -> Bool {
   self.value.is_undef()
 }
@@ -67,6 +124,20 @@ pub fn FunctionValue::get_previous_function(self: FunctionValue) -> FunctionValu
 }
 
 ///| Get the first parameter of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_first_param(), content="Some(i32 %0)")
+/// ```
 pub fn FunctionValue::get_first_param(self: FunctionValue) -> BasicValueEnum?{
   let param = @unsafe.llvm_get_first_param(self.as_value_ref())
 
@@ -78,6 +149,20 @@ pub fn FunctionValue::get_first_param(self: FunctionValue) -> BasicValueEnum?{
 }
 
 ///| Get the last parameter of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_last_param(), content="Some(double %1)")
+/// ```
 pub fn FunctionValue::get_last_param(self: FunctionValue) -> BasicValueEnum? {
   let param = @unsafe.llvm_get_last_param(self.as_value_ref())
 
@@ -103,6 +188,21 @@ pub fn FunctionValue::get_last_basic_block(self: FunctionValue) -> BasicBlock? {
 }
 
 ///| Get the n-th parameter of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_nth_param(0), content="Some(double %1)")
+/// inspect!(fn_value.get_nth_param(1), content="Some(i32 %1)")
+/// ```
 pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValueEnum? {
   let cnt = self.count_params()
 
@@ -114,6 +214,20 @@ pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValu
 }
 
 ///| Returns the number of parameters this `FunctionValue` has.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// assert_eq!(fn_value.count_params(), 2)
+/// ```
 pub fn FunctionValue::count_params(self: FunctionValue) -> UInt {
   @unsafe.llvm_count_params(self.as_value_ref())
 }
@@ -125,12 +239,40 @@ pub fn FunctionValue::get_basic_blocks(self: FunctionValue) -> Array[BasicBlock]
 }
 
 ///| Get parameters of the function.
+///
+/// ## Example (Not Tested)
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_params(), [double %0, i32 %1])
+/// ```
 pub fn FunctionValue::get_params(self: FunctionValue) -> Array[BasicValueEnum] {
   let param_refs : Array[@unsafe.LLVMValueRef] = @unsafe.llvm_get_params(self.as_value_ref())
   param_refs.map(fn (param_ref) { BasicValueEnum::new(param_ref) })
 }
 
 ///| Get the name of the function.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let f64_ty = context.f64_type();
+/// let void_ty = context.void_type();
+/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_value = lmodule.add_function("foo", fn_type);
+///
+/// inspect!(fn_value.get_name(), contend="foo")
+/// ```
 pub fn FunctionValue::get_name(self: FunctionValue) -> String {
   self.value.get_name()
 }
@@ -144,7 +286,16 @@ pub fn FunctionValue::get_name(self: FunctionValue) -> String {
 // }
 
 ///| Free the function.
+///
+/// It's equivalent to `FunctionValue::drop`.
 pub fn FunctionValue::delete(self: FunctionValue) -> Unit {
+  @unsafe.llvm_delete_function(self.as_value_ref())
+}
+
+///| Free the function.
+///
+/// It's equivalent to `FunctionValue::delete`.
+pub fn FunctionValue::drop(self: FunctionValue) -> Unit {
   @unsafe.llvm_delete_function(self.as_value_ref())
 }
 
@@ -192,6 +343,10 @@ pub fn FunctionValue::get_gc(self: FunctionValue) -> String {
   @unsafe.llvm_get_gc(self.as_value_ref())
 }
 
+pub fn FunctionValue::set_gc(self: FunctionValue, gc: String) -> Unit {
+  @unsafe.llvm_set_gc(self.as_value_ref(), gc)
+}
+
 ///| Replace all uses of a `FunctionValue` with another `FunctionValue`.
 pub fn FunctionValue::replace_all_uses_with(
   self: FunctionValue, new_value: FunctionValue
@@ -223,7 +378,7 @@ pub fn FunctionValue::add_attribute(
 
 ///| Counts the number of `Attribute`s belonging to the specified location in this `FunctionValue`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -261,6 +416,9 @@ pub fn FunctionValue::count_attributes(self: FunctionValue, loc: AttributeLoc) -
 ///
 /// assert_eq!(fn_value.attributes(AttributeLoc::Return), [string_attribute, enum_attribute]);
 /// ```
+///
+/// @alert Bug "This Function will cause link error. To be Fixed."
+///
 pub fn FunctionValue::attributes(
   self: FunctionValue, loc: AttributeLoc
 ) -> Array[Attribute] {

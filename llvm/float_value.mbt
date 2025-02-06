@@ -17,6 +17,7 @@ pub fn FloatValue::new(value_ref: @unsafe.LLVMValueRef) -> FloatValue {
   }
 }
 
+// FIXME: Not a good example
 ///| Gets name of the `FloatValue`.
 /// If the value is a constant, this will return an empty string.
 ///
@@ -34,6 +35,7 @@ pub fn FloatValue::get_name(self: FloatValue) -> String {
   self.value.get_name()
 }
 
+// FIXME: Not a good example
 ///| Set name of the `FloatValue`.
 ///
 /// ## Example (Not Tested)
@@ -51,7 +53,7 @@ pub fn FloatValue::set_name(self: FloatValue, name: String) -> Unit {
 
 ///| Gets the type of the `FloatValue`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -70,7 +72,7 @@ pub fn FloatValue::is_null(self: FloatValue) -> Bool {
 
 ///| Returns whether or not the `FloatValue` is undefined.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -95,7 +97,7 @@ pub fn FloatValue::as_instruction(self: FloatValue) -> InstructionValue? {
 
 ///| Determines whether or not a `FloatValue` is a constant.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -107,6 +109,7 @@ pub fn FloatValue::is_const(self: FloatValue) -> Bool {
   self.value.is_const()
 }
 
+// TODO: need to check when lossy info is true
 ///| Obtains a constant `FloatValue`'s value and whether or not it lost info.
 ///
 /// ## Example

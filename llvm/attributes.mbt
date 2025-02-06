@@ -171,7 +171,7 @@ pub fn Attribute::get_string_kind_id(self: Attribute) -> String {
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
-/// assert_eq!(string_attribute.get_string_value().to_str(), Ok("my_val"));
+/// assert_eq!(string_attribute.get_string_value(), "my_val");
 /// ```
 pub fn Attribute::get_string_value(self: Attribute) -> String {
   if not(self.is_string()) {
@@ -210,8 +210,28 @@ pub fn Attribute::get_type_value(self: Attribute) -> AnyTypeEnum {
   AnyTypeEnum::new(@unsafe.llvm_get_type_attribute_value(self.as_attr_ref()))
 }
 
+pub fn Attribute::to_string(self: Attribute) -> String {
+  if self.is_string() {
+    "string_attribute (\{self.get_string_value()})"
+  } else if self.is_enum() {
+    "enum_attribute (\{self.get_enum_value()})"
+  } else if self.is_type() {
+    "type_attribute (\{self.get_type_value()})"
+  } else {
+    "Unkown attribute (Maybe error)"
+  }
+}
+
+pub impl Show for Attribute with to_string(self: Attribute) {
+  self.to_string()
+}
+
+pub impl Show for Attribute with output(self: Attribute, logger: &Logger) {
+  logger.write_string(self.to_string())
+}
+
 ///| An `AttributeLoc` determines where on a function an attribute is assigned to.
-pub enum AttributeLoc {
+pub(all) enum AttributeLoc {
   /// Assign to the `FunctionValue`'s return type.
   Return
 
@@ -267,3 +287,4 @@ pub fn AttributeLoc::new(i: Int) -> AttributeLoc {
     _ => abort("Invalid attribute location")
   }
 }
+

@@ -1591,8 +1591,8 @@ extern "C" fn __llvm_get_struct_element_types(
 pub fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] {
   let field_count = llvm_count_struct_element_types(struct_ty)
   let null_ref = llvm_new_null_type_ref()
-  // FIXME: Use `Array::make` once compiler bug is fixed
-  let null_refs = LLVMTypeRef::make(field_count.reinterpret_as_int(), null_ref)
+  // TODO: Use `Array::make` once compiler bug is fixed
+  let null_refs = LLVMTypeRef::make_array(field_count.reinterpret_as_int(), null_ref)
   __llvm_get_struct_element_types(struct_ty, field_count, null_refs)
 }
 
@@ -3389,7 +3389,10 @@ pub fn LLVMValueRef::const_int_get_s_ext_value(self: LLVMValueRef) -> Int64 {
 /// losesInfo indicates if some precision was lost in the conversion.
 /// 
 /// - see llvm::ConstantFP::getDoubleValue
-extern "C" fn __llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Double, LLVMBool) = "__llvm_const_real_get_double"
+extern "C" fn __llvm_const_real_get_double(
+  constant_val: LLVMValueRef,
+  bool_ref: Ref[LLVMBool]
+) -> Double = "__llvm_const_real_get_double"
 
 ///| Obtain the double value for an floating point constant value.
 ///
@@ -3397,8 +3400,9 @@ extern "C" fn __llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Doubl
 /// 
 /// - see llvm::ConstantFP::getDoubleValue
 pub fn llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Double, Bool) {
-  let (v, loses_info) = __llvm_const_real_get_double(constant_val)
-  (v, loses_info.to_moonbit_bool())
+  let loses_info : Ref[LLVMBool] = Ref::new(0)
+  let v = __llvm_const_real_get_double(constant_val, loses_info)
+  (v, loses_info.val.to_moonbit_bool())
 }
 
 ///| Create a ConstantDataSequential and initialize it with a string.
@@ -4537,8 +4541,26 @@ pub extern "C" fn llvm_count_params(func: LLVMValueRef) -> UInt = "__llvm_count_
 /// 
 /// - see llvm::Function::arg_begin()
 /// 
-// FIXME: Not implemented
-pub extern "C" fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_params"
+extern "C" fn __llvm_get_params(func: LLVMValueRef, params: Array[LLVMValueRef]) -> Array[LLVMValueRef] = "__llvm_get_params"
+
+///| Obtain the parameters in a function.
+/// 
+/// The takes a pointer to a pre-allocated array of LLVMValueRef that is
+/// at least LLVMCountParams() long. This array will be filled with
+/// LLVMValueRef instances which correspond to the parameters the
+/// function receives. Each LLVMValueRef corresponds to a llvm::Argument
+/// instance.
+/// 
+/// - see llvm::Function::arg_begin()
+/// 
+pub fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] {
+  let count = llvm_count_params(func);
+  let null_ref = LLVMValueRef::null();
+  // TODO: use `Array::make` once compiler bug is fixed
+  let params = LLVMValueRef::make_array(count.reinterpret_as_int(), null_ref);
+  __llvm_get_params(func, params)
+}
+
 pub fn LLVMValueRef::get_params(self: LLVMValueRef) -> Array[LLVMValueRef] {
   llvm_get_params(self)
 }

@@ -1,4 +1,16 @@
+fn dummy_test() -> Unit!Error {
+  let context = @llvm.Context::create()
+
+  let bool_ty = context.bool_type()
+  inspect!(bool_ty, content="i1")
+
+  context.drop()
+}
+
+
 test "Integer Type Test" {
+  dummy_test!()
+
   let context = @llvm.Context::create()
 
   let bool_ty = context.bool_type()

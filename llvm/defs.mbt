@@ -22,7 +22,21 @@ pub fn FastMathFlags::from(f: @unsafe.LLVMFastMathFlags) -> FastMathFlags {
   FastMathFlags(u)
 }
 
-pub enum IntPredicate {
+///| IntPredicate is used for integer comparisons.
+///
+/// # Items
+///
+/// - EQ : Equal.
+/// - NE : Not equal.
+/// - UGT : Unsigned greater than.
+/// - UGE : Unsigned greater than or equal.
+/// - ULT : Unsigned less than.
+/// - ULE : Unsigned less than or equal.
+/// - SGT : Signed greater than.
+/// - SGE : Signed greater than or equal.
+/// - SLT : Signed less than.
+/// - SLE : Signed less than or equal.
+pub(all) enum IntPredicate {
   // Equal
   EQ
 
@@ -54,6 +68,7 @@ pub enum IntPredicate {
   SLE
 } derive(Eq, Show, Hash)
 
+///| Convert From `@unsafe.LLVMIntPredicate` to `IntPredicate`
 pub fn IntPredicate::from(p: @unsafe.LLVMIntPredicate) -> IntPredicate {
   match p {
     @unsafe.LLVMIntEQ => EQ
@@ -69,6 +84,7 @@ pub fn IntPredicate::from(p: @unsafe.LLVMIntPredicate) -> IntPredicate {
   }
 }
 
+///| Convert From `IntPredicate` to `@unsafe.LLVMIntPredicate`
 pub fn IntPredicate::into(self: IntPredicate) -> @unsafe.LLVMIntPredicate {
   match self {
     EQ => @unsafe.LLVMIntEQ
@@ -84,7 +100,26 @@ pub fn IntPredicate::into(self: IntPredicate) -> @unsafe.LLVMIntPredicate {
   }
 }
 
-pub enum FloatPredicate {
+///| FloatPredicate is used for floating point comparisons.
+///
+/// # Items
+///
+/// - OEQ : Ordered and equal, returns true if `left` == `right` and neither are NaN.
+/// - OGT : Ordered and greater than, returns true if `left` > `right` and neither are NaN.
+/// - OGE : Ordered and greater than or equal, returns true if `left` >= `right` and neither are NaN.
+/// - OLT : Ordered and less than, returns true if `left` < `right` and neither are NaN.
+/// - OLE : Ordered and less than or equal, returns true if `left` <= `right` and neither are NaN.
+/// - ONE : Ordered and not equal, returns true if `left` != `right` and neither are NaN.
+/// - ORD : Ordered , returns true if neither value is NaN.
+/// - PredicateFalse : Always returns false.
+/// - PredicateTrue : Always returns true.
+/// - UEQ: Unordered or equal, returns true if `left` == `right` or either is NaN.
+/// - UGE: Unordered or greater than or equal, returns true if `left` >= `right` or either is NaN.
+/// - UGT: Unordered or greater than, returns true if `left` > `right` or either is NaN.
+/// - ULT: Unordered or less than, returns true if `left` < `right` or either is NaN.
+/// - ULE: Unordered or less than or equal, returns true if `left` <= `right` or either is NaN.
+/// - UNE: Unordered or not equal, returns true if `left` != `right` or either is NaN.
+pub(all) enum FloatPredicate {
   /// Returns true if `left` == `right` and neither are NaN
   OEQ
 
@@ -135,6 +170,7 @@ pub enum FloatPredicate {
   UNO
 } derive(Eq, Show, Hash)
 
+///| Convert From `@unsafe.LLVMRealPredicate` to `FloatPredicate`
 fn FloatPredicate::from(p: @unsafe.LLVMRealPredicate) -> FloatPredicate {
   match p {
     @unsafe.LLVMRealPredicateFalse => FloatPredicate::PredicateFalse
@@ -156,6 +192,7 @@ fn FloatPredicate::from(p: @unsafe.LLVMRealPredicate) -> FloatPredicate {
   }
 }
 
+///| Convert From `FloatPredicate` to `@unsafe.LLVMRealPredicate`
 fn FloatPredicate::into(self: FloatPredicate) -> @unsafe.LLVMRealPredicate {
   match self {
     FloatPredicate::PredicateFalse => @unsafe.LLVMRealPredicateFalse
@@ -178,7 +215,7 @@ fn FloatPredicate::into(self: FloatPredicate) -> @unsafe.LLVMRealPredicate {
 }
 
 
-pub enum InstructionOpcode {
+pub(all) enum InstructionOpcode {
     Add
     AddrSpaceCast
     Alloca
@@ -392,7 +429,7 @@ pub fn InstructionOpcode::into(self: InstructionOpcode) -> @unsafe.LLVMOpcode {
   }
 }
 
-pub enum AtomicOrdering {
+pub(all) enum AtomicOrdering {
   NotAtomic
 
   Unordered
@@ -432,7 +469,7 @@ pub fn AtomicOrdering::into(self: AtomicOrdering) -> @unsafe.LLVMAtomicOrdering 
   }
 }
 
-pub enum AtomicRMWBinOp {
+pub(all) enum AtomicRMWBinOp {
   /// Stores to memory and returns the prior value.
   Xchg
 
@@ -528,7 +565,7 @@ pub fn AtomicRMWBinOp::into(self: AtomicRMWBinOp) -> @unsafe.LLVMAtomicRMWBinOp 
   }
 }
 
-pub enum OptimizationLevel {
+pub(all) enum OptimizationLevel {
   None
   Less
   Default
@@ -546,7 +583,7 @@ pub fn OptimizationLevel::from_int(i: Int) -> OptimizationLevel {
   }
 }
 
-pub enum Linkage {
+pub(all) enum Linkage {
     Appending
     AvailableExternally
     Common
@@ -564,7 +601,7 @@ pub enum Linkage {
     Private
     WeakAny
     WeakODR
-}
+} derive(Show)
 
 pub fn Linkage::from(linkage: @unsafe.LLVMLinkage) -> Linkage {
   match linkage {
@@ -611,7 +648,7 @@ pub fn Linkage::into(self: Linkage) -> @unsafe.LLVMLinkage {
 }
 
 
-pub enum GlobalVisibility {
+pub(all) enum GlobalVisibility {
   Default
 
   Hidden
@@ -635,7 +672,7 @@ pub fn GlobalVisibility::into(self: GlobalVisibility) -> @unsafe.LLVMVisibility 
   }
 }
 
-pub enum ThreadLocalMode {
+pub(all) enum ThreadLocalMode {
   NotThreadLocal
 
   GeneralDynamic
@@ -667,7 +704,7 @@ pub fn ThreadLocalMode::into(self: ThreadLocalMode) -> @unsafe.LLVMThreadLocalMo
   }
 }
 
-pub enum UnnamedAddress {
+pub(all) enum UnnamedAddress {
   None
   Local
   Global
@@ -690,7 +727,7 @@ pub fn UnnamedAddress::into(self: UnnamedAddress) -> @unsafe.LLVMUnnamedAddr {
 }
 
 
-pub enum DLLStorageClass {
+pub(all) enum DLLStorageClass {
   Default
 
   DLLImport
@@ -714,7 +751,7 @@ pub fn DLLStorageClass::into(self: DLLStorageClass) -> @unsafe.LLVMDLLStorageCla
   }
 }
 
-pub enum InlineAsmDialect {
+pub(all) enum InlineAsmDialect {
   ATT
   Intel
 } derive(Eq, Show, Hash)
@@ -733,7 +770,7 @@ pub fn InlineAsmDialect::into(self: InlineAsmDialect) -> @unsafe.LLVMInlineAsmDi
   }
 }
 
-pub enum FlagBehavior {
+pub(all) enum FlagBehavior {
   Error
   Warning
   Require
@@ -764,7 +801,7 @@ pub fn FlagBehavior::into(self: FlagBehavior) -> @unsafe.LLVMModuleFlagBehavior 
   }
 }
 
-pub enum ComdatSelectionKind {
+pub(all) enum ComdatSelectionKind {
   /// The linker may choose any COMDAT.
   Any
 
