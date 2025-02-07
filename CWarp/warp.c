@@ -4303,16 +4303,18 @@ int __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed, void *dest_ty,
   return llvm_opcode_to_int(code);
 }
 
-void *__llvm_build_icmp(void *builder, LLVMIntPredicate op, void *lhs,
-                        void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildICmp((LLVMBuilderRef)builder, op,
+void *__llvm_build_icmp(void *builder, int op, void *lhs, void *rhs,
+                        void *name) {
+  LLVMIntPredicate real_op = llvm_int_predicate_from_int(op);
+  return (LLVMValueRef)LLVMBuildICmp((LLVMBuilderRef)builder, real_op,
                                      (LLVMValueRef)lhs, (LLVMValueRef)rhs,
                                      (const char *)name);
 }
 
-void *__llvm_build_fcmp(void *builder, LLVMRealPredicate op, void *lhs,
-                        void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFCmp((LLVMBuilderRef)builder, op,
+void *__llvm_build_fcmp(void *builder, int op, void *lhs, void *rhs,
+                        void *name) {
+  LLVMRealPredicate real_op = llvm_real_predicate_from_int(op);
+  return (LLVMValueRef)LLVMBuildFCmp((LLVMBuilderRef)builder, real_op,
                                      (LLVMValueRef)lhs, (LLVMValueRef)rhs,
                                      (const char *)name);
 }

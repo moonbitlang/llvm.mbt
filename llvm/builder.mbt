@@ -66,7 +66,7 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
 
 ///| Builds a function return instruction.
 /// It should be provided with `None` if the return type
-/// is void otherwise `Some(&value)` should be provided.
+/// is void otherwise `Some(value)` should be provided.
 ///
 /// ## Example (Not Tested)
 ///
@@ -82,10 +82,10 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
 /// let i32_arg = fn_value.get_first_param().unwrap();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_return?(val=Some(i32_arg)).unwrap();
+/// builder.build_return?(Some(i32_arg)).unwrap();
 /// ```
-pub fn Builder::build_return(
-  self: Builder, val~:&BasicValue? = None
+pub fn Builder::build_return[T: BasicValue](
+  self: Builder, val:T?
 ) -> InstructionValue!BuilderError {
   if self.get_positioned() == PositionState::NotSet {
     raise UnsetPosition
@@ -205,7 +205,7 @@ pub fn Builder::build_call(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(val=Some(ret_val)).unwrap();
+/// builder.build_return(Some(ret_val)).unwrap();
 /// ```
 pub fn Builder::build_direct_call(
   self: Builder, 
@@ -249,7 +249,7 @@ pub fn Builder::build_direct_call(
 ///     .unwrap()
 ///     .try_as_basic_value()
 ///     .unwrap_left();
-/// builder.build_return(val=Some(ret_val)).unwrap();
+/// builder.build_return(Some(ret_val)).unwrap();
 /// ```
 pub fn Builder::build_direct_call_with_operand_bundles(
   self: Builder,
@@ -294,7 +294,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(val=Some(ret_val)).unwrap();
+/// builder.build_return(Some(ret_val)).unwrap();
 /// ```
 ///
 pub fn Builder::build_indirect_call(
@@ -993,8 +993,8 @@ pub fn Builder::build_load(self: Builder, pointee_ty: &BasicType, ptr: PointerVa
 }
 
 ///| Build an `alloca` instruction, allocating memory on the stack.
-pub fn Builder::build_alloca(
-  self: Builder, ty: &BasicType, name: String
+pub fn Builder::build_alloca[T: BasicType](
+  self: Builder, ty: T, name: String
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1005,10 +1005,10 @@ pub fn Builder::build_alloca(
 }
 
 ///| Build an `alloca` instruction, allocating memory on the stack.
-pub fn Builder::build_array_alloca(
+pub fn Builder::build_array_alloca[T: BasicType, V: BasicValue](
   self: Builder,
-  ty: &BasicType,
-  size: &BasicValue,
+  ty: T,
+  size: V,
   name: String
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
@@ -1208,8 +1208,28 @@ pub fn Builder::insert_instruction(
   }
 }
 
+///| Build an unsigned integer division instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("udiv", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let res = builder.build_int_unsigned_div(lhs, rhs, "res").unwrap();
+/// inspect!(res, content="  %res = udiv i32 %0, %1");
+/// ```
 pub fn Builder::build_int_unsigned_div[T: IntMathValue](
-  self: Builder, lhs: T, rhs: T, name: String
+  self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1221,8 +1241,28 @@ pub fn Builder::build_int_unsigned_div[T: IntMathValue](
   T::new(value)
 }
 
+///| Build a signed integer division instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("sdiv", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let res = builder.build_int_signed_div(lhs, rhs, "res").unwrap();
+/// inspect!(res, content="  %res = sdiv i32 %0, %1");
+/// ```
 pub fn Builder::build_int_signed_div[T: IntMathValue](
-  self: Builder, lhs: T, rhs: T, name: String
+  self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1234,8 +1274,29 @@ pub fn Builder::build_int_signed_div[T: IntMathValue](
   T::new(value)
 }
 
+///| Build an signed integer division instruction with `exact` flag.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("sdiv", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let res = builder.build_int_exact_signed_div(
+///   lhs, rhs, "res").unwrap();
+/// inspect!(res, content="  %res = sdiv exact i32 %0, %1");
+/// ```
 pub fn Builder::build_int_exact_signed_div[T: IntMathValue](
-  self: Builder, lhs: T, rhs: T, name: String
+  self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1247,8 +1308,28 @@ pub fn Builder::build_int_exact_signed_div[T: IntMathValue](
   T::new(value)
 }
 
+///| Build an unsigned integer rem instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("urem", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let res = builder.build_int_unsigned_rem(lhs, rhs, "res").unwrap();
+/// inspect!(res, content="  %res = urem i32 %0, %1");
+/// ```
 pub fn Builder::build_int_unsigned_rem[T: IntMathValue](
-  self: Builder, lhs: T, rhs: T, name: String
+  self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1260,8 +1341,28 @@ pub fn Builder::build_int_unsigned_rem[T: IntMathValue](
   T::new(value)
 }
 
+///| Build a signed integer rem instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("srem", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let res = builder.build_int_signed_rem(lhs, rhs, "res").unwrap();
+/// inspect!(res, content="  %res = srem i32 %0, %1");
+/// ```
 pub fn Builder::build_int_signed_rem[T: IntMathValue](
-  self: Builder, lhs: T, rhs: T, name: String
+  self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1305,7 +1406,7 @@ pub fn Builder::build_address_space_cast(
 
 ///| Build BitCast instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1324,8 +1425,8 @@ pub fn Builder::build_address_space_cast(
 /// inspect!(res, content="  %res = bitcast i32 %0 to float");
 /// ```
 // REVIEW: Do we need to check bitwidth?
-pub fn Builder::build_bit_cast(
-  self: Builder, val:&BasicValue, ty:&BasicType, name~: String = ""
+pub fn Builder::build_bit_cast[BV: BasicValue, BT: BasicType](
+  self: Builder, val:BV, ty:BT, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1339,24 +1440,6 @@ pub fn Builder::build_bit_cast(
   BasicValueEnum::new(value)
 }
 
-///| Unsafe version of `build_bit_cast`, will deprecate once compiler bug fixed.
-pub fn Builder::build_bit_cast_unsafe(
-  self: Builder,
-  val_ref: @unsafe.LLVMValueRef,
-  ty_ref: @unsafe.LLVMTypeRef,
-  name~: String = ""
-) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
-    raise UnsetPosition
-  }
-
-  let builder_ref = self.as_builder_ref()
-  let value = @unsafe.llvm_build_bit_cast(builder_ref, val_ref, ty_ref, name)
-
-  BasicValueEnum::new(value)
-}
-
-
 // pub fn build_int_s_extend_or_bit_cast<T: IntMathValue<'ctx>>(
 // pub fn build_int_z_extend<T: IntMathValue<'ctx>>(
 // pub fn build_int_z_extend_or_bit_cast<T: IntMathValue<'ctx>>(
@@ -1365,7 +1448,7 @@ pub fn Builder::build_bit_cast_unsafe(
 
 ///| Builder floating point rem instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1408,7 +1491,7 @@ pub fn Builder::build_float_rem[T: FloatMathValue](
 
 ///| Builder floating point division instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1441,7 +1524,7 @@ pub fn Builder::build_float_div(
 
 ///| Build integer addition instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1474,7 +1557,7 @@ pub fn Builder::build_int_add[T: IntMathValue](
 
 ///| Build integer add instruction with NSW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1507,7 +1590,7 @@ pub fn Builder::build_int_nsw_add[T: IntMathValue](
 
 ///| Build integer add instruction with NUW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1540,7 +1623,7 @@ pub fn Builder::build_int_nuw_add[T: IntMathValue](
 
 ///| Builder floating point addition instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1573,7 +1656,7 @@ pub fn Builder::build_float_add[T: FloatMathValue](
 
 ///| Build integer XOR instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1606,7 +1689,7 @@ pub fn Builder::build_xor[T: IntMathValue](
 
 ///| Build integer AND instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1639,7 +1722,7 @@ pub fn Builder::build_and[T: IntMathValue](
 
 ///| Build integer OR instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1672,7 +1755,7 @@ pub fn Builder::build_or[T: IntMathValue](
 
 ///| Build integer Logical Left Shift instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1705,7 +1788,7 @@ pub fn Builder::build_left_shift[T: IntMathValue](
 
 ///| Build integer Logical Left Shift instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1748,7 +1831,7 @@ pub fn Builder::build_right_shift[T: IntMathValue](
 
 ///| Build integer sub instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1781,7 +1864,7 @@ pub fn Builder::build_int_sub[T: IntMathValue](
 
 ///| Build integer sub instruction with NSW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1814,7 +1897,7 @@ pub fn Builder::build_int_nsw_sub[T: IntMathValue](
 
 ///| Build integer sub instruction with NUW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1847,7 +1930,7 @@ pub fn Builder::build_int_nuw_sub[T: IntMathValue](
 
 ///| Builder floating point sub instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1880,7 +1963,7 @@ pub fn Builder::build_float_sub[T: FloatMathValue](
 
 ///| Build integer multiplication instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1913,7 +1996,7 @@ pub fn Builder::build_int_mul[T: IntMathValue](
 
 ///| Build integer multiplication instruction with NSW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1946,7 +2029,7 @@ pub fn Builder::build_int_nsw_mul[T: IntMathValue](
 
 ///| Build integer multiplication instruction with NUW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -1979,7 +2062,7 @@ pub fn Builder::build_int_nuw_mul[T: IntMathValue](
 
 ///| Builder floating point multiplication instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -2063,55 +2146,98 @@ pub fn Builder::build_cast[T: BasicType, V: BasicValue](
 //   T::new(value)
 // }
 
-// pub fn build_int_compare<T: IntMathValue<'ctx>>(
-//     &self,
-//     op: IntPredicate,
-//     lhs: T,
-//     rhs: T,
-//     name: &str,
-// ) -> Result<<T::BaseType as IntMathType<'ctx>>::ValueType, BuilderError> {
-//     if self.positioned.get() != PositionState::Set {
-//         return Err(BuilderError::UnsetPosition);
-//     }
-//     let c_string = to_c_str(name);
-//     let value = unsafe {
-//         @unsafe.LLVMBuildICmp(
-//             self.builder,
-//             op.into(),
-//             lhs.as_value_ref(),
-//             rhs.as_value_ref(),
-//             c_string.as_ptr(),
-//         )
-//     };
-//
-//     unsafe { Ok(<T::BaseType as IntMathType<'ctx>>::ValueType::new(value)) }
-// }
+///| Build integer comparison instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
+/// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
+/// let fval = lmodule.add_function("add", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_int_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
+///
+/// let pred_eq = @llvm.IntPredicate::EQ;
+/// let res = builder.build_int_compare!(pred_eq, lhs, rhs, name="res").unwrap();
+/// inspect!(res, content="  %res = icmp eq i32 %0, %1");
+/// ```
+pub fn Builder::build_int_compare[T: IntMathValue] (
+  self: Builder, op: IntPredicate, lhs: T, rhs: T, name~: String = ""
+) -> T!BuilderError {
+  if self.get_positioned() != PositionState::Set {
+    raise UnsetPosition
+  }
 
-// pub fn build_float_compare<T: FloatMathValue<'ctx>>(
-//     &self,
-//     op: FloatPredicate,
-//     lhs: T,
-//     rhs: T,
-//     name: &str,
-// ) -> Result<<<T::BaseType as FloatMathType<'ctx>>::MathConvType as IntMathType<'ctx>>::ValueType, BuilderError>
-// {
-//     if self.positioned.get() != PositionState::Set {
-//         return Err(BuilderError::UnsetPosition);
-//     }
-//     let c_string = to_c_str(name);
-//
-//     let value = unsafe {
-//         @unsafe.LLVMBuildFCmp(
-//             self.builder,
-//             op.into(),
-//             lhs.as_value_ref(),
-//             rhs.as_value_ref(),
-//             c_string.as_ptr(),
-//         )
-//     };
-//
-//     unsafe { Ok(<<T::BaseType as FloatMathType>::MathConvType as IntMathType>::ValueType::new(value)) }
-// }
+  let val_ref = @unsafe.llvm_build_icmp(
+    self.as_builder_ref(),
+    op.into(),
+    lhs.as_value_ref(),
+    rhs.as_value_ref(),
+    name
+  )
+  T::new(val_ref)
+}
+
+pub fn Builder::build_ptr_compare(
+  self: Builder, op: IntPredicate, lhs: PointerValue, rhs: PointerValue, name~: String = ""
+) -> IntValue!BuilderError {
+  if self.get_positioned() != PositionState::Set {
+    raise UnsetPosition
+  }
+
+  let val_ref = @unsafe.llvm_build_icmp(
+    self.as_builder_ref(),
+    op.into(),
+    lhs.as_value_ref(),
+    rhs.as_value_ref(),
+    name
+  )
+  IntValue::new(val_ref)
+}
+
+///| Build integer comparison instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let f32_ty = context.f32_type();
+/// let fty = i32_ty.fn_type([f32_ty, f32_ty]);
+/// let fval = lmodule.add_function("add", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
+/// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
+///
+/// let pred_oeq = @llvm.FloatPredicate::OEQ;
+/// let res = builder.build_int_compare!(pred_oeq, lhs, rhs, name="res").unwrap();
+/// inspect!(res, content="  %res = fcmp oeq float %0, %1");
+/// ```
+pub fn Builder::build_float_compare[T: FloatMathValue](
+  self: Builder, op: FloatPredicate, lhs: T, rhs: T, name~: String = ""
+) -> IntValue!BuilderError {
+  if self.get_positioned() != PositionState::Set {
+    raise UnsetPosition
+  }
+
+  let val_ref = @unsafe.llvm_build_fcmp(
+    self.as_builder_ref(),
+    op.into(),
+    lhs.as_value_ref(),
+    rhs.as_value_ref(),
+    name
+  )
+  IntValue::new(val_ref)
+}
 
 pub fn Builder::build_unconditional_branch(
   self: Builder, destination_block: BasicBlock
@@ -2168,7 +2294,7 @@ pub fn Builder::build_indirect_branch(
 
 ///| Build integer sub instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -2198,7 +2324,7 @@ pub fn Builder::build_int_neg[T: IntMathValue](
 
 ///| Build integer sub instruction with NSW flag.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -2239,6 +2365,25 @@ pub fn Builder::build_int_nuw_neg[T: IntMathValue](
   T::new(value)
 }
 
+///| Build a floating point negation instruction.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = @llvm.Context::create();
+/// let lmodule = context.create_module("demo");
+/// let f32_ty = context.f32_type();
+/// let fty = f32_ty.fn_type([f32_ty]);
+/// let fval = lmodule.add_function("neg", fty);
+/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let builder = context.create_builder();
+/// builder.position_at_end(entry_bb);
+///
+/// let operand = fval.get_first_param().unwrap().into_float_value();
+///
+/// let res = builder.build_float_neg!(operand, name="res").unwrap();
+/// inspect!(res, content="  %res = fsub float 0.0, %0");
+/// ```
 pub fn Builder::build_float_neg[T: FloatMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
@@ -2252,7 +2397,7 @@ pub fn Builder::build_float_neg[T: FloatMathValue](
 
 ///| Build integer NOT instruction.
 ///
-/// # Example
+/// ## Example
 ///
 /// ```moonbit
 /// let context = @llvm.Context::create();
@@ -2301,7 +2446,7 @@ pub fn Builder::position_before(
 }
 
 
-pub fn position_at_end(self: Builder, bb: BasicBlock) -> Unit {
+pub fn Builder::position_at_end(self: Builder, bb: BasicBlock) -> Unit {
   let builder_ref = self.builder_ref
   let bb_ref = bb.bb_ref
   self.positioned = PositionState::Set
@@ -2650,7 +2795,7 @@ pub fn Builder::build_select[BV: BasicValue, IMV: IntMathValue](
 }
 
 pub fn Builder::build_global_string(
-  self: Builder, value: String, name: String
+  self: Builder, value: String, name~: String = ""
 ) -> GlobalValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2666,7 +2811,7 @@ pub fn Builder::build_global_string(
 }
 
 pub fn Builder::build_global_string_ptr(
-  self: Builder, value: String, name: String
+  self: Builder, value: String, name~: String = ""
 ) -> GlobalValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2701,7 +2846,7 @@ pub fn Builder::build_shuffle_vector[V: VectorBaseValue](
 
 
 pub fn Builder::build_va_arg[T: BasicType](
-  self: Builder, list: PointerValue, type_: T, name: String
+  self: Builder, list: PointerValue, ty: T, name: String
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2710,7 +2855,7 @@ pub fn Builder::build_va_arg[T: BasicType](
   let value = @unsafe.llvm_build_va_arg(
     self.as_builder_ref(),
     list.as_value_ref(),
-    type_.as_type_ref(),
+    ty.as_type_ref(),
     name
   )
 

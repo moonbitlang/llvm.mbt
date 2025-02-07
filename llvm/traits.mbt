@@ -271,9 +271,10 @@ pub impl IntMathValue for IntValue with new(val_ref: @unsafe.LLVMValueRef) -> In
   IntValue::new(val_ref)
 }
 
-pub impl IntMathValue for PointerValue with new(val_ref: @unsafe.LLVMValueRef) -> PointerValue {
-  PointerValue::new(val_ref)
-}
+// This is different with `inkwell`
+// pub impl IntMathValue for PointerValue with new(val_ref: @unsafe.LLVMValueRef) -> PointerValue {
+//   PointerValue::new(val_ref)
+// }
 
 pub impl IntMathValue for VectorValue with new(val_ref: @unsafe.LLVMValueRef) -> VectorValue {
   VectorValue::new(val_ref)
