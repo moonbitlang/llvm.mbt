@@ -53,6 +53,9 @@ pub type LLVMModuleProviderRef
 ///| llvm pass manager
 pub type LLVMPassManagerRef
 
+///| llvm pass builder options
+pub type LLVMPassBuilderOptionsRef
+
 ///| llvm use
 pub type LLVMUseRef
 
@@ -1636,121 +1639,386 @@ pub fn LLVMDIFlags::from_int(idx: Int) -> LLVMDIFlags {
   }
 }
 
-//| Source languages known by DWARF.
-// pub enum LLVMDWARFSourceLanguage {
-//   LLVMDWARFSourceLanguageC89
-//   LLVMDWARFSourceLanguageC
-//   LLVMDWARFSourceLanguageAda83
-//   LLVMDWARFSourceLanguageC_plus_plus
-//   LLVMDWARFSourceLanguageCobol74
-//   LLVMDWARFSourceLanguageCobol85
-//   LLVMDWARFSourceLanguageFortran77
-//   LLVMDWARFSourceLanguageFortran90
-//   LLVMDWARFSourceLanguagePascal83
-//   LLVMDWARFSourceLanguageModula2
-//   // New in DWARF v3:
-//   LLVMDWARFSourceLanguageJava
-//   LLVMDWARFSourceLanguageC99
-//   LLVMDWARFSourceLanguageAda95
-//   LLVMDWARFSourceLanguageFortran95
-//   LLVMDWARFSourceLanguagePLI
-//   LLVMDWARFSourceLanguageObjC
-//   LLVMDWARFSourceLanguageObjC_plus_plus
-//   LLVMDWARFSourceLanguageUPC
-//   LLVMDWARFSourceLanguageD
-//   // New in DWARF v4:
-//   LLVMDWARFSourceLanguagePython
-//   // New in DWARF v5:
-//   LLVMDWARFSourceLanguageOpenCL
-//   LLVMDWARFSourceLanguageGo
-//   LLVMDWARFSourceLanguageModula3
-//   LLVMDWARFSourceLanguageHaskell
-//   LLVMDWARFSourceLanguageC_plus_plus_03
-//   LLVMDWARFSourceLanguageC_plus_plus_11
-//   LLVMDWARFSourceLanguageOCaml
-//   LLVMDWARFSourceLanguageRust
-//   LLVMDWARFSourceLanguageC11
-//   LLVMDWARFSourceLanguageSwift
-//   LLVMDWARFSourceLanguageJulia
-//   LLVMDWARFSourceLanguageDylan
-//   LLVMDWARFSourceLanguageC_plus_plus_14
-//   LLVMDWARFSourceLanguageFortran03
-//   LLVMDWARFSourceLanguageFortran08
-//   LLVMDWARFSourceLanguageRenderScript
-//   LLVMDWARFSourceLanguageBLISS
-//   LLVMDWARFSourceLanguageKotlin
-//   LLVMDWARFSourceLanguageZig
-//   LLVMDWARFSourceLanguageCrystal
-//   LLVMDWARFSourceLanguageC_plus_plus_17
-//   LLVMDWARFSourceLanguageC_plus_plus_20
-//   LLVMDWARFSourceLanguageC17
-//   LLVMDWARFSourceLanguageFortran18
-//   LLVMDWARFSourceLanguageAda2005
-//   LLVMDWARFSourceLanguageAda2012
-//   LLVMDWARFSourceLanguageHIP
-//   LLVMDWARFSourceLanguageAssembly
-//   LLVMDWARFSourceLanguageC_sharp
-//   LLVMDWARFSourceLanguageMojo
-//   LLVMDWARFSourceLanguageGLSL
-//   LLVMDWARFSourceLanguageGLSL_ES
-//   LLVMDWARFSourceLanguageHLSL
-//   LLVMDWARFSourceLanguageOpenCL_CPP
-//   LLVMDWARFSourceLanguageCPP_for_OpenCL
-//   LLVMDWARFSourceLanguageSYCL
-//   LLVMDWARFSourceLanguageRuby
-//   LLVMDWARFSourceLanguageMove
-//   LLVMDWARFSourceLanguageHylo
-//   LLVMDWARFSourceLanguageMetal
-//
-//   // Vendor extensions:
-//   LLVMDWARFSourceLanguageMips_Assembler
-//   LLVMDWARFSourceLanguageGOOGLE_RenderScript
-//   LLVMDWARFSourceLanguageBORLAND_Delphi
-// };
-//
-// ///| The amount of debug information to emit.
-// pub enum LLVMDWARFEmissionKind {
-//     LLVMDWARFEmissionNone
-//     LLVMDWARFEmissionFull
-//     LLVMDWARFEmissionLineTablesOnly
-// }
-//
-// ///| The kind of metadata nodes.
-// pub enum LLVMMDNodeKind {
-//   LLVMMDStringMetadataKind
-//   LLVMConstantAsMetadataMetadataKind
-//   LLVMLocalAsMetadataMetadataKind
-//   LLVMDistinctMDOperandPlaceholderMetadataKind
-//   LLVMMDTupleMetadataKind
-//   LLVMDILocationMetadataKind
-//   LLVMDIExpressionMetadataKind
-//   LLVMDIGlobalVariableExpressionMetadataKind
-//   LLVMGenericDINodeMetadataKind
-//   LLVMDISubrangeMetadataKind
-//   LLVMDIEnumeratorMetadataKind
-//   LLVMDIBasicTypeMetadataKind
-//   LLVMDIDerivedTypeMetadataKind
-//   LLVMDICompositeTypeMetadataKind
-//   LLVMDISubroutineTypeMetadataKind
-//   LLVMDIFileMetadataKind
-//   LLVMDICompileUnitMetadataKind
-//   LLVMDISubprogramMetadataKind
-//   LLVMDILexicalBlockMetadataKind
-//   LLVMDILexicalBlockFileMetadataKind
-//   LLVMDINamespaceMetadataKind
-//   LLVMDIModuleMetadataKind
-//   LLVMDITemplateTypeParameterMetadataKind
-//   LLVMDITemplateValueParameterMetadataKind
-//   LLVMDIGlobalVariableMetadataKind
-//   LLVMDILocalVariableMetadataKind
-//   LLVMDILabelMetadataKind
-//   LLVMDIObjCPropertyMetadataKind
-//   LLVMDIImportedEntityMetadataKind
-//   LLVMDIMacroMetadataKind
-//   LLVMDIMacroFileMetadataKind
-//   LLVMDICommonBlockMetadataKind
-//   LLVMDIStringTypeMetadataKind
-//   LLVMDIGenericSubrangeMetadataKind
-//   LLVMDIArgListMetadataKind
-//   LLVMDIAssignIDMetadataKind
-// };
+///| Source languages known by DWARF.
+pub enum LLVMDWARFSourceLanguage {
+  LLVMDWARFSourceLanguageC89
+  LLVMDWARFSourceLanguageC
+  LLVMDWARFSourceLanguageAda83
+  LLVMDWARFSourceLanguageC_plus_plus
+  LLVMDWARFSourceLanguageCobol74
+  LLVMDWARFSourceLanguageCobol85
+  LLVMDWARFSourceLanguageFortran77
+  LLVMDWARFSourceLanguageFortran90
+  LLVMDWARFSourceLanguagePascal83
+  LLVMDWARFSourceLanguageModula2
+  // New in DWARF v3:
+  LLVMDWARFSourceLanguageJava
+  LLVMDWARFSourceLanguageC99
+  LLVMDWARFSourceLanguageAda95
+  LLVMDWARFSourceLanguageFortran95
+  LLVMDWARFSourceLanguagePLI
+  LLVMDWARFSourceLanguageObjC
+  LLVMDWARFSourceLanguageObjC_plus_plus
+  LLVMDWARFSourceLanguageUPC
+  LLVMDWARFSourceLanguageD
+  // New in DWARF v4:
+  LLVMDWARFSourceLanguagePython
+  // New in DWARF v5:
+  LLVMDWARFSourceLanguageOpenCL
+  LLVMDWARFSourceLanguageGo
+  LLVMDWARFSourceLanguageModula3
+  LLVMDWARFSourceLanguageHaskell
+  LLVMDWARFSourceLanguageC_plus_plus_03
+  LLVMDWARFSourceLanguageC_plus_plus_11
+  LLVMDWARFSourceLanguageOCaml
+  LLVMDWARFSourceLanguageRust
+  LLVMDWARFSourceLanguageC11
+  LLVMDWARFSourceLanguageSwift
+  LLVMDWARFSourceLanguageJulia
+  LLVMDWARFSourceLanguageDylan
+  LLVMDWARFSourceLanguageC_plus_plus_14
+  LLVMDWARFSourceLanguageFortran03
+  LLVMDWARFSourceLanguageFortran08
+  LLVMDWARFSourceLanguageRenderScript
+  LLVMDWARFSourceLanguageBLISS
+  LLVMDWARFSourceLanguageKotlin
+  LLVMDWARFSourceLanguageZig
+  LLVMDWARFSourceLanguageCrystal
+  LLVMDWARFSourceLanguageC_plus_plus_17
+  LLVMDWARFSourceLanguageC_plus_plus_20
+  LLVMDWARFSourceLanguageC17
+  LLVMDWARFSourceLanguageFortran18
+  LLVMDWARFSourceLanguageAda2005
+  LLVMDWARFSourceLanguageAda2012
+  LLVMDWARFSourceLanguageHIP
+  LLVMDWARFSourceLanguageAssembly
+  LLVMDWARFSourceLanguageC_sharp
+  LLVMDWARFSourceLanguageMojo
+  LLVMDWARFSourceLanguageGLSL
+  LLVMDWARFSourceLanguageGLSL_ES
+  LLVMDWARFSourceLanguageHLSL
+  LLVMDWARFSourceLanguageOpenCL_CPP
+  LLVMDWARFSourceLanguageCPP_for_OpenCL
+  LLVMDWARFSourceLanguageSYCL
+  LLVMDWARFSourceLanguageRuby
+  LLVMDWARFSourceLanguageMove
+  LLVMDWARFSourceLanguageHylo
+  LLVMDWARFSourceLanguageMetal
+
+  // Vendor extensions:
+  LLVMDWARFSourceLanguageMips_Assembler
+  LLVMDWARFSourceLanguageGOOGLE_RenderScript
+  LLVMDWARFSourceLanguageBORLAND_Delphi
+};
+
+pub fn LLVMDWARFSourceLanguage::to_int(self: LLVMDWARFSourceLanguage) -> Int{
+  match self {
+    LLVMDWARFSourceLanguageC89 => 0
+    LLVMDWARFSourceLanguageC => 1
+    LLVMDWARFSourceLanguageAda83 => 2
+    LLVMDWARFSourceLanguageC_plus_plus => 3
+    LLVMDWARFSourceLanguageCobol74 => 4
+    LLVMDWARFSourceLanguageCobol85 => 5
+    LLVMDWARFSourceLanguageFortran77 => 6
+    LLVMDWARFSourceLanguageFortran90 => 7
+    LLVMDWARFSourceLanguagePascal83 => 8
+    LLVMDWARFSourceLanguageModula2 => 9
+    // New in DWARF v3:
+    LLVMDWARFSourceLanguageJava => 10
+    LLVMDWARFSourceLanguageC99 => 11
+    LLVMDWARFSourceLanguageAda95 => 12
+    LLVMDWARFSourceLanguageFortran95 => 13
+    LLVMDWARFSourceLanguagePLI => 14
+    LLVMDWARFSourceLanguageObjC => 15
+    LLVMDWARFSourceLanguageObjC_plus_plus => 16
+    LLVMDWARFSourceLanguageUPC => 17
+    LLVMDWARFSourceLanguageD => 18
+    // New in DWARF v4:
+    LLVMDWARFSourceLanguagePython => 19
+    // New in DWARF v5:
+    LLVMDWARFSourceLanguageOpenCL => 20
+    LLVMDWARFSourceLanguageGo => 21
+    LLVMDWARFSourceLanguageModula3 => 22
+    LLVMDWARFSourceLanguageHaskell => 23
+    LLVMDWARFSourceLanguageC_plus_plus_03 => 24
+    LLVMDWARFSourceLanguageC_plus_plus_11 => 25
+    LLVMDWARFSourceLanguageOCaml => 26
+    LLVMDWARFSourceLanguageRust => 27
+    LLVMDWARFSourceLanguageC11 => 28
+    LLVMDWARFSourceLanguageSwift => 29
+    LLVMDWARFSourceLanguageJulia => 30
+    LLVMDWARFSourceLanguageDylan => 31
+    LLVMDWARFSourceLanguageC_plus_plus_14 => 32
+    LLVMDWARFSourceLanguageFortran03 => 33
+    LLVMDWARFSourceLanguageFortran08 => 34
+    LLVMDWARFSourceLanguageRenderScript => 35
+    LLVMDWARFSourceLanguageBLISS => 36
+    LLVMDWARFSourceLanguageKotlin => 37
+    LLVMDWARFSourceLanguageZig => 38
+    LLVMDWARFSourceLanguageCrystal => 39
+    LLVMDWARFSourceLanguageC_plus_plus_17 => 40
+    LLVMDWARFSourceLanguageC_plus_plus_20 => 41
+    LLVMDWARFSourceLanguageC17 => 42
+    LLVMDWARFSourceLanguageFortran18 => 43
+    LLVMDWARFSourceLanguageAda2005 => 44
+    LLVMDWARFSourceLanguageAda2012 => 45
+    LLVMDWARFSourceLanguageHIP => 46
+    LLVMDWARFSourceLanguageAssembly => 47
+    LLVMDWARFSourceLanguageC_sharp => 48
+    LLVMDWARFSourceLanguageMojo => 49
+    LLVMDWARFSourceLanguageGLSL => 50
+    LLVMDWARFSourceLanguageGLSL_ES => 51
+    LLVMDWARFSourceLanguageHLSL => 52
+    LLVMDWARFSourceLanguageOpenCL_CPP => 53
+    LLVMDWARFSourceLanguageCPP_for_OpenCL => 54
+    LLVMDWARFSourceLanguageSYCL => 55
+    LLVMDWARFSourceLanguageRuby => 56
+    LLVMDWARFSourceLanguageMove => 57
+    LLVMDWARFSourceLanguageHylo => 58
+    LLVMDWARFSourceLanguageMetal => 59
+
+    // Vendor extensions:
+    LLVMDWARFSourceLanguageMips_Assembler => 60
+    LLVMDWARFSourceLanguageGOOGLE_RenderScript => 61
+    LLVMDWARFSourceLanguageBORLAND_Delphi => 62
+  }
+}
+
+pub fn LLVMDWARFSourceLanguage::from_int(i: Int) -> LLVMDWARFSourceLanguage {
+  match i {
+    0 => LLVMDWARFSourceLanguageC89
+    1 => LLVMDWARFSourceLanguageC
+    2 => LLVMDWARFSourceLanguageAda83
+    3 => LLVMDWARFSourceLanguageC_plus_plus
+    4 => LLVMDWARFSourceLanguageCobol74
+    5 => LLVMDWARFSourceLanguageCobol85
+    6 => LLVMDWARFSourceLanguageFortran77
+    7 => LLVMDWARFSourceLanguageFortran90
+    8 => LLVMDWARFSourceLanguagePascal83
+    9 => LLVMDWARFSourceLanguageModula2
+    10 => LLVMDWARFSourceLanguageJava
+    11 => LLVMDWARFSourceLanguageC99
+    12 => LLVMDWARFSourceLanguageAda95
+    13 => LLVMDWARFSourceLanguageFortran95
+    14 => LLVMDWARFSourceLanguagePLI
+    15 => LLVMDWARFSourceLanguageObjC
+    16 => LLVMDWARFSourceLanguageObjC_plus_plus
+    17 => LLVMDWARFSourceLanguageUPC
+    18 => LLVMDWARFSourceLanguageD
+    19 => LLVMDWARFSourceLanguagePython
+    20 => LLVMDWARFSourceLanguageOpenCL
+    21 => LLVMDWARFSourceLanguageGo
+    22 => LLVMDWARFSourceLanguageModula3
+    23 => LLVMDWARFSourceLanguageHaskell
+    24 => LLVMDWARFSourceLanguageC_plus_plus_03
+    25 => LLVMDWARFSourceLanguageC_plus_plus_11
+    26 => LLVMDWARFSourceLanguageOCaml
+    27 => LLVMDWARFSourceLanguageRust
+    28 => LLVMDWARFSourceLanguageC11
+    29 => LLVMDWARFSourceLanguageSwift
+    30 => LLVMDWARFSourceLanguageJulia
+    31 => LLVMDWARFSourceLanguageDylan
+    32 => LLVMDWARFSourceLanguageC_plus_plus_14
+    33 => LLVMDWARFSourceLanguageFortran03
+    34 => LLVMDWARFSourceLanguageFortran08
+    35 => LLVMDWARFSourceLanguageRenderScript
+    36 => LLVMDWARFSourceLanguageBLISS
+    37 => LLVMDWARFSourceLanguageKotlin
+    38 => LLVMDWARFSourceLanguageZig
+    39 => LLVMDWARFSourceLanguageCrystal
+    40 => LLVMDWARFSourceLanguageC_plus_plus_17
+    41 => LLVMDWARFSourceLanguageC_plus_plus_20
+    42 => LLVMDWARFSourceLanguageC17
+    43 => LLVMDWARFSourceLanguageFortran18
+    44 => LLVMDWARFSourceLanguageAda2005
+    45 => LLVMDWARFSourceLanguageAda2012
+    46 => LLVMDWARFSourceLanguageHIP
+    47 => LLVMDWARFSourceLanguageAssembly
+    48 => LLVMDWARFSourceLanguageC_sharp
+    49 => LLVMDWARFSourceLanguageMojo
+    50 => LLVMDWARFSourceLanguageGLSL
+    51 => LLVMDWARFSourceLanguageGLSL_ES
+    52 => LLVMDWARFSourceLanguageHLSL
+    53 => LLVMDWARFSourceLanguageOpenCL_CPP
+    54 => LLVMDWARFSourceLanguageCPP_for_OpenCL
+    55 => LLVMDWARFSourceLanguageSYCL
+    56 => LLVMDWARFSourceLanguageRuby
+    57 => LLVMDWARFSourceLanguageMove
+    58 => LLVMDWARFSourceLanguageHylo
+    59 => LLVMDWARFSourceLanguageMetal
+    60 => LLVMDWARFSourceLanguageMips_Assembler
+    61 => LLVMDWARFSourceLanguageGOOGLE_RenderScript
+    62 => LLVMDWARFSourceLanguageBORLAND_Delphi
+    _ => abort("Invalid LLVMDWARFSourceLanguage Number in `LLVMDWARFSourceLanguage::from_int`")
+  }
+}
+
+///| The amount of debug information to emit.
+pub enum LLVMDWARFEmissionKind {
+    LLVMDWARFEmissionNone
+    LLVMDWARFEmissionFull
+    LLVMDWARFEmissionLineTablesOnly
+}
+
+pub fn LLVMDWARFEmissionKind::to_int(self: LLVMDWARFEmissionKind) -> Int {
+  match self {
+    LLVMDWARFEmissionNone => 0
+    LLVMDWARFEmissionFull => 1
+    LLVMDWARFEmissionLineTablesOnly => 2
+  }
+}
+
+pub fn LLVMDWARFEmissionKind::from_int(idx: Int) -> LLVMDWARFEmissionKind {
+  match idx {
+    0 => LLVMDWARFEmissionNone
+    1 => LLVMDWARFEmissionFull
+    2 => LLVMDWARFEmissionLineTablesOnly
+    _ => abort("Invalid LLVMDWARFEmissionKind Number in `LLVMDWARFEmissionKind::from_int`")
+  }
+}
+
+///| The kind of metadata nodes.
+pub enum LLVMMDNodeKind {
+  LLVMMDStringMetadataKind
+  LLVMConstantAsMetadataMetadataKind
+  LLVMLocalAsMetadataMetadataKind
+  LLVMDistinctMDOperandPlaceholderMetadataKind
+  LLVMMDTupleMetadataKind
+  LLVMDILocationMetadataKind
+  LLVMDIExpressionMetadataKind
+  LLVMDIGlobalVariableExpressionMetadataKind
+  LLVMGenericDINodeMetadataKind
+  LLVMDISubrangeMetadataKind
+  LLVMDIEnumeratorMetadataKind
+  LLVMDIBasicTypeMetadataKind
+  LLVMDIDerivedTypeMetadataKind
+  LLVMDICompositeTypeMetadataKind
+  LLVMDISubroutineTypeMetadataKind
+  LLVMDIFileMetadataKind
+  LLVMDICompileUnitMetadataKind
+  LLVMDISubprogramMetadataKind
+  LLVMDILexicalBlockMetadataKind
+  LLVMDILexicalBlockFileMetadataKind
+  LLVMDINamespaceMetadataKind
+  LLVMDIModuleMetadataKind
+  LLVMDITemplateTypeParameterMetadataKind
+  LLVMDITemplateValueParameterMetadataKind
+  LLVMDIGlobalVariableMetadataKind
+  LLVMDILocalVariableMetadataKind
+  LLVMDILabelMetadataKind
+  LLVMDIObjCPropertyMetadataKind
+  LLVMDIImportedEntityMetadataKind
+  LLVMDIMacroMetadataKind
+  LLVMDIMacroFileMetadataKind
+  LLVMDICommonBlockMetadataKind
+  LLVMDIStringTypeMetadataKind
+  LLVMDIGenericSubrangeMetadataKind
+  LLVMDIArgListMetadataKind
+  LLVMDIAssignIDMetadataKind
+};
+
+pub fn LLVMMDNodeKind::to_int(self: LLVMMDNodeKind) -> Int {
+  match self {
+    LLVMMDStringMetadataKind => 0
+    LLVMConstantAsMetadataMetadataKind => 1
+    LLVMLocalAsMetadataMetadataKind => 2
+    LLVMDistinctMDOperandPlaceholderMetadataKind => 3
+    LLVMMDTupleMetadataKind => 4
+    LLVMDILocationMetadataKind => 5
+    LLVMDIExpressionMetadataKind => 6
+    LLVMDIGlobalVariableExpressionMetadataKind => 7
+    LLVMGenericDINodeMetadataKind => 8
+    LLVMDISubrangeMetadataKind => 9
+    LLVMDIEnumeratorMetadataKind => 10
+    LLVMDIBasicTypeMetadataKind => 11
+    LLVMDIDerivedTypeMetadataKind => 12
+    LLVMDICompositeTypeMetadataKind => 13
+    LLVMDISubroutineTypeMetadataKind => 14
+    LLVMDIFileMetadataKind => 15
+    LLVMDICompileUnitMetadataKind => 16
+    LLVMDISubprogramMetadataKind => 17
+    LLVMDILexicalBlockMetadataKind => 18
+    LLVMDILexicalBlockFileMetadataKind => 19
+    LLVMDINamespaceMetadataKind => 20
+    LLVMDIModuleMetadataKind => 21
+    LLVMDITemplateTypeParameterMetadataKind => 22
+    LLVMDITemplateValueParameterMetadataKind => 23
+    LLVMDIGlobalVariableMetadataKind => 24
+    LLVMDILocalVariableMetadataKind => 25
+    LLVMDILabelMetadataKind => 26
+    LLVMDIObjCPropertyMetadataKind => 27
+    LLVMDIImportedEntityMetadataKind => 28
+    LLVMDIMacroMetadataKind => 29
+    LLVMDIMacroFileMetadataKind => 30
+    LLVMDICommonBlockMetadataKind => 31
+    LLVMDIStringTypeMetadataKind => 32
+    LLVMDIGenericSubrangeMetadataKind => 33
+    LLVMDIArgListMetadataKind => 34
+    LLVMDIAssignIDMetadataKind => 35
+  }
+}
+
+pub fn LLVMMDNodeKind::from_int(i: Int) -> LLVMMDNodeKind {
+  match i {
+    0 => LLVMMDStringMetadataKind
+    1 => LLVMConstantAsMetadataMetadataKind
+    2 => LLVMLocalAsMetadataMetadataKind
+    3 => LLVMDistinctMDOperandPlaceholderMetadataKind
+    4 => LLVMMDTupleMetadataKind
+    5 => LLVMDILocationMetadataKind
+    6 => LLVMDIExpressionMetadataKind
+    7 => LLVMDIGlobalVariableExpressionMetadataKind
+    8 => LLVMGenericDINodeMetadataKind
+    9 => LLVMDISubrangeMetadataKind
+    10 => LLVMDIEnumeratorMetadataKind
+    11 => LLVMDIBasicTypeMetadataKind
+    12 => LLVMDIDerivedTypeMetadataKind
+    13 => LLVMDICompositeTypeMetadataKind
+    14 => LLVMDISubroutineTypeMetadataKind
+    15 => LLVMDIFileMetadataKind
+    16 => LLVMDICompileUnitMetadataKind
+    17 => LLVMDISubprogramMetadataKind
+    18 => LLVMDILexicalBlockMetadataKind
+    19 => LLVMDILexicalBlockFileMetadataKind
+    20 => LLVMDINamespaceMetadataKind
+    21 => LLVMDIModuleMetadataKind
+    22 => LLVMDITemplateTypeParameterMetadataKind
+    23 => LLVMDITemplateValueParameterMetadataKind
+    24 => LLVMDIGlobalVariableMetadataKind
+    25 => LLVMDILocalVariableMetadataKind
+    26 => LLVMDILabelMetadataKind
+    27 => LLVMDIObjCPropertyMetadataKind
+    28 => LLVMDIImportedEntityMetadataKind
+    29 => LLVMDIMacroMetadataKind
+    30 => LLVMDIMacroFileMetadataKind
+    31 => LLVMDICommonBlockMetadataKind
+    32 => LLVMDIStringTypeMetadataKind
+    33 => LLVMDIGenericSubrangeMetadataKind
+    34 => LLVMDIArgListMetadataKind
+    35 => LLVMDIAssignIDMetadataKind
+    _ => abort("Invalid LLVMMDNodeKind Number in `LLVMMDNodeKind::from_int`")
+  }
+}
+
+pub enum LLVMVerifierFailureAction {
+  LLVMAbortProcessAction
+  LLVMPrintMessageAction
+  LLVMReturnStatusAction
+}
+
+pub fn LLVMVerifierFailureAction::to_int(self: LLVMVerifierFailureAction) -> Int {
+  match self {
+    LLVMAbortProcessAction => 0
+    LLVMPrintMessageAction => 1
+    LLVMReturnStatusAction => 2
+  }
+}
+
+pub fn LLVMVerifierFailureAction::from_int(idx: Int) -> LLVMVerifierFailureAction {
+  match idx {
+    0 => LLVMAbortProcessAction
+    1 => LLVMPrintMessageAction
+    2 => LLVMReturnStatusAction
+    _ => abort("Invalid LLVMVerifierFailureAction Number in `LLVMVerifierFailureAction::from_int`")
+  }
+}

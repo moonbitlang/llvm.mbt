@@ -1,16 +1,17 @@
 // =======================================================
 // DebugInfo.h
 // =======================================================
-
 // /**
 //  * The current debug metadata version number.
 //  */
 // unsigned LLVMDebugMetadataVersion(void);
+pub extern "C" fn llvm_debug_metadata_version() -> UInt = "__llvm_debug_metadata_version"
 //
 // /**
 //  * The version of debug metadata that's present in the provided \c Module.
 //  */
 // unsigned LLVMGetModuleDebugMetadataVersion(LLVMModuleRef Module);
+pub extern "C" fn llvm_get_module_debug_metadata_version(mod_ref: LLVMModuleRef) -> UInt = "__llvm_get_module_debug_metadata_version"
 //
 // /**
 //  * Strip debug info in the module if it exists.
@@ -19,12 +20,14 @@
 //  * Return true if module is modified.
 //  */
 // LLVMBool LLVMStripModuleDebugInfo(LLVMModuleRef Module);
+pub extern "C" fn llvm_strip_module_debug_info(mod_ref: LLVMModuleRef) -> LLVMBool = "__llvm_strip_module_debug_info"
 //
 // /**
 //  * Construct a builder for a module, and do not allow for unresolved nodes
 //  * attached to the module.
 //  */
 // LLVMDIBuilderRef LLVMCreateDIBuilderDisallowUnresolved(LLVMModuleRef M);
+pub extern "C" fn llvm_create_di_builder_disallow_unresolved(mod_ref: LLVMModuleRef) -> LLVMDIBuilderRef = "__llvm_create_di_builder_disallow_unresolved"
 //
 // /**
 //  * Construct a builder for a module and collect unresolved nodes attached
@@ -32,17 +35,20 @@
 //  * \c LLVMDIBuilderFinalize.
 //  */
 // LLVMDIBuilderRef LLVMCreateDIBuilder(LLVMModuleRef M);
+pub extern "C" fn llvm_create_di_builder(mod_ref: LLVMModuleRef) -> LLVMDIBuilderRef = "__llvm_create_di_builder"
 //
 // /**
 //  * Deallocates the \c DIBuilder and everything it owns.
 //  * @note You must call \c LLVMDIBuilderFinalize before this
 //  */
 // void LLVMDisposeDIBuilder(LLVMDIBuilderRef Builder);
+pub extern "C" fn llvm_dispose_di_builder(builder_ref: LLVMDIBuilderRef) = "__llvm_dispose_di_builder"
 //
 // /**
 //  * Construct any deferred debug info descriptors.
 //  */
 // void LLVMDIBuilderFinalize(LLVMDIBuilderRef Builder);
+pub extern "C" fn llvm_di_builder_finalize(builder_ref: LLVMDIBuilderRef) = "__llvm_di_builder_finalize"
 //
 // /**
 //  * Finalize a specific subprogram.
@@ -50,6 +56,7 @@
 //  */
 // void LLVMDIBuilderFinalizeSubprogram(LLVMDIBuilderRef Builder,
 //                                      LLVMMetadataRef Subprogram);
+pub extern "C" fn llvm_di_builder_finalize_subprogram(builder_ref: LLVMDIBuilderRef, subprogram_ref: LLVMMetadataRef) = "__llvm_di_builder_finalize_subprogram"
 //
 // /**
 //  * A CompileUnit provides an anchor for all debugging
@@ -279,6 +286,11 @@
 //  * @see DILocation::getLine()
 //  */
 // unsigned LLVMDILocationGetLine(LLVMMetadataRef Location);
+
+///| Get the line number of this debug location.
+/// 
+/// - see `DILocation::getLine()`
+pub extern "C" fn llvm_di_location_get_line(location_ref: LLVMMetadataRef) -> UInt = "__llvm_di_location_get_line"
 //
 // /**
 //  * Get the column number of this debug location.
@@ -287,6 +299,12 @@
 //  * @see DILocation::getColumn()
 //  */
 // unsigned LLVMDILocationGetColumn(LLVMMetadataRef Location);
+
+///| Get the column number of this debug location.
+/// 
+/// - see `DILocation::getColumn()`
+/// 
+pub extern "C" fn llvm_di_location_get_column(location_ref: LLVMMetadataRef) -> UInt = "__llvm_di_location_get_column"
 //
 // /**
 //  * Get the local scope associated with this debug location.
@@ -295,7 +313,13 @@
 //  * @see DILocation::getScope()
 //  */
 // LLVMMetadataRef LLVMDILocationGetScope(LLVMMetadataRef Location);
-//
+
+///| Get the local scope associated with this debug location.
+/// 
+/// - see `DILocation::getScope()`
+/// 
+pub extern "C" fn llvm_di_location_get_scope(location_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_location_get_scope"
+
 // /**
 //  * Get the "inline at" location associated with this debug location.
 //  * \param Location     The debug location.
@@ -303,6 +327,12 @@
 //  * @see DILocation::getInlinedAt()
 //  */
 // LLVMMetadataRef LLVMDILocationGetInlinedAt(LLVMMetadataRef Location);
+
+///| Get the "inline at" location associated with this debug location.
+/// 
+/// - see `DILocation::getInlinedAt()`
+/// 
+pub extern "C" fn llvm_di_location_get_inlined_at(location_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_location_get_inlined_at"
 //
 // /**
 //  * Get the metadata of the file associated with a given scope.
@@ -311,6 +341,13 @@
 //  * @see DIScope::getFile()
 //  */
 // LLVMMetadataRef LLVMDIScopeGetFile(LLVMMetadataRef Scope);
+
+///| Get the metadata of the file associated with a given scope.
+/// 
+/// - see `DIScope::getFile()`
+/// 
+pub extern "C" fn llvm_di_scope_get_file(scope_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_scope_get_file"
+
 //
 // /**
 //  * Get the directory of a given file.
@@ -320,7 +357,18 @@
 //  * @see DIFile::getDirectory()
 //  */
 // const char *LLVMDIFileGetDirectory(LLVMMetadataRef File, unsigned *Len);
-//
+
+///| Get the directory of a given file.
+/// 
+/// - see `DIFile::getDirectory()`
+/// 
+pub fn llvm_di_file_get_directory(file_ref: LLVMMetadataRef) -> String {
+  let len: Ref[UInt] = Ref::new(0);
+  let cstr = __llvm_di_file_get_directory(file_ref, len)
+  c_str_to_moonbit_str_with_length(cstr, len.val)
+}
+extern "C" fn __llvm_di_file_get_directory(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_directory"
+
 // /**
 //  * Get the name of a given file.
 //  * \param File     The file object.
@@ -329,6 +377,18 @@
 //  * @see DIFile::getFilename()
 //  */
 // const char *LLVMDIFileGetFilename(LLVMMetadataRef File, unsigned *Len);
+
+///| Get the name of a given file.
+/// 
+/// - see `DIFile::getFilename()`
+pub fn llvm_di_file_get_filename(file_ref: LLVMMetadataRef) -> String {
+  let len: Ref[UInt] = Ref::new(0);
+  let cstr = __llvm_di_file_get_filename(file_ref, len)
+  c_str_to_moonbit_str_with_length(cstr, len.val)
+}
+
+extern "C" fn __llvm_di_file_get_filename(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_filename"
+
 //
 // /**
 //  * Get the source of a given file.
@@ -338,7 +398,17 @@
 //  * @see DIFile::getSource()
 //  */
 // const char *LLVMDIFileGetSource(LLVMMetadataRef File, unsigned *Len);
-//
+
+///| Get the source of a given file.
+/// 
+/// - see `DIFile::getSource()`
+pub fn llvm_di_file_get_source(file_ref: LLVMMetadataRef) -> String {
+  let len: Ref[UInt] = Ref::new(0);
+  let cstr = __llvm_di_file_get_source(file_ref, len)
+  c_str_to_moonbit_str_with_length(cstr, len.val)
+}
+
+extern "C" fn __llvm_di_file_get_source(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_source"
 // /**
 //  * Create a type array.
 //  * \param Builder        The DIBuilder.
@@ -495,7 +565,16 @@
 // LLVMMetadataRef
 // LLVMDIBuilderCreateUnspecifiedType(LLVMDIBuilderRef Builder, const char *Name,
 //                                    size_t NameLen);
-//
+
+///| Create a DWARF unspecified type.
+pub fn llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuilderRef, name: String) -> LLVMMetadataRef {
+  let cstr = moonbit_str_to_c_str(name);
+  let len = name.length().to_uint64();
+  __llvm_di_builder_create_unspecified_type(builder_ref, cstr, len)
+}
+
+extern "C" fn __llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuilderRef, name: CStr, name_len: UInt64) -> LLVMMetadataRef = "__llvm_di_builder_create_unspecified_type"
+
 // /**
 //  * Create debugging information entry for a basic
 //  * type.
@@ -675,6 +754,9 @@
 // LLVMMetadataRef
 // LLVMDIBuilderCreateQualifiedType(LLVMDIBuilderRef Builder, unsigned Tag,
 //                                  LLVMMetadataRef Type);
+
+///| Create debugging information entry for a qualified type, e.g. 'const int'.
+pub extern "C" fn llvm_di_builder_create_qualified_type(builder_ref: LLVMDIBuilderRef, tag: UInt, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_qualified_type"
 //
 // /**
 //  * Create debugging information entry for a c++
@@ -686,6 +768,7 @@
 // LLVMMetadataRef
 // LLVMDIBuilderCreateReferenceType(LLVMDIBuilderRef Builder, unsigned Tag,
 //                                  LLVMMetadataRef Type);
+pub extern "C" fn llvm_di_builder_create_reference_type(builder_ref: LLVMDIBuilderRef, tag: UInt, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_reference_type"
 //
 // /**
 //  * Create C++11 nullptr type.
@@ -693,6 +776,7 @@
 //  */
 // LLVMMetadataRef
 // LLVMDIBuilderCreateNullPtrType(LLVMDIBuilderRef Builder);
+pub extern "C" fn llvm_di_builder_create_null_ptr_type(builder_ref: LLVMDIBuilderRef) -> LLVMMetadataRef = "__llvm_di_builder_create_null_ptr_type"
 //
 // /**
 //  * Create debugging information entry for a typedef.
@@ -835,6 +919,7 @@
 // LLVMMetadataRef
 // LLVMDIBuilderCreateArtificialType(LLVMDIBuilderRef Builder,
 //                                   LLVMMetadataRef Type);
+pub extern "C" fn llvm_di_builder_create_artificial_type(builder_ref: LLVMDIBuilderRef, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_artificial_type"
 //
 // /**
 //  * Get the name of this DIType.
@@ -844,6 +929,17 @@
 //  * @see DIType::getName()
 //  */
 // const char *LLVMDITypeGetName(LLVMMetadataRef DType, size_t *Length);
+
+///| Get the name of this DIType.
+/// 
+/// - see `DIType::getName()`
+pub fn llvm_di_type_get_name(type_ref: LLVMMetadataRef) -> String {
+  let len: Ref[UInt] = Ref::new(0);
+  let cstr = __llvm_di_type_get_name(type_ref, len)
+  c_str_to_moonbit_str_with_length(cstr, len.val)
+}
+
+extern "C" fn __llvm_di_type_get_name(type_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_type_get_name"
 //
 // /**
 //  * Get the size of this DIType in bits.
@@ -852,7 +948,12 @@
 //  * @see DIType::getSizeInBits()
 //  */
 // uint64_t LLVMDITypeGetSizeInBits(LLVMMetadataRef DType);
-//
+
+///| Get the size of this DIType in bits.
+/// 
+/// - see `DIType::getSizeInBits()`
+pub extern "C" fn llvm_di_type_get_size_in_bits(type_ref: LLVMMetadataRef) -> UInt64 = "__llvm_di_type_get_size_in_bits"
+
 // /**
 //  * Get the offset of this DIType in bits.
 //  * \param DType     The DIType.
@@ -860,6 +961,7 @@
 //  * @see DIType::getOffsetInBits()
 //  */
 // uint64_t LLVMDITypeGetOffsetInBits(LLVMMetadataRef DType);
+pub extern "C" fn llvm_di_type_get_offset_in_bits(type_ref: LLVMMetadataRef) -> UInt64 = "__llvm_di_type_get_offset_in_bits"
 //
 // /**
 //  * Get the alignment of this DIType in bits.
@@ -868,6 +970,11 @@
 //  * @see DIType::getAlignInBits()
 //  */
 // uint32_t LLVMDITypeGetAlignInBits(LLVMMetadataRef DType);
+
+///| Get the alignment of this DIType in bits.
+/// 
+/// - see `DIType::getAlignInBits()`
+pub extern "C" fn llvm_di_type_get_align_in_bits(type_ref: LLVMMetadataRef) -> UInt = "__llvm_di_type_get_align_in_bits"
 //
 // /**
 //  * Get the source line where this DIType is declared.
@@ -876,7 +983,12 @@
 //  * @see DIType::getLine()
 //  */
 // unsigned LLVMDITypeGetLine(LLVMMetadataRef DType);
-//
+
+///| Get the source line where this DIType is declared.
+/// 
+/// - see `DIType::getLine()`
+pub extern "C" fn llvm_di_type_get_line(type_ref: LLVMMetadataRef) -> UInt = "__llvm_di_type_get_line"
+
 // /**
 //  * Get the flags associated with this DIType.
 //  * \param DType     The DIType.
@@ -884,6 +996,12 @@
 //  * @see DIType::getFlags()
 //  */
 // LLVMDIFlags LLVMDITypeGetFlags(LLVMMetadataRef DType);
+
+///| Get the flags associated with this DIType.
+/// 
+/// - see `DIType::getFlags()`
+pub extern "C" fn llvm_di_type_get_flags(type_ref: LLVMMetadataRef) -> LLVMDIFlags = "__llvm_di_type_get_flags"
+
 //
 // /**
 //  * Create a descriptor for a value range.
@@ -894,13 +1012,10 @@
 // LLVMMetadataRef LLVMDIBuilderGetOrCreateSubrange(LLVMDIBuilderRef Builder,
 //                                                  int64_t LowerBound,
 //                                                  int64_t Count);
-//
-// /**
-//  * Create an array of DI Nodes.
-//  * \param Builder        The DIBuilder.
-//  * \param Data           The DI Node elements.
-//  * \param NumElements    Number of DI Node elements.
-//  */
+
+///| Create a descriptor for a value range.
+pub extern "C" fn llvm_di_builder_get_or_create_subrange(builder_ref: LLVMDIBuilderRef, lower_bound: Int64, count: Int64) -> LLVMMetadataRef = "__llvm_di_builder_get_or_create_subrange"
+
 // LLVMMetadataRef LLVMDIBuilderGetOrCreateArray(LLVMDIBuilderRef Builder,
 //                                               LLVMMetadataRef *Data,
 //                                               size_t NumElements);
@@ -924,6 +1039,10 @@
 // LLVMMetadataRef
 // LLVMDIBuilderCreateConstantValueExpression(LLVMDIBuilderRef Builder,
 //                                            uint64_t Value);
+
+///| Create a new descriptor for the specified variable that does not have an address, but does have a constant value.
+pub extern "C" fn llvm_di_builder_create_constant_value_expression(builder_ref: LLVMDIBuilderRef, value: UInt64) -> LLVMMetadataRef = "__llvm_di_builder_create_constant_value_expression"
+
 //
 // /**
 //  * Create a new descriptor for the specified variable.
@@ -950,52 +1069,47 @@
 //     unsigned LineNo, LLVMMetadataRef Ty, LLVMBool LocalToUnit,
 //     LLVMMetadataRef Expr, LLVMMetadataRef Decl, uint32_t AlignInBits);
 //
-//
-// /**
-//  * Get the dwarf::Tag of a DINode
-//  */
+
 // uint16_t LLVMGetDINodeTag(LLVMMetadataRef MD);
-//
-// /**
-//  * Retrieves the \c DIVariable associated with this global variable expression.
-//  * \param GVE    The global variable expression.
-//  *
-//  * @see llvm::DIGlobalVariableExpression::getVariable()
-//  */
+
+///| Get the dwarf::Tag of a DINode
+pub extern "C" fn llvm_get_di_node_tag(metadata_ref: LLVMMetadataRef) -> UInt16 = "__llvm_get_di_node_tag"
+
 // LLVMMetadataRef LLVMDIGlobalVariableExpressionGetVariable(LLVMMetadataRef GVE);
-//
-// /**
-//  * Retrieves the \c DIExpression associated with this global variable expression.
-//  * \param GVE    The global variable expression.
-//  *
-//  * @see llvm::DIGlobalVariableExpression::getExpression()
-//  */
+
+///| Retrieves the DIVariable associated with this global variable expression.
+///
+///  - see `llvm::DIGlobalVariableExpression::getVariable()`
+pub extern "C" fn llvm_di_global_variable_expression_get_variable(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_variable"
+
 // LLVMMetadataRef LLVMDIGlobalVariableExpressionGetExpression(
 //     LLVMMetadataRef GVE);
-//
-// /**
-//  * Get the metadata of the file associated with a given variable.
-//  * \param Var     The variable object.
-//  *
-//  * @see DIVariable::getFile()
-//  */
+
+///| Retrieves the \c DIExpression associated with this global variable expression.
+///
+/// - see `llvm::DIGlobalVariableExpression::getExpression()`
+pub extern "C" fn llvm_di_global_variable_expression_get_expression(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_expression"
+
 // LLVMMetadataRef LLVMDIVariableGetFile(LLVMMetadataRef Var);
-//
-// /**
-//  * Get the metadata of the scope associated with a given variable.
-//  * \param Var     The variable object.
-//  *
-//  * @see DIVariable::getScope()
-//  */
+
+///| Get the metadata of the file associated with a given variable.
+/// 
+/// - `see DIVariable::getFile()`
+pub extern "C" fn llvm_di_variable_get_file(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_variable_get_file"
+
 // LLVMMetadataRef LLVMDIVariableGetScope(LLVMMetadataRef Var);
-//
-// /**
-//  * Get the source line where this \c DIVariable is declared.
-//  * \param Var     The DIVariable.
-//  *
-//  * @see DIVariable::getLine()
-//  */
+
+///| Get the metadata of the scope associated with a given variable.
+/// 
+/// - see `DIVariable::getScope()`
+pub extern "C" fn llvm_di_variable_get_scope(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_variable_get_scope"
+
 // unsigned LLVMDIVariableGetLine(LLVMMetadataRef Var);
+
+///| Get the source line where this DIVariable is declared.
+/// 
+/// - see `DIVariable::getLine()`
+pub extern "C" fn llvm_di_variable_get_line(metadata_ref: LLVMMetadataRef) -> UInt = "__llvm_di_variable_get_line"
 //
 // /**
 //  * Create a new temporary \c MDNode.  Suitable for use in constructing cyclic
@@ -1007,23 +1121,19 @@
 //  */
 // LLVMMetadataRef LLVMTemporaryMDNode(LLVMContextRef Ctx, LLVMMetadataRef *Data,
 //                                     size_t NumElements);
-//
-// /**
-//  * Deallocate a temporary node.
-//  *
-//  * Calls \c replaceAllUsesWith(nullptr) before deleting, so any remaining
-//  * references will be reset.
-//  * \param TempNode    The temporary metadata node.
-//  */
+
+
 // void LLVMDisposeTemporaryMDNode(LLVMMetadataRef TempNode);
-//
-// /**
-//  * Replace all uses of temporary metadata.
-//  * \param TempTargetMetadata    The temporary metadata node.
-//  * \param Replacement           The replacement metadata node.
-//  */
+///| Deallocate a temporary node.
+/// 
+/// Calls replaceAllUsesWith(nullptr) before deleting, so any remaining
+/// references will be reset.
+pub extern "C" fn llvm_dispose_temporary_md_node(metadata_ref: LLVMMetadataRef) = "__llvm_dispose_temporary_md_node"
+
 // void LLVMMetadataReplaceAllUsesWith(LLVMMetadataRef TempTargetMetadata,
 //                                     LLVMMetadataRef Replacement);
+///| Replace all uses of temporary metadata.
+pub extern "C" fn llvm_metadata_replace_all_uses_with(temp_target_metadata: LLVMMetadataRef, replacement: LLVMMetadataRef) = "__llvm_metadata_replace_all_uses_with"
 //
 // /**
 //  * Create a new descriptor for the specified global variable that is temporary
@@ -1066,6 +1176,20 @@
 // LLVMDbgRecordRef LLVMDIBuilderInsertDeclareRecordBefore(
 //     LLVMDIBuilderRef Builder, LLVMValueRef Storage, LLVMMetadataRef VarInfo,
 //     LLVMMetadataRef Expr, LLVMMetadataRef DebugLoc, LLVMValueRef Instr);
+
+/// The debug format can be switched later after inserting the records using
+/// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
+/// 
+/// Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
+/// See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
+pub extern "C" fn llvm_di_builder_insert_declare_record_before(
+  builder_ref: LLVMDIBuilderRef,
+  storage: LLVMValueRef,
+  var_info: LLVMMetadataRef,
+  expr: LLVMMetadataRef,
+  debug_loc: LLVMMetadataRef,
+  instr: LLVMValueRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_declare_record_before"
 //
 // /**
 //  * Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
@@ -1087,7 +1211,27 @@
 // LLVMDbgRecordRef LLVMDIBuilderInsertDeclareRecordAtEnd(
 //     LLVMDIBuilderRef Builder, LLVMValueRef Storage, LLVMMetadataRef VarInfo,
 //     LLVMMetadataRef Expr, LLVMMetadataRef DebugLoc, LLVMBasicBlockRef Block);
-//
+
+///| Insert a Declare DbgRecord at the end of the given basic block.
+///
+/// Insert a Declare DbgRecord at the end of the given basic block. If the basic
+/// block has a terminator instruction, the record is inserted before that
+/// terminator instruction.
+///
+/// Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
+/// See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
+/// 
+/// The debug format can be switched later after inserting the records using
+/// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
+pub extern "C" fn llvm_di_builder_insert_declare_record_at_end(
+  builder_ref: LLVMDIBuilderRef,
+  storage: LLVMValueRef,
+  var_info: LLVMMetadataRef,
+  expr: LLVMMetadataRef,
+  debug_loc: LLVMMetadataRef,
+  block: LLVMBasicBlockRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_declare_record_at_end"
+
 // /**
 //  * Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
 //  * See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
@@ -1106,7 +1250,24 @@
 // LLVMDbgRecordRef LLVMDIBuilderInsertDbgValueRecordBefore(
 //     LLVMDIBuilderRef Builder, LLVMValueRef Val, LLVMMetadataRef VarInfo,
 //     LLVMMetadataRef Expr, LLVMMetadataRef DebugLoc, LLVMValueRef Instr);
-//
+
+///| Insert a new debug record before the given instruction.
+///
+/// Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
+/// See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
+/// 
+/// The debug format can be switched later after inserting the records using
+/// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
+/// 
+pub extern "C" fn llvm_di_builder_insert_dbg_value_record_before(
+  builder_ref: LLVMDIBuilderRef,
+  val: LLVMValueRef,
+  var_info: LLVMMetadataRef,
+  expr: LLVMMetadataRef,
+  debug_loc: LLVMMetadataRef,
+  instr: LLVMValueRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_dbg_value_record_before"
+
 // /**
 //  * Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
 //  * See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
@@ -1127,7 +1288,27 @@
 // LLVMDbgRecordRef LLVMDIBuilderInsertDbgValueRecordAtEnd(
 //     LLVMDIBuilderRef Builder, LLVMValueRef Val, LLVMMetadataRef VarInfo,
 //     LLVMMetadataRef Expr, LLVMMetadataRef DebugLoc, LLVMBasicBlockRef Block);
-//
+
+///| Insert a new debug record at the end of the given basic block. If the
+///
+/// Insert a new debug record at the end of the given basic block.
+/// basic block has a terminator instruction, the record is inserted before
+/// that terminator instruction.
+///
+/// Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
+/// See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
+/// 
+/// The debug format can be switched later after inserting the records using
+/// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
+pub extern "C" fn llvm_di_builder_insert_dbg_value_record_at_end(
+  builder_ref: LLVMDIBuilderRef,
+  val: LLVMValueRef,
+  var_info: LLVMMetadataRef,
+  expr: LLVMMetadataRef,
+  debug_loc: LLVMMetadataRef,
+  block: LLVMBasicBlockRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_dbg_value_record_at_end"
+
 // /**
 //  * Create a new descriptor for a local auto variable.
 //  * \param Builder         The DIBuilder.
@@ -1164,43 +1345,45 @@
 //     size_t NameLen, unsigned ArgNo, LLVMMetadataRef File, unsigned LineNo,
 //     LLVMMetadataRef Ty, LLVMBool AlwaysPreserve, LLVMDIFlags Flags);
 //
-// /**
-//  * Get the metadata of the subprogram attached to a function.
-//  *
-//  * @see llvm::Function::getSubprogram()
-//  */
+
 // LLVMMetadataRef LLVMGetSubprogram(LLVMValueRef Func);
-//
-// /**
-//  * Set the subprogram attached to a function.
-//  *
-//  * @see llvm::Function::setSubprogram()
-//  */
+
+///| Get the metadata of the subprogram attached to a function.
+/// 
+/// - see `llvm::Function::getSubprogram()`
+pub extern "C" fn llvm_get_subprogram(func: LLVMValueRef) -> LLVMMetadataRef = "__llvm_get_subprogram"
+
 // void LLVMSetSubprogram(LLVMValueRef Func, LLVMMetadataRef SP);
-//
-// /**
-//  * Get the line associated with a given subprogram.
-//  * \param Subprogram     The subprogram object.
-//  *
-//  * @see DISubprogram::getLine()
-//  */
+
+///| Set the subprogram attached to a function.
+///
+/// - see `llvm::Function::setSubprogram()`
+pub extern "C" fn llvm_set_subprogram(func: LLVMValueRef, sp: LLVMMetadataRef) = "__llvm_set_subprogram"
+
 // unsigned LLVMDISubprogramGetLine(LLVMMetadataRef Subprogram);
-//
-// /**
-//  * Get the debug location for the given instruction.
-//  *
-//  * @see llvm::Instruction::getDebugLoc()
-//  */
+
+///| Get the line associated with a given subprogram.
+///
+/// - see `DISubprogram::getLine()`
+pub extern "C" fn llvm_di_subprogram_get_line(subprogram: LLVMMetadataRef) -> UInt = "__llvm_di_subprogram_get_line"
+
+
 // LLVMMetadataRef LLVMInstructionGetDebugLoc(LLVMValueRef Inst);
-//
-// /**
-//  * Set the debug location for the given instruction.
-//  *
-//  * To clear the location metadata of the given instruction, pass NULL to \p Loc.
-//  *
-//  * @see llvm::Instruction::setDebugLoc()
-//  */
+
+///| Get the debug location for the given instruction.
+///
+/// - see `llvm::Instruction::getDebugLoc()`
+pub extern "C" fn llvm_instruction_get_debug_loc(inst: LLVMValueRef) -> LLVMMetadataRef = "__llvm_instruction_get_debug_loc"
+
 // void LLVMInstructionSetDebugLoc(LLVMValueRef Inst, LLVMMetadataRef Loc);
+
+///| Set the debug location for the given instruction.
+///
+/// To clear the location metadata of the given instruction, pass NULL to Loc.
+///
+/// - see `llvm::Instruction::setDebugLoc()`
+pub extern "C" fn llvm_instruction_set_debug_loc(inst: LLVMValueRef, loc: LLVMMetadataRef) = "__llvm_instruction_set_debug_loc"
+
 //
 // /**
 //  * Create a new descriptor for a label
@@ -1233,24 +1416,34 @@
 // LLVMDbgRecordRef LLVMDIBuilderInsertLabelBefore(
 //     LLVMDIBuilderRef Builder, LLVMMetadataRef LabelInfo,
 //     LLVMMetadataRef Location, LLVMValueRef InsertBefore);
-//
-// /**
-//  * Insert a new llvm.dbg.label intrinsic call
-//  *
-//  * \param Builder         The DIBuilder.
-//  * \param LabelInfo       The Label's debug info descriptor
-//  * \param Location        The debug info location
-//  * \param InsertAtEnd     Location for the new intrinsic.
-//  *
-//  * @see llvm::DIBuilder::insertLabel()
-//  */
+
+///| Insert a new llvm.dbg.label intrinsic call.
+///
+/// - see `llvm::DIBuilder::insertLabel()`
+pub extern "C" fn llvm_di_builder_insert_label_before(
+  builder_ref: LLVMDIBuilderRef,
+  label_info: LLVMMetadataRef,
+  location: LLVMMetadataRef,
+  insert_before: LLVMValueRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_label_before"
+
 // LLVMDbgRecordRef LLVMDIBuilderInsertLabelAtEnd(
 //     LLVMDIBuilderRef Builder, LLVMMetadataRef LabelInfo,
 //     LLVMMetadataRef Location, LLVMBasicBlockRef InsertAtEnd);
-//
-// /**
-//  * Obtain the enumerated type of a Metadata instance.
-//  *
-//  * @see llvm::Metadata::getMetadataID()
-//  */
+
+///| Insert a new llvm.dbg.label intrinsic call.
+///
+/// - see `llvm::DIBuilder::insertLabel()`
+pub extern "C" fn llvm_di_builder_insert_label_at_end(
+  builder_ref: LLVMDIBuilderRef,
+  label_info: LLVMMetadataRef,
+  location: LLVMMetadataRef,
+  insert_at_end: LLVMBasicBlockRef
+) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_label_at_end"
+
 // LLVMMetadataKind LLVMGetMetadataKind(LLVMMetadataRef Metadata);
+
+///| Obtain the enumerated type of a Metadata instance.
+///
+/// - see `llvm::Metadata::getMetadataID()`
+pub extern "C" fn llvm_get_metadata_kind(metadata_ref: LLVMMetadataRef) -> LLVMMetadataKind = "__llvm_get_metadata_kind"
