@@ -109,8 +109,7 @@ test "Function Value Test" {
   let i32_ty = context.i32_type()
   let f64_ty = context.f64_type()
 
-  let foo_ty = i32_ty.fn_type_unsafe([
-    f64_ty.as_type_ref(), bool_ty.as_type_ref()])
+  let foo_ty = i32_ty.fn_type([f64_ty, bool_ty])
   let foo_val = llvm_module.add_function("foo", foo_ty)
 
   // get_linkage

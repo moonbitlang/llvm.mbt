@@ -161,21 +161,6 @@ pub fn VectorType::fn_type(self: VectorType, param_types: Array[&BasicMetadataTy
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `VectorType` for its return type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type().as_type_ref();
-/// let vector_type = i32_type.vector_type(8);
-/// let fn_type = vector_type.fn_type_unsafe([i32_type]);
-/// inspect!(fn_type, "<8 x i32> (i32)")
-/// ```
-pub fn VectorType::fn_type_unsafe(self: VectorType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Creates an `ArrayType` with this `VectorType` for its element type.
 ///
 /// ## Example (Not Tested)

@@ -12,4 +12,4 @@
 pub fn llvm_link_modules(dest: LLVMModuleRef, src: LLVMModuleRef) -> Bool {
   __llvm_link_modules2(dest, src).to_moonbit_bool()
 }
-extern "C" fn __llvm_link_modules2(dest: LLVMModuleRef, src: LLVMModuleRef) -> LLVMBool = "__llvm_link_modules2"
+extern "C" fn __llvm_link_modules2(dest: LLVMModuleRef, src: LLVMModuleRef) -> LLVMBool = "LLVMLinkModules2"

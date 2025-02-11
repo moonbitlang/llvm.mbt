@@ -92,24 +92,8 @@ pub fn IntType::const_zero(self: IntType) -> IntValue {
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// inspect!(fn_type, "i32 ()")
 /// ```
-/// @alert CompilerBug "This function will cause Compiler Bug, Use `fn_type_unsafe` instead."
 pub fn IntType::fn_type(self: IntType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-///| Creates a `FunctionType` with this `IntType` for its return type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type_unsafe([i32_type.as_type_ref()]);
-/// inspect!(fn_type, "i32 ()")
-/// ```
-// @alert WillRemove "This function will be removed once the bug in the compiler is fixed."
-pub fn IntType::fn_type_unsafe(self: IntType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool=false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 ///| Creates an `ArrayType` with this `IntType` as its element type.

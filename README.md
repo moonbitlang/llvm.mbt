@@ -104,8 +104,7 @@ fn main {
   let builder = context.create_builder()
 
   let i32_ty = context.i32_type()
-  // let fn_ty = i32_ty.fn_type([i32_ty, i32_ty], false)
-  let fn_ty = i32_ty.fn_type_unsafe([i32_ty.as_type_ref(), i32_ty.as_type_ref()])
+  let fn_ty = i32_ty.fn_type([i32_ty, i32_ty])
   let f = llvm_module.add_function("add", fn_ty)
 
   let param_a = f.get_nth_param(0).unwrap()
@@ -245,8 +244,7 @@ fn main {
   let builder = context.create_builder()
 
   let i32_ty = context.i32_type()
-  // let fn_ty = i32_ty.fn_type([i32_ty, i32_ty], false)
-  let fn_ty = i32_ty.fn_type_unsafe([i32_ty.as_type_ref(), i32_ty.as_type_ref()])
+  let fn_ty = i32_ty.fn_type([i32_ty, i32_ty])
   let f = llvm_module.add_function("add", fn_ty)
 
   let param_a = f.get_nth_param(0).unwrap()

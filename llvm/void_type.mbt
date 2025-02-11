@@ -54,21 +54,6 @@ pub fn VoidType::fn_type(self: VoidType, param_types: Array[&BasicMetadataType],
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `VoidType` for its return type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let void_type = context.void_type();
-/// let i32_type = context.i32_type();
-/// let fn_type = void_type.fn_type_unsafe([i32_type.as_type_ref()]);
-/// inspect!(fn_type, "void (i32)")
-/// ```
-pub fn VoidType::fn_type_unsafe(self: VoidType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Gets the alignment of this `VoidType`. Value may vary depending on the target architecture.
 ///
 /// ## Example

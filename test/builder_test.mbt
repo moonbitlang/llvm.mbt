@@ -4,11 +4,7 @@ test "Builder Test" {
   let i32_ty = context.i32_type();
   let void_ty = context.void_type();
 
-  // let fty = void_ty.fn_type([i32_ty, f32_ty, f64_ty, bool_ty]);
-  let fty = void_ty.fn_type_unsafe([
-    i32_ty.as_type_ref(),
-    i32_ty.as_type_ref(),
-  ]);
+  let fty = void_ty.fn_type([i32_ty, i32_ty]);
 
   let fval = lmodule.add_function("foo", fty);
   let bb = context.append_basic_block(fval, "entry");

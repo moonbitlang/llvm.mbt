@@ -1,9 +1,9 @@
 // LLVMTypes
 type LLVMBool Int derive(Eq)
-pub type LLVMAttributeIndex UInt derive(Eq)
-pub type LLVMFastMathFlags UInt derive(Eq)
-pub type LLVMDWARFTypeEncoding UInt derive(Eq)
-pub type LLVMMetadataKind UInt derive(Eq)
+pub(all) type LLVMAttributeIndex UInt derive(Eq)
+pub(all) type LLVMFastMathFlags UInt derive(Eq)
+pub(all) type LLVMDWARFTypeEncoding UInt derive(Eq)
+pub(all) type LLVMMetadataKind UInt derive(Eq)
 
 // Dummy function just for eliminating the warning
 pub fn LLVMAttributeIndex::new(idx: UInt) -> LLVMAttributeIndex {
@@ -53,6 +53,8 @@ pub type LLVMModuleProviderRef
 ///| llvm pass manager
 pub type LLVMPassManagerRef
 
+pub type LLVMPassRegistryRef 
+
 ///| llvm pass builder options
 pub type LLVMPassBuilderOptionsRef
 
@@ -87,6 +89,9 @@ pub type LLVMDbgRecordRef
 pub type LLVMGenericValueRef
 pub type LVMExecutionEngineRef
 pub type LVMMCJITMemoryManagerRef
+
+pub type LLVMRemarkStringRef
+
 
 pub impl Eq for LLVMTypeRef with op_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
   self.is_equal(other)
@@ -2020,5 +2025,40 @@ pub fn LLVMVerifierFailureAction::from_int(idx: Int) -> LLVMVerifierFailureActio
     1 => LLVMPrintMessageAction
     2 => LLVMReturnStatusAction
     _ => abort("Invalid LLVMVerifierFailureAction Number in `LLVMVerifierFailureAction::from_int`")
+  }
+}
+
+pub enum LLVMRemarkType {
+  LLVMRemarkTypeUnknown
+  LLVMRemarkTypePassed
+  LLVMRemarkTypeMissed
+  LLVMRemarkTypeAnalysis
+  LLVMRemarkTypeAnalysisFPCommute
+  LLVMRemarkTypeAnalysisAliasing
+  LLVMRemarkTypeFailure
+}
+
+pub fn LLVMRemarkType::to_int(self: LLVMRemarkType) -> Int {
+  match self {
+    LLVMRemarkTypeUnknown => 0
+    LLVMRemarkTypePassed => 1
+    LLVMRemarkTypeMissed => 2
+    LLVMRemarkTypeAnalysis => 3
+    LLVMRemarkTypeAnalysisFPCommute => 4
+    LLVMRemarkTypeAnalysisAliasing => 5
+    LLVMRemarkTypeFailure => 6
+  }
+}
+
+pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
+  match idx {
+    0 => LLVMRemarkTypeUnknown
+    1 => LLVMRemarkTypePassed
+    2 => LLVMRemarkTypeMissed
+    3 => LLVMRemarkTypeAnalysis
+    4 => LLVMRemarkTypeAnalysisFPCommute
+    5 => LLVMRemarkTypeAnalysisAliasing
+    6 => LLVMRemarkTypeFailure
+    _ => abort("Invalid LLVMRemarkType Number in `LLVMRemarkType::from_int`")
   }
 }

@@ -110,21 +110,6 @@ pub fn ArrayType::fn_type(self: ArrayType, param_types: Array[&BasicMetadataType
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `ArrayType` for its return type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type().as_type_ref();
-/// let array_type = i32_type.array_type(8);
-/// let fn_type = array_type.fn_type_unsafe([i32_type]);
-/// inspect!(fn_type, "[8 x i32] (i32)")
-/// ```
-pub fn ArrayType::fn_type_unsafe(self: ArrayType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Creates a `StructType` with this `ArrayType` for its return type.
 ///
 /// ## Example (Not Tested)

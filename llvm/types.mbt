@@ -70,18 +70,6 @@ fn Type::fn_type(
   FunctionType::new(fty_ref)
 }
 
-fn Type::fn_type_unsafe(
-  self: Type,
-  param_types: Array[@unsafe.LLVMTypeRef],
-  is_var_arg~: Bool = false
-) -> FunctionType {
-  let ret_ty = self.as_type_ref()
-  let type_refs = param_types
-  let fty_ref = @unsafe.llvm_function_type(ret_ty, type_refs, is_var_arg)
-  FunctionType::new(fty_ref)
-}
-
-
 // REVIEW: Why not check size is zero?
 fn array_type(self: Type, size: UInt) -> ArrayType {
   let r = @unsafe.llvm_array_type(self.as_type_ref(), size)

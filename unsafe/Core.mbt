@@ -5898,37 +5898,6 @@ pub fn LLVMContextRef::create_builder(self: LLVMContextRef) -> LLVMBuilderRef {
   llvm_create_builder_in_context(self)
 }
 
-
-///| Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
-///
-/// Read LLVM IR from a memory buffer and convert it into an in-memory Module
-/// object. Returns 0 on success.
-/// Optionally returns a human-readable description of any errors that
-/// occurred during parsing IR. OutMessage must be disposed with
-/// LLVMDisposeMessage.
-/// 
-/// - see llvm::ParseIR()
-/// 
-extern "C" fn __llvm_parse_ir_in_context(
-  ctx: LLVMContextRef, membuf: LLVMMemoryBufferRef
-) -> (LLVMModuleRef, CStr, LLVMBool) = "__llvm_parse_ir_in_context"
-
-///| Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
-///
-/// Read LLVM IR from a memory buffer and convert it into an in-memory Module
-/// object. Returns 0 on success.
-/// Optionally returns a human-readable description of any errors that
-/// occurred during parsing IR. OutMessage must be disposed with
-/// LLVMDisposeMessage.
-/// 
-/// - see llvm::ParseIR()
-/// 
-pub fn LLVMContextRef::parse_ir(self: LLVMContextRef, membuf: LLVMMemoryBufferRef) -> (LLVMModuleRef, String, Bool) {
-  let (mod, err, failed) = __llvm_parse_ir_in_context(self, membuf);
-  (mod, c_str_to_moonbit_str(err), failed.to_moonbit_bool())
-}
-
-
 ///| Create a new IR builder in the global context.
 pub extern "C" fn llvm_create_builder() -> LLVMBuilderRef = "__llvm_create_builder"
 

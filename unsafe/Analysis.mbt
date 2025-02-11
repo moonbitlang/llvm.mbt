@@ -30,8 +30,6 @@ pub extern "C" fn llvm_verify_function(
 // void LLVMViewFunctionCFG(LLVMValueRef Fn);
 // void LLVMViewFunctionCFGOnly(LLVMValueRef Fn);
 
-// TODO: Inplement C function
-pub extern "C" fn llvm_view_function_cfg(fn_ref: LLVMValueRef) =  "__llvm_view_function_cfg"
+pub extern "C" fn llvm_view_function_cfg(fn_ref: LLVMValueRef) =  "LLVMViewFunctionCFG"
 
-// TODO: Inplement C function
-pub extern "C" fn llvm_view_function_cfg_only(fn_ref: LLVMValueRef) =  "__llvm_view_function_cfg_only"
+pub extern "C" fn llvm_view_function_cfg_only(fn_ref: LLVMValueRef) =  "LLVMViewFunctionCFGOnly"

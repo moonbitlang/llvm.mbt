@@ -101,21 +101,6 @@ pub fn PointerType::fn_type(self: PointerType, param_types: Array[&BasicMetadata
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `PointerType` for its return type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let fn_type = ptr_type.fn_type_unsafe([i32_type.as_type_ref()]);
-/// inspect!(fn_type, "ptr (i32)")
-/// ```
-pub fn PointerType::fn_type_unsafe(self: PointerType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Creates an `ArrayType` with this `PointerType` as its element type.
 ///
 /// ## Example

@@ -22,11 +22,6 @@ pub fn MetadataType::fn_type(self: MetadataType, param_types: Array[&BasicMetada
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `MetadataType` for its return type.
-pub fn MetadataType::fn_type_unsafe(self: MetadataType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 /// Gets a reference to the `Context` this `MetadataType` was created in.
 ///
 /// ## Example (Not Tested)

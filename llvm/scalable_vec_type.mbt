@@ -170,21 +170,6 @@ pub fn ScalableVectorType::fn_type(self: ScalableVectorType, param_types: Array[
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `ScalableVectorType` for its return type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type().as_type_ref();
-/// let scalable_vector_type = i32_type.scalable_vector_type(8);
-/// let fn_type = scalable_vector_type.fn_type_unsafe([i32_type]);
-/// inspect!(fn_type, "<8 x i32> (i32)")
-/// ```
-pub fn ScalableVectorType::fn_type_unsafe(self: ScalableVectorType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool=false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Creates an `ArrayType` with this `ScalableVectorType` for its element type.
 ///
 /// ## Example (Not Tested)

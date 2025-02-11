@@ -150,22 +150,6 @@ pub fn StructType::fn_type(self: StructType, param_types: Array[&BasicMetadataTy
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
-///| Creates a `FunctionType` with this `StructType` for its return type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type().as_type_ref();
-/// let i64_type = context.i64_type().as_type_ref();
-/// let struct_type = context.struct_type_unsafe([i32_type, i64_type]);
-/// let fn_type = struct_type.fn_type_unsafe([i32_type, i64_type]);
-/// inspect!(fn_type, "<{ i32, i64 }> (i32, i64)")
-/// ```
-pub fn StructType::fn_type_unsafe(self: StructType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
-}
-
 ///| Creates an `ArrayType` with this `StructType` as its element type.
 ///
 /// ## Example
@@ -322,36 +306,6 @@ pub fn StructType::set_body(
 ) -> Bool {
   let is_opaque = self.is_opaque()
   let field_types =  field_types.map(fn (t) {t.as_type_ref()})
-
-  @unsafe.llvm_struct_set_body(self.as_type_ref(), field_types, is_packed)
-  is_opaque
-}
-
-///| Defines the body of a `StructType`.
-///
-/// If the struct is an opaque type, it will no longer be after this call.
-///
-/// Resetting the `packed` state of a non-opaque struct type may not work.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let opaque_struct = context.opaque_struct_type("opaque_struct");
-/// assert_true!(opaque_struct.is_opaque())
-///
-/// let i32_type = context.i32_type().as_type_ref();
-/// let f64_type = context.f64_type().as_type_ref();
-/// opaque_struct.set_body_unsafe([i32_type, f64_type], packed=true);
-/// assert_false!(opaque_struct.is_opaque())
-/// inspect!(opaque_struct, "%opaque_struct = type { i32, double }")
-/// ```
-pub fn StructType::set_body_unsafe(
-  self: StructType,
-  field_types: Array[@unsafe.LLVMTypeRef],
-  is_packed~: Bool=false
-) -> Bool {
-  let is_opaque = self.is_opaque()
 
   @unsafe.llvm_struct_set_body(self.as_type_ref(), field_types, is_packed)
   is_opaque

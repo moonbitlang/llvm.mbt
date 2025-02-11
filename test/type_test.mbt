@@ -1,15 +1,4 @@
-fn dummy_test() -> Unit!Error {
-  let context = @llvm.Context::create()
-
-  let bool_ty = context.bool_type()
-  inspect!(bool_ty, content="i1")
-
-  context.drop()
-}
-
-
 test "Integer Type Test" {
-  dummy_test!()
 
   let context = @llvm.Context::create()
 
@@ -49,8 +38,7 @@ test "Integer Type Test" {
   // const_zero
 
   // fn_type
-  // let fn_type = i32_ty.fn_type([i16_ty, i64_ty])
-  let fn_type = i32_ty.fn_type_unsafe([i16_ty.as_type_ref(), i64_ty.as_type_ref()])
+  let fn_type = i32_ty.fn_type([i16_ty, i64_ty])
   inspect!(fn_type, content="i32 (i16, i64)")
 
   // array_type
@@ -352,8 +340,7 @@ test "Void Type Test" {
 
   inspect!(void_ty, content="void")
 
-  // inspect!(void_ty.fn_type([], is_var_arg=false), content="void ()")
-  inspect!(void_ty.fn_type_unsafe([]), content="void ()")
+  inspect!(void_ty.fn_type([], is_var_arg=false), content="void ()")
   
   inspect!(
     void_ty.get_alignment(),
@@ -371,10 +358,7 @@ test "Struct Type Test" {
   let i32_ty = context.i32_type()
   let f64_ty = context.f64_type()
 
-  // let struct_ty = context.struct_type([i32_ty, f64_ty], is_packed=false)
-  let struct_ty = context.struct_type_unsafe(
-    [i32_ty.as_type_ref(), f64_ty.as_type_ref()]
-  )
+  let struct_ty = context.struct_type([i32_ty, f64_ty])
   let opaque_struct_ty = context.opaque_struct_type("foo")
 
   inspect!(struct_ty, content="{ i32, double }")
@@ -411,7 +395,7 @@ test "Struct Type Test" {
 
   // fn_type
   inspect!(
-    struct_ty.fn_type_unsafe([i32_ty.as_type_ref(), f64_ty.as_type_ref()]),
+    struct_ty.fn_type([i32_ty, f64_ty]),
     content="{ i32, double } (i32, double)"
   )
 
@@ -446,12 +430,11 @@ test "Struct Type Test" {
 
   // set body (The following code is problematic)
   let i64_ty = context.i64_type()
-  let _ = struct_ty.set_body_unsafe(
-    [i32_ty.as_type_ref(), i64_ty.as_type_ref()]
+  let _ = struct_ty.set_body(
+    [i32_ty, i64_ty]
   )
-  let _ = opaque_struct_ty.set_body_unsafe(
-    [i64_ty.as_type_ref(), f64_ty.as_type_ref()],
-    is_packed=true
+  let _ = opaque_struct_ty.set_body(
+    [i64_ty, f64_ty],is_packed=true
   )
   inspect!(opaque_struct_ty, content="%foo = type <{ i64, double }>")
   assert_true!(opaque_struct_ty.is_packed())
@@ -469,12 +452,9 @@ test "Function Type Test" {
   let f32_ty = context.f32_type()
   let f64_ty = context.f64_type()
 
-  // let foo = i32_ty.fn_type([])
-  // let bar = i32_ty.fn_type([i32_ty])
-  // let baz = i32_ty.fn_type([i32_ty, i32_ty])
-  let foo = i32_ty.fn_type_unsafe([])
-  let bar = f32_ty.fn_type_unsafe([i32_ty.as_type_ref()])
-  let baz = f64_ty.fn_type_unsafe([i32_ty.as_type_ref(), i32_ty.as_type_ref()])
+  let foo = i32_ty.fn_type([])
+  let bar = f32_ty.fn_type([i32_ty])
+  let baz = f64_ty.fn_type([i32_ty, i32_ty])
 
   // print
   inspect!(foo, content ="i32 ()")
@@ -545,11 +525,7 @@ test "Array Type Test" {
   inspect!(arr_ty.ptr_type(addr_space), content="ptr")
 
   // fn_type
-  // inspect!(arr_ty.fn_type([i32_ty]), content="[8 x i32] (i32)")
-  inspect!(
-    arr_ty.fn_type_unsafe([i32_ty.as_type_ref()]),
-    content="[8 x i32] (i32)"
-  )
+  inspect!(arr_ty.fn_type([i32_ty]), content="[8 x i32] (i32)")
 
   // array_type
   inspect!(arr_ty.array_type(4), content="[4 x [8 x i32]]")
@@ -610,10 +586,8 @@ test "Vector Type Test" {
   inspect!(i32_vty.ptr_type(addr_space), content="ptr")
 
   // fn_type
-  // let fty1 = i32_ty.fn_type([i32_vty])
-  // let fty2 = i32_vty.fn_type([i32_ty])
-  let fty1 = i32_ty.fn_type_unsafe([i32_vty.as_type_ref()])
-  let fty2 = i32_vty.fn_type_unsafe([i32_ty.as_type_ref()])
+  let fty1 = i32_ty.fn_type([i32_vty])
+  let fty2 = i32_vty.fn_type([i32_ty])
   inspect!(fty1, content="i32 (<8 x i32>)")
   inspect!(fty2, content="<8 x i32> (i32)")
 

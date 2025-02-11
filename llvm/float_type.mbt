@@ -36,27 +36,10 @@ pub fn FloatType::as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
 /// let fn_val = f32_type.fn_type([i32_type]);
 /// inspect!(fn_val, "float (i32)")
 /// ```
-/// @alert CompilerBug "This function will cause Compiler Bug, Use `fn_type_unsafe` instead."
 pub fn FloatType::fn_type(
   self: FloatType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-///| Creates a constant `FloatValue` of this `FloatType`.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let f32_type = context.f32_type();
-/// let i32_type = context.i32_type();
-/// let fn_val = f32_type.fn_type_unsafe([i32_type.as_type_ref()]);
-/// inspect!(fn_val, "float (i32)")
-/// ```
-// @alert WillRemove "This function will be removed once the bug in the compiler is fixed."
-pub fn FloatType::fn_type_unsafe(self: FloatType, param_types: Array[@unsafe.LLVMTypeRef], is_var_arg~: Bool=false) -> FunctionType {
-  self.ty.fn_type_unsafe(param_types, is_var_arg=is_var_arg)
 }
 
 ///| Creates an `ArrayType` with this `FloatType` as its element type.
