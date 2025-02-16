@@ -19,11 +19,11 @@ pub extern "C" fn llvm_dispose_message(message: CStr) = "__llvm_dispose_message"
 /// 
 /// Every call to this function should be paired with a call to
 /// `llvm_context_dispose()` or the context will leak memory.
-pub extern "C" fn llvm_context_create() -> LLVMContextRef = "__llvm_context_create"
+pub extern "C" fn llvm_context_create() -> LLVMContextRef = "LLVMContextCreate"
 
 ///| Obtain the global context instance.
 /// 
-pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "__llvm_get_global_context"
+pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "LLVMGetGlobalContext"
 
 // pub extern "C" fn llvm_context_set_diagnostic_handler(context: LLVMContextRef, handler: LLVMDiagnosticHandler, diagnostic_context: Ptr[Void]) = "__llvm_context_set_diagnostic_handler"
 
@@ -35,7 +35,7 @@ pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "__llvm_get_glob
 ///| Retrieve whether the given context is set to discard all value names.
 ///
 /// - see `LLVMContext::shouldDiscardValueNames()`
-pub extern "C" fn llvm_context_should_discard_value_names(context: LLVMContextRef) -> LLVMBool = "__llvm_context_should_discard_value_names"
+pub extern "C" fn llvm_context_should_discard_value_names(context: LLVMContextRef) -> LLVMBool = "LLVMContextShouldDiscardValueNames"
 pub fn LLVMContextRef::should_discard_value_names(self: LLVMContextRef) -> Bool {
   llvm_context_should_discard_value_names(self).to_moonbit_bool()
 }
@@ -46,7 +46,7 @@ pub fn LLVMContextRef::should_discard_value_names(self: LLVMContextRef) -> Bool 
 /// This can be used to save memory and runtime, especially in release mode.
 /// 
 /// - see `LLVMContext::setDiscardValueNames()`
-extern "C" fn __llvm_context_set_discard_value_names(context: LLVMContextRef, discard: LLVMBool) = "__llvm_context_set_discard_value_names"
+extern "C" fn __llvm_context_set_discard_value_names(context: LLVMContextRef, discard: LLVMBool) = "LLVMContextSetDiscardValueNames"
 
 ///| Set whether the given context discards all value names.
 /// 
@@ -72,7 +72,7 @@ pub fn LLVMContextRef::set_discard_value_names(self: LLVMContextRef, discard: Bo
 /// 
 /// This should be called for every call to `llvm_context_create()` or memory
 /// will be leaked.
-pub extern "C" fn llvm_context_dispose(context: LLVMContextRef) = "__llvm_context_dispose"
+pub extern "C" fn llvm_context_dispose(context: LLVMContextRef) = "LLVMContextDispose"
 
 ///| Destroy a context instance.
 /// 
@@ -82,12 +82,11 @@ pub fn LLVMContextRef::dispose(self: LLVMContextRef) -> Unit {
   llvm_context_dispose(self)
 }
 
-
 ///| Return a string representation of the DiagnosticInfo. Use `llvm_dispose_message` to free the string.
 /// 
 /// - see `DiagnosticInfo::print()`
 /// 
-extern "C" fn __llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> CStr = "__llvm_get_diag_info_description"
+extern "C" fn __llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> CStr = "LLVMGetDiagInfoDescription"
 
 ///| Return a string representation of the DiagnosticInfo. Use `llvm_dispose_message` to free the string.
 /// 
@@ -97,7 +96,6 @@ pub fn llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> String {
   let cstr = __llvm_get_diag_info_description(di)
   c_str_to_moonbit_str(cstr)
 }
-
 
 ///| Return an enum llvm_diagnostic_severity.
 /// 
@@ -191,7 +189,7 @@ pub fn llvm_get_string_attribute_value(a: LLVMAttributeRef) -> String {
 }
 
 ///| Check if the attribute is an enum attribute.
-extern "C" fn __llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_enum_attribute"
+extern "C" fn __llvm_is_enum_attribute(a: LLVMAttributeRef) -> LLVMBool = "LLVMIsEnumAttribute"
 
 ///| Check if the attribute is an enum attribute.
 pub fn llvm_is_enum_attribute(a: LLVMAttributeRef) -> Bool {
@@ -204,7 +202,7 @@ pub fn LLVMAttributeRef::is_enum_attribute(self: LLVMAttributeRef) -> Bool {
 }
 
 ///| Check if the attribute is a string attribute.
-extern "C" fn __llvm_is_string_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_string_attribute"
+extern "C" fn __llvm_is_string_attribute(a: LLVMAttributeRef) -> LLVMBool = "LLVMIsStringAttribute"
 
 ///| Check if the attribute is a string attribute.
 pub fn llvm_is_string_attribute(a: LLVMAttributeRef) -> Bool {
@@ -217,7 +215,7 @@ pub fn LLVMAttributeRef::is_string_attribute(self: LLVMAttributeRef) -> Bool {
 }
 
 ///| Check if the attribute is a type attribute.
-extern "C" fn __llvm_is_type_attribute(a: LLVMAttributeRef) -> LLVMBool = "__llvm_is_type_attribute"
+extern "C" fn __llvm_is_type_attribute(a: LLVMAttributeRef) -> LLVMBool = "LLVMIsTypeAttribute"
 
 ///| Check if the attribute is a type attribute.
 pub fn llvm_is_type_attribute(a: LLVMAttributeRef) -> Bool {
@@ -230,7 +228,7 @@ pub fn LLVMAttributeRef::is_type_attribute(self: LLVMAttributeRef) -> Bool {
 }
 
 ///| Obtain a Type from a context by its registered name.
-extern "C" fn __llvm_get_type_by_name(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_get_type_by_name"
+extern "C" fn __llvm_get_type_by_name(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "LLVMGetTypeByName"
 
 ///| Obtain a Type from a context by its registered name.
 pub fn llvm_get_type_by_name(context: LLVMContextRef, name: String) -> LLVMTypeRef {
@@ -314,7 +312,7 @@ pub fn LLVMModuleRef::clone(self: LLVMModuleRef) -> LLVMModuleRef {
 /// This must be called for every created module or memory will be
 /// leaked.
 /// 
-pub extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "__llvm_dispose_module"
+pub extern "C" fn llvm_dispose_module(m: LLVMModuleRef) = "LLVMDisposeModule"
 
 ///| Destroy a module instance.
 /// 
@@ -1107,7 +1105,7 @@ pub fn LLVMTypeRef::get_context(self: LLVMTypeRef) -> LLVMContextRef {
 /// 
 /// - see llvm::Type::dump()
 /// 
-pub extern "C" fn llvm_dump_type(val: LLVMTypeRef) = "__llvm_dump_type"
+pub extern "C" fn llvm_dump_type(val: LLVMTypeRef) = "LLVMDumpType"
 
 ///| Dump a representation of a type to stderr.
 /// 
@@ -1116,7 +1114,6 @@ pub extern "C" fn llvm_dump_type(val: LLVMTypeRef) = "__llvm_dump_type"
 pub fn LLVMTypeRef::dump(self: LLVMTypeRef) -> Unit {
   llvm_dump_type(self)
 }
-
 
 ///| Return a string representation of the type.
 ///
@@ -1154,7 +1151,7 @@ pub fn LLVMTypeRef::to_string(self: LLVMTypeRef) -> String {
 }
 
 ///| Obtain an interger type with 1 bit.
-pub extern "C" fn llvm_int1_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int1_type_in_context"
+pub extern "C" fn llvm_int1_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt1TypeInContext"
 
 ///| Obtain an interger type with 1 bit.
 pub fn LLVMContextRef::int1_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1162,7 +1159,7 @@ pub fn LLVMContextRef::int1_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with 8 bits.
-pub extern "C" fn llvm_int8_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int8_type_in_context"
+pub extern "C" fn llvm_int8_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt8TypeInContext"
 
 ///| Obtain an interger type with 8 bits.
 pub fn LLVMContextRef::int8_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1170,7 +1167,7 @@ pub fn LLVMContextRef::int8_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with 16 bits.
-pub extern "C" fn llvm_int16_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int16_type_in_context"
+pub extern "C" fn llvm_int16_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt16TypeInContext"
 
 ///| Obtain an interger type with 16 bits.
 pub fn LLVMContextRef::int16_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1178,7 +1175,7 @@ pub fn LLVMContextRef::int16_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with 32 bits.
-pub extern "C" fn llvm_int32_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int32_type_in_context"
+pub extern "C" fn llvm_int32_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt32TypeInContext"
 
 ///| Obtain an interger type with 32 bits.
 pub fn LLVMContextRef::int32_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1186,7 +1183,7 @@ pub fn LLVMContextRef::int32_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with 64 bits.
-pub extern "C" fn llvm_int64_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int64_type_in_context"
+pub extern "C" fn llvm_int64_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt64TypeInContext"
 
 ///| Obtain an interger type with 64 bits.
 pub fn LLVMContextRef::int64_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1194,7 +1191,7 @@ pub fn LLVMContextRef::int64_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with 128 bits.
-pub extern "C" fn llvm_int128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_int128_type_in_context"
+pub extern "C" fn llvm_int128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt128TypeInContext"
 
 ///| Obtain an interger type with 128 bits.
 pub fn LLVMContextRef::int128_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1202,7 +1199,7 @@ pub fn LLVMContextRef::int128_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain an interger type with the specified number of bits.
-pub extern "C" fn llvm_int_type_in_context(context: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type_in_context"
+pub extern "C" fn llvm_int_type_in_context(context: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "LLVMIntTypeInContext"
 
 ///| Obtain an interger type with the specified number of bits.
 pub fn LLVMContextRef::int_type(self: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef {
@@ -1210,7 +1207,7 @@ pub fn LLVMContextRef::int_type(self: LLVMContextRef, num_bits: UInt) -> LLVMTyp
 }
 
 ///| Obtain an integer type from the global context with 1 bit.
-pub extern "C" fn llvm_int1_type() -> LLVMTypeRef = "__llvm_int1_type"
+pub extern "C" fn llvm_int1_type() -> LLVMTypeRef = "LLVMInt1Type"
 
 ///| Obtain an integer type from the global context with 1 bit.
 pub fn LLVMTypeRef::int1_type() -> LLVMTypeRef {
@@ -1218,7 +1215,7 @@ pub fn LLVMTypeRef::int1_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with 8 bits.
-pub extern "C" fn llvm_int8_type() -> LLVMTypeRef = "__llvm_int8_type"
+pub extern "C" fn llvm_int8_type() -> LLVMTypeRef = "LLVMInt8Type"
 
 ///| Obtain an integer type from the global context with 8 bits.
 pub fn LLVMTypeRef::int8_type() -> LLVMTypeRef {
@@ -1226,7 +1223,7 @@ pub fn LLVMTypeRef::int8_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with 16 bits.
-pub extern "C" fn llvm_int16_type() -> LLVMTypeRef = "__llvm_int16_type"
+pub extern "C" fn llvm_int16_type() -> LLVMTypeRef = "LLVMInt16Type"
 
 ///| Obtain an integer type from the global context with 16 bits.
 pub fn LLVMTypeRef::int16_type() -> LLVMTypeRef {
@@ -1234,7 +1231,7 @@ pub fn LLVMTypeRef::int16_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with 32 bits.
-pub extern "C" fn llvm_int32_type() -> LLVMTypeRef = "__llvm_int32_type"
+pub extern "C" fn llvm_int32_type() -> LLVMTypeRef = "LLVMInt32Type"
 
 ///| Obtain an integer type from the global context with 32 bits.
 pub fn LLVMTypeRef::int32_type() -> LLVMTypeRef {
@@ -1242,7 +1239,7 @@ pub fn LLVMTypeRef::int32_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with 64 bits.
-pub extern "C" fn llvm_int64_type() -> LLVMTypeRef = "__llvm_int64_type"
+pub extern "C" fn llvm_int64_type() -> LLVMTypeRef = "LLVMInt64Type"
 
 ///| Obtain an integer type from the global context with 64 bits.
 pub fn LLVMTypeRef::int64_type() -> LLVMTypeRef {
@@ -1250,7 +1247,7 @@ pub fn LLVMTypeRef::int64_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with 128 bits.
-pub extern "C" fn llvm_int128_type() -> LLVMTypeRef = "__llvm_int128_type"
+pub extern "C" fn llvm_int128_type() -> LLVMTypeRef = "LLVMInt128Type"
 
 ///| Obtain an integer type from the global context with 128 bits.
 pub fn LLVMTypeRef::int128_type() -> LLVMTypeRef {
@@ -1258,7 +1255,7 @@ pub fn LLVMTypeRef::int128_type() -> LLVMTypeRef {
 }
 
 ///| Obtain an integer type from the global context with the specified number of bits.
-pub extern "C" fn llvm_int_type(num_bits: UInt) -> LLVMTypeRef = "__llvm_int_type"
+pub extern "C" fn llvm_int_type(num_bits: UInt) -> LLVMTypeRef = "LLVMIntType"
 
 ///| Obtain an integer type from the global context with the specified number of bits.
 pub fn LLVMTypeRef::int_type(num_bits: UInt) -> LLVMTypeRef {
@@ -1266,7 +1263,7 @@ pub fn LLVMTypeRef::int_type(num_bits: UInt) -> LLVMTypeRef {
 }
 
 ///| Return the number of bits in an integer type.
-pub extern "C" fn llvm_get_int_type_width(integer_ty: LLVMTypeRef) -> UInt = "__llvm_get_int_type_width"
+pub extern "C" fn llvm_get_int_type_width(integer_ty: LLVMTypeRef) -> UInt = "LLVMGetIntTypeWidth"
 
 ///| Return the number of bits in an integer type.
 pub fn LLVMTypeRef::get_int_type_width(self: LLVMTypeRef) -> UInt {
@@ -1274,7 +1271,7 @@ pub fn LLVMTypeRef::get_int_type_width(self: LLVMTypeRef) -> UInt {
 }
 
 ///| Obtain a 16-bit floating point type from a context.
-pub extern "C" fn llvm_half_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_half_type_in_context"
+pub extern "C" fn llvm_half_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMHalfTypeInContext"
 
 ///| Obtain a 16-bit floating point type from a context.
 pub fn LLVMContextRef::half_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1282,7 +1279,7 @@ pub fn LLVMContextRef::half_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 16-bit brain floating point type from a context.
-pub extern "C" fn llvm_bfloat_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_bfloat_type_in_context"
+pub extern "C" fn llvm_bfloat_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMBFloatTypeInContext"
 
 ///| Obtain a 16-bit brain floating point type from a context.
 pub fn LLVMContextRef::bfloat_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1290,7 +1287,7 @@ pub fn LLVMContextRef::bfloat_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 32-bit floating point type from a context.
-pub extern "C" fn llvm_float_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_float_type_in_context"
+pub extern "C" fn llvm_float_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMFloatTypeInContext"
 
 ///| Obtain a 32-bit floating point type from a context.
 pub fn LLVMContextRef::float_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1298,7 +1295,7 @@ pub fn LLVMContextRef::float_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 64-bit floating point type from a context.
-pub extern "C" fn llvm_double_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_double_type_in_context"
+pub extern "C" fn llvm_double_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMDoubleTypeInContext"
 
 ///| Obtain a 64-bit floating point type from a context.
 pub fn LLVMContextRef::double_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1306,7 +1303,7 @@ pub fn LLVMContextRef::double_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 80-bit floating point type (X87) from a context.
-pub extern "C" fn llvm_x86_fp80_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_fp80_type_in_context"
+pub extern "C" fn llvm_x86_fp80_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMX86FP80TypeInContext"
 
 ///| Obtain a 80-bit floating point type (X87) from a context.
 pub fn LLVMContextRef::x86_fp80_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1314,7 +1311,7 @@ pub fn LLVMContextRef::x86_fp80_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 128-bit floating point type (112-bit mantissa) from a context.
-pub extern "C" fn llvm_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_fp128_type_in_context"
+pub extern "C" fn llvm_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMFP128TypeInContext"
 
 ///| Obtain a 128-bit floating point type (112-bit mantissa) from a context.
 pub fn LLVMContextRef::fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1322,7 +1319,7 @@ pub fn LLVMContextRef::fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 128-bit floating point type (two 64-bits) from a context.
-pub extern "C" fn llvm_ppc_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_ppc_fp128_type_in_context"
+pub extern "C" fn llvm_ppc_fp128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMPPCFP128TypeInContext"
 
 ///| Obtain a 128-bit floating point type (two 64-bits) from a context.
 pub fn LLVMContextRef::ppc_fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1330,7 +1327,7 @@ pub fn LLVMContextRef::ppc_fp128_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Obtain a 16-bit floating point type from global context.
-pub extern "C" fn llvm_half_type() -> LLVMTypeRef = "__llvm_half_type"
+pub extern "C" fn llvm_half_type() -> LLVMTypeRef = "LLVMHalfType"
 
 ///| Obtain a 16-bit floating point type from global context.
 pub fn LLVMTypeRef::half_type() -> LLVMTypeRef {
@@ -1338,7 +1335,7 @@ pub fn LLVMTypeRef::half_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 16-bit brain floating point type from global context.
-pub extern "C" fn llvm_bfloat_type() -> LLVMTypeRef = "__llvm_bfloat_type"
+pub extern "C" fn llvm_bfloat_type() -> LLVMTypeRef = "LLVMBFloatType"
 
 ///| Obtain a 16-bit brain floating point type from global context.
 pub fn LLVMTypeRef::bfloat_type() -> LLVMTypeRef {
@@ -1346,7 +1343,7 @@ pub fn LLVMTypeRef::bfloat_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 32-bit floating point type from global context.
-pub extern "C" fn llvm_float_type() -> LLVMTypeRef = "__llvm_float_type"
+pub extern "C" fn llvm_float_type() -> LLVMTypeRef = "LLVMFloatType"
 
 ///| Obtain a 32-bit floating point type from global context.
 pub fn LLVMTypeRef::float_type() -> LLVMTypeRef {
@@ -1354,7 +1351,7 @@ pub fn LLVMTypeRef::float_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 64-bit floating point type from global context.
-pub extern "C" fn llvm_double_type() -> LLVMTypeRef = "__llvm_double_type"
+pub extern "C" fn llvm_double_type() -> LLVMTypeRef = "LLVMDoubleType"
 
 ///| Obtain a 64-bit floating point type from global context.
 pub fn LLVMTypeRef::double_type() -> LLVMTypeRef {
@@ -1362,7 +1359,7 @@ pub fn LLVMTypeRef::double_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 80-bit floating point type (X87) from global context.
-pub extern "C" fn llvm_x86_fp80_type() -> LLVMTypeRef = "__llvm_x86_fp80_type"
+pub extern "C" fn llvm_x86_fp80_type() -> LLVMTypeRef = "LLVMX86FP80Type"
 
 ///| Obtain a 80-bit floating point type (X87) from global context.
 pub fn LLVMTypeRef::x86_fp80_type() -> LLVMTypeRef {
@@ -1370,7 +1367,7 @@ pub fn LLVMTypeRef::x86_fp80_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 128-bit floating point type (112-bit mantissa) from global context.
-pub extern "C" fn llvm_fp128_type() -> LLVMTypeRef = "__llvm_fp128_type"
+pub extern "C" fn llvm_fp128_type() -> LLVMTypeRef = "LLVMFP128Type"
 
 ///| Obtain a 128-bit floating point type (112-bit mantissa) from global context.
 pub fn LLVMTypeRef::fp128_type() -> LLVMTypeRef {
@@ -1378,7 +1375,7 @@ pub fn LLVMTypeRef::fp128_type() -> LLVMTypeRef {
 }
 
 ///| Obtain a 128-bit floating point type (two 64-bits) from global context.
-pub extern "C" fn llvm_ppc_fp128_type() -> LLVMTypeRef = "__llvm_ppc_fp128_type"
+pub extern "C" fn llvm_ppc_fp128_type() -> LLVMTypeRef = "LLVMPPCFP128Type"
 
 ///| Obtain a 128-bit floating point type (two 64-bits) from global context.
 pub fn LLVMTypeRef::ppc_fp128_type() -> LLVMTypeRef {
@@ -1891,7 +1888,6 @@ pub fn LLVMTypeRef::get_pointer_address_space(self: LLVMTypeRef) -> UInt {
   llvm_get_pointer_address_space(self)
 }
 
-
 ///| Create a vector type that contains a defined type and has a specific number of elements.
 /// 
 /// The created type will exist in the context thats its element type
@@ -1899,7 +1895,7 @@ pub fn LLVMTypeRef::get_pointer_address_space(self: LLVMTypeRef) -> UInt {
 /// 
 /// - see llvm::VectorType::get()
 /// 
-pub extern "C" fn llvm_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_vector_type"
+pub extern "C" fn llvm_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "LLVMVectorType"
 
 ///| Create a vector type that contains a defined type and has a specific number of elements.
 /// 
@@ -1912,15 +1908,13 @@ pub fn LLVMTypeRef::vector_type(self: LLVMTypeRef, element_count: UInt) -> LLVMT
   llvm_vector_type(self, element_count)
 }
 
-
-
 ///| Create a vector type that contains a defined type and has a scalable number of elements.
 /// 
 /// The created type will exist in the context thats its element type
 /// exists in.
 /// 
 /// - see llvm::ScalableVectorType::get()
-pub extern "C" fn llvm_scalable_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "__llvm_scalable_vector_type"
+pub extern "C" fn llvm_scalable_vector_type(element_type: LLVMTypeRef, element_count: UInt) -> LLVMTypeRef = "LLVMScalableVectorType"
 
 ///| Create a vector type that contains a defined type and has a scalable number of elements.
 /// 
@@ -1938,7 +1932,7 @@ pub fn LLVMTypeRef::scalable_vector_type(self: LLVMTypeRef, element_count: UInt)
 /// This only works on types that represent vectors (fixed or scalable).
 /// 
 /// - see llvm::VectorType::getNumElements()
-pub extern "C" fn llvm_get_vector_size(vector_ty: LLVMTypeRef) -> UInt = "__llvm_get_vector_size"
+pub extern "C" fn llvm_get_vector_size(vector_ty: LLVMTypeRef) -> UInt = "LLVMGetVectorSize"
 
 ///| Obtain the (possibly scalable) number of elements in a vector type.
 /// 
@@ -1950,7 +1944,7 @@ pub fn LLVMTypeRef::get_vector_size(self: LLVMTypeRef) -> UInt {
 }
 
 ///| Create a void type in a context.
-pub extern "C" fn llvm_void_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_void_type_in_context"
+pub extern "C" fn llvm_void_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMVoidTypeInContext"
 
 ///| Create a void type in a context.
 pub fn LLVMContextRef::void_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1958,7 +1952,7 @@ pub fn LLVMContextRef::void_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create a label type in a context.
-pub extern "C" fn llvm_label_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_label_type_in_context"
+pub extern "C" fn llvm_label_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMLabelTypeInContext"
 
 ///| Create a label type in a context.
 pub fn LLVMContextRef::label_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1966,7 +1960,7 @@ pub fn LLVMContextRef::label_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create an X86 AMX type in a context.
-pub extern "C" fn llvm_x86_mmx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_mmx_type_in_context"
+pub extern "C" fn llvm_x86_mmx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMX86MMXTypeInContext"
 
 ///| Create an X86 AMX type in a context.
 pub fn LLVMContextRef::x86_mmx_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1974,7 +1968,7 @@ pub fn LLVMContextRef::x86_mmx_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create an X86 AMX type in a context.
-pub extern "C" fn llvm_x86_amx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_x86_amx_type_in_context"
+pub extern "C" fn llvm_x86_amx_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMX86AMXTypeInContext"
 
 ///| Create an X86 AMX type in a context.
 pub fn LLVMContextRef::x86_amx_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1982,7 +1976,7 @@ pub fn LLVMContextRef::x86_amx_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create a token type in a context.
-pub extern "C" fn llvm_token_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_token_type_in_context"
+pub extern "C" fn llvm_token_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMTokenTypeInContext"
 
 ///| Create a token type in a context.
 pub fn LLVMContextRef::token_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1990,7 +1984,7 @@ pub fn LLVMContextRef::token_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create a metadata type in a context.
-pub extern "C" fn llvm_metadata_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "__llvm_metadata_type_in_context"
+pub extern "C" fn llvm_metadata_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMMetadataTypeInContext"
 
 ///| Create a metadata type in a context.
 pub fn LLVMContextRef::metadata_type(self: LLVMContextRef) -> LLVMTypeRef {
@@ -1998,7 +1992,7 @@ pub fn LLVMContextRef::metadata_type(self: LLVMContextRef) -> LLVMTypeRef {
 }
 
 ///| Create a void type in the global context.
-pub extern "C" fn llvm_void_type() -> LLVMTypeRef = "__llvm_void_type"
+pub extern "C" fn llvm_void_type() -> LLVMTypeRef = "LLVMVoidType"
 
 ///| Create a void type in the global context.
 pub fn LLVMTypeRef::void_type() -> LLVMTypeRef {
@@ -2006,7 +2000,7 @@ pub fn LLVMTypeRef::void_type() -> LLVMTypeRef {
 }
 
 ///| Create a label type in the global context.
-pub extern "C" fn llvm_label_type() -> LLVMTypeRef = "__llvm_label_type"
+pub extern "C" fn llvm_label_type() -> LLVMTypeRef = "LLVMLabelType"
 
 ///| Create a label type in the global context.
 pub fn LLVMTypeRef::label_type() -> LLVMTypeRef {
@@ -2014,7 +2008,7 @@ pub fn LLVMTypeRef::label_type() -> LLVMTypeRef {
 }
 
 ///| Create an X86 AMX type in the global context.
-pub extern "C" fn llvm_x86_mmx_type() -> LLVMTypeRef = "__llvm_x86_mmx_type"
+pub extern "C" fn llvm_x86_mmx_type() -> LLVMTypeRef = "LLVMX86MMXType"
 
 ///| Create an X86 AMX type in the global context.
 pub fn LLVMTypeRef::x86_mmx_type() -> LLVMTypeRef {
@@ -2022,7 +2016,7 @@ pub fn LLVMTypeRef::x86_mmx_type() -> LLVMTypeRef {
 }
 
 ///| Create an X86 AMX type in the global context.
-pub extern "C" fn llvm_x86_amx_type() -> LLVMTypeRef = "__llvm_x86_amx_type"
+pub extern "C" fn llvm_x86_amx_type() -> LLVMTypeRef = "LLVMX86AMXType"
 
 ///| Create an X86 AMX type in the global context.
 pub fn LLVMTypeRef::x86_amx_type() -> LLVMTypeRef {
@@ -5059,7 +5053,7 @@ pub fn llvm_insert_basic_block(insert_before_bb: LLVMBasicBlockRef, name: String
 }
 
 ///| Delete a basic block.
-pub extern "C" fn llvm_delete_basic_block(bb: LLVMBasicBlockRef) = "__llvm_delete_basic_block"
+pub extern "C" fn llvm_delete_basic_block(bb: LLVMBasicBlockRef) = "LLVMDeleteBasicBlock"
 
 ///| Delete a basic block.
 pub fn LLVMBasicBlockRef::delete(self: LLVMBasicBlockRef) -> Unit {
@@ -5067,7 +5061,7 @@ pub fn LLVMBasicBlockRef::delete(self: LLVMBasicBlockRef) -> Unit {
 }
 
 ///| Remove a basic block from a function.
-pub extern "C" fn llvm_remove_basic_block_from_parent(bb: LLVMBasicBlockRef) = "__llvm_remove_basic_block_from_parent"
+pub extern "C" fn llvm_remove_basic_block_from_parent(bb: LLVMBasicBlockRef) = "LLVMRemoveBasicBlockFromParent"
 
 ///| Remove a basic block from a function.
 pub fn LLVMBasicBlockRef::remove_from_parent(self: LLVMBasicBlockRef) -> Unit {
@@ -5075,7 +5069,7 @@ pub fn LLVMBasicBlockRef::remove_from_parent(self: LLVMBasicBlockRef) -> Unit {
 }
 
 ///| Move a basic block to before another basic block.
-pub extern "C" fn llvm_move_basic_block_before(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_before"
+pub extern "C" fn llvm_move_basic_block_before(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "LLVMMoveBasicBlockBefore"
 
 ///| Move a basic block to before another basic block.
 pub fn LLVMBasicBlockRef::move_before(self: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) -> Unit {
@@ -5083,7 +5077,7 @@ pub fn LLVMBasicBlockRef::move_before(self: LLVMBasicBlockRef, move_pos: LLVMBas
 }
 
 ///| Move a basic block to after another basic block.
-pub extern "C" fn llvm_move_basic_block_after(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "__llvm_move_basic_block_after"
+pub extern "C" fn llvm_move_basic_block_after(bb: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) = "LLVMMoveBasicBlockAfter"
 
 ///| Move a basic block to after another basic block.
 pub fn LLVMBasicBlockRef::move_after(self: LLVMBasicBlockRef, move_pos: LLVMBasicBlockRef) -> Unit {
@@ -5091,7 +5085,7 @@ pub fn LLVMBasicBlockRef::move_after(self: LLVMBasicBlockRef, move_pos: LLVMBasi
 }
 
 ///| Get the first instruction in a basic block.
-pub extern "C" fn llvm_get_first_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_first_instruction"
+pub extern "C" fn llvm_get_first_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMGetLastInstruction"
 
 ///| Get the first instruction in a basic block.
 pub fn LLVMBasicBlockRef::get_first_instruction(self: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -5099,7 +5093,7 @@ pub fn LLVMBasicBlockRef::get_first_instruction(self: LLVMBasicBlockRef) -> LLVM
 }
 
 ///| Get the last instruction in a basic block.
-pub extern "C" fn llvm_get_last_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_get_last_instruction"
+pub extern "C" fn llvm_get_last_instruction(bb: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMGetLastInstruction"
 
 ///| Get the last instruction in a basic block.
 pub fn LLVMBasicBlockRef::get_last_instruction(self: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -5107,7 +5101,7 @@ pub fn LLVMBasicBlockRef::get_last_instruction(self: LLVMBasicBlockRef) -> LLVMV
 }
 
 /// Check if the value has metadata attached.
-extern "C" fn __llvm_has_metadata(val: LLVMValueRef) -> LLVMBool = "__llvm_has_metadata"
+extern "C" fn __llvm_has_metadata(val: LLVMValueRef) -> LLVMBool = "LLVMHasMetadata"
 
 /// Check if the value has metadata attached.
 pub fn llvm_has_metadata(val: LLVMValueRef) -> Bool {
@@ -5120,7 +5114,7 @@ pub fn LLVMValueRef::has_metadata(self: LLVMValueRef) -> Bool {
 }
 
 ///| Get the metadata of a value.
-pub extern "C" fn llvm_get_metadata(val: LLVMValueRef, kind_id: UInt) -> LLVMValueRef = "__llvm_get_metadata"
+pub extern "C" fn llvm_get_metadata(val: LLVMValueRef, kind_id: UInt) -> LLVMValueRef = "LLVMGetMetadata"
 
 ///| Get the metadata of a value.
 pub fn LLVMValueRef::get_metadata(self: LLVMValueRef, kind_id: UInt) -> LLVMValueRef {
@@ -5128,7 +5122,7 @@ pub fn LLVMValueRef::get_metadata(self: LLVMValueRef, kind_id: UInt) -> LLVMValu
 }
 
 ///| Set the metadata of a value.
-pub extern "C" fn llvm_set_metadata(val: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) = "__llvm_set_metadata"
+pub extern "C" fn llvm_set_metadata(val: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) = "LLVMSetMetadata"
 
 ///| Set the metadata of a value.
 pub fn LLVMValueRef::set_metadata(self: LLVMValueRef, kind_id: UInt, node: LLVMValueRef) -> Unit {
@@ -5138,7 +5132,7 @@ pub fn LLVMValueRef::set_metadata(self: LLVMValueRef, kind_id: UInt, node: LLVMV
 // pub extern "C" fn llvm_instruction_get_all_metadata_other_than_debug_loc(instr: LLVMValueRef, num_entries: Ptr[UInt64]) -> Ptr[LLVMValueMetadataEntry] = "__llvm_instruction_get_all_metadata_other_than_debug_loc"
 
 ///| Get the basic block of an instruction.
-pub extern "C" fn llvm_get_instruction_parent(inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_instruction_parent"
+pub extern "C" fn llvm_get_instruction_parent(inst: LLVMValueRef) -> LLVMBasicBlockRef = "LLVMGetInstructionParent"
 
 ///| Get the basic block of an instruction.
 pub fn LLVMValueRef::get_instruction_parent(self: LLVMValueRef) -> LLVMBasicBlockRef {
@@ -5146,7 +5140,7 @@ pub fn LLVMValueRef::get_instruction_parent(self: LLVMValueRef) -> LLVMBasicBloc
 }
 
 ///| Get the next instruction of the given instruction.
-pub extern "C" fn llvm_get_next_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_next_instruction"
+pub extern "C" fn llvm_get_next_instruction(inst: LLVMValueRef) -> LLVMValueRef = "LLVMGetNextInstruction"
 
 ///| Get the next instruction of the given instruction.
 pub fn LLVMValueRef::get_next_instruction(self: LLVMValueRef) -> LLVMValueRef {
@@ -5154,7 +5148,7 @@ pub fn LLVMValueRef::get_next_instruction(self: LLVMValueRef) -> LLVMValueRef {
 }
 
 ///| Get the previous instruction of the given instruction.
-pub extern "C" fn llvm_get_previous_instruction(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_get_previous_instruction"
+pub extern "C" fn llvm_get_previous_instruction(inst: LLVMValueRef) -> LLVMValueRef = "LLVMGetPreviousInstruction"
 
 ///| Get the previous instruction of the given instruction.
 pub fn LLVMValueRef::get_previous_instruction(self: LLVMValueRef) -> LLVMValueRef {
@@ -5162,7 +5156,7 @@ pub fn LLVMValueRef::get_previous_instruction(self: LLVMValueRef) -> LLVMValueRe
 }
 
 ///| Remove an instruction from its containing basic block and delete it.
-pub extern "C" fn llvm_instruction_remove_from_parent(inst: LLVMValueRef) = "__llvm_instruction_remove_from_parent"
+pub extern "C" fn llvm_instruction_remove_from_parent(inst: LLVMValueRef) = "LLVMInstructionRemoveFromParent"
 
 ///| Remove an instruction from its containing basic block and delete it.
 pub fn LLVMValueRef::instruction_remove_from_parent(self: LLVMValueRef) -> Unit {
@@ -5170,7 +5164,7 @@ pub fn LLVMValueRef::instruction_remove_from_parent(self: LLVMValueRef) -> Unit 
 }
 
 ///| Remove an instruction from its containing basic block and delete it.
-pub extern "C" fn llvm_instruction_erase_from_parent(inst: LLVMValueRef) = "__llvm_instruction_erase_from_parent"
+pub extern "C" fn llvm_instruction_erase_from_parent(inst: LLVMValueRef) = "LLVMInstructionEraseFromParent"
 
 ///| Remove an instruction from its containing basic block and delete it.
 pub fn LLVMValueRef::instruction_erase_from_parent(self: LLVMValueRef) -> Unit {
@@ -5178,7 +5172,7 @@ pub fn LLVMValueRef::instruction_erase_from_parent(self: LLVMValueRef) -> Unit {
 }
 
 ///| Remove an instruction from its containing basic block and delete it.
-pub extern "C" fn llvm_delete_instruction(inst: LLVMValueRef) = "__llvm_delete_instruction"
+pub extern "C" fn llvm_delete_instruction(inst: LLVMValueRef) = "LLVMDeleteInstruction"
 
 ///| Remove an instruction from its containing basic block and delete it.
 pub fn LLVMValueRef::delete_instruction(self: LLVMValueRef) -> Unit {
@@ -5193,7 +5187,6 @@ pub fn llvm_get_instruction_opcode(inst: LLVMValueRef) -> LLVMOpcode {
   let opcode = __llvm_get_instruction_opcode(inst);
   LLVMOpcode::from_int(opcode)
 }
-
 
 ///| Obtain the predicate of an instruction.
 /// 
@@ -5239,7 +5232,7 @@ pub fn llvm_get_fcmp_predicate(inst: LLVMValueRef) -> LLVMRealPredicate {
 ///   * The instruction has no name
 /// 
 /// - see llvm::Instruction::clone()
-pub extern "C" fn llvm_instruction_clone(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_instruction_clone"
+pub extern "C" fn llvm_instruction_clone(inst: LLVMValueRef) -> LLVMValueRef = "LLVMInstructionClone"
 
 ///| Create a copy of 'this' instruction that is identical in all ways
 /// except the following:
@@ -5342,7 +5335,7 @@ pub fn LLVMDbgRecordRef::get_previous_dbg_record(self: LLVMDbgRecordRef) -> LLVM
 /// - see llvm::CallInst::getNumArgOperands()
 /// - see llvm::InvokeInst::getNumArgOperands()
 /// - see llvm::FuncletPadInst::getNumArgOperands()
-pub extern "C" fn llvm_get_num_arg_operands(instr: LLVMValueRef) -> UInt = "__llvm_get_num_arg_operands"
+pub extern "C" fn llvm_get_num_arg_operands(instr: LLVMValueRef) -> UInt = "LLVMGetNumArgOperands"
 
 ///| Obtain the argument count for a call instruction.
 /// 
@@ -5848,7 +5841,7 @@ pub fn LLVMValueRef::get_gep_source_element_type(self: LLVMValueRef) -> LLVMType
 pub extern "C" fn llvm_add_incoming(phi_node: LLVMValueRef, incoming_values: Array[LLVMValueRef], incoming_blocks: Array[LLVMBasicBlockRef], count: UInt) = "__llvm_add_incoming"
 
 ///| Obtain the number of incoming basic blocks to a PHI node.
-pub extern "C" fn llvm_count_incoming(phi_node: LLVMValueRef) -> UInt = "__llvm_count_incoming"
+pub extern "C" fn llvm_count_incoming(phi_node: LLVMValueRef) -> UInt = "LLVMCountIncoming"
 
 ///| Obtain the number of incoming basic blocks to a PHI node.
 pub fn LLVMValueRef::count_incoming(self: LLVMValueRef) -> UInt {
@@ -5893,13 +5886,13 @@ pub fn LLVMValueRef::get_indices(self: LLVMValueRef) -> Array[UInt] {
 }
 
 ///| Create a new IR builder in context.
-pub extern "C" fn llvm_create_builder_in_context(context: LLVMContextRef) -> LLVMBuilderRef = "__llvm_create_builder_in_context"
+pub extern "C" fn llvm_create_builder_in_context(context: LLVMContextRef) -> LLVMBuilderRef = "LLVMCreateBuilderInContext"
 pub fn LLVMContextRef::create_builder(self: LLVMContextRef) -> LLVMBuilderRef {
   llvm_create_builder_in_context(self)
 }
 
 ///| Create a new IR builder in the global context.
-pub extern "C" fn llvm_create_builder() -> LLVMBuilderRef = "__llvm_create_builder"
+pub extern "C" fn llvm_create_builder() -> LLVMBuilderRef = "LLVMCreateBuilder"
 
 ///| Create a new IR builder in the global context.
 pub fn LLVMBuilderRef::create() -> LLVMBuilderRef {
@@ -5908,7 +5901,7 @@ pub fn LLVMBuilderRef::create() -> LLVMBuilderRef {
 
 /// Set the builder position before Instr but after any attached debug records,
 /// or if Instr is null set the position to the end of Block.
-pub extern "C" fn llvm_position_builder(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, instr: LLVMValueRef) = "__llvm_position_builder"
+pub extern "C" fn llvm_position_builder(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, instr: LLVMValueRef) = "LLVMPositionBuilder"
 
 /// Set the builder position before Instr but after any attached debug records,
 /// or if Instr is null set the position to the end of Block.
@@ -5918,7 +5911,7 @@ pub fn LLVMBuilderRef::position(self: LLVMBuilderRef, block: LLVMBasicBlockRef, 
 
 /// Set the builder position before Instr and any attached debug records,
 /// or if Instr is null set the position to the end of Block.
-pub extern "C" fn llvm_position_builder_before_dbg_records(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, inst: LLVMValueRef) = "__llvm_position_builder_before_dbg_records"
+pub extern "C" fn llvm_position_builder_before_dbg_records(builder: LLVMBuilderRef, block: LLVMBasicBlockRef, inst: LLVMValueRef) = "LLVMPositionBuilderBeforeDbgRecords"
 
 /// Set the builder position before Instr and any attached debug records,
 /// or if Instr is null set the position to the end of Block.
@@ -5927,7 +5920,7 @@ pub fn LLVMBuilderRef::position_before_dbg_records(self: LLVMBuilderRef, block: 
 }
 
 ///| Set the builder position before Instr but after any attached debug records.
-pub extern "C" fn llvm_position_builder_before(builder: LLVMBuilderRef, instr: LLVMValueRef) = "__llvm_position_builder_before"
+pub extern "C" fn llvm_position_builder_before(builder: LLVMBuilderRef, instr: LLVMValueRef) = "LLVMPositionBuilderBefore"
 
 ///| Set the builder position before Instr but after any attached debug records.
 pub fn LLVMBuilderRef::position_before(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit {
@@ -5935,7 +5928,7 @@ pub fn LLVMBuilderRef::position_before(self: LLVMBuilderRef, instr: LLVMValueRef
 }
 
 ///| Set the builder position before Instr and any attached debug records.
-pub extern "C" fn llvm_position_builder_before_instr_and_dbg_records(builder: LLVMBuilderRef, instr: LLVMValueRef) = "__llvm_position_builder_before_instr_and_dbg_records"
+pub extern "C" fn llvm_position_builder_before_instr_and_dbg_records(builder: LLVMBuilderRef, instr: LLVMValueRef) = "LLVMPositionBuilderBeforeInstrAndDbgRecords"
 
 ///| Set the builder position before Instr and any attached debug records.
 pub fn LLVMBuilderRef::position_before_instr_and_dbg_records(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit {
@@ -5943,7 +5936,7 @@ pub fn LLVMBuilderRef::position_before_instr_and_dbg_records(self: LLVMBuilderRe
 }
 
 ///| Position the builder at the end of the basic block.
-pub extern "C" fn llvm_position_builder_at_end(builder: LLVMBuilderRef, block: LLVMBasicBlockRef) = "__llvm_position_builder_at_end"
+pub extern "C" fn llvm_position_builder_at_end(builder: LLVMBuilderRef, block: LLVMBasicBlockRef) = "LLVMPositionBuilderAtEnd"
 
 ///| Position the builder at the end of the basic block.
 pub fn LLVMBuilderRef::position_at_end(self: LLVMBuilderRef, block: LLVMBasicBlockRef) -> Unit {
@@ -5951,7 +5944,7 @@ pub fn LLVMBuilderRef::position_at_end(self: LLVMBuilderRef, block: LLVMBasicBlo
 }
 
 ///| Get the current insertion point of the builder.
-pub extern "C" fn llvm_get_insert_block(builder: LLVMBuilderRef) -> LLVMBasicBlockRef = "__llvm_get_insert_block"
+pub extern "C" fn llvm_get_insert_block(builder: LLVMBuilderRef) -> LLVMBasicBlockRef = "LLVMGetInsertBlock"
 
 ///| Get the current insertion point of the builder.
 pub fn LLVMBuilderRef::get_insert_block(self: LLVMBuilderRef) -> LLVMBasicBlockRef {
@@ -5959,7 +5952,7 @@ pub fn LLVMBuilderRef::get_insert_block(self: LLVMBuilderRef) -> LLVMBasicBlockR
 }
 
 ///| Clear the insertion position from the builder.
-pub extern "C" fn llvm_clear_insertion_position(builder: LLVMBuilderRef) = "__llvm_clear_insertion_position"
+pub extern "C" fn llvm_clear_insertion_position(builder: LLVMBuilderRef) = "LLVMClearInsertionPosition"
 
 ///| Clear the insertion position from the builder.
 pub fn LLVMBuilderRef::clear_insertion_position(self: LLVMBuilderRef) -> Unit {
@@ -5967,7 +5960,7 @@ pub fn LLVMBuilderRef::clear_insertion_position(self: LLVMBuilderRef) -> Unit {
 }
 
 ///| Insert instruction at the current insertion point.
-pub extern "C" fn llvm_insert_into_builder(builder: LLVMBuilderRef, instr: LLVMValueRef) = "__llvm_insert_into_builder"
+pub extern "C" fn llvm_insert_into_builder(builder: LLVMBuilderRef, instr: LLVMValueRef) = "LLVMInsertIntoBuilder"
 
 ///| Insert instruction at the current insertion point.
 pub fn LLVMBuilderRef::insert(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit {
@@ -5975,7 +5968,7 @@ pub fn LLVMBuilderRef::insert(self: LLVMBuilderRef, instr: LLVMValueRef) -> Unit
 }
 
 ///| Insert instruction at the current insertion point with a name.
-extern "C" fn __llvm_insert_into_builder_with_name(builder: LLVMBuilderRef, instr: LLVMValueRef, name: CStr) = "__llvm_insert_into_builder_with_name"
+extern "C" fn __llvm_insert_into_builder_with_name(builder: LLVMBuilderRef, instr: LLVMValueRef, name: CStr) = "LLVMInsertIntoBuilderWithName"
 
 ///| Insert instruction at the current insertion point with a name.
 pub fn llvm_insert_into_builder_with_name(builder: LLVMBuilderRef, instr: LLVMValueRef, name: String) -> Unit {
@@ -5983,7 +5976,7 @@ pub fn llvm_insert_into_builder_with_name(builder: LLVMBuilderRef, instr: LLVMVa
 }
 
 ///| Free the resources used by the builder.
-pub extern "C" fn llvm_dispose_builder(builder: LLVMBuilderRef) = "__llvm_dispose_builder"
+pub extern "C" fn llvm_dispose_builder(builder: LLVMBuilderRef) = "LLVMDisposeBuilder"
 
 ///| Free the resources used by the builder.
 pub fn LLVMBuilderRef::dispose(self: LLVMBuilderRef) -> Unit {
@@ -5993,7 +5986,7 @@ pub fn LLVMBuilderRef::dispose(self: LLVMBuilderRef) -> Unit {
 ///| Get location information used by debugging information.
 /// 
 /// - see llvm::IRBuilder::getCurrentDebugLocation()
-pub extern "C" fn llvm_get_current_debug_location2(builder: LLVMBuilderRef) -> LLVMMetadataRef = "__llvm_get_current_debug_location2"
+pub extern "C" fn llvm_get_current_debug_location2(builder: LLVMBuilderRef) -> LLVMMetadataRef = "LLVMGetCurrentDebugLocation2"
 
 ///| Get location information used by debugging information.
 /// 
@@ -6008,7 +6001,7 @@ pub fn LLVMBuilderRef::get_current_debug_location2(self: LLVMBuilderRef) -> LLVM
 /// To clear the location metadata of the given instruction, pass NULL to \p Loc.
 /// 
 /// - see llvm::IRBuilder::SetCurrentDebugLocation()
-pub extern "C" fn llvm_set_current_debug_location2(builder: LLVMBuilderRef, loc: LLVMMetadataRef) = "__llvm_set_current_debug_location2"
+pub extern "C" fn llvm_set_current_debug_location2(builder: LLVMBuilderRef, loc: LLVMMetadataRef) = "LLVMSetCurrentDebugLocation2"
 
 ///| Set location information used by debugging information.
 /// 
@@ -6028,7 +6021,7 @@ pub fn LLVMBuilderRef::set_current_debug_location2(self: LLVMBuilderRef, loc: LL
 /// 
 /// - see llvm::IRBuilder::SetInstDebugLocation()
 /// 
-pub extern "C" fn llvm_set_inst_debug_location(builder: LLVMBuilderRef, inst: LLVMValueRef) = "__llvm_set_inst_debug_location"
+pub extern "C" fn llvm_set_inst_debug_location(builder: LLVMBuilderRef, inst: LLVMValueRef) = "LLVMSetInstDebugLocation"
 
 /// Attempts to set the debug location for the given instruction using the
 /// current debug location for the given builder.  If the builder has no current
@@ -6043,11 +6036,10 @@ pub fn LLVMBuilderRef::set_inst_debug_location(self: LLVMBuilderRef, inst: LLVMV
   llvm_set_inst_debug_location(self, inst)
 }
 
-
 ///| Adds the metadata registered with the given builder to the given instruction.
 /// 
 /// - see llvm::IRBuilder::AddMetadataToInst()
-pub extern "C" fn llvm_add_metadata_to_inst(builder: LLVMBuilderRef, inst: LLVMValueRef) = "__llvm_add_metadata_to_inst"
+pub extern "C" fn llvm_add_metadata_to_inst(builder: LLVMBuilderRef, inst: LLVMValueRef) = "LLVMAddMetadataToInst"
 
 ///| Adds the metadata registered with the given builder to the given instruction.
 /// 
@@ -6059,7 +6051,7 @@ pub fn LLVMBuilderRef::add_metadata_to_inst(self: LLVMBuilderRef, inst: LLVMValu
 ///| Get the dafult floating-point math metadata for a given builder.
 /// 
 /// - see llvm::IRBuilder::getDefaultFPMathTag()
-pub extern "C" fn llvm_builder_get_default_fp_math_tag(builder: LLVMBuilderRef) -> LLVMMetadataRef = "__llvm_builder_get_default_fp_math_tag"
+pub extern "C" fn llvm_builder_get_default_fp_math_tag(builder: LLVMBuilderRef) -> LLVMMetadataRef = "LLVMBuilderGetDefaultFPMathTag"
 
 ///| Get the dafult floating-point math metadata for a given builder.
 /// 
@@ -6073,7 +6065,7 @@ pub fn LLVMBuilderRef::get_default_fp_math_tag(self: LLVMBuilderRef) -> LLVMMeta
 /// To clear the metadata, pass NULL to \p FPMathTag.
 /// 
 /// - see llvm::IRBuilder::setDefaultFPMathTag()
-pub extern "C" fn llvm_builder_set_default_fp_math_tag(builder: LLVMBuilderRef, fp_math_tag: LLVMMetadataRef) = "__llvm_builder_set_default_fp_math_tag"
+pub extern "C" fn llvm_builder_set_default_fp_math_tag(builder: LLVMBuilderRef, fp_math_tag: LLVMMetadataRef) = "LLVMBuilderSetDefaultFPMathTag"
 
 ///| Set the default floating-point math metadata for the given builder.
 /// 
@@ -6097,7 +6089,7 @@ pub fn LLVMBuilderRef::set_default_fp_math_tag(self: LLVMBuilderRef, fp_math_tag
 // }
 
 ///| Build a return void instruction.
-pub extern "C" fn llvm_build_ret_void(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_build_ret_void"
+pub extern "C" fn llvm_build_ret_void(builder: LLVMBuilderRef) -> LLVMValueRef = "LLVMBuildRetVoid"
 
 ///| Build a return void instruction.
 pub fn LLVMBuilderRef::build_ret_void(self: LLVMBuilderRef) -> LLVMValueRef {
@@ -6105,7 +6097,7 @@ pub fn LLVMBuilderRef::build_ret_void(self: LLVMBuilderRef) -> LLVMValueRef {
 }
 
 ///| Build a return instruction.
-pub extern "C" fn llvm_build_ret(builder: LLVMBuilderRef, v: LLVMValueRef) -> LLVMValueRef = "__llvm_build_ret"
+pub extern "C" fn llvm_build_ret(builder: LLVMBuilderRef, v: LLVMValueRef) -> LLVMValueRef = "LLVMBuildRet"
 
 ///| Build a return instruction.
 pub fn LLVMBuilderRef::build_ret(self: LLVMBuilderRef, v: LLVMValueRef) -> LLVMValueRef {
@@ -6121,7 +6113,7 @@ pub fn LLVMBuilderRef::build_aggregate_ret(self: LLVMBuilderRef, ret_vals: Array
 }
 
 ///| Build a branch instruction.
-pub extern "C" fn llvm_build_br(builder: LLVMBuilderRef, dest: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_build_br"
+pub extern "C" fn llvm_build_br(builder: LLVMBuilderRef, dest: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMBuildBr"
 
 ///| Build a branch instruction.
 pub fn LLVMBuilderRef::build_br(self: LLVMBuilderRef, dest: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -6129,7 +6121,7 @@ pub fn LLVMBuilderRef::build_br(self: LLVMBuilderRef, dest: LLVMBasicBlockRef) -
 }
 
 ///| Build a conditional branch instruction.
-pub extern "C" fn llvm_build_cond_br(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMBasicBlockRef, else_block: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_build_cond_br"
+pub extern "C" fn llvm_build_cond_br(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMBasicBlockRef, else_block: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMBuildCondBr"
 
 ///| Build a conditional branch instruction.
 pub fn LLVMBuilderRef::build_cond_br(self: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMBasicBlockRef, else_block: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -6137,7 +6129,7 @@ pub fn LLVMBuilderRef::build_cond_br(self: LLVMBuilderRef, if_block: LLVMValueRe
 }
 
 ///| Build a switch instruction.
-pub extern "C" fn llvm_build_switch(builder: LLVMBuilderRef, v: LLVMValueRef, else_block: LLVMBasicBlockRef, num_cases: UInt) -> LLVMValueRef = "__llvm_build_switch"
+pub extern "C" fn llvm_build_switch(builder: LLVMBuilderRef, v: LLVMValueRef, else_block: LLVMBasicBlockRef, num_cases: UInt) -> LLVMValueRef = "LLVMBuildSwitch"
 
 ///| Build a switch instruction.
 pub fn LLVMBuilderRef::build_switch(self: LLVMBuilderRef, v: LLVMValueRef, else_block: LLVMBasicBlockRef, num_cases: UInt) -> LLVMValueRef {
@@ -6145,7 +6137,7 @@ pub fn LLVMBuilderRef::build_switch(self: LLVMBuilderRef, v: LLVMValueRef, else_
 }
 
 ///| Build an indirect branch instruction.
-pub extern "C" fn llvm_build_indirect_br(builder: LLVMBuilderRef, addr: LLVMValueRef, num_dests: UInt) -> LLVMValueRef = "__llvm_build_indirect_br"
+pub extern "C" fn llvm_build_indirect_br(builder: LLVMBuilderRef, addr: LLVMValueRef, num_dests: UInt) -> LLVMValueRef = "LLVMBuildIndirectBr"
 
 ///| Build an indirect branch instruction.
 pub fn LLVMBuilderRef::build_indirect_br(self: LLVMBuilderRef, addr: LLVMValueRef, num_dests: UInt) -> LLVMValueRef {
@@ -6192,7 +6184,7 @@ pub fn LLVMBuilderRef::build_invoke_with_operand_bundles(self: LLVMBuilderRef, t
 }
 
 ///| Build an unreachable instruction.
-pub extern "C" fn llvm_build_unreachable(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_build_unreachable"
+pub extern "C" fn llvm_build_unreachable(builder: LLVMBuilderRef) -> LLVMValueRef = "LLVMBuildUnreachable"
 
 ///| Build an unreachable instruction.
 pub fn LLVMBuilderRef::build_unreachable(self: LLVMBuilderRef) -> LLVMValueRef {
@@ -6200,7 +6192,7 @@ pub fn LLVMBuilderRef::build_unreachable(self: LLVMBuilderRef) -> LLVMValueRef {
 }
 
 ///| Build a resume instruction.
-pub extern "C" fn llvm_build_resume(builder: LLVMBuilderRef, exn: LLVMValueRef) -> LLVMValueRef = "__llvm_build_resume"
+pub extern "C" fn llvm_build_resume(builder: LLVMBuilderRef, exn: LLVMValueRef) -> LLVMValueRef = "LLVMBuildResume"
 
 ///| Build a resume instruction.
 pub fn LLVMBuilderRef::build_resume(self: LLVMBuilderRef, exn: LLVMValueRef) -> LLVMValueRef {
@@ -6208,7 +6200,7 @@ pub fn LLVMBuilderRef::build_resume(self: LLVMBuilderRef, exn: LLVMValueRef) -> 
 }
 
 ///| Build a landing pad instruction.
-extern "C" fn __llvm_build_landing_pad(builder: LLVMBuilderRef, ty: LLVMTypeRef, pers_fn: LLVMValueRef, num_clauses: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_landing_pad"
+extern "C" fn __llvm_build_landing_pad(builder: LLVMBuilderRef, ty: LLVMTypeRef, pers_fn: LLVMValueRef, num_clauses: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildLandingPad"
 
 ///| Build a landing pad instruction.
 pub fn llvm_build_landing_pad(builder: LLVMBuilderRef, ty: LLVMTypeRef, pers_fn: LLVMValueRef, num_clauses: UInt, name: String) -> LLVMValueRef {
@@ -6221,7 +6213,7 @@ pub fn LLVMBuilderRef::build_landing_pad(self: LLVMBuilderRef, ty: LLVMTypeRef, 
 }
 
 ///| Build a cleanup pad instruction.
-pub extern "C" fn llvm_build_cleanup_ret(builder: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_build_cleanup_ret"
+pub extern "C" fn llvm_build_cleanup_ret(builder: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMBuildCleanupRet"
 
 ///| Build a cleanup pad instruction.
 pub fn LLVMBuilderRef::build_cleanup_ret(self: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -6229,7 +6221,7 @@ pub fn LLVMBuilderRef::build_cleanup_ret(self: LLVMBuilderRef, catch_pad: LLVMVa
 }
 
 ///| Build a catch pad instruction.
-pub extern "C" fn llvm_build_catch_ret(builder: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef = "__llvm_build_catch_ret"
+pub extern "C" fn llvm_build_catch_ret(builder: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef = "LLVMBuildCatchRet"
 
 ///| Build a catch pad instruction.
 pub fn LLVMBuilderRef::build_catch_ret(self: LLVMBuilderRef, catch_pad: LLVMValueRef, bb: LLVMBasicBlockRef) -> LLVMValueRef {
@@ -6263,7 +6255,7 @@ pub fn LLVMBuilderRef::build_cleanup_pad(self: LLVMBuilderRef, parent_pad: LLVMV
 }
 
 ///| Build a catch switch instruction.
-extern "C" fn __llvm_build_catch_switch(builder: LLVMBuilderRef, parent_pad: LLVMValueRef, unwind_bb: LLVMBasicBlockRef, num_handlers: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_catch_switch"
+extern "C" fn __llvm_build_catch_switch(builder: LLVMBuilderRef, parent_pad: LLVMValueRef, unwind_bb: LLVMBasicBlockRef, num_handlers: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildCatchSwitch"
 
 ///| Build a catch switch instruction.
 pub fn llvm_build_catch_switch(builder: LLVMBuilderRef, parent_pad: LLVMValueRef, unwind_bb: LLVMBasicBlockRef, num_handlers: UInt, name: String) -> LLVMValueRef {
@@ -6276,7 +6268,7 @@ pub fn LLVMBuilderRef::build_catch_switch(self: LLVMBuilderRef, parent_pad: LLVM
 }
 
 ///| Add a case to the switch instruction.
-pub extern "C" fn llvm_add_case(_switch: LLVMValueRef, on_val: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_case"
+pub extern "C" fn llvm_add_case(_switch: LLVMValueRef, on_val: LLVMValueRef, dest: LLVMBasicBlockRef) = "LLVMAddCase"
 
 ///| Add a case to the switch instruction.
 pub fn LLVMValueRef::add_case(self: LLVMValueRef, on_val: LLVMValueRef, dest: LLVMBasicBlockRef) -> Unit {
@@ -6284,7 +6276,7 @@ pub fn LLVMValueRef::add_case(self: LLVMValueRef, on_val: LLVMValueRef, dest: LL
 }
 
 ///| Add a destination to the indirectbr instruction.
-pub extern "C" fn llvm_add_destination(indirect_br: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_destination"
+pub extern "C" fn llvm_add_destination(indirect_br: LLVMValueRef, dest: LLVMBasicBlockRef) = "LLVMAddDestination"
 
 ///| Add a destination to the indirectbr instruction.
 pub fn LLVMValueRef::add_destination(self: LLVMValueRef, dest: LLVMBasicBlockRef) -> Unit {
@@ -6292,7 +6284,7 @@ pub fn LLVMValueRef::add_destination(self: LLVMValueRef, dest: LLVMBasicBlockRef
 }
 
 ///| Get the number of clauses on the landingpad instruction.
-pub extern "C" fn llvm_get_num_clauses(landing_pad: LLVMValueRef) -> UInt = "__llvm_get_num_clauses"
+pub extern "C" fn llvm_get_num_clauses(landing_pad: LLVMValueRef) -> UInt = "LLVMGetNumClauses"
 
 ///| Get the number of clauses on the landingpad instruction.
 pub fn LLVMValueRef::get_num_clauses(self: LLVMValueRef) -> UInt {
@@ -6300,7 +6292,7 @@ pub fn LLVMValueRef::get_num_clauses(self: LLVMValueRef) -> UInt {
 }
 
 ///| Get the value of the clause at index Idx on the landingpad instruction.
-pub extern "C" fn llvm_get_clause(landing_pad: LLVMValueRef, idx: UInt) -> LLVMValueRef = "__llvm_get_clause"
+pub extern "C" fn llvm_get_clause(landing_pad: LLVMValueRef, idx: UInt) -> LLVMValueRef = "LLVMGetClause"
 
 ///| Get the value of the clause at index Idx on the landingpad instruction.
 pub fn LLVMValueRef::get_clause(self: LLVMValueRef, idx: UInt) -> LLVMValueRef {
@@ -6308,7 +6300,7 @@ pub fn LLVMValueRef::get_clause(self: LLVMValueRef, idx: UInt) -> LLVMValueRef {
 }
 
 ///| Add a catch or filter clause to the landingpad instruction.
-pub extern "C" fn llvm_add_clause(landing_pad: LLVMValueRef, clause_val: LLVMValueRef) = "__llvm_add_clause"
+pub extern "C" fn llvm_add_clause(landing_pad: LLVMValueRef, clause_val: LLVMValueRef) = "LLVMAddClause"
 
 ///| Add a catch or filter clause to the landingpad instruction.
 pub fn LLVMValueRef::add_clause(self: LLVMValueRef, clause_val: LLVMValueRef) -> Unit {
@@ -6316,7 +6308,7 @@ pub fn LLVMValueRef::add_clause(self: LLVMValueRef, clause_val: LLVMValueRef) ->
 }
 
 ///| Get the 'cleanup' flag in the landingpad instruction.
-extern "C" fn __llvm_is_cleanup(landing_pad: LLVMValueRef) -> LLVMBool = "__llvm_is_cleanup"
+extern "C" fn __llvm_is_cleanup(landing_pad: LLVMValueRef) -> LLVMBool = "LLVMIsCleanup"
 
 ///| Get the 'cleanup' flag in the landingpad instruction.
 pub fn llvm_is_cleanup(landing_pad: LLVMValueRef) -> Bool {
@@ -6324,7 +6316,7 @@ pub fn llvm_is_cleanup(landing_pad: LLVMValueRef) -> Bool {
 }
 
 ///| Set the 'cleanup' flag in the landingpad instruction.
-extern "C" fn __llvm_set_cleanup(landing_pad: LLVMValueRef, val: LLVMBool) = "__llvm_set_cleanup"
+extern "C" fn __llvm_set_cleanup(landing_pad: LLVMValueRef, val: LLVMBool) = "LLVMSetCleanup"
 
 ///| Set the 'cleanup' flag in the landingpad instruction.
 pub fn llvm_set_cleanup(landing_pad: LLVMValueRef, val: Bool) -> Unit {
@@ -6332,10 +6324,10 @@ pub fn llvm_set_cleanup(landing_pad: LLVMValueRef, val: Bool) -> Unit {
 }
 
 ///| Add a destination to the catchswitch instruction.
-pub extern "C" fn llvm_add_handler(catch_switch: LLVMValueRef, dest: LLVMBasicBlockRef) = "__llvm_add_handler"
+pub extern "C" fn llvm_add_handler(catch_switch: LLVMValueRef, dest: LLVMBasicBlockRef) = "LLVMAddHandler"
 
 ///| Get the number of handlers on the catchswitch instruction.
-pub extern "C" fn llvm_get_num_handlers(catch_switch: LLVMValueRef) -> UInt = "__llvm_get_num_handlers"
+pub extern "C" fn llvm_get_num_handlers(catch_switch: LLVMValueRef) -> UInt = "LLVMGetNumHandlers"
 
 ///| Obtain the basic blocks acting as handlers for a catchswitch instruction.
 /// 
@@ -6347,13 +6339,13 @@ pub extern "C" fn llvm_get_num_handlers(catch_switch: LLVMValueRef) -> UInt = "_
 /// @param CatchSwitch The catchswitch instruction to operate on.
 /// @param Handlers Memory address of an array to be filled with basic blocks.
 /// 
-pub extern "C" fn llvm_get_handlers(catch_switch: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "__llvm_get_handlers"
+pub extern "C" fn llvm_get_handlers(catch_switch: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "LLVMGetHandlers"
 
 ///| Get the number of funcletpad arguments.
-pub extern "C" fn llvm_get_arg_operand(funclet: LLVMValueRef, i: UInt) -> LLVMValueRef = "__llvm_get_arg_operand"
+pub extern "C" fn llvm_get_arg_operand(funclet: LLVMValueRef, i: UInt) -> LLVMValueRef = "LLVMGetArgOperand"
 
 ///| Set a funcletpad argument at the given index.
-pub extern "C" fn llvm_set_arg_operand(funclet: LLVMValueRef, i: UInt, value: LLVMValueRef) = "__llvm_set_arg_operand"
+pub extern "C" fn llvm_set_arg_operand(funclet: LLVMValueRef, i: UInt, value: LLVMValueRef) = "LLVMSetArgOperand"
 
 
 /// Get the parent catchswitch instruction of a catchpad instruction.
@@ -6361,7 +6353,7 @@ pub extern "C" fn llvm_set_arg_operand(funclet: LLVMValueRef, i: UInt, value: LL
 /// This only works on llvm::CatchPadInst instructions.
 /// 
 /// - see llvm::CatchPadInst::getCatchSwitch()
-pub extern "C" fn llvm_get_parent_catch_switch(catch_pad: LLVMValueRef) -> LLVMValueRef = "__llvm_get_parent_catch_switch"
+pub extern "C" fn llvm_get_parent_catch_switch(catch_pad: LLVMValueRef) -> LLVMValueRef = "LLVMGetParentCatchSwitch"
 
 
 ///| Set the parent catchswitch instruction of a catchpad instruction.
@@ -6369,10 +6361,10 @@ pub extern "C" fn llvm_get_parent_catch_switch(catch_pad: LLVMValueRef) -> LLVMV
 /// This only works on llvm::CatchPadInst instructions.
 /// 
 /// - see llvm::CatchPadInst::setCatchSwitch()
-pub extern "C" fn llvm_set_parent_catch_switch(catch_pad: LLVMValueRef, catch_switch: LLVMValueRef) = "__llvm_set_parent_catch_switch"
+pub extern "C" fn llvm_set_parent_catch_switch(catch_pad: LLVMValueRef, catch_switch: LLVMValueRef) = "LLVMSetParentCatchSwitch"
 
 ///| Build add instruction.
-extern "C" fn __llvm_build_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_add"
+extern "C" fn __llvm_build_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildAdd"
 
 ///| Build add instruction.
 pub fn llvm_build_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6380,7 +6372,7 @@ pub fn llvm_build_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValue
 }
 
 ///| Build add instruction with nsw flag.
-extern "C" fn __llvm_build_nsw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nsw_add"
+extern "C" fn __llvm_build_nsw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNSWAdd"
 
 ///| Build add instruction with nsw flag.
 pub fn llvm_build_nsw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6388,7 +6380,7 @@ pub fn llvm_build_nsw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build add instruction with nuw flag.
-extern "C" fn __llvm_build_nuw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nuw_add"
+extern "C" fn __llvm_build_nuw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNUWAdd"
 
 ///| Build add instruction with nuw flag.
 pub fn llvm_build_nuw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6396,7 +6388,7 @@ pub fn llvm_build_nuw_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build floating-point add instruction.
-extern "C" fn __llvm_build_f_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_add"
+extern "C" fn __llvm_build_f_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFAdd"
 
 ///| Build floating-point add instruction.
 pub fn llvm_build_f_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6404,7 +6396,7 @@ pub fn llvm_build_f_add(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build subtract instruction.
-extern "C" fn __llvm_build_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_sub"
+extern "C" fn __llvm_build_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildSub"
 
 ///| Build subtract instruction.
 pub fn llvm_build_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6412,7 +6404,7 @@ pub fn llvm_build_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValue
 }
 
 ///| Build subtract instruction with nsw flag.
-extern "C" fn __llvm_build_nsw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nsw_sub"
+extern "C" fn __llvm_build_nsw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNSWSub"
 
 ///| Build subtract instruction with nsw flag.
 pub fn llvm_build_nsw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6420,7 +6412,7 @@ pub fn llvm_build_nsw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build subtract instruction with nuw flag.
-extern "C" fn __llvm_build_nuw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nuw_sub"
+extern "C" fn __llvm_build_nuw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNUWSub"
 
 ///| Build subtract instruction with nuw flag.
 pub fn llvm_build_nuw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6428,7 +6420,7 @@ pub fn llvm_build_nuw_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build floating-point subtract instruction.
-extern "C" fn __llvm_build_f_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_sub"
+extern "C" fn __llvm_build_f_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFSub"
 
 ///| Build floating-point subtract instruction.
 pub fn llvm_build_f_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6436,7 +6428,7 @@ pub fn llvm_build_f_sub(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build multiply instruction.
-extern "C" fn __llvm_build_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_mul"
+extern "C" fn __llvm_build_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildMul"
 
 ///| Build multiply instruction.
 pub fn llvm_build_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6444,7 +6436,7 @@ pub fn llvm_build_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValue
 }
 
 ///| Build multiply instruction with nsw flag.
-extern "C" fn __llvm_build_nsw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nsw_mul"
+extern "C" fn __llvm_build_nsw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNSWMul"
 
 ///| Build multiply instruction with nsw flag.
 pub fn llvm_build_nsw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6452,7 +6444,7 @@ pub fn llvm_build_nsw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build multiply instruction with nuw flag.
-extern "C" fn __llvm_build_nuw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nuw_mul"
+extern "C" fn __llvm_build_nuw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNUWMul"
 
 ///| Build multiply instruction with nuw flag.
 pub fn llvm_build_nuw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6460,7 +6452,7 @@ pub fn llvm_build_nuw_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMV
 }
 
 ///| Build floating-point multiply instruction.
-extern "C" fn __llvm_build_f_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_mul"
+extern "C" fn __llvm_build_f_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFMul"
 
 ///| Build floating-point multiply instruction.
 pub fn llvm_build_f_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6468,7 +6460,7 @@ pub fn llvm_build_f_mul(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build unsigned division instruction.
-extern "C" fn __llvm_build_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_u_div"
+extern "C" fn __llvm_build_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildUDiv"
 
 ///| Build unsigned division instruction.
 pub fn llvm_build_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6476,7 +6468,7 @@ pub fn llvm_build_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build exact unsigned division instruction.
-extern "C" fn __llvm_build_exact_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_exact_u_div"
+extern "C" fn __llvm_build_exact_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildExactUDiv"
 
 ///| Build exact unsigned division instruction.
 pub fn llvm_build_exact_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6484,7 +6476,7 @@ pub fn llvm_build_exact_u_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: L
 }
 
 ///| Build signed division instruction.
-extern "C" fn __llvm_build_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_s_div"
+extern "C" fn __llvm_build_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildSDiv"
 
 ///| Build signed division instruction.
 pub fn llvm_build_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6492,7 +6484,7 @@ pub fn llvm_build_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build exact signed division instruction.
-extern "C" fn __llvm_build_exact_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_exact_s_div"
+extern "C" fn __llvm_build_exact_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildExactSDiv"
 
 ///| Build exact signed division instruction.
 pub fn llvm_build_exact_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6500,7 +6492,7 @@ pub fn llvm_build_exact_s_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: L
 }
 
 ///| Build floating-point division instruction.
-extern "C" fn __llvm_build_f_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_div"
+extern "C" fn __llvm_build_f_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFDiv"
 
 ///| Build floating-point division instruction.
 pub fn llvm_build_f_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6508,7 +6500,7 @@ pub fn llvm_build_f_div(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build unsigned remainder instruction.
-extern "C" fn __llvm_build_u_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_u_rem"
+extern "C" fn __llvm_build_u_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildURem"
 
 ///| Build unsigned remainder instruction.
 pub fn llvm_build_u_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6516,7 +6508,7 @@ pub fn llvm_build_u_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build signed remainder instruction.
-extern "C" fn __llvm_build_s_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_s_rem"
+extern "C" fn __llvm_build_s_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildSRem"
 
 ///| Build signed remainder instruction.
 pub fn llvm_build_s_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6524,7 +6516,7 @@ pub fn llvm_build_s_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build floating-point remainder instruction.
-extern "C" fn __llvm_build_f_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_rem"
+extern "C" fn __llvm_build_f_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFRem"
 
 ///| Build floating-point remainder instruction.
 pub fn llvm_build_f_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6532,7 +6524,7 @@ pub fn llvm_build_f_rem(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build bitwise shift left instruction.
-extern "C" fn __llvm_build_shl(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_shl"
+extern "C" fn __llvm_build_shl(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildShl"
 
 ///| Build bitwise shift left instruction.
 pub fn llvm_build_shl(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6540,7 +6532,7 @@ pub fn llvm_build_shl(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValue
 }
 
 ///| Build bitwise logical shift right instruction.
-extern "C" fn __llvm_build_l_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_l_shr"
+extern "C" fn __llvm_build_l_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildLShr"
 
 ///| Build bitwise logical shift right instruction.
 pub fn llvm_build_l_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6548,7 +6540,7 @@ pub fn llvm_build_l_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build bitwise arithmetic shift right instruction.
-extern "C" fn __llvm_build_a_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_a_shr"
+extern "C" fn __llvm_build_a_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildAShr"
 
 ///| Build bitwise arithmetic shift right instruction.
 pub fn llvm_build_a_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6556,7 +6548,7 @@ pub fn llvm_build_a_shr(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMVal
 }
 
 ///| Build bitwise and instruction.
-extern "C" fn __llvm_build_and(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_and"
+extern "C" fn __llvm_build_and(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildAnd"
 
 ///| Build bitwise and instruction.
 pub fn llvm_build_and(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6564,7 +6556,7 @@ pub fn llvm_build_and(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValue
 }
 
 ///| Build bitwise or instruction.
-extern "C" fn __llvm_build_or(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_or"
+extern "C" fn __llvm_build_or(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildOr"
 
 ///| Build bitwise or instruction.
 pub fn llvm_build_or(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6572,7 +6564,7 @@ pub fn llvm_build_or(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueR
 }
 
 ///| Build bitwise xor instruction.
-extern "C" fn __llvm_build_xor(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_xor"
+extern "C" fn __llvm_build_xor(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildXor"
 
 ///| Build bitwise xor instruction.
 pub fn llvm_build_xor(builder: LLVMBuilderRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6590,7 +6582,7 @@ pub fn llvm_build_bin_op(builder: LLVMBuilderRef, op: LLVMOpcode, lhs: LLVMValue
 }
 
 ///| Build negation instruction.
-extern "C" fn __llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_neg"
+extern "C" fn __llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNeg"
 
 pub fn llvm_build_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
   __llvm_build_neg(builder, v, moonbit_str_to_c_str(name))
@@ -6602,7 +6594,7 @@ pub fn LLVMBuilderRef::build_neg(self: LLVMBuilderRef, v: LLVMValueRef, name: St
 }
 
 ///| Build negation instruction with nsw flag.
-extern "C" fn __llvm_build_nsw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nsw_neg"
+extern "C" fn __llvm_build_nsw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNSWNeg"
 
 ///| Build negation instruction with nsw flag.
 pub fn llvm_build_nsw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6615,7 +6607,7 @@ pub fn LLVMBuilderRef::build_nsw_neg(self: LLVMBuilderRef, v: LLVMValueRef, name
 }
 
 ///| Build negation instruction with nuw flag.
-extern "C" fn __llvm_build_nuw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_nuw_neg"
+extern "C" fn __llvm_build_nuw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNUWNeg"
 
 ///| Build negation instruction with nuw flag.
 pub fn llvm_build_nuw_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6629,7 +6621,7 @@ pub fn LLVMBuilderRef::build_nuw_neg(self: LLVMBuilderRef, v: LLVMValueRef, name
 
 
 ///| Build floating-point negation instruction.
-extern "C" fn __llvm_build_f_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_f_neg"
+extern "C" fn __llvm_build_f_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFNeg"
 
 ///| Build floating-point negation instruction.
 pub fn llvm_build_f_neg(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6642,7 +6634,7 @@ pub fn LLVMBuilderRef::build_f_neg(self: LLVMBuilderRef, v: LLVMValueRef, name: 
 }
 
 ///| Build not instruction.
-extern "C" fn __llvm_build_not(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_not"
+extern "C" fn __llvm_build_not(builder: LLVMBuilderRef, v: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildNot"
 
 ///| Build not instruction.
 pub fn llvm_build_not(builder: LLVMBuilderRef, v: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6655,7 +6647,7 @@ pub fn LLVMBuilderRef::build_not(self: LLVMBuilderRef, v: LLVMValueRef, name: St
 }
 
 ///| Check if the instruction has the nuw flag set.
-extern "C" fn __llvm_get_nuw(arith_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_nuw"
+extern "C" fn __llvm_get_nuw(arith_inst: LLVMValueRef) -> LLVMBool = "LLVMGetNUW"
 
 ///| Check if the instruction has the nuw flag set.
 pub fn LLVMValueRef::get_nuw(self: LLVMValueRef) -> Bool {
@@ -6669,7 +6661,7 @@ pub fn llvm_get_nuw(arith_inst: LLVMValueRef) -> Bool {
 }
 
 ///| Set the nuw flag for the instruction.
-extern "C" fn __llvm_set_nuw(arith_inst: LLVMValueRef, has_nuw: LLVMBool) = "__llvm_set_nuw"
+extern "C" fn __llvm_set_nuw(arith_inst: LLVMValueRef, has_nuw: LLVMBool) = "LLVMSetNUW"
 
 ///| Set the nuw flag for the instruction.
 pub fn llvm_set_nuw(arith_inst: LLVMValueRef, has_nuw: Bool) -> Unit {
@@ -6682,7 +6674,7 @@ pub fn LLVMValueRef::set_nuw(self: LLVMValueRef, has_nuw: Bool) -> Unit {
 }
 
 ///| Check if the instruction has the nsw flag set.
-extern "C" fn __llvm_get_nsw(arith_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_nsw"
+extern "C" fn __llvm_get_nsw(arith_inst: LLVMValueRef) -> LLVMBool = "LLVMGetNSW"
 
 ///| Check if the instruction has the nsw flag set.
 pub fn LLVMValueRef::get_nsw(self: LLVMValueRef) -> Bool {
@@ -6696,7 +6688,7 @@ pub fn llvm_get_nsw(arith_inst: LLVMValueRef) -> Bool {
 }
 
 ///| Set the nsw flag for the instruction.
-extern "C" fn __llvm_set_nsw(arith_inst: LLVMValueRef, has_nsw: LLVMBool) = "__llvm_set_nsw"
+extern "C" fn __llvm_set_nsw(arith_inst: LLVMValueRef, has_nsw: LLVMBool) = "LLVMSetNSW"
 
 ///| Set the nsw flag for the instruction.
 pub fn llvm_set_nsw(arith_inst: LLVMValueRef, has_nsw: Bool) -> Unit {
@@ -6709,7 +6701,7 @@ pub fn LLVMValueRef::set_nsw(self: LLVMValueRef, has_nsw: Bool) -> Unit {
 }
 
 ///| Check if the instruction has the exact flag set.
-extern "C" fn __llvm_get_exact(div_or_shr_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_exact"
+extern "C" fn __llvm_get_exact(div_or_shr_inst: LLVMValueRef) -> LLVMBool = "LLVMGetExact"
 
 ///| Check if the instruction has the exact flag set.
 pub fn LLVMValueRef::get_exact(self: LLVMValueRef) -> Bool {
@@ -6723,7 +6715,7 @@ pub fn llvm_get_exact(div_or_shr_inst: LLVMValueRef) -> Bool {
 }
 
 ///| Set the exact flag for the instruction.
-extern "C" fn __llvm_set_exact(div_or_shr_inst: LLVMValueRef, is_exact: LLVMBool) = "__llvm_set_exact"
+extern "C" fn __llvm_set_exact(div_or_shr_inst: LLVMValueRef, is_exact: LLVMBool) = "LLVMSetExact"
 
 ///| Set the exact flag for the instruction.
 pub fn llvm_set_exact(div_or_shr_inst: LLVMValueRef, is_exact: Bool) -> Unit {
@@ -6738,7 +6730,7 @@ pub fn LLVMValueRef::set_exact(self: LLVMValueRef, is_exact: Bool) -> Unit {
 ///| Gets if the instruction has the non-negative flag set.
 ///
 /// Only valid for zext instructions.
-extern "C" fn __llvm_get_n_neg(non_neg_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_n_neg"
+extern "C" fn __llvm_get_n_neg(non_neg_inst: LLVMValueRef) -> LLVMBool = "LLVMGetNNeg"
 
 ///| Gets if the instruction has the non-negative flag set.
 ///
@@ -6759,7 +6751,7 @@ pub fn LLVMValueRef::get_n_neg(self: LLVMValueRef) -> Bool {
 ///| Sets the non-negative flag for the instruction.
 ///
 /// Only valid for zext instructions.
-extern "C" fn __llvm_set_n_neg(non_neg_inst: LLVMValueRef, is_non_neg: LLVMBool) = "__llvm_set_n_neg"
+extern "C" fn __llvm_set_n_neg(non_neg_inst: LLVMValueRef, is_non_neg: LLVMBool) = "LLVMSetNNeg"
 
 ///| Sets the non-negative flag for the instruction.
 ///
@@ -6834,7 +6826,7 @@ pub fn LLVMValueRef::can_use_fast_math_flags(self: LLVMValueRef) -> Bool {
 ///| Gets whether the instruction has the disjoint flag set.
 /// 
 /// Only valid for or instructions.
-extern "C" fn __llvm_get_is_disjoint(inst: LLVMValueRef) -> LLVMBool = "__llvm_get_is_disjoint"
+extern "C" fn __llvm_get_is_disjoint(inst: LLVMValueRef) -> LLVMBool = "LLVMGetIsDisjoint"
 
 ///| Gets whether the instruction has the disjoint flag set.
 /// 
@@ -6847,7 +6839,7 @@ pub fn LLVMValueRef::get_is_disjoint(self: LLVMValueRef) -> Bool {
 ///| Sets the disjoint flag for the instruction.
 /// 
 /// Only valid for or instructions.
-extern "C" fn __llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: LLVMBool) = "__llvm_set_is_disjoint"
+extern "C" fn __llvm_set_is_disjoint(inst: LLVMValueRef, is_disjoint: LLVMBool) = "LLVMSetIsDisjoint"
 
 ///| Sets the disjoint flag for the instruction.
 /// 
@@ -6864,7 +6856,7 @@ pub fn LLVMValueRef::set_is_disjoint(self: LLVMValueRef, is_disjoint: Bool) -> U
 }
 
 ///| Build a malloc instruction.
-extern "C" fn __llvm_build_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_malloc"
+extern "C" fn __llvm_build_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildMalloc"
 
 ///| Build a malloc instruction.
 pub fn llvm_build_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -6877,7 +6869,7 @@ pub fn LLVMBuilderRef::build_malloc(self: LLVMBuilderRef, ty: LLVMTypeRef, name:
 }
 
 ///| Build an array malloc instruction.
-extern "C" fn __llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_array_malloc"
+extern "C" fn __llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildArrayMalloc"
 
 ///| Build an array malloc instruction.
 pub fn llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6887,7 +6879,7 @@ pub fn llvm_build_array_malloc(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LL
 ///| Creates and inserts a memset to the specified pointer and the specified value.
 /// 
 /// - see llvm::IRRBuilder::CreateMemSet()
-pub extern "C" fn llvm_build_mem_set(builder: LLVMBuilderRef, ptr: LLVMValueRef, val: LLVMValueRef, len: LLVMValueRef, align: UInt) -> LLVMValueRef = "__llvm_build_mem_set"
+pub extern "C" fn llvm_build_mem_set(builder: LLVMBuilderRef, ptr: LLVMValueRef, val: LLVMValueRef, len: LLVMValueRef, align: UInt) -> LLVMValueRef = "LLVMBuildMemSet"
 
 ///| Creates and inserts a memset to the specified pointer and the specified value.
 /// 
@@ -6899,7 +6891,7 @@ pub fn LLVMBuilderRef::build_mem_set(self: LLVMBuilderRef, ptr: LLVMValueRef, va
 ///| Creates and inserts a memcpy between the specified pointers.
 /// 
 /// - see llvm::IRRBuilder::CreateMemCpy()
-pub extern "C" fn llvm_build_mem_cpy(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "__llvm_build_mem_cpy"
+pub extern "C" fn llvm_build_mem_cpy(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "LLVMBuildMemCpy"
 
 ///| Creates and inserts a memcpy between the specified pointers.
 /// 
@@ -6911,7 +6903,7 @@ pub fn LLVMBuilderRef::build_mem_cpy(self: LLVMBuilderRef, dst: LLVMValueRef, ds
 ///| Creates and inserts a memmove between the specified pointers.
 /// 
 /// - see llvm::IRRBuilder::CreateMemMove()
-pub extern "C" fn llvm_build_mem_move(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "__llvm_build_mem_move"
+pub extern "C" fn llvm_build_mem_move(builder: LLVMBuilderRef, dst: LLVMValueRef, dst_align: UInt, src: LLVMValueRef, src_align: UInt, size: LLVMValueRef) -> LLVMValueRef = "LLVMBuildMemMove"
 
 ///| Creates and inserts a memmove between the specified pointers.
 /// 
@@ -6921,7 +6913,7 @@ pub fn LLVMBuilderRef::build_mem_move(self: LLVMBuilderRef, dst: LLVMValueRef, d
 }
 
 ///| Build an alloca instruction.
-extern "C" fn __llvm_build_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_alloca"
+extern "C" fn __llvm_build_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildAlloca"
 
 ///| Build an alloca instruction.
 pub fn llvm_build_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -6934,7 +6926,7 @@ pub fn LLVMBuilderRef::build_alloca(self: LLVMBuilderRef, ty: LLVMTypeRef, name:
 }
 
 ///| Build an array alloca instruction.
-extern "C" fn __llvm_build_array_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_array_alloca"
+extern "C" fn __llvm_build_array_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildArrayAlloca"
 
 ///| Build an array alloca instruction.
 pub fn llvm_build_array_alloca(builder: LLVMBuilderRef, ty: LLVMTypeRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6947,7 +6939,7 @@ pub fn LLVMBuilderRef::build_array_alloca(self: LLVMBuilderRef, ty: LLVMTypeRef,
 }
 
 ///| Build a free instruction.
-pub extern "C" fn llvm_build_free(builder: LLVMBuilderRef, pointer_val: LLVMValueRef) -> LLVMValueRef = "__llvm_build_free"
+pub extern "C" fn llvm_build_free(builder: LLVMBuilderRef, pointer_val: LLVMValueRef) -> LLVMValueRef = "LLVMBuildFree"
 
 ///| Build a free instruction.
 pub fn LLVMBuilderRef::build_free(self: LLVMBuilderRef, pointer_val: LLVMValueRef) -> LLVMValueRef {
@@ -6955,7 +6947,7 @@ pub fn LLVMBuilderRef::build_free(self: LLVMBuilderRef, pointer_val: LLVMValueRe
 }
 
 ///| Build a load instruction.
-extern "C" fn __llvm_build_load2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer_val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_load2"
+extern "C" fn __llvm_build_load2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer_val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildLoad2"
 
 ///| Build a load instruction.
 pub fn llvm_build_load2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer_val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -6966,7 +6958,7 @@ pub fn LLVMBuilderRef::build_load2(self: LLVMBuilderRef, ty: LLVMTypeRef, pointe
 }
 
 ///| Build a store instruction.
-pub extern "C" fn llvm_build_store(builder: LLVMBuilderRef, val: LLVMValueRef, ptr: LLVMValueRef) -> LLVMValueRef = "__llvm_build_store"
+pub extern "C" fn llvm_build_store(builder: LLVMBuilderRef, val: LLVMValueRef, ptr: LLVMValueRef) -> LLVMValueRef = "LLVMBuildStore"
 
 ///| Build a store instruction.
 pub fn LLVMBuilderRef::build_store(self: LLVMBuilderRef, val: LLVMValueRef, ptr: LLVMValueRef) -> LLVMValueRef {
@@ -7010,7 +7002,7 @@ pub fn LLVMBuilderRef::build_in_bounds_gep2(self: LLVMBuilderRef, ty: LLVMTypeRe
 //                                          LLVMGEPNoWrapFlags NoWrapFlags);
 
 ///| Build a struct getelementptr instruction.
-extern "C" fn __llvm_build_struct_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, idx: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_struct_gep2"
+extern "C" fn __llvm_build_struct_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, idx: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildStructGEP2"
 
 ///| Build a struct getelementptr instruction.
 pub fn llvm_build_struct_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, idx: UInt, name: String) -> LLVMValueRef {
@@ -7023,7 +7015,7 @@ pub fn LLVMBuilderRef::build_struct_gep2(self: LLVMBuilderRef, ty: LLVMTypeRef, 
 }
 
 ///| Build a global string.
-extern "C" fn __llvm_build_global_string(builder: LLVMBuilderRef, str: CStr, name: CStr) -> LLVMValueRef = "__llvm_build_global_string"
+extern "C" fn __llvm_build_global_string(builder: LLVMBuilderRef, str: CStr, name: CStr) -> LLVMValueRef = "LLVMBuildGlobalString"
 
 ///| Build a global string.
 pub fn llvm_build_global_string(builder: LLVMBuilderRef, str: String, name: String) -> LLVMValueRef {
@@ -7036,7 +7028,7 @@ pub fn LLVMBuilderRef::build_global_string(self: LLVMBuilderRef, str: String, na
 }
 
 ///| Build a global string pointer.
-extern "C" fn __llvm_build_global_string_ptr(builder: LLVMBuilderRef, str: CStr, name: CStr) -> LLVMValueRef = "__llvm_build_global_string_ptr"
+extern "C" fn __llvm_build_global_string_ptr(builder: LLVMBuilderRef, str: CStr, name: CStr) -> LLVMValueRef = "LLVMBuildGlobalStringPtr"
 
 ///| Build a global string pointer.
 pub fn llvm_build_global_string_ptr(builder: LLVMBuilderRef, str: String, name: String) -> LLVMValueRef {
@@ -7049,7 +7041,7 @@ pub fn LLVMBuilderRef::build_global_string_ptr(self: LLVMBuilderRef, str: String
 }
 
 ///| Check if memory access instruction is volatile.
-extern "C" fn __llvm_get_volatile(memory_access_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_volatile"
+extern "C" fn __llvm_get_volatile(memory_access_inst: LLVMValueRef) -> LLVMBool = "LLVMGetVolatile"
 
 ///| Check if memory access instruction is volatile.
 pub fn llvm_get_volatile(memory_access_inst: LLVMValueRef) -> Bool {
@@ -7063,7 +7055,7 @@ pub fn LLVMValueRef::get_volatile(self: LLVMValueRef) -> Bool {
 }
 
 ///| Set memory access instruction as volatile.
-extern "C" fn __llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: LLVMBool) = "__llvm_set_volatile"
+extern "C" fn __llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: LLVMBool) = "LLVMSetVolatile"
 
 ///| Set memory access instruction as volatile.
 pub fn llvm_set_volatile(memory_access_inst: LLVMValueRef, is_volatile: Bool) -> Unit {
@@ -7074,7 +7066,7 @@ pub fn LLVMValueRef::set_volatile(self: LLVMValueRef, is_volatile: Bool) -> Unit
 }
 
 ///| Check if cmpxchg instruction is weak.
-extern "C" fn __llvm_get_weak(cmp_xchg_inst: LLVMValueRef) -> LLVMBool = "__llvm_get_weak"
+extern "C" fn __llvm_get_weak(cmp_xchg_inst: LLVMValueRef) -> LLVMBool = "LLVMGetWeak"
 
 ///| Check if cmpxchg instruction is weak.
 pub fn llvm_get_weak(cmp_xchg_inst: LLVMValueRef) -> Bool {
@@ -7086,7 +7078,7 @@ pub fn LLVMValueRef::get_weak(self: LLVMValueRef) -> Bool {
 }
 
 ///| Set cmpxchg instruction as weak.
-extern "C" fn __llvm_set_weak(cmp_xchg_inst: LLVMValueRef, is_weak: LLVMBool) = "__llvm_set_weak"
+extern "C" fn __llvm_set_weak(cmp_xchg_inst: LLVMValueRef, is_weak: LLVMBool) = "LLVMSetWeak"
 
 ///| Set cmpxchg instruction as weak.
 pub fn llvm_set_weak(cmp_xchg_inst: LLVMValueRef, is_weak: Bool) -> Unit {
@@ -7138,7 +7130,7 @@ pub fn LLVMValueRef::set_atomic_rmw_bin_op(self: LLVMValueRef, bin_op: LLVMAtomi
 }
 
 ///| Build a trunc instruction.
-extern "C" fn __llvm_build_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_trunc"
+extern "C" fn __llvm_build_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildTrunc"
 
 ///| Build a trunc instruction.
 pub fn llvm_build_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7151,7 +7143,7 @@ pub fn LLVMBuilderRef::build_trunc(self: LLVMBuilderRef, val: LLVMValueRef, dest
 }
 
 ///| Build a zext instruction.
-extern "C" fn __llvm_build_z_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_z_ext"
+extern "C" fn __llvm_build_z_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildZExt"
 
 ///| Build a zext instruction.
 pub fn llvm_build_z_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7164,7 +7156,7 @@ pub fn LLVMBuilderRef::build_z_ext(self: LLVMBuilderRef, val: LLVMValueRef, dest
 }
 
 ///| Build a sext instruction.
-extern "C" fn __llvm_build_s_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_s_ext"
+extern "C" fn __llvm_build_s_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildSExt"
 
 ///| Build a sext instruction.
 pub fn llvm_build_s_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7177,7 +7169,7 @@ pub fn LLVMBuilderRef::build_s_ext(self: LLVMBuilderRef, val: LLVMValueRef, dest
 }
 
 ///| Build a float to unsigned int instruction.
-extern "C" fn __llvm_build_fp_to_ui(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_fp_to_ui"
+extern "C" fn __llvm_build_fp_to_ui(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildFPToUI"
 
 ///| Build a float to unsigned int instruction.
 pub fn llvm_build_fp_to_ui(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7190,7 +7182,7 @@ pub fn LLVMBuilderRef::build_fp_to_ui(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build a float to signed int instruction.
-extern "C" fn __llvm_build_fp_to_si(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_fp_to_si"
+extern "C" fn __llvm_build_fp_to_si(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildFPToSI"
 
 ///| Build a float to signed int instruction.
 pub fn llvm_build_fp_to_si(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7203,7 +7195,7 @@ pub fn LLVMBuilderRef::build_fp_to_si(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build an unsigned int to float instruction.
-extern "C" fn __llvm_build_ui_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_ui_to_fp"
+extern "C" fn __llvm_build_ui_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildUIToFP"
 
 ///| Build an unsigned int to float instruction.
 pub fn llvm_build_ui_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7216,7 +7208,7 @@ pub fn LLVMBuilderRef::build_ui_to_fp(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build a signed int to float instruction.
-extern "C" fn __llvm_build_si_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_si_to_fp"
+extern "C" fn __llvm_build_si_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildSIToFP"
 
 ///| Build a signed int to float instruction.
 pub fn llvm_build_si_to_fp(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7229,7 +7221,7 @@ pub fn LLVMBuilderRef::build_si_to_fp(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build a float truncation instruction.
-extern "C" fn __llvm_build_fp_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_fp_trunc"
+extern "C" fn __llvm_build_fp_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildFPTrunc"
 
 ///| Build a float truncation instruction.
 pub fn llvm_build_fp_trunc(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7242,7 +7234,7 @@ pub fn LLVMBuilderRef::build_fp_trunc(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build a float extension instruction.
-extern "C" fn __llvm_build_fp_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_fp_ext"
+extern "C" fn __llvm_build_fp_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildFPExt"
 
 ///| Build a float extension instruction.
 pub fn llvm_build_fp_ext(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7255,7 +7247,7 @@ pub fn LLVMBuilderRef::build_fp_ext(self: LLVMBuilderRef, val: LLVMValueRef, des
 }
 
 ///| Build a ptr to int instruction.
-extern "C" fn __llvm_build_ptr_to_int(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_ptr_to_int"
+extern "C" fn __llvm_build_ptr_to_int(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildPtrToInt"
 
 ///| Build a ptr to int instruction.
 pub fn llvm_build_ptr_to_int(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7268,7 +7260,7 @@ pub fn LLVMBuilderRef::build_ptr_to_int(self: LLVMBuilderRef, val: LLVMValueRef,
 }
 
 ///| Build a int to ptr instruction.
-extern "C" fn __llvm_build_int_to_ptr(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_int_to_ptr"
+extern "C" fn __llvm_build_int_to_ptr(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildIntToPtr"
 
 ///| Build a int to ptr instruction.
 pub fn llvm_build_int_to_ptr(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7281,7 +7273,7 @@ pub fn LLVMBuilderRef::build_int_to_ptr(self: LLVMBuilderRef, val: LLVMValueRef,
 }
 
 ///| Build a bit cast instruction.
-extern "C" fn __llvm_build_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_bit_cast"
+extern "C" fn __llvm_build_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildBitCast"
 
 ///| Build a bit cast instruction.
 pub fn llvm_build_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7294,7 +7286,7 @@ pub fn LLVMBuilderRef::build_bit_cast(self: LLVMBuilderRef, val: LLVMValueRef, d
 }
 
 ///| Build address space cast instruction.
-extern "C" fn __llvm_build_addr_space_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_addr_space_cast"
+extern "C" fn __llvm_build_addr_space_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildAddrSpaceCast"
 
 ///| Build address space cast instruction.
 pub fn llvm_build_addr_space_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7307,7 +7299,7 @@ pub fn LLVMBuilderRef::build_addr_space_cast(self: LLVMBuilderRef, val: LLVMValu
 }
 
 ///| Build z ext or bit cast instruction.
-extern "C" fn __llvm_build_z_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_z_ext_or_bit_cast"
+extern "C" fn __llvm_build_z_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildZExtOrBitCast"
 
 ///| Build z ext or bit cast instruction.
 pub fn llvm_build_z_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7320,7 +7312,7 @@ pub fn LLVMBuilderRef::build_z_ext_or_bit_cast(self: LLVMBuilderRef, val: LLVMVa
 }
 
 ///| Build s ext or bit cast instruction.
-extern "C" fn __llvm_build_s_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_s_ext_or_bit_cast"
+extern "C" fn __llvm_build_s_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildSExtOrBitCast"
 
 ///| Build s ext or bit cast instruction.
 pub fn llvm_build_s_ext_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7333,7 +7325,7 @@ pub fn LLVMBuilderRef::build_s_ext_or_bit_cast(self: LLVMBuilderRef, val: LLVMVa
 }
 
 ///| Build trunc or bit cast instruction.
-extern "C" fn __llvm_build_trunc_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_trunc_or_bit_cast"
+extern "C" fn __llvm_build_trunc_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildTruncOrBitCast"
 
 ///| Build trunc or bit cast instruction.
 pub fn llvm_build_trunc_or_bit_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7361,7 +7353,7 @@ pub fn LLVMBuilderRef::build_cast(self: LLVMBuilderRef, op: LLVMOpcode, val: LLV
 }
 
 ///| Build pointer cast instruction.
-extern "C" fn __llvm_build_pointer_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_pointer_cast"
+extern "C" fn __llvm_build_pointer_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildPointerCast"
 
 ///| Build pointer cast instruction.
 pub fn llvm_build_pointer_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7374,7 +7366,7 @@ pub fn LLVMBuilderRef::build_pointer_cast(self: LLVMBuilderRef, val: LLVMValueRe
 }
 
 ///| Build int cast instruction.
-extern "C" fn __llvm_build_int_cast2(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, is_signed: LLVMBool, name: CStr) -> LLVMValueRef = "__llvm_build_int_cast2"
+extern "C" fn __llvm_build_int_cast2(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, is_signed: LLVMBool, name: CStr) -> LLVMValueRef = "LLVMBuildIntCast2"
 
 ///| Build int cast instruction.
 pub fn llvm_build_int_cast2(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, is_signed: Bool, name: String) -> LLVMValueRef {
@@ -7387,7 +7379,7 @@ pub fn LLVMBuilderRef::build_int_cast2(self: LLVMBuilderRef, val: LLVMValueRef, 
 }
 
 ///| Build floating point cast instruction.
-extern "C" fn __llvm_build_fp_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_fp_cast"
+extern "C" fn __llvm_build_fp_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildFPCast"
 
 ///| Build floating point cast instruction.
 pub fn llvm_build_fp_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7400,7 +7392,7 @@ pub fn LLVMBuilderRef::build_fp_cast(self: LLVMBuilderRef, val: LLVMValueRef, de
 }
 
 ///| Build int cast instruction.
-extern "C" fn __llvm_build_int_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_int_cast"
+extern "C" fn __llvm_build_int_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildIntCast"
 
 ///| Build int cast instruction.
 pub fn llvm_build_int_cast(builder: LLVMBuilderRef, val: LLVMValueRef, dest_ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7460,7 +7452,7 @@ pub fn LLVMBuilderRef::build_fcmp(self: LLVMBuilderRef, op: LLVMRealPredicate, l
 }
 
 ///| Build a phi node.
-extern "C" fn __llvm_build_phi(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_phi"
+extern "C" fn __llvm_build_phi(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildPhi"
 
 ///| Build a phi node.
 pub fn llvm_build_phi(builder: LLVMBuilderRef, ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7499,7 +7491,7 @@ pub fn LLVMBuilderRef::build_call_with_operand_bundles(self: LLVMBuilderRef, ty:
 }
 
 ///| Build a select instruction.
-extern "C" fn __llvm_build_select(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMValueRef, else_block: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_select"
+extern "C" fn __llvm_build_select(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMValueRef, else_block: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildSelect"
 
 ///| Build a select instruction.
 pub fn llvm_build_select(builder: LLVMBuilderRef, if_block: LLVMValueRef, then: LLVMValueRef, else_block: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7512,7 +7504,7 @@ pub fn LLVMBuilderRef::build_select(self: LLVMBuilderRef, if_block: LLVMValueRef
 }
 
 ///| Build a variadic argument instruction.
-extern "C" fn __llvm_build_va_arg(builder: LLVMBuilderRef, list: LLVMValueRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "__llvm_build_va_arg"
+extern "C" fn __llvm_build_va_arg(builder: LLVMBuilderRef, list: LLVMValueRef, ty: LLVMTypeRef, name: CStr) -> LLVMValueRef = "LLVMBuildVAArg"
 
 ///| Build a variadic argument instruction.
 pub fn llvm_build_va_arg(builder: LLVMBuilderRef, list: LLVMValueRef, ty: LLVMTypeRef, name: String) -> LLVMValueRef {
@@ -7525,7 +7517,7 @@ pub fn LLVMBuilderRef::build_va_arg(self: LLVMBuilderRef, list: LLVMValueRef, ty
 }
 
 ///| Build extract element instruction.
-extern "C" fn __llvm_build_extract_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, index: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_extract_element"
+extern "C" fn __llvm_build_extract_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, index: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildExtractElement"
 
 ///| Build extract element instruction.
 pub fn llvm_build_extract_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, index: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7538,7 +7530,7 @@ pub fn LLVMBuilderRef::build_extract_element(self: LLVMBuilderRef, vec_val: LLVM
 }
 
 ///| Build insert element instruction.
-extern "C" fn __llvm_build_insert_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, elt_val: LLVMValueRef, index: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_insert_element"
+extern "C" fn __llvm_build_insert_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, elt_val: LLVMValueRef, index: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildInsertElement"
 
 ///| Build insert element instruction.
 pub fn llvm_build_insert_element(builder: LLVMBuilderRef, vec_val: LLVMValueRef, elt_val: LLVMValueRef, index: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7551,7 +7543,7 @@ pub fn LLVMBuilderRef::build_insert_element(self: LLVMBuilderRef, vec_val: LLVMV
 }
 
 ///| Build shuffle vector instruction.
-extern "C" fn __llvm_build_shuffle_vector(builder: LLVMBuilderRef, v1: LLVMValueRef, v2: LLVMValueRef, mask: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_shuffle_vector"
+extern "C" fn __llvm_build_shuffle_vector(builder: LLVMBuilderRef, v1: LLVMValueRef, v2: LLVMValueRef, mask: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildShuffleVector"
 
 ///| Build shuffle vector instruction.
 pub fn llvm_build_shuffle_vector(builder: LLVMBuilderRef, v1: LLVMValueRef, v2: LLVMValueRef, mask: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7564,7 +7556,7 @@ pub fn LLVMBuilderRef::build_shuffle_vector(self: LLVMBuilderRef, v1: LLVMValueR
 }
 
 ///| Build extract value instruction.
-extern "C" fn __llvm_build_extract_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, index: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_extract_value"
+extern "C" fn __llvm_build_extract_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, index: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildExtractValue"
 
 ///| Build extract value instruction.
 pub fn llvm_build_extract_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, index: UInt, name: String) -> LLVMValueRef {
@@ -7577,7 +7569,7 @@ pub fn LLVMBuilderRef::build_extract_value(self: LLVMBuilderRef, agg_val: LLVMVa
 }
 
 ///| Build insert value instruction.
-extern "C" fn __llvm_build_insert_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, elt_val: LLVMValueRef, index: UInt, name: CStr) -> LLVMValueRef = "__llvm_build_insert_value"
+extern "C" fn __llvm_build_insert_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, elt_val: LLVMValueRef, index: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildInsertValue"
 
 ///| Build insert value instruction.
 pub fn llvm_build_insert_value(builder: LLVMBuilderRef, agg_val: LLVMValueRef, elt_val: LLVMValueRef, index: UInt, name: String) -> LLVMValueRef {
@@ -7590,7 +7582,7 @@ pub fn LLVMBuilderRef::build_insert_value(self: LLVMBuilderRef, agg_val: LLVMVal
 }
 
 ///| Build freeze instruction.
-extern "C" fn __llvm_build_freeze(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_freeze"
+extern "C" fn __llvm_build_freeze(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildFreeze"
 
 ///| Build freeze instruction.
 pub fn llvm_build_freeze(builder: LLVMBuilderRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7603,7 +7595,7 @@ pub fn LLVMBuilderRef::build_freeze(self: LLVMBuilderRef, val: LLVMValueRef, nam
 }
 
 ///| Build is null instruction.
-extern "C" fn __llvm_build_is_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_is_null"
+extern "C" fn __llvm_build_is_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildIsNull"
 
 ///| Build is null instruction.
 pub fn llvm_build_is_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7616,7 +7608,7 @@ pub fn LLVMBuilderRef::build_is_null(self: LLVMBuilderRef, val: LLVMValueRef, na
 }
 
 ///| Build is not null instruction.
-extern "C" fn __llvm_build_is_not_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_is_not_null"
+extern "C" fn __llvm_build_is_not_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildIsNotNull"
 
 ///| Build is not null instruction.
 pub fn llvm_build_is_not_null(builder: LLVMBuilderRef, val: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7629,7 +7621,7 @@ pub fn LLVMBuilderRef::build_is_not_null(self: LLVMBuilderRef, val: LLVMValueRef
 }
 
 ///| Build ptr diff instruction.
-extern "C" fn __llvm_build_ptr_diff2(builder: LLVMBuilderRef, elem_ty: LLVMTypeRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "__llvm_build_ptr_diff2"
+extern "C" fn __llvm_build_ptr_diff2(builder: LLVMBuilderRef, elem_ty: LLVMTypeRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: CStr) -> LLVMValueRef = "LLVMBuildPtrDiff2"
 
 ///| Build ptr diff instruction.
 pub fn llvm_build_ptr_diff2(builder: LLVMBuilderRef, elem_ty: LLVMTypeRef, lhs: LLVMValueRef, rhs: LLVMValueRef, name: String) -> LLVMValueRef {
@@ -7642,7 +7634,7 @@ pub fn LLVMBuilderRef::build_ptr_diff2(self: LLVMBuilderRef, elem_ty: LLVMTypeRe
 }
 
 ///| Build fence instruction.
-extern "C" fn __llvm_build_fence(builder: LLVMBuilderRef, ordering: Int, single_thread: LLVMBool, name: CStr) -> LLVMValueRef = "__llvm_build_fence"
+extern "C" fn __llvm_build_fence(builder: LLVMBuilderRef, ordering: Int, single_thread: LLVMBool, name: CStr) -> LLVMValueRef = "LLVMBuildFence"
 
 ///| Build fence instruction.
 pub fn llvm_build_fence(builder: LLVMBuilderRef, ordering: LLVMAtomicOrdering, single_thread: Bool, name: String) -> LLVMValueRef {
@@ -7653,7 +7645,7 @@ pub fn llvm_build_fence(builder: LLVMBuilderRef, ordering: LLVMAtomicOrdering, s
 }
 
 ///| Build atomic rmw instruction.
-extern "C" fn __llvm_build_atomic_rmw(builder: LLVMBuilderRef, op: Int, ptr: LLVMValueRef, val: LLVMValueRef, ordering: Int, single_thread: LLVMBool) -> LLVMValueRef = "__llvm_build_atomic_rmw"
+extern "C" fn __llvm_build_atomic_rmw(builder: LLVMBuilderRef, op: Int, ptr: LLVMValueRef, val: LLVMValueRef, ordering: Int, single_thread: LLVMBool) -> LLVMValueRef = "LLVMBuildAtomicRMW"
 
 ///| Build atomic rmw instruction.
 pub fn llvm_build_atomic_rmw(builder: LLVMBuilderRef, op: LLVMAtomicRMWBinOp, ptr: LLVMValueRef, val: LLVMValueRef, ordering: LLVMAtomicOrdering, single_thread: LLVMBool) -> LLVMValueRef {
@@ -7668,7 +7660,7 @@ pub fn LLVMBuilderRef::build_atomic_rmw(self: LLVMBuilderRef, op: LLVMAtomicRMWB
 }
 
 ///| Build atomic cmp xchg instruction.
-extern "C" fn __llvm_build_atomic_cmp_xchg(builder: LLVMBuilderRef, ptr: LLVMValueRef, cmp: LLVMValueRef, _new: LLVMValueRef, success_ordering: Int, failure_ordering: Int, single_thread: LLVMBool) -> LLVMValueRef = "__llvm_build_atomic_cmp_xchg"
+extern "C" fn __llvm_build_atomic_cmp_xchg(builder: LLVMBuilderRef, ptr: LLVMValueRef, cmp: LLVMValueRef, _new: LLVMValueRef, success_ordering: Int, failure_ordering: Int, single_thread: LLVMBool) -> LLVMValueRef = "LLVMBuildAtomicCmpXchg"
 
 ///| Build atomic cmp xchg instruction.
 pub fn llvm_build_atomic_cmp_xchg(builder: LLVMBuilderRef, ptr: LLVMValueRef, cmp: LLVMValueRef, _new: LLVMValueRef, success_ordering: LLVMAtomicOrdering, failure_ordering: LLVMAtomicOrdering, single_thread: LLVMBool) -> LLVMValueRef {
@@ -7678,24 +7670,25 @@ pub fn llvm_build_atomic_cmp_xchg(builder: LLVMBuilderRef, ptr: LLVMValueRef, cm
 }
 
 ///| Get the number of elements in the mask of a ShuffleVector instruction.
-pub extern "C" fn llvm_get_num_mask_elements(shuffle_vector_inst: LLVMValueRef) -> UInt = "__llvm_get_num_mask_elements"
+pub extern "C" fn llvm_get_num_mask_elements(shuffle_vector_inst: LLVMValueRef) -> UInt = "LLVMGetNumMaskElements"
+
+///| Get the number of elements in the mask of a ShuffleVector instruction.
 pub fn LLVMValueRef::get_num_mask_elements(self: LLVMValueRef) -> UInt {
   llvm_get_num_mask_elements(self)
 }
-
 
 // 
 // returns a constant that specifies that the result of a ShuffleVectorInst
 // is undefined.
 // 
-pub extern "C" fn llvm_get_undef_mask_elem() -> Int = "__llvm_get_undef_mask_elem"
+pub extern "C" fn llvm_get_undef_mask_elem() -> Int = "LLVMGetUndefMaskElem"
 
 
 ///| Get the mask value at position Elt in the mask of a ShuffleVector instruction.
 /// 
 /// Returns the result of LLVMGetUndefMaskElem() if the mask value is
 /// poison at that position.
-pub extern "C" fn llvm_get_mask_value(shuffle_vector_inst: LLVMValueRef, elt: UInt) -> Int = "__llvm_get_mask_value"
+pub extern "C" fn llvm_get_mask_value(shuffle_vector_inst: LLVMValueRef, elt: UInt) -> Int = "LLVMGetMaskValue"
 
 ///| Get the mask value at position Elt in the mask of a ShuffleVector instruction.
 /// 
@@ -7719,9 +7712,8 @@ pub fn llvm_is_atomic(inst: LLVMValueRef) -> Bool {
   __llvm_is_atomic(inst).to_moonbit_bool()
 }
 
-
 ///| Check if the atomic instruction is single-thread.
-pub extern "C" fn llvm_is_atomic_single_thread(atomic_inst: LLVMValueRef) -> LLVMBool = "__llvm_is_atomic_single_thread"
+pub extern "C" fn llvm_is_atomic_single_thread(atomic_inst: LLVMValueRef) -> LLVMBool = "LLVMIsAtomicSingleThread"
 
 ///| Check if the atomic instruction is single-thread.
 pub fn LLVMValueRef::is_atomic_single_thread(self: LLVMValueRef) -> Bool {
@@ -7729,7 +7721,7 @@ pub fn LLVMValueRef::is_atomic_single_thread(self: LLVMValueRef) -> Bool {
 }
 
 ///| Set the atomic instruction to be single-thread.
-extern "C" fn __llvm_set_atomic_single_thread(atomic_inst: LLVMValueRef, single_thread: LLVMBool) = "__llvm_set_atomic_single_thread"
+extern "C" fn __llvm_set_atomic_single_thread(atomic_inst: LLVMValueRef, single_thread: LLVMBool) = "LLVMSetAtomicSingleThread"
 
 ///| Set the atomic instruction to be single-thread.
 pub fn llvm_set_atomic_single_thread(atomic_inst: LLVMValueRef, single_thread: Bool) -> Unit {
@@ -7777,11 +7769,11 @@ pub fn llvm_set_cmp_xchg_failure_ordering(cmp_xchg_inst: LLVMValueRef, ordering:
 
 /// Changes the type of M so it can be passed to FunctionPassManagers and the
 /// JIT.  They take ModuleProviders for historical reasons.
-pub extern "C" fn llvm_create_module_provider_for_existing_module(m: LLVMModuleRef) -> LLVMModuleProviderRef = "__llvm_create_module_provider_for_existing_module"
+pub extern "C" fn llvm_create_module_provider_for_existing_module(m: LLVMModuleRef) -> LLVMModuleProviderRef = "LLVMCreateModuleProviderForExistingModule"
 
 
 ///| Destroys the module M.
-pub extern "C" fn llvm_dispose_module_provider(m: LLVMModuleProviderRef) = "__llvm_dispose_module_provider"
+pub extern "C" fn llvm_dispose_module_provider(m: LLVMModuleProviderRef) = "LLVMDisposeModuleProvider"
 
 ///| Create a new memory buffer with the contents of a file.
 // FIXME: Not implemented
@@ -7838,7 +7830,7 @@ pub fn llvm_create_memory_buffer_with_memory_range_copy(input_data: String, inpu
 }
 
 // TODO: Need to check if this is correct
-extern "C" fn __llvm_get_buffer_start(mem_buf: LLVMMemoryBufferRef) -> CStr = "__llvm_get_buffer_start"
+extern "C" fn __llvm_get_buffer_start(mem_buf: LLVMMemoryBufferRef) -> CStr = "LLVMGetBufferStart"
 pub fn llvm_get_buffer_start(mem_buf: LLVMMemoryBufferRef) -> String {
   c_str_to_moonbit_str(__llvm_get_buffer_start(mem_buf))
 }
@@ -7847,7 +7839,7 @@ pub fn LLVMMemoryBufferRef::get_buffer_start(self: LLVMMemoryBufferRef) -> Strin
 }
 
 ///| Get buffer size
-pub extern "C" fn llvm_get_buffer_size(mem_buf: LLVMMemoryBufferRef) -> Int = "__llvm_get_buffer_size"
+pub extern "C" fn llvm_get_buffer_size(mem_buf: LLVMMemoryBufferRef) -> Int = "LLVMGetBufferSize"
 
 ///| Get buffer size
 pub fn LLVMMemoryBufferRef::get_buffer_size(self: LLVMMemoryBufferRef) -> Int {
@@ -7855,7 +7847,7 @@ pub fn LLVMMemoryBufferRef::get_buffer_size(self: LLVMMemoryBufferRef) -> Int {
 }
 
 ///| Frees the memory buffer.
-pub extern "C" fn llvm_dispose_memory_buffer(mem_buf: LLVMMemoryBufferRef) = "__llvm_dispose_memory_buffer"
+pub extern "C" fn llvm_dispose_memory_buffer(mem_buf: LLVMMemoryBufferRef) = "LLVMDisposeMemoryBuffer"
 
 ///| Frees the memory buffer.
 pub fn LLVMMemoryBufferRef::dispose_memory_buffer(self: LLVMMemoryBufferRef) -> Unit {
@@ -7868,7 +7860,7 @@ pub fn LLVMMemoryBufferRef::dispose_memory_buffer(self: LLVMMemoryBufferRef) -> 
 /// and whole-module transformations.
 ///
 /// - see llvm::PassManager::PassManager
-pub extern "C" fn llvm_create_pass_manager() -> LLVMPassManagerRef = "__llvm_create_pass_manager"
+pub extern "C" fn llvm_create_pass_manager() -> LLVMPassManagerRef = "LLVMCreatePassManager"
 
 ///| Constructs a new whole-module pass pipeline.
 ///
@@ -7887,7 +7879,7 @@ pub fn LLVMPassManagerRef::create() -> LLVMPassManagerRef {
 /// pipeline is suitable for code generation and JIT compilation tasks.
 ///
 /// - see llvm::FunctionPassManager::FunctionPassManager
-pub extern "C" fn llvm_create_function_pass_manager_for_module(m: LLVMModuleRef) -> LLVMPassManagerRef = "__llvm_create_function_pass_manager_for_module"
+pub extern "C" fn llvm_create_function_pass_manager_for_module(m: LLVMModuleRef) -> LLVMPassManagerRef = "LLVMCreateFunctionPassManagerForModule"
 
 ///| Constructs a new function-by-function pass pipeline over the module
 ///
@@ -7913,7 +7905,7 @@ pub fn LLVMModuleRef::create_function_pass_manager(self: LLVMModuleRef) -> LLVMP
 /// modified the module, 0 otherwise.
 ///
 /// - see llvm::PassManager::run(Module&)
-pub extern "C" fn llvm_run_pass_manager(pm: LLVMPassManagerRef, m: LLVMModuleRef) -> LLVMBool = "__llvm_run_pass_manager"
+pub extern "C" fn llvm_run_pass_manager(pm: LLVMPassManagerRef, m: LLVMModuleRef) -> LLVMBool = "LLVMRunPassManager"
 
 ///| Run the pass manager.
 ///
@@ -7932,7 +7924,7 @@ pub fn LLVMPassManagerRef::run(self: LLVMPassManagerRef, m: LLVMModuleRef) -> Bo
 ///  manager. Returns 1 if any of the passes modified the module, 0 otherwise.
 ///
 ///  - see llvm::FunctionPassManager::doInitialization.
-pub extern "C" fn llvm_initialize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "__llvm_initialize_function_pass_manager"
+pub extern "C" fn llvm_initialize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "LLVMInitializeFunctionPassManager"
 
 ///| Initialize a function pass manager.
 ///
@@ -7951,7 +7943,7 @@ pub fn LLVMPassManagerRef::initialize_function_pass_manager(self: LLVMPassManage
 /// function, false otherwise.
 ///
 /// - see llvm::FunctionPassManager::run(Function&)
-pub extern "C" fn llvm_run_function_pass_manager(fpm: LLVMPassManagerRef, f: LLVMValueRef) -> LLVMBool = "__llvm_run_function_pass_manager"
+pub extern "C" fn llvm_run_function_pass_manager(fpm: LLVMPassManagerRef, f: LLVMValueRef) -> LLVMBool = "LLVMRunFunctionPassManager"
 
 ///| Run the function pass manager on a given function.
 ///
@@ -7969,7 +7961,7 @@ pub fn LLVMPassManagerRef::run_function_pass_manager(self: LLVMPassManagerRef, f
 /// Returns 1 if any of the passes modified the module, 0 otherwise.
 ///
 /// - see llvm::FunctionPassManager::doFinalization.
-pub extern "C" fn llvm_finalize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "__llvm_finalize_function_pass_manager"
+pub extern "C" fn llvm_finalize_function_pass_manager(fpm: LLVMPassManagerRef) -> LLVMBool = "LLVMFinalizeFunctionPassManager"
 
 ///| Finalizes all of the function passes scheduled in the function pass manager.
 ///
@@ -7987,24 +7979,24 @@ pub fn LLVMPassManagerRef::finalize_function_pass_manager(self: LLVMPassManagerR
 /// the module provider.
 ///
 /// - see llvm::PassManagerBase::~PassManagerBase.
-pub extern "C" fn llvm_dispose_pass_manager(pm: LLVMPassManagerRef) = "__llvm_dispose_pass_manager"
+pub extern "C" fn llvm_dispose_pass_manager(pm: LLVMPassManagerRef) = "LLVMDisposePassManager"
 pub fn LLVMPassManagerRef::dispose_pass_manager(self: LLVMPassManagerRef) -> Unit {
   llvm_dispose_pass_manager(self)
 }
 
 // Deprecated
-// extern "C" fn __llvm_start_multithreaded() -> LLVMBool = "__llvm_start_multithreaded"
-// pub fn llvm_start_multithreaded() -> Bool {
-//   __llvm_start_multithreaded().to_moonbit_bool()
-// }
+extern "C" fn __llvm_start_multithreaded() -> LLVMBool = "LLVMStartMultithreaded"
+pub fn llvm_start_multithreaded() -> Bool {
+  __llvm_start_multithreaded().to_moonbit_bool()
+}
 
 // Deprecated
-// pub extern "C" fn llvm_stop_multithreaded() = "__llvm_stop_multithreaded"
+pub extern "C" fn llvm_stop_multithreaded() = "LLVMStopMultithreaded"
 
 ///| Check whether LLVM is executing in thread-safe mode or not.
 ///
 /// - see llvm::llvm_is_multithreaded.
-extern "C" fn __llvm_is_multithreaded() -> LLVMBool = "__llvm_is_multithreaded"
+extern "C" fn __llvm_is_multithreaded() -> LLVMBool = "LLVMIsMultithreaded"
 pub fn llvm_is_multithreaded() -> Bool {
   __llvm_is_multithreaded().to_moonbit_bool()
 }

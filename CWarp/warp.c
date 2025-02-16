@@ -1546,101 +1546,9 @@ void *__llvm_get_type_context(void *ty) {
   return (LLVMContextRef)LLVMGetTypeContext((LLVMTypeRef)ty);
 }
 
-void __llvm_dump_type(void *val) { LLVMDumpType((LLVMTypeRef)val); }
-
 void *__llvm_print_type_to_string(void *val) {
   return (char *)LLVMPrintTypeToString((LLVMTypeRef)val);
 }
-
-void *__llvm_int1_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt1TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int8_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt8TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int16_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt16TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int32_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt32TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int64_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt64TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int128_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMInt128TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_int_type_in_context(void *context, unsigned num_bits) {
-  return (LLVMTypeRef)LLVMIntTypeInContext((LLVMContextRef)context, num_bits);
-}
-
-void *__llvm_int1_type() { return (LLVMTypeRef)LLVMInt1Type(); }
-
-void *__llvm_int8_type() { return (LLVMTypeRef)LLVMInt8Type(); }
-
-void *__llvm_int16_type() { return (LLVMTypeRef)LLVMInt16Type(); }
-
-void *__llvm_int32_type() { return (LLVMTypeRef)LLVMInt32Type(); }
-
-void *__llvm_int64_type() { return (LLVMTypeRef)LLVMInt64Type(); }
-
-void *__llvm_int128_type() { return (LLVMTypeRef)LLVMInt128Type(); }
-
-void *__llvm_int_type(unsigned num_bits) {
-  return (LLVMTypeRef)LLVMIntType(num_bits);
-}
-
-unsigned __llvm_get_int_type_width(void *integer_ty) {
-  return LLVMGetIntTypeWidth((LLVMTypeRef)integer_ty);
-}
-
-void *__llvm_half_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMHalfTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_bfloat_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMBFloatTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_float_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMFloatTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_double_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMDoubleTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_x86_fp80_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMX86FP80TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_fp128_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMFP128TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_ppc_fp128_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMPPCFP128TypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_half_type() { return (LLVMTypeRef)LLVMHalfType(); }
-
-void *__llvm_bfloat_type() { return (LLVMTypeRef)LLVMBFloatType(); }
-
-void *__llvm_float_type() { return (LLVMTypeRef)LLVMFloatType(); }
-
-void *__llvm_double_type() { return (LLVMTypeRef)LLVMDoubleType(); }
-
-void *__llvm_x86_fp80_type() { return (LLVMTypeRef)LLVMX86FP80Type(); }
-
-void *__llvm_fp128_type() { return (LLVMTypeRef)LLVMFP128Type(); }
-
-void *__llvm_ppc_fp128_type() { return (LLVMTypeRef)LLVMPPCFP128Type(); }
 
 void *__llvm_function_type(void *return_type, ArrayLLVMTypeRef *param_types,
                            LLVMBool is_var_arg) {
@@ -1771,50 +1679,9 @@ unsigned __llvm_get_pointer_address_space(void *pointer_ty) {
   return LLVMGetPointerAddressSpace((LLVMTypeRef)pointer_ty);
 }
 
-void *__llvm_vector_type(void *element_type, unsigned element_count) {
-  return (LLVMTypeRef)LLVMVectorType((LLVMTypeRef)element_type, element_count);
-}
-
-void *__llvm_scalable_vector_type(void *element_type, unsigned element_count) {
-  return (LLVMTypeRef)LLVMScalableVectorType((LLVMTypeRef)element_type,
-                                             element_count);
-}
-
 unsigned __llvm_get_vector_size(void *vector_ty) {
   return LLVMGetVectorSize((LLVMTypeRef)vector_ty);
 }
-
-void *__llvm_void_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMVoidTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_label_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMLabelTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_x86_mmx_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMX86MMXTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_x86_amx_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMX86AMXTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_token_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMTokenTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_metadata_type_in_context(void *context) {
-  return (LLVMTypeRef)LLVMMetadataTypeInContext((LLVMContextRef)context);
-}
-
-void *__llvm_void_type() { return (LLVMTypeRef)LLVMVoidType(); }
-
-void *__llvm_label_type() { return (LLVMTypeRef)LLVMLabelType(); }
-
-void *__llvm_x86_mmx_type() { return (LLVMTypeRef)LLVMX86MMXType(); }
-
-void *__llvm_x86_amx_type() { return (LLVMTypeRef)LLVMX86AMXType(); }
 
 // void *__llvm_target_ext_type_in_context(void *context, void *name,
 //                                         ArrayLLVMTypeRef *type_params,
@@ -1863,7 +1730,7 @@ LLVMValueKind __llvm_get_value_kind(void *val) {
 // }
 
 TupleCStrUInt64 *__llvm_get_value_name2(void *val, TupleCStrUInt64 *input) {
-  const char *s = LLVMGetValueName2((LLVMValueRef)val, &(input->$1));
+  const char *s = LLVMGetValueName2((LLVMValueRef)val, (size_t *)&(input->$1));
   input->$0 = (void *)s;
   return input;
 }
@@ -3239,38 +3106,6 @@ void *__llvm_insert_basic_block(void *insert_before_bb, void *name) {
       (LLVMBasicBlockRef)insert_before_bb, (const char *)name);
 }
 
-void __llvm_delete_basic_block(void *bb) {
-  LLVMDeleteBasicBlock((LLVMBasicBlockRef)bb);
-}
-
-void __llvm_remove_basic_block_from_parent(void *bb) {
-  LLVMRemoveBasicBlockFromParent((LLVMBasicBlockRef)bb);
-}
-
-void __llvm_move_basic_block_before(void *bb, void *move_pos) {
-  LLVMMoveBasicBlockBefore((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)move_pos);
-}
-
-void __llvm_move_basic_block_after(void *bb, void *move_pos) {
-  LLVMMoveBasicBlockAfter((LLVMBasicBlockRef)bb, (LLVMBasicBlockRef)move_pos);
-}
-
-void *__llvm_get_first_instruction(void *bb) {
-  return (LLVMValueRef)LLVMGetFirstInstruction((LLVMBasicBlockRef)bb);
-}
-
-void *__llvm_get_last_instruction(void *bb) {
-  return (LLVMValueRef)LLVMGetLastInstruction((LLVMBasicBlockRef)bb);
-}
-
-int __llvm_has_metadata(void *val) {
-  return LLVMHasMetadata((LLVMValueRef)val);
-}
-
-void *__llvm_get_metadata(void *val, unsigned kind_id) {
-  return (LLVMValueRef)LLVMGetMetadata((LLVMValueRef)val, kind_id);
-}
-
 void __llvm_set_metadata(void *val, unsigned kind_id, void *node) {
   LLVMSetMetadata((LLVMValueRef)val, kind_id, (LLVMValueRef)node);
 }
@@ -3281,30 +3116,6 @@ __llvm_instruction_get_all_metadata_other_than_debug_loc(void *instr,
   return (LLVMValueMetadataEntry *)
       LLVMInstructionGetAllMetadataOtherThanDebugLoc((LLVMValueRef)instr,
                                                      num_entries);
-}
-
-void *__llvm_get_instruction_parent(void *inst) {
-  return (LLVMBasicBlockRef)LLVMGetInstructionParent((LLVMValueRef)inst);
-}
-
-void *__llvm_get_next_instruction(void *inst) {
-  return (LLVMValueRef)LLVMGetNextInstruction((LLVMValueRef)inst);
-}
-
-void *__llvm_get_previous_instruction(void *inst) {
-  return (LLVMValueRef)LLVMGetPreviousInstruction((LLVMValueRef)inst);
-}
-
-void __llvm_instruction_remove_from_parent(void *inst) {
-  LLVMInstructionRemoveFromParent((LLVMValueRef)inst);
-}
-
-void __llvm_instruction_erase_from_parent(void *inst) {
-  LLVMInstructionEraseFromParent((LLVMValueRef)inst);
-}
-
-void __llvm_delete_instruction(void *inst) {
-  LLVMDeleteInstruction((LLVMValueRef)inst);
 }
 
 int __llvm_get_instruction_opcode(void *inst) {
@@ -3320,16 +3131,8 @@ LLVMRealPredicate __llvm_get_fcmp_predicate(void *inst) {
   return LLVMGetFCmpPredicate((LLVMValueRef)inst);
 }
 
-void *__llvm_instruction_clone(void *inst) {
-  return (LLVMValueRef)LLVMInstructionClone((LLVMValueRef)inst);
-}
-
 void *__llvm_isa_terminator_inst(void *inst) {
   return (LLVMValueRef)LLVMIsATerminatorInst((LLVMValueRef)inst);
-}
-
-unsigned __llvm_get_num_arg_operands(void *instr) {
-  return LLVMGetNumArgOperands((LLVMValueRef)instr);
 }
 
 void __llvm_set_instruction_call_conv(void *instr, unsigned cc) {
@@ -3519,99 +3322,8 @@ const unsigned *__llvm_get_indices(void *inst) {
   return LLVMGetIndices((LLVMValueRef)inst);
 }
 
-void *__llvm_create_builder_in_context(void *context) {
-  return (LLVMBuilderRef)LLVMCreateBuilderInContext((LLVMContextRef)context);
-}
-
-void *__llvm_create_builder() { return (LLVMBuilderRef)LLVMCreateBuilder(); }
-
-void __llvm_position_builder(void *builder, void *block, void *instr) {
-  LLVMPositionBuilder((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block,
-                      (LLVMValueRef)instr);
-}
-
-void __llvm_position_builder_before_dbg_records(void *builder, void *block,
-                                                void *inst) {
-  LLVMPositionBuilderBeforeDbgRecords(
-      (LLVMBuilderRef)builder, (LLVMBasicBlockRef)block, (LLVMValueRef)inst);
-}
-
-void __llvm_position_builder_before(void *builder, void *instr) {
-  LLVMPositionBuilderBefore((LLVMBuilderRef)builder, (LLVMValueRef)instr);
-}
-
-void __llvm_position_builder_before_instr_and_dbg_records(void *builder,
-                                                          void *instr) {
-  LLVMPositionBuilderBeforeInstrAndDbgRecords((LLVMBuilderRef)builder,
-                                              (LLVMValueRef)instr);
-}
-
-void __llvm_position_builder_at_end(void *builder, void *block) {
-  LLVMPositionBuilderAtEnd((LLVMBuilderRef)builder, (LLVMBasicBlockRef)block);
-}
-
-void *__llvm_get_insert_block(void *builder) {
-  return (LLVMBasicBlockRef)LLVMGetInsertBlock((LLVMBuilderRef)builder);
-}
-
-void __llvm_clear_insertion_position(void *builder) {
-  LLVMClearInsertionPosition((LLVMBuilderRef)builder);
-}
-
-void __llvm_insert_into_builder(void *builder, void *instr) {
-  LLVMInsertIntoBuilder((LLVMBuilderRef)builder, (LLVMValueRef)instr);
-}
-
-void __llvm_insert_into_builder_with_name(void *builder, void *instr,
-                                          void *name) {
-  LLVMInsertIntoBuilderWithName((LLVMBuilderRef)builder, (LLVMValueRef)instr,
-                                (const char *)name);
-}
-
-void __llvm_dispose_builder(void *builder) {
-  LLVMDisposeBuilder((LLVMBuilderRef)builder);
-}
-
-void *__llvm_get_current_debug_location2(void *builder) {
-  return (LLVMMetadataRef)LLVMGetCurrentDebugLocation2((LLVMBuilderRef)builder);
-}
-
-void __llvm_set_current_debug_location2(void *builder, void *loc) {
-  LLVMSetCurrentDebugLocation2((LLVMBuilderRef)builder, (LLVMMetadataRef)loc);
-}
-
-void __llvm_set_inst_debug_location(void *builder, void *inst) {
-  LLVMSetInstDebugLocation((LLVMBuilderRef)builder, (LLVMValueRef)inst);
-}
-
-void __llvm_add_metadata_to_inst(void *builder, void *inst) {
-  LLVMAddMetadataToInst((LLVMBuilderRef)builder, (LLVMValueRef)inst);
-}
-
-void *__llvm_builder_get_default_fp_math_tag(void *builder) {
-  return (LLVMMetadataRef)LLVMBuilderGetDefaultFPMathTag(
-      (LLVMBuilderRef)builder);
-}
-
-void __llvm_builder_set_default_fp_math_tag(void *builder, void *fp_math_tag) {
-  LLVMBuilderSetDefaultFPMathTag((LLVMBuilderRef)builder,
-                                 (LLVMMetadataRef)fp_math_tag);
-}
-
-void __llvm_set_current_debug_location(void *builder, void *l) {
-  LLVMSetCurrentDebugLocation((LLVMBuilderRef)builder, (LLVMValueRef)l);
-}
-
 void *__llvm_get_current_debug_location(void *builder) {
   return (LLVMValueRef)LLVMGetCurrentDebugLocation((LLVMBuilderRef)builder);
-}
-
-void *__llvm_build_ret_void(void *builder) {
-  return (LLVMValueRef)LLVMBuildRetVoid((LLVMBuilderRef)builder);
-}
-
-void *__llvm_build_ret(void *builder, void *v) {
-  return (LLVMValueRef)LLVMBuildRet((LLVMBuilderRef)builder, (LLVMValueRef)v);
 }
 
 void *__llvm_build_aggregate_ret(void *builder, ArrayLLVMValueRef *ret_vals) {
@@ -3620,28 +3332,6 @@ void *__llvm_build_aggregate_ret(void *builder, ArrayLLVMValueRef *ret_vals) {
   unsigned n = ret_vals->$1;
   return (LLVMValueRef)LLVMBuildAggregateRet((LLVMBuilderRef)builder,
                                              llvm_ret_vals, n);
-}
-
-void *__llvm_build_br(void *builder, void *dest) {
-  return (LLVMValueRef)LLVMBuildBr((LLVMBuilderRef)builder,
-                                   (LLVMBasicBlockRef)dest);
-}
-
-void *__llvm_build_cond_br(void *builder, void *_if, void *then, void *_else) {
-  return (LLVMValueRef)LLVMBuildCondBr(
-      (LLVMBuilderRef)builder, (LLVMValueRef)_if, (LLVMBasicBlockRef)then,
-      (LLVMBasicBlockRef)_else);
-}
-
-void *__llvm_build_switch(void *builder, void *v, void *_else,
-                          unsigned num_cases) {
-  return (LLVMValueRef)LLVMBuildSwitch((LLVMBuilderRef)builder, (LLVMValueRef)v,
-                                       (LLVMBasicBlockRef)_else, num_cases);
-}
-
-void *__llvm_build_indirect_br(void *builder, void *addr, unsigned num_dests) {
-  return (LLVMValueRef)LLVMBuildIndirectBr((LLVMBuilderRef)builder,
-                                           (LLVMValueRef)addr, num_dests);
 }
 
 void *__llvm_build_call_br(void *builder, void *ty, void *fn,
@@ -3688,32 +3378,6 @@ void *__llvm_build_invoke_with_operand_bundles(
       llvm_bundles, num_bundles, (const char *)name);
 }
 
-void *__llvm_build_unreachable(void *builder) {
-  return (LLVMValueRef)LLVMBuildUnreachable((LLVMBuilderRef)builder);
-}
-
-void *__llvm_build_resume(void *builder, void *exn) {
-  return (LLVMValueRef)LLVMBuildResume((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)exn);
-}
-
-void *__llvm_build_landing_pad(void *builder, void *ty, void *pers_fn,
-                               unsigned num_clauses, void *name) {
-  return (LLVMValueRef)LLVMBuildLandingPad(
-      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)pers_fn,
-      num_clauses, (const char *)name);
-}
-
-void *__llvm_build_cleanup_ret(void *builder, void *catch_pad, void *bb) {
-  return (LLVMValueRef)LLVMBuildCleanupRet(
-      (LLVMBuilderRef)builder, (LLVMValueRef)catch_pad, (LLVMBasicBlockRef)bb);
-}
-
-void *__llvm_build_catch_ret(void *builder, void *catch_pad, void *bb) {
-  return (LLVMValueRef)LLVMBuildCatchRet(
-      (LLVMBuilderRef)builder, (LLVMValueRef)catch_pad, (LLVMBasicBlockRef)bb);
-}
-
 void *__llvm_build_catch_pad(void *builder, void *parent_pad,
                              ArrayLLVMValueRef *args, void *name) {
   LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
@@ -3732,211 +3396,6 @@ void *__llvm_build_cleanup_pad(void *builder, void *parent_pad,
                                            num_args, (const char *)name);
 }
 
-void *__llvm_build_catch_switch(void *builder, void *parent_pad,
-                                void *unwind_bb, unsigned num_handlers,
-                                void *name) {
-  return (LLVMValueRef)LLVMBuildCatchSwitch(
-      (LLVMBuilderRef)builder, (LLVMValueRef)parent_pad,
-      (LLVMBasicBlockRef)unwind_bb, num_handlers, (const char *)name);
-}
-
-void __llvm_add_case(void *_switch, void *on_val, void *dest) {
-  LLVMAddCase((LLVMValueRef)_switch, (LLVMValueRef)on_val,
-              (LLVMBasicBlockRef)dest);
-}
-
-void __llvm_add_destination(void *indirect_br, void *dest) {
-  LLVMAddDestination((LLVMValueRef)indirect_br, (LLVMBasicBlockRef)dest);
-}
-
-unsigned __llvm_get_num_clauses(void *landing_pad) {
-  return LLVMGetNumClauses((LLVMValueRef)landing_pad);
-}
-
-void *__llvm_get_clause(void *landing_pad, unsigned idx) {
-  return (LLVMValueRef)LLVMGetClause((LLVMValueRef)landing_pad, idx);
-}
-
-void __llvm_add_clause(void *landing_pad, void *clause_val) {
-  LLVMAddClause((LLVMValueRef)landing_pad, (LLVMValueRef)clause_val);
-}
-
-LLVMBool __llvm_is_cleanup(void *landing_pad) {
-  return LLVMIsCleanup((LLVMValueRef)landing_pad);
-}
-
-void __llvm_set_cleanup(void *landing_pad, LLVMBool val) {
-  LLVMSetCleanup((LLVMValueRef)landing_pad, val);
-}
-
-void __llvm_add_handler(void *catch_switch, void *dest) {
-  LLVMAddHandler((LLVMValueRef)catch_switch, (LLVMBasicBlockRef)dest);
-}
-
-unsigned __llvm_get_num_handlers(void *catch_switch) {
-  return LLVMGetNumHandlers((LLVMValueRef)catch_switch);
-}
-
-void __llvm_get_handlers(void *catch_switch, void *handlers) {
-  LLVMGetHandlers((LLVMValueRef)catch_switch, (LLVMBasicBlockRef *)handlers);
-}
-
-void *__llvm_get_arg_operand(void *funclet, unsigned i) {
-  return (LLVMValueRef)LLVMGetArgOperand((LLVMValueRef)funclet, i);
-}
-
-void __llvm_set_arg_operand(void *funclet, unsigned i, void *value) {
-  LLVMSetArgOperand((LLVMValueRef)funclet, i, (LLVMValueRef)value);
-}
-
-void *__llvm_get_parent_catch_switch(void *catch_pad) {
-  return (LLVMValueRef)LLVMGetParentCatchSwitch((LLVMValueRef)catch_pad);
-}
-
-void __llvm_set_parent_catch_switch(void *catch_pad, void *catch_switch) {
-  LLVMSetParentCatchSwitch((LLVMValueRef)catch_pad, (LLVMValueRef)catch_switch);
-}
-
-void *__llvm_build_add(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildAdd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_nsw_add(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNSWAdd((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_nuw_add(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNUWAdd((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_f_add(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFAdd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_sub(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildSub((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_nsw_sub(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNSWSub((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_nuw_sub(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNUWSub((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_f_sub(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFSub((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_mul(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildMul((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_nsw_mul(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNSWMul((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_nuw_mul(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildNUWMul((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                       (const char *)name);
-}
-
-void *__llvm_build_f_mul(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFMul((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_u_div(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildUDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_exact_u_div(void *builder, void *lhs, void *rhs,
-                               void *name) {
-  return (LLVMValueRef)LLVMBuildExactUDiv((LLVMBuilderRef)builder,
-                                          (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                          (const char *)name);
-}
-
-void *__llvm_build_s_div(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildSDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_exact_s_div(void *builder, void *lhs, void *rhs,
-                               void *name) {
-  return (LLVMValueRef)LLVMBuildExactSDiv((LLVMBuilderRef)builder,
-                                          (LLVMValueRef)lhs, (LLVMValueRef)rhs,
-                                          (const char *)name);
-}
-
-void *__llvm_build_f_div(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFDiv((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_u_rem(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildURem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_s_rem(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildSRem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_f_rem(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildFRem((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_shl(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildShl((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_l_shr(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildLShr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_a_shr(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildAShr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                     (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_and(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildAnd((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_or(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildOr((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                   (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_xor(void *builder, void *lhs, void *rhs, void *name) {
-  return (LLVMValueRef)LLVMBuildXor((LLVMBuilderRef)builder, (LLVMValueRef)lhs,
-                                    (LLVMValueRef)rhs, (const char *)name);
-}
-
 void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                           void *name) {
   LLVMOpcode op = llvm_opcode_from_int(op_code);
@@ -3945,64 +3404,7 @@ void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                                       (const char *)name);
 }
 
-void *__llvm_build_neg(void *builder, void *v, void *name) {
-  return (LLVMValueRef)LLVMBuildNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
-                                    (const char *)name);
-}
-
-void *__llvm_build_nsw_neg(void *builder, void *v, void *name) {
-  return (LLVMValueRef)LLVMBuildNSWNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
-                                       (const char *)name);
-}
-
-// void *__llvm_build_nuw_neg(void *builder, void *v, void *name) {
-//   return (LLVMValueRef)LLVMBuildNUWNeg((LLVMBuilderRef)builder,
-//   (LLVMValueRef)v,
-//                                        (const char *)name);
-// }
-
-void *__llvm_build_f_neg(void *builder, void *v, void *name) {
-  return (LLVMValueRef)LLVMBuildFNeg((LLVMBuilderRef)builder, (LLVMValueRef)v,
-                                     (const char *)name);
-}
-
-void *__llvm_build_not(void *builder, void *v, void *name) {
-  return (LLVMValueRef)LLVMBuildNot((LLVMBuilderRef)builder, (LLVMValueRef)v,
-                                    (const char *)name);
-}
-
-LLVMBool __llvm_get_nuw(void *arith_inst) {
-  return LLVMGetNUW((LLVMValueRef)arith_inst);
-}
-
-void __llvm_set_nuw(void *arith_inst, LLVMBool has_nuw) {
-  LLVMSetNUW((LLVMValueRef)arith_inst, has_nuw);
-}
-
-LLVMBool __llvm_get_nsw(void *arith_inst) {
-  return LLVMGetNSW((LLVMValueRef)arith_inst);
-}
-
-void __llvm_set_nsw(void *arith_inst, LLVMBool has_nsw) {
-  LLVMSetNSW((LLVMValueRef)arith_inst, has_nsw);
-}
-
-LLVMBool __llvm_get_exact(void *div_or_shr_inst) {
-  return LLVMGetExact((LLVMValueRef)div_or_shr_inst);
-}
-
-void __llvm_set_exact(void *div_or_shr_inst, LLVMBool is_exact) {
-  LLVMSetExact((LLVMValueRef)div_or_shr_inst, is_exact);
-}
-
-LLVMBool __llvm_get_n_neg(void *non_neg_inst) {
-  return LLVMGetNNeg((LLVMValueRef)non_neg_inst);
-}
-
-void __llvm_set_n_neg(void *non_neg_inst, LLVMBool is_non_neg) {
-  LLVMSetNNeg((LLVMValueRef)non_neg_inst, is_non_neg);
-}
-
+// TODO: May be incorrect
 LLVMFastMathFlags __llvm_get_fast_math_flags(void *fp_math_inst) {
   return LLVMGetFastMathFlags((LLVMValueRef)fp_math_inst);
 }
@@ -4013,76 +3415,6 @@ void __llvm_set_fast_math_flags(void *fp_math_inst, LLVMFastMathFlags fmf) {
 
 LLVMBool __llvm_can_value_use_fast_math_flags(void *inst) {
   return LLVMCanValueUseFastMathFlags((LLVMValueRef)inst);
-}
-
-LLVMBool __llvm_get_is_disjoint(void *inst) {
-  return LLVMGetIsDisjoint((LLVMValueRef)inst);
-}
-
-void __llvm_set_is_disjoint(void *inst, LLVMBool is_disjoint) {
-  LLVMSetIsDisjoint((LLVMValueRef)inst, is_disjoint);
-}
-
-void *__llvm_build_malloc(void *builder, void *ty, void *name) {
-  return (LLVMValueRef)LLVMBuildMalloc((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_array_malloc(void *builder, void *ty, void *val,
-                                void *name) {
-  return (LLVMValueRef)LLVMBuildArrayMalloc((LLVMBuilderRef)builder,
-                                            (LLVMTypeRef)ty, (LLVMValueRef)val,
-                                            (const char *)name);
-}
-
-void *__llvm_build_mem_set(void *builder, void *ptr, void *val, void *len,
-                           unsigned align) {
-  return (LLVMValueRef)LLVMBuildMemSet((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)ptr, (LLVMValueRef)val,
-                                       (LLVMValueRef)len, align);
-}
-
-void *__llvm_build_mem_cpy(void *builder, void *dst, unsigned dst_align,
-                           void *src, unsigned src_align, void *size) {
-  return (LLVMValueRef)LLVMBuildMemCpy(
-      (LLVMBuilderRef)builder, (LLVMValueRef)dst, dst_align, (LLVMValueRef)src,
-      src_align, (LLVMValueRef)size);
-}
-
-void *__llvm_build_mem_move(void *builder, void *dst, unsigned dst_align,
-                            void *src, unsigned src_align, void *size) {
-  return (LLVMValueRef)LLVMBuildMemMove(
-      (LLVMBuilderRef)builder, (LLVMValueRef)dst, dst_align, (LLVMValueRef)src,
-      src_align, (LLVMValueRef)size);
-}
-
-void *__llvm_build_alloca(void *builder, void *ty, void *name) {
-  return (LLVMValueRef)LLVMBuildAlloca((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_array_alloca(void *builder, void *ty, void *val,
-                                void *name) {
-  return (LLVMValueRef)LLVMBuildArrayAlloca((LLVMBuilderRef)builder,
-                                            (LLVMTypeRef)ty, (LLVMValueRef)val,
-                                            (const char *)name);
-}
-
-void *__llvm_build_free(void *builder, void *pointer_val) {
-  return (LLVMValueRef)LLVMBuildFree((LLVMBuilderRef)builder,
-                                     (LLVMValueRef)pointer_val);
-}
-
-void *__llvm_build_load2(void *builder, void *ty, void *pointer_val,
-                         void *name) {
-  return (LLVMValueRef)LLVMBuildLoad2((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
-                                      (LLVMValueRef)pointer_val,
-                                      (const char *)name);
-}
-
-void *__llvm_build_store(void *builder, void *val, void *ptr) {
-  return (LLVMValueRef)LLVMBuildStore((LLVMBuilderRef)builder,
-                                      (LLVMValueRef)val, (LLVMValueRef)ptr);
 }
 
 void *__llvm_build_gep2(void *builder, void *ty, void *pointer,
@@ -4103,39 +3435,7 @@ void *__llvm_build_in_bounds_gep2(void *builder, void *ty, void *pointer,
       llvm_indices, num_indices, (const char *)name);
 }
 
-void *__llvm_build_struct_gep2(void *builder, void *ty, void *pointer,
-                               unsigned idx, void *name) {
-  return (LLVMValueRef)LLVMBuildStructGEP2(
-      (LLVMBuilderRef)builder, (LLVMTypeRef)ty, (LLVMValueRef)pointer, idx,
-      (const char *)name);
-}
-
-void *__llvm_build_global_string(void *builder, void *str, void *name) {
-  return (LLVMValueRef)LLVMBuildGlobalString(
-      (LLVMBuilderRef)builder, (const char *)str, (const char *)name);
-}
-
-void *__llvm_build_global_string_ptr(void *builder, void *str, void *name) {
-  return (LLVMValueRef)LLVMBuildGlobalStringPtr(
-      (LLVMBuilderRef)builder, (const char *)str, (const char *)name);
-}
-
-LLVMBool __llvm_get_volatile(void *memory_access_inst) {
-  return LLVMGetVolatile((LLVMValueRef)memory_access_inst);
-}
-
-void __llvm_set_volatile(void *memory_access_inst, LLVMBool is_volatile) {
-  LLVMSetVolatile((LLVMValueRef)memory_access_inst, is_volatile);
-}
-
-LLVMBool __llvm_get_weak(void *cmp_xchg_inst) {
-  return LLVMGetWeak((LLVMValueRef)cmp_xchg_inst);
-}
-
-void __llvm_set_weak(void *cmp_xchg_inst, LLVMBool is_weak) {
-  LLVMSetWeak((LLVMValueRef)cmp_xchg_inst, is_weak);
-}
-
+// TODO: May be incorrect
 LLVMAtomicOrdering __llvm_get_ordering(void *memory_access_inst) {
   return LLVMGetOrdering((LLVMValueRef)memory_access_inst);
 }
@@ -4154,146 +3454,12 @@ void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst,
   LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, bin_op);
 }
 
-void *__llvm_build_trunc(void *builder, void *val, void *dest_ty, void *name) {
-  return (LLVMValueRef)LLVMBuildTrunc((LLVMBuilderRef)builder,
-                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                      (const char *)name);
-}
-
-void *__llvm_build_z_ext(void *builder, void *val, void *dest_ty, void *name) {
-  return (LLVMValueRef)LLVMBuildZExt((LLVMBuilderRef)builder, (LLVMValueRef)val,
-                                     (LLVMTypeRef)dest_ty, (const char *)name);
-}
-
-void *__llvm_build_s_ext(void *builder, void *val, void *dest_ty, void *name) {
-  return (LLVMValueRef)LLVMBuildSExt((LLVMBuilderRef)builder, (LLVMValueRef)val,
-                                     (LLVMTypeRef)dest_ty, (const char *)name);
-}
-
-void *__llvm_build_fp_to_ui(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildFPToUI((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_fp_to_si(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildFPToSI((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_ui_to_fp(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildUIToFP((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_si_to_fp(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildSIToFP((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_fp_trunc(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildFPTrunc((LLVMBuilderRef)builder,
-                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                        (const char *)name);
-}
-
-void *__llvm_build_fp_ext(void *builder, void *val, void *dest_ty, void *name) {
-  return (LLVMValueRef)LLVMBuildFPExt((LLVMBuilderRef)builder,
-                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                      (const char *)name);
-}
-
-void *__llvm_build_ptr_to_int(void *builder, void *val, void *dest_ty,
-                              void *name) {
-  return (LLVMValueRef)LLVMBuildPtrToInt(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_int_to_ptr(void *builder, void *val, void *dest_ty,
-                              void *name) {
-  return (LLVMValueRef)LLVMBuildIntToPtr(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_bit_cast(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildBitCast((LLVMBuilderRef)builder,
-                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                        (const char *)name);
-}
-
-void *__llvm_build_addr_space_cast(void *builder, void *val, void *dest_ty,
-                                   void *name) {
-  return (LLVMValueRef)LLVMBuildAddrSpaceCast(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_z_ext_or_bit_cast(void *builder, void *val, void *dest_ty,
-                                     void *name) {
-  return (LLVMValueRef)LLVMBuildZExtOrBitCast(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_s_ext_or_bit_cast(void *builder, void *val, void *dest_ty,
-                                     void *name) {
-  return (LLVMValueRef)LLVMBuildSExtOrBitCast(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_trunc_or_bit_cast(void *builder, void *val, void *dest_ty,
-                                     void *name) {
-  return (LLVMValueRef)LLVMBuildTruncOrBitCast(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
 void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                         void *name) {
   LLVMOpcode op = llvm_opcode_from_int(op_code);
   return (LLVMValueRef)LLVMBuildCast((LLVMBuilderRef)builder, op,
                                      (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
                                      (const char *)name);
-}
-
-void *__llvm_build_pointer_cast(void *builder, void *val, void *dest_ty,
-                                void *name) {
-  return (LLVMValueRef)LLVMBuildPointerCast(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      (const char *)name);
-}
-
-void *__llvm_build_int_cast2(void *builder, void *val, void *dest_ty,
-                             LLVMBool is_signed, void *name) {
-  return (LLVMValueRef)LLVMBuildIntCast2(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-      is_signed, (const char *)name);
-}
-
-void *__llvm_build_fp_cast(void *builder, void *val, void *dest_ty,
-                           void *name) {
-  return (LLVMValueRef)LLVMBuildFPCast((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                       (const char *)name);
-}
-
-void *__llvm_build_int_cast(void *builder, void *val, void *dest_ty,
-                            void *name) {
-  return (LLVMValueRef)LLVMBuildIntCast((LLVMBuilderRef)builder,
-                                        (LLVMValueRef)val, (LLVMTypeRef)dest_ty,
-                                        (const char *)name);
 }
 
 int __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed, void *dest_ty,
@@ -4347,82 +3513,6 @@ void *__llvm_build_call_with_operand_bundles(void *builder, void *ty, void *fn,
       num_args, llvm_bundles, num_bundles, (const char *)name);
 }
 
-void *__llvm_build_select(void *builder, void *_if, void *then, void *_else,
-                          void *name) {
-  return (LLVMValueRef)LLVMBuildSelect((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)_if, (LLVMValueRef)then,
-                                       (LLVMValueRef)_else, (const char *)name);
-}
-
-void *__llvm_build_va_arg(void *builder, void *list, void *ty, void *name) {
-  return (LLVMValueRef)LLVMBuildVAArg((LLVMBuilderRef)builder,
-                                      (LLVMValueRef)list, (LLVMTypeRef)ty,
-                                      (const char *)name);
-}
-
-void *__llvm_build_extract_element(void *builder, void *vec_val, void *index,
-                                   void *name) {
-  return (LLVMValueRef)LLVMBuildExtractElement(
-      (LLVMBuilderRef)builder, (LLVMValueRef)vec_val, (LLVMValueRef)index,
-      (const char *)name);
-}
-
-void *__llvm_build_insert_element(void *builder, void *vec_val, void *elt_val,
-                                  void *index, void *name) {
-  return (LLVMValueRef)LLVMBuildInsertElement(
-      (LLVMBuilderRef)builder, (LLVMValueRef)vec_val, (LLVMValueRef)elt_val,
-      (LLVMValueRef)index, (const char *)name);
-}
-
-void *__llvm_build_shuffle_vector(void *builder, void *v1, void *v2, void *mask,
-                                  void *name) {
-  return (LLVMValueRef)LLVMBuildShuffleVector(
-      (LLVMBuilderRef)builder, (LLVMValueRef)v1, (LLVMValueRef)v2,
-      (LLVMValueRef)mask, (const char *)name);
-}
-
-void *__llvm_build_extract_value(void *builder, void *agg_val, unsigned index,
-                                 void *name) {
-  return (LLVMValueRef)LLVMBuildExtractValue((LLVMBuilderRef)builder,
-                                             (LLVMValueRef)agg_val, index,
-                                             (const char *)name);
-}
-
-void *__llvm_build_insert_value(void *builder, void *agg_val, void *elt_val,
-                                unsigned index, void *name) {
-  return (LLVMValueRef)LLVMBuildInsertValue(
-      (LLVMBuilderRef)builder, (LLVMValueRef)agg_val, (LLVMValueRef)elt_val,
-      index, (const char *)name);
-}
-
-void *__llvm_build_freeze(void *builder, void *val, void *name) {
-  return (LLVMValueRef)LLVMBuildFreeze((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (const char *)name);
-}
-
-void *__llvm_build_is_null(void *builder, void *val, void *name) {
-  return (LLVMValueRef)LLVMBuildIsNull((LLVMBuilderRef)builder,
-                                       (LLVMValueRef)val, (const char *)name);
-}
-
-void *__llvm_build_is_not_null(void *builder, void *val, void *name) {
-  return (LLVMValueRef)LLVMBuildIsNotNull(
-      (LLVMBuilderRef)builder, (LLVMValueRef)val, (const char *)name);
-}
-
-void *__llvm_build_ptr_diff2(void *builder, void *elem_ty, void *lhs, void *rhs,
-                             void *name) {
-  return (LLVMValueRef)LLVMBuildPtrDiff2(
-      (LLVMBuilderRef)builder, (LLVMTypeRef)elem_ty, (LLVMValueRef)lhs,
-      (LLVMValueRef)rhs, (const char *)name);
-}
-
-void *__llvm_build_fence(void *builder, LLVMAtomicOrdering ordering,
-                         LLVMBool single_thread, void *name) {
-  return (LLVMValueRef)LLVMBuildFence((LLVMBuilderRef)builder, ordering,
-                                      single_thread, (const char *)name);
-}
-
 void *__llvm_build_atomic_rmw(void *builder, LLVMAtomicRMWBinOp op, void *ptr,
                               void *val, LLVMAtomicOrdering ordering,
                               LLVMBool single_thread) {
@@ -4439,25 +3529,6 @@ void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
   return (LLVMValueRef)LLVMBuildAtomicCmpXchg(
       (LLVMBuilderRef)builder, (LLVMValueRef)ptr, (LLVMValueRef)cmp,
       (LLVMValueRef)_new, success_ordering, failure_ordering, single_thread);
-}
-
-unsigned __llvm_get_num_mask_elements(void *shuffle_vector_inst) {
-  return LLVMGetNumMaskElements((LLVMValueRef)shuffle_vector_inst);
-}
-
-int __llvm_get_undef_mask_elem() { return LLVMGetUndefMaskElem(); }
-
-int __llvm_get_mask_value(void *shuffle_vector_inst, unsigned elt) {
-  return LLVMGetMaskValue((LLVMValueRef)shuffle_vector_inst, elt);
-}
-
-LLVMBool __llvm_is_atomic_single_thread(void *atomic_inst) {
-  return LLVMIsAtomicSingleThread((LLVMValueRef)atomic_inst);
-}
-
-void __llvm_set_atomic_single_thread(void *atomic_inst,
-                                     LLVMBool single_thread) {
-  LLVMSetAtomicSingleThread((LLVMValueRef)atomic_inst, single_thread);
 }
 
 LLVMAtomicOrdering __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
@@ -4478,15 +3549,11 @@ void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst,
   LLVMSetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
 }
 
-void *__llvm_create_module_provider_for_existing_module(void *m) {
-  return (LLVMModuleProviderRef)LLVMCreateModuleProviderForExistingModule(
-      (LLVMModuleRef)m);
-}
-
 void __llvm_dispose_module_provider(void *m) {
   LLVMDisposeModuleProvider((LLVMModuleProviderRef)m);
 }
 
+// TODO: Incorrect inplementation
 LLVMBool __llvm_create_memory_buffer_with_contents_of_file(void *path,
                                                            void **out_mem_buf,
                                                            void **out_message) {
@@ -4514,55 +3581,3 @@ void *__llvm_create_memory_buffer_with_memory_range_copy(
   return (LLVMMemoryBufferRef)LLVMCreateMemoryBufferWithMemoryRangeCopy(
       (const char *)input_data, input_data_length, (const char *)buffer_name);
 }
-
-void *__llvm_get_buffer_start(void *mem_buf) {
-  return (char *)LLVMGetBufferStart((LLVMMemoryBufferRef)mem_buf);
-}
-
-size_t __llvm_get_buffer_size(void *mem_buf) {
-  return LLVMGetBufferSize((LLVMMemoryBufferRef)mem_buf);
-}
-
-void __llvm_dispose_memory_buffer(void *mem_buf) {
-  LLVMDisposeMemoryBuffer((LLVMMemoryBufferRef)mem_buf);
-}
-
-void *__llvm_create_pass_manager() {
-  return (LLVMPassManagerRef)LLVMCreatePassManager();
-}
-
-void *__llvm_create_function_pass_manager_for_module(void *m) {
-  return (LLVMPassManagerRef)LLVMCreateFunctionPassManagerForModule(
-      (LLVMModuleRef)m);
-}
-
-void *__llvm_create_function_pass_manager(void *mp) {
-  return (LLVMPassManagerRef)LLVMCreateFunctionPassManager(
-      (LLVMModuleProviderRef)mp);
-}
-
-LLVMBool __llvm_run_pass_manager(void *pm, void *m) {
-  return LLVMRunPassManager((LLVMPassManagerRef)pm, (LLVMModuleRef)m);
-}
-
-LLVMBool __llvm_initialize_function_pass_manager(void *fpm) {
-  return LLVMInitializeFunctionPassManager((LLVMPassManagerRef)fpm);
-}
-
-LLVMBool __llvm_run_function_pass_manager(void *fpm, void *f) {
-  return LLVMRunFunctionPassManager((LLVMPassManagerRef)fpm, (LLVMValueRef)f);
-}
-
-LLVMBool __llvm_finalize_function_pass_manager(void *fpm) {
-  return LLVMFinalizeFunctionPassManager((LLVMPassManagerRef)fpm);
-}
-
-void __llvm_dispose_pass_manager(void *pm) {
-  LLVMDisposePassManager((LLVMPassManagerRef)pm);
-}
-
-LLVMBool __llvm_start_multithreaded() { return LLVMStartMultithreaded(); }
-
-void __llvm_stop_multithreaded() { LLVMStopMultithreaded(); }
-
-LLVMBool __llvm_is_multithreaded() { return LLVMIsMultithreaded(); }
