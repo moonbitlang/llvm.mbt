@@ -395,7 +395,7 @@ extern "C" fn __llvm_set_source_file_name(m: LLVMModuleRef, name: CStr, len: UIn
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-extern "C" fn __llvm_get_data_layout_str(m: LLVMModuleRef) -> CStr = "__llvm_get_data_layout_str"
+extern "C" fn __llvm_get_data_layout_str(m: LLVMModuleRef) -> CStr = "LLVMGetDataLayoutStr"
 
 ///| Obtain the data layout for a module.
 /// 
@@ -753,13 +753,13 @@ pub extern "C" fn llvm_get_first_named_metadata(m: LLVMModuleRef) -> LLVMNamedMD
 /// 
 /// - see llvm::Module::named_metadata_end()
 /// 
-pub extern "C" fn llvm_get_last_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "__llvm_get_last_named_metadata"
+pub extern "C" fn llvm_get_last_named_metadata(m: LLVMModuleRef) -> LLVMNamedMDNodeRef = "LLVMGetLastNamedMetadata"
 
 ///| Advance a NamedMDNode iterator to the next NamedMDNode.
 /// 
 /// Returns NULL if the iterator was already at the end and there are no more
 /// named metadata nodes.
-pub extern "C" fn llvm_get_next_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_next_named_metadata"
+pub extern "C" fn llvm_get_next_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "LLVMGetNextNamedMetadata"
 
 
 ///| Decrement a NamedMDNode iterator to the previous NamedMDNode.
@@ -767,7 +767,7 @@ pub extern "C" fn llvm_get_next_named_metadata(named_md_node: LLVMNamedMDNodeRef
 /// Returns NULL if the iterator was already at the beginning and there are
 /// no previous named metadata nodes.
 /// 
-pub extern "C" fn llvm_get_previous_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "__llvm_get_previous_named_metadata"
+pub extern "C" fn llvm_get_previous_named_metadata(named_md_node: LLVMNamedMDNodeRef) -> LLVMNamedMDNodeRef = "LLVMGetPreviousNamedMetadata"
 
 
 ///| Retrieve a NamedMDNode with the given name.
@@ -776,12 +776,12 @@ pub extern "C" fn llvm_get_previous_named_metadata(named_md_node: LLVMNamedMDNod
 /// node exists.
 /// 
 /// - see llvm::Module::getNamedMetadata()
-pub extern "C" fn llvm_get_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_named_metadata"
+pub extern "C" fn llvm_get_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "LLVMGetNamedMetadata"
 
 ///| Retrieve a NamedMDNode with the given name, creating a new node if no such node exists.
 /// 
 /// - see llvm::Module::getOrInsertNamedMetadata()
-pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "__llvm_get_or_insert_named_metadata"
+pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMNamedMDNodeRef = "LLVMGetOrInsertNamedMetadata"
 
 // pub extern "C" fn llvm_get_named_metadata_name(named_md: LLVMNamedMDNodeRef, name_len: Ptr[UInt64]) -> CStr = "__llvm_get_named_metadata_name"
 
@@ -789,7 +789,7 @@ pub extern "C" fn llvm_get_or_insert_named_metadata(m: LLVMModuleRef, name: CStr
 /// 
 /// - see llvm::NamedMDNode::getName()
 /// 
-extern "C" fn __llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: CStr) -> UInt = "__llvm_get_named_metadata_num_operands"
+extern "C" fn __llvm_get_named_metadata_num_operands(m: LLVMModuleRef, name: CStr) -> UInt = "LLVMGetNamedMetadataNumOperands"
 
 ///| Retrieve the name of a NamedMDNode.
 /// 
@@ -833,7 +833,7 @@ pub fn LLVMModuleRef::get_named_metadata(self: LLVMModuleRef, name: String) -> A
 /// 
 /// - see llvm::Module::getNamedMetadata()
 /// - see llvm::MDNode::addOperand()
-extern "C" fn __llvm_add_named_metadata_operand(m: LLVMModuleRef, name: CStr, val: LLVMValueRef) = "__llvm_add_named_metadata_operand"
+extern "C" fn __llvm_add_named_metadata_operand(m: LLVMModuleRef, name: CStr, val: LLVMValueRef) = "LLVMAddNamedMetadataOperand"
 
 ///| Add an operand to named metadata.
 /// 
@@ -1501,7 +1501,7 @@ pub fn LLVMTypeRef::struct_type(element_types: Array[LLVMTypeRef], packed: Bool)
 /// 
 /// - see llvm::StructType::create()
 /// 
-extern "C" fn __llvm_struct_create_named(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "__llvm_struct_create_named"
+extern "C" fn __llvm_struct_create_named(context: LLVMContextRef, name: CStr) -> LLVMTypeRef = "LLVMStructCreateNamed"
 
 ///| Create an empty structure in a context having a specified name.
 /// 
@@ -1523,7 +1523,7 @@ pub fn LLVMContextRef::struct_create_named(self: LLVMContextRef, name: String) -
 ///| Obtain the name of a structure.
 /// 
 /// - see llvm::StructType::getName()
-extern "C" fn __llvm_get_struct_name(ty: LLVMTypeRef) -> CStr = "__llvm_get_struct_name"
+extern "C" fn __llvm_get_struct_name(ty: LLVMTypeRef) -> CStr = "LLVMGetStructName"
 
 ///| Obtain the name of a structure.
 /// 
@@ -1552,7 +1552,7 @@ pub fn LLVMTypeRef::set_body(self: LLVMTypeRef, element_types: Array[LLVMTypeRef
 /// 
 /// - see llvm::StructType::getNumElements()
 /// 
-pub extern "C" fn llvm_count_struct_element_types(struct_ty: LLVMTypeRef) -> UInt = "__llvm_count_struct_element_types"
+pub extern "C" fn llvm_count_struct_element_types(struct_ty: LLVMTypeRef) -> UInt = "LLVMCountStructElementTypes"
 
 ///| Get the number of elements defined inside the structure.
 /// 
@@ -1608,7 +1608,7 @@ pub fn LLVMTypeRef::get_struct_element_types(self: LLVMTypeRef) -> Array[LLVMTyp
 /// 
 /// - see llvm::StructType::getTypeAtIndex()
 /// 
-pub extern "C" fn llvm_struct_get_type_at_index(struct_ty: LLVMTypeRef, i: UInt) -> LLVMTypeRef = "__llvm_struct_get_type_at_index"
+pub extern "C" fn llvm_struct_get_type_at_index(struct_ty: LLVMTypeRef, i: UInt) -> LLVMTypeRef = "LLVMStructGetTypeAtIndex"
 
 ///| Get the type of the element at a given index in the structure.
 /// 
@@ -1712,7 +1712,7 @@ pub fn LLVMTypeRef::get_subtypes(self: LLVMTypeRef) -> Array[LLVMTypeRef] {
 /// 
 /// - see llvm::Type::getNumContainedTypes()
 /// 
-pub extern "C" fn llvm_get_num_contained_types(tp: LLVMTypeRef) -> UInt = "__llvm_get_num_contained_types"
+pub extern "C" fn llvm_get_num_contained_types(tp: LLVMTypeRef) -> UInt = "LLVMGetNumContainedTypes"
 
 ////| Return the number of types in the derived type.
 /// 
@@ -2033,7 +2033,7 @@ pub fn LLVMTypeRef::x86_amx_type() -> LLVMTypeRef {
 /// 
 /// - see llvm::TargetExtType::getName()
 /// 
-extern "C" fn __llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> CStr = "__llvm_get_target_ext_type_name"
+extern "C" fn __llvm_get_target_ext_type_name(target_ext_ty: LLVMTypeRef) -> CStr = "LLVMGetTargetExtTypeName"
 
 ///| Obtain the name for this target extension type.
 /// 
@@ -2057,7 +2057,7 @@ pub fn LLVMTypeRef::get_target_ext_type_name(self: LLVMTypeRef) -> String {
 /// 
 /// - see llvm::TargetExtType::getNumTypeParameters()
 /// 
-pub extern "C" fn llvm_get_target_ext_type_num_type_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_type_params"
+pub extern "C" fn llvm_get_target_ext_type_num_type_params(target_ext_ty: LLVMTypeRef) -> UInt = "LLVMGetTargetExtTypeNumTypeParams"
 
 ///| Obtain the number of type parameters for this target extension type.
 /// 
@@ -2072,7 +2072,7 @@ pub fn LLVMTypeRef::get_target_ext_type_num_type_params(self: LLVMTypeRef) -> UI
 /// 
 /// - see llvm::TargetExtType::getTypeParameter()
 /// 
-pub extern "C" fn llvm_get_target_ext_type_type_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> LLVMTypeRef = "__llvm_get_target_ext_type_type_param"
+pub extern "C" fn llvm_get_target_ext_type_type_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> LLVMTypeRef = "LLVMGetTargetExtTypeTypeParam"
 
 ///| Get the type parameter at the given index for the target extension type.
 /// 
@@ -2086,7 +2086,7 @@ pub fn LLVMTypeRef::get_target_ext_type_type_param(self: LLVMTypeRef, idx: UInt)
 /// 
 /// - see llvm::TargetExtType::getNumIntParameters()
 /// 
-pub extern "C" fn llvm_get_target_ext_type_num_int_params(target_ext_ty: LLVMTypeRef) -> UInt = "__llvm_get_target_ext_type_num_int_params"
+pub extern "C" fn llvm_get_target_ext_type_num_int_params(target_ext_ty: LLVMTypeRef) -> UInt = "LLVMGetTargetExtTypeNumIntParams"
 
 ///| Obtain the number of int parameters for this target extension type.
 /// 
@@ -2101,7 +2101,7 @@ pub fn LLVMTypeRef::get_target_ext_type_num_int_params(self: LLVMTypeRef) -> UIn
 /// 
 /// - see llvm::TargetExtType::getIntParameter()
 /// 
-pub extern "C" fn llvm_get_target_ext_type_int_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> UInt = "__llvm_get_target_ext_type_int_param"
+pub extern "C" fn llvm_get_target_ext_type_int_param(target_ext_ty: LLVMTypeRef, idx: UInt) -> UInt = "LLVMGetTargetExtTypeIntParam"
 
 ///| Get the int parameter at the given index for the target extension type.
 /// 
@@ -2126,7 +2126,11 @@ pub fn LLVMValueRef::get_type(self: LLVMValueRef) -> LLVMTypeRef {
 /// Obtain the enumerated type of a Value instance.
 /// 
 /// - see llvm::Value::getValueID()
-pub extern "C" fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind = "__llvm_get_value_kind"
+pub fn llvm_get_value_kind(val: LLVMValueRef) -> LLVMValueKind {
+  let kind = __llvm_get_value_kind(val)
+  LLVMValueKind::from_int(kind)
+}
+extern "C" fn __llvm_get_value_kind(val: LLVMValueRef) -> Int = "__llvm_get_value_kind"
 
 /// Obtain the enumerated type of a Value instance.
 /// 
@@ -2225,7 +2229,7 @@ pub fn LLVMValueRef::to_string(self: LLVMValueRef) -> String {
 /// 
 /// - see llvm::DbgRecord::print()
 /// 
-extern "C" fn __llvm_print_dbg_record_to_string(record: LLVMDbgRecordRef) -> CStr = "__llvm_print_dbg_record_to_string"
+extern "C" fn __llvm_print_dbg_record_to_string(record: LLVMDbgRecordRef) -> CStr = "LLVMPrintDbgRecordToString"
 
 ///| Return a string representation of the DbgRecord. Use
 /// LLVMDisposeMessage to free the string.
@@ -3459,9 +3463,9 @@ pub fn LLVMContextRef::const_string2(self: LLVMContextRef, str: String, dont_nul
 /// 
 /// - see LLVMConstStringInContext()
 /// - see llvm::ConstantDataArray::getString()
-pub extern "C" fn llvm_const_string(str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string"
+pub extern "C" fn llvm_const_string(str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "LLVMConstString"
 
-extern "C" fn __llvm_is_constant_string(c: LLVMValueRef) -> LLVMBool = "__llvm_is_constant_string"
+extern "C" fn __llvm_is_constant_string(c: LLVMValueRef) -> LLVMBool = "LLVMIsConstantString"
 pub fn llvm_is_constant_string(c: LLVMValueRef) -> Bool {
   __llvm_is_constant_string(c).to_moonbit_bool()
 }
@@ -3579,7 +3583,7 @@ pub fn LLVMValueRef::const_named_struct(self: LLVMTypeRef, constant_vals: Array[
 /// constant expression.)
 /// 
 /// - see llvm::Constant::getAggregateElement()
-pub extern "C" fn llvm_get_aggregate_element(c: LLVMValueRef, idx: UInt) -> LLVMValueRef = "__llvm_get_aggregate_element"
+pub extern "C" fn llvm_get_aggregate_element(c: LLVMValueRef, idx: UInt) -> LLVMValueRef = "LLVMGetAggregateElement"
 
 ///| Get element of a constant aggregate (struct, array or vector) at the specified index.
 ///
@@ -3890,8 +3894,12 @@ pub fn LLVMValueRef::is_declaration(self: LLVMValueRef) -> Bool {
   __llvm_is_declaration(self).to_moonbit_bool()
 }
 
-///| Get linkage for value.
-pub extern "C" fn llvm_get_linkage(global: LLVMValueRef) -> LLVMLinkage = "__llvm_get_linkage"
+extern "C" fn __llvm_get_linkage(global: LLVMValueRef) -> Int = "__llvm_get_linkage"
+
+pub fn llvm_get_linkage(global: LLVMValueRef) -> LLVMLinkage {
+  let linkage = __llvm_get_linkage(global);
+  LLVMLinkage::from_int(linkage)
+}
 
 ///| Get linkage for value.
 pub fn LLVMValueRef::get_linkage(self: LLVMValueRef) -> LLVMLinkage {
@@ -3935,7 +3943,12 @@ pub fn LLVMValueRef::set_section(self: LLVMValueRef, section: String) -> Unit {
 }
 
 ///| Get visibility for value.
-pub extern "C" fn llvm_get_visibility(global: LLVMValueRef) -> LLVMVisibility = "__llvm_get_visibility"
+extern "C" fn __llvm_get_visibility(global: LLVMValueRef) -> Int = "__llvm_get_visibility"
+
+pub fn llvm_get_visibility(global: LLVMValueRef) -> LLVMVisibility {
+  let visibility = __llvm_get_visibility(global);
+  LLVMVisibility::from_int(visibility)
+}
 
 ///| Get visibility for value.
 pub fn LLVMValueRef::get_visibility(self: LLVMValueRef) -> LLVMVisibility {
@@ -3950,8 +3963,13 @@ pub fn LLVMValueRef::set_visibility(self: LLVMValueRef, viz: LLVMVisibility) -> 
   llvm_set_visibility(self, viz)
 }
 
+
 ///| Get DLL storage class for value.
-pub extern "C" fn llvm_get_dll_storage_class(global: LLVMValueRef) -> LLVMDLLStorageClass = "__llvm_get_dll_storage_class"
+pub fn llvm_get_dll_storage_class(global: LLVMValueRef) -> LLVMDLLStorageClass {
+  let dll_storage_class = __llvm_get_dll_storage_class(global);
+  LLVMDLLStorageClass::from_int(dll_storage_class)
+}
+extern "C" fn __llvm_get_dll_storage_class(global: LLVMValueRef) -> Int = "__llvm_get_dll_storage_class"
 
 ///| Get DLL storage class for value.
 pub fn LLVMValueRef::get_dll_storage_class(self: LLVMValueRef) -> LLVMDLLStorageClass {
@@ -4680,7 +4698,7 @@ pub fn LLVMModuleRef::add_global_ifunc(self: LLVMModuleRef, name: String, ty: LL
 }
 
 ///| Obtain a GlobalIFunc value from a Module by its name.
-extern "C" fn __llvm_get_named_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMValueRef = "__llvm_get_named_global_ifunc"
+extern "C" fn __llvm_get_named_global_ifunc(m: LLVMModuleRef, name: CStr, name_len: UInt64) -> LLVMValueRef = "LLVMGetNamedGlobalIFunc"
 
 ///| Obtain a GlobalIFunc value from a Module by its name.
 pub fn llvm_get_named_global_ifunc(m: LLVMModuleRef, name: String) -> LLVMValueRef {
@@ -4788,7 +4806,7 @@ pub fn LLVMValueRef::get_md_string(self: LLVMValueRef) -> String {
   llvm_get_md_string(self)
 }
 
-pub extern "C" fn llvm_get_md_node_num_operands(v: LLVMValueRef) -> UInt = "__llvm_get_md_node_num_operands"
+pub extern "C" fn llvm_get_md_node_num_operands(v: LLVMValueRef) -> UInt = "LLVMGetMDNodeNumOperands"
 pub fn LLVMValueRef::get_md_node_num_operands(self: LLVMValueRef) -> UInt {
   llvm_get_md_node_num_operands(self)
 }
@@ -4799,7 +4817,7 @@ pub fn LLVMValueRef::get_md_node_operands(self: LLVMValueRef) -> Array[LLVMValue
   llvm_get_md_node_operands(self)
 }
 
-pub extern "C" fn llvm_replace_md_node_operand_with(v: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) = "__llvm_replace_md_node_operand_with"
+pub extern "C" fn llvm_replace_md_node_operand_with(v: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) = "LLVMReplaceMDNodeOperandWith"
 pub fn LLVMValueRef::replace_md_node_operand_with(self: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) -> Unit {
   llvm_replace_md_node_operand_with(self, index, replacement)
 }
@@ -5213,7 +5231,6 @@ pub fn LLVMValueRef::get_icmp_predicate(self: LLVMValueRef) -> LLVMIntPredicate 
   llvm_get_icmp_predicate(self)
 }
 
-
 ///| Obtain the float predicate of an instruction.
 /// 
 /// This is only valid for instructions that correspond to llvm::FCmpInst.
@@ -5250,7 +5267,7 @@ pub fn LLVMValueRef::instruction_clone(self: LLVMValueRef) -> LLVMValueRef {
 /// underlying C++ type.
 /// 
 /// - see llvm::Instruction::isTerminator()
-pub extern "C" fn llvm_isa_terminator_inst(inst: LLVMValueRef) -> LLVMValueRef = "__llvm_isa_terminator_inst"
+pub extern "C" fn llvm_isa_terminator_inst(inst: LLVMValueRef) -> LLVMValueRef = "LLVMIsATerminatorInst"
 
 ///| Determine whether an instruction is a terminator.
 ///
@@ -5357,7 +5374,7 @@ pub fn LLVMValueRef::get_num_arg_operands(self: LLVMValueRef) -> UInt {
 /// - see llvm::CallInst::setCallingConv()
 /// - see llvm::InvokeInst::setCallingConv()
 /// 
-pub extern "C" fn llvm_set_instruction_call_conv(instr: LLVMValueRef, cc: UInt) = "__llvm_set_instruction_call_conv"
+pub extern "C" fn llvm_set_instruction_call_conv(instr: LLVMValueRef, cc: UInt) = "LLVMSetInstructionCallConv"
 
 ///| Set the calling convention for a call instruction.
 /// 
@@ -5377,7 +5394,7 @@ pub fn LLVMValueRef::set_instruction_call_conv(self: LLVMValueRef, cc: UInt) -> 
 /// usage.
 /// 
 /// - see LLVMSetInstructionCallConv()
-pub extern "C" fn llvm_get_instruction_call_conv(instr: LLVMValueRef) -> UInt = "__llvm_get_instruction_call_conv"
+pub extern "C" fn llvm_get_instruction_call_conv(instr: LLVMValueRef) -> UInt = "LLVMGetInstructionCallConv"
 
 ///| Obtain the calling convention for a call instruction.
 /// 
@@ -5389,7 +5406,7 @@ pub fn LLVMValueRef::get_instruction_call_conv(self: LLVMValueRef) -> UInt {
   llvm_get_instruction_call_conv(self)
 }
 
-pub extern "C" fn llvm_set_instr_param_alignment(instr: LLVMValueRef, idx: LLVMAttributeIndex, align: UInt) = "__llvm_set_instr_param_alignment"
+pub extern "C" fn llvm_set_instr_param_alignment(instr: LLVMValueRef, idx: LLVMAttributeIndex, align: UInt) = "LLVMSetInstrParamAlignment"
 pub fn LLVMValueRef::set_instr_param_alignment(self: LLVMValueRef, idx: LLVMAttributeIndex, align: UInt) -> Unit {
   llvm_set_instr_param_alignment(self, idx, align)
 }
@@ -5400,17 +5417,17 @@ pub extern "C" fn llvm_get_call_site_attribute_count(c: LLVMValueRef, idx: LLVMA
 
 pub extern "C" fn llvm_get_call_site_attributes(c: LLVMValueRef, idx: LLVMAttributeIndex) -> Array[LLVMAttributeRef] = "__llvm_get_call_site_attributes"
 
-pub extern "C" fn llvm_get_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_enum_attribute"
+pub extern "C" fn llvm_get_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) -> LLVMAttributeRef = "LLVMGetCallSiteEnumAttribute"
 
-extern "C" fn __llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "__llvm_get_call_site_string_attribute"
+extern "C" fn __llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) -> LLVMAttributeRef = "LLVMGetCallSiteStringAttribute"
 pub fn llvm_get_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> LLVMAttributeRef {
   let cstr = moonbit_str_to_c_str(k);
   __llvm_get_call_site_string_attribute(c, idx, cstr, k.length().reinterpret_as_uint())
 }
 
-pub extern "C" fn llvm_remove_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) = "__llvm_remove_call_site_enum_attribute"
+pub extern "C" fn llvm_remove_call_site_enum_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, kind_id: UInt) = "LLVMRemoveCallSiteEnumAttribute"
 
-extern "C" fn __llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "__llvm_remove_call_site_string_attribute"
+extern "C" fn __llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: CStr, k_len: UInt) = "LLVMRemoveCallSiteStringAttribute"
 pub fn llvm_remove_call_site_string_attribute(c: LLVMValueRef, idx: LLVMAttributeIndex, k: String) -> Unit {
   let cstr = moonbit_str_to_c_str(k);
   __llvm_remove_call_site_string_attribute(c, idx, cstr, k.length().reinterpret_as_uint())
@@ -5575,7 +5592,7 @@ pub fn LLVMValueRef::set_tail_call_kind(self: LLVMValueRef, kind: LLVMTailCallKi
 /// This only works on llvm::InvokeInst instructions.
 /// 
 /// - see llvm::InvokeInst::getNormalDest()
-pub extern "C" fn llvm_get_normal_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_normal_dest"
+pub extern "C" fn llvm_get_normal_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "LLVMGetNormalDest"
 
 ///| Return the normal destination basic block.
 /// 
@@ -5594,7 +5611,7 @@ pub fn LLVMValueRef::get_normal_dest(self: LLVMValueRef) -> LLVMBasicBlockRef {
 /// - see llvm::InvokeInst::getUnwindDest()
 /// - see llvm::CleanupReturnInst::getUnwindDest()
 /// - see llvm::CatchSwitchInst::getUnwindDest()
-pub extern "C" fn llvm_get_unwind_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "__llvm_get_unwind_dest"
+pub extern "C" fn llvm_get_unwind_dest(invoke_inst: LLVMValueRef) -> LLVMBasicBlockRef = "LLVMGetUnwindDest"
 
 ///| Return the unwind destination basic block.
 /// 
@@ -6085,10 +6102,10 @@ pub fn LLVMBuilderRef::set_default_fp_math_tag(self: LLVMBuilderRef, fp_math_tag
 // }
 
 // Deprecated
-// pub extern "C" fn llvm_get_current_debug_location(builder: LLVMBuilderRef) -> LLVMValueRef = "__llvm_get_current_debug_location"
-// pub fn LLVMBuilderRef::get_current_debug_location(self: LLVMBuilderRef) -> LLVMValueRef {
-//   llvm_get_current_debug_location(self)
-// }
+pub extern "C" fn llvm_get_current_debug_location(builder: LLVMBuilderRef) -> LLVMValueRef = "LLVMGetCurrentDebugLocation"
+pub fn LLVMBuilderRef::get_current_debug_location(self: LLVMBuilderRef) -> LLVMValueRef {
+  llvm_get_current_debug_location(self)
+}
 
 ///| Build a return void instruction.
 pub extern "C" fn llvm_build_ret_void(builder: LLVMBuilderRef) -> LLVMValueRef = "LLVMBuildRetVoid"

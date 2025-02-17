@@ -111,6 +111,40 @@ LLVMTypeKind llvm_type_kind_from_int(int32_t k) {
   }
 }
 
+// typedef enum {
+//   LLVMTailCallKindNone = 0,
+//   LLVMTailCallKindTail = 1,
+//   LLVMTailCallKindMustTail = 2,
+//   LLVMTailCallKindNoTail = 3,
+// } LLVMTailCallKind;
+int llvm_tail_call_kind_to_int(LLVMTailCallKind k) {
+  switch (k) {
+  case LLVMTailCallKindNone:
+    return 0;
+  case LLVMTailCallKindTail:
+    return 1;
+  case LLVMTailCallKindMustTail:
+    return 2;
+  case LLVMTailCallKindNoTail:
+    return 3;
+  }
+}
+
+LLVMTailCallKind llvm_tail_call_kind_from_int(int i) {
+  switch (i) {
+  case 0:
+    return LLVMTailCallKindNone;
+  case 1:
+    return LLVMTailCallKindTail;
+  case 2:
+    return LLVMTailCallKindMustTail;
+  case 3:
+    return LLVMTailCallKindNoTail;
+  default:
+    panic("Error during Moonbit Convert to LLVMTailCallKind");
+  }
+}
+
 int llvm_opcode_to_int(LLVMOpcode self) {
   switch (self) {
   case LLVMRet:
@@ -1200,14 +1234,6 @@ void *__llvm_get_source_file_name(void *m, size_t *len) {
   return (char *)LLVMGetSourceFileName((LLVMModuleRef)m, len);
 }
 
-void __llvm_set_source_file_name(void *m, void *name, size_t len) {
-  LLVMSetSourceFileName((LLVMModuleRef)m, (const char *)name, len);
-}
-
-void *__llvm_get_data_layout_str(void *m) {
-  return (char *)LLVMGetDataLayoutStr((LLVMModuleRef)m);
-}
-
 void *__llvm_copy_module_flags_metadata(void *m, size_t *len) {
   return (LLVMModuleFlagEntry *)LLVMCopyModuleFlagsMetadata((LLVMModuleRef)m,
                                                             len);
@@ -1300,25 +1326,6 @@ void *__llvm_get_type_by_name_in_module(void *m, void *name) {
   return (LLVMTypeRef)LLVMGetTypeByName((LLVMModuleRef)m, (const char *)name);
 }
 
-void *__llvm_get_last_named_metadata(void *m) {
-  return (LLVMNamedMDNodeRef)LLVMGetLastNamedMetadata((LLVMModuleRef)m);
-}
-
-void *__llvm_get_next_named_metadata(void *named_md_node) {
-  return (LLVMNamedMDNodeRef)LLVMGetNextNamedMetadata(
-      (LLVMNamedMDNodeRef)named_md_node);
-}
-
-void *__llvm_get_previous_named_metadata(void *named_md_node) {
-  return (LLVMNamedMDNodeRef)LLVMGetPreviousNamedMetadata(
-      (LLVMNamedMDNodeRef)named_md_node);
-}
-
-void *__llvm_get_named_metadata(void *m, void *name, size_t name_len) {
-  return (LLVMNamedMDNodeRef)LLVMGetNamedMetadata((LLVMModuleRef)m,
-                                                  (const char *)name, name_len);
-}
-
 void *__llvm_get_or_insert_named_metadata(void *m, void *name,
                                           size_t name_len) {
   return (LLVMNamedMDNodeRef)LLVMGetOrInsertNamedMetadata(
@@ -1328,20 +1335,6 @@ void *__llvm_get_or_insert_named_metadata(void *m, void *name,
 void *__llvm_get_named_metadata_name(void *named_md, size_t *name_len) {
   return (char *)LLVMGetNamedMetadataName((LLVMNamedMDNodeRef)named_md,
                                           name_len);
-}
-
-unsigned __llvm_get_named_metadata_num_operands(void *m, void *name) {
-  return LLVMGetNamedMetadataNumOperands((LLVMModuleRef)m, (const char *)name);
-}
-
-void __llvm_get_named_metadata_operands(void *m, void *name, void *dest) {
-  LLVMGetNamedMetadataOperands((LLVMModuleRef)m, (const char *)name,
-                               (LLVMValueRef *)dest);
-}
-
-void __llvm_add_named_metadata_operand(void *m, void *name, void *val) {
-  LLVMAddNamedMetadataOperand((LLVMModuleRef)m, (const char *)name,
-                              (LLVMValueRef)val);
 }
 
 void *__llvm_get_debug_loc_directory(void *val, unsigned *length) {
@@ -1370,9 +1363,9 @@ void *__llvm_function_type(void *return_type, ArrayLLVMTypeRef *param_types,
 }
 
 // TODO: Wrong implementation
-void __llvm_get_param_types(void *function_ty, void *dest) {
-  LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)dest);
-}
+// void __llvm_get_param_types(void *function_ty, void *dest) {
+//   LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)dest);
+// }
 
 void *__llvm_struct_type_in_context(void *context,
                                     ArrayLLVMTypeRef *element_types,
@@ -1389,25 +1382,12 @@ void *__llvm_struct_type(ArrayLLVMTypeRef *element_types, LLVMBool packed) {
   return (LLVMTypeRef)LLVMStructType(llvm_element_types, element_count, packed);
 }
 
-void *__llvm_struct_create_named(void *context, void *name) {
-  return (LLVMTypeRef)LLVMStructCreateNamed((LLVMContextRef)context,
-                                            (const char *)name);
-}
-
-void *__llvm_get_struct_name(void *ty) {
-  return (char *)LLVMGetStructName((LLVMTypeRef)ty);
-}
-
 void __llvm_struct_set_body(void *struct_ty, ArrayLLVMTypeRef *element_types,
                             LLVMBool packed) {
   LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)element_types->$0->data;
   unsigned element_count = element_types->$1;
   LLVMStructSetBody((LLVMTypeRef)struct_ty, llvm_element_types, element_count,
                     packed);
-}
-
-unsigned __llvm_count_struct_element_types(void *struct_ty) {
-  return LLVMCountStructElementTypes((LLVMTypeRef)struct_ty);
 }
 
 ArrayLLVMValueRef *__llvm_get_struct_element_types(void *struct_ty,
@@ -1418,33 +1398,10 @@ ArrayLLVMValueRef *__llvm_get_struct_element_types(void *struct_ty,
   return arr;
 }
 
-void *__llvm_struct_get_type_at_index(void *struct_ty, unsigned i) {
-  return (LLVMTypeRef)LLVMStructGetTypeAtIndex((LLVMTypeRef)struct_ty, i);
-}
-
-void __llvm_get_subtypes(void *tp, void *arr) {
-  LLVMGetSubtypes((LLVMTypeRef)tp, (LLVMTypeRef *)arr);
-}
-
-unsigned __llvm_get_num_contained_types(void *tp) {
-  return LLVMGetNumContainedTypes((LLVMTypeRef)tp);
-}
-
-void *__llvm_array_type(void *element_type, unsigned element_count) {
-  return (LLVMTypeRef)LLVMArrayType((LLVMTypeRef)element_type, element_count);
-}
-
-void *__llvm_array_type2(void *element_type, uint64_t element_count) {
-  return (LLVMTypeRef)LLVMArrayType2((LLVMTypeRef)element_type, element_count);
-}
-
-unsigned __llvm_get_array_length(void *array_ty) {
-  return LLVMGetArrayLength((LLVMTypeRef)array_ty);
-}
-
-uint64_t __llvm_get_array_length2(void *array_ty) {
-  return LLVMGetArrayLength2((LLVMTypeRef)array_ty);
-}
+// TODO: Wrong implementation
+// void __llvm_get_subtypes(void *tp, void *arr) {
+//   LLVMGetSubtypes((LLVMTypeRef)tp, (LLVMTypeRef *)arr);
+// }
 
 // void *__llvm_target_ext_type_in_context(void *context, void *name,
 //                                         ArrayLLVMTypeRef *type_params,
@@ -1458,30 +1415,9 @@ uint64_t __llvm_get_array_length2(void *array_ty) {
 //       type_param_count, llvm_int_params, int_param_count);
 // }
 
-void *__llvm_get_target_ext_type_name(void *target_ext_ty) {
-  return (char *)LLVMGetTargetExtTypeName((LLVMTypeRef)target_ext_ty);
-}
-
-unsigned __llvm_get_target_ext_type_num_type_params(void *target_ext_ty) {
-  return LLVMGetTargetExtTypeNumTypeParams((LLVMTypeRef)target_ext_ty);
-}
-
-void *__llvm_get_target_ext_type_type_param(void *target_ext_ty, unsigned idx) {
-  return (LLVMTypeRef)LLVMGetTargetExtTypeTypeParam((LLVMTypeRef)target_ext_ty,
-                                                    idx);
-}
-
-unsigned __llvm_get_target_ext_type_num_int_params(void *target_ext_ty) {
-  return LLVMGetTargetExtTypeNumIntParams((LLVMTypeRef)target_ext_ty);
-}
-
-unsigned __llvm_get_target_ext_type_int_param(void *target_ext_ty,
-                                              unsigned idx) {
-  return LLVMGetTargetExtTypeIntParam((LLVMTypeRef)target_ext_ty, idx);
-}
-
-LLVMValueKind __llvm_get_value_kind(void *val) {
-  return LLVMGetValueKind((LLVMValueRef)val);
+int __llvm_get_value_kind(void *val) {
+  LLVMValueKind k = LLVMGetValueKind((LLVMValueRef)val);
+  llvm_value_kind_to_int(k);
 }
 
 // void *__llvm_get_value_name2(void *val, size_t *length) {
@@ -1496,10 +1432,6 @@ TupleCStrUInt64 *__llvm_get_value_name2(void *val, TupleCStrUInt64 *input) {
 
 void __llvm_set_value_name2(void *val, void *name, size_t name_len) {
   LLVMSetValueName2((LLVMValueRef)val, (const char *)name, name_len);
-}
-
-void *__llvm_print_dbg_record_to_string(void *record) {
-  return (char *)LLVMPrintDbgRecordToString((LLVMDbgRecordRef)record);
 }
 
 void *__llvm_get_value_name(void *val) {
@@ -1553,19 +1485,10 @@ void *__llvm_const_string_in_context2(void *context, void *str, size_t length,
       (LLVMContextRef)context, (const char *)str, length, dont_null_terminate);
 }
 
-void *__llvm_const_string(void *str, unsigned length,
-                          LLVMBool dont_null_terminate) {
-  return (LLVMValueRef)LLVMConstString((const char *)str, length,
-                                       dont_null_terminate);
-}
-
-LLVMBool __llvm_is_constant_string(void *c) {
-  return LLVMIsConstantString((LLVMValueRef)c);
-}
-
-void *__llvm_get_as_string(void *c, size_t *length) {
-  return (char *)LLVMGetAsString((LLVMValueRef)c, length);
-}
+// TODO: Wrong implementation
+// void *__llvm_get_as_string(void *c, size_t *length) {
+//   return (char *)LLVMGetAsString((LLVMValueRef)c, length);
+// }
 
 void *__llvm_const_struct_in_context(void *context,
                                      ArrayLLVMValueRef *constant_vals,
@@ -1602,10 +1525,6 @@ void *__llvm_const_named_struct(void *struct_ty,
   unsigned count = constant_vals->$1;
   return (LLVMValueRef)LLVMConstNamedStruct((LLVMTypeRef)struct_ty,
                                             llvm_constant_vals, count);
-}
-
-void *__llvm_get_aggregate_element(void *c, unsigned idx) {
-  return (LLVMValueRef)LLVMGetAggregateElement((LLVMValueRef)c, idx);
 }
 
 // void *__llvm_get_element_as_constant(void *c, unsigned idx) {
@@ -1648,12 +1567,13 @@ void *__llvm_const_in_bounds_gep2(void *ty, void *constant_val,
       num_indices);
 }
 
-// TODO：wrong implementation
-LLVMLinkage __llvm_get_linkage(void *global) {
-  return LLVMGetLinkage((LLVMValueRef)global);
+int __llvm_get_linkage(void *global) {
+  LLVMLinkage linkage = LLVMGetLinkage((LLVMValueRef)global);
+  return llvm_linkage_to_int(linkage);
 }
 
-void __llvm_set_linkage(void *global, LLVMLinkage linkage) {
+void __llvm_set_linkage(void *global, int link) {
+  LLVMLinkage linkage = llvm_linkage_from_int(link);
   LLVMSetLinkage((LLVMValueRef)global, linkage);
 }
 
@@ -1665,16 +1585,19 @@ void __llvm_set_section(void *global, void *section) {
   LLVMSetSection((LLVMValueRef)global, (const char *)section);
 }
 
-LLVMVisibility __llvm_get_visibility(void *global) {
-  return LLVMGetVisibility((LLVMValueRef)global);
+int __llvm_get_visibility(void *global) {
+  LLVMVisibility v = LLVMGetVisibility((LLVMValueRef)global);
+  return llvm_visibility_to_int(v);
 }
 
-void __llvm_set_visibility(void *global, LLVMVisibility viz) {
+void __llvm_set_visibility(void *global, int iviz) {
+  LLVMVisibility viz = llvm_visibility_from_int(iviz);
   LLVMSetVisibility((LLVMValueRef)global, viz);
 }
 
-LLVMDLLStorageClass __llvm_get_dll_storage_class(void *global) {
-  return LLVMGetDLLStorageClass((LLVMValueRef)global);
+int __llvm_get_dll_storage_class(void *global) {
+  LLVMDLLStorageClass d = LLVMGetDLLStorageClass((LLVMValueRef)global);
+  llvm_dll_storage_class_to_int(d);
 }
 
 // void __llvm_set_dll_storage_class(void *global, LLVMDLLStorageClass class)
@@ -1687,9 +1610,10 @@ void *__llvm_global_copy_all_metadata(void *value, size_t *num_entries) {
       (LLVMValueRef)value, num_entries);
 }
 
-void __llvm_dispose_value_metadata_entries(void *entries) {
-  LLVMDisposeValueMetadataEntries((LLVMValueMetadataEntry *)entries);
-}
+// TODO: Wrong implementation
+// void __llvm_dispose_value_metadata_entries(void *entries) {
+//   LLVMDisposeValueMetadataEntries((LLVMValueMetadataEntry *)entries);
+// }
 
 unsigned __llvm_value_metadata_entries_get_kind(void *entries, unsigned index) {
   return LLVMValueMetadataEntriesGetKind((LLVMValueMetadataEntry *)entries,
@@ -1746,11 +1670,6 @@ ArrayLLVMValueRef *__llvm_get_params(void *fn, ArrayLLVMValueRef *param_arr) {
   return param_arr;
 }
 
-void *__llvm_get_named_global_ifunc(void *m, void *name, size_t name_len) {
-  return (LLVMValueRef)LLVMGetNamedGlobalIFunc((LLVMModuleRef)m,
-                                               (const char *)name, name_len);
-}
-
 void *__llvm_md_string_in_context2(void *context, void *str, size_t s_len) {
   return (LLVMMetadataRef)LLVMMDStringInContext2((LLVMContextRef)context,
                                                  (const char *)str, s_len);
@@ -1767,18 +1686,8 @@ void *__llvm_get_md_string(void *v, unsigned *length) {
   return (char *)LLVMGetMDString((LLVMValueRef)v, length);
 }
 
-unsigned __llvm_get_md_node_num_operands(void *v) {
-  return LLVMGetMDNodeNumOperands((LLVMValueRef)v);
-}
-
 void __llvm_get_md_node_operands(void *v, void *dest) {
   LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
-}
-
-void __llvm_replace_md_node_operand_with(void *v, unsigned index,
-                                         void *replacement) {
-  LLVMReplaceMDNodeOperandWith((LLVMValueRef)v, index,
-                               (LLVMMetadataRef)replacement);
 }
 
 void *__llvm_md_string_in_context(void *context, void *str, unsigned s_len) {
@@ -1820,9 +1729,9 @@ void *__llvm_get_operand_bundle_arg_at_index(void *bundle, unsigned index) {
 }
 
 // TODO: wrong implementation
-void __llvm_get_basic_blocks(void *fn, void *basic_blocks) {
-  LLVMGetBasicBlocks((LLVMValueRef)fn, (LLVMBasicBlockRef *)basic_blocks);
-}
+// void __llvm_get_basic_blocks(void *fn, void *basic_blocks) {
+//   LLVMGetBasicBlocks((LLVMValueRef)fn, (LLVMBasicBlockRef *)basic_blocks);
+// }
 
 void __llvm_set_metadata(void *val, unsigned kind_id, void *node) {
   LLVMSetMetadata((LLVMValueRef)val, kind_id, (LLVMValueRef)node);
@@ -1841,77 +1750,30 @@ int __llvm_get_instruction_opcode(void *inst) {
   return llvm_opcode_to_int(opcode);
 }
 
-LLVMIntPredicate __llvm_get_icmp_predicate(void *inst) {
-  return LLVMGetICmpPredicate((LLVMValueRef)inst);
+int __llvm_get_icmp_predicate(void *inst) {
+  LLVMIntPredicate p = LLVMGetICmpPredicate((LLVMValueRef)inst);
+  return llvm_int_predicate_to_int(p);
 }
 
-LLVMRealPredicate __llvm_get_fcmp_predicate(void *inst) {
-  return LLVMGetFCmpPredicate((LLVMValueRef)inst);
+int __llvm_get_fcmp_predicate(void *inst) {
+  LLVMRealPredicate p = LLVMGetFCmpPredicate((LLVMValueRef)inst);
+  return llvm_real_predicate_to_int(p);
 }
 
-void *__llvm_isa_terminator_inst(void *inst) {
-  return (LLVMValueRef)LLVMIsATerminatorInst((LLVMValueRef)inst);
+// TODO: Wrong Implementation
+// void __llvm_get_call_site_attributes(void *c, LLVMAttributeIndex idx,
+//                                      void *attrs) {
+//   LLVMGetCallSiteAttributes((LLVMValueRef)c, idx, (LLVMAttributeRef *)attrs);
+// }
+
+int __llvm_get_tail_call_kind(void *call_inst) {
+  LLVMTailCallKind k = LLVMGetTailCallKind((LLVMValueRef)call_inst);
+  return llvm_tail_call_kind_to_int(k);
 }
 
-void __llvm_set_instruction_call_conv(void *instr, unsigned cc) {
-  LLVMSetInstructionCallConv((LLVMValueRef)instr, cc);
-}
-
-unsigned __llvm_get_instruction_call_conv(void *instr) {
-  return LLVMGetInstructionCallConv((LLVMValueRef)instr);
-}
-
-void __llvm_set_instr_param_alignment(void *instr, LLVMAttributeIndex idx,
-                                      unsigned align) {
-  LLVMSetInstrParamAlignment((LLVMValueRef)instr, idx, align);
-}
-
-void __llvm_get_call_site_attributes(void *c, LLVMAttributeIndex idx,
-                                     void *attrs) {
-  LLVMGetCallSiteAttributes((LLVMValueRef)c, idx, (LLVMAttributeRef *)attrs);
-}
-
-void *__llvm_get_call_site_enum_attribute(void *c, LLVMAttributeIndex idx,
-                                          unsigned kind_id) {
-  return (LLVMAttributeRef)LLVMGetCallSiteEnumAttribute((LLVMValueRef)c, idx,
-                                                        kind_id);
-}
-
-void *__llvm_get_call_site_string_attribute(void *c, LLVMAttributeIndex idx,
-                                            void *k, unsigned k_len) {
-  return (LLVMAttributeRef)LLVMGetCallSiteStringAttribute(
-      (LLVMValueRef)c, idx, (const char *)k, k_len);
-}
-
-void __llvm_remove_call_site_enum_attribute(void *c, LLVMAttributeIndex idx,
-                                            unsigned kind_id) {
-  LLVMRemoveCallSiteEnumAttribute((LLVMValueRef)c, idx, kind_id);
-}
-
-void __llvm_remove_call_site_string_attribute(void *c, LLVMAttributeIndex idx,
-                                              void *k, unsigned k_len) {
-  LLVMRemoveCallSiteStringAttribute((LLVMValueRef)c, idx, (const char *)k,
-                                    k_len);
-}
-
-LLVMTailCallKind __llvm_get_tail_call_kind(void *call_inst) {
-  return LLVMGetTailCallKind((LLVMValueRef)call_inst);
-}
-
-void __llvm_set_tail_call_kind(void *call_inst, LLVMTailCallKind kind) {
+void __llvm_set_tail_call_kind(void *call_inst, int ikind) {
+  LLVMTailCallKind kind = llvm_tail_call_kind_from_int(ikind);
   LLVMSetTailCallKind((LLVMValueRef)call_inst, kind);
-}
-
-void *__llvm_get_normal_dest(void *invoke_inst) {
-  return (LLVMBasicBlockRef)LLVMGetNormalDest((LLVMValueRef)invoke_inst);
-}
-
-void *__llvm_get_unwind_dest(void *invoke_inst) {
-  return (LLVMBasicBlockRef)LLVMGetUnwindDest((LLVMValueRef)invoke_inst);
-}
-
-void __llvm_set_normal_dest(void *invoke_inst, void *b) {
-  LLVMSetNormalDest((LLVMValueRef)invoke_inst, (LLVMBasicBlockRef)b);
 }
 
 void __llvm_add_incoming(void *phi_node, ArrayLLVMValueRef *incoming_values,
@@ -1933,13 +1795,10 @@ void *__llvm_get_incoming_block(void *phi_node, unsigned index) {
   return (LLVMBasicBlockRef)LLVMGetIncomingBlock((LLVMValueRef)phi_node, index);
 }
 
-const unsigned *__llvm_get_indices(void *inst) {
-  return LLVMGetIndices((LLVMValueRef)inst);
-}
-
-void *__llvm_get_current_debug_location(void *builder) {
-  return (LLVMValueRef)LLVMGetCurrentDebugLocation((LLVMBuilderRef)builder);
-}
+// TODO: Wrong Implementation
+// const unsigned *__llvm_get_indices(void *inst) {
+//   return LLVMGetIndices((LLVMValueRef)inst);
+// }
 
 void *__llvm_build_aggregate_ret(void *builder, ArrayLLVMValueRef *ret_vals) {
 
@@ -2019,14 +1878,14 @@ void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                                       (const char *)name);
 }
 
-// TODO: May be incorrect
-LLVMFastMathFlags __llvm_get_fast_math_flags(void *fp_math_inst) {
-  return LLVMGetFastMathFlags((LLVMValueRef)fp_math_inst);
-}
+// TODO: Wrong Implementation
+// LLVMFastMathFlags __llvm_get_fast_math_flags(void *fp_math_inst) {
+//   return LLVMGetFastMathFlags((LLVMValueRef)fp_math_inst);
+// }
 
-void __llvm_set_fast_math_flags(void *fp_math_inst, LLVMFastMathFlags fmf) {
-  LLVMSetFastMathFlags((LLVMValueRef)fp_math_inst, fmf);
-}
+// void __llvm_set_fast_math_flags(void *fp_math_inst, LLVMFastMathFlags fmf) {
+//   LLVMSetFastMathFlags((LLVMValueRef)fp_math_inst, fmf);
+// }
 
 LLVMBool __llvm_can_value_use_fast_math_flags(void *inst) {
   return LLVMCanValueUseFastMathFlags((LLVMValueRef)inst);
@@ -2050,24 +1909,24 @@ void *__llvm_build_in_bounds_gep2(void *builder, void *ty, void *pointer,
       llvm_indices, num_indices, (const char *)name);
 }
 
-// TODO: May be incorrect
-LLVMAtomicOrdering __llvm_get_ordering(void *memory_access_inst) {
-  return LLVMGetOrdering((LLVMValueRef)memory_access_inst);
-}
-
-void __llvm_set_ordering(void *memory_access_inst,
-                         LLVMAtomicOrdering ordering) {
-  LLVMSetOrdering((LLVMValueRef)memory_access_inst, ordering);
-}
-
-LLVMAtomicRMWBinOp __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
-  return LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
-}
-
-void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst,
-                                  LLVMAtomicRMWBinOp bin_op) {
-  LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, bin_op);
-}
+// TODO: Wrong Implementation
+// LLVMAtomicOrdering __llvm_get_ordering(void *memory_access_inst) {
+//   return LLVMGetOrdering((LLVMValueRef)memory_access_inst);
+// }
+//
+// void __llvm_set_ordering(void *memory_access_inst,
+//                          LLVMAtomicOrdering ordering) {
+//   LLVMSetOrdering((LLVMValueRef)memory_access_inst, ordering);
+// }
+//
+// LLVMAtomicRMWBinOp __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
+//   return LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
+// }
+//
+// void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst,
+//                                   LLVMAtomicRMWBinOp bin_op) {
+//   LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, bin_op);
+// }
 
 void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                         void *name) {
