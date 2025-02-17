@@ -467,9 +467,9 @@ test "Function Type Test" {
   assert_false!(baz.is_var_arg())
 
   // get_param_types
-  // inspect!(foo.get_param_types(), content="[]")
-  // inspect!(bar.get_param_types(), content="[i32]")
-  // inspect!(baz.get_param_types(), content="[i32, i32]")
+  inspect!(foo.get_param_types(), content="[]")
+  inspect!(bar.get_param_types(), content="[i32]")
+  inspect!(baz.get_param_types(), content="[i32, i32]")
 
   // ptr_type
   let addr_space = @llvm.AddressSpace::default()

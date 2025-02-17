@@ -1363,9 +1363,12 @@ void *__llvm_function_type(void *return_type, ArrayLLVMTypeRef *param_types,
 }
 
 // TODO: Wrong implementation
-// void __llvm_get_param_types(void *function_ty, void *dest) {
-//   LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)dest);
-// }
+ArrayLLVMTypeRef *__llvm_get_param_types(void *function_ty,
+                                         ArrayLLVMTypeRef *dest) {
+  LLVMTypeRef *e_dest = (LLVMTypeRef *)dest->$0->data;
+  LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)e_dest);
+  return dest;
+}
 
 void *__llvm_struct_type_in_context(void *context,
                                     ArrayLLVMTypeRef *element_types,
@@ -1398,10 +1401,11 @@ ArrayLLVMValueRef *__llvm_get_struct_element_types(void *struct_ty,
   return arr;
 }
 
-// TODO: Wrong implementation
-// void __llvm_get_subtypes(void *tp, void *arr) {
-//   LLVMGetSubtypes((LLVMTypeRef)tp, (LLVMTypeRef *)arr);
-// }
+ArrayLLVMTypeRef *__llvm_get_subtypes(void *tp, ArrayLLVMTypeRef *arr) {
+  LLVMTypeRef *e_arr = (LLVMTypeRef *)arr->$0->data;
+  LLVMGetSubtypes((LLVMTypeRef)tp, e_arr);
+  return arr;
+}
 
 // void *__llvm_target_ext_type_in_context(void *context, void *name,
 //                                         ArrayLLVMTypeRef *type_params,

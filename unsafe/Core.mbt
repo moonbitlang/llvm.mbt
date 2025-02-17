@@ -1444,7 +1444,13 @@ pub fn LLVMTypeRef::count_param_types(self: LLVMTypeRef) -> UInt {
 /// 
 /// - param FunctionTy The function type to operate on.
 /// - param Dest Memory address of an array to be filled with result.
-pub extern "C" fn llvm_get_param_types(function_ty: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_param_types"
+pub fn llvm_get_param_types(function_ty: LLVMTypeRef) -> Array[LLVMTypeRef] {
+  let null_ref = LLVMTypeRef::null()
+  let cnt = llvm_count_param_types(function_ty).reinterpret_as_int()
+  let dest = Array::make(cnt, null_ref)
+  __llvm_get_param_types(function_ty, dest)
+}
+extern "C" fn __llvm_get_param_types(function_ty: LLVMTypeRef, dest: Array[LLVMTypeRef]) -> Array[LLVMTypeRef] = "__llvm_get_param_types"
 
 
 ///| Create a new structure type in a context.
@@ -1587,8 +1593,7 @@ extern "C" fn __llvm_get_struct_element_types(
 pub fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] {
   let field_count = llvm_count_struct_element_types(struct_ty)
   let null_ref = llvm_new_null_type_ref()
-  // TODO: Use `Array::make` once compiler bug is fixed
-  let null_refs = LLVMTypeRef::make_array(field_count.reinterpret_as_int(), null_ref)
+  let null_refs = Array::make(field_count.reinterpret_as_int(), null_ref)
   __llvm_get_struct_element_types(struct_ty, field_count, null_refs)
 }
 
@@ -1698,8 +1703,16 @@ pub fn LLVMTypeRef::get_element_type(self: LLVMTypeRef) -> LLVMTypeRef {
 ///| Returns type's subtypes
 /// 
 /// - see llvm::Type::subtypes()
-// FIXME: Not implemented
-pub extern "C" fn llvm_get_subtypes(tp: LLVMTypeRef) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
+// TODO: Check if it is correct.
+pub fn llvm_get_subtypes(
+  tp: LLVMTypeRef
+) -> Array[LLVMTypeRef] {
+  let cnt = llvm_get_num_contained_types(tp).reinterpret_as_int()
+  let null_ref = LLVMTypeRef::null()
+  let arr = Array::make(cnt, null_ref)
+  __llvm_get_subtypes(tp, arr)
+}
+extern "C" fn __llvm_get_subtypes(tp: LLVMTypeRef, arr:Array[LLVMTypeRef]) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
 
 ///| Returns type's subtypes
 /// 
@@ -4565,10 +4578,9 @@ extern "C" fn __llvm_get_params(func: LLVMValueRef, params: Array[LLVMValueRef])
 /// - see llvm::Function::arg_begin()
 /// 
 pub fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] {
-  let count = llvm_count_params(func);
+  let count = llvm_count_params(func).reinterpret_as_int()
   let null_ref = LLVMValueRef::null();
-  // TODO: use `Array::make` once compiler bug is fixed
-  let params = LLVMValueRef::make_array(count.reinterpret_as_int(), null_ref);
+  let params = Array::make(count, null_ref)
   __llvm_get_params(func, params)
 }
 
