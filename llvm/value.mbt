@@ -21,7 +21,7 @@ fn Value::as_value_ref(self: Value) -> @unsafe.LLVMValueRef {
 }
 
 fn Value::is_instruction(self: Value) -> Bool {
-  @unsafe.llvm_isa_instruction(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_instruction(self.as_value_ref()).is_null() |> not
 }
 
 fn Value::as_instruction(self: Value) -> InstructionValue? {

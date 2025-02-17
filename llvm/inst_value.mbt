@@ -649,18 +649,18 @@ pub fn InstructionValue::get_first_use(self: InstructionValue) -> BasicValueUse?
 /// let module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type([i32_type, i32_type], false);
+/// let fn_type = i32_type.fn_type([i32_type, i32_type]);
 ///
-/// let function = module.add_function("less", fn_type, None);
+/// let function = module.add_function("less", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_int_value();
 /// let arg2 = function.get_nth_param(1).unwrap().into_int_value();
-/// let slt = builder.build_int_compare(IntPredicate::SLT, arg1, arg2, "less_than").unwrap();
+/// let slt = builder.build_int_compare!(IntPredicate::SLT, arg1, arg2, "less_than");
 ///
-/// inspect!(slt.get_icmp_predicate().unwrap(), "SLT");
+/// inspect!(slt.as_instruction().get_icmp_predicate().unwrap(), "SLT");
 /// ```
 pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredicate? {
   if self.get_opcode() == InstructionOpcode::ICmp {
@@ -692,9 +692,9 @@ pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredic
 /// let arg1 = function.get_first_param().unwrap().into_float_value();
 /// let arg2 = function.get_nth_param(1).unwrap().into_float_value();
 /// let olt_pred = FloatPredicate::OLT;
-/// let fcmp = builder.build_float_compare(olt_pred, arg1, arg2, "less_than").unwrap();
+/// let fcmp = builder.build_float_compare!(olt_pred, arg1, arg2, "less_than");
 ///
-/// inspect!(fcmp.get_fcmp_predicate().unwrap(), "OLT");
+/// inspect!(fcmp.as_instruction().get_fcmp_predicate().unwrap(), "OLT");
 /// ```
 pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPredicate? {
   if self.get_opcode() == InstructionOpcode::FCmp {

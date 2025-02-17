@@ -114,21 +114,20 @@ pub fn Builder::build_return[T: BasicValue](
 /// let module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let i32_three = i32_type.const_int(3, false);
-/// let i32_seven = i32_type.const_int(7, false);
-/// let struct_type = context.struct_type([i32_type, i32_type], false);
-/// let fn_type = struct_type.fn_type([], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let i32_three = i32_type.const_int(3);
+/// let i32_seven = i32_type.const_int(7);
+/// let struct_type = context.struct_type([i32_type, i32_type]);
+/// let fn_type = struct_type.fn_type([]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 ///
 /// builder.position_at_end(entry);
-/// builder.build_aggregate_return([i32_three, i32_seven]).unwrap();
+/// builder.build_aggregate_return?([i32_three, i32_seven]).unwrap();
 /// ```
 pub fn Builder::build_aggregate_return(
   self: Builder, values: Array[BasicValueEnum]
 ) -> InstructionValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
-  // if self.get_positioned() == PositionState::NotSet {
     raise UnsetPosition
   }
 
@@ -152,8 +151,8 @@ pub fn Builder::build_aggregate_return(
 /// let module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type([i32_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = i32_type.fn_type([i32_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
@@ -172,13 +171,13 @@ pub fn Builder::build_call(
   self: Builder, 
   func: FunctionValue, 
   args: Array[BasicMetadataValueEnum],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
 
-  self.build_direct_call!(func, args, name)
+  self.build_direct_call!(func, args, name~)
 }
 
 ///| Builds a function call instruction. The function being called is known at compile time. If
@@ -191,8 +190,8 @@ pub fn Builder::build_call(
 /// let module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type([i32_type.into()], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = i32_type.fn_type([i32_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
@@ -211,7 +210,7 @@ pub fn Builder::build_direct_call(
   self: Builder, 
   func: FunctionValue, 
   args: Array[BasicMetadataValueEnum],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -219,7 +218,7 @@ pub fn Builder::build_direct_call(
 
   let fty = func.get_type()
   let fn_val = func.value
-  self.build_call_help!(fty, fn_val, args, name)
+  self.build_call_help!(fty, fn_val, args, name~)
 }
 
 ///| Build a function call instruction, with attached operand bundles.
@@ -233,8 +232,8 @@ pub fn Builder::build_direct_call(
 /// let i32_type = context.i32_type();
 ///
 /// // declare i32 @func(i32)
-/// let fn_type = i32_type.fn_type([i32_type], false);
-/// let fn_value = module.add_function("func", fn_type, None);
+/// let fn_type = i32_type.fn_type([i32_type]);
+/// let fn_value = module.add_function("func", fn_type);
 ///
 /// let basic_block = context.append_basic_block(fn_value, "entry");
 /// builder.position_at_end(basic_block);
@@ -256,11 +255,11 @@ pub fn Builder::build_direct_call_with_operand_bundles(
   func: FunctionValue,
   args: Array[BasicMetadataValueEnum],
   operand_bundles: Array[OperandBundle],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   let fty = func.get_type()
   let fn_val = func.value
-  self.build_call_with_operand_bundles_help!(fty, fn_val, args, operand_bundles, name)
+  self.build_call_with_operand_bundles_help!(fty, fn_val, args, operand_bundles, name~)
 }
 
 ///| Call a function pointer. Because a pointer does not carry a type, the type of the function
@@ -275,8 +274,8 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 /// let module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type([i32_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = i32_type.fn_type([i32_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
@@ -302,13 +301,13 @@ pub fn Builder::build_indirect_call(
   fn_type: FunctionType,
   fn_ptr: PointerValue,
   args: Array[BasicMetadataValueEnum],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
 
-  self.build_call_help!(fn_type, fn_ptr.value, args, name)
+  self.build_call_help!(fn_type, fn_ptr.value, args, name~)
 }
 
 ///| Build a call instruction to a function pointer, with attached operand bundles.
@@ -321,9 +320,9 @@ pub fn Builder::build_indirect_call_with_operand_bundles(
   fn_ptr: PointerValue,
   args: Array[BasicMetadataValueEnum],
   operand_bundles: Array[OperandBundle],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  self.build_call_with_operand_bundles_help!(fn_type, fn_ptr.value, args, operand_bundles, name)
+  self.build_call_with_operand_bundles_help!(fn_type, fn_ptr.value, args, operand_bundles, name~)
 }
 
 fn Builder::build_call_help(
@@ -331,7 +330,7 @@ fn Builder::build_call_help(
   fn_ty: FunctionType,
   fn_val: Value, // FunctionValue Or PointerValue
   args: Array[BasicMetadataValueEnum],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -352,7 +351,7 @@ fn Builder::build_call_with_operand_bundles_help(
   fn_val: Value, // FunctionValue Or PointerValue
   args: Array[BasicMetadataValueEnum],
   operand_bundles: Array[OperandBundle],
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -392,10 +391,10 @@ fn Builder::build_call_with_operand_bundles_help(
 /// let builder = context.create_builder();
 ///
 /// let f32_type = context.f32_type();
-/// let fn_type = f32_type.fn_type(&[], false);
+/// let fn_type = f32_type.fn_type([]);
 ///
 /// // we will pretend this function can throw an exception
-/// let function = module.add_function("bomb", fn_type, None);
+/// let function = module.add_function("bomb", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -404,7 +403,7 @@ fn Builder::build_call_with_operand_bundles_help(
 ///
 /// builder.build_return(val=Some(pi)).unwrap();
 ///
-/// let function2 = module.add_function("wrapper", fn_type, None);
+/// let function2 = module.add_function("wrapper", fn_type);
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 ///
 /// builder.position_at_end(basic_block2);
@@ -432,13 +431,13 @@ fn Builder::build_call_with_operand_bundles_help(
 ///         let name = "__gxx_personality_v0";
 ///         let linkage = Some(Linkage::External);
 ///
-///         module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///         module.add_function(name, context.i64_type().fn_type([]), linkage~)
 ///     };
 ///
 ///     // type of an exception in C++
 ///     let ptr_type = context.ptr_type(AddressSpace::default());
 ///     let i32_type = context.i32_type();
-///     let exception_type = context.struct_type([ptr_type, i32_type], false);
+///     let exception_type = context.struct_type([ptr_type, i32_type]);
 ///
 ///     let null = ptr_type.const_zero();
 ///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, "res").unwrap();
@@ -453,13 +452,13 @@ pub fn Builder::build_invoke(
   args: Array[BasicValueEnum],
   then_block: BasicBlock,
   catch_block: BasicBlock,
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
 
-  self.build_direct_invoke!(func, args, then_block, catch_block, name)
+  self.build_direct_invoke!(func, args, then_block, catch_block, name~)
 }
 
 ///| Build a direct invoke instruction.
@@ -469,7 +468,7 @@ pub fn Builder::build_direct_invoke(
   args: Array[BasicValueEnum],
   then_block: BasicBlock,
   catch_block: BasicBlock,
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -477,7 +476,7 @@ pub fn Builder::build_direct_invoke(
 
   let fty = func.get_type()
   let fn_val = func.value
-  self.build_invoke_help!(fty, fn_val, args, then_block, catch_block, name)
+  self.build_invoke_help!(fty, fn_val, args, then_block, catch_block, name~)
 }
 
 ///| Build an indirect invoke instruction.
@@ -488,13 +487,13 @@ pub fn Builder::build_indirect_invoke(
   args: Array[BasicValueEnum],
   then_block: BasicBlock,
   catch_block: BasicBlock,
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
 
-  self.build_invoke_help!(fn_ty, fn_ptr.value, args, then_block, catch_block, name)
+  self.build_invoke_help!(fn_ty, fn_ptr.value, args, then_block, catch_block, name~)
 }
 
 fn Builder::build_invoke_help(
@@ -504,7 +503,7 @@ fn Builder::build_invoke_help(
   args: Array[BasicValueEnum],
   then_block: BasicBlock,
   catch_block: BasicBlock,
-  name: String
+  name~: String = ""
 ) -> CallSiteValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -553,18 +552,18 @@ fn Builder::build_invoke_help(
 /// // type of an exception in C++
 /// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
 /// let i32_type = context.i32_type();
-/// let exception_type = context.struct_type(&[i8_ptr_type.into(), i32_type.into()], false);
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 /// // the personality function used by C++
 /// let personality_function = {
 ///     let name = "__gxx_personality_v0";
 ///     let linkage = Some(Linkage::External);
 ///
-///     module.add_function(name, context.i64_type().fn_type(&[], false), linkage)
+///     module.add_function(name, context.i64_type().fn_type([]), linkage~)
 /// };
 ///
 /// // make the cleanup landing pad
-/// let res = builder.build_landing_pad( exception_type, personality_function, &[], true, "res").unwrap();
+/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, "res").unwrap();
 /// ```
 ///
 /// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
@@ -578,14 +577,14 @@ fn Builder::build_invoke_help(
 /// // type of an exception in C++
 /// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
 /// let i32_type = context.i32_type();
-/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 /// // the personality function used by C++
 /// let personality_function = {
 ///     let name = "__gxx_personality_v0";
 ///     let linkage = Some(Linkage::External);
 ///
-///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///     module.add_function(name, context.i64_type().fn_type([]), linkage~)
 /// };
 ///
 /// // make a null pointer of type i8
@@ -605,14 +604,14 @@ fn Builder::build_invoke_help(
 /// // type of an exception in C++
 /// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
 /// let i32_type = context.i32_type();
-/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 /// // the personality function used by C++
 /// let personality_function = {
 ///     let name = "__gxx_personality_v0";
 ///     let linkage = Some(Linkage::External);
 ///
-///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///     module.add_function(name, context.i64_type().fn_type([]), linkage~)
 /// };
 ///
 /// // link in the C++ type info for the `int` type
@@ -635,14 +634,14 @@ fn Builder::build_invoke_help(
 /// // type of an exception in C++
 /// let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
 /// let i32_type = context.i32_type();
-/// let exception_type = context.struct_type([i8_ptr_type, i32_type], false);
+/// let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 /// // the personality function used by C++
 /// let personality_function = {
 ///     let name = "__gxx_personality_v0";
 ///     let linkage = Some(Linkage::External);
 ///
-///     module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///     module.add_function(name, context.i64_type().fn_type([]), linkage~)
 /// };
 ///
 /// // link in the C++ type info for the `int` type
@@ -650,7 +649,7 @@ fn Builder::build_invoke_help(
 /// type_info_int.set_linkage(Linkage::External);
 ///
 /// // make the filter landing pad
-/// let filter_pattern = i8_ptr_type.const_array(&[type_info_int.as_any_value_enum().into_pointer_value()]);
+/// let filter_pattern = i8_ptr_type.const_array([type_info_int.as_any_value_enum().into_pointer_value()]);
 /// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, "res").unwrap();
 /// ```
 pub fn Builder::build_landing_pad(
@@ -659,7 +658,7 @@ pub fn Builder::build_landing_pad(
   personality_function: FunctionValue,
   clauses: Array[BasicValueEnum],
   is_cleanup: Bool,
-  name: String
+  name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -769,7 +768,7 @@ pub fn Builder::build_gep(
   pointee_ty: &BasicType,
   ptr: PointerValue,
   ordered_indices: Array[BasicValueEnum],
-  name: String
+  name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -793,7 +792,7 @@ pub fn Builder::build_in_bounds_gep(
   pointee_ty: &BasicType,
   ptr: PointerValue,
   ordered_indices: Array[IntValue],
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -846,7 +845,7 @@ pub fn Builder::build_struct_gep(
   pointee_ty: &BasicType,
   ptr: PointerValue,
   index: UInt,
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -901,7 +900,7 @@ pub fn Builder::build_ptr_diff(
   pointee_ty: &BasicType,
   lhs_ptr: PointerValue,
   rhs_ptr: PointerValue,
-  name: String
+  name~: String = ""
 ) -> IntValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -920,7 +919,9 @@ pub fn Builder::build_ptr_diff(
 }
 
 ///| Builds a `phi` node.
-pub fn Builder::build_phi(self: Builder, ty: &BasicType, name: String) -> PhiValue!BuilderError {
+pub fn Builder::build_phi(
+  self: Builder, ty: &BasicType, name~: String = ""
+) -> PhiValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
@@ -963,26 +964,31 @@ pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) 
 
 ///| Builds a load2 instruction. It allows you to retrieve a value of type `T` from a pointer to a type `T`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ret");
+/// let lmodule = context.create_module("demo");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let fn_type = i32_type.fn_type([i32_ptr_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = i32_type.fn_type([i32_ptr_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
 ///
-/// let pointee = builder.build_load(i32_type, i32_ptr_param, "load2").unwrap();
+/// let pointee = builder.build_load!(i32_type, i32_ptr_param, "load2").into_int_value();
 ///
-/// builder.build_return(Some(&pointee)).unwrap();
+/// builder.build_return(Some(pointee)).unwrap();
 /// ```
-pub fn Builder::build_load(self: Builder, pointee_ty: &BasicType, ptr: PointerValue, name: String) -> BasicValueEnum!BuilderError {
+pub fn Builder::build_load(
+  self: Builder, 
+  pointee_ty: &BasicType,
+  ptr: PointerValue,
+  name~: String = ""
+) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
@@ -993,8 +999,28 @@ pub fn Builder::build_load(self: Builder, pointee_ty: &BasicType, ptr: PointerVa
 }
 
 ///| Build an `alloca` instruction, allocating memory on the stack.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let module = context.create_module("demo");
+/// let builder = context.create_builder();
+/// let i32_type = context.i32_type();
+/// let fty = i32_type.fn_type([]);
+/// let fn_value = module.add_function("foo", fty);
+/// let entry = context.append_basic_block(fn_value, "entry");
+/// builder.position_at_end(entry);
+///
+/// let forty_two = i32_type.const_int(42);
+/// let alloca = builder.build_alloca!(i32_type, "a");
+/// let _ = builder.build_store!(alloca, forty_two);
+/// let load = builder.build_load!(i32_type, alloca, "b");
+///
+/// builder.build_return!(Some(load));
+/// ```
 pub fn Builder::build_alloca[T: BasicType](
-  self: Builder, ty: T, name: String
+  self: Builder, ty: T, name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1009,7 +1035,7 @@ pub fn Builder::build_array_alloca[T: BasicType, V: BasicValue](
   self: Builder,
   ty: T,
   size: V,
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1145,7 +1171,7 @@ pub fn Builder::build_memset(
 pub fn Builder::build_malloc(
   self: Builder,
   ty: &BasicType,
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1164,7 +1190,7 @@ pub fn Builder::build_array_malloc(
   self: Builder,
   ty: &BasicType,
   size: IntValue,
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -1386,7 +1412,7 @@ pub fn Builder::build_address_space_cast(
   self: Builder,
   ptr_val: PointerValue,
   ptr_type: PointerType,
-  name: String
+  name~: String = ""
 ) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2134,7 +2160,7 @@ pub fn Builder::build_cast[T: BasicType, V: BasicValue](
 
 
 // pub fn Builder::build_pointer_cast[T: PointerMathValue](
-//   self: Builder, from: T, to:T::BaseType, name: String
+//   self: Builder, from: T, to:T::BaseType, name~: String = ""
 // ) -> T!BuilderError {
 //   if self.get_positioned() != PositionState::Set {
 //     raise UnsetPosition
@@ -2493,7 +2519,7 @@ pub fn Builder::position_at_end(self: Builder, bb: BasicBlock) -> Unit {
 /// assert_true!(builder.build_extract_value(array, 3, "extract").is_err());
 /// ```
 pub fn Builder::build_extract_value[AV: AggregateValue](
-  self: Builder, agg: AV, index: UInt, name: String
+  self: Builder, agg: AV, index: UInt, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2553,7 +2579,7 @@ pub fn Builder::build_extract_value[AV: AggregateValue](
 /// assert_true!(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
 /// ```
 pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
-  self: Builder, agg: AV, value: BV, index: UInt, name: String
+  self: Builder, agg: AV, value: BV, index: UInt, name~: String = ""
 ) -> AggregateValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2602,7 +2628,7 @@ pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
 /// builder.build_return(Some(extracted)).unwrap();
 /// ```
 pub fn Builder::build_extract_element(
-  self: Builder, vector: VectorValue, index: IntValue, name: String
+  self: Builder, vector: VectorValue, index: IntValue, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2627,11 +2653,11 @@ pub fn Builder::build_extract_element(
 /// let module = context.create_module("av");
 /// let void_type = context.void_type();
 /// let i32_type = context.i32_type();
-/// let i32_zero = i32_type.const_int(0, false);
-/// let i32_seven = i32_type.const_int(7, false);
+/// let i32_zero = i32_type.const_int(0);
+/// let i32_seven = i32_type.const_int(7);
 /// let vec_type = i32_type.vec_type(2);
-/// let fn_type = void_type.fn_type([vec_type], false);
-/// let fn_value = module.add_function("vec_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([vec_type]);
+/// let fn_value = module.add_function("vec_fn", fn_type);
 /// let builder = context.create_builder();
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
@@ -2641,7 +2667,7 @@ pub fn Builder::build_extract_element(
 /// builder.build_return(None).unwrap();
 /// ```
 pub fn Builder::build_insert_element[V: BasicValue, W: VectorBaseValue](
-  self: Builder, vector: W, element: V, index: IntValue, name: String
+  self: Builder, vector: W, element: V, index: IntValue, name~: String = ""
 ) -> W!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2668,7 +2694,7 @@ pub fn Builder::build_unreachable(self: Builder) -> InstructionValue!BuilderErro
 }
 
 pub fn Builder::build_fence(
-  self: Builder, atomic_ordering: AtomicOrdering, single_thread:Bool, name: String
+  self: Builder, atomic_ordering: AtomicOrdering, single_thread:Bool, name~: String = ""
 ) -> InstructionValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2684,7 +2710,7 @@ pub fn Builder::build_fence(
 }
 
 pub fn Builder::build_is_null[T: PointerMathValue](
-  self: Builder, ptr: T, name: String
+  self: Builder, ptr: T, name~: String = ""
 ) -> IntValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2777,7 +2803,7 @@ pub fn Builder::build_switch(
 }
 
 pub fn Builder::build_select[BV: BasicValue, IMV: IntMathValue](
-  self: Builder, condition: IMV, then: BV, else_: BV, name: String
+  self: Builder, condition: IMV, then: BV, else_: BV, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2827,7 +2853,7 @@ pub fn Builder::build_global_string_ptr(
 }
 
 pub fn Builder::build_shuffle_vector[V: VectorBaseValue](
-  self: Builder, left: V, right: V, mask: V, name: String
+  self: Builder, left: V, right: V, mask: V, name~: String = ""
 ) -> V!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
@@ -2846,7 +2872,7 @@ pub fn Builder::build_shuffle_vector[V: VectorBaseValue](
 
 
 pub fn Builder::build_va_arg[T: BasicType](
-  self: Builder, list: PointerValue, ty: T, name: String
+  self: Builder, list: PointerValue, ty: T, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition

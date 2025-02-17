@@ -1,4 +1,4 @@
-test "Builder Test" {
+test "Builder Test - 1" {
   let context = @llvm.Context::create();
   let lmodule = context.create_module("demo");
   let i32_ty = context.i32_type();
@@ -121,16 +121,6 @@ test "Builder Test" {
   inspect!(fneg, content = "  %24 = fneg float %f0")
 
   // int compare
-// - EQ : Equal.
-// - NE : Not equal.
-// - UGT : Unsigned greater than.
-// - UGE : Unsigned greater than or equal.
-// - ULT : Unsigned less than.
-// - ULE : Unsigned less than or equal.
-// - SGT : Signed greater than.
-// - SGE : Signed greater than or equal.
-// - SLT : Signed less than.
-// - SLE : Signed less than or equal.
   let pred_eq = @llvm.IntPredicate::EQ;
   let pred_ne = @llvm.IntPredicate::NE;
   let pred_ugt = @llvm.IntPredicate::UGT;
@@ -144,33 +134,43 @@ test "Builder Test" {
 
   let ieq = builder.build_int_compare!(pred_eq, iarg0, iarg1, name="ieq")
   inspect!(ieq, content = "  %ieq = icmp eq i32 %0, %1") //?
+  assert_eq!(ieq.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_eq)
 
   let ine = builder.build_int_compare!(pred_ne, iarg0, iarg1, name="ine")
   inspect!(ine, content = "  %ine = icmp ne i32 %0, %1")
+  assert_eq!(ine.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_ne)
 
   let ugt = builder.build_int_compare!(pred_ugt, iarg0, iarg1, name="ugt")
   inspect!(ugt, content = "  %ugt = icmp ugt i32 %0, %1")
+  assert_eq!(ugt.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_ugt)
 
   let uge = builder.build_int_compare!(pred_uge, iarg0, iarg1, name="uge")
   inspect!(uge, content = "  %uge = icmp uge i32 %0, %1")
+  assert_eq!(uge.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_uge)
 
   let ult = builder.build_int_compare!(pred_ult, iarg0, iarg1, name="ult")
   inspect!(ult, content = "  %ult = icmp ult i32 %0, %1")
+  assert_eq!(ult.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_ult)
 
   let ule = builder.build_int_compare!(pred_ule, iarg0, iarg1, name="ule")
   inspect!(ule, content = "  %ule = icmp ule i32 %0, %1")
+  assert_eq!(ule.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_ule)
 
   let sgt = builder.build_int_compare!(pred_sgt, iarg0, iarg1, name="sgt")
   inspect!(sgt, content = "  %sgt = icmp sgt i32 %0, %1")
+  assert_eq!(sgt.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_sgt)
 
   let sge = builder.build_int_compare!(pred_sge, iarg0, iarg1, name="sge")
   inspect!(sge, content = "  %sge = icmp sge i32 %0, %1")
+  assert_eq!(sge.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_sge)
 
   let slt = builder.build_int_compare!(pred_slt, iarg0, iarg1, name="slt")
   inspect!(slt, content = "  %slt = icmp slt i32 %0, %1")
+  assert_eq!(slt.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_slt)
 
   let sle = builder.build_int_compare!(pred_sle, iarg0, iarg1, name="sle")
   inspect!(sle, content = "  %sle = icmp sle i32 %0, %1")
+  assert_eq!(sle.as_instruction().unwrap().get_icmp_predicate().unwrap(), pred_sle)
 
   let fpred_oeq = @llvm.FloatPredicate::OEQ;
   let fpred_ogt = @llvm.FloatPredicate::OGT;
@@ -190,52 +190,67 @@ test "Builder Test" {
 
   let foeq = builder.build_float_compare!(fpred_oeq, farg0, farg1, name="foeq")
   inspect!(foeq, content = "  %foeq = fcmp oeq float %f0, %f1")
+  assert_eq!(foeq.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_oeq)
 
   let fogt = builder.build_float_compare!(fpred_ogt, farg0, farg1, name="fogt")
   inspect!(fogt, content = "  %fogt = fcmp ogt float %f0, %f1")
+  assert_eq!(fogt.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ogt)
 
   let foge = builder.build_float_compare!(fpred_oge, farg0, farg1, name="foge")
   inspect!(foge, content = "  %foge = fcmp oge float %f0, %f1")
+  assert_eq!(foge.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_oge)
 
   let folt = builder.build_float_compare!(fpred_olt, farg0, farg1, name="folt")
   inspect!(folt, content = "  %folt = fcmp olt float %f0, %f1")
+  assert_eq!(folt.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_olt)
 
   let fole = builder.build_float_compare!(fpred_ole, farg0, farg1, name="fole")
   inspect!(fole, content = "  %fole = fcmp ole float %f0, %f1")
+  assert_eq!(fole.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ole)
 
   let fone = builder.build_float_compare!(fpred_one, farg0, farg1, name="fone")
   inspect!(fone, content = "  %fone = fcmp one float %f0, %f1")
+  assert_eq!(fone.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_one)
 
   let ford = builder.build_float_compare!(fpred_ord, farg0, farg1, name="ford")
   inspect!(ford, content = "  %ford = fcmp ord float %f0, %f1")
+  assert_eq!(ford.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ord)
 
   let ffalse = builder.build_float_compare!(
     fpred_false, farg0, farg1, name="ffalse"
   )
   inspect!(ffalse, content = "  %ffalse = fcmp false float %f0, %f1")
+  assert_eq!(ffalse.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_false)
 
   let ftrue = builder.build_float_compare!(
     fpred_true, farg0, farg1, name="ftrue"
   )
   inspect!(ftrue, content = "  %ftrue = fcmp true float %f0, %f1")
+  assert_eq!(ftrue.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_true)
 
   let fueq = builder.build_float_compare!(fpred_ueq, farg0, farg1, name="fueq")
   inspect!(fueq, content = "  %fueq = fcmp ueq float %f0, %f1")
+  assert_eq!(fueq.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ueq)
 
   let fuge = builder.build_float_compare!(fpred_uge, farg0, farg1, name="fuge")
   inspect!(fuge, content = "  %fuge = fcmp uge float %f0, %f1")
+  assert_eq!(fuge.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_uge)
 
   let fugt = builder.build_float_compare!(fpred_ugt, farg0, farg1, name="fugt")
   inspect!(fugt, content = "  %fugt = fcmp ugt float %f0, %f1")
+  assert_eq!(fugt.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ugt)
 
   let fult = builder.build_float_compare!(fpred_ult, farg0, farg1, name="fult")
   inspect!(fult, content = "  %fult = fcmp ult float %f0, %f1")
+  assert_eq!(fult.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ult)
 
   let fule = builder.build_float_compare!(fpred_ule, farg0, farg1, name="fule")
   inspect!(fule, content = "  %fule = fcmp ule float %f0, %f1")
+  assert_eq!(fule.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_ule)
 
   let fune = builder.build_float_compare!(fpred_une, farg0, farg1, name="fune")
   inspect!(fune, content = "  %fune = fcmp une float %f0, %f1")
+  assert_eq!(fune.as_instruction().unwrap().get_fcmp_predicate().unwrap(), fpred_une)
 
   context.drop()
 }

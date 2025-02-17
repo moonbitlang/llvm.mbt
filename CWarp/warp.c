@@ -143,6 +143,7 @@ LLVMTailCallKind llvm_tail_call_kind_from_int(int i) {
   default:
     panic("Error during Moonbit Convert to LLVMTailCallKind");
   }
+  return LLVMTailCallKindNone;
 }
 
 int llvm_opcode_to_int(LLVMOpcode self) {
@@ -1421,7 +1422,7 @@ ArrayLLVMTypeRef *__llvm_get_subtypes(void *tp, ArrayLLVMTypeRef *arr) {
 
 int __llvm_get_value_kind(void *val) {
   LLVMValueKind k = LLVMGetValueKind((LLVMValueRef)val);
-  llvm_value_kind_to_int(k);
+  return llvm_value_kind_to_int(k);
 }
 
 // void *__llvm_get_value_name2(void *val, size_t *length) {
@@ -1601,7 +1602,7 @@ void __llvm_set_visibility(void *global, int iviz) {
 
 int __llvm_get_dll_storage_class(void *global) {
   LLVMDLLStorageClass d = LLVMGetDLLStorageClass((LLVMValueRef)global);
-  llvm_dll_storage_class_to_int(d);
+  return llvm_dll_storage_class_to_int(d);
 }
 
 // void __llvm_set_dll_storage_class(void *global, LLVMDLLStorageClass class)
