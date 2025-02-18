@@ -41,7 +41,7 @@ pub fn BasicValueUse::as_use_ref(self: BasicValueUse) -> @unsafe.LLVMUseRef {
 ///
 /// let arg1_first_use = arg1.get_first_use().unwrap();
 ///
-/// assert!(arg1_first_use.get_next_use().is_some());
+/// assert_true!(arg1_first_use.get_next_use().is_some());
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):
@@ -119,7 +119,7 @@ pub fn BasicValueUse::get_user(self: BasicValueUse) -> AnyValueEnum {
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type([f32_ptr_type.into()]);
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");

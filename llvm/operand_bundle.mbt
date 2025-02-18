@@ -26,7 +26,7 @@ pub fn OperandBundle::as_bundle_ref(self: OperandBundle) -> @unsafe.LLVMOperandB
 /// let op_bundle = OperandBundle::create("tag", [i32_type.const_zero()]);
 /// assert_eq!(op_bundle.get_tag().unwrap(), "tag");
 /// let arg = op_bundle.get_args().nth(0).unwrap().into_int_value();
-/// assert!(arg.is_const());
+/// assert_true!(arg.is_const());
 /// assert_eq!(arg.get_zero_extended_constant().unwrap(), 0);
 /// ```
 pub fn OperandBundle::create(tag: String, args: Array[&AnyValue]) -> OperandBundle {
@@ -42,7 +42,7 @@ pub fn OperandBundle::create(tag: String, args: Array[&AnyValue]) -> OperandBund
 /// ## Example
 ///
 /// ```
-/// let op_bundle = OperandBundle::create("tag", &[]);
+/// let op_bundle = OperandBundle::create("tag", []);
 /// inspect!(op_bundle.get_tag(), content="tag");
 /// ```
 pub fn OperandBundle::get_tag(self: OperandBundle) -> String {

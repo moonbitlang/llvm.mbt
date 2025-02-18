@@ -484,7 +484,7 @@ pub fn Context::prepend_basic_block(
 ///
 /// let ret_instr = builder.build_return(None).unwrap();
 ///
-/// assert!(md_node.is_node());
+/// assert_true!(md_node.is_node());
 ///
 /// ret_instr.set_metadata(md_node, 0);
 /// ```
@@ -518,7 +518,7 @@ pub fn Context::metadata_node(
 ///
 /// let ret_instr = builder.build_return(None).unwrap();
 ///
-/// assert!(md_string.is_string());
+/// assert_true!(md_string.is_string());
 ///
 /// ret_instr.set_metadata(md_string, 0);
 /// ```
@@ -555,7 +555,7 @@ pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///
-/// assert!(enum_attribute.is_enum());
+/// assert_true!(enum_attribute.is_enum());
 /// ```
 pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64) -> Attribute {
   let attr_ref = @unsafe.llvm_create_enum_attribute(self.as_ctx_ref(), kind_id, val)
@@ -570,7 +570,7 @@ pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64)
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key_123", "my_val");
 ///
-/// assert!(string_attribute.is_string());
+/// assert_true!(string_attribute.is_string());
 /// ```
 pub fn Context::create_string_attribute(self: Context, key: String, val: String) -> Attribute {
   let attr_ref = @unsafe.llvm_create_string_attribute(self.as_ctx_ref(), key, val)
@@ -590,7 +590,7 @@ pub fn Context::create_string_attribute(self: Context, key: String, val: String)
 ///     any_type,
 /// );
 ///
-/// assert!(type_attribute.is_type());
+/// assert_true!(type_attribute.is_type());
 /// assert_eq!(type_attribute.get_type_value(), any_type);
 /// assert_ne!(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```

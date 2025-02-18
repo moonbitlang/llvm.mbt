@@ -103,7 +103,7 @@ pub fn Attribute::get_named_enum_kind_id(name: String) -> UInt {
 /// assert_eq!(type_attribute.get_enum_kind_id(), kind_id);
 /// ```
 pub fn Attribute::get_enum_kind_id(self: Attribute) -> UInt {
-  // assert!(self.get_enum_kind_id_is_valid());
+  // assert_true!(self.get_enum_kind_id_is_valid());
   if not(self.get_enum_kind_id_is_valid()) {
     abort("Invalid enum kind id");
   }
@@ -198,7 +198,7 @@ pub fn Attribute::get_string_value(self: Attribute) -> String {
 ///     any_type,
 /// );
 ///
-/// assert!(type_attribute.is_type());
+/// assert_true!(type_attribute.is_type());
 /// assert_eq!(type_attribute.get_type_value(), any_type);
 /// assert_ne!(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```

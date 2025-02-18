@@ -740,7 +740,7 @@ pub fn Builder::build_landing_pad(
 ///     // type of an exception in C++
 ///     let i8_ptr_type = context.i8_type().ptr_type(AddressSpace::default());
 ///     let i32_type = context.i32_type();
-///     let exception_type = context.struct_type(&[i8_ptr_type, i32_type], false);
+///     let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 ///     // make the landing pad; must give a concrete type to the slice
 ///     let res = builder.build_landing_pad(exception_type, personality_function, [], true, "res").unwrap();
@@ -822,8 +822,8 @@ pub fn Builder::build_in_bounds_gep(
 /// let void_type = context.void_type();
 /// let i32_ty = context.i32_type();
 /// let i32_ptr_ty = i32_ty.ptr_type(AddressSpace::default());
-/// let field_types = &[i32_ty.into(), i32_ty.into()];
-/// let struct_ty = context.struct_type(field_types, false);
+/// let field_types = [i32_ty, i32_ty];
+/// let struct_ty = context.struct_type(field_types);
 /// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty]);
 /// let fn_value = module.add_function("", fn_type);
@@ -834,11 +834,11 @@ pub fn Builder::build_in_bounds_gep(
 /// let i32_ptr = fn_value.get_first_param().unwrap().into_pointer_value();
 /// let struct_ptr = fn_value.get_last_param().unwrap().into_pointer_value();
 ///
-/// assert!(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
-/// assert!(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
-/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
-/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
-/// assert!(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
+/// assert_true!(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
+/// assert_true!(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
+/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
+/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
+/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
 /// ```
 pub fn Builder::build_struct_gep(
   self: Builder,
@@ -2557,7 +2557,7 @@ pub fn Builder::build_extract_value[AV: AggregateValue](
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
-/// let struct_type = context.struct_type([i32_type, f32_type], false);
+/// let struct_type = context.struct_type([i32_type, f32_type]);
 /// let array_type = i32_type.array_type(3);
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("av_fn", fn_type);
@@ -2734,14 +2734,14 @@ pub fn Builder::build_is_null[T: PointerMathValue](
 //     }
 //     let c_string = to_c_str(name);
 //
-//     let value = unsafe {
+//     let value =
 //         @unsafe.LLVMBuildIntToPtr(
 //             self.builder,
 //             int.as_value_ref(),
 //             ptr_type.as_type_ref(),
 //             c_string.as_ptr(),
 //         )
-//     };
+//     ;
 //
 //     unsafe { Ok(<<T::BaseType as IntMathType>::PtrConvType as PointerMathType>::ValueType::new(value)) }
 // }
@@ -2760,16 +2760,16 @@ pub fn Builder::build_is_null[T: PointerMathValue](
 //     }
 //     let c_string = to_c_str(name);
 //
-//     let value = unsafe {
+//     let value =
 //         @unsafe.LLVMBuildPtrToInt(
 //             self.builder,
 //             ptr.as_value_ref(),
 //             int_type.as_type_ref(),
 //             c_string.as_ptr(),
 //         )
-//     };
+//     ;
 //
-//     unsafe { Ok(<<T::BaseType as PointerMathType>::PtrConvType as IntMathType>::ValueType::new(value)) }
+//     Ok(<<T::BaseType as PointerMathType>::PtrConvType as IntMathType>::ValueType::new(value))
 // }
 
 pub fn Builder::clear_insertion_position(self: Builder) -> Unit {

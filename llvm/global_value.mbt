@@ -108,7 +108,7 @@ pub fn GlobalValue::set_thread_local_mode(
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_func", fn_type);
 ///
-/// assert!(fn_value.as_global_value().is_declaration());
+/// assert_true!(fn_value.as_global_value().is_declaration());
 ///
 /// context.append_basic_block(fn_value, "entry");
 ///

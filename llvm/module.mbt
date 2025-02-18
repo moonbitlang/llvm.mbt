@@ -74,7 +74,7 @@ pub fn Module::get_context(self: Module) -> Context {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 ///
-/// assert!(module.get_first_function().is_none());
+/// assert_true!(module.get_first_function().is_none());
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
@@ -220,11 +220,11 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 //
 // assert_eq!(module.get_triple(), triple);
 // ```
-// pub fn get_triple(&self) -> TargetTriple {
+// pub fn get_triple(self) -> TargetTriple {
 //   // REVIEW: This isn't an owned @unsafe.LLVMString, is it? If so, need to deallocate.
-//   let target_str = unsafe { @unsafe.LLVMGetTarget(self.module.get()) };
+//   let target_str = @unsafe.LLVMGetTarget(self.module.get());
 //
-//   unsafe { TargetTriple::new(@unsafe.LLVMString::create_from_c_str(CStr::from_ptr(target_str))) }
+//   TargetTriple::new(CStr::from_ptr(target_str))
 // }
 
 // More about target triple, engine
@@ -567,7 +567,7 @@ pub fn Module::set_source_filename(self: Module, name: String) -> Unit {
 // let module = context.create_module("mod");
 // let module2 = context.create_module("mod2");
 //
-// assert!(module.link_in_module(module2).is_ok());
+// assert_true!(module.link_in_module(module2).is_ok());
 // ```
 // pub fn Module::link_in_module(self: Module, other: Module) -> Result[Unit, String] {
 //   let res = @unsafe.llvm_link_modules(self.as_mod_ref(), other.as_mod_ref())

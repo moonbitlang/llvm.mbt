@@ -633,7 +633,7 @@ fn InstructionValue::get_oprand_use_unchecked(
 /// let free_instruction = builder.build_free(arg1).unwrap();
 /// let return_instruction = builder.build_return(None).unwrap();
 ///
-/// assert!(arg1.get_first_use().is_some());
+/// assert_true!(arg1.get_first_use().is_some());
 /// ```
 pub fn InstructionValue::get_first_use(self: InstructionValue) -> BasicValueUse? {
   self.value.get_first_use()

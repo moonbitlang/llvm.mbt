@@ -89,7 +89,7 @@ pub fn ArrayValue::is_const(self: ArrayValue) -> Bool {
 /// let context = Context::create();
 /// let string = context.const_string(b"my_string", false);
 ///
-/// assert!(string.is_const_string());
+/// assert_true!(string.is_const_string());
 /// ```
 pub fn ArrayValue::is_const_string(self: ArrayValue) -> Bool {
   // @unsafe.llvm_is_constant_string(self.as_value_ref())

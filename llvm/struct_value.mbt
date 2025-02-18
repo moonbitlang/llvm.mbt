@@ -30,13 +30,13 @@ pub fn StructValue::as_value_ref(self: StructValue) -> @unsafe.LLVMValueRef {
 /// let i8_type = context.i8_type();
 /// let i8_val = i8_type.const_all_ones();
 /// let i32_val = i32_type.const_all_ones();
-/// let struct_type = context.struct_type([i8_type, i32_type], false);
+/// let struct_type = context.struct_type([i8_type, i32_type]);
 /// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
 ///
-/// assert!(struct_val.get_field_at_index(0).is_some());
-/// assert!(struct_val.get_field_at_index(1).is_some());
-/// assert!(struct_val.get_field_at_index(3).is_none());
-/// assert!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+/// assert_true!(struct_val.get_field_at_index(0).is_some());
+/// assert_true!(struct_val.get_field_at_index(1).is_some());
+/// assert_true!(struct_val.get_field_at_index(3).is_none());
+/// assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
 /// ```
 pub fn StructValue::get_field_at_index(self: StructValue, index: UInt) -> BasicValueEnum? {
   if index >= self.count_fields() {
@@ -81,7 +81,7 @@ pub fn StructValue::set_field_at_index(
 /// let i8_type = context.i8_type();
 /// let i8_val = i8_type.const_all_ones();
 /// let i32_val = i32_type.const_all_ones();
-/// let struct_type = context.struct_type([i8_type, i32_type], false);
+/// let struct_type = context.struct_type([i8_type, i32_type]);
 /// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
 ///
 /// assert_eq!(struct_val.count_fields(), 2);
@@ -137,7 +137,7 @@ pub fn StructValue::replace_all_uses_with(self: StructValue, new_value: StructVa
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23, false).as_basic_value_enum();
 /// let struct_val = context.const_struct([i64_val, i64_val], false);
-/// assert!(struct_val.is_const());
+/// assert_true!(struct_val.is_const());
 /// ```
 pub fn StructValue::is_const(self: StructValue) -> Bool {
   self.value.is_const()
