@@ -20,9 +20,6 @@
 //
 // #define LLVMErrorSuccess 0
 //
-// /**
-//  * Opaque reference to an error instance. Null serves as the 'success' value.
-//  */
 // typedef struct LLVMOpaqueError *LLVMErrorRef;
 //
 // /**
@@ -45,7 +42,7 @@
 //  passed
 //  * to some other consuming operation, e.g. LLVMGetErrorMessage.
 //  */
-// void LLVMConsumeError(LLVMErrorRef Err);
+pub extern "C" fn llvm_consume_error(err: LLVMErrorRef) = "LLVMConsumeError"
 //
 // /**
 //  * Returns the given string's error message. This operation consumes the
@@ -54,19 +51,15 @@
 //  * The caller is responsible for disposing of the string by calling
 //  * LLVMDisposeErrorMessage.
 //  */
-// char *LLVMGetErrorMessage(LLVMErrorRef Err);
-//
-// /**
-//  * Dispose of the given error message.
-//  */
-// void LLVMDisposeErrorMessage(char *ErrMsg);
+pub extern "C" fn llvm_get_error_message(err: LLVMErrorRef) -> CStr = "LLVMGetErrorMessage"
+
+///| Disposes of the given error message.
+pub extern "C" fn llvm_dispose_error_message(err_msg: CStr) = "LLVMDisposeErrorMessage"
 //
 // /**
 //  * Returns the type id for llvm StringError.
 //  */
 // LLVMErrorTypeId LLVMGetStringErrorTypeId(void);
-//
-// /**
-//  * Create a StringError.
-//  */
-// LLVMErrorRef LLVMCreateStringError(const char *ErrMsg);
+
+///| Creates a string error with the given message.
+pub extern "C" fn llvm_create_string_error(err_msg: CStr) -> LLVMErrorRef = "LLVMCreateStringError"

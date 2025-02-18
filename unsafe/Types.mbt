@@ -55,8 +55,16 @@ pub type LLVMPassManagerRef
 
 pub type LLVMPassRegistryRef 
 
-///| llvm pass builder options
+///| A set of options passed which are attached to the Pass Manager upon run.
+/// 
+/// This corresponds to an llvm::LLVMPassBuilderOptions instance
+/// 
+/// The details for how the different properties of this structure are used can
+/// be found in the source for LLVMRunPasses
+/// 
 pub type LLVMPassBuilderOptionsRef
+
+pub type LLVMPassManagerBuilderRef 
 
 ///| llvm use
 pub type LLVMUseRef
@@ -92,7 +100,27 @@ pub type LVMMCJITMemoryManagerRef
 
 pub type LLVMRemarkStringRef
 
+///| Opaque reference to an error instance. Null serves as the 'success' value.
+pub type LLVMErrorRef
 
+///| Represents an address in the executor process.
+pub(all) type LLVMOrcJITTargetAddress UInt64 derive(Show, Eq)
+
+
+///| Represents an address in the executor process.
+pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq)
+
+// NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
+pub(all) type LLVMJITSymbolTargetFlags UInt derive(Show, Eq)
+
+///| A reference to an orc::ExecutionSession instance.
+pub type LLVMOrcExecutionSessionRef
+
+///| A reference to an orc::SymbolStringPool.
+pub type LLVMOrcSymbolStringPoolRef
+
+///| A reference to an orc::SymbolStringPool table entry.
+pub type LLVMOrcSymbolStringPoolEntryRef
 pub impl Eq for LLVMTypeRef with op_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
   self.is_equal(other)
 }
@@ -117,48 +145,6 @@ pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
 pub fn LLVMMetadataKind::into(self: LLVMMetadataKind) -> UInt {
   guard let LLVMMetadataKind(u) = self
   u
-}
-
-
-// Utils
-extern "C" fn moonbit_str_to_c_str(
-  s: String
-) -> CStr = "moonbit_str_to_c_str"
-extern "C" fn c_str_to_moonbit_str(
-  s: CStr
-) -> String = "c_str_to_moonbit_str"
-extern "C" fn c_str_to_moonbit_str_with_length(
-  s: CStr,
-  len: UInt
-) -> String = "c_str_to_moonbit_str_with_length"
-pub extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
-pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
-  llvm_type_is_null(self).to_moonbit_bool()
-}
-
-pub extern "C" fn llvm_value_is_null(ty: LLVMValueRef) -> LLVMBool = "__llvm_value_is_null"
-pub fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
-  llvm_value_is_null(self).to_moonbit_bool()
-}
-
-pub extern "C" fn llvm_use_is_null(u: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
-pub fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
-  llvm_use_is_null(self).to_moonbit_bool()
-}
-
-pub extern "C" fn llvm_bb_is_null(bb: LLVMBasicBlockRef) -> LLVMBool = "__llvm_bb_is_null"
-pub fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
-  llvm_bb_is_null(self).to_moonbit_bool()
-}
-
-pub extern "C" fn llvm_attr_is_null(attr: LLVMAttributeRef) -> LLVMBool = "__llvm_attr_is_null"
-pub fn LLVMAttributeRef::is_null(self: LLVMAttributeRef) -> Bool {
-  llvm_attr_is_null(self).to_moonbit_bool()
-}
-
-pub extern "C" fn llvm_comdat_is_null(comdat: LLVMComdatRef) -> LLVMBool = "__llvm_comdat_is_null"
-pub fn LLVMComdatRef::is_null(self: LLVMComdatRef) -> Bool {
-  llvm_comdat_is_null(self).to_moonbit_bool()
 }
 
 // enums
@@ -2060,5 +2046,43 @@ pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
     5 => LLVMRemarkTypeAnalysisAliasing
     6 => LLVMRemarkTypeFailure
     _ => abort("Invalid LLVMRemarkType Number in `LLVMRemarkType::from_int`")
+  }
+}
+
+
+// typedef enum {
+//   LLVMJITSymbolGenericFlagsNone = 0,
+//   LLVMJITSymbolGenericFlagsExported = 1U << 0,
+//   LLVMJITSymbolGenericFlagsWeak = 1U << 1,
+//   LLVMJITSymbolGenericFlagsCallable = 1U << 2,
+//   LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly = 1U << 3
+// } LLVMJITSymbolGenericFlags;
+
+pub enum LLVMJITSymbolGenericFlags {
+  LLVMJITSymbolGenericFlagsNone
+  LLVMJITSymbolGenericFlagsExported
+  LLVMJITSymbolGenericFlagsWeak
+  LLVMJITSymbolGenericFlagsCallable
+  LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly
+}
+
+pub fn LLVMJITSymbolGenericFlags::to_int(self: LLVMJITSymbolGenericFlags) -> Int {
+  match self {
+    LLVMJITSymbolGenericFlagsNone => 0
+    LLVMJITSymbolGenericFlagsExported => 1
+    LLVMJITSymbolGenericFlagsWeak => 2
+    LLVMJITSymbolGenericFlagsCallable => 4
+    LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly => 8
+  }
+}
+
+pub fn LLVMJITSymbolGenericFlags::from_int(idx: Int) -> LLVMJITSymbolGenericFlags {
+  match idx {
+    0 => LLVMJITSymbolGenericFlagsNone
+    1 => LLVMJITSymbolGenericFlagsExported
+    2 => LLVMJITSymbolGenericFlagsWeak
+    4 => LLVMJITSymbolGenericFlagsCallable
+    8 => LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly
+    _ => abort("Invalid LLVMJITSymbolGenericFlags Number in `LLVMJITSymbolGenericFlags::from_int`")
   }
 }

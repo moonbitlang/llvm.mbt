@@ -57,7 +57,8 @@ test "Real Case - Simple Calculation" {
     #|  store i32 %6, ptr %c, align 4
     #|  %7 = load i32, ptr %c, align 4
     #|  ret i32 %7
-    $|}\n
+    #|}
+    #|
 
   inspect!(fval, content=expect);
 
@@ -161,7 +162,8 @@ test "Real Case - Simple Calculation" {
 //     #|exit:
 //     #|  %11 = load i32, ptr %x, align 4
 //     #|  ret i32 %11
-//     $|}\n
+//     #|}
+//     #|
 //
 //   inspect!(fval, content=expect);
 //

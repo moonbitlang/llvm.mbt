@@ -6,16 +6,6 @@
 //  */
 //
 // /**
-//  * Represents an address in the executor process.
-//  */
-// typedef uint64_t LLVMOrcJITTargetAddress;
-//
-// /**
-//  * Represents an address in the executor process.
-//  */
-// typedef uint64_t LLVMOrcExecutorAddress;
-//
-// /**
 //  * Represents generic linkage flags for a symbol definition.
 //  */
 // typedef enum {
