@@ -105,8 +105,8 @@ pub fn GlobalValue::set_thread_local_mode(
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_func", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_func", fn_type);
 ///
 /// assert!(fn_value.as_global_value().is_declaration());
 ///

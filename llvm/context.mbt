@@ -376,8 +376,8 @@ pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, "entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
@@ -406,8 +406,8 @@ pub fn Context::append_basic_block(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, "entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
@@ -440,8 +440,8 @@ pub fn Context::insert_basic_block_after(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, "entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
@@ -476,8 +476,8 @@ pub fn Context::prepend_basic_block(
 ///
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");
-/// let fn_type = void_type.fn_type([f32_type.into()], false);
-/// let fn_value = module.add_function("my_func", fn_type, None);
+/// let fn_type = void_type.fn_type([f32_type]);
+/// let fn_value = module.add_function("my_func", fn_type);
 /// let entry_block = context.append_basic_block(fn_value, "entry");
 ///
 /// builder.position_at_end(entry_block);
@@ -510,8 +510,8 @@ pub fn Context::metadata_node(
 ///
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");
-/// let fn_type = void_type.fn_type([f32_type], false);
-/// let fn_value = module.add_function("my_func", fn_type, None);
+/// let fn_type = void_type.fn_type([f32_type]);
+/// let fn_value = module.add_function("my_func", fn_type);
 /// let entry_block = context.append_basic_block(fn_value, "entry");
 ///
 /// builder.position_at_end(entry_block);

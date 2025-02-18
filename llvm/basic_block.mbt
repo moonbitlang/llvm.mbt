@@ -34,8 +34,8 @@ pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBloc
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
@@ -57,14 +57,14 @@ pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function1 = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function1 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block1 = context.append_basic_block(function1, "entry");
 ///
 /// assert!(basic_block1.get_previous_basic_block().is_none());
 ///
-/// let function2 = module.add_function("do_nothing", fn_type, None);
+/// let function2 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
@@ -91,14 +91,14 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function1 = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function1 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block1 = context.append_basic_block(function1, "entry");
 ///
 /// assert!(basic_block1.get_next_basic_block().is_none());
 ///
-/// let function2 = module.add_function("do_nothing", fn_type, None);
+/// let function2 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
@@ -127,8 +127,8 @@ pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block1 = context.append_basic_block(function, "entry");
 /// let basic_block2 = context.append_basic_block(function, "next");
@@ -158,8 +158,8 @@ pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Result[Un
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block1 = context.append_basic_block(function, "entry");
 /// let basic_block2 = context.append_basic_block(function, "next");
@@ -190,8 +190,8 @@ pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Result[Uni
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -219,8 +219,8 @@ pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? 
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -253,8 +253,8 @@ pub fn BasicBlock::get_last_instruction(self: BasicBlock) -> InstructionValue? {
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
 ///
-/// let fn_type = void_type.fn_type([i32_ptr_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = void_type.fn_type([i32_ptr_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// builder.position_at_end(entry);
 ///
@@ -286,8 +286,8 @@ pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> 
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type(&[], false);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -318,7 +318,7 @@ pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
 /// let module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type, None);
+/// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// assert_eq!(basic_block.get_parent().unwrap(), function);
@@ -415,7 +415,7 @@ pub fn BasicBlock::set_name(self: BasicBlock, name: String) -> Unit {
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_val = module.add_function("my_fn", fn_type, None);
+/// let fn_val = module.add_function("my_fn", fn_type);
 /// let entry = context.append_basic_block(fn_val, "entry");
 /// let bb1 = context.append_basic_block(fn_val, "bb1");
 /// let bb2 = context.append_basic_block(fn_val, "bb2");
@@ -444,7 +444,7 @@ pub fn BasicBlock::replace_all_uses_with(self: BasicBlock, other: BasicBlock) ->
 /// let module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
+/// let fn_type = void_type.fn_type([]);
 /// let fn_val = module.add_function("my_fn", fn_type);
 /// let entry = context.append_basic_block(fn_val, "entry");
 /// let bb1 = context.append_basic_block(fn_val, "bb1");
@@ -473,8 +473,8 @@ pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_val = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_val = module.add_function("my_fn", fn_type);
 /// let entry_bb = context.append_basic_block(fn_val, "entry");
 /// let next_bb = context.append_basic_block(fn_val, "next");
 ///

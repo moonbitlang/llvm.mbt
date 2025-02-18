@@ -75,9 +75,9 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
 /// let module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let arg_types = [i32_type.into()];
-/// let fn_type = i32_type.fn_type(arg_types, false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let arg_types = [i32_type];
+/// let fn_type = i32_type.fn_type(arg_types);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 ///
@@ -695,10 +695,10 @@ pub fn Builder::build_landing_pad(
 /// let builder = context.create_builder();
 ///
 /// let f32_type = context.f32_type();
-/// let fn_type = f32_type.fn_type([], false);
+/// let fn_type = f32_type.fn_type([]);
 ///
 /// // we will pretend this function can throw an exception
-/// let function = module.add_function("bomb", fn_type, None);
+/// let function = module.add_function("bomb", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -707,7 +707,7 @@ pub fn Builder::build_landing_pad(
 ///
 /// builder.build_return(val=Some(pi)).unwrap();
 ///
-/// let function2 = module.add_function("wrapper", fn_type, None);
+/// let function2 = module.add_function("wrapper", fn_type);
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 ///
 /// builder.position_at_end(basic_block2);
@@ -734,7 +734,7 @@ pub fn Builder::build_landing_pad(
 ///         let name = "__gxx_personality_v0";
 ///         let linkage = Some(Linkage::External);
 ///
-///         module.add_function(name, context.i64_type().fn_type([], false), linkage)
+///         module.add_function(name, context.i64_type().fn_type([]), linkage~)
 ///     };
 ///
 ///     // type of an exception in C++
@@ -825,8 +825,8 @@ pub fn Builder::build_in_bounds_gep(
 /// let field_types = &[i32_ty.into(), i32_ty.into()];
 /// let struct_ty = context.struct_type(field_types, false);
 /// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty], false);
-/// let fn_value = module.add_function("", fn_type, None);
+/// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty]);
+/// let fn_value = module.add_function("", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 ///
 /// builder.position_at_end(entry);
@@ -885,8 +885,8 @@ pub fn Builder::build_struct_gep(
 /// let void_type = context.void_type();
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type([i32_ptr_type, i32_ptr_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = void_type.fn_type([i32_ptr_type, i32_ptr_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_ptr_param1 = fn_value.get_first_param().unwrap().into_pointer_value();
 /// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
@@ -942,8 +942,8 @@ pub fn Builder::build_phi(
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let i32_seven = i32_type.const_int(7, false);
-/// let fn_type = void_type.fn_type([i32_ptr_type], false);
-/// let fn_value = module.add_function("ret", fn_type, None);
+/// let fn_type = void_type.fn_type([i32_ptr_type]);
+/// let fn_value = module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
@@ -2493,8 +2493,8 @@ pub fn Builder::position_at_end(self: Builder, bb: BasicBlock) -> Unit {
 /// let i32_type = context.i32_type();
 /// let struct_type = context.struct_type([i32_type, f32_type]);
 /// let array_type = i32_type.array_type(3);
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("av_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("av_fn", fn_type);
 /// let builder = context.create_builder();
 /// let entry = context.append_basic_block(fn_value, "entry");
 ///
@@ -2559,8 +2559,8 @@ pub fn Builder::build_extract_value[AV: AggregateValue](
 /// let i32_type = context.i32_type();
 /// let struct_type = context.struct_type([i32_type, f32_type], false);
 /// let array_type = i32_type.array_type(3);
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("av_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("av_fn", fn_type);
 /// let builder = context.create_builder();
 /// let entry = context.append_basic_block(fn_value, "entry");
 ///
@@ -2615,8 +2615,8 @@ pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
 /// let i32_type = context.i32_type();
 /// let i32_zero = i32_type.const_int(0, false);
 /// let vec_type = i32_type.vec_type(2);
-/// let fn_type = i32_type.fn_type([vec_type], false);
-/// let fn_value = module.add_function("vec_fn", fn_type, None);
+/// let fn_type = i32_type.fn_type([vec_type]);
+/// let fn_value = module.add_function("vec_fn", fn_type);
 /// let builder = context.create_builder();
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();

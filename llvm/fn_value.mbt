@@ -362,8 +362,8 @@ pub fn FunctionValue::replace_all_uses_with(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
@@ -384,8 +384,8 @@ pub fn FunctionValue::add_attribute(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
@@ -406,8 +406,8 @@ pub fn FunctionValue::count_attributes(self: FunctionValue, loc: AttributeLoc) -
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
@@ -436,8 +436,8 @@ pub fn FunctionValue::attributes(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
@@ -457,8 +457,8 @@ pub fn FunctionValue::remove_string_attribute(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -478,8 +478,8 @@ pub fn FunctionValue::remove_enum_attribute(
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -504,8 +504,8 @@ pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc,
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);

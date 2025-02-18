@@ -77,8 +77,8 @@ pub fn Module::get_context(self: Module) -> Context {
 /// assert!(module.get_first_function().is_none());
 ///
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 ///
 /// assert_true!(fn_value == module.get_first_function().unwrap());
 /// ```
@@ -98,8 +98,8 @@ pub fn Module::get_first_function(self: Module) -> FunctionValue? {
 /// assert_true!(module.get_last_function().is_none());
 ///
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 ///
 /// assert_eq!(fn_value, module.get_last_function().unwrap());
 /// ```
@@ -119,8 +119,8 @@ pub fn Module::get_last_function(self: Module) -> FunctionValue? {
 /// assert_true!(module.get_function("my_fn").is_none());
 ///
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 ///
 /// assert_eq!(fn_value, module.get_function("my_fn").unwrap());
 /// ```
@@ -139,8 +139,8 @@ pub fn Module::get_function(self: Module, name: String) -> FunctionValue? {
 /// assert_true!(module.get_function("my_fn").is_none());
 ///
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("my_fn", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("my_fn", fn_type);
 ///
 /// let names = module
 ///     .get_functions().map(fn (f) { f.get_name() });

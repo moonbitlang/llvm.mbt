@@ -26,9 +26,9 @@ pub fn BasicValueUse::as_use_ref(self: BasicValueUse) -> @unsafe.LLVMUseRef {
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type([f32_ptr_type], false);
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -85,9 +85,9 @@ pub fn BasicValueUse::get_next_use(self: BasicValueUse) -> BasicValueUse? {
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type(&[f32_ptr_type.into()], false);
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -119,9 +119,9 @@ pub fn BasicValueUse::get_user(self: BasicValueUse) -> AnyValueEnum {
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type(&[f32_ptr_type.into()], false);
+/// let fn_type = void_type.fn_type([f32_ptr_type.into()]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);

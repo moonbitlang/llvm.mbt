@@ -60,8 +60,8 @@ pub fn Intrinsic::is_overloaded(self: Intrinsic) -> Bool {
 /// let module = context.create_module("trap");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
-/// let fn_type = void_type.fn_type([], false);
-/// let fn_value = module.add_function("trap", fn_type, None);
+/// let fn_type = void_type.fn_type([]);
+/// let fn_value = module.add_function("trap", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 ///
 /// let trap_function = trap_intrinsic.get_declaration(module, []).unwrap();

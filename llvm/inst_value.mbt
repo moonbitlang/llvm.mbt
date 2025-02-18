@@ -376,9 +376,9 @@ pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: A
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type(&[f32_ptr_type.into()], false);
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -435,7 +435,7 @@ pub fn InstructionValue::get_num_operands(self: InstructionValue) -> UInt {
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -530,7 +530,7 @@ fn InstructionValue::get_operand_unchecked(
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -568,9 +568,9 @@ pub fn InstructionValue::set_operand(self: InstructionValue, index: UInt, val: &
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
-/// let fn_type = void_type.fn_type([f32_ptr_type], false);
+/// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -622,7 +622,7 @@ fn InstructionValue::get_oprand_use_unchecked(
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type, None);
+/// let function = module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -684,7 +684,7 @@ pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredic
 /// let f32_type = context.i32_type();
 /// let fn_type = bool_type.fn_type([f32_type, f32_type]);
 ///
-/// let function = module.add_function("less", fn_type, None);
+/// let function = module.add_function("less", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);

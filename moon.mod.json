@@ -1,9 +1,9 @@
 {
   "name": "Kaida-Amethyst/llvm",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "readme": "README.md",
   "repository": "https://github.com/Kaida-Amethyst/moonbit-llvm",
   "license": "Apache-2.0",
-  "keywords": ["compiler", "llvm"],
+  "keywords": ["Compiler", "llvm", "Native-Only"],
   "description": "Write real llvm in moonbit"
 }

@@ -114,7 +114,7 @@ fn main {
   builder.position_at_end(bb)
 
   let sum = builder.build_add(param_a, param_b, "sum")
-  builder.build_return?(val=Some(sum))
+  let _ = builder.build_return?(val=Some(sum))
 
   println(llvm_module)
 }
@@ -254,7 +254,7 @@ fn main {
   builder.position_at_end(bb)
 
   let sum = builder.build_add(param_a, param_b, "sum")
-  builder.build_return?(val=Some(sum))
+  let _ = builder.build_return?(val=Some(sum))
 
   println(llvm_module)
 }

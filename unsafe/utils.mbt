@@ -10,51 +10,6 @@ fn CStr::to_string(self: CStr) -> String {
   c_str_to_moonbit_str(self)
 }
 
-// Eliminate it when `Array::make` compiler bug fixed
-fn LLVMTypeRef::make_array(cnt: Int, ty_ref: LLVMTypeRef) -> Array[LLVMTypeRef] {
-  match cnt {
-    0 => []
-    1 => [ty_ref]
-    2 => [ty_ref, ty_ref]
-    3 => [ty_ref, ty_ref, ty_ref]
-    4 => [ty_ref, ty_ref, ty_ref, ty_ref]
-    5 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    6 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    7 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    8 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    9 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    10 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    _ => {
-      println("Over 10 elemnts of LLVMTypeRef is not supported currently.")
-      println("Need to wait Compiler bug fixed.")
-      panic()
-    }
-      
-  }
-}
-
-// Eliminate it when `Array::make` compiler bug fixed
-fn LLVMValueRef::make_array(cnt: Int, ty_ref: LLVMValueRef) -> Array[LLVMValueRef] {
-  match cnt {
-    0 => []
-    1 => [ty_ref]
-    2 => [ty_ref, ty_ref]
-    3 => [ty_ref, ty_ref, ty_ref]
-    4 => [ty_ref, ty_ref, ty_ref, ty_ref]
-    5 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    6 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    7 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    8 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    9 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    10 => [ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref, ty_ref]
-    _ => {
-      println("Over 10 elemnts of LLVMTypeRef is not supported currently.")
-      println("Need to wait Compiler bug fixed.")
-      panic()
-    }
-  }
-}
-
 extern "C" fn llvm_new_null_type_ref() -> LLVMTypeRef = "__llvm_new_null_type_ref"
 
 extern "C" fn llvm_new_null_value_ref() -> LLVMValueRef = "__llvm_new_null_value_ref"
@@ -99,18 +54,10 @@ fn LLVMBool::into(self: LLVMBool) -> Bool {
 }
 
 fn to_moonbit_bool(self: LLVMBool) -> Bool {
-  if self == 0 {
-    false
-  } else {
-    true
-  }
+  self != 0
 }
 
 fn to_llvm_bool(b: Bool) -> LLVMBool {
-  if b {
-    1
-  } else {
-    0
-  }
+  b.to_int()
 }
 
