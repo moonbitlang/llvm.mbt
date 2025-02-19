@@ -58,12 +58,10 @@ pub fn InstructionValue::explicit_clone(self: InstructionValue) -> InstructionVa
 
 ///| Gets the name of an `InstructionValue`.
 pub fn InstructionValue::get_name(self: InstructionValue) -> String? {
-  // self.value.get_name()
-  if self.get_type().is_void_type() {
-    None
-  } else {
-    Some(self.value.get_name())
-  }
+  @option.unless(
+    self.get_type().is_void_type(),
+    fn () { self.value.get_name() }
+  )
 }
 
 ///| Set name of the `InstructionValue`.
@@ -103,22 +101,20 @@ pub fn InstructionValue::get_opcode(self: InstructionValue) -> InstructionOpcode
 pub fn InstructionValue::get_previous_instruction(self: InstructionValue) -> InstructionValue? {
   let value_ref = @unsafe.llvm_get_previous_instruction(self.as_value_ref())
   
-  if value_ref.is_null() {
-    None
-  } else {
-    Some(InstructionValue::new(value_ref))
-  }
+  @option.unless(
+    value_ref.is_null(),
+    fn () { InstructionValue::new(value_ref) }
+  )
 }
 
 ///| Get the next instruction of the current instruction.
 pub fn InstructionValue::get_next_instruction(self: InstructionValue) -> InstructionValue? {
   let value_ref = @unsafe.llvm_get_next_instruction(self.as_value_ref())
   
-  if value_ref.is_null() {
-    None
-  } else {
-    Some(InstructionValue::new(value_ref))
-  }
+  @option.unless(
+    value_ref.is_null(),
+    fn () { InstructionValue::new(value_ref) }
+  )
 }
 
 // REVIEW: need review, possibly unsafe
@@ -155,7 +151,7 @@ pub fn InstructionValue::is_conditional(self: InstructionValue) -> Bool {
 
 ///| Returns if the instruction is tail call or not.
 pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
-  if self.get_opcode() == InstructionOpcode::Call {
+  if self.get_opcode() is InstructionOpcode::Call {
     @unsafe.llvm_is_tail_call(self.as_value_ref())
   } else {
     false
@@ -166,7 +162,7 @@ pub fn InstructionValue::is_tail_call(self: InstructionValue) -> Bool {
 ///
 /// Other instructions return `None`.
 pub fn InstructionValue::get_tail_call_kind(self: InstructionValue) -> @unsafe.LLVMTailCallKind? {
-  if self.get_opcode() == InstructionOpcode::Call {
+  if self.get_opcode() is InstructionOpcode::Call {
     Some(@unsafe.llvm_get_tail_call_kind(self.as_value_ref()))
   } else {
     None
@@ -209,10 +205,10 @@ pub fn InstructionValue::set_fast_math_flags(self: InstructionValue, flags: Fast
 ///
 /// Calling this function on other instructions is safe and results in a no-op.
 pub fn InstructionValue::get_non_negative_flag(self: InstructionValue) -> Bool? {
-  match self.get_opcode() {
-    InstructionOpcode::ZExt => Some(@unsafe.llvm_get_n_neg(self.as_value_ref()))
-    _ => None
-  }
+  @option.when(
+    self.get_opcode() is InstructionOpcode::ZExt,
+    fn () { @unsafe.llvm_get_n_neg(self.as_value_ref()) }
+  )
 }
 
 ///| Set the non-negative flag on `zext` instructions.
@@ -596,11 +592,10 @@ fn InstructionValue::get_oprand_use_unchecked(
 ) -> BasicValueUse? {
   let use_ = @unsafe.llvm_get_operand_use(self.as_value_ref(), index)
 
-  if use_.is_null() {
-    return None
-  }
-
-  Some(BasicValueUse::new(use_))
+  @option.unless(
+    use_.is_null(),
+    fn () {BasicValueUse::new(use_) }
+  )
 }
 
 // TODO: should return array or iter?
@@ -661,12 +656,13 @@ pub fn InstructionValue::get_first_use(self: InstructionValue) -> BasicValueUse?
 /// inspect!(slt.as_instruction().get_icmp_predicate().unwrap(), "SLT");
 /// ```
 pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredicate? {
-  if self.get_opcode() == InstructionOpcode::ICmp {
-    let p = @unsafe.llvm_get_icmp_predicate(self.as_value_ref())
-    Some(IntPredicate::from(p))
-  } else {
-    None
-  }
+  @option.when(
+    self.get_opcode() is InstructionOpcode::ICmp,
+    fn () {
+      let p = @unsafe.llvm_get_icmp_predicate(self.as_value_ref())
+      IntPredicate::from(p)
+    }
+  )
 }
 
 ///| Gets the predicate of an `ICmp` `InstructionValue`.
@@ -695,12 +691,13 @@ pub fn InstructionValue::get_icmp_predicate(self: InstructionValue) -> IntPredic
 /// inspect!(fcmp.as_instruction().get_fcmp_predicate().unwrap(), "OLT");
 /// ```
 pub fn InstructionValue::get_fcmp_predicate(self: InstructionValue) -> FloatPredicate? {
-  if self.get_opcode() == InstructionOpcode::FCmp {
-    let p = @unsafe.llvm_get_fcmp_predicate(self.as_value_ref())
-    Some(FloatPredicate::from(p))
-  } else {
-    None
-  }
+  @option.when(
+    self.get_opcode() is InstructionOpcode::FCmp,
+    fn () {
+      let p = @unsafe.llvm_get_fcmp_predicate(self.as_value_ref())
+      FloatPredicate::from(p)
+    }
+  )
 }
 
 ///| Determines whether or not this `Instruction` has any associated metadata.
@@ -712,11 +709,10 @@ pub fn InstructionValue::has_metadata(self: InstructionValue) -> Bool {
 pub fn InstructionValue::get_metadata(self: InstructionValue, kind_id: UInt) -> MetadataValue? {
   let metadata = @unsafe.llvm_get_metadata(self.as_value_ref(), kind_id)
 
-  if metadata.is_null() {
-    None
-  } else {
-    Some(MetadataValue::new(metadata))
-  }
+  @option.unless(
+    metadata.is_null(),
+    fn () { MetadataValue::new(metadata) }
+  )
 }
 
 pub fn InstructionValue::set_metadata(self: InstructionValue, metadata: MetadataValue, kind_id: UInt) -> Result[Unit, String] {

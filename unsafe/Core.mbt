@@ -27,9 +27,9 @@ pub extern "C" fn llvm_get_global_context() -> LLVMContextRef = "LLVMGetGlobalCo
 
 // pub extern "C" fn llvm_context_set_diagnostic_handler(context: LLVMContextRef, handler: LLVMDiagnosticHandler, diagnostic_context: Ptr[Void]) = "__llvm_context_set_diagnostic_handler"
 
-// pub extern "C" fn llvm_context_get_diagnostic_context(context: LLVMContextRef) -> Ptr[Void] = "__llvm_context_get_diagnostic_context"
+// pub extern "C" fn llvm_context_get_diagnostic_context(context: LLVMContextRef) -> Ptr[Void] = " LLVMContextGetDiagnosticContext"
 
-// pub extern "C" fn llvm_context_set_yield_callback(context: LLVMContextRef, callback: LLVMYieldCallback, opaque_handle: Ptr[Void]) = "__llvm_context_set_yield_callback"
+// pub extern "C" fn llvm_context_set_yield_callback(context: LLVMContextRef, callback: LLVMYieldCallback, opaque_handle: Ptr[Void]) = "LLVMContextSetYieldCallback"
 
 
 ///| Retrieve whether the given context is set to discard all value names.
@@ -272,7 +272,7 @@ pub fn llvm_module_create_with_name(module_id: String) -> LLVMModuleRef {
 /// Every invocation should be paired with LLVMDisposeModule() or memory
 /// will be leaked.
 /// 
-extern "C" fn __llvm_module_create_with_name_in_context(module_id: CStr, context: LLVMContextRef) -> LLVMModuleRef = "__llvm_module_create_with_name_in_context"
+extern "C" fn __llvm_module_create_with_name_in_context(module_id: CStr, context: LLVMContextRef) -> LLVMModuleRef = "LLVMModuleCreateWithNameInContext"
 
 /// Create a new, empty module in the global context.
 /// 
@@ -629,14 +629,14 @@ pub fn llvm_get_module_inline_asm(m: LLVMModuleRef) -> String {
 ///| Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
-extern "C" fn __llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_set_module_inline_asm"
+extern "C" fn __llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: CStr) = "LLVMSetModuleInlineAsm"
 
 ///| Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
 pub fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: String) -> Unit {
   let cstr = moonbit_str_to_c_str(_asm)
-  __llvm_set_module_inline_asm(m, cstr, _asm.length().to_uint64())
+  __llvm_set_module_inline_asm(m, cstr)
 }
 
 ///| Append inline assembly to a module.
@@ -645,11 +645,11 @@ pub fn llvm_set_module_inline_asm(m: LLVMModuleRef, _asm: String) -> Unit {
 pub extern "C" fn llvm_append_module_inline_asm(m: LLVMModuleRef, _asm: CStr, len: UInt64) = "__llvm_append_module_inline_asm"
 
 
-// Create the specified uniqued inline asm string.
-// 
-// - see InlineAsm::get()
-// 
-// pub extern "C" fn llvm_get_inline_asm(ty: LLVMTypeRef, asm_string: CStr, asm_string_size: UInt64, constraints: CStr, constraints_size: UInt64, has_side_effects: LLVMBool, is_align_stack: LLVMBool, dialect: LLVMInlineAsmDialect, can_throw: LLVMBool) -> LLVMValueRef = "__llvm_get_inline_asm"
+///| Create the specified uniqued inline asm string.
+/// 
+/// - see InlineAsm::get()
+/// 
+pub extern "C" fn llvm_get_inline_asm(ty: LLVMTypeRef, asm_string: CStr, asm_string_size: UInt64, constraints: CStr, constraints_size: UInt64, has_side_effects: LLVMBool, is_align_stack: LLVMBool, dialect: LLVMInlineAsmDialect, can_throw: LLVMBool) -> LLVMValueRef = "LLVMGetInlineAsm"
 
 // Get the template string used for an inline assembly snippet
 // pub extern "C" fn llvm_get_inline_asm_asm_string(inline_asm_val: LLVMValueRef, len: Ptr[UInt64]) -> CStr = "__llvm_get_inline_asm_asm_string"
@@ -2176,14 +2176,14 @@ pub fn LLVMValueRef::get_name(self: LLVMValueRef) -> String {
 /// Set the string name of a value.
 /// 
 /// - see llvm::Value::setName()
-extern "C" fn __llvm_set_value_name(val: LLVMValueRef, name: CStr, name_len: Int) = "__llvm_set_value_name2"
+extern "C" fn __llvm_set_value_name(val: LLVMValueRef, name: CStr, name_len: UInt64) = "LLVMSetValueName2"
 
 /// Set the string name of a value.
 /// 
 /// - see llvm::Value::setName()
 pub fn llvm_set_value_name(val: LLVMValueRef, name: String) -> Unit {
   let cstr = moonbit_str_to_c_str(name)
-  let len = name.length()
+  let len = name.length().to_uint64()
   __llvm_set_value_name(val, cstr, len)
 }
 
@@ -3053,14 +3053,14 @@ pub fn LLVMValueRef::isa_md_string(self: LLVMValueRef) -> LLVMValueRef {
 //| Obtain the string name of a value.
 // 
 // - see llvm::Value::getName()
-// pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "__llvm_get_value_name"
+// pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "LLVMGetValueName"
 // pub fn LLVMValueRef::get_value_name(self: LLVMValueRef) -> String {
 //   let cstr = llvm_get_value_name(self)
 //   c_str_to_moonbit_str(cstr)
 // }
 
 // deprecated
-// pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "__llvm_set_value_name"
+// pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "LLVMSetValueName"
 
 ///| Obtain the first use of a value.
 /// 
@@ -3365,7 +3365,7 @@ pub fn LLVMTypeRef::const_real_of_string(self: LLVMTypeRef, text: String) -> LLV
 }
 
 ///| Obtain a constant for a floating point value parsed from a string.
-extern "C" fn __llvm_const_real_of_string_and_size(real_ty: LLVMTypeRef, text: CStr, s_len: UInt) -> LLVMValueRef = "__llvm_const_real_of_string_and_size"
+extern "C" fn __llvm_const_real_of_string_and_size(real_ty: LLVMTypeRef, text: CStr, s_len: UInt) -> LLVMValueRef = "LLVMConstRealOfStringAndSize"
 
 ///| Obtain a constant for a floating point value parsed from a string.
 pub fn llvm_const_real_of_string_and_size(real_ty: LLVMTypeRef, text: String) -> LLVMValueRef {
@@ -3422,7 +3422,7 @@ pub fn llvm_const_real_get_double(constant_val: LLVMValueRef) -> (Double, Bool) 
 /// - see llvm::ConstantDataArray::getString()
 /// 
 // TODO: use llvm_const_string_in_context2 instead
-extern "C" fn __llvm_const_string_in_context(context: LLVMContextRef, str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context"
+extern "C" fn __llvm_const_string_in_context(context: LLVMContextRef, str: CStr, length: UInt, dont_null_terminate: LLVMBool) -> LLVMValueRef = "LLVMConstStringInContext"
 
 ///| Create a ConstantDataSequential and initialize it with a string.
 /// 
@@ -3450,7 +3450,7 @@ pub fn LLVMContextRef::const_string(self: LLVMContextRef, str: String, dont_null
 ///| Create a ConstantDataSequential and initialize it with a string.
 /// 
 /// - see llvm::ConstantDataArray::getString()
-extern "C" fn __llvm_const_string_in_context2(context: LLVMContextRef, str: CStr, length: UInt64, dont_null_terminate: LLVMBool) -> LLVMValueRef = "__llvm_const_string_in_context2"
+extern "C" fn __llvm_const_string_in_context2(context: LLVMContextRef, str: CStr, length: UInt64, dont_null_terminate: LLVMBool) -> LLVMValueRef = "LLVMConstStringInContext2"
 
 ///| Create a ConstantDataSequential and initialize it with a string.
 /// 
@@ -3928,7 +3928,7 @@ pub fn LLVMValueRef::set_linkage(self: LLVMValueRef, linkage: LLVMLinkage) -> Un
 }
 
 ///| Get section for value.
-extern "C" fn __llvm_get_section(global: LLVMValueRef) -> CStr = "__llvm_get_section"
+extern "C" fn __llvm_get_section(global: LLVMValueRef) -> CStr = "LLVMGetSection"
 
 ///| Get section for value.
 pub fn llvm_get_section(global: LLVMValueRef) -> String {
@@ -3942,7 +3942,7 @@ pub fn LLVMValueRef::get_section(self: LLVMValueRef) -> String {
 }
 
 ///| Set section for global value.
-extern "C" fn __llvm_set_section(global: LLVMValueRef, section: CStr) = "__llvm_set_section"
+extern "C" fn __llvm_set_section(global: LLVMValueRef, section: CStr) = "LLVMSetSection"
 
 ///| Set section for global value.
 pub fn llvm_set_section(global: LLVMValueRef, section: String) -> Unit {
@@ -5880,7 +5880,7 @@ pub fn LLVMValueRef::count_incoming(self: LLVMValueRef) -> UInt {
 }
 
 ///| Obtain an incoming value to a PHI node as an LLVMValueRef.
-pub extern "C" fn llvm_get_incoming_value(phi_node: LLVMValueRef, index: UInt) -> LLVMValueRef = "__llvm_get_incoming_value"
+pub extern "C" fn llvm_get_incoming_value(phi_node: LLVMValueRef, index: UInt) -> LLVMValueRef = "LLVMGetIncomingValue"
 
 ///| Obtain an incoming value to a PHI node as an LLVMValueRef.
 pub fn LLVMValueRef::get_incoming_value(self: LLVMValueRef, index: UInt) -> LLVMValueRef {
@@ -5888,7 +5888,7 @@ pub fn LLVMValueRef::get_incoming_value(self: LLVMValueRef, index: UInt) -> LLVM
 }
 
 ///| Obtain an incoming value to a PHI node as an LLVMBasicBlockRef.
-pub extern "C" fn llvm_get_incoming_block(phi_node: LLVMValueRef, index: UInt) -> LLVMBasicBlockRef = "__llvm_get_incoming_block"
+pub extern "C" fn llvm_get_incoming_block(phi_node: LLVMValueRef, index: UInt) -> LLVMBasicBlockRef = "LLVMGetIncomingBlock"
 
 ///| Obtain an incoming value to a PHI node as an LLVMBasicBlockRef.
 pub fn LLVMValueRef::get_incoming_block(self: LLVMValueRef, index: UInt) -> LLVMBasicBlockRef {
@@ -6833,7 +6833,7 @@ pub fn LLVMValueRef::set_fast_math_flags(self: LLVMValueRef, fmf: LLVMFastMathFl
 /// Will return true for floating point arithmetic instructions, and for select,
 /// phi, and call instructions whose type is a floating point type, or a vector
 /// or array thereof. - see https://llvm.org/docs/LangRef.html#fast-math-flags
-extern "C" fn __llvm_can_value_use_fast_math_flags(inst: LLVMValueRef) -> LLVMBool = "__llvm_can_value_use_fast_math_flags"
+extern "C" fn __llvm_can_value_use_fast_math_flags(inst: LLVMValueRef) -> LLVMBool = "LLVMCanValueUseFastMathFlags"
 
 ///| Check if a given value can potentially have fast math flags.
 /// 

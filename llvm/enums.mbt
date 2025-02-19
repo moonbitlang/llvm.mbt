@@ -132,10 +132,7 @@ pub fn AnyValueEnum::get_type(self: AnyValueEnum) -> AnyTypeEnum {
 }
 
 pub fn AnyValueEnum::is_array_value(self: AnyValueEnum) -> Bool {
-  match self {
-    AnyValueEnum::ArrayValue(_) => true
-    _ => false
-  }
+  self is AnyValueEnum::ArrayValue(_)
 }
 
 pub impl Show for AnyValueEnum with to_string(self: AnyValueEnum) -> String {
@@ -240,52 +237,31 @@ pub fn BasicValueEnum::get_type(self: BasicValueEnum) -> BasicTypeEnum {
 }
 
 pub fn BasicValueEnum::is_array_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::ArrayValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::ArrayValue(_)
 }
 
 pub fn BasicValueEnum::is_int_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::IntValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::IntValue(_)
 }
 
 pub fn BasicValueEnum::is_float_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::FloatValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::FloatValue(_)
 }
 
 pub fn BasicValueEnum::is_pointer_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::PointerValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::PointerValue(_)
 }
 
 pub fn BasicValueEnum::is_struct_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::StructValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::StructValue(_)
 }
 
 pub fn BasicValueEnum::is_vector_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::VectorValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::VectorValue(_)
 }
 
 pub fn BasicValueEnum::is_scalable_vector_value(self: BasicValueEnum) -> Bool {
-  match self {
-    BasicValueEnum::ScalableVectorValue(_) => true
-    _ => false
-  }
+  self is BasicValueEnum::ScalableVectorValue(_)
 }
 
 pub fn BasicValueEnum::into_array_value(self: BasicValueEnum) -> ArrayValue {
@@ -401,59 +377,35 @@ pub fn BasicMetadataValueEnum::as_value_ref(self: BasicMetadataValueEnum) -> @un
 }
 
 pub fn BasicMetadataValueEnum::is_array_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::ArrayValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::ArrayValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_int_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::IntValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::IntValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_float_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::FloatValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::FloatValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_pointer_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::PointerValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::PointerValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_struct_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::StructValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::StructValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_vector_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::VectorValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::VectorValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_scalable_vector_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-   BasicMetadataValueEnum::ScalableVectorValue(_) => true
-   _ => false
-  }
+  self is BasicMetadataValueEnum::ScalableVectorValue(_)
 }
 
 pub fn BasicMetadataValueEnum::is_metadata_value(self: BasicMetadataValueEnum) -> Bool {
-  match self {
-    BasicMetadataValueEnum::MetadataValue(_) => true
-    _ => false
-  }
+  self is BasicMetadataValueEnum::MetadataValue(_)
 }
 
 pub fn BasicMetadataValueEnum::into_array_value(self: BasicMetadataValueEnum) -> ArrayValue {
@@ -586,66 +538,39 @@ pub impl Eq for AnyTypeEnum with op_equal(self: AnyTypeEnum, other: AnyTypeEnum)
 }
 
 pub fn AnyTypeEnum::is_array_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::ArrayType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::ArrayType(_)
 }
 
 pub fn AnyTypeEnum::is_float_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::FloatType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::FloatType(_)
 }
 
 pub fn AnyTypeEnum::is_function_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::FunctionType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::FunctionType(_)
 }
 
 pub fn AnyTypeEnum::is_int_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::IntType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::IntType(_)
 }
 
 pub fn AnyTypeEnum::is_pointer_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::PointerType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::PointerType(_)
 }
 
 pub fn AnyTypeEnum::is_struct_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::StructType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::StructType(_)
 }
 
 pub fn AnyTypeEnum::is_vector_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::VectorType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::VectorType(_)
 }
 
 pub fn AnyTypeEnum::is_scalable_vector_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::ScalableVectorType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::ScalableVectorType(_)
 }
 
 pub fn AnyTypeEnum::is_void_type(self: AnyTypeEnum) -> Bool {
-  match self {
-    AnyTypeEnum::VoidType(_) => true
-    _ => false
-  }
+  self is AnyTypeEnum::VoidType(_)
 }
 
 pub fn AnyTypeEnum::into_array_type(self: AnyTypeEnum) -> ArrayType {

@@ -8,14 +8,14 @@ pub struct FunctionValue {
 
 ///| Creates a new `FunctionValue` from an `@unsafe.LLVMValueRef`.
 pub fn FunctionValue::new(value_ref: @unsafe.LLVMValueRef) -> FunctionValue? {
-  if value_ref.is_null() {
-    return None
-  }
-
-  let fv = FunctionValue::{
-    value: Value::new(value_ref)
-  }
-  Some(fv)
+  @option.unless(
+    value_ref.is_null(),
+    fn () {
+      FunctionValue::{
+        value: Value::new(value_ref)
+      }
+    }
+  )
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `FunctionValue` wraps.
@@ -204,13 +204,10 @@ pub fn FunctionValue::get_last_basic_block(self: FunctionValue) -> BasicBlock? {
 /// inspect!(fn_value.get_nth_param(1), content="Some(i32 %1)")
 /// ```
 pub fn FunctionValue::get_nth_param(self: FunctionValue, nth: UInt) -> BasicValueEnum? {
-  let cnt = self.count_params()
-
-  if nth >= cnt {
-    None
-  } else {
-    Some(BasicValueEnum::new(@unsafe.llvm_get_param(self.as_value_ref(), nth)))
-  }
+  @option.when(
+    nth < self.count_params(), 
+    fn () {BasicValueEnum::new(@unsafe.llvm_get_param(self.as_value_ref(), nth))}
+  )
 }
 
 ///| Returns the number of parameters this `FunctionValue` has.
@@ -489,11 +486,10 @@ pub fn FunctionValue::remove_enum_attribute(
 pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc, kind_id: UInt) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_enum_attribute_at_index(self.as_value_ref(), loc.get_index(), kind_id)
 
-  if attr_ref.is_null() {
-    None
-  } else {
-    Some(Attribute::new(attr_ref))
-  }
+  @option.unless(
+    attr_ref.is_null(),
+    fn () {Attribute::new(attr_ref)}
+  )
 }
 
 ///| Gets a string `Attribute` belonging to the specified location in this `FunctionValue`.
@@ -515,11 +511,10 @@ pub fn FunctionValue::get_enum_attribute(self: FunctionValue, loc: AttributeLoc,
 pub fn FunctionValue::get_string_attribute(self: FunctionValue, loc: AttributeLoc, key: String) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_string_attribute_at_index(self.as_value_ref(), loc.get_index(), key)
 
-  if attr_ref.is_null() {
-    None
-  } else {
-    Some(Attribute::new(attr_ref))
-  }
+  @option.unless(
+    attr_ref.is_null(),
+    fn () {Attribute::new(attr_ref)}
+  )
 }
 
 ///| Sets the alignment of a parameter at a given index.
