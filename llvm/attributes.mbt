@@ -183,13 +183,9 @@ pub fn Attribute::get_string_value(self: Attribute) -> String {
 
 ///| Gets the type associated with a type attribute.
 ///
-/// # Example
+/// # Example (Not Tested)
 ///
-/// ```no_run
-/// use inkwell::context::Context;
-/// use inkwell::attributes::Attribute;
-/// use inkwell::types::AnyType;
-///
+/// ```moonbit
 /// let context = Context::create();
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
 /// let any_type = context.i32_type().as_any_type_enum();

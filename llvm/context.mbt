@@ -550,8 +550,6 @@ pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
 /// ## Example (Not Tested)
 ///
 /// ```moonbit
-/// use inkwell::context::Context;
-///
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///

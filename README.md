@@ -2,6 +2,9 @@
 
 [中文版](#Moonbit-llvm-1)
 
+[AI-Assustant](https://www.coze.cn/store/agent/7472944227773956147?bot_id=true&bid=6fda0p1hg501m)
+[AI助手看这里](https://www.coze.cn/store/agent/7472944227773956147?bot_id=true&bid=6fda0p1hg501m)
+
 Moonbit-LLVM provides Moonbit bindings for LLVM-C and further encapsulates its functionality using Moonbit's features, enabling developers to leverage the power of LLVM in Moonbit for projects such as compiler backends.
 
 This project offers two types of interfaces:

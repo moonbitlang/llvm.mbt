@@ -181,10 +181,7 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 // # Example
 //
 // ```rust,no_run
-// use inkwell::context::Context;
-// use inkwell::targets::{Target, TargetTriple};
-//
-// Target::initialize_x86(&Default::default());
+// Target::initialize_x86(Default::default());
 // let context = Context::create();
 // let module = context.create_module("mod");
 // let triple = TargetTriple::create("x86_64-pc-linux-gnu");
@@ -206,10 +203,7 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 // # Example
 //
 // ```rust,no_run
-// use inkwell::context::Context;
-// use inkwell::targets::{Target, TargetTriple};
-//
-// Target::initialize_x86(&Default::default());
+// Target::initialize_x86(Default::default());
 // let context = Context::create();
 // let module = context.create_module("mod");
 // let triple = TargetTriple::create("x86_64-pc-linux-gnu");

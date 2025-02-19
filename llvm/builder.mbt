@@ -1054,8 +1054,6 @@ pub fn Builder::build_array_alloca[T: BasicType, V: BasicValue](
 /// The final argument should be a pointer-sized integer.
 ///
 /// Returns an `Err(BuilderError::AlignmentError)` if the source or destination alignments are not a power of 2.
-///
-/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memcpy(
   self: Builder,
   dest: PointerValue,
@@ -1097,8 +1095,6 @@ pub fn Builder::build_memcpy(
 /// The final argument should be a pointer-sized integer.
 ///
 /// Returns an `Err(BuilderError::AlignmentError)` if the source or destination alignments are not a power of 2 under 2^64.
-///
-/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memove(
   self: Builder,
   dest: PointerValue,
@@ -1139,8 +1135,6 @@ pub fn Builder::build_memove(
 /// The final argument should be a pointer-sized integer.
 ///
 /// Returns an `Err(BuilderError::AlignmentError)` if the source alignment is not a power of 2 under 2^64.
-///
-/// [`TargetData::ptr_sized_int_type_in_context`](https://thedan64.github.io/inkwell/inkwell/targets/struct.TargetData.html#method.ptr_sized_int_type_in_context) will get you one of those.
 pub fn Builder::build_memset(
   self: Builder,
   dest: PointerValue,

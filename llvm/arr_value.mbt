@@ -84,8 +84,6 @@ pub fn ArrayValue::is_const(self: ArrayValue) -> Bool {
 /// # Example (Not Tested)
 ///
 /// ```moonbit
-/// use inkwell::context::Context;
-///
 /// let context = Context::create();
 /// let string = context.const_string(b"my_string", false);
 ///
