@@ -2049,15 +2049,6 @@ pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
   }
 }
 
-
-// typedef enum {
-//   LLVMJITSymbolGenericFlagsNone = 0,
-//   LLVMJITSymbolGenericFlagsExported = 1U << 0,
-//   LLVMJITSymbolGenericFlagsWeak = 1U << 1,
-//   LLVMJITSymbolGenericFlagsCallable = 1U << 2,
-//   LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly = 1U << 3
-// } LLVMJITSymbolGenericFlags;
-
 pub enum LLVMJITSymbolGenericFlags {
   LLVMJITSymbolGenericFlagsNone
   LLVMJITSymbolGenericFlagsExported

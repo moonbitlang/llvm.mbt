@@ -42,9 +42,8 @@ pub fn Module::add_function(
     None => abort("Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function")
   }
 
-  match linkage {
-    Some(linkage) => fn_val.set_linkage(linkage)
-    None => ()
+  if linkage is Some(linkage) {
+    fn_val.set_linkage(linkage)
   }
 
   fn_val

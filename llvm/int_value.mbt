@@ -29,6 +29,8 @@ pub fn IntValue::get_name(self: IntValue) -> String {
 }
 
 ///| Set name of the `IntValue`.
+///
+/// If the value is constant, `set_name` will not have any effect.
 pub fn IntValue::set_name(self: IntValue, name: String) -> Unit {
   self.value.set_name(name)
 }

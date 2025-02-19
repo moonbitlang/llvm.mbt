@@ -74,9 +74,8 @@ pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
 /// ```
 pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 
-  match self.get_parent() {
-    None => return None
-    _ => ()
+  if self.get_parent() is None {
+    return None
   }
 
   BasicBlock::new(@unsafe.llvm_get_previous_basic_block(self.as_bb_ref()))
@@ -109,9 +108,8 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 /// ```
 pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
 
-  match self.get_parent() {
-    None => return None
-    _ => ()
+  if self.get_parent() is None {
+    return None
   }
 
   BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref()))
@@ -139,10 +137,8 @@ pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
 /// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
 pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Result[Unit, Unit] {
-  match (self.get_parent(), other.get_parent()) {
-    (None, _) => return Err(())
-    (_, None) => return Err(())
-    _ => ()
+  if self.get_parent() is None || other.get_parent() is None {
+    return Err(())
   }
 
   @unsafe.llvm_move_basic_block_before(self.as_bb_ref(), other.as_bb_ref())
@@ -170,10 +166,8 @@ pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Result[Un
 /// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
 pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Result[Unit, Unit] {
-  match (self.get_parent(), other.get_parent()) {
-    (None, _) => return Err(())
-    (_, None) => return Err(())
-    _ => ()
+  if self.get_parent() is None || other.get_parent() is None {
+    return Err(())
   }
 
   @unsafe.llvm_move_basic_block_after(self.as_bb_ref(), other.as_bb_ref())
@@ -328,9 +322,9 @@ pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
 /// assert_true!(basic_block.get_parent().is_none());
 /// ```
 pub fn remove_from_function(self: BasicBlock) -> Result[Unit, Unit] {
-  match self.get_parent() {
-    None => return Err(())
-    _ => ()
+
+  if self.get_parent() is None {
+    return Err(())
   }
 
   @unsafe.llvm_remove_basic_block_from_parent(self.as_bb_ref())
@@ -354,9 +348,9 @@ pub fn remove_from_function(self: BasicBlock) -> Result[Unit, Unit] {
 /// assert_true!(function.get_basic_blocks().is_empty());
 /// ```
 pub fn BasicBlock::delete(self: BasicBlock) -> Result[Unit, Unit] {
-  match self.get_parent() {
-    None => return Err(())
-    _ => ()
+
+  if self.get_parent() is None {
+    return Err(())
   }
 
   @unsafe.llvm_delete_basic_block(self.as_bb_ref())
@@ -482,18 +476,14 @@ pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
 /// assert_true!(next_bb.get_address().is_some());
 /// ```
 pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
-  let parent = self.get_parent()
-  match parent {
-    None => return None
-    _ => ()
-  }
-  guard let Some(parent) = parent
 
-  let prev = self.get_previous_basic_block()
-  match prev {
+  guard let Some(parent) = self.get_parent() else {
     None => return None
-    _ => ()
   }
+
+  if self.get_previous_basic_block() is None {
+    return None
+  } 
 
   let value = PointerValue::new(@unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()))
 

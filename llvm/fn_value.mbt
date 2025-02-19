@@ -526,11 +526,8 @@ pub fn FunctionValue::get_string_attribute(self: FunctionValue, loc: AttributeLo
 pub fn FunctionValue::set_param_alignment(
   self: FunctionValue, param_index: UInt, alignment: UInt
 ) -> Unit {
-  match self.get_nth_param(param_index) {
-    Some(param) => {
-      @unsafe.llvm_set_param_alignment(param.as_value_ref(), alignment)
-    }
-    _ => ()
+  if self.get_nth_param(param_index) is Some(param) {
+    @unsafe.llvm_set_param_alignment(param.as_value_ref(), alignment)
   }
 }
 

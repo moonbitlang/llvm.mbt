@@ -76,16 +76,15 @@ pub fn InstructionValue::set_name(self: InstructionValue, name: String) -> Unit 
 pub fn InstructionValue::get_instruction_with_name(
   self: InstructionValue, name: String
 ) -> InstructionValue? {
-  match self.get_name() {
-    Some(this_name) => if this_name == name {
-      return Some(self)
-    }
-    None => ()
+  if self.get_name() is Some(n) && n == name {
+    return Some(self)
   }
-  match self.get_next_instruction() {
-    Some(next_inst) => next_inst.get_instruction_with_name(name)
-    None => None
+
+  if self.get_next_instruction() is Some(next_inst) {
+    return next_inst.get_instruction_with_name(name)
   }
+
+  None
 }
 
 ///| Get type of the `InstructionValue`.
@@ -220,9 +219,8 @@ pub fn InstructionValue::get_non_negative_flag(self: InstructionValue) -> Bool? 
 ///
 /// Calling this function on other instructions is safe and results in a no-op.
 pub fn InstructionValue::set_non_negative_flag(self: InstructionValue, flag: Bool) -> Unit {
-  match self.get_opcode() {
-    InstructionOpcode::ZExt => @unsafe.llvm_set_n_neg(self.as_value_ref(), flag)
-    _ => ()
+  if self.get_opcode() is InstructionOpcode::ZExt {
+    @unsafe.llvm_set_n_neg(self.as_value_ref(), flag)
   }
 }
 
@@ -231,7 +229,7 @@ pub fn InstructionValue::set_non_negative_flag(self: InstructionValue, flag: Boo
 ///
 /// Calling this function on other instructions is safe and returns `None`.
 pub fn InstructionValue::get_disjoint_flag(self: InstructionValue) -> Bool? {
-  if self.get_opcode() == InstructionOpcode::Or {
+  if self.get_opcode() is InstructionOpcode::Or {
     Some(self.as_value_ref().get_is_disjoint())
   } else {
     None
@@ -242,7 +240,7 @@ pub fn InstructionValue::get_disjoint_flag(self: InstructionValue) -> Bool? {
 ///
 /// Calling this function on other instructions is safe and results in a no-op.
 pub fn InstructionValue::set_disjoint_flag(self: InstructionValue, flag: Bool) -> Unit {
-  if self.get_opcode() == InstructionOpcode::Or {
+  if self.get_opcode() is InstructionOpcode::Or {
     self.as_value_ref().set_is_disjoint(flag)
   }
 }
@@ -343,7 +341,7 @@ pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: A
   }
 
   match ordering {
-    AtomicOrdering::Release  => {
+    AtomicOrdering::Release => {
       if self.is_a_load_inst() {
         return Err("The release ordering is not valid on load instructions")
       }
@@ -351,7 +349,7 @@ pub fn InstructionValue::set_atomic_ordering(self: InstructionValue, ordering: A
     AtomicOrdering::AcquireRelease => {
       return Err("The acq_rel ordering is not valid on load or store instructions")
     }
-    AtomicOrdering::Acquire  => {
+    AtomicOrdering::Acquire => {
       if self.is_a_store_inst() {
         return Err("The acquire ordering is not valid on store instructions")
       }
