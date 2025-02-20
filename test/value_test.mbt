@@ -3,12 +3,14 @@ test "Int Value Test" {
   let context = @llvm.Context::create()
 
   let i32_ty = context.i32_type()
+  let zero = i32_ty.const_int(0)
   let forty_two = i32_ty.const_int(42)
   let thirty_tri = i32_ty.const_int(33)
   let undef = i32_ty.get_undef()
   let poison = i32_ty.get_poison()
 
   // print
+  inspect!(zero, content="i32 0")
   inspect!(forty_two, content="i32 42")
   inspect!(thirty_tri, content="i32 33")
   inspect!(undef, content="i32 undef")
@@ -68,21 +70,31 @@ test "Int Value Test" {
     content="Some(-1)"
   )
 
-  // TODO: add get_name, set_name test
-
   context.drop()
 }
 
 test "Floating-Point Value Test" {
   let context = @llvm.Context::create()
+  let lmodule = context.create_module("demo")
+
   let f64_ty = context.f64_type()
+  let fty = f64_ty.fn_type([f64_ty])
+  let fval = lmodule.add_function("foo", fty)
+  let entry_bb = context.append_basic_block(fval, "entry")
+  let builder = context.create_builder()
+  builder.position_at_end(entry_bb)
+
+  let x = fval.get_nth_param(0).unwrap().into_float_value()
   let one = f64_ty.const_float(1.0)
+  let xplusone = builder.build_float_add!(x, one, name="xp1")
   let undef = f64_ty.get_undef()
 
   // print
   inspect!(one, content="double 1.000000e+00")
 
-  // TODO:set_name and get_name
+  inspect!(xplusone.get_name(), content="xp1")
+  xplusone.set_name("xplusone")
+  inspect!(xplusone.get_name(), content="xplusone")
 
   // get_type
   inspect!(one.get_type(), content="double")
@@ -97,6 +109,7 @@ test "Floating-Point Value Test" {
   // get_constant
   inspect!(one.get_constant(), content="Some((1, false))")
 
+  lmodule.drop()
   context.drop()
 }
 

@@ -1119,9 +1119,7 @@ void *new_null_cstr() { return (char *)NULL; }
 
 void free_cstr(void *cstr) { free(cstr); }
 
-LLVMBool __llvm_value_is_null(void *val) {
-  return LLVMIsNull((LLVMValueRef)val);
-}
+LLVMBool __llvm_value_ref_is_null(void *val) { return val == NULL ? 1 : 0; }
 
 LLVMBool __llvm_type_is_null(void *type_ref) {
   return type_ref == NULL ? 1 : 0;

@@ -17,35 +17,55 @@ pub fn FloatValue::new(value_ref: @unsafe.LLVMValueRef) -> FloatValue {
   }
 }
 
-// FIXME: Not a good example
 ///| Gets name of the `FloatValue`.
 /// If the value is a constant, this will return an empty string.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
-/// let context = Context::create();
-/// let f64_type = context.f64_type();
-/// let pi = f64_type.const_float(3.14);
-/// inspect!(pi.get_name(), "");
-/// pi.set_name("pi");
-/// inspect!(pi.get_name(), "pi");
+/// let context = Context::create()
+/// let lmodule = context.create_module("demo")
+/// let f64_ty = context.f64_type()
+/// let fty = f64_ty.fn_type([f64_ty])
+/// let fval = lmodule.add_function("foo", fty)
+/// let one = f64_ty.const_float(1.0)
+///
+/// let bb = context.append_basic_block(fval, "entry")
+/// let builder = context.create_builder()
+/// builder.position_at_end(bb)
+///
+/// let x = fval.get_nth_param(0).unwrap().into_int_value()
+/// let xp1 = builder.build_int_add!(x, one, name="xp1")
+///
+/// inspect!(xp1.get_name(), content="xp1")
 /// ```
 pub fn FloatValue::get_name(self: FloatValue) -> String {
   self.value.get_name()
 }
 
-// FIXME: Not a good example
 ///| Set name of the `FloatValue`.
 ///
-/// ## Example (Not Tested)
+/// If the value is constant, `set_name` will not have any effect.
+///
+/// ## Example
 ///
 /// ```moonbit
-/// let context = Context::create();
-/// let f64_type = context.f64_type();
-/// let pi = f64_type.const_float(3.14);
-/// pi.set_name("pi");
-/// inspect!(pi.get_name(), "pi");
+/// let context = Context::create()
+/// let lmodule = context.create_module("demo")
+/// let f64_ty = context.f64_type()
+/// let fty = f64_ty.fn_type([f64_ty])
+/// let fval = lmodule.add_function("foo", fty)
+/// let one = f64_ty.const_float(1.0)
+///
+/// let bb = context.append_basic_block(fval, "entry")
+/// let builder = context.create_builder()
+/// builder.position_at_end(bb)
+///
+/// let x = fval.get_nth_param(0).unwrap().into_int_value()
+/// let xp1 = builder.build_int_add!(x, one)
+///
+/// xp1.set_name("xp1")
+/// inspect!(xp1.get_name(), content="xp1")
 /// ```
 pub fn FloatValue::set_name(self: FloatValue, name: String) -> Unit {
   self.value.set_name(name)

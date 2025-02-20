@@ -72,9 +72,11 @@ pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()
 }
 
-pub extern "C" fn llvm_value_is_null(ty: LLVMValueRef) -> LLVMBool = "__llvm_value_is_null"
+pub extern "C" fn llvm_value_is_null(ty: LLVMValueRef) -> LLVMBool = "LLVMIsNull"
+
+pub extern "C" fn llvm_value_ref_is_null(ty: LLVMValueRef) -> LLVMBool = "__llvm_value_ref_is_null"
 pub fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
-  llvm_value_is_null(self).to_moonbit_bool()
+  llvm_value_ref_is_null(self).to_moonbit_bool()
 }
 
 pub extern "C" fn llvm_use_is_null(u: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
