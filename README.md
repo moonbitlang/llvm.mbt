@@ -26,7 +26,7 @@ First, you need to install LLVM locally. Moonbit-LLVM requires LLVM version 18 o
 Install LLVM using Homebrew:
 
 ```shell
-brew install llvm
+brew install llvm@19
 ```
 
 #### Linux
@@ -36,7 +36,7 @@ It is recommended to install LLVM from source to ensure the correct version.
 1. Download the LLVM source code:
 
    ```shell
-   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-18.0.0
+   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
    ```
 
 2. Build LLVM:
@@ -67,9 +67,7 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
    moon add Kaida-Amethyst/llvm
    ```
 
-2. Download the C files from Moonbit-LLVM to your project's root directory. The files are located at: [CWarp](https://github.com/Kaida-Amethyst/moonbit-llvm/tree/master/CWarp). This step is currently necessary due to limitations in the Moonbit compiler.
-
-3. Use `llvm-config` to generate compilation and linking flags:
+2. Use `llvm-config` to generate compilation and linking flags:
 
    ```shell
    llvm-config --cflags --ldflags --libs all
@@ -77,7 +75,7 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
 
    Save the output and add it to your `moon.pkg.json` file.
 
-4. Add the dependency and linking flags to `moon.pkg.json`:
+3. Add the dependency and linking flags to `moon.pkg.json`:
 
    ```json
    {
@@ -86,14 +84,14 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
      ],
      "link": {
        "native": {
-         "cc-flags" : "./CWarp/warp.c ./CWarp/utils.c",
+         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/CWarp/warp.c ./.mooncakes/Kaida-Amethyst/llvm/CWarp/utils.c",
          "cc-link-flags": "{output from llvm-config}"
        }
      }
    }
    ```
 
-5. Now, you can use LLVM in your Moonbit project.
+4. Now, you can use LLVM in your Moonbit project.
 
 ### Example Program
 
@@ -166,7 +164,7 @@ Moonbit-llvm 提供了 llvm-c 的 Moonbit 语言绑定，并利用 Moonbit 的�
 使用 Homebrew 安装 LLVM：
 
 ```shell
-brew install llvm
+brew install llvm@19
 ```
 
 #### Linux
@@ -176,7 +174,7 @@ brew install llvm
 1. 下载 LLVM 源码：
 
    ```shell
-   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-18.0.0
+   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
    ```
 
 2. 构建 LLVM：
@@ -207,9 +205,7 @@ brew install llvm
    moon add Kaida-Amethyst/llvm
    ```
 
-2. 下载 Moonbit-LLVM 中的 C 文件到项目根目录。文件位于：[CWarp](https://github.com/Kaida-Amethyst/moonbit-llvm/tree/master/CWarp)。由于当前 Moonbit 编译器的限制，此步骤是必要的。
-
-3. 使用 `llvm-config` 生成编译和链接标志：
+2. 使用 `llvm-config` 生成编译和链接标志：
 
    ```shell
    llvm-config --cflags --ldflags --libs all
@@ -217,7 +213,7 @@ brew install llvm
 
    将输出内容保存，并写入 `moon.pkg.json` 文件中。
 
-4. 在 `moon.pkg.json` 中添加依赖和链接标志：
+3. 在 `moon.pkg.json` 中添加依赖和链接标志：
 
    ```json
    {
@@ -226,14 +222,14 @@ brew install llvm
      ],
      "link": {
        "native": {
-         "cc-flags" : "./CWarp/warp.c ./CWarp/utils.c",
+         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/CWarp/warp.c ./.mooncakes/Kaida-Amethyst/llvm/CWarp/utils.c",
          "cc-link-flags": "{刚才llvm-config输出的内容}"
        }
      }
    }
    ```
 
-5. 现在，您可以在 Moonbit 项目中使用 LLVM 了。
+4. 现在，您可以在 Moonbit 项目中使用 LLVM 了。
 
 ### 示例程序
 
