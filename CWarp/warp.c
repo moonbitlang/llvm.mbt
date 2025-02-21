@@ -1038,6 +1038,222 @@ LLVMRealPredicate llvm_real_predicate_from_int(int idx) {
   }
 }
 
+int llvm_diagnostic_severity_to_int(LLVMDiagnosticSeverity s) {
+  switch (s) {
+  case LLVMDSError:
+    return 0;
+  case LLVMDSWarning:
+    return 1;
+  case LLVMDSRemark:
+    return 2;
+  case LLVMDSNote:
+    return 3;
+  }
+}
+
+int llvm_inline_asm_dialect_to_int(LLVMInlineAsmDialect i) {
+  switch (i) {
+  case LLVMInlineAsmDialectATT:
+    return 0;
+  case LLVMInlineAsmDialectIntel:
+    return 1;
+  }
+}
+
+// typedef enum {
+//   LLVMAtomicOrderingNotAtomic,
+//   LLVMAtomicOrderingUnordered, /**< Lowest level of atomicity, guarantees
+//   LLVMAtomicOrderingMonotonic, /**< guarantees that if you take all the
+//   LLVMAtomicOrderingAcquire, /**< Acquire provides a barrier of the sort
+//   LLVMAtomicOrderingRelease, /**< Release is similar to Acquire, but with
+//   LLVMAtomicOrderingAcquireRelease, /**< provides both an Acquire and a
+//   LLVMAtomicOrderingSequentiallyConsistent /**< provides Acquire semantics
+// } LLVMAtomicOrdering;
+int llvm_atomic_ordering_to_int(LLVMAtomicOrdering o) {
+  switch (o) {
+  case LLVMAtomicOrderingNotAtomic:
+    return 0;
+  case LLVMAtomicOrderingUnordered:
+    return 1;
+  case LLVMAtomicOrderingMonotonic:
+    return 2;
+  case LLVMAtomicOrderingAcquire:
+    return 3;
+  case LLVMAtomicOrderingRelease:
+    return 4;
+  case LLVMAtomicOrderingAcquireRelease:
+    return 5;
+  case LLVMAtomicOrderingSequentiallyConsistent:
+    return 6;
+  }
+}
+
+LLVMAtomicOrdering llvm_atomic_ordering_from_int(int i) {
+  switch (i) {
+  case 0:
+    return LLVMAtomicOrderingNotAtomic;
+  case 1:
+    return LLVMAtomicOrderingUnordered;
+  case 2:
+    return LLVMAtomicOrderingMonotonic;
+  case 3:
+    return LLVMAtomicOrderingAcquire;
+  case 4:
+    return LLVMAtomicOrderingRelease;
+  case 5:
+    return LLVMAtomicOrderingAcquireRelease;
+  case 6:
+    return LLVMAtomicOrderingSequentiallyConsistent;
+  default:
+    panic("Unknown Error happened, loc: llvm_atomic_ordering_from_int");
+    return LLVMAtomicOrderingNotAtomic;
+  }
+}
+
+// typedef enum {
+//   LLVMAtomicRMWBinOpXchg, /**< Set the new value and return the one old */
+//   LLVMAtomicRMWBinOpAdd,  /**< Add a value and return the old one */
+//   LLVMAtomicRMWBinOpSub,  /**< Subtract a value and return the old one */
+//   LLVMAtomicRMWBinOpAnd,  /**< And a value and return the old one */
+//   LLVMAtomicRMWBinOpNand, /**< Not-And a value and return the old one */
+//   LLVMAtomicRMWBinOpOr,   /**< OR a value and return the old one */
+//   LLVMAtomicRMWBinOpXor,  /**< Xor a value and return the old one */
+//   LLVMAtomicRMWBinOpMax,  /**< Sets the value if it's greater than the
+//   LLVMAtomicRMWBinOpMin,  /**< Sets the value if it's Smaller than the
+//   LLVMAtomicRMWBinOpUMax, /**< Sets the value if it's greater than the
+//   LLVMAtomicRMWBinOpUMin, /**< Sets the value if it's greater than the
+//   LLVMAtomicRMWBinOpFAdd, /**< Add a floating point value and return the
+//   LLVMAtomicRMWBinOpFSub, /**< Subtract a floating point value and return the
+//   LLVMAtomicRMWBinOpFMax, /**< Sets the value if it's greater than the
+//   LLVMAtomicRMWBinOpFMin, /**< Sets the value if it's smaller than the
+//   LLVMAtomicRMWBinOpUIncWrap, /**< Increments the value, wrapping back to
+//   zero LLVMAtomicRMWBinOpUDecWrap, /**< Decrements the value, wrapping back
+//   to
+// } LLVMAtomicRMWBinOp;
+int llvm_atomic_rmw_bin_op_to_int(LLVMAtomicRMWBinOp o) {
+  switch (o) {
+  case LLVMAtomicRMWBinOpXchg:
+    return 0;
+  case LLVMAtomicRMWBinOpAdd:
+    return 1;
+  case LLVMAtomicRMWBinOpSub:
+    return 2;
+  case LLVMAtomicRMWBinOpAnd:
+    return 3;
+  case LLVMAtomicRMWBinOpNand:
+    return 4;
+  case LLVMAtomicRMWBinOpOr:
+    return 5;
+  case LLVMAtomicRMWBinOpXor:
+    return 6;
+  case LLVMAtomicRMWBinOpMax:
+    return 7;
+  case LLVMAtomicRMWBinOpMin:
+    return 8;
+  case LLVMAtomicRMWBinOpUMax:
+    return 9;
+  case LLVMAtomicRMWBinOpUMin:
+    return 10;
+  case LLVMAtomicRMWBinOpFAdd:
+    return 11;
+  case LLVMAtomicRMWBinOpFSub:
+    return 12;
+  case LLVMAtomicRMWBinOpFMax:
+    return 13;
+  case LLVMAtomicRMWBinOpFMin:
+    return 14;
+  case LLVMAtomicRMWBinOpUIncWrap:
+    return 15;
+  case LLVMAtomicRMWBinOpUDecWrap:
+    return 16;
+  default:
+    panic("Unknown Error happened, loc: llvm_atomic_rmw_bin_op_to_int");
+    return -1;
+  }
+}
+
+LLVMAtomicRMWBinOp llvm_atomic_rmw_bin_op_from_int(int i) {
+  switch (i) {
+  case 0:
+    return LLVMAtomicRMWBinOpXchg;
+  case 1:
+    return LLVMAtomicRMWBinOpAdd;
+  case 2:
+    return LLVMAtomicRMWBinOpSub;
+  case 3:
+    return LLVMAtomicRMWBinOpAnd;
+  case 4:
+    return LLVMAtomicRMWBinOpNand;
+  case 5:
+    return LLVMAtomicRMWBinOpOr;
+  case 6:
+    return LLVMAtomicRMWBinOpXor;
+  case 7:
+    return LLVMAtomicRMWBinOpMax;
+  case 8:
+    return LLVMAtomicRMWBinOpMin;
+  case 9:
+    return LLVMAtomicRMWBinOpUMax;
+  case 10:
+    return LLVMAtomicRMWBinOpUMin;
+  case 11:
+    return LLVMAtomicRMWBinOpFAdd;
+  case 12:
+    return LLVMAtomicRMWBinOpFSub;
+  case 13:
+    return LLVMAtomicRMWBinOpFMax;
+  case 14:
+    return LLVMAtomicRMWBinOpFMin;
+  case 15:
+    return LLVMAtomicRMWBinOpUIncWrap;
+  case 16:
+    return LLVMAtomicRMWBinOpUDecWrap;
+  default:
+    panic("Unknown Error happened, loc: llvm_atomic_rmw_bin_op_from_int");
+    return LLVMAtomicRMWBinOpXchg;
+  }
+}
+
+int llvm_module_flag_behavior_to_int(LLVMModuleFlagBehavior b) {
+  switch (b) {
+  case LLVMModuleFlagBehaviorError:
+    return 0;
+  case LLVMModuleFlagBehaviorWarning:
+    return 1;
+  case LLVMModuleFlagBehaviorRequire:
+    return 2;
+  case LLVMModuleFlagBehaviorOverride:
+    return 3;
+  case LLVMModuleFlagBehaviorAppend:
+    return 4;
+  case LLVMModuleFlagBehaviorAppendUnique:
+    return 5;
+  default:
+    panic("Unknown Error happened, loc: llvm_module_flag_behavior_to_int");
+    return -1;
+  }
+}
+
+LLVMModuleFlagBehavior llvm_module_flag_behavior_from_int(int i) {
+  switch (i) {
+  case 0:
+    return LLVMModuleFlagBehaviorError;
+  case 1:
+    return LLVMModuleFlagBehaviorWarning;
+  case 2:
+    return LLVMModuleFlagBehaviorRequire;
+  case 3:
+    return LLVMModuleFlagBehaviorOverride;
+  case 4:
+    return LLVMModuleFlagBehaviorAppend;
+  case 5:
+    return LLVMModuleFlagBehaviorAppendUnique;
+  default:
+    panic("Unknown Error happened, loc: llvm_module_flag_behavior_from_int");
+    return LLVMModuleFlagBehaviorError;
+  }
+}
+
 typedef struct ArrayLLVMTypeRef {
   struct moonbit_object header;
   int32_t $1;
@@ -1115,6 +1331,12 @@ typedef struct TupleCStrUInt64 {
   uint64_t $1;
 } TupleCStrUInt64;
 
+typedef struct TupleCStrUInt {
+  struct moonbit_object header;
+  void *$0;
+  uint32_t $1;
+} TupleCStrUInt;
+
 void *new_null_cstr() { return (char *)NULL; }
 
 void free_cstr(void *cstr) { free(cstr); }
@@ -1171,12 +1393,9 @@ void __llvm_context_set_diagnostic_handler(void *context, void *handler,
 //       (LLVMContextRef)context);
 // }
 
-LLVMBool __llvm_context_should_discard_value_names(void *context) {
-  return LLVMContextShouldDiscardValueNames((LLVMContextRef)context);
-}
-
-LLVMDiagnosticSeverity __llvm_get_diag_info_severity(void *di) {
-  return LLVMGetDiagInfoSeverity((LLVMDiagnosticInfoRef)di);
+int __llvm_get_diag_info_severity(void *di) {
+  LLVMDiagnosticSeverity s = LLVMGetDiagInfoSeverity((LLVMDiagnosticInfoRef)di);
+  return llvm_diagnostic_severity_to_int(s);
 }
 
 // void *__llvm_create_constant_range_attribute(void *context, unsigned kind_id,
@@ -1190,62 +1409,67 @@ LLVMDiagnosticSeverity __llvm_get_diag_info_severity(void *di) {
 //       llvm_upper_words);
 // }
 
-void *__llvm_create_string_attribute(void *context, void *k, unsigned k_length,
-                                     void *v, unsigned v_length) {
-  return (LLVMAttributeRef)LLVMCreateStringAttribute((LLVMContextRef)context,
-                                                     (const char *)k, k_length,
-                                                     (const char *)v, v_length);
+TupleCStrUInt *__llvm_get_string_attribute_kind(void *a, TupleCStrUInt *input) {
+
+  const char *s =
+      LLVMGetStringAttributeKind((LLVMAttributeRef)a, (unsigned *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_string_attribute_kind(void *a, unsigned *length) {
-  return (char *)LLVMGetStringAttributeKind((LLVMAttributeRef)a, length);
+TupleCStrUInt *__llvm_get_string_attribute_value(void *a,
+                                                 TupleCStrUInt *input) {
+  const char *s = LLVMGetStringAttributeValue((LLVMAttributeRef)a,
+                                              (unsigned *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_string_attribute_value(void *a, unsigned *length) {
-  return (char *)LLVMGetStringAttributeValue((LLVMAttributeRef)a, length);
+TupleCStrUInt64 *__llvm_get_module_identifier(void *m, TupleCStrUInt64 *input) {
+  const char *s =
+      LLVMGetModuleIdentifier((LLVMModuleRef)m, (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_module_identifier(void *m, size_t *len) {
-  return (char *)LLVMGetModuleIdentifier((LLVMModuleRef)m, len);
+TupleCStrUInt64 *__llvm_get_source_file_name(void *m, TupleCStrUInt64 *input) {
+  const char *s =
+      LLVMGetSourceFileName((LLVMModuleRef)m, (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_source_file_name(void *m, size_t *len) {
-  return (char *)LLVMGetSourceFileName((LLVMModuleRef)m, len);
-}
+// TODO: Wrong Implementation
+// void *__llvm_copy_module_flags_metadata(void *m, size_t *len) {
+//   return (LLVMModuleFlagEntry *)LLVMCopyModuleFlagsMetadata((LLVMModuleRef)m,
+//                                                             len);
+// }
+//
+// void __llvm_dispose_module_flags_metadata(void *entries) {
+//   LLVMDisposeModuleFlagsMetadata((LLVMModuleFlagEntry *)entries);
+// }
+//
+// LLVMModuleFlagBehavior
+// __llvm_module_flag_entries_get_flag_behavior(void *entries, unsigned index) {
+//   return LLVMModuleFlagEntriesGetFlagBehavior((LLVMModuleFlagEntry *)entries,
+//                                               index);
+// }
+//
+// void *__llvm_module_flag_entries_get_key(void *entries, unsigned index,
+//                                          size_t *len) {
+//   return (char *)LLVMModuleFlagEntriesGetKey((LLVMModuleFlagEntry *)entries,
+//                                              index, len);
+// }
+//
+// void *__llvm_module_flag_entries_get_metadata(void *entries, unsigned index)
+// {
+//   return (LLVMMetadataRef)LLVMModuleFlagEntriesGetMetadata(
+//       (LLVMModuleFlagEntry *)entries, index);
+// }
 
-void *__llvm_copy_module_flags_metadata(void *m, size_t *len) {
-  return (LLVMModuleFlagEntry *)LLVMCopyModuleFlagsMetadata((LLVMModuleRef)m,
-                                                            len);
-}
-
-void __llvm_dispose_module_flags_metadata(void *entries) {
-  LLVMDisposeModuleFlagsMetadata((LLVMModuleFlagEntry *)entries);
-}
-
-LLVMModuleFlagBehavior
-__llvm_module_flag_entries_get_flag_behavior(void *entries, unsigned index) {
-  return LLVMModuleFlagEntriesGetFlagBehavior((LLVMModuleFlagEntry *)entries,
-                                              index);
-}
-
-void *__llvm_module_flag_entries_get_key(void *entries, unsigned index,
-                                         size_t *len) {
-  return (char *)LLVMModuleFlagEntriesGetKey((LLVMModuleFlagEntry *)entries,
-                                             index, len);
-}
-
-void *__llvm_module_flag_entries_get_metadata(void *entries, unsigned index) {
-  return (LLVMMetadataRef)LLVMModuleFlagEntriesGetMetadata(
-      (LLVMModuleFlagEntry *)entries, index);
-}
-
-void *__llvm_get_module_flag(void *m, void *key, size_t key_len) {
-  return (LLVMMetadataRef)LLVMGetModuleFlag((LLVMModuleRef)m, (const char *)key,
-                                            key_len);
-}
-
-void __llvm_add_module_flag(void *m, LLVMModuleFlagBehavior behavior, void *key,
+void __llvm_add_module_flag(void *m, LLVMModuleFlagBehavior b, void *key,
                             size_t key_len, void *val) {
+  LLVMModuleFlagBehavior behavior = llvm_module_flag_behavior_from_int(b);
   LLVMAddModuleFlag((LLVMModuleRef)m, behavior, (const char *)key, key_len,
                     (LLVMMetadataRef)val);
 }
@@ -1260,39 +1484,49 @@ void *__llvm_get_module_inline_asm(void *m, size_t *len) {
   return (char *)LLVMGetModuleInlineAsm((LLVMModuleRef)m, len);
 }
 
-void __llvm_set_module_inline_asm2(void *m, void *_asm, size_t len) {
-  LLVMSetModuleInlineAsm2((LLVMModuleRef)m, (char *)_asm, len);
+TupleCStrUInt64 *__llvm_get_inline_asm_asm_string(void *inline_asm_val,
+                                                  TupleCStrUInt64 *input) {
+  const char *s = LLVMGetInlineAsmAsmString((LLVMValueRef)inline_asm_val,
+                                            (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void __llvm_append_module_inline_asm(void *m, void *_asm, size_t len) {
-  LLVMAppendModuleInlineAsm((LLVMModuleRef)m, (char *)_asm, len);
+TupleCStrUInt64 *
+__llvm_get_inline_asm_constraint_string(void *inline_asm_val,
+                                        TupleCStrUInt64 *input) {
+  const char *s = LLVMGetInlineAsmConstraintString((LLVMValueRef)inline_asm_val,
+                                                   (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_inline_asm_asm_string(void *inline_asm_val, size_t *len) {
-  return (char *)LLVMGetInlineAsmAsmString((LLVMValueRef)inline_asm_val, len);
+int __llvm_get_inline_asm_dialect(void *inline_asm_val) {
+  LLVMInlineAsmDialect i =
+      LLVMGetInlineAsmDialect((LLVMValueRef)inline_asm_val);
+  return llvm_inline_asm_dialect_to_int(i);
 }
 
-void *__llvm_get_inline_asm_constraint_string(void *inline_asm_val,
-                                              size_t *len) {
-  return (char *)LLVMGetInlineAsmConstraintString((LLVMValueRef)inline_asm_val,
-                                                  len);
+TupleCStrUInt64 *__llvm_get_named_metadata_name(void *named_md,
+                                                TupleCStrUInt64 *input) {
+  const char *s = LLVMGetNamedMetadataName((LLVMNamedMDNodeRef)named_md,
+                                           (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-LLVMInlineAsmDialect __llvm_get_inline_asm_dialect(void *inline_asm_val) {
-  return LLVMGetInlineAsmDialect((LLVMValueRef)inline_asm_val);
+TupleCStrUInt *__llvm_get_debug_loc_directory(void *val, TupleCStrUInt *input) {
+  const char *s =
+      LLVMGetDebugLocDirectory((LLVMValueRef)val, (unsigned *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void *__llvm_get_named_metadata_name(void *named_md, size_t *name_len) {
-  return (char *)LLVMGetNamedMetadataName((LLVMNamedMDNodeRef)named_md,
-                                          name_len);
-}
-
-void *__llvm_get_debug_loc_directory(void *val, unsigned *length) {
-  return (char *)LLVMGetDebugLocDirectory((LLVMValueRef)val, length);
-}
-
-void *__llvm_get_debug_loc_filename(void *val, unsigned *length) {
-  return (char *)LLVMGetDebugLocFilename((LLVMValueRef)val, length);
+TupleCStrUInt *__llvm_get_debug_loc_filename(void *val, TupleCStrUInt *input) {
+  const char *s =
+      LLVMGetDebugLocFilename((LLVMValueRef)val, (unsigned *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
 int32_t __llvm_get_type_kind(void *ty) {
@@ -1406,10 +1640,11 @@ double __llvm_const_real_get_double(void *constant_val,
                                 &(loses_info->data));
 }
 
-// TODO: Wrong implementation
-// void *__llvm_get_as_string(void *c, size_t *length) {
-//   return (char *)LLVMGetAsString((LLVMValueRef)c, length);
-// }
+TupleCStrUInt64 *__llvm_get_as_string(void *c, TupleCStrUInt64 *input) {
+  const char *s = LLVMGetAsString((LLVMValueRef)c, (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
+}
 
 void *__llvm_const_struct_in_context(void *context,
                                      ArrayLLVMValueRef *constant_vals,
@@ -1518,26 +1753,30 @@ int __llvm_get_dll_storage_class(void *global) {
 //   LLVMSetDLLStorageClass((LLVMValueRef)global, class);
 // }
 
-void *__llvm_global_copy_all_metadata(void *value, size_t *num_entries) {
-  return (LLVMValueMetadataEntry *)LLVMGlobalCopyAllMetadata(
-      (LLVMValueRef)value, num_entries);
-}
+// Wrong Implementation
+// void *__llvm_global_copy_all_metadata(void *value, size_t *num_entries) {
+//   return (LLVMValueMetadataEntry *)LLVMGlobalCopyAllMetadata(
+//       (LLVMValueRef)value, num_entries);
+// }
 
 // TODO: Wrong implementation
 // void __llvm_dispose_value_metadata_entries(void *entries) {
 //   LLVMDisposeValueMetadataEntries((LLVMValueMetadataEntry *)entries);
 // }
 
-unsigned __llvm_value_metadata_entries_get_kind(void *entries, unsigned index) {
-  return LLVMValueMetadataEntriesGetKind((LLVMValueMetadataEntry *)entries,
-                                         index);
-}
+// TODO: Wrong implementation
+// unsigned __llvm_value_metadata_entries_get_kind(void *entries, unsigned
+// index) {
+//   return LLVMValueMetadataEntriesGetKind((LLVMValueMetadataEntry *)entries,
+//                                          index);
+// }
 
-void *__llvm_value_metadata_entries_get_metadata(void *entries,
-                                                 unsigned index) {
-  return (LLVMMetadataRef)LLVMValueMetadataEntriesGetMetadata(
-      (LLVMValueMetadataEntry *)entries, index);
-}
+// TODO: Wrong implementation
+// void *__llvm_value_metadata_entries_get_metadata(void *entries,
+//                                                  unsigned index) {
+//   return (LLVMMetadataRef)LLVMValueMetadataEntriesGetMetadata(
+//       (LLVMValueMetadataEntry *)entries, index);
+// }
 
 void *__llvm_get_intrinsic_declaration(void *mod, unsigned id,
                                        ArrayLLVMTypeRef *param_types) {
@@ -1555,8 +1794,11 @@ void *__llvm_intrinsic_get_type(void *ctx, unsigned id,
                                            llvm_param_types, param_count);
 }
 
-void *__llvm_intrinsic_get_name(unsigned id, size_t *name_length) {
-  return (char *)LLVMIntrinsicGetName(id, name_length);
+TupleCStrUInt64 *__llvm_intrinsic_get_name(unsigned id,
+                                           TupleCStrUInt64 *input) {
+  const char *s = LLVMIntrinsicGetName(id, (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
 void *__llvm_intrinsic_copy_overloaded_name(unsigned id,
@@ -1583,11 +1825,6 @@ ArrayLLVMValueRef *__llvm_get_params(void *fn, ArrayLLVMValueRef *param_arr) {
   return param_arr;
 }
 
-void *__llvm_md_string_in_context2(void *context, void *str, size_t s_len) {
-  return (LLVMMetadataRef)LLVMMDStringInContext2((LLVMContextRef)context,
-                                                 (const char *)str, s_len);
-}
-
 void *__llvm_md_node_in_context2(void *context, ArrayLLVMMetadataRef *mds) {
   LLVMMetadataRef *llvm_mds = (LLVMMetadataRef *)mds->$0->data;
   unsigned count = mds->$1;
@@ -1595,22 +1832,16 @@ void *__llvm_md_node_in_context2(void *context, ArrayLLVMMetadataRef *mds) {
                                                llvm_mds, count);
 }
 
-void *__llvm_get_md_string(void *v, unsigned *length) {
-  return (char *)LLVMGetMDString((LLVMValueRef)v, length);
+TupleCStrUInt *__llvm_get_md_string(void *v, TupleCStrUInt *input) {
+  const char *s = LLVMGetMDString((LLVMValueRef)v, (unsigned *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
-void __llvm_get_md_node_operands(void *v, void *dest) {
-  LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
-}
-
-void *__llvm_md_string_in_context(void *context, void *str, unsigned s_len) {
-  return (LLVMValueRef)LLVMMDStringInContext((LLVMContextRef)context,
-                                             (char *)str, s_len);
-}
-
-void *__llvm_md_string(void *str, unsigned s_len) {
-  return (LLVMValueRef)LLVMMDString((const char *)str, s_len);
-}
+// TODO: Wrong Implementation
+// void __llvm_get_md_node_operands(void *v, void *dest) {
+//   LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
+// }
 
 void *__llvm_md_node_in_context(void *context, ArrayLLVMValueRef *vals) {
   LLVMValueRef *llvm_vals = (LLVMValueRef *)vals->$0->data;
@@ -1632,13 +1863,12 @@ void *__llvm_create_operand_bundle(void *tag, size_t tag_len,
       (const char *)tag, tag_len, llvm_args, num_args);
 }
 
-void *__llvm_get_operand_bundle_tag(void *bundle, size_t *len) {
-  return (char *)LLVMGetOperandBundleTag((LLVMOperandBundleRef)bundle, len);
-}
-
-void *__llvm_get_operand_bundle_arg_at_index(void *bundle, unsigned index) {
-  return (LLVMValueRef)LLVMGetOperandBundleArgAtIndex(
-      (LLVMOperandBundleRef)bundle, index);
+TupleCStrUInt64 *__llvm_get_operand_bundle_tag(void *bundle,
+                                               TupleCStrUInt64 *input) {
+  const char *s = LLVMGetOperandBundleTag((LLVMOperandBundleRef)bundle,
+                                          (size_t *)&(input->$1));
+  input->$0 = (void *)s;
+  return input;
 }
 
 // TODO: wrong implementation
@@ -1646,17 +1876,15 @@ void *__llvm_get_operand_bundle_arg_at_index(void *bundle, unsigned index) {
 //   LLVMGetBasicBlocks((LLVMValueRef)fn, (LLVMBasicBlockRef *)basic_blocks);
 // }
 
-void __llvm_set_metadata(void *val, unsigned kind_id, void *node) {
-  LLVMSetMetadata((LLVMValueRef)val, kind_id, (LLVMValueRef)node);
-}
-
-void *
-__llvm_instruction_get_all_metadata_other_than_debug_loc(void *instr,
-                                                         size_t *num_entries) {
-  return (LLVMValueMetadataEntry *)
-      LLVMInstructionGetAllMetadataOtherThanDebugLoc((LLVMValueRef)instr,
-                                                     num_entries);
-}
+// TODO: wrong implementation
+// void *
+// __llvm_instruction_get_all_metadata_other_than_debug_loc(void *instr,
+//                                                          size_t *num_entries)
+//                                                          {
+//   return (LLVMValueMetadataEntry *)
+//       LLVMInstructionGetAllMetadataOtherThanDebugLoc((LLVMValueRef)instr,
+//                                                      num_entries);
+// }
 
 int __llvm_get_instruction_opcode(void *inst) {
   LLVMOpcode opcode = LLVMGetInstructionOpcode((LLVMValueRef)inst);
@@ -1783,15 +2011,6 @@ void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                                       (const char *)name);
 }
 
-// TODO: Wrong Implementation
-// LLVMFastMathFlags __llvm_get_fast_math_flags(void *fp_math_inst) {
-//   return LLVMGetFastMathFlags((LLVMValueRef)fp_math_inst);
-// }
-
-// void __llvm_set_fast_math_flags(void *fp_math_inst, LLVMFastMathFlags fmf) {
-//   LLVMSetFastMathFlags((LLVMValueRef)fp_math_inst, fmf);
-// }
-
 void *__llvm_build_gep2(void *builder, void *ty, void *pointer,
                         ArrayLLVMValueRef *indices, void *name) {
   LLVMValueRef *llvm_indices = (LLVMValueRef *)indices->$0->data;
@@ -1810,24 +2029,27 @@ void *__llvm_build_in_bounds_gep2(void *builder, void *ty, void *pointer,
       llvm_indices, num_indices, (const char *)name);
 }
 
-// TODO: Wrong Implementation
-// LLVMAtomicOrdering __llvm_get_ordering(void *memory_access_inst) {
-//   return LLVMGetOrdering((LLVMValueRef)memory_access_inst);
-// }
-//
-// void __llvm_set_ordering(void *memory_access_inst,
-//                          LLVMAtomicOrdering ordering) {
-//   LLVMSetOrdering((LLVMValueRef)memory_access_inst, ordering);
-// }
-//
-// LLVMAtomicRMWBinOp __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
-//   return LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
-// }
-//
-// void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst,
-//                                   LLVMAtomicRMWBinOp bin_op) {
-//   LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, bin_op);
-// }
+int __llvm_get_ordering(void *memory_access_inst) {
+  LLVMAtomicOrdering ordering =
+      LLVMGetOrdering((LLVMValueRef)memory_access_inst);
+  return llvm_atomic_ordering_to_int(ordering);
+}
+
+void __llvm_set_ordering(void *memory_access_inst, int ordering) {
+  LLVMAtomicOrdering order = llvm_atomic_ordering_from_int(ordering);
+  LLVMSetOrdering((LLVMValueRef)memory_access_inst, order);
+}
+
+int __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
+  LLVMAtomicRMWBinOp bin_op =
+      LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
+  return llvm_atomic_rmw_bin_op_to_int(bin_op);
+}
+
+void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst, int bin_op) {
+  LLVMAtomicRMWBinOp op = llvm_atomic_rmw_bin_op_from_int(bin_op);
+  LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, op);
+}
 
 void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                         void *name) {
@@ -1884,59 +2106,51 @@ void *__llvm_build_call_with_operand_bundles(void *builder, void *ty, void *fn,
 }
 
 void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
-                                   void *_new,
-                                   LLVMAtomicOrdering success_ordering,
-                                   LLVMAtomicOrdering failure_ordering,
+                                   void *_new, int so, int fo,
                                    LLVMBool single_thread) {
+  LLVMAtomicOrdering success_ordering = llvm_atomic_ordering_from_int(so);
+  LLVMAtomicOrdering failure_ordering = llvm_atomic_ordering_from_int(fo);
   return (LLVMValueRef)LLVMBuildAtomicCmpXchg(
       (LLVMBuilderRef)builder, (LLVMValueRef)ptr, (LLVMValueRef)cmp,
       (LLVMValueRef)_new, success_ordering, failure_ordering, single_thread);
 }
 
 // TODO: Wrong Implementation
-LLVMAtomicOrdering __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
-  return LLVMGetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst);
+int __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
+  LLVMAtomicOrdering o =
+      LLVMGetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst);
+  return llvm_atomic_ordering_to_int(o);
 }
 
-void __llvm_set_cmp_xchg_success_ordering(void *cmp_xchg_inst,
-                                          LLVMAtomicOrdering ordering) {
+void __llvm_set_cmp_xchg_success_ordering(void *cmp_xchg_inst, int o) {
+  LLVMAtomicOrdering ordering = llvm_atomic_ordering_from_int(o);
   LLVMSetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
 }
 
-LLVMAtomicOrdering __llvm_get_cmp_xchg_failure_ordering(void *cmp_xchg_inst) {
-  return LLVMGetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst);
+int __llvm_get_cmp_xchg_failure_ordering(void *cmp_xchg_inst) {
+  LLVMAtomicOrdering o =
+      LLVMGetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst);
+  return llvm_atomic_ordering_to_int(o);
 }
 
-void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst,
-                                          LLVMAtomicOrdering ordering) {
+void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst, int o) {
+  LLVMAtomicOrdering ordering = llvm_atomic_ordering_from_int(o);
   LLVMSetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
 }
 
 // TODO: Incorrect inplementation
-LLVMBool __llvm_create_memory_buffer_with_contents_of_file(void *path,
-                                                           void **out_mem_buf,
-                                                           void **out_message) {
-  return LLVMCreateMemoryBufferWithContentsOfFile(
-      (const char *)path, (LLVMMemoryBufferRef *)out_mem_buf,
-      (char **)out_message);
-}
-
-LLVMBool __llvm_create_memory_buffer_with_stdin(void **out_mem_buf,
-                                                void **out_message) {
-  return LLVMCreateMemoryBufferWithSTDIN((LLVMMemoryBufferRef *)out_mem_buf,
-                                         (char **)out_message);
-}
-
-void *__llvm_create_memory_buffer_with_memory_range(
-    void *input_data, size_t input_data_length, void *buffer_name,
-    LLVMBool requires_null_terminator) {
-  return (LLVMMemoryBufferRef)LLVMCreateMemoryBufferWithMemoryRange(
-      (const char *)input_data, input_data_length, (const char *)buffer_name,
-      requires_null_terminator);
-}
-
-void *__llvm_create_memory_buffer_with_memory_range_copy(
-    void *input_data, size_t input_data_length, void *buffer_name) {
-  return (LLVMMemoryBufferRef)LLVMCreateMemoryBufferWithMemoryRangeCopy(
-      (const char *)input_data, input_data_length, (const char *)buffer_name);
-}
+// LLVMBool __llvm_create_memory_buffer_with_contents_of_file(void *path,
+//                                                            void
+//                                                            **out_mem_buf,
+//                                                            void
+//                                                            **out_message) {
+//   return LLVMCreateMemoryBufferWithContentsOfFile(
+//       (const char *)path, (LLVMMemoryBufferRef *)out_mem_buf,
+//       (char **)out_message);
+// }
+//
+// LLVMBool __llvm_create_memory_buffer_with_stdin(void **out_mem_buf,
+//                                                 void **out_message) {
+//   return LLVMCreateMemoryBufferWithSTDIN((LLVMMemoryBufferRef *)out_mem_buf,
+//                                          (char **)out_message);
+// }

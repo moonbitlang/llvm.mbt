@@ -57,16 +57,16 @@ pub fn MetadataValue::get_node_size(self: MetadataValue) -> UInt {
   }
 }
 
-pub fn MetadataValue::get_node_values(
-  self: MetadataValue
-) -> Array[BasicMetadataValueEnum] {
-  if self.is_string() {
-    return Array::new()
-  }
-
-  let operands = @unsafe.llvm_get_md_node_operands(self.as_value_ref())
-  operands.map(fn (op) {BasicMetadataValueEnum::new(op)})
-}
+// pub fn MetadataValue::get_node_values(
+//   self: MetadataValue
+// ) -> Array[BasicMetadataValueEnum] {
+//   if self.is_string() {
+//     return Array::new()
+//   }
+//
+//   let operands = @unsafe.llvm_get_md_node_operands(self.as_value_ref())
+//   operands.map(fn (op) {BasicMetadataValueEnum::new(op)})
+// }
 
 ///| Replaces all uses of this value with another value of the same type.
 pub fn MetadataValue::replace_all_uses_with(self: MetadataValue, new_value: MetadataValue) -> Unit {

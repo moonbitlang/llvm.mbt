@@ -15,25 +15,25 @@ pub fn MemoryBuffer::as_mem_buf(self: MemoryBuffer) -> @unsafe.LLVMMemoryBufferR
   self.memory_buffer
 }
 
-pub fn MemoryBuffer::create_from_file(path:String) -> Result[MemoryBuffer, String] {
-  let (mbuf, msg, is_ok) = @unsafe.llvm_create_memory_buffer_with_contents_of_file(path)
-
-  if is_ok {
-    Ok(MemoryBuffer::new(mbuf))
-  } else {
-    Err(msg)
-  }
-}
-
-pub fn MemoryBuffer::create_from_stdin() -> Result[MemoryBuffer, String] {
-  let (mbuf, msg, is_ok) = @unsafe.llvm_create_memory_buffer_with_stdin()
-
-  if is_ok {
-    Ok(MemoryBuffer::new(mbuf))
-  } else {
-    Err(msg)
-  }
-}
+// pub fn MemoryBuffer::create_from_file(path:String) -> Result[MemoryBuffer, String] {
+//   let (mbuf, msg, is_ok) = @unsafe.llvm_create_memory_buffer_with_contents_of_file(path)
+//
+//   if is_ok {
+//     Ok(MemoryBuffer::new(mbuf))
+//   } else {
+//     Err(msg)
+//   }
+// }
+//
+// pub fn MemoryBuffer::create_from_stdin() -> Result[MemoryBuffer, String] {
+//   let (mbuf, msg, is_ok) = @unsafe.llvm_create_memory_buffer_with_stdin()
+//
+//   if is_ok {
+//     Ok(MemoryBuffer::new(mbuf))
+//   } else {
+//     Err(msg)
+//   }
+// }
 
 pub fn MemoryBuffer::get_size(self: MemoryBuffer) -> Int {
   @unsafe.llvm_get_buffer_size(self.memory_buffer)
