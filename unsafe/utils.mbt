@@ -1,4 +1,4 @@
-type CStr
+extern type CStr
 
 extern "C" fn moonbit_str_to_c_str(
   s: String

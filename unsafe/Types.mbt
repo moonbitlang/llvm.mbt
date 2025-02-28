@@ -25,35 +25,35 @@ pub fn LLVMMetadataKind::new(idx: UInt) -> LLVMMetadataKind {
 }
 
 ///| llvm memory buffer
-pub type LLVMMemoryBufferRef
+pub extern type LLVMMemoryBufferRef
 
 ///| llvm context
-pub type LLVMContextRef
+pub extern type LLVMContextRef
 
 ///| llvm module
-pub type LLVMModuleRef
+pub extern type LLVMModuleRef
 
 ///| llvm BasicBlock
-pub type LLVMBasicBlockRef
+pub extern type LLVMBasicBlockRef
 
 ///| llvm metadata
-pub type LLVMMetadataRef
+pub extern type LLVMMetadataRef
 
 ///| llvm md node
-pub type LLVMNamedMDNodeRef
-pub type LLVMValueMetadataEntry
+pub extern type LLVMNamedMDNodeRef
+pub extern type LLVMValueMetadataEntry
 
 ///| llvm builder
-pub type LLVMBuilderRef
-pub type LLVMDIBuilderRef
+pub extern type LLVMBuilderRef
+pub extern type LLVMDIBuilderRef
 
 ///| llvm module provider
-pub type LLVMModuleProviderRef
+pub extern type LLVMModuleProviderRef
 
 ///| llvm pass manager
-pub type LLVMPassManagerRef
+pub extern type LLVMPassManagerRef
 
-pub type LLVMPassRegistryRef 
+pub extern type LLVMPassRegistryRef 
 
 ///| A set of options passed which are attached to the Pass Manager upon run.
 /// 
@@ -62,46 +62,46 @@ pub type LLVMPassRegistryRef
 /// The details for how the different properties of this structure are used can
 /// be found in the source for LLVMRunPasses
 /// 
-pub type LLVMPassBuilderOptionsRef
+pub extern type LLVMPassBuilderOptionsRef
 
-pub type LLVMPassManagerBuilderRef 
+pub extern type LLVMPassManagerBuilderRef 
 
 ///| llvm use
-pub type LLVMUseRef
+pub extern type LLVMUseRef
 
 ///| llvm values
-pub type LLVMValueRef
+pub extern type LLVMValueRef
 
 ///| llvm types
-pub type LLVMTypeRef
+pub extern type LLVMTypeRef
 
 ///| llvm operand bundles
-pub type LLVMOperandBundleRef
+pub extern type LLVMOperandBundleRef
 
 ///| llvm attributes
-pub type LLVMAttributeRef
+pub extern type LLVMAttributeRef
 
 ///| llvm diagnostic info
-pub type LLVMDiagnosticInfoRef
-pub type LLVMComdatRef
-pub type LLVMModuleFlagEntry
-pub type LLVMJITEventListenerRef
-pub type LLVMBinaryRef
-pub type LLVMTargetRef
-pub type LLVMTargetMachineOptionsRef
-pub type LLVMTargetMachineRef
+pub extern type LLVMDiagnosticInfoRef
+pub extern type LLVMComdatRef
+pub extern type LLVMModuleFlagEntry
+pub extern type LLVMJITEventListenerRef
+pub extern type LLVMBinaryRef
+pub extern type LLVMTargetRef
+pub extern type LLVMTargetMachineOptionsRef
+pub extern type LLVMTargetMachineRef
 
 ///| llvm debug record refs
-pub type LLVMDbgRecordRef
+pub extern type LLVMDbgRecordRef
 
-pub type LLVMGenericValueRef
-pub type LVMExecutionEngineRef
-pub type LVMMCJITMemoryManagerRef
+pub extern type LLVMGenericValueRef
+pub extern type LVMExecutionEngineRef
+pub extern type LVMMCJITMemoryManagerRef
 
-pub type LLVMRemarkStringRef
+pub extern type LLVMRemarkStringRef
 
 ///| Opaque reference to an error instance. Null serves as the 'success' value.
-pub type LLVMErrorRef
+pub extern type LLVMErrorRef
 
 ///| Represents an address in the executor process.
 pub(all) type LLVMOrcJITTargetAddress UInt64 derive(Show, Eq)
@@ -114,13 +114,13 @@ pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq)
 pub(all) type LLVMJITSymbolTargetFlags UInt derive(Show, Eq)
 
 ///| A reference to an orc::ExecutionSession instance.
-pub type LLVMOrcExecutionSessionRef
+pub extern type LLVMOrcExecutionSessionRef
 
 ///| A reference to an orc::SymbolStringPool.
-pub type LLVMOrcSymbolStringPoolRef
+pub extern type LLVMOrcSymbolStringPoolRef
 
 ///| A reference to an orc::SymbolStringPool table entry.
-pub type LLVMOrcSymbolStringPoolEntryRef
+pub extern type LLVMOrcSymbolStringPoolEntryRef
 pub impl Eq for LLVMTypeRef with op_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
   self.is_equal(other)
 }
