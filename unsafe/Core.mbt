@@ -1532,8 +1532,12 @@ extern "C" fn __llvm_struct_type_in_context(context: LLVMContextRef, element_typ
 /// 
 /// - see llvm::StructType::create()
 /// 
-pub fn llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
-  __llvm_struct_type_in_context(context, element_types, to_llvm_bool(packed))
+pub fn llvm_struct_type_in_context(
+  context: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool
+) -> LLVMTypeRef {
+  let cnt = element_types.length().reinterpret_as_uint()
+  let element_types = FixedArray::from_array(element_types)
+  __llvm_struct_type_in_context(context, element_types, cnt, to_llvm_bool(packed))
 }
 
 ///| Create a new structure type in a context.
@@ -1543,27 +1547,39 @@ pub fn llvm_struct_type_in_context(context: LLVMContextRef, element_types: Array
 /// 
 /// - see llvm::StructType::create()
 /// 
-pub fn LLVMContextRef::struct_type(self: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
-  __llvm_struct_type_in_context(self, element_types, to_llvm_bool(packed))
+pub fn LLVMContextRef::struct_type(
+  self: LLVMContextRef, element_types: Array[LLVMTypeRef], packed: Bool
+) -> LLVMTypeRef {
+  llvm_struct_type_in_context(self, element_types, packed)
 }
 
 ///| Create a new structure type in the global context.
 /// 
 /// - see llvm::StructType::create()
-extern "C" fn __llvm_struct_type(element_types: FixedArray[LLVMTypeRef], element_count: UInt, packed: LLVMBool) -> LLVMTypeRef = "LLVMStructType"
+extern "C" fn __llvm_struct_type(
+  element_types: FixedArray[LLVMTypeRef],
+  element_count: UInt,
+  packed: LLVMBool
+) -> LLVMTypeRef = "LLVMStructType"
 
 ///| Create a new structure type in the global context.
 /// 
 /// - see llvm::StructType::create()
-pub fn llvm_struct_type(element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
-  __llvm_struct_type(element_types, to_llvm_bool(packed))
+pub fn llvm_struct_type(
+  element_types: Array[LLVMTypeRef], packed: Bool
+) -> LLVMTypeRef {
+  let cnt = element_types.length().reinterpret_as_uint()
+  let element_types = FixedArray::from_array(element_types)
+  __llvm_struct_type(element_types, cnt, to_llvm_bool(packed))
 }
 
 ///| Create a new structure type in the global context.
 /// 
 /// - see llvm::StructType::create()
-pub fn LLVMTypeRef::struct_type(element_types: Array[LLVMTypeRef], packed: Bool) -> LLVMTypeRef {
-  __llvm_struct_type(element_types, to_llvm_bool(packed))
+pub fn LLVMTypeRef::struct_type(
+  element_types: Array[LLVMTypeRef], packed: Bool
+) -> LLVMTypeRef {
+  llvm_struct_type(element_types, packed)
 }
 
 ///| Create an empty structure in a context having a specified name.
@@ -1609,9 +1625,16 @@ pub fn LLVMTypeRef::get_struct_name(self: LLVMTypeRef) -> String {
   llvm_get_struct_name(self)
 }
 
-extern "C" fn __llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: FixedArray[LLVMTypeRef], element_count: UInt, packed: LLVMBool) = "LLVMStructSetBody"
+extern "C" fn __llvm_struct_set_body(
+  struct_ty: LLVMTypeRef,
+  element_types: FixedArray[LLVMTypeRef],
+  element_count: UInt,
+  packed: LLVMBool
+) = "LLVMStructSetBody"
 pub fn llvm_struct_set_body(struct_ty: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: Bool) -> Unit {
-  __llvm_struct_set_body(struct_ty, element_types, to_llvm_bool(packed))
+  let cnt = element_types.length().reinterpret_as_uint()
+  let element_types = FixedArray::from_array(element_types)
+  __llvm_struct_set_body(struct_ty, element_types, cnt, to_llvm_bool(packed))
 }
 pub fn LLVMTypeRef::set_body(self: LLVMTypeRef, element_types: Array[LLVMTypeRef], packed: Bool) -> Unit {
   llvm_struct_set_body(self, element_types, packed)
@@ -3357,7 +3380,12 @@ pub fn LLVMTypeRef::const_int(self: LLVMTypeRef, n: UInt64, sign_extend: Bool) -
 ///| Obtain a constant value for an integer of arbitrary precision.
 /// 
 /// - see llvm::ConstantInt::get()
-pub extern "C" fn llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, num_words: UInt words: FixedArray[UInt64]) -> LLVMValueRef = "LLVMConstIntOfArbitraryPrecision"
+pub fn llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, words: Array[UInt64]) -> LLVMValueRef {
+  let num_words = words.length().reinterpret_as_uint()
+  let words = FixedArray::from_array(words)
+  __llvm_const_int_of_arbitrary_precision(int_ty, num_words, words)
+}
+extern "C" fn __llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, num_words: UInt, words: FixedArray[UInt64]) -> LLVMValueRef = "LLVMConstIntOfArbitraryPrecision"
 
 
 ///| Obtain a constant value for an integer parsed from a string.
@@ -3367,7 +3395,7 @@ pub extern "C" fn llvm_const_int_of_arbitrary_precision(int_ty: LLVMTypeRef, num
 /// instead.
 /// 
 /// - see llvm::ConstantInt::get()
-extern "C" fn __llvm_const_int_of_string(int_ty: LLVMTypeRef, text: Bytes, radix: Byte) -> LLVMValueRef = "LLVMConstIntOfString"
+extern "C" fn __llvm_const_int_of_string(int_ty: LLVMTypeRef, text: CStr, radix: Byte) -> LLVMValueRef = "LLVMConstIntOfString"
 
 ///| Obtain a constant value for an integer parsed from a string.
 /// 
@@ -3379,6 +3407,7 @@ extern "C" fn __llvm_const_int_of_string(int_ty: LLVMTypeRef, text: Bytes, radix
 // TODO: use llvm_const_int_of_string_and_size instead
 pub fn llvm_const_int_of_string(int_ty: LLVMTypeRef, text: String, radix: Int) -> LLVMValueRef {
   let cstr = moonbit_str_to_c_str(text);
+  let radix = radix.to_byte()
   __llvm_const_int_of_string(int_ty, cstr, radix)
 }
 
@@ -3393,10 +3422,15 @@ pub fn LLVMTypeRef::const_int_of_string(self: LLVMTypeRef, text: String, radix: 
   llvm_const_int_of_string(self, text, radix)
 }
 
-extern "C" fn __llvm_const_int_of_string_and_size(int_ty: LLVMTypeRef, text: Bytes, s_len: Int, radix: Byte) -> LLVMValueRef = "LLVMConstIntOfStringAndSize"
-pub fn llvm_const_int_of_string_and_size(int_ty: LLVMTypeRef, text: String, radix: Int) -> LLVMValueRef {
+extern "C" fn __llvm_const_int_of_string_and_size(int_ty: LLVMTypeRef, text: CStr, s_len: Int, radix: Byte) -> LLVMValueRef = "LLVMConstIntOfStringAndSize"
+pub fn llvm_const_int_of_string_and_size(
+  int_ty: LLVMTypeRef,
+  text: String,
+  radix: Int
+) -> LLVMValueRef {
   let cstr = moonbit_str_to_c_str(text);
   let s_len = text.length()
+  let radix = radix.to_byte()
   __llvm_const_int_of_string_and_size(int_ty, cstr, s_len, radix)
 }
 
@@ -3574,15 +3608,21 @@ extern "C" fn __llvm_const_struct_in_context(context: LLVMContextRef, constant_v
 ///| Create an anonymous ConstantStruct with the specified values.
 /// 
 /// - see llvm::ConstantStruct::getAnon()
-pub fn llvm_const_struct_in_context(context: LLVMContextRef, constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
-  __llvm_const_struct_in_context(context, constant_vals, to_llvm_bool(packed))
+pub fn llvm_const_struct_in_context(
+  context: LLVMContextRef,
+  constant_vals: Array[LLVMValueRef],
+  packed: Bool
+) -> LLVMValueRef {
+  let cnt = constant_vals.length().reinterpret_as_uint()
+  let constant_vals = FixedArray::from_array(constant_vals)
+  __llvm_const_struct_in_context(context, constant_vals, cnt, to_llvm_bool(packed))
 }
 
 ///| Create an anonymous ConstantStruct with the specified values.
 /// 
 /// - see llvm::ConstantStruct::getAnon()
 pub fn LLVMContextRef::const_struct(self: LLVMContextRef, constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
-  __llvm_const_struct_in_context(self, constant_vals, to_llvm_bool(packed))
+  llvm_const_struct_in_context(self, constant_vals, packed)
 }
 
 ///| Create a ConstantStruct in the global Context.
@@ -3600,7 +3640,9 @@ extern "C" fn __llvm_const_struct(constant_vals: FixedArray[LLVMValueRef], count
 /// 
 /// - see LLVMConstStructInContext()
 pub fn llvm_const_struct(constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
-  __llvm_const_struct(constant_vals, to_llvm_bool(packed))
+  let cnt = constant_vals.length().reinterpret_as_uint()
+  let constant_vals = FixedArray::from_array(constant_vals)
+  __llvm_const_struct(constant_vals, cnt, to_llvm_bool(packed))
 }
 
 ///| Create a ConstantStruct in the global Context.
@@ -3610,7 +3652,7 @@ pub fn llvm_const_struct(constant_vals: Array[LLVMValueRef], packed: Bool) -> LL
 /// 
 /// - see LLVMConstStructInContext()
 pub fn LLVMValueRef::const_struct(constant_vals: Array[LLVMValueRef], packed: Bool) -> LLVMValueRef {
-  __llvm_const_struct(constant_vals, to_llvm_bool(packed))
+  llvm_const_struct(constant_vals, packed)
 }
 
 ///| Create a ConstantArray from values.
@@ -3619,7 +3661,12 @@ pub fn LLVMValueRef::const_struct(constant_vals: Array[LLVMValueRef], packed: Bo
 /// LLVMConstArray2
 ///
 /// - see llvm::ConstantArray::get()
-pub extern "C" fn llvm_const_array(element_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], length: UInt) -> LLVMValueRef = "LLVMConstArray"
+pub fn llvm_const_array(element_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = constant_vals.length().reinterpret_as_uint()
+  let constant_vals = FixedArray::from_array(constant_vals)
+  __llvm_const_array(element_ty, constant_vals, cnt)
+}
+extern "C" fn __llvm_const_array(element_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], length: UInt) -> LLVMValueRef = "LLVMConstArray"
 
 ///| Create a ConstantArray from values.
 /// 
@@ -3634,7 +3681,12 @@ pub fn LLVMValueRef::const_array(self: LLVMTypeRef, constant_vals: Array[LLVMVal
 ///| Create a ConstantArray from values.
 /// 
 /// - see llvm::ConstantArray::get()
-pub extern "C" fn llvm_const_array2(element_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], length: UInt) -> LLVMValueRef = "LLVMConstArray2"
+pub fn llvm_const_array2(element_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = constant_vals.length().reinterpret_as_uint()
+  let constant_vals = FixedArray::from_array(constant_vals)
+  __llvm_const_array2(element_ty, constant_vals, cnt)
+}
+extern "C" fn __llvm_const_array2(element_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], length: UInt) -> LLVMValueRef = "LLVMConstArray2"
 
 ///| Create a ConstantArray from values.
 /// 
@@ -3646,7 +3698,12 @@ pub fn LLVMValueRef::const_array2(self: LLVMTypeRef, constant_vals: Array[LLVMVa
 ///| Create a non-anonymous ConstantStruct from values.
 /// 
 /// - see llvm::ConstantStruct::get()
-pub extern "C" fn llvm_const_named_struct(struct_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMConstNamedStruct"
+pub fn llvm_const_named_struct(struct_ty: LLVMTypeRef, constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = constant_vals.length().reinterpret_as_uint()
+  let constant_vals = FixedArray::from_array(constant_vals)
+  __llvm_const_named_struct(struct_ty, constant_vals, cnt)
+}
+extern "C" fn __llvm_const_named_struct(struct_ty: LLVMTypeRef, constant_vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMConstNamedStruct"
 
 ///| Create a non-anonymous ConstantStruct from values.
 /// 
@@ -3680,7 +3737,12 @@ pub fn LLVMValueRef::get_aggregate_element(self: LLVMValueRef, idx: UInt) -> LLV
 ///| Create a ConstantVector from values.
 /// 
 /// - see llvm::ConstantVector::get()
-pub extern "C" fn llvm_const_vector(scalar_constant_vals: FixedArray[LLVMValueRef], size: UInt) -> LLVMValueRef = "LLVMConstVector"
+pub fn llvm_const_vector(scalar_constant_vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = scalar_constant_vals.length().reinterpret_as_uint()
+  let scalar_constant_vals = FixedArray::from_array(scalar_constant_vals)
+  __llvm_const_vector(scalar_constant_vals, cnt)
+}
+extern "C" fn __llvm_const_vector(scalar_constant_vals: FixedArray[LLVMValueRef], size: UInt) -> LLVMValueRef = "LLVMConstVector"
 
 ///| Create a ConstantVector from values.
 /// 
@@ -3819,7 +3881,12 @@ pub fn LLVMValueRef::const_xor(self: LLVMValueRef, rhs_constant: LLVMValueRef) -
 }
 
 ///| Return getelementptr of a constant value.
-pub extern "C" fn llvm_const_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: FixedArray[LLVMValueRef], num_indices: UInt) -> LLVMValueRef = "LLVMConstGEP2"
+pub fn llvm_const_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = constant_indices.length().reinterpret_as_uint()
+  let constant_indices = FixedArray::from_array(constant_indices)
+  __llvm_const_gep2(ty, constant_val, constant_indices, cnt)
+}
+extern "C" fn __llvm_const_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: FixedArray[LLVMValueRef], num_indices: UInt) -> LLVMValueRef = "LLVMConstGEP2"
 
 ///| Return getelementptr of a constant value.
 pub fn LLVMTypeRef::const_gep2(self: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: Array[LLVMValueRef]) -> LLVMValueRef {
@@ -3827,7 +3894,12 @@ pub fn LLVMTypeRef::const_gep2(self: LLVMTypeRef, constant_val: LLVMValueRef, co
 }
 
 ///| Return inbounds getelementptr of a constant value.
-pub extern "C" fn llvm_const_in_bounds_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: FixedArray[LLVMValueRef], num_indices: UInt) -> LLVMValueRef = "LLVMConstInBoundsGEP2"
+pub fn llvm_const_in_bounds_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: Array[LLVMValueRef]) -> LLVMValueRef {
+  let cnt = constant_indices.length().reinterpret_as_uint()
+  let constant_indices = FixedArray::from_array(constant_indices)
+  __llvm_const_in_bounds_gep2(ty, constant_val, constant_indices, cnt)
+}
+extern "C" fn __llvm_const_in_bounds_gep2(ty: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: FixedArray[LLVMValueRef], num_indices: UInt) -> LLVMValueRef = "LLVMConstInBoundsGEP2"
 
 ///| Return inbounds getelementptr of a constant value.
 pub fn LLVMTypeRef::const_in_bounds_gep2(self: LLVMTypeRef, constant_val: LLVMValueRef, constant_indices: Array[LLVMValueRef]) -> LLVMValueRef {
@@ -4414,7 +4486,12 @@ pub extern "C" fn llvm_get_intrinsic_id(func: LLVMValueRef) -> UInt = "LLVMGetIn
 /// parameter types must be provided to uniquely identify an overload.
 /// 
 /// - see llvm::Intrinsic::getOrInsertDeclaration()
-pub extern "C" fn llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, param_types: FixedArray[LLVMTypeRef], param_count: UInt) -> LLVMValueRef = "LLVMGetIntrinsicDeclaration"
+pub fn llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMValueRef {
+  let param_count = param_types.length().reinterpret_as_uint();
+  let param_types = FixedArray::from_array(param_types);
+  __llvm_get_intrinsic_declaration(mod, id, param_types, param_count)
+}
+extern "C" fn __llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, param_types: FixedArray[LLVMTypeRef], param_count: UInt) -> LLVMValueRef = "LLVMGetIntrinsicDeclaration"
 
 ///| Retrieves the type of an intrinsic.
 ///
@@ -4422,7 +4499,12 @@ pub extern "C" fn llvm_get_intrinsic_declaration(mod: LLVMModuleRef, id: UInt, p
 /// types must be provided to uniquely identify an overload.
 /// 
 /// - see llvm::Intrinsic::getType()
-pub extern "C" fn llvm_intrinsic_get_type(ctx: LLVMContextRef, id: UInt, param_types: FixedArray[LLVMTypeRef], param_count: UInt) -> LLVMTypeRef = "LLVMIntrinsicGetType"
+pub fn llvm_intrinsic_get_type(ctx: LLVMContextRef, id: UInt, param_types: Array[LLVMTypeRef]) -> LLVMTypeRef {
+  let param_count = param_types.length().reinterpret_as_uint();
+  let param_types = FixedArray::from_array(param_types);
+  __llvm_intrinsic_get_type(ctx, id, param_types, param_count)
+}
+extern "C" fn __llvm_intrinsic_get_type(ctx: LLVMContextRef, id: UInt, param_types: FixedArray[LLVMTypeRef], param_count: UInt) -> LLVMTypeRef = "LLVMIntrinsicGetType"
 
 ///| Retrieves the type of an intrinsic.
 ///
@@ -4455,7 +4537,9 @@ pub fn llvm_intrinsic_get_name(id: UInt) -> String {
 // Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead. 
 extern "C" fn __llvm_intrinsic_copy_overloaded_name(id: UInt, param_types: FixedArray[LLVMTypeRef], param_count: UInt) -> CStr = "__llvm_intrinsic_copy_overloaded_name"
 pub fn llvm_intrinsic_copy_overloaded_name(id: UInt, param_types: Array[LLVMTypeRef]) -> String {
-  let cstr = __llvm_intrinsic_copy_overloaded_name(id, param_types);
+  let cnt = param_types.length().reinterpret_as_uint();
+  let param_types = FixedArray::from_array(param_types);
+  let cstr = __llvm_intrinsic_copy_overloaded_name(id, param_types, cnt);
   c_str_to_moonbit_str(cstr)
 }
 
@@ -4478,7 +4562,9 @@ extern "C" fn __llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: UIn
 /// 
 /// - see llvm::Intrinsic::getName()
 pub fn llvm_intrinsic_copy_overloaded_name2(mod: LLVMModuleRef, id: UInt, param_types: Array[LLVMTypeRef]) -> String {
-  let cstr = __llvm_intrinsic_copy_overloaded_name2(mod, id, param_types);
+  let cnt = param_types.length().reinterpret_as_uint();
+  let param_types = FixedArray::from_array(param_types);
+  let cstr = __llvm_intrinsic_copy_overloaded_name2(mod, id, param_types, cnt);
   c_str_to_moonbit_str(cstr)
 }
 
@@ -4867,8 +4953,15 @@ pub fn LLVMContextRef::md_string_in_context2(self: LLVMContextRef, str: String) 
   llvm_md_string_in_context2(self, str)
 }
 
-pub extern "C" fn llvm_md_node_in_context2(context: LLVMContextRef, mds: FixedArray[LLVMMetadataRef], count: UInt) -> LLVMMetadataRef = "LLVMMDNodeInContext2"
-pub fn LLVMContextRef::md_node_in_context2(self: LLVMContextRef, mds: Array[LLVMMetadataRef]) -> LLVMMetadataRef {
+extern "C" fn __llvm_md_node_in_context2(context: LLVMContextRef, mds: FixedArray[LLVMMetadataRef], count: UInt) -> LLVMMetadataRef = "LLVMMDNodeInContext2"
+pub fn llvm_md_node_in_context2(context: LLVMContextRef, mds: Array[LLVMMetadataRef]) -> LLVMMetadataRef {
+  let count = mds.length().reinterpret_as_uint();
+  let mds = FixedArray::from_array(mds);
+  __llvm_md_node_in_context2(context, mds, count)
+}
+pub fn LLVMContextRef::md_node_in_context2(
+  self: LLVMContextRef, mds: Array[LLVMMetadataRef]
+) -> LLVMMetadataRef {
   llvm_md_node_in_context2(self, mds)
 }
 
@@ -4926,15 +5019,22 @@ pub fn LLVMValueRef::md_string(self: String) -> LLVMValueRef {
   llvm_md_string(self)
 }
 
-pub extern "C" fn llvm_md_node_in_context(context: LLVMContextRef, vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMMDNodeInContext"
+pub fn llvm_md_node_in_context(context: LLVMContextRef, vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let count = vals.length().reinterpret_as_uint();
+  let vals = FixedArray::from_array(vals);
+  __llvm_md_node_in_context(context, vals, count)
+}
+extern "C" fn __llvm_md_node_in_context(context: LLVMContextRef, vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMMDNodeInContext"
 pub fn LLVMContextRef::md_node_in_context(self: LLVMContextRef, vals: Array[LLVMValueRef]) -> LLVMValueRef {
   llvm_md_node_in_context(self, vals)
 }
 
-pub extern "C" fn llvm_md_node(vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMMDNode"
-pub fn LLVMValueRef::md_node(self: Array[LLVMValueRef], count: UInt) -> LLVMValueRef {
-  llvm_md_node(self, count)
+pub fn llvm_md_node(vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let count = vals.length().reinterpret_as_uint();
+  let vals = FixedArray::from_array(vals);
+  __llvm_md_node(vals, count)
 }
+extern "C" fn __llvm_md_node(vals: FixedArray[LLVMValueRef], count: UInt) -> LLVMValueRef = "LLVMMDNode"
 
 ///| Create operand bundle.
 extern "C" fn __llvm_create_operand_bundle(tag: CStr, tag_len: UInt64, args: FixedArray[LLVMValueRef], num_args: UInt) -> LLVMOperandBundleRef = "LLVMCreateOperandBundle"
@@ -4942,7 +5042,9 @@ extern "C" fn __llvm_create_operand_bundle(tag: CStr, tag_len: UInt64, args: Fix
 ///| Create operand bundle.
 pub fn llvm_create_operand_bundle(tag: String, args: Array[LLVMValueRef]) -> LLVMOperandBundleRef {
   let cstr = moonbit_str_to_c_str(tag);
-  __llvm_create_operand_bundle(cstr, tag.length().to_uint64(), args)
+  let num_args = args.length().reinterpret_as_uint();
+  let args = FixedArray::from_array(args);
+  __llvm_create_operand_bundle(cstr, tag.length().to_uint64(), args, num_args)
 }
 
 ///| Dispose operand bundle.
@@ -5946,7 +6048,17 @@ pub fn LLVMValueRef::get_gep_source_element_type(self: LLVMValueRef) -> LLVMType
 
 
 ///| Add an incoming value to the end of a PHI list.
-pub extern "C" fn llvm_add_incoming(phi_node: LLVMValueRef, incoming_values: FixedArray[LLVMValueRef], incoming_blocks: FixedArray[LLVMBasicBlockRef], count: UInt) = "LLVMAddIncoming"
+pub fn llvm_add_incoming(phi_node: LLVMValueRef, incoming_values: Array[LLVMValueRef], incoming_blocks: Array[LLVMBasicBlockRef]) -> Unit {
+  let incoming_values_cnt = incoming_values.length().reinterpret_as_uint();
+  let incoming_blocks_cnt = incoming_blocks.length().reinterpret_as_uint();
+  guard incoming_blocks_cnt == incoming_values_cnt else {
+    abort("Incoming values and blocks must have the same length");
+  }
+  let incoming_values = FixedArray::from_array(incoming_values);
+  let incoming_blocks = FixedArray::from_array(incoming_blocks);
+  __llvm_add_incoming(phi_node, incoming_values, incoming_blocks, incoming_values_cnt);
+}
+extern "C" fn __llvm_add_incoming(phi_node: LLVMValueRef, incoming_values: FixedArray[LLVMValueRef], incoming_blocks: FixedArray[LLVMBasicBlockRef], count: UInt) = "LLVMAddIncoming"
 
 ///| Obtain the number of incoming basic blocks to a PHI node.
 pub extern "C" fn llvm_count_incoming(phi_node: LLVMValueRef) -> UInt = "LLVMCountIncoming"
@@ -6213,7 +6325,12 @@ pub fn LLVMBuilderRef::build_ret(self: LLVMBuilderRef, v: LLVMValueRef) -> LLVMV
 }
 
 ///| Build an aggregate return instruction.
-pub extern "C" fn llvm_build_aggregate_ret(builder: LLVMBuilderRef, ret_vals: FixedArray[LLVMValueRef], n: UInt) -> LLVMValueRef = "LLVMBuildAggregateRet"
+pub fn llvm_build_aggregate_ret(builder: LLVMBuilderRef, ret_vals: Array[LLVMValueRef]) -> LLVMValueRef {
+  let n = ret_vals.length().reinterpret_as_uint()
+  let ret_vals = FixedArray::from_array(ret_vals)
+  __llvm_build_aggregate_ret(builder, ret_vals, n)
+}
+extern "C" fn __llvm_build_aggregate_ret(builder: LLVMBuilderRef, ret_vals: FixedArray[LLVMValueRef], n: UInt) -> LLVMValueRef = "LLVMBuildAggregateRet"
 
 ///| Build an aggregate return instruction.
 pub fn LLVMBuilderRef::build_aggregate_ret(self: LLVMBuilderRef, ret_vals: Array[LLVMValueRef]) -> LLVMValueRef {
@@ -6257,7 +6374,13 @@ extern "C" fn __llvm_build_call_br(builder: LLVMBuilderRef, ty: LLVMTypeRef, fun
 
 ///| Build a call branch instruction.
 pub fn llvm_build_call_br(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, default_dest: LLVMBasicBlockRef, indirect_dests: Array[LLVMBasicBlockRef], args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: String) -> LLVMValueRef {
-  __llvm_build_call_br(builder, ty, func, default_dest, indirect_dests, args, bundles, moonbit_str_to_c_str(name))
+  let num_indirect_dests = indirect_dests.length().reinterpret_as_uint()
+  let num_args = args.length().reinterpret_as_uint()
+  let num_bundles = bundles.length().reinterpret_as_uint()
+  let indirect_dests = FixedArray::from_array(indirect_dests)
+  let args = FixedArray::from_array(args)
+  let bundles = FixedArray::from_array(bundles)
+  __llvm_build_call_br(builder, ty, func, default_dest, indirect_dests, num_indirect_dests, args, num_args, bundles, num_bundles, moonbit_str_to_c_str(name))
 }
 
 ///| Build a call branch instruction.
@@ -6270,7 +6393,9 @@ extern "C" fn __llvm_build_invoke2(builder: LLVMBuilderRef, ty: LLVMTypeRef, fun
 
 ///| Build an invoke instruction.
 pub fn llvm_build_invoke2(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, name: String) -> LLVMValueRef {
-  __llvm_build_invoke2(builder, ty, func, args, then, catch_block, moonbit_str_to_c_str(name))
+  let num_args = args.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  __llvm_build_invoke2(builder, ty, func, args, num_args, then, catch_block, moonbit_str_to_c_str(name))
 }
 
 ///| Build an invoke instruction.
@@ -6283,7 +6408,11 @@ extern "C" fn __llvm_build_invoke_with_operand_bundles(builder: LLVMBuilderRef, 
 
 ///| Build an invoke instruction with operand bundles.
 pub fn llvm_build_invoke_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], then: LLVMBasicBlockRef, catch_block: LLVMBasicBlockRef, bundles: Array[LLVMOperandBundleRef], name: String) -> LLVMValueRef {
-  __llvm_build_invoke_with_operand_bundles(builder, ty, func, args, then, catch_block, bundles, moonbit_str_to_c_str(name))
+  let num_args = args.length().reinterpret_as_uint()
+  let num_bundles = bundles.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  let bundles = FixedArray::from_array(bundles)
+  __llvm_build_invoke_with_operand_bundles(builder, ty, func, args, num_args, then, catch_block, bundles, num_bundles, moonbit_str_to_c_str(name))
 }
 
 ///| Build an invoke instruction with operand bundles.
@@ -6341,7 +6470,9 @@ extern "C" fn __llvm_build_catch_pad(builder: LLVMBuilderRef, parent_pad: LLVMVa
 
 ///| Build a catch pad instruction.
 pub fn llvm_build_catch_pad(builder: LLVMBuilderRef, parent_pad: LLVMValueRef, args: Array[LLVMValueRef], name: String) -> LLVMValueRef {
-  __llvm_build_catch_pad(builder, parent_pad, args, moonbit_str_to_c_str(name))
+  let num_args = args.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  __llvm_build_catch_pad(builder, parent_pad, args, num_args, moonbit_str_to_c_str(name))
 }
 
 ///| Build a catch pad instruction.
@@ -6354,7 +6485,9 @@ extern "C" fn __llvm_build_cleanup_pad(builder: LLVMBuilderRef, parent_pad: LLVM
 
 ///| Build a cleanup pad instruction.
 pub fn llvm_build_cleanup_pad(builder: LLVMBuilderRef, parent_pad: LLVMValueRef, args: Array[LLVMValueRef], name: String) -> LLVMValueRef {
-  __llvm_build_cleanup_pad(builder, parent_pad, args, moonbit_str_to_c_str(name))
+  let num_args = args.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  __llvm_build_cleanup_pad(builder, parent_pad, args, num_args, moonbit_str_to_c_str(name))
 }
 
 ///| Build a cleanup pad instruction.
@@ -7078,7 +7211,9 @@ extern "C" fn __llvm_build_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointe
 
 ///| Build a getelementptr instruction.
 pub fn llvm_build_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, indices: Array[LLVMValueRef], name: String) -> LLVMValueRef {
-  __llvm_build_gep2(builder, ty, pointer, indices, moonbit_str_to_c_str(name))
+  let num_indices = indices.length().reinterpret_as_uint()
+  let indices = FixedArray::from_array(indices)
+  __llvm_build_gep2(builder, ty, pointer, indices, num_indices, moonbit_str_to_c_str(name))
 }
 pub fn LLVMBuilderRef::build_gep2(self: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, indices: Array[LLVMValueRef], name: String) -> LLVMValueRef {
   llvm_build_gep2(self, ty, pointer, indices, name)
@@ -7089,7 +7224,9 @@ extern "C" fn __llvm_build_in_bounds_gep2(builder: LLVMBuilderRef, ty: LLVMTypeR
 
 ///| Build a getelementptr instruction with inbounds flag.
 pub fn llvm_build_in_bounds_gep2(builder: LLVMBuilderRef, ty: LLVMTypeRef, pointer: LLVMValueRef, indices: Array[LLVMValueRef], name: String) -> LLVMValueRef {
-  __llvm_build_in_bounds_gep2(builder, ty, pointer, indices, moonbit_str_to_c_str(name))
+  let num_indices = indices.length().reinterpret_as_uint()
+  let indices = FixedArray::from_array(indices)
+  __llvm_build_in_bounds_gep2(builder, ty, pointer, indices, num_indices, moonbit_str_to_c_str(name))
 }
 
 ///| Build a getelementptr instruction with inbounds flag.
@@ -7586,11 +7723,15 @@ pub fn LLVMBuilderRef::build_call2(self: LLVMBuilderRef, ty: LLVMTypeRef, func: 
 }
 
 ///| Build a call instruction with operand bundles.
-extern "C" fn __llvm_build_call_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: FixedArray[LLVMValueRef], num_args: UInt, bundles: Array[LLVMOperandBundleRef], num_bundles: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildCallWithOperandBundles"
+extern "C" fn __llvm_build_call_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: FixedArray[LLVMValueRef], num_args: UInt, bundles: FixedArray[LLVMOperandBundleRef], num_bundles: UInt, name: CStr) -> LLVMValueRef = "LLVMBuildCallWithOperandBundles"
 
 ///| Build a call instruction with operand bundles.
 pub fn llvm_build_call_with_operand_bundles(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], bundles: Array[LLVMOperandBundleRef], name: String) -> LLVMValueRef {
-  __llvm_build_call_with_operand_bundles(builder, ty, func, args, bundles, moonbit_str_to_c_str(name))
+  let num_args = args.length().reinterpret_as_uint()
+  let num_bundles = bundles.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  let bundles = FixedArray::from_array(bundles)
+  __llvm_build_call_with_operand_bundles(builder, ty, func, args, num_args, bundles, num_bundles, moonbit_str_to_c_str(name))
 }
 
 ///| Build a call instruction with operand bundles.

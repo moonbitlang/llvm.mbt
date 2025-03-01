@@ -29,9 +29,8 @@ pub fn PhiValue::as_value_ref(self: PhiValue) -> @unsafe.LLVMValueRef {
 pub fn PhiValue::add_incoming(self: PhiValue, incoming: Array[(&BasicValue, BasicBlock)]) -> Unit {
   let values = incoming.iter().map(fn (pair) {pair.0.as_value_ref()}).collect()
   let bbs = incoming.iter().map(fn (pair) {pair.1.as_bb_ref()}).collect()
-  let cnt = incoming.length()
 
-  @unsafe.llvm_add_incoming(self.as_value_ref(), values, bbs, cnt.reinterpret_as_uint())
+  @unsafe.llvm_add_incoming(self.as_value_ref(), values, bbs)
 }
 
 ///| Get the number of incoming values of the phi node.
