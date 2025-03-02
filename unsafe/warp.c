@@ -1468,27 +1468,6 @@ int32_t __llvm_get_type_kind(void *ty) {
   return llvm_type_kind_to_int(k);
 }
 
-ArrayLLVMTypeRef *__llvm_get_param_types(void *function_ty,
-                                         ArrayLLVMTypeRef *dest) {
-  LLVMTypeRef *e_dest = (LLVMTypeRef *)dest->$0->data;
-  LLVMGetParamTypes((LLVMTypeRef)function_ty, (LLVMTypeRef *)e_dest);
-  return dest;
-}
-
-ArrayLLVMValueRef *__llvm_get_struct_element_types(void *struct_ty,
-                                                   unsigned cnt,
-                                                   ArrayLLVMValueRef *arr) {
-  LLVMTypeRef *llvm_element_types = (LLVMTypeRef *)arr->$0->data;
-  LLVMGetStructElementTypes((LLVMTypeRef)struct_ty, llvm_element_types);
-  return arr;
-}
-
-ArrayLLVMTypeRef *__llvm_get_subtypes(void *tp, ArrayLLVMTypeRef *arr) {
-  LLVMTypeRef *e_arr = (LLVMTypeRef *)arr->$0->data;
-  LLVMGetSubtypes((LLVMTypeRef)tp, e_arr);
-  return arr;
-}
-
 int __llvm_get_value_kind(void *val) {
   LLVMValueKind k = LLVMGetValueKind((LLVMValueRef)val);
   return llvm_value_kind_to_int(k);
@@ -1514,12 +1493,6 @@ TupleCStrUInt64 *__llvm_get_as_string(void *c, TupleCStrUInt64 *input) {
   const char *s = LLVMGetAsString((LLVMValueRef)c, (size_t *)&(input->$1));
   input->$0 = (void *)s;
   return input;
-}
-
-void *__llvm_const_struct(ArrayLLVMValueRef *constant_vals, LLVMBool packed) {
-  LLVMValueRef *llvm_constant_vals = (LLVMValueRef *)constant_vals->$0->data;
-  unsigned count = constant_vals->$1;
-  return (LLVMValueRef)LLVMConstStruct(llvm_constant_vals, count, packed);
 }
 
 int __llvm_get_const_opcode(void *constant_val) {
@@ -1603,12 +1576,6 @@ void *__llvm_intrinsic_copy_overloaded_name2(void *mod, unsigned id,
   size_t name_length = 0;
   return (char *)LLVMIntrinsicCopyOverloadedName2(
       (LLVMModuleRef)mod, id, llvm_param_types, param_count, &name_length);
-}
-
-ArrayLLVMValueRef *__llvm_get_params(void *fn, ArrayLLVMValueRef *param_arr) {
-  LLVMValueRef *params = (LLVMValueRef *)param_arr->$0->data;
-  LLVMGetParams((LLVMValueRef)fn, params);
-  return param_arr;
 }
 
 TupleCStrUInt *__llvm_get_md_string(void *v, TupleCStrUInt *input) {
@@ -1740,15 +1707,6 @@ void *__llvm_build_fcmp(void *builder, int op, void *lhs, void *rhs,
   return (LLVMValueRef)LLVMBuildFCmp((LLVMBuilderRef)builder, real_op,
                                      (LLVMValueRef)lhs, (LLVMValueRef)rhs,
                                      (const char *)name);
-}
-
-void *__llvm_build_call2(void *builder, void *ty, void *fn,
-                         ArrayLLVMValueRef *args, void *name) {
-  LLVMValueRef *llvm_args = (LLVMValueRef *)args->$0->data;
-  unsigned num_args = args->$1;
-  return (LLVMValueRef)LLVMBuildCall2((LLVMBuilderRef)builder, (LLVMTypeRef)ty,
-                                      (LLVMValueRef)fn, llvm_args, num_args,
-                                      (const char *)name);
 }
 
 void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,

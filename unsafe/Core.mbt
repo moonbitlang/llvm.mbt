@@ -1510,10 +1510,11 @@ pub fn LLVMTypeRef::count_param_types(self: LLVMTypeRef) -> UInt {
 pub fn llvm_get_param_types(function_ty: LLVMTypeRef) -> Array[LLVMTypeRef] {
   let null_ref = LLVMTypeRef::null()
   let cnt = llvm_count_param_types(function_ty).reinterpret_as_int()
-  let dest = Array::make(cnt, null_ref)
+  let dest = FixedArray::make(cnt, null_ref)
   __llvm_get_param_types(function_ty, dest)
+  Array::from_fixed_array(dest)
 }
-extern "C" fn __llvm_get_param_types(function_ty: LLVMTypeRef, dest: Array[LLVMTypeRef]) -> Array[LLVMTypeRef] = "__llvm_get_param_types"
+extern "C" fn __llvm_get_param_types(function_ty: LLVMTypeRef, dest: FixedArray[LLVMTypeRef]) = "LLVMGetParamTypes"
 
 
 ///| Create a new structure type in a context.
@@ -1664,9 +1665,8 @@ pub fn LLVMTypeRef::count_struct_element_types(self: LLVMTypeRef) -> UInt {
 /// is contained in.
 extern "C" fn __llvm_get_struct_element_types(
   struct_ty: LLVMTypeRef,
-  num_fields: UInt,
-  fields: Array[LLVMTypeRef]
-)-> Array[LLVMTypeRef] = "__llvm_get_struct_element_types"
+  fields: FixedArray[LLVMTypeRef]
+) = "LLVMGetStructElementTypes"
 
 ///| Get the elements within a structure.
 /// 
@@ -1679,8 +1679,9 @@ extern "C" fn __llvm_get_struct_element_types(
 pub fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] {
   let field_count = llvm_count_struct_element_types(struct_ty)
   let null_ref = llvm_new_null_type_ref()
-  let null_refs = Array::make(field_count.reinterpret_as_int(), null_ref)
-  __llvm_get_struct_element_types(struct_ty, field_count, null_refs)
+  let arr = FixedArray::make(field_count.reinterpret_as_int(), null_ref)
+  __llvm_get_struct_element_types(struct_ty, arr)
+  Array::from_fixed_array(arr)
 }
 
 ///| Get the elements within a structure.
@@ -1795,10 +1796,11 @@ pub fn llvm_get_subtypes(
 ) -> Array[LLVMTypeRef] {
   let cnt = llvm_get_num_contained_types(tp).reinterpret_as_int()
   let null_ref = LLVMTypeRef::null()
-  let arr = Array::make(cnt, null_ref)
+  let arr = FixedArray::make(cnt, null_ref)
   __llvm_get_subtypes(tp, arr)
+  Array::from_fixed_array(arr)
 }
-extern "C" fn __llvm_get_subtypes(tp: LLVMTypeRef, arr:Array[LLVMTypeRef]) -> Array[LLVMTypeRef] = "__llvm_get_subtypes"
+extern "C" fn __llvm_get_subtypes(tp: LLVMTypeRef, arr:FixedArray[LLVMTypeRef]) = "LLVMGetSubtypes"
 
 ///| Returns type's subtypes
 /// 
@@ -3631,7 +3633,11 @@ pub fn LLVMContextRef::const_struct(self: LLVMContextRef, constant_vals: Array[L
 /// global Context.
 /// 
 /// - see LLVMConstStructInContext()
-extern "C" fn __llvm_const_struct(constant_vals: FixedArray[LLVMValueRef], count: UInt, packed: LLVMBool) -> LLVMValueRef = "LLVMConstStruct"
+extern "C" fn __llvm_const_struct(
+  constant_vals: FixedArray[LLVMValueRef],
+  count: UInt,
+  packed: LLVMBool
+) -> LLVMValueRef = "LLVMConstStruct"
 
 ///| Create a ConstantStruct in the global Context.
 /// 
@@ -4722,7 +4728,7 @@ pub extern "C" fn llvm_count_params(func: LLVMValueRef) -> UInt = "LLVMCountPara
 /// 
 /// - see llvm::Function::arg_begin()
 /// 
-extern "C" fn __llvm_get_params(func: LLVMValueRef, params: Array[LLVMValueRef]) -> Array[LLVMValueRef] = "__llvm_get_params"
+extern "C" fn __llvm_get_params(func: LLVMValueRef, params: FixedArray[LLVMValueRef]) = "LLVMGetParams"
 
 ///| Obtain the parameters in a function.
 /// 
@@ -4737,8 +4743,9 @@ extern "C" fn __llvm_get_params(func: LLVMValueRef, params: Array[LLVMValueRef])
 pub fn llvm_get_params(func: LLVMValueRef) -> Array[LLVMValueRef] {
   let count = llvm_count_params(func).reinterpret_as_int()
   let null_ref = LLVMValueRef::null();
-  let params = Array::make(count, null_ref)
+  let params = FixedArray::make(count, null_ref)
   __llvm_get_params(func, params)
+  Array::from_fixed_array(params)
 }
 
 pub fn LLVMValueRef::get_params(self: LLVMValueRef) -> Array[LLVMValueRef] {
@@ -7710,11 +7717,26 @@ pub fn LLVMBuilderRef::build_phi(self: LLVMBuilderRef, ty: LLVMTypeRef, name: St
 }
 
 ///| Build a call instruction.
-extern "C" fn __llvm_build_call2(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], name: CStr) -> LLVMValueRef = "__llvm_build_call2"
+extern "C" fn __llvm_build_call2(
+  builder: LLVMBuilderRef,
+  ty: LLVMTypeRef,
+  func: LLVMValueRef,
+  args: FixedArray[LLVMValueRef],
+  num_arsg: UInt,
+  name: CStr
+) -> LLVMValueRef = "LLVMBuildCall2"
 
 ///| Build a call instruction.
-pub fn llvm_build_call2(builder: LLVMBuilderRef, ty: LLVMTypeRef, func: LLVMValueRef, args: Array[LLVMValueRef], name: String) -> LLVMValueRef {
-  __llvm_build_call2(builder, ty, func, args, moonbit_str_to_c_str(name))
+pub fn llvm_build_call2(
+  builder: LLVMBuilderRef,
+  ty: LLVMTypeRef,
+  func: LLVMValueRef,
+  args: Array[LLVMValueRef],
+  name: String
+) -> LLVMValueRef {
+  let num_args = args.length().reinterpret_as_uint()
+  let args = FixedArray::from_array(args)
+  __llvm_build_call2(builder, ty, func, args, num_args, moonbit_str_to_c_str(name))
 }
 
 ///| Build a call instruction.
