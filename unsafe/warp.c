@@ -149,12 +149,6 @@ LLVMTypeKind llvm_type_kind_from_int(int32_t k) {
   }
 }
 
-// typedef enum {
-//   LLVMTailCallKindNone = 0,
-//   LLVMTailCallKindTail = 1,
-//   LLVMTailCallKindMustTail = 2,
-//   LLVMTailCallKindNoTail = 3,
-// } LLVMTailCallKind;
 int llvm_tail_call_kind_to_int(LLVMTailCallKind k) {
   switch (k) {
   case LLVMTailCallKindNone:
@@ -1098,15 +1092,6 @@ int llvm_inline_asm_dialect_to_int(LLVMInlineAsmDialect i) {
   }
 }
 
-// typedef enum {
-//   LLVMAtomicOrderingNotAtomic,
-//   LLVMAtomicOrderingUnordered, /**< Lowest level of atomicity, guarantees
-//   LLVMAtomicOrderingMonotonic, /**< guarantees that if you take all the
-//   LLVMAtomicOrderingAcquire, /**< Acquire provides a barrier of the sort
-//   LLVMAtomicOrderingRelease, /**< Release is similar to Acquire, but with
-//   LLVMAtomicOrderingAcquireRelease, /**< provides both an Acquire and a
-//   LLVMAtomicOrderingSequentiallyConsistent /**< provides Acquire semantics
-// } LLVMAtomicOrdering;
 int llvm_atomic_ordering_to_int(LLVMAtomicOrdering o) {
   switch (o) {
   case LLVMAtomicOrderingNotAtomic:
@@ -1148,26 +1133,6 @@ LLVMAtomicOrdering llvm_atomic_ordering_from_int(int i) {
   }
 }
 
-// typedef enum {
-//   LLVMAtomicRMWBinOpXchg, /**< Set the new value and return the one old */
-//   LLVMAtomicRMWBinOpAdd,  /**< Add a value and return the old one */
-//   LLVMAtomicRMWBinOpSub,  /**< Subtract a value and return the old one */
-//   LLVMAtomicRMWBinOpAnd,  /**< And a value and return the old one */
-//   LLVMAtomicRMWBinOpNand, /**< Not-And a value and return the old one */
-//   LLVMAtomicRMWBinOpOr,   /**< OR a value and return the old one */
-//   LLVMAtomicRMWBinOpXor,  /**< Xor a value and return the old one */
-//   LLVMAtomicRMWBinOpMax,  /**< Sets the value if it's greater than the
-//   LLVMAtomicRMWBinOpMin,  /**< Sets the value if it's Smaller than the
-//   LLVMAtomicRMWBinOpUMax, /**< Sets the value if it's greater than the
-//   LLVMAtomicRMWBinOpUMin, /**< Sets the value if it's greater than the
-//   LLVMAtomicRMWBinOpFAdd, /**< Add a floating point value and return the
-//   LLVMAtomicRMWBinOpFSub, /**< Subtract a floating point value and return the
-//   LLVMAtomicRMWBinOpFMax, /**< Sets the value if it's greater than the
-//   LLVMAtomicRMWBinOpFMin, /**< Sets the value if it's smaller than the
-//   LLVMAtomicRMWBinOpUIncWrap, /**< Increments the value, wrapping back to
-//   zero LLVMAtomicRMWBinOpUDecWrap, /**< Decrements the value, wrapping back
-//   to
-// } LLVMAtomicRMWBinOp;
 int llvm_atomic_rmw_bin_op_to_int(LLVMAtomicRMWBinOp o) {
   switch (o) {
   case LLVMAtomicRMWBinOpXchg:
@@ -1292,23 +1257,6 @@ LLVMModuleFlagBehavior llvm_module_flag_behavior_from_int(int i) {
   }
 }
 
-typedef struct RefLLVMBool {
-  struct moonbit_object header;
-  int32_t data;
-} RefLLVMBool;
-
-typedef struct TupleCStrUInt64 {
-  struct moonbit_object header;
-  void *$0;
-  uint64_t $1;
-} TupleCStrUInt64;
-
-typedef struct TupleCStrUInt {
-  struct moonbit_object header;
-  void *$0;
-  uint32_t $1;
-} TupleCStrUInt;
-
 void *new_null_cstr() { return (char *)NULL; }
 
 void free_cstr(void *cstr) { free(cstr); }
@@ -1365,36 +1313,6 @@ int __llvm_get_diag_info_severity(void *di) {
   return llvm_diagnostic_severity_to_int(s);
 }
 
-TupleCStrUInt *__llvm_get_string_attribute_kind(void *a, TupleCStrUInt *input) {
-
-  const char *s =
-      LLVMGetStringAttributeKind((LLVMAttributeRef)a, (unsigned *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt *__llvm_get_string_attribute_value(void *a,
-                                                 TupleCStrUInt *input) {
-  const char *s = LLVMGetStringAttributeValue((LLVMAttributeRef)a,
-                                              (unsigned *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt64 *__llvm_get_module_identifier(void *m, TupleCStrUInt64 *input) {
-  const char *s =
-      LLVMGetModuleIdentifier((LLVMModuleRef)m, (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt64 *__llvm_get_source_file_name(void *m, TupleCStrUInt64 *input) {
-  const char *s =
-      LLVMGetSourceFileName((LLVMModuleRef)m, (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
 // TODO: Wrong Implementation
 // void *__llvm_copy_module_flags_metadata(void *m, size_t *len) {
 //   return (LLVMModuleFlagEntry *)LLVMCopyModuleFlagsMetadata((LLVMModuleRef)m,
@@ -1414,53 +1332,10 @@ LLVMBool __llvm_print_module_to_file(void *m, void *filename,
                                (char **)error_message);
 }
 
-void *__llvm_get_module_inline_asm(void *m, size_t *len) {
-  return (char *)LLVMGetModuleInlineAsm((LLVMModuleRef)m, len);
-}
-
-TupleCStrUInt64 *__llvm_get_inline_asm_asm_string(void *inline_asm_val,
-                                                  TupleCStrUInt64 *input) {
-  const char *s = LLVMGetInlineAsmAsmString((LLVMValueRef)inline_asm_val,
-                                            (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt64 *
-__llvm_get_inline_asm_constraint_string(void *inline_asm_val,
-                                        TupleCStrUInt64 *input) {
-  const char *s = LLVMGetInlineAsmConstraintString((LLVMValueRef)inline_asm_val,
-                                                   (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
 int __llvm_get_inline_asm_dialect(void *inline_asm_val) {
   LLVMInlineAsmDialect i =
       LLVMGetInlineAsmDialect((LLVMValueRef)inline_asm_val);
   return llvm_inline_asm_dialect_to_int(i);
-}
-
-TupleCStrUInt64 *__llvm_get_named_metadata_name(void *named_md,
-                                                TupleCStrUInt64 *input) {
-  const char *s = LLVMGetNamedMetadataName((LLVMNamedMDNodeRef)named_md,
-                                           (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt *__llvm_get_debug_loc_directory(void *val, TupleCStrUInt *input) {
-  const char *s =
-      LLVMGetDebugLocDirectory((LLVMValueRef)val, (unsigned *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-TupleCStrUInt *__llvm_get_debug_loc_filename(void *val, TupleCStrUInt *input) {
-  const char *s =
-      LLVMGetDebugLocFilename((LLVMValueRef)val, (unsigned *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
 }
 
 int32_t __llvm_get_type_kind(void *ty) {
@@ -1471,28 +1346,6 @@ int32_t __llvm_get_type_kind(void *ty) {
 int __llvm_get_value_kind(void *val) {
   LLVMValueKind k = LLVMGetValueKind((LLVMValueRef)val);
   return llvm_value_kind_to_int(k);
-}
-
-// void *__llvm_get_value_name2(void *val, size_t *length) {
-//   return (char *)LLVMGetValueName2((LLVMValueRef)val, length);
-// }
-
-TupleCStrUInt64 *__llvm_get_value_name2(void *val, TupleCStrUInt64 *input) {
-  const char *s = LLVMGetValueName2((LLVMValueRef)val, (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
-double __llvm_const_real_get_double(void *constant_val,
-                                    RefLLVMBool *loses_info) {
-  return LLVMConstRealGetDouble((LLVMValueRef)constant_val,
-                                &(loses_info->data));
-}
-
-TupleCStrUInt64 *__llvm_get_as_string(void *c, TupleCStrUInt64 *input) {
-  const char *s = LLVMGetAsString((LLVMValueRef)c, (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
 }
 
 int __llvm_get_const_opcode(void *constant_val) {
@@ -1554,13 +1407,6 @@ int __llvm_get_dll_storage_class(void *global) {
 //       (LLVMValueMetadataEntry *)entries, index);
 // }
 
-TupleCStrUInt64 *__llvm_intrinsic_get_name(unsigned id,
-                                           TupleCStrUInt64 *input) {
-  const char *s = LLVMIntrinsicGetName(id, (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
 void *__llvm_intrinsic_copy_overloaded_name(unsigned id, void **param_types,
                                             unsigned param_count) {
   LLVMTypeRef *llvm_param_types = (LLVMTypeRef *)param_types;
@@ -1578,24 +1424,10 @@ void *__llvm_intrinsic_copy_overloaded_name2(void *mod, unsigned id,
       (LLVMModuleRef)mod, id, llvm_param_types, param_count, &name_length);
 }
 
-TupleCStrUInt *__llvm_get_md_string(void *v, TupleCStrUInt *input) {
-  const char *s = LLVMGetMDString((LLVMValueRef)v, (unsigned *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
-
 // TODO: Wrong Implementation
 // void __llvm_get_md_node_operands(void *v, void *dest) {
 //   LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
 // }
-
-TupleCStrUInt64 *__llvm_get_operand_bundle_tag(void *bundle,
-                                               TupleCStrUInt64 *input) {
-  const char *s = LLVMGetOperandBundleTag((LLVMOperandBundleRef)bundle,
-                                          (size_t *)&(input->$1));
-  input->$0 = (void *)s;
-  return input;
-}
 
 // TODO: wrong implementation
 // void __llvm_get_basic_blocks(void *fn, void *basic_blocks) {
