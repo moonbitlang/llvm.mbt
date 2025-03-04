@@ -1273,9 +1273,7 @@ LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 
 LLVMBool __llvm_comdat_is_null(void *comdat) { return comdat == NULL ? 1 : 0; }
 
-void *__llvm_new_null_type_ref() { return (LLVMTypeRef)NULL; }
-
-void *__llvm_new_null_value_ref() { return (LLVMValueRef)NULL; }
+void *__llvm_new_null() { return (void *)NULL; }
 
 // ty1: LLVMTypeRef, ty2: LLVMTypeRef
 LLVMBool __llvm_same_type_ref(void *ty1, void *ty2) {
@@ -1424,16 +1422,6 @@ void *__llvm_intrinsic_copy_overloaded_name2(void *mod, unsigned id,
       (LLVMModuleRef)mod, id, llvm_param_types, param_count, &name_length);
 }
 
-// TODO: Wrong Implementation
-// void __llvm_get_md_node_operands(void *v, void *dest) {
-//   LLVMGetMDNodeOperands((LLVMValueRef)v, (LLVMValueRef *)dest);
-// }
-
-// TODO: wrong implementation
-// void __llvm_get_basic_blocks(void *fn, void *basic_blocks) {
-//   LLVMGetBasicBlocks((LLVMValueRef)fn, (LLVMBasicBlockRef *)basic_blocks);
-// }
-
 // TODO: wrong implementation
 // void *
 // __llvm_instruction_get_all_metadata_other_than_debug_loc(void *instr,
@@ -1551,7 +1539,6 @@ void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
       (LLVMValueRef)_new, success_ordering, failure_ordering, single_thread);
 }
 
-// TODO: Wrong Implementation
 int __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
   LLVMAtomicOrdering o =
       LLVMGetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst);

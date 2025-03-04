@@ -1707,7 +1707,7 @@ extern "C" fn __llvm_get_struct_element_types(
 /// is contained in.
 pub fn llvm_get_struct_element_types(struct_ty: LLVMTypeRef)-> Array[LLVMTypeRef] {
   let field_count = llvm_count_struct_element_types(struct_ty)
-  let null_ref = llvm_new_null_type_ref()
+  let null_ref = LLVMTypeRef::null()
   let arr = FixedArray::make(field_count.reinterpret_as_int(), null_ref)
   __llvm_get_struct_element_types(struct_ty, arr)
   Array::from_fixed_array(arr)
@@ -5026,11 +5026,17 @@ pub fn LLVMValueRef::get_md_node_num_operands(self: LLVMValueRef) -> UInt {
   llvm_get_md_node_num_operands(self)
 }
 
-// FIXME: Not implemented
-// pub extern "C" fn llvm_get_md_node_operands(v: LLVMValueRef) -> Array[LLVMValueRef] = "__llvm_get_md_node_operands" 
-// pub fn LLVMValueRef::get_md_node_operands(self: LLVMValueRef) -> Array[LLVMValueRef] {
-//   llvm_get_md_node_operands(self)
-// }
+pub fn llvm_get_md_node_operands(v: LLVMValueRef) -> Array[LLVMValueRef] {
+  let num = llvm_get_md_node_num_operands(v).reinterpret_as_int();
+  let null_ref = LLVMValueRef::null();
+  let operands = FixedArray::make(num, null_ref)
+  __llvm_get_md_node_operands(v, operands)
+  Array::from_fixed_array(operands)
+}
+pub fn LLVMValueRef::get_md_node_operands(self: LLVMValueRef) -> Array[LLVMValueRef] {
+  llvm_get_md_node_operands(self)
+}
+extern "C" fn __llvm_get_md_node_operands(v: LLVMValueRef, dest: FixedArray[LLVMValueRef]) = "LLVMGetMDNodeOperands" 
 
 pub extern "C" fn llvm_replace_md_node_operand_with(v: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) = "LLVMReplaceMDNodeOperandWith"
 pub fn LLVMValueRef::replace_md_node_operand_with(self: LLVMValueRef, index: UInt, replacement: LLVMMetadataRef) -> Unit {
@@ -5188,7 +5194,14 @@ pub fn LLVMValueRef::count_basic_blocks(self: LLVMValueRef) -> UInt {
 }
 
 ///| Get all basic blocks in a function.
-pub extern "C" fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[LLVMBasicBlockRef] = "__llvm_get_basic_blocks"
+pub fn llvm_get_basic_blocks(func: LLVMValueRef) -> Array[LLVMBasicBlockRef] {
+  let count = llvm_count_basic_blocks(func).reinterpret_as_int()
+  let null_ref = LLVMBasicBlockRef::null();
+  let basic_blocks = FixedArray::make(count, null_ref)
+  __llvm_get_basic_blocks(func, basic_blocks)
+  Array::from_fixed_array(basic_blocks)
+}
+extern "C" fn __llvm_get_basic_blocks(func: LLVMValueRef, basic_blocks: FixedArray[LLVMBasicBlockRef]) = "LLVMGetBasicBlocks"
 
 ///| Get all basic blocks in a function.
 pub fn LLVMValueRef::get_basic_blocks(self: LLVMValueRef) -> Array[LLVMBasicBlockRef] {

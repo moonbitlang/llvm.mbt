@@ -19,7 +19,7 @@ Due to the ongoing development of the Moonbit language and its build system, thi
 
 ### Installing LLVM
 
-First, you need to install LLVM locally. Moonbit-LLVM requires LLVM version 18 or higher.
+First, you need to install LLVM locally. Moonbit-LLVM requires LLVM version 19 or higher.
 
 #### macOS
 
@@ -84,7 +84,7 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
      ],
      "link": {
        "native": {
-         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/CWarp/warp.c ./.mooncakes/Kaida-Amethyst/llvm/CWarp/utils.c",
+         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/unsafe/warp.c",
          "cc-link-flags": "{output from llvm-config}"
        }
      }
@@ -157,7 +157,7 @@ Moonbit-llvm 提供了 llvm-c 的 Moonbit 语言绑定，并利用 Moonbit 的�
 
 ### 安装 LLVM
 
-首先，您需要在本地安装 LLVM。Moonbit-LLVM 要求 LLVM 版本为 18 或更高。
+首先，您需要在本地安装 LLVM。Moonbit-LLVM 要求 LLVM 版本为 19 或更高。
 
 #### macOS
 
@@ -222,7 +222,7 @@ brew install llvm@19
      ],
      "link": {
        "native": {
-         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/CWarp/warp.c ./.mooncakes/Kaida-Amethyst/llvm/CWarp/utils.c",
+         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/unsafe/warp.c",
          "cc-link-flags": "{刚才llvm-config输出的内容}"
        }
      }

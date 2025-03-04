@@ -28,23 +28,28 @@ fn CStr::to_string(self: CStr, length~ : UInt? = None) -> String {
   }
 }
 
-extern "C" fn llvm_new_null_type_ref() -> LLVMTypeRef = "__llvm_new_null_type_ref"
+// extern "C" fn llvm_new_null_type_ref() -> LLVMTypeRef = "__llvm_new_null_type_ref"
+//
+// extern "C" fn llvm_new_null_value_ref() -> LLVMValueRef = "__llvm_new_null_value_ref"
+//
+// extern "C" fn llvm_new_null_module_ref() -> LLVMModuleRef = "__llvm_new_null_module_ref"
 
-extern "C" fn llvm_new_null_value_ref() -> LLVMValueRef = "__llvm_new_null_value_ref"
+// fn LLVMTypeRef::null() -> LLVMTypeRef {
+//   llvm_new_null_type_ref()
+// }
+//
+// fn LLVMValueRef::null() -> LLVMValueRef {
+//   llvm_new_null_value_ref()
+// }
+//
+// fn LLVMModuleRef::null() -> LLVMModuleRef {
+//   llvm_new_null_module_ref()
+// }
 
-extern "C" fn llvm_new_null_module_ref() -> LLVMModuleRef = "__llvm_new_null_module_ref"
-
-fn LLVMTypeRef::null() -> LLVMTypeRef {
-  llvm_new_null_type_ref()
-}
-
-fn LLVMValueRef::null() -> LLVMValueRef {
-  llvm_new_null_value_ref()
-}
-
-fn LLVMModuleRef::null() -> LLVMModuleRef {
-  llvm_new_null_module_ref()
-}
+extern "C" fn LLVMTypeRef::null() -> LLVMTypeRef = "__llvm_new_null"
+extern "C" fn LLVMValueRef::null() -> LLVMValueRef = "__llvm_new_null"
+extern "C" fn LLVMModuleRef::null() -> LLVMModuleRef = "__llvm_new_null"
+extern "C" fn LLVMBasicBlockRef::null() -> LLVMBasicBlockRef = "__llvm_new_null"
 
 
 extern "C" fn llvm_same_type_ref(ty1: LLVMTypeRef, ty2: LLVMTypeRef) -> LLVMBool = "__llvm_same_type_ref"
