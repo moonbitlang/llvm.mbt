@@ -1,5 +1,9 @@
 {
-  "native-stub" : [
-    "warp.c"
-  ]
+  "is-main" : false,
+  "link" : {
+    "native" : {
+      "cc" : "gcc",
+      "cc-link-flags" : "-lstdc++ -lm -lpthread -ldl"
+    }
+  }
 }

@@ -1,6 +1,13 @@
 {
+  "is-main" : false,
   "import" : [
     "Kaida-Amethyst/llvm/unsafe"
-  ]
+  ],
+  "link" : {
+    "native" : {
+      "cc" : "gcc",
+      "cc-link-flags" : "-lstdc++ -lm -lpthread -ldl"
+    }
+  }
 }
 

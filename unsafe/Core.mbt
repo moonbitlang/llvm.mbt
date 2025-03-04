@@ -2,14 +2,20 @@
 
 pub extern "C" fn llvm_shutdown() = "LLVMShutdown"
 
-// FIXME: Not implemented
 // 
 // Return the major, minor, and patch version of LLVM
 // 
 // The version components are returned via the function's three output
 // parameters or skipped if a NULL pointer was supplied.
 // 
-pub extern "C" fn llvm_get_version() -> (UInt, UInt, UInt) = "__llvm_get_version"
+pub fn llvm_get_version() -> (UInt, UInt, UInt) {
+  let major = Ref::new(0U)
+  let minor = Ref::new(0U)
+  let patch = Ref::new(0U)
+  __llvm_get_version(major, minor, patch)
+  (major.val, minor.val, patch.val)
+}
+extern "C" fn __llvm_get_version(major: Ref[UInt], minor: Ref[UInt], patch: Ref[UInt]) = "LLVMGetVersion"
 
 pub extern "C" fn llvm_create_message(message: CStr) -> CStr = "LLVMCreateMessage"
 
@@ -101,17 +107,19 @@ pub fn llvm_get_diag_info_description(di: LLVMDiagnosticInfoRef) -> String {
 /// 
 /// - see `DiagnosticInfo::getSeverity()`
 /// 
-pub extern "C" fn llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> Int = "__llvm_get_diag_info_severity"
+fn llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity {
+  LLVMDiagnosticSeverity::from_int(__llvm_get_diag_info_severity(di))
+}
+extern "C" fn __llvm_get_diag_info_severity(di: LLVMDiagnosticInfoRef) -> Int = "__llvm_get_diag_info_severity"
 
 ///| Return an enum llvm_diagnostic_severity.
 /// 
 /// - see `DiagnosticInfo::getSeverity()`
 /// 
 pub fn LLVMDiagnosticInfoRef::get_severity(self: LLVMDiagnosticInfoRef) -> LLVMDiagnosticSeverity {
-  LLVMDiagnosticSeverity::from_int(llvm_get_diag_info_severity(self))
+  llvm_get_diag_info_severity(self)
 }
 
-// TODO: Warp it
 extern "C" fn __llvm_get_md_kind_id_in_context(context: LLVMContextRef, name: CStr, s_len: UInt) -> UInt = "LLVMGetMDKindIDInContext"
 pub fn llvm_get_md_kind_id_in_context(context: LLVMContextRef, name: String) -> UInt {
   let cstr = moonbit_str_to_c_str(name)
