@@ -138,13 +138,13 @@ pub impl Eq for LLVMAttributeRef with op_equal(self: LLVMAttributeRef, other: LL
 }
 
 pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
-  guard let LLVMDWARFTypeEncoding(u) = self
-  u
+  guard self is LLVMDWARFTypeEncoding(val)
+  val
 }
 
 pub fn LLVMMetadataKind::into(self: LLVMMetadataKind) -> UInt {
-  guard let LLVMMetadataKind(u) = self
-  u
+  guard self is LLVMMetadataKind(val)
+  val
 }
 
 // enums

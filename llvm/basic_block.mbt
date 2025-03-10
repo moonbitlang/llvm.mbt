@@ -477,8 +477,8 @@ pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
 /// ```
 pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
 
-  guard let Some(parent) = self.get_parent() else {
-    None => return None
+  guard self.get_parent() is Some(parent) else {
+    return None
   }
 
   if self.get_previous_basic_block() is None {

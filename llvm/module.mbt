@@ -38,8 +38,8 @@ pub fn Module::add_function(
   linkage~: Linkage? = None
 ) -> FunctionValue {
   let val_ref = self.module_ref.add_function(name, function_ty.as_type_ref())
-  guard let Some(fn_val) = FunctionValue::new(val_ref) else {
-    None => abort("Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function")
+  guard FunctionValue::new(val_ref) is Some(fn_val) else {
+    abort("Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function")
   }
 
   if linkage is Some(linkage) {

@@ -17,24 +17,18 @@ pub fn AggregateValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> AggregateValueE
 }
 
 pub fn AggregateValueEnum::is_array_value(self: AggregateValueEnum) -> Bool {
-  match self {
-    AggregateValueEnum::ArrayValue(_) => true
-    _ => false
-  }
+  self is AggregateValueEnum::ArrayValue(_)
 }
 
 pub fn AggregateValueEnum::is_struct_value(self: AggregateValueEnum) -> Bool {
-  match self {
-    AggregateValueEnum::StructValue(_) => true
-    _ => false
-  }
+  self is AggregateValueEnum::StructValue(_)
 }
 
 pub fn AggregateValueEnum::into_array_value(self: AggregateValueEnum) -> ArrayValue {
-  match self {
-    AggregateValueEnum::ArrayValue(v) => v
-    _ => abort("Found \{self} but expected the ArrayValue variant")
+  guard self is AggregateValueEnum::ArrayValue(v) else {
+    abort("Found \{self} but expected the ArrayValue variant")
   }
+  v
 }
 
 pub fn AggregateValueEnum::into_struct_value(self: AggregateValueEnum) -> StructValue {
@@ -111,19 +105,19 @@ pub fn AnyValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> AnyValueEnum {
   }
 }
 
-pub fn AnyValueEnum::as_value_ref(self: AnyValueEnum) -> @unsafe.LLVMValueRef {
+pub impl AsValueRef for AnyValueEnum with as_value_ref(self: AnyValueEnum) -> @unsafe.LLVMValueRef {
   match self {
-    AnyValueEnum::ArrayValue(v) => v.as_value_ref()
-    AnyValueEnum::IntValue(v) => v.as_value_ref()
-    AnyValueEnum::FloatValue(v) => v.as_value_ref()
-    AnyValueEnum::PhiValue(v) => v.as_value_ref()
-    AnyValueEnum::FunctionValue(v) => v.as_value_ref()
-    AnyValueEnum::PointerValue(v) => v.as_value_ref()
-    AnyValueEnum::StructValue(v) => v.as_value_ref()
-    AnyValueEnum::VectorValue(v) => v.as_value_ref()
-    AnyValueEnum::ScalableVectorValue(v) => v.as_value_ref()
-    AnyValueEnum::InstructionValue(v) => v.as_value_ref()
-    AnyValueEnum::MetadataValue(v) => v.as_value_ref()
+    ArrayValue(v) => v.as_value_ref()
+    IntValue(v) => v.as_value_ref()
+    FloatValue(v) => v.as_value_ref()
+    PhiValue(v) => v.as_value_ref()
+    FunctionValue(v) => v.as_value_ref()
+    PointerValue(v) => v.as_value_ref()
+    StructValue(v) => v.as_value_ref()
+    VectorValue(v) => v.as_value_ref()
+    ScalableVectorValue(v) => v.as_value_ref()
+    InstructionValue(v) => v.as_value_ref()
+    MetadataValue(v) => v.as_value_ref()
   }
 }
 
@@ -137,17 +131,17 @@ pub fn AnyValueEnum::is_array_value(self: AnyValueEnum) -> Bool {
 
 pub impl Show for AnyValueEnum with to_string(self: AnyValueEnum) -> String {
   match self {
-    AnyValueEnum::ArrayValue(v) => v.to_string()
-    AnyValueEnum::IntValue(v) => v.to_string()
-    AnyValueEnum::FloatValue(v) => v.to_string()
-    AnyValueEnum::PhiValue(v) => v.to_string()
-    AnyValueEnum::FunctionValue(v) => v.to_string()
-    AnyValueEnum::PointerValue(v) => v.to_string()
-    AnyValueEnum::StructValue(v) => v.to_string()
-    AnyValueEnum::VectorValue(v) => v.to_string()
-    AnyValueEnum::ScalableVectorValue(v) => v.to_string()
-    AnyValueEnum::InstructionValue(v) => v.to_string()
-    AnyValueEnum::MetadataValue(v) => v.to_string()
+    ArrayValue(v) => v.to_string()
+    IntValue(v) => v.to_string()
+    FloatValue(v) => v.to_string()
+    PhiValue(v) => v.to_string()
+    FunctionValue(v) => v.to_string()
+    PointerValue(v) => v.to_string()
+    StructValue(v) => v.to_string()
+    VectorValue(v) => v.to_string()
+    ScalableVectorValue(v) => v.to_string()
+    InstructionValue(v) => v.to_string()
+    MetadataValue(v) => v.to_string()
   }
 }
 
@@ -188,51 +182,51 @@ pub fn BasicValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> BasicValueEnum {
   }
 }
 
-pub fn BasicValueEnum::as_value_ref(self: BasicValueEnum) -> @unsafe.LLVMValueRef {
+pub impl AsValueRef for BasicValueEnum with as_value_ref(self) {
   match self {
-    BasicValueEnum::ArrayValue(v) => v.as_value_ref()
-    BasicValueEnum::IntValue(v) => v.as_value_ref()
-    BasicValueEnum::FloatValue(v) => v.as_value_ref()
-    BasicValueEnum::PointerValue(v) => v.as_value_ref()
-    BasicValueEnum::StructValue(v) => v.as_value_ref()
-    BasicValueEnum::VectorValue(v) => v.as_value_ref()
-    BasicValueEnum::ScalableVectorValue(v) => v.as_value_ref()
+    ArrayValue(v) => v.as_value_ref()
+    IntValue(v) => v.as_value_ref()
+    FloatValue(v) => v.as_value_ref()
+    PointerValue(v) => v.as_value_ref()
+    StructValue(v) => v.as_value_ref()
+    VectorValue(v) => v.as_value_ref()
+    ScalableVectorValue(v) => v.as_value_ref()
   }
 }
 
 pub fn BasicValueEnum::get_name(self: BasicValueEnum) -> String {
   match self {
-    BasicValueEnum::ArrayValue(v) => v.get_name()
-    BasicValueEnum::IntValue(v) => v.get_name()
-    BasicValueEnum::FloatValue(v) => v.get_name()
-    BasicValueEnum::PointerValue(v) => v.get_name()
-    BasicValueEnum::StructValue(v) => v.get_name()
-    BasicValueEnum::VectorValue(v) => v.get_name()
-    BasicValueEnum::ScalableVectorValue(v) => v.get_name()
+    ArrayValue(v) => v.get_name()
+    IntValue(v) => v.get_name()
+    FloatValue(v) => v.get_name()
+    PointerValue(v) => v.get_name()
+    StructValue(v) => v.get_name()
+    VectorValue(v) => v.get_name()
+    ScalableVectorValue(v) => v.get_name()
   }
 }
 
 pub fn BasicValueEnum::set_name(self: BasicValueEnum, name: String) -> Unit {
   match self {
-    BasicValueEnum::ArrayValue(v) => v.set_name(name)
-    BasicValueEnum::IntValue(v) => v.set_name(name)
-    BasicValueEnum::FloatValue(v) => v.set_name(name)
-    BasicValueEnum::PointerValue(v) => v.set_name(name)
-    BasicValueEnum::StructValue(v) => v.set_name(name)
-    BasicValueEnum::VectorValue(v) => v.set_name(name)
-    BasicValueEnum::ScalableVectorValue(v) => v.set_name(name)
+    ArrayValue(v) => v.set_name(name)
+    IntValue(v) => v.set_name(name)
+    FloatValue(v) => v.set_name(name)
+    PointerValue(v) => v.set_name(name)
+    StructValue(v) => v.set_name(name)
+    VectorValue(v) => v.set_name(name)
+    ScalableVectorValue(v) => v.set_name(name)
   }
 }
 
 pub fn BasicValueEnum::get_type(self: BasicValueEnum) -> BasicTypeEnum {
   match self {
-    BasicValueEnum::ArrayValue(v) => BasicTypeEnum::ArrayType(v.get_type())
-    BasicValueEnum::IntValue(v) => BasicTypeEnum::IntType(v.get_type())
-    BasicValueEnum::FloatValue(v) => BasicTypeEnum::FloatType(v.get_type())
-    BasicValueEnum::PointerValue(v) => BasicTypeEnum::PointerType(v.get_type())
-    BasicValueEnum::StructValue(v) => BasicTypeEnum::StructType(v.get_type())
-    BasicValueEnum::VectorValue(v) => BasicTypeEnum::VectorType(v.get_type())
-    BasicValueEnum::ScalableVectorValue(v) => BasicTypeEnum::ScalableVectorType(v.get_type())
+    ArrayValue(v) => BasicTypeEnum::ArrayType(v.get_type())
+    IntValue(v) => BasicTypeEnum::IntType(v.get_type())
+    FloatValue(v) => BasicTypeEnum::FloatType(v.get_type())
+    PointerValue(v) => BasicTypeEnum::PointerType(v.get_type())
+    StructValue(v) => BasicTypeEnum::StructType(v.get_type())
+    VectorValue(v) => BasicTypeEnum::VectorType(v.get_type())
+    ScalableVectorValue(v) => BasicTypeEnum::ScalableVectorType(v.get_type())
   }
 }
 
@@ -363,7 +357,7 @@ pub fn BasicMetadataValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> BasicMetada
   }
 }
 
-pub fn BasicMetadataValueEnum::as_value_ref(self: BasicMetadataValueEnum) -> @unsafe.LLVMValueRef {
+pub impl AsValueRef for BasicMetadataValueEnum with as_value_ref(self) {
   match self {
     ArrayValue(v) => v.as_value_ref()
     IntValue(v) => v.as_value_ref()
@@ -508,7 +502,7 @@ pub fn AnyTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> AnyTypeEnum {
   }
 }
 
-pub fn AnyTypeEnum::as_type_ref(self: AnyTypeEnum) -> @unsafe.LLVMTypeRef {
+pub impl AsTypeRef for AnyTypeEnum with as_type_ref(self) {
   match self {
     AnyTypeEnum::ArrayType(v) => v.as_type_ref()
     AnyTypeEnum::FloatType(v) => v.as_type_ref()
@@ -651,15 +645,15 @@ pub fn AnyTypeEnum::into_void_type(self: AnyTypeEnum) -> VoidType {
 
 pub impl Show for AnyTypeEnum with to_string(self: AnyTypeEnum) -> String {
   match self {
-    AnyTypeEnum::ArrayType(v) => v.to_string()
-    AnyTypeEnum::FloatType(v) => v.to_string()
-    AnyTypeEnum::FunctionType(v) => v.to_string()
-    AnyTypeEnum::IntType(v) => v.to_string()
-    AnyTypeEnum::PointerType(v) => v.to_string()
-    AnyTypeEnum::StructType(v) => v.to_string()
-    AnyTypeEnum::VectorType(v) => v.to_string()
-    AnyTypeEnum::ScalableVectorType(v) => v.to_string()
-    AnyTypeEnum::VoidType(v) => v.to_string()
+    ArrayType(v) => v.to_string()
+    FloatType(v) => v.to_string()
+    FunctionType(v) => v.to_string()
+    IntType(v) => v.to_string()
+    PointerType(v) => v.to_string()
+    StructType(v) => v.to_string()
+    VectorType(v) => v.to_string()
+    ScalableVectorType(v) => v.to_string()
+    VoidType(v) => v.to_string()
   }
 }
 
@@ -701,15 +695,15 @@ pub fn BasicTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicTypeEnum {
   }
 }
 
-impl AsTypeRef for BasicTypeEnum with as_type_ref(self: BasicTypeEnum) -> @unsafe.LLVMTypeRef {
+impl AsTypeRef for BasicTypeEnum with as_type_ref(self) {
   match self {
-    BasicTypeEnum::ArrayType(t) => t.as_type_ref()
-    BasicTypeEnum::FloatType(t) => t.as_type_ref()
-    BasicTypeEnum::IntType(t) => t.as_type_ref()
-    BasicTypeEnum::PointerType(t) => t.as_type_ref()
-    BasicTypeEnum::StructType(t) => t.as_type_ref()
-    BasicTypeEnum::VectorType(t) => t.as_type_ref()
-    BasicTypeEnum::ScalableVectorType(t) => t.as_type_ref()
+    ArrayType(t) => t.as_type_ref()
+    FloatType(t) => t.as_type_ref()
+    IntType(t) => t.as_type_ref()
+    PointerType(t) => t.as_type_ref()
+    StructType(t) => t.as_type_ref()
+    VectorType(t) => t.as_type_ref()
+    ScalableVectorType(t) => t.as_type_ref()
   }
 }
 
@@ -729,13 +723,13 @@ pub impl Eq for BasicTypeEnum with op_equal(self: BasicTypeEnum, other: BasicTyp
 
 pub impl Show for BasicTypeEnum with to_string(self: BasicTypeEnum) -> String {
   match self {
-    BasicTypeEnum::ArrayType(t) => t.to_string()
-    BasicTypeEnum::FloatType(t) => t.to_string()
-    BasicTypeEnum::IntType(t) => t.to_string()
-    BasicTypeEnum::PointerType(t) => t.to_string()
-    BasicTypeEnum::StructType(t) => t.to_string()
-    BasicTypeEnum::VectorType(t) => t.to_string()
-    BasicTypeEnum::ScalableVectorType(t) => t.to_string()
+    ArrayType(t) => t.to_string()
+    FloatType(t) => t.to_string()
+    IntType(t) => t.to_string()
+    PointerType(t) => t.to_string()
+    StructType(t) => t.to_string()
+    VectorType(t) => t.to_string()
+    ScalableVectorType(t) => t.to_string()
   }
 }
 
@@ -779,29 +773,29 @@ pub fn BasicMetadataTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicMetadat
   }
 }
 
-pub fn BasicMetadataTypeEnum::as_type_ref(self: BasicMetadataTypeEnum) -> @unsafe.LLVMTypeRef {
+pub impl AsTypeRef for BasicMetadataTypeEnum with as_type_ref(self) {
   match self {
-    BasicMetadataTypeEnum::ArrayType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::FloatType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::IntType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::PointerType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::StructType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::VectorType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::ScalableVectorType(t) => t.as_type_ref()
-    BasicMetadataTypeEnum::MetadataType(t) => t.as_type_ref()
+    ArrayType(t) => t.as_type_ref()
+    FloatType(t) => t.as_type_ref()
+    IntType(t) => t.as_type_ref()
+    PointerType(t) => t.as_type_ref()
+    StructType(t) => t.as_type_ref()
+    VectorType(t) => t.as_type_ref()
+    ScalableVectorType(t) => t.as_type_ref()
+    MetadataType(t) => t.as_type_ref()
   }
 }
 
-pub impl Show for BasicMetadataTypeEnum with to_string(self: BasicMetadataTypeEnum) -> String {
+pub impl Show for BasicMetadataTypeEnum with to_string(self) {
   match self {
-    BasicMetadataTypeEnum::ArrayType(v) => v.to_string()
-    BasicMetadataTypeEnum::FloatType(v) => v.to_string()
-    BasicMetadataTypeEnum::IntType(v) => v.to_string()
-    BasicMetadataTypeEnum::PointerType(v) => v.to_string()
-    BasicMetadataTypeEnum::StructType(v) => v.to_string()
-    BasicMetadataTypeEnum::VectorType(v) => v.to_string()
-    BasicMetadataTypeEnum::ScalableVectorType(v) => v.to_string()
-    BasicMetadataTypeEnum::MetadataType(v) => v.to_string()
+    ArrayType(v) => v.to_string()
+    FloatType(v) => v.to_string()
+    IntType(v) => v.to_string()
+    PointerType(v) => v.to_string()
+    StructType(v) => v.to_string()
+    VectorType(v) => v.to_string()
+    ScalableVectorType(v) => v.to_string()
+    MetadataType(v) => v.to_string()
   }
 }
 

@@ -1,24 +1,20 @@
 // extern types
 
-pub type AddressSpace UInt derive(Eq, Show)
+pub type AddressSpace UInt derive(Eq, Show, Default)
 pub type FastMathFlags UInt derive(Eq)
 
-pub fn AddressSpace::default() -> AddressSpace {
-  AddressSpace(0)
-}
-
 pub fn AddressSpace::into(self: AddressSpace) -> UInt {
-  guard let AddressSpace(i) = self
-  i
+  guard self is AddressSpace(val);
+  val
 }
 
 pub fn FastMathFlags::into(self: FastMathFlags) -> @unsafe.LLVMFastMathFlags {
-  guard let FastMathFlags(f) = self
+  guard self is FastMathFlags(f)
   @unsafe.LLVMFastMathFlags(f)
 }
 
 pub fn FastMathFlags::from(f: @unsafe.LLVMFastMathFlags) -> FastMathFlags {
-  guard let @unsafe.LLVMFastMathFlags(u) = f
+  guard f is @unsafe.LLVMFastMathFlags(u)
   FastMathFlags(u)
 }
 
