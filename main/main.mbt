@@ -63,11 +63,6 @@ fn main_err () -> Unit!Error {
   println(lmodule)
 }
 
-fn main {
-  // let context = @llvm.Context::create();
-  // // let lmodule = context.create_module("demo");
-  // let i32_ty = context.i32_type();
-  // let zero = i32_ty.const_int(0)
-  // println(zero)
-  let _ = main_err?()
+test {
+  main_err!()
 }
