@@ -14,10 +14,10 @@ jobs:
         os:
           - name: ubuntu-latest
             version: stable
-          # - name: macos-latest
-          #   version: stable
-          # - name: macos-13
-          #   version: stable
+          - name: macos-latest
+            version: stable
+          - name: macos-13
+            version: stable
           # - name: windows-latest
           #   version: stable
 
@@ -26,10 +26,10 @@ jobs:
           # 2. install latest core library from github.com
           - name: ubuntu-latest
             version: bleeding
-          # - name: macos-latest
-          #   version: bleeding
-          # - name: macos-13
-          #   version: bleeding
+          - name: macos-latest
+            version: bleeding
+          - name: macos-13
+            version: bleeding
           # - name: windows-latest
           #   version: bleeding
 
@@ -45,7 +45,11 @@ jobs:
           curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz
           tar xf LLVM-19.1.7-Linux-X64.tar.xz
           mv LLVM-19.1.7-Linux-X64 llvm-19
-          
+
+      - name: download llvm-19 on macos
+        if: ${{ matrix.os.name == 'macos-latest' || matrix.os.name == 'macos-13' }}
+        run: |
+          brew install llvm@19
 
       - name: install stable version on unix
         if: ${{ matrix.os.name != 'windows-latest' && matrix.os.version == 'stable' }}
