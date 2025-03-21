@@ -14,10 +14,10 @@ jobs:
         os:
           - name: ubuntu-latest
             version: stable
-          # - name: macos-latest
-          #   version: stable
-          # - name: macos-13
-          #   version: stable
+          - name: macos-latest
+            version: stable
+          - name: macos-13
+            version: stable
           # - name: windows-latest
           #   version: stable
 
@@ -26,10 +26,10 @@ jobs:
           # 2. install latest core library from github.com
           - name: ubuntu-latest
             version: bleeding
-          # - name: macos-latest
-          #   version: bleeding
-          # - name: macos-13
-          #   version: bleeding
+          - name: macos-latest
+            version: bleeding
+          - name: macos-13
+            version: bleeding
           # - name: windows-latest
           #   version: bleeding
 
