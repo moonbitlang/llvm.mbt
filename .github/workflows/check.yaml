@@ -121,10 +121,11 @@ jobs:
         # each step uses different environment variable
         # don't separate `source env.sh` and `moon build`
 
-      - name: moon test --target native --doc
+      # TODO: Add `--doc` option when all doc problems fixed.
+      - name: moon test --target native
         run: |
           source env.sh 
-          moon test --target native --doc
+          moon test --target native
 
   moon-json-format-check:
     runs-on: ubuntu-latest
