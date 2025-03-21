@@ -128,7 +128,7 @@ pub fn StructType::get_context(self: StructType) -> Context {
   self.ty.get_context()
 }
 
-// NOTE: It's different with `inkwell`, need to check if it is corrent for anonymous struct
+// NOTE: It's different with `inkwell`, need to check if it is correct for anonymous struct
 ///| Gets this `StructType`'s name.
 pub fn StructType::get_name(self: StructType) -> String {
   @unsafe.llvm_get_struct_name(self.as_type_ref())

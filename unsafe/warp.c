@@ -1561,7 +1561,7 @@ void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst, int o) {
   LLVMSetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
 }
 
-// TODO: Incorrect inplementation
+// TODO: Incorrect implementation
 // LLVMBool __llvm_create_memory_buffer_with_contents_of_file(void *path,
 //                                                            void
 //                                                            **out_mem_buf,

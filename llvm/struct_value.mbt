@@ -117,7 +117,7 @@ pub fn is_undef(self: StructValue) -> Bool {
   self.value.is_undef()
 }
 
-// REVIEW: Does this alwyas return `None`?
+// REVIEW: Does this always return `None`?
 ///| Converts a struct value to an instruction value.
 pub fn as_instruction(self: StructValue) -> InstructionValue? {
   self.value.as_instruction()

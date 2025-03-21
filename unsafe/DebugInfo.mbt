@@ -583,7 +583,7 @@ extern "C" fn __llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuild
 //  * \param NameLen     Length of type name.
 //  * \param SizeInBits  Size of the type.
 //  * \param Encoding    DWARF encoding code, e.g. \c LLVMDWARFTypeEncoding_float.
-//  * \param Flags       Flags to encode optional attribute like endianity
+//  * \param Flags       Flags to encode optional attribute like endianness
 //  */
 // LLVMMetadataRef
 // LLVMDIBuilderCreateBasicType(LLVMDIBuilderRef Builder, const char *Name,

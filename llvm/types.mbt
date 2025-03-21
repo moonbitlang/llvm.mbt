@@ -58,7 +58,7 @@ fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
 
 }
 
-// TODO: use `prarm_types: Array[&TyepRef]` after compiler bug fixed
+// TODO: use `prarm_types: Array[&TypeRef]` after compiler bug fixed
 fn Type::fn_type(
   self: Type,
   param_types: Array[&BasicMetadataType],
