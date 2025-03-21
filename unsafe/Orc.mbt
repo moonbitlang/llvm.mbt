@@ -704,7 +704,7 @@
 //  * The length of the array is returned in NumPairs and the caller is responsible
 //  * for the returned memory and needs to call LLVMOrcDisposeCSymbolFlagsMap.
 //  *
-//  * To use the returned symbols beyond the livetime of the
+//  * To use the returned symbols beyond the lifetime of the
 //  * MaterializationResponsibility requires the caller to retain the symbols
 //  * explicitly.
 //  */
@@ -724,7 +724,7 @@
 //  * object.
 //  *
 //  * The returned symbol is not retained over any mutating operation of the
-//  * MaterializationResponsbility or beyond the lifetime thereof.
+//  * Materialization Responsibility or beyond the lifetime thereof.
 //  */
 // LLVMOrcSymbolStringPoolEntryRef
 // LLVMOrcMaterializationResponsibilityGetInitializerSymbol(
@@ -974,7 +974,7 @@
 //     LLVMOrcSymbolPredicate Filter, void *FilterCtx);
 //
 // /**
-//  * Get a LLVMOrcCreateDynamicLibararySearchGeneratorForPath that will reflect
+//  * Get a LLVMOrcCreateDynamicLibrarySearchGeneratorForPath that will reflect
 //  * library symbols into the JITDylib. On success the resulting generator is
 //  * owned by the client. Ownership is typically transferred by adding the
 //  * instance to a JITDylib using LLVMOrcJITDylibAddGenerator,
@@ -1081,7 +1081,7 @@
 //  * Create a JITTargetMachineBuilder from the given TargetMachine template.
 //  *
 //  * This operation takes ownership of the given TargetMachine and destroys it
-//  * before returing. The resulting JITTargetMachineBuilder is owned by the client
+//  * before returning. The resulting JITTargetMachineBuilder is owned by the client
 //  * and must be passed to a consuming operation (e.g.
 //  * LLVMOrcLLJITBuilderSetJITTargetMachineBuilder) or disposed of by calling
 //  * LLVMOrcDisposeJITTargetMachineBuilder.

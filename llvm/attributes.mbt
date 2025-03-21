@@ -214,7 +214,7 @@ pub fn Attribute::to_string(self: Attribute) -> String {
   } else if self.is_type() {
     "type_attribute (\{self.get_type_value()})"
   } else {
-    "Unkown attribute (Maybe error)"
+    "Unknown attribute (Maybe error)"
   }
 }
 

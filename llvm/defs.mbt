@@ -568,7 +568,7 @@ pub(all) enum OptimizationLevel {
   Aggressive
 } derive(Eq, Show, Hash)
 
-// Note: Check if we realy need it
+// Note: Check if we really need it
 pub fn OptimizationLevel::from_int(i: Int) -> OptimizationLevel {
   match i {
     0 => OptimizationLevel::None

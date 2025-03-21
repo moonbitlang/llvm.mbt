@@ -1,0 +1,11 @@
+# See https://github.com/crate-ci/typos/blob/master/docs/reference.md to configure typos
+[default.extend-words]
+OLT="OLT"
+fo="fo"
+ine="ine"
+fule="fule"
+
+# fix below words will breaking change
+storge="storge"
+oprand="oprand"
+memove="memove"

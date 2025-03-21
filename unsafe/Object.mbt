@@ -9,7 +9,7 @@
 //  * appropriate implementation selected.  The context may be NULL except if
 //  * the resulting file is an LLVM IR file.
 //  *
-//  * The memory buffer is not consumed by this function.  It is the responsibilty
+//  * The memory buffer is not consumed by this function.  It is the responsibility
 //  * of the caller to free it with \c LLVMDisposeMemoryBuffer.
 //  *
 //  * If NULL is returned, the \p ErrorMessage parameter is populated with the
@@ -25,7 +25,7 @@
 // /**
 //  * Dispose of a binary file.
 //  *
-//  * The binary file does not own its backing buffer.  It is the responsibilty
+//  * The binary file does not own its backing buffer.  It is the responsibility
 //  * of the caller to free it with \c LLVMDisposeMemoryBuffer.
 //  */
 // void LLVMDisposeBinary(LLVMBinaryRef BR);
@@ -56,7 +56,7 @@
 //  * error's description.  It is then the caller's responsibility to free this
 //  * message by calling \c LLVMDisposeMessage.
 //  *
-//  * It is the responsiblity of the caller to free the returned object file by
+//  * It is the responsibility of the caller to free the returned object file by
 //  * calling \c LLVMDisposeBinary.
 //  */
 // LLVMBinaryRef LLVMMachOUniversalBinaryCopyObjectForArch(LLVMBinaryRef BR,

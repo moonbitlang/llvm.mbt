@@ -406,10 +406,10 @@ pub fn IntValue::const_truncate_or_bit_cast(self: IntValue, int_type: IntType) -
   ) |> IntValue::new
 }
 
-pub fn IntValue::const_bit_cast(self: IntValue, int_tyep: IntType) -> IntValue {
+pub fn IntValue::const_bit_cast(self: IntValue, int_type: IntType) -> IntValue {
   @unsafe.llvm_const_bit_cast(
     self.as_value_ref(),
-    int_tyep.as_type_ref()
+    int_type.as_type_ref()
   ) |> IntValue::new
 }
 

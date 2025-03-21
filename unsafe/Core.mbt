@@ -1239,58 +1239,58 @@ pub fn LLVMTypeRef::to_string(self: LLVMTypeRef) -> String {
   llvm_print_type_to_string(self)
 }
 
-///| Obtain an interger type with 1 bit.
+///| Obtain an integer type with 1 bit.
 pub extern "C" fn llvm_int1_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt1TypeInContext"
 
-///| Obtain an interger type with 1 bit.
+///| Obtain an integer type with 1 bit.
 pub fn LLVMContextRef::int1_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int1_type_in_context(self)
 }
 
-///| Obtain an interger type with 8 bits.
+///| Obtain an integer type with 8 bits.
 pub extern "C" fn llvm_int8_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt8TypeInContext"
 
-///| Obtain an interger type with 8 bits.
+///| Obtain an integer type with 8 bits.
 pub fn LLVMContextRef::int8_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int8_type_in_context(self)
 }
 
-///| Obtain an interger type with 16 bits.
+///| Obtain an integer type with 16 bits.
 pub extern "C" fn llvm_int16_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt16TypeInContext"
 
-///| Obtain an interger type with 16 bits.
+///| Obtain an integer type with 16 bits.
 pub fn LLVMContextRef::int16_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int16_type_in_context(self)
 }
 
-///| Obtain an interger type with 32 bits.
+///| Obtain an integer type with 32 bits.
 pub extern "C" fn llvm_int32_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt32TypeInContext"
 
-///| Obtain an interger type with 32 bits.
+///| Obtain an integer type with 32 bits.
 pub fn LLVMContextRef::int32_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int32_type_in_context(self)
 }
 
-///| Obtain an interger type with 64 bits.
+///| Obtain an integer type with 64 bits.
 pub extern "C" fn llvm_int64_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt64TypeInContext"
 
-///| Obtain an interger type with 64 bits.
+///| Obtain an integer type with 64 bits.
 pub fn LLVMContextRef::int64_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int64_type_in_context(self)
 }
 
-///| Obtain an interger type with 128 bits.
+///| Obtain an integer type with 128 bits.
 pub extern "C" fn llvm_int128_type_in_context(context: LLVMContextRef) -> LLVMTypeRef = "LLVMInt128TypeInContext"
 
-///| Obtain an interger type with 128 bits.
+///| Obtain an integer type with 128 bits.
 pub fn LLVMContextRef::int128_type(self: LLVMContextRef) -> LLVMTypeRef {
   llvm_int128_type_in_context(self)
 }
 
-///| Obtain an interger type with the specified number of bits.
+///| Obtain an integer type with the specified number of bits.
 pub extern "C" fn llvm_int_type_in_context(context: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef = "LLVMIntTypeInContext"
 
-///| Obtain an interger type with the specified number of bits.
+///| Obtain an integer type with the specified number of bits.
 pub fn LLVMContextRef::int_type(self: LLVMContextRef, num_bits: UInt) -> LLVMTypeRef {
   llvm_int_type_in_context(self, num_bits)
 }
