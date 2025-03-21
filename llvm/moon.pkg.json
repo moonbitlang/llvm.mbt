@@ -5,8 +5,9 @@
   ],
   "link" : {
     "native" : {
-      "cc" : "gcc",
-      "cc-link-flags" : "-lstdc++ -lm -lpthread -ldl"
+      "cc" : "$CC",
+      "cc-flags": "$CC_FLAGS",
+      "cc-link-flags" : "$CC_LINK_FLAGS"
     }
   }
 }
