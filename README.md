@@ -59,6 +59,13 @@ Moonbit-LLVM is currently not supported on Windows. It is recommended to use a v
 
 After installation, ensure that the commands `llc --version` and `llvm-config` are available.
 
+Try to use `llvm-config` to generate compilation and linking flags:
+
+```shell
+llvm-config --cflags --ldflags --libs all
+```
+
+
 ### Using Moonbit-LLVM
 
 1. Add Moonbit-LLVM as a dependency in your Moonbit project:
@@ -67,13 +74,13 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
    moon add Kaida-Amethyst/llvm
    ```
 
-2. Use `llvm-config` to generate compilation and linking flags:
+2. Use `llvm-config` to generate compilation and linking flags, and set environment variables. 
 
    ```shell
-   llvm-config --cflags --ldflags --libs all
+   export CC_FLAGS=$(llvm-config --cflags)
+   export CC_LINK_FLAGS=$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++
+   export C_INCLUDE_PATH=$(llvm-config --includedir):$C_INCLUDE_PATH
    ```
-
-   Save the output and add it to your `moon.pkg.json` file.
 
 3. Add the dependency and linking flags to `moon.pkg.json`:
 
@@ -84,8 +91,8 @@ After installation, ensure that the commands `llc --version` and `llvm-config` a
      ],
      "link": {
        "native": {
-         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/unsafe/warp.c",
-         "cc-link-flags": "{output from llvm-config}"
+         "cc-flags" : "$CC_FLAGS",
+         "cc-link-flags": "$CC_LINK_FLAGS"
        }
      }
    }
@@ -195,7 +202,15 @@ brew install llvm@19
 
 目前 Moonbit-LLVM 暂不支持 Windows 平台。建议使用虚拟机或 WSL2，并按照 Linux 的安装步骤进行操作。
 
+---------
+
 安装完成后，请确保 `llc --version` 和 `llvm-config` 命令可用。
+
+尝试使用`llvm-config`来生成编译和链接标志。
+
+```shell
+llvm-config --cflags --ldflags --libs all
+```
 
 ### 使用 Moonbit-LLVM
 
@@ -205,13 +220,13 @@ brew install llvm@19
    moon add Kaida-Amethyst/llvm
    ```
 
-2. 使用 `llvm-config` 生成编译和链接标志：
+2. 使用 `llvm-config` 生成编译和链接标志，并设置环境变量。
 
    ```shell
-   llvm-config --cflags --ldflags --libs all
+   export CC_FLAGS=$(llvm-config --cflags)
+   export CC_LINK_FLAGS=$(llvm-config --ldflags --libs all)  -lpthread -ldl -lm -lstdc++
+   export C_INCLUDE_PATH=$(llvm-config --includedir):$C_INCLUDE_PATH
    ```
-
-   将输出内容保存，并写入 `moon.pkg.json` 文件中。
 
 3. 在 `moon.pkg.json` 中添加依赖和链接标志：
 
@@ -222,8 +237,8 @@ brew install llvm@19
      ],
      "link": {
        "native": {
-         "cc-flags" : "./.mooncakes/Kaida-Amethyst/llvm/unsafe/warp.c",
-         "cc-link-flags": "{刚才llvm-config输出的内容}"
+         "cc-flags" : "$CC_FLAGS",
+         "cc-link-flags": "$CC_LINK_FLAGS"
        }
      }
    }

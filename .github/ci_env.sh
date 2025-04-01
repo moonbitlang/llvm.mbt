@@ -13,17 +13,19 @@ case $(uname -ms) in
     
     llvm_include="-I/usr/local/opt/llvm@19/include"
     llvm_link_dir="-L/usr/local/opt/llvm@19/lib"
+    export C_INCLUDE_PATH="/usr/local/opt/llvm@19/include":$C_INCLUDE_PATH
     export CC=clang
     export CC_FLAGS="$llvm_include $cc_macro"
-    export CC_LINK_FLAGS="./unsafe/warp.c $llvm_link_dir $llvm_link_lib"
+    export CC_LINK_FLAGS="$llvm_link_dir $llvm_link_lib"
     ;;
 'Darwin arm64')
     target=darwin-aarch64
     llvm_include="-I/opt/homebrew/opt/llvm/include"
     llvm_link_dir="-L/opt/homebrew/opt/llvm/lib"
+    export C_INCLUDE_PATH="/opt/homebrew/opt/llvm/include":$C_INCLUDE_PATH
     export CC=clang
     export CC_FLAGS="$llvm_include $cc_macro"
-    export CC_LINK_FLAGS="./unsafe/warp.c $llvm_link_dir $llvm_link_lib"
+    export CC_LINK_FLAGS="$llvm_link_dir $llvm_link_lib"
     ;;
 'Linux x86_64')
     target=linux-x86_64
@@ -33,9 +35,9 @@ case $(uname -ms) in
     llvm_include="-I $llvm_home/include"
     llvm_link_dir="-L $llvm_home/share -L $llvm_home/lib"
 
-
+    export C_INCLUDE_PATH="$llvm_home/include":$C_INCLUDE_PATH
     export CC=./llvm-19/bin/clang
     export CC_FLAGS="$llvm_include $cc_macro"
-    export CC_LINK_FLAGS="-fuse-ld=$ld ./unsafe/warp.c $llvm_link_dir $llvm_link_lib"
+    export CC_LINK_FLAGS="-fuse-ld=$ld $llvm_link_dir $llvm_link_lib"
     ;;
 esac
