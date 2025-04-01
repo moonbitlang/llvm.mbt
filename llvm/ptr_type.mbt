@@ -85,7 +85,7 @@ pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> 
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_ctx = ptr_type.get_context();
-/// assert_eq!(context, ptr_ctx);
+/// assert_true!(context == ptr_ctx);
 /// ```
 pub fn PointerType::get_context(self: PointerType) -> Context {
   self.ty.get_context()
@@ -123,7 +123,7 @@ pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
 
 ///| Gets the `AddressSpace` a `PointerType` was created with.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -141,24 +141,21 @@ pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
 ///| Creates a null `PointerValue` of this `PointerType`.
 /// It will be automatically assigned this `PointerType`'s `Context`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let null_ptr = ptr_type.const_null();
-/// inspect!(null_ptr, "")
+/// inspect!(null_ptr, "ptr null")
 /// ```
-///
-/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn PointerType::const_null(self: PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_const_null(self.as_type_ref()))
 }
 
 ///| Creates a constant null value of this `PointerType`.
-/// This is practically the same as calling `const_null` for this particular type and
-/// so this function may be removed in the future.
+/// This is practically the same as calling `const_null` for this particular type.
 ///
 /// ## Example (Not Tested)
 ///
@@ -166,11 +163,9 @@ pub fn PointerType::const_null(self: PointerType) -> PointerValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let null_ptr = ptr_type.const_null();
-/// inspect!(null_ptr, "")
+/// let null_ptr = ptr_type.const_zero();
+/// inspect!(null_ptr, "ptr null")
 /// ```
-///
-/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
   PointerValue::new(self.ty.const_zero())
 }

@@ -204,7 +204,7 @@ pub fn ScalableVectorType::const_array(self: ScalableVectorType, values: Array[S
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_ctx = scalable_vector_type.get_context();
-/// assert_eq!(context, scalable_vector_ctx);
+/// assert_true!(context == scalable_vector_ctx);
 /// ```
 pub fn ScalableVectorType::get_context(self: ScalableVectorType) -> Context {
   self.ty.get_context()

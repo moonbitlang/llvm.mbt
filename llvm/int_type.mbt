@@ -61,6 +61,7 @@ pub fn IntType::const_int_arbitrary_precision(self: IntType, words: Array[UInt64
 ///| Creates an `IntValue` representing a constant value of all one bits of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
 ///
 /// ## Example
+///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
@@ -146,13 +147,13 @@ pub fn IntType::scalable_vec_type(self: IntType, size: UInt) -> ScalableVectorTy
 
 ///| Gets a reference to the `Context` this `IntType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_ctx = i32_type.get_context();
-/// assert_eq!(context, i32_ctx);
+/// assert_true!(context == i32_ctx);
 /// ```
 pub fn IntType::get_context(self: IntType) -> Context {
   self.ty.get_context()
@@ -177,7 +178,6 @@ pub fn IntType::size_of(self: IntType) -> IntValue {
 pub fn IntType::is_sized(self: IntType) -> Bool {
   self.ty.is_sized()
 }
-
 
 ///| Gets the alignment of this `IntType`. Value may vary depending on the target architecture.
 ///

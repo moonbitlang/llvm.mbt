@@ -94,7 +94,7 @@ pub fn ArrayType::ptr_type(self: ArrayType, address_space: AddressSpace) -> Poin
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_ctx = array_type.get_context();
-/// assert_eq!(context, array_ctx);
+/// assert_true!(context == array_ctx);
 /// ```
 pub fn ArrayType::get_context(self: ArrayType) -> Context {
   self.ty.get_context()

@@ -118,9 +118,7 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
 
 ///| Creates a constant zero value of this `FloatType`.
 ///
-/// **Note: This API is problematic**
-///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -128,7 +126,6 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
 /// let f64_zero = f64_type.const_zero();
 /// inspect!(f64_zero, "double 0.0")
 /// ```
-/// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
@@ -170,13 +167,13 @@ pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
 
 ///| Gets a reference to the `Context` this `FloatType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_ctx = f64_type.get_context();
-/// assert_eq!(context, f64_ctx);
+/// assert_true!(context == f64_ctx);
 /// ```
 pub fn FloatType::get_context(self: FloatType) -> Context {
   self.ty.get_context()

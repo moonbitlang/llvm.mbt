@@ -128,7 +128,7 @@ pub fn StructType::get_alignment(self: StructType) -> IntValue {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_ctx = struct_type.get_context();
-/// assert_eq!(context, struct_ctx);
+/// assert_true!(context == struct_ctx);
 /// ```
 pub fn StructType::get_context(self: StructType) -> Context {
   self.ty.get_context()

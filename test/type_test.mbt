@@ -601,3 +601,61 @@ test "Vector Type Test" {
 
   context.drop()
 }
+
+test "Pointer Type Test" {
+
+  let context = @llvm.Context::create()
+  let i32_ty = context.i32_type()
+  let ptr_ty = i32_ty.ptr_type(@llvm.AddressSpace::default())
+
+  // size_of
+  let ptr_sz = ptr_ty.size_of()
+  inspect!(
+    ptr_sz,
+    content = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)"
+  )
+
+  // is sized
+  assert_true!(ptr_ty.is_sized())
+
+  // get_alignment
+  let ptr_align = ptr_ty.get_alignment()
+  inspect!(
+    ptr_align,
+    content="i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)"
+  )
+
+  // get_context
+  assert_true!(ptr_ty.get_context() == context)
+
+  // fn_type
+  let fty = ptr_ty.fn_type([i32_ty])
+  inspect!(fty, content="ptr (i32)")
+
+  // arr_type
+  let arr_ty = ptr_ty.array_type(4)
+  inspect!(arr_ty, content="[4 x ptr]")
+
+  // get_address_space
+  inspect!(ptr_ty.get_address_space(), content="AddressSpace(0)")
+
+  // const_null
+  inspect!(ptr_ty.const_null(), content="ptr null")
+
+  // const zero
+  inspect!(ptr_ty.const_zero(), content="ptr null")
+
+  // get_undef
+  inspect!(ptr_ty.get_undef(), content="ptr undef")
+
+  // get_poison
+  inspect!(ptr_ty.get_poison(), content="ptr poison")
+
+  // vec_type
+  let ptr_vec = ptr_ty.vec_type(4)
+  inspect!(ptr_vec, content="<4 x ptr>")
+
+  // scalable_vec_type
+  let ptr_svec = ptr_ty.scalable_vec_type(4)
+  inspect!(ptr_svec, content="<vscale x 4 x ptr>")
+}

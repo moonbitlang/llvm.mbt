@@ -33,7 +33,7 @@ pub fn VoidType::is_sized(self: VoidType) -> Bool {
 /// let context = Context::create();
 /// let void_type = context.void_type();
 /// let void_ctx = void_type.get_context();
-/// assert_eq!(context, void_ctx);
+/// assert_true!(context == void_ctx);
 /// ```
 pub fn VoidType::get_context(self: VoidType) -> Context {
   self.ty.get_context()

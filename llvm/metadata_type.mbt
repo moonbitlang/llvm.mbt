@@ -35,7 +35,7 @@ pub fn MetadataType::fn_type(self: MetadataType, param_types: Array[&BasicMetada
 /// let context = Context::create();
 /// let md_type = context.metadata_type();
 /// let md_context = md_type.get_context();
-/// assert_eq!(md_context, context)
+/// assert_true!(md_context == context)
 /// ```
 pub fn MetadataType::get_context(self: MetadataType) -> Context {
   self.ty.get_context()

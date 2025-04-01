@@ -11,8 +11,8 @@ case $(uname -ms) in
     # Darwin x86_64 is installed in /usr
     # Darwin arm64 is installed  in  /opt
     
-    llvm_include="-I/usr/local/opt/llvm/include"
-    llvm_link_dir="-L/usr/local/opt/llvm/lib"
+    llvm_include="-I/usr/local/opt/llvm@19/include"
+    llvm_link_dir="-L/usr/local/opt/llvm@19/lib"
     export CC=clang
     export CC_FLAGS="$llvm_include $cc_macro"
     export CC_LINK_FLAGS="./unsafe/warp.c $llvm_link_dir $llvm_link_lib"
