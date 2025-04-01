@@ -14,6 +14,12 @@ pub fn StructType::new(type_ref: @unsafe.LLVMTypeRef) -> StructType {
   }
 }
 
+///|
+pub fn StructType::as_type(self: StructType) -> Type {
+  self.ty
+}
+
+///|
 pub fn StructType::as_type_ref(self: StructType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }

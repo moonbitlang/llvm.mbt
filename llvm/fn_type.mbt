@@ -14,6 +14,11 @@ pub fn FunctionType::new(type_ref: @unsafe.LLVMTypeRef) -> FunctionType {
   }
 }
 
+///| Returns the `Type` of this `FunctionType`.
+pub fn FunctionType::as_type(self: FunctionType) -> Type {
+  self.ty
+}
+
 ///| Return `@unsafe.LLVMTypeRef` of `FunctionType`
 pub fn FunctionType::as_type_ref(self: FunctionType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

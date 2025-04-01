@@ -14,6 +14,11 @@ pub fn ArrayType::new(type_ref: @unsafe.LLVMTypeRef) -> ArrayType {
   }
 }
 
+///| Returns the `Type` of this `ArrayType`.
+pub fn ArrayType::as_type(self: ArrayType) -> Type {
+  self.ty
+}
+
 ///| Returns the `@unsafe.LLVMTypeRef` of this `ArrayType`.
 pub fn ArrayType::as_type_ref(self: ArrayType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

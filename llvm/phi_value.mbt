@@ -14,6 +14,12 @@ pub fn PhiValue::new(value_ref: @unsafe.LLVMValueRef) -> PhiValue {
     value: Value::new(value_ref)
   }
 }
+
+///| Returns the `Value` that this `PhiValue` wraps.
+pub fn PhiValue::as_value(self: PhiValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `PhiValue` wraps.
 pub fn PhiValue::as_value_ref(self: PhiValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

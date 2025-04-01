@@ -14,6 +14,11 @@ pub fn IntType::new(type_ref: @unsafe.LLVMTypeRef) -> IntType {
   }
 }
 
+///|
+pub fn IntType::as_type(self: IntType) -> Type {
+  self.ty
+}
+
 ///| Return `@unsafe.LLVMTypeRef` of `IntType`
 pub fn IntType::as_type_ref(self: IntType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

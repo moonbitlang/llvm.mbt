@@ -15,6 +15,11 @@ pub fn VectorValue::new(value_ref: @unsafe.LLVMValueRef) -> VectorValue {
   }
 }
 
+///| Returns the `Value` that this `VectorValue` wraps.
+pub fn VectorValue::as_value(self: VectorValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `VectorValue` wraps.
 pub fn VectorValue::as_value_ref(self: VectorValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

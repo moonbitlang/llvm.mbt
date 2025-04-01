@@ -15,6 +15,11 @@ pub fn ScalableVectorValue::new(value_ref: @unsafe.LLVMValueRef) -> ScalableVect
   }
 }
 
+///| Returns the `Value` that this `ScalableVectorValue` wraps.
+pub fn ScalableVectorValue::as_value(self: ScalableVectorValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `ScalableVectorValue` wraps.
 pub fn ScalableVectorValue::as_value_ref(self: ScalableVectorValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

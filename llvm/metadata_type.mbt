@@ -12,6 +12,11 @@ pub fn MetadataType::new(type_ref: @unsafe.LLVMTypeRef) -> MetadataType {
   }
 }
 
+///| Returns the `Type` of this `MetadataType`.
+pub fn MetadataType::as_type(self: MetadataType) -> Type {
+  self.ty
+}
+
 ///| Returns the `@unsafe.LLVMTypeRef` of this `MetadataType`.
 pub fn MetadataType::as_type_ref(self: MetadataType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

@@ -14,6 +14,11 @@ pub fn VectorType::new(type_ref: @unsafe.LLVMTypeRef) -> VectorType {
   }
 }
 
+///|
+pub fn VectorType::as_type(self: VectorType) -> Type {
+  self.ty
+}
+
 ///| Returns the `@unsafe.LLVMTypeRef` of this `VectorType`.
 pub fn VectorType::as_type_ref(self: VectorType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

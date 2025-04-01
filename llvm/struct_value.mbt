@@ -17,6 +17,11 @@ pub fn StructValue::new(value_ref: @unsafe.LLVMValueRef) -> StructValue {
   }
 }
 
+///| Returns the `Value` that this `StructValue` wraps.
+pub fn StructValue::as_value(self: StructValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `StructValue` wraps.
 pub fn StructValue::as_value_ref(self: StructValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

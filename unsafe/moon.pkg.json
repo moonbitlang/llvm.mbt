@@ -1,5 +1,6 @@
 {
   "is-main": false,
+  "supported-targets" : ["native"],
   "link" : {
     "native" : {
       "cc" : "$CC",

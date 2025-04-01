@@ -14,6 +14,11 @@ pub fn PointerType::new(type_ref: @unsafe.LLVMTypeRef) -> PointerType {
   }
 }
 
+///| Returns the `Type` of this `PointerType`.
+pub fn PointerType::as_type(self: PointerType) -> Type {
+  self.ty
+}
+
 ///| Return `@unsafe.LLVMTypeRef` of `PointerType`
 pub fn PointerType::as_type_ref(self: PointerType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

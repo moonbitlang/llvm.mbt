@@ -40,6 +40,10 @@ fn Value::is_const(self: Value) -> Bool {
   @unsafe.llvm_is_constant(self.as_value_ref())
 }
 
+fn Value::is_poison(self: Value) -> Bool {
+  @unsafe.llvm_is_poison(self.as_value_ref())
+}
+
 fn Value::set_name(self: Value, name: String) -> Unit {
   let value_ref = self.as_value_ref()
   @unsafe.llvm_set_value_name(value_ref, name)

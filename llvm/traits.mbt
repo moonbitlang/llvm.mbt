@@ -88,7 +88,7 @@ pub impl AnyValue for IntValue with as_any_value_enum(self: IntValue) -> AnyValu
 }
 
 pub impl AnyValue for IntValue with is_poison(self: IntValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for FloatValue with as_any_value_enum(self: FloatValue) -> AnyValueEnum {
@@ -96,7 +96,7 @@ pub impl AnyValue for FloatValue with as_any_value_enum(self: FloatValue) -> Any
 }
 
 pub impl AnyValue for FloatValue with is_poison(self: FloatValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for PointerValue with as_any_value_enum(self: PointerValue) -> AnyValueEnum {
@@ -104,7 +104,7 @@ pub impl AnyValue for PointerValue with as_any_value_enum(self: PointerValue) ->
 }
 
 pub impl AnyValue for PointerValue with is_poison(self: PointerValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for InstructionValue with as_any_value_enum(self: InstructionValue) -> AnyValueEnum {
@@ -112,7 +112,7 @@ pub impl AnyValue for InstructionValue with as_any_value_enum(self: InstructionV
 }
 
 pub impl AnyValue for InstructionValue with is_poison(self: InstructionValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for StructValue with as_any_value_enum(self: StructValue) -> AnyValueEnum {
@@ -120,7 +120,7 @@ pub impl AnyValue for StructValue with as_any_value_enum(self: StructValue) -> A
 }
 
 pub impl AnyValue for StructValue with is_poison(self: StructValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for ArrayValue with as_any_value_enum(self: ArrayValue) -> AnyValueEnum {
@@ -128,7 +128,7 @@ pub impl AnyValue for ArrayValue with as_any_value_enum(self: ArrayValue) -> Any
 }
 
 pub impl AnyValue for ArrayValue with is_poison(self: ArrayValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for VectorValue with as_any_value_enum(self: VectorValue) -> AnyValueEnum {
@@ -136,7 +136,7 @@ pub impl AnyValue for VectorValue with as_any_value_enum(self: VectorValue) -> A
 }
 
 pub impl AnyValue for VectorValue with is_poison(self: VectorValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for PhiValue with as_any_value_enum(self: PhiValue) -> AnyValueEnum {
@@ -144,7 +144,7 @@ pub impl AnyValue for PhiValue with as_any_value_enum(self: PhiValue) -> AnyValu
 }
 
 pub impl AnyValue for PhiValue with is_poison(self: PhiValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
 pub impl AnyValue for ScalableVectorValue with as_any_value_enum(self: ScalableVectorValue) -> AnyValueEnum {
@@ -152,9 +152,16 @@ pub impl AnyValue for ScalableVectorValue with as_any_value_enum(self: ScalableV
 }
 
 pub impl AnyValue for ScalableVectorValue with is_poison(self: ScalableVectorValue) -> Bool {
-  self.is_poison()
+  self.as_value().is_poison()
 }
 
+pub impl AnyValue for MetadataValue with as_any_value_enum(self: MetadataValue) -> AnyValueEnum {
+  AnyValueEnum::MetadataValue(self)
+}
+
+pub impl AnyValue for MetadataValue with is_poison(self: MetadataValue) -> Bool {
+  self.as_value().is_poison()
+}
 
 //=========================================================
 // BasicValue

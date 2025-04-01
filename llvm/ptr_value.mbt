@@ -17,6 +17,11 @@ pub fn PointerValue::new(value_ref: @unsafe.LLVMValueRef) -> PointerValue {
   }
 }
 
+///| Returns the `Value` that this `PointerValue` wraps.
+pub fn PointerValue::as_value(self: PointerValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `PointerValue` wraps.
 pub fn PointerValue::as_value_ref(self: PointerValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

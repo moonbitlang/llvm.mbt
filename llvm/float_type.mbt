@@ -17,6 +17,11 @@ pub fn FloatType::new(type_ref: @unsafe.LLVMTypeRef) -> FloatType {
   }
 }
 
+///| Return `Type` of `FloatType`.
+pub fn FloatType::as_type(self: FloatType) -> Type {
+  self.ty
+}
+
 // use get_kind to check if it is float type
 // pub fn FloatType::safe_new(type_ref: @unsafe.LLVMTypeRef) -> Option[FloatType];
 

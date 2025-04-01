@@ -15,6 +15,11 @@ pub fn ArrayValue::new(value_ref: @unsafe.LLVMValueRef) -> ArrayValue {
   }
 }
 
+///| Returns the `Value` that this `ArrayValue` wraps.
+pub fn ArrayValue::as_value(self: ArrayValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `ArrayValue` wraps.
 pub fn ArrayValue::as_value_ref(self: ArrayValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

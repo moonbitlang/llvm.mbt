@@ -2426,10 +2426,15 @@ pub fn LLVMValueRef::is_undef(self: LLVMValueRef) -> Bool {
 }
 
 ///| Determine whether a value instance is poisonous.
-pub extern "C" fn llvm_is_poison(val: LLVMValueRef) -> LLVMBool = "LLVMIsPoison"
+pub fn llvm_is_poison(val: LLVMValueRef) -> Bool {
+  __llvm_is_poison(val).to_moonbit_bool()
+}
+
+///|
+extern "C" fn __llvm_is_poison(val: LLVMValueRef) -> LLVMBool = "LLVMIsPoison"
 
 ///| Determine whether a value instance is poisonous.
-pub fn LLVMValueRef::is_poison(self: LLVMValueRef) -> LLVMBool {
+pub fn LLVMValueRef::is_poison(self: LLVMValueRef) -> Bool {
   llvm_is_poison(self)
 }
 

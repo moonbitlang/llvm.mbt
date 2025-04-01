@@ -15,6 +15,11 @@ pub fn InstructionValue::new(value_ref: @unsafe.LLVMValueRef) -> InstructionValu
   }
 }
 
+///| Returns the `Value` that this `InstructionValue` wraps.
+pub fn InstructionValue::as_value(self: InstructionValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `InstructionValue` wraps.
 pub fn InstructionValue::as_value_ref(self: InstructionValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

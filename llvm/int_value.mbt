@@ -17,6 +17,11 @@ pub fn IntValue::new(value_ref: @unsafe.LLVMValueRef) -> IntValue {
   }
 }
 
+///| Returns the `Value` that this `IntValue` wraps.
+pub fn IntValue::as_value(self: IntValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `IntValue` wraps.
 pub fn IntValue::as_value_ref(self: IntValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()

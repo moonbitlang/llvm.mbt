@@ -17,6 +17,16 @@ pub fn FloatValue::new(value_ref: @unsafe.LLVMValueRef) -> FloatValue {
   }
 }
 
+///| Returns the `Value` that this `FloatValue` wraps.
+pub fn FloatValue::as_value(self: FloatValue) -> Value {
+  self.value
+}
+
+///| Returns the `@unsafe.LLVMValueRef` that this `FloatValue` wraps.
+pub fn FloatValue::as_value_ref(self: FloatValue) -> @unsafe.LLVMValueRef {
+  self.value.as_value_ref()
+}
+
 ///| Gets name of the `FloatValue`.
 /// If the value is a constant, this will return an empty string.
 ///

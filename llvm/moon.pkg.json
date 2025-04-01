@@ -3,6 +3,7 @@
   "import" : [
     "Kaida-Amethyst/llvm/unsafe"
   ],
+  "supported-targes" : ["native"],
   "link" : {
     "native" : {
       "cc" : "$CC",

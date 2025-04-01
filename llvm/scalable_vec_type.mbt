@@ -14,6 +14,11 @@ pub fn ScalableVectorType::new(type_ref: @unsafe.LLVMTypeRef) -> ScalableVectorT
   }
 }
 
+///| Returns the `Type` of this `ScalableVectorType`.
+pub fn ScalableVectorType::as_type(self: ScalableVectorType) -> Type {
+  self.ty
+}
+
 ///| Returns the `@unsafe.LLVMTypeRef` of this `ScalableVectorType`.
 pub fn ScalableVectorType::as_type_ref(self: ScalableVectorType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()

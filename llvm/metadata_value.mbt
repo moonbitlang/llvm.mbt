@@ -17,6 +17,11 @@ pub fn MetadataValue::new(value_ref: @unsafe.LLVMValueRef) -> MetadataValue {
   }
 }
 
+///| Returns the `Value` that this `MetadataValue` wraps.
+pub fn MetadataValue::as_value(self: MetadataValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `MetadataValue` wraps.
 pub fn MetadataValue::as_value_ref(self: MetadataValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
