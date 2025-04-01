@@ -119,7 +119,7 @@ jobs:
 
       - name: moon test
         run: |
-          source env.sh 
+          source ./.github/env.sh 
           moon test --target native
           moon test --target native --release
         # each step uses different environment variable
