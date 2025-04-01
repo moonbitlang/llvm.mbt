@@ -63,6 +63,6 @@ fn main_err () -> Unit!Error {
   println(lmodule)
 }
 
-test {
-  main_err!()
+fn main {
+  let _ = main_err?()
 }

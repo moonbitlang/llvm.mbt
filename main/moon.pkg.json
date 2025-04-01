@@ -1,5 +1,5 @@
 {
-  "is-main": false,
+  "is-main": true,
   "import": [
     "Kaida-Amethyst/llvm/llvm"
   ],

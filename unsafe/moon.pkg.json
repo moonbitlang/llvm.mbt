@@ -1,12 +1,9 @@
 {
-  "is-main" : false,
+  "is-main": false,
   "link" : {
-    "link" : {
-      "native" : {
-        "cc" : "$CC",
-        "cc-flags": "$CC_FLAGS",
-        "cc-link-flags" : "$CC_LINK_FLAGS"
-      }
+    "native" : {
+      "cc" : "$CC",
+      "cc-link-flags" : "$CC_LINK_FLAGS"
     }
   }
 }
