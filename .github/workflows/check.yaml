@@ -95,8 +95,8 @@ jobs:
           moon update
           moon install
 
-      # - name: moon check
-      #   run: moon check 
+      - name: moon check
+        run: moon check --target native
 
       # - name: moon info
       #   run: |
@@ -119,8 +119,7 @@ jobs:
 
       - name: moon test
         run: |
-          source ./.github/env.sh 
-          moon test --target native
+          source ./.github/ci_env.sh 
           moon test --target native --release
         # each step uses different environment variable
         # don't separate `source env.sh` and `moon build`
