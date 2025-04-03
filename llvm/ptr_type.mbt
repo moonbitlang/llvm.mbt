@@ -78,7 +78,7 @@ pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> 
 
 ///| Gets a reference to the `Context` this `PointerType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -157,7 +157,7 @@ pub fn PointerType::const_null(self: PointerType) -> PointerValue {
 ///| Creates a constant null value of this `PointerType`.
 /// This is practically the same as calling `const_null` for this particular type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();

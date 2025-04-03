@@ -417,8 +417,8 @@ test "Struct Type Test" {
   assert_eq!(opaque_struct_ty.count_fields(), 0)
 
   // get_field_types
-  // inspect!(struct_ty.get_field_types(), content="[i32, double]")
-  // inspect!(opaque_struct_ty.get_field_types(), content="[]")
+  inspect!(struct_ty.get_field_types(), content="[i32, double]")
+  inspect!(opaque_struct_ty.get_field_types(), content="[]")
 
   // get_undef
   inspect!(struct_ty.get_undef(), content="{ i32, double } undef")

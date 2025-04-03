@@ -234,7 +234,7 @@ pub fn StructType::count_fields(self: StructType) -> UInt {
 
 ///| Gets this `StructType`'s field types.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -292,7 +292,7 @@ pub fn StructType::get_poison(self: StructType) -> StructValue {
 ///
 /// Resetting the `packed` state of a non-opaque struct type may not work.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();

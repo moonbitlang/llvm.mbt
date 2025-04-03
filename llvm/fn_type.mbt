@@ -55,7 +55,7 @@ pub fn FunctionType::is_var_arg(self: FunctionType) -> Bool {
 
 ///| Gets param types this `FunctionType` has.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
