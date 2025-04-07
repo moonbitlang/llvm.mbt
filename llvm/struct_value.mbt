@@ -38,9 +38,9 @@ pub fn StructValue::as_value_ref(self: StructValue) -> @unsafe.LLVMValueRef {
 /// let struct_type = context.struct_type([i8_type, i32_type]);
 /// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
 ///
-/// assert_true!(struct_val.get_field_at_index(0).is_some());
-/// assert_true!(struct_val.get_field_at_index(1).is_some());
-/// assert_true!(struct_val.get_field_at_index(3).is_none());
+/// assert_true!(struct_val.get_field_at_index(0) is Some(_));
+/// assert_true!(struct_val.get_field_at_index(1) is Some(_));
+/// assert_true!(struct_val.get_field_at_index(2) is None);
 /// assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
 /// ```
 pub fn StructValue::get_field_at_index(self: StructValue, index: UInt) -> BasicValueEnum? {

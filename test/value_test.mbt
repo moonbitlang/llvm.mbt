@@ -173,3 +173,29 @@ test "Function Value Test" {
   llvm_module.drop()
   context.drop()
 }
+
+test "Struct Value Test" {
+  let context = @llvm.Context::create()
+  let i32_ty = context.i32_type()
+  let i32_val = i32_ty.const_all_ones()
+
+  let i8_ty = context.i8_type()
+  let i8_val = i8_ty.const_all_ones()
+
+  let struct_ty = context.struct_type([i8_ty, i32_ty])
+  let struct_val = struct_ty.const_named_struct([i8_val, i32_val])
+
+  // get_field_at_index
+  assert_true!(struct_val.get_field_at_index(0) is Some(_));
+  assert_true!(struct_val.get_field_at_index(1) is Some(_));
+  assert_true!(struct_val.get_field_at_index(2) is None);
+  assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+}
+
+// test "Array Value Test" {
+//
+// }
+//
+// test "Vector Value Test" {
+//
+// }

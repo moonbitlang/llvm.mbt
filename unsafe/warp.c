@@ -82,8 +82,8 @@ int32_t llvm_type_kind_to_int(LLVMTypeKind k) {
     return 13;
   case LLVMMetadataTypeKind:
     return 14;
-  case LLVMX86_MMXTypeKind:
-    return 15;
+  // case LLVMX86_MMXTypeKind:
+  //   return 15;
   case LLVMTokenTypeKind:
     return 16;
   case LLVMScalableVectorTypeKind:
@@ -131,8 +131,8 @@ LLVMTypeKind llvm_type_kind_from_int(int32_t k) {
     return LLVMVectorTypeKind;
   case 14:
     return LLVMMetadataTypeKind;
-  case 15:
-    return LLVMX86_MMXTypeKind;
+  // case 15:
+  //   return LLVMX86_MMXTypeKind;
   case 16:
     return LLVMTokenTypeKind;
   case 17:

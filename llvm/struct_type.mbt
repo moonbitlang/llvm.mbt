@@ -52,7 +52,7 @@ pub fn StructType::get_field_type_at_index(self: StructType, index: UInt) -> Bas
 }
 
 ///| Creates a `StructValue` based on this `StructType`'s definition.
-pub fn StructType::const_named_struct(self: StructType, values: Array[BasicValueEnum]) -> StructValue {
+pub fn StructType::const_named_struct(self: StructType, values: Array[&BasicValue]) -> StructValue {
   let args = values.map(fn (v) {v.as_value_ref()})
   let vref = @unsafe.llvm_const_named_struct(self.as_type_ref(), args)
   StructValue::new(vref)
