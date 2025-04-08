@@ -107,5 +107,3 @@ pub impl Show for VectorValue with output(self: VectorValue, logger: &Logger) ->
 pub impl Show for VectorValue with to_string(self: VectorValue) -> String {
   self.to_string()
 }
-
-

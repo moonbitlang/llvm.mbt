@@ -72,11 +72,11 @@ pub fn ArrayValue::replace_all_uses_with(self: ArrayValue, new_value: ArrayValue
 
 ///| Determines whether or not an `ArrayValue` is a constant.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int(23, false);
+/// let i64_val = i64_type.const_int(23);
 /// let array_val = i64_type.const_array([i64_val]);
 /// assert_true!(array_val.is_const());
 /// ```
@@ -106,7 +106,7 @@ pub fn ArrayValue::is_const_string(self: ArrayValue) -> Bool {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let string = context.const_string(b"hello!", true);
+/// let string = context.const_string("hello!", true);
 ///
 /// assert_eq!(string.get_string_constant(), Some(result));
 /// ```

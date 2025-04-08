@@ -205,12 +205,26 @@ test "Struct Value Test" {
 
   // is_const
   assert_true!(struct_val.is_const())
+
+  context.drop()
 }
 
-// test "Array Value Test" {
-//
-// }
-//
+test "Array Value Test" {
+  let context = @llvm.Context::create()
+
+  let i32_ty = context.i32_type()
+  let i32_val = i32_ty.const_int(23)
+  let arr_val = i32_ty.const_array([i32_val, i32_val])
+
+  // print
+  inspect!(arr_val, content="[2 x i32] [i32 23, i32 23]")
+
+  // is const
+  assert_true!(arr_val.is_const())
+
+  context.drop()
+}
+
 // test "Vector Value Test" {
 //
 // }
