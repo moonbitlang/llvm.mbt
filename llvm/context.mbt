@@ -345,7 +345,7 @@ pub fn Context::get_struct_type(self: Context, name: String) -> StructType? {
 /// assert_eq!(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
 /// ```
 pub fn Context::const_struct(
-  self: Context, values: Array[BasicValueEnum], packed: Bool
+  self: Context, values: Array[BasicValueEnum], packed~: Bool = false
 ) -> StructValue {
   let args = values.map(fn (v) {v.as_value_ref()})
 

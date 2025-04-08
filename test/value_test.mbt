@@ -185,11 +185,26 @@ test "Struct Value Test" {
   let struct_ty = context.struct_type([i8_ty, i32_ty])
   let struct_val = struct_ty.const_named_struct([i8_val, i32_val])
 
+  // print
+  inspect!(struct_val, content="{ i8, i32 } { i8 -1, i32 -1 }")
+
   // get_field_at_index
   assert_true!(struct_val.get_field_at_index(0) is Some(_));
   assert_true!(struct_val.get_field_at_index(1) is Some(_));
   assert_true!(struct_val.get_field_at_index(2) is None);
   assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+
+  // set_field_at_index
+  let i32_val2 = i32_ty.const_int(42)
+  let _ = struct_val.set_field_at_index(1, i32_val2)
+  inspect!(struct_val, content="{ i8, i32 } { i8 -1, i32 42 }")
+
+  // count fields
+  assert_eq!(struct_val.count_fields(), 2)
+  assert_eq!(struct_val.count_fields(), struct_ty.count_fields())
+
+  // is_const
+  assert_true!(struct_val.is_const())
 }
 
 // test "Array Value Test" {

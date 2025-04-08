@@ -62,6 +62,9 @@ fn StructValue::get_field_at_index_unchecked(
 
 // pub fn StructValue::get_fields
 
+// TODO: Should throw an error if
+// 1. index is out of bounds
+// 2. type of field is not the same as the type of value
 ///| Sets the value of a field belonging to this `StructValue`.
 pub fn StructValue::set_field_at_index(
   self: StructValue,
@@ -135,13 +138,13 @@ pub fn StructValue::replace_all_uses_with(self: StructValue, new_value: StructVa
 
 ///| Determines whether or not this `StructValue` is constant.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int(23, false).as_basic_value_enum();
-/// let struct_val = context.const_struct([i64_val, i64_val], false);
+/// let i64_val = i64_type.const_int(23, false);
+/// let struct_val = context.const_struct([i64_val, i64_val]);
 /// assert_true!(struct_val.is_const());
 /// ```
 pub fn StructValue::is_const(self: StructValue) -> Bool {
