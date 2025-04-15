@@ -20,9 +20,9 @@ case $(uname -ms) in
     ;;
 'Darwin arm64')
     target=darwin-aarch64
-    llvm_include="-I/opt/homebrew/opt/llvm/include"
-    llvm_link_dir="-L/opt/homebrew/opt/llvm/lib"
-    export C_INCLUDE_PATH="/opt/homebrew/opt/llvm/include":$C_INCLUDE_PATH
+    llvm_include="-I/opt/homebrew/opt/llvm@19/include"
+    llvm_link_dir="-L/opt/homebrew/opt/llvm@19/lib"
+    export C_INCLUDE_PATH="/opt/homebrew/opt/llvm@19/include":$C_INCLUDE_PATH
     export CC=clang
     export CC_FLAGS="$llvm_include $cc_macro"
     export CC_LINK_FLAGS="$llvm_link_dir $llvm_link_lib"
