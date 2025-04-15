@@ -395,7 +395,7 @@ pub fn Context::append_basic_block(
   let fn_val_ref = function.as_value_ref()
   
   let bb_ref = @unsafe.llvm_append_basic_block_in_context(ctx_ref, fn_val_ref, name)
-  BasicBlock::new(bb_ref).unwrap()
+  BasicBlock::new(bb_ref)
 }
 
 ///| Append a named `BasicBlock` after the referenced `BasicBlock`.
@@ -457,7 +457,7 @@ pub fn Context::prepend_basic_block(
 ) -> BasicBlock {
   let val_ref = @unsafe.llvm_insert_basic_block_in_context(self.as_ctx_ref(), basic_block.as_bb_ref(), name)
 
-  BasicBlock::new(val_ref).unwrap()
+  BasicBlock::new(val_ref)
 }
 
 ///| Creates a `MetadataValue` tuple of heterogeneous types (a "Node") for the current context. It can be assigned to a value.

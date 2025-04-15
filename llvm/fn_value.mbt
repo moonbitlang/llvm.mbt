@@ -182,14 +182,20 @@ pub fn FunctionValue::get_last_param(self: FunctionValue) -> BasicValueEnum? {
 pub fn FunctionValue::get_first_basic_block(self: FunctionValue) -> BasicBlock? {
   let bb = @unsafe.llvm_get_first_basic_block(self.as_value_ref())
 
-  BasicBlock::new(bb)
+  @option.when(
+    bb.is_not_null(),
+    fn () {BasicBlock::new(bb)}
+  )
 }
 
 ///| Get the last basic block of the function.
 pub fn FunctionValue::get_last_basic_block(self: FunctionValue) -> BasicBlock? {
   let bb = @unsafe.llvm_get_last_basic_block(self.as_value_ref())
 
-  BasicBlock::new(bb)
+  @option.when(
+    bb.is_not_null(),
+    fn () {BasicBlock::new(bb)}
+  )
 }
 
 ///| Get the n-th parameter of the function.
@@ -237,7 +243,7 @@ pub fn FunctionValue::count_params(self: FunctionValue) -> UInt {
 ///| Get basic blocks of the function.
 pub fn FunctionValue::get_basic_blocks(self: FunctionValue) -> Array[BasicBlock] {
   let bb_refs : Array[@unsafe.LLVMBasicBlockRef] = @unsafe.llvm_get_basic_blocks(self.as_value_ref())
-  bb_refs.map(fn (bb_ref) { BasicBlock::new(bb_ref).unwrap() })
+  bb_refs.map(fn (bb_ref) { BasicBlock::new(bb_ref) })
 }
 
 ///| Get parameters of the function.

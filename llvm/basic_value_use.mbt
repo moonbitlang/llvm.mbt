@@ -149,7 +149,7 @@ pub fn BasicValueUse::get_used_value(self: BasicValueUse) -> Either[BasicValueEn
   let is_basic_block = @unsafe.llvm_isa_basic_block(used_value).is_null() |> not
 
   if is_basic_block {
-    let bb = BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value)).unwrap()
+    let bb = BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value))
     Right(bb)
   } else {
     let value = BasicValueEnum::new(used_value)

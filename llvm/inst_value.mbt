@@ -137,7 +137,12 @@ pub fn InstructionValue::remove_from_basic_block(self: InstructionValue) -> Unit
 ///| Get the parent of the instruction.
 // REVIEW: what happen if the parent been deleted?
 pub fn InstructionValue::get_parent(self: InstructionValue) -> BasicBlock? {
-  BasicBlock::new(@unsafe.llvm_get_instruction_parent(self.as_value_ref()))
+  let p = @unsafe.llvm_get_instruction_parent(self.as_value_ref())
+
+  @option.unless(
+    p.is_null(),
+    fn () { BasicBlock::new(p) }
+  )
 }
 
 ///| Returns if the instruction is a terminator
@@ -501,10 +506,7 @@ fn InstructionValue::get_operand_unchecked(
 
   if is_basic_block {
     let bb_ref = @unsafe.llvm_value_as_basic_block(operand)
-    let bb = match BasicBlock::new(bb_ref) {
-      Some(bb) => bb
-      None => abort("BasicBlock should always be valid")
-    }
+    let bb = BasicBlock::new(bb_ref) 
     Some(Right(bb))
   } else {
     let value = BasicValueEnum::new(operand)

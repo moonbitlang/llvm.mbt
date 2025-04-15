@@ -14,11 +14,13 @@ pub fn BasicBlock::as_bb_ref(self: BasicBlock) -> @unsafe.LLVMBasicBlockRef {
   self.bb_ref
 }
 
-pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBlock? {
-  @option.unless(
-    basic_block_ref.is_null(),
-    fn () { BasicBlock::{ bb_ref : basic_block_ref} }
-  )
+pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBlock {
+  guard basic_block_ref.is_not_null() else {
+    println("basic block ref is null")
+    panic()
+  }
+
+  BasicBlock::{ bb_ref : basic_block_ref }
 }
 
 ///| Obtains the `FunctionValue` that this `BasicBlock` belongs to, if any.
@@ -68,13 +70,12 @@ pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
 /// assert_true!(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
 /// ```
 pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
-  if self.get_parent() is None {
-    return None
-  }
-
-  BasicBlock::new(@unsafe.llvm_get_previous_basic_block(self.as_bb_ref()))
+  let prev_bb_ref = @unsafe.llvm_get_previous_basic_block(self.as_bb_ref())
+  @option.when(
+    prev_bb_ref.is_not_null(),
+    fn () { BasicBlock::new(prev_bb_ref) }
+  )
 }
-
 
 ///| Gets the `BasicBlock` succeeding the current one, in its own scope, if any.
 ///
@@ -101,18 +102,18 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 /// assert_true!(basic_block3.get_next_basic_block() is None);
 /// ```
 pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
-  if self.get_parent() is None {
-    return None
-  }
-
-  BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref()))
+  let next_bb_ref = @unsafe.llvm_get_next_basic_block(self.as_bb_ref())
+  @option.when(
+    next_bb_ref.is_not_null(),
+    fn () { BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref())) }
+  )
 }
 
 
 ///| Prepends one `BasicBlock` before another.
 /// It returns `Err(())` when either `BasicBlock` has no parent, as @unsafe.LLVM assumes they both have parents.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -126,22 +127,21 @@ pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
 ///
 /// basic_block2.move_before(basic_block1);
 ///
-/// assert_true!(basic_block1.get_next_basic_block().is_none());
-/// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
+/// assert_true!(basic_block1.get_next_basic_block() is None);
+/// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block1);
 /// ```
-pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Result[Unit, Unit] {
-  if self.get_parent() is None || other.get_parent() is None {
-    return Err(())
+pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Unit!MoonllvmError {
+  guard self.get_parent() is Some(_) && other.get_parent() is Some(_) else {
+    raise MoonllvmError::BasicBlockHasNoParent
   }
 
   @unsafe.llvm_move_basic_block_before(self.as_bb_ref(), other.as_bb_ref())
-  Ok(())
 }
 
 ///| Appends one `BasicBlock` after another.
 /// It returns `Err(())` when either `BasicBlock` has no parent, as @unsafe.LLVM assumes they both have parents.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -158,19 +158,18 @@ pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Result[Un
 /// assert_true!(basic_block1.get_next_basic_block().is_none());
 /// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
-pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Result[Unit, Unit] {
-  if self.get_parent() is None || other.get_parent() is None {
-    return Err(())
+pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Unit!MoonllvmError {
+  guard self.get_parent() is Some(_) && other.get_parent() is Some(_) else {
+    raise MoonllvmError::BasicBlockHasNoParent
   }
 
   @unsafe.llvm_move_basic_block_after(self.as_bb_ref(), other.as_bb_ref())
-  Ok(())
 }
 
 
 ///| Obtains the first `InstructionValue` in this `BasicBlock`, if any.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -190,16 +189,15 @@ pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Result[Uni
 pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_first_instruction(self.as_bb_ref())
 
-  if inst.is_null() {
-    return None
-  }
-
-  Some(InstructionValue::new(inst))
+  @option.when(
+    inst.is_not_null(),
+    fn () { InstructionValue::new(inst) }
+  )
 }
 
 ///| Obtains the last `InstructionValue` in this `BasicBlock`, if any. A `BasicBlock` must have a last instruction to be valid.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -211,7 +209,7 @@ pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? 
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
-/// builder.build_return(None);
+/// let _ = builder.build_return(None);
 ///
 /// let opcode = basic_block.get_last_instruction().unwrap().get_opcode();
 /// assert_eq!(opcode, InstructionOpcode::Return);
@@ -219,11 +217,10 @@ pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? 
 pub fn BasicBlock::get_last_instruction(self: BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_last_instruction(self.as_bb_ref())
 
-  if inst.is_null() {
-    return None
-  }
-
-  Some(InstructionValue::new(inst))
+  @option.when(
+    inst.is_not_null(),
+    fn () { InstructionValue::new(inst) }
+  )
 }
 
 
@@ -253,7 +250,7 @@ pub fn BasicBlock::get_last_instruction(self: BasicBlock) -> InstructionValue? {
 /// let some_number = block.get_instruction_with_name("some_number");
 ///
 /// assert_true!(some_number.is_some());
-/// inspect!(some_number.unwrap().get_name().unwrap(), contend="some_number")
+/// inspect!(some_number.unwrap().get_name().unwrap(), content="some_number")
 /// ```
 pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> InstructionValue? {
   let inst = self.get_first_instruction()
@@ -261,12 +258,11 @@ pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> 
     Some(inst) => inst.get_instruction_with_name(name)
     None => None
   }
-  
 }
 
 ///| Obtains the terminating `InstructionValue` in this `BasicBlock`, if any. A `BasicBlock` must have a terminating instruction to be valid.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -286,8 +282,8 @@ pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> 
 pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_basic_block_terminator(self.as_bb_ref())
 
-  @option.unless(
-    inst.is_null(),
+  @option.when(
+    inst.is_not_null(),
     fn () { InstructionValue::new(inst) }
   )
 }
@@ -337,20 +333,17 @@ pub fn remove_from_function(self: BasicBlock) -> Unit!MoonllvmError {
 /// basic_block.delete();
 /// assert_true!(function.get_basic_blocks().is_empty());
 /// ```
-pub fn BasicBlock::delete(self: BasicBlock) -> Result[Unit, Unit] {
-
-  if self.get_parent() is None {
-    return Err(())
+pub fn BasicBlock::delete(self: BasicBlock) -> Unit!MoonllvmError {
+  guard self.get_parent() is Some(_) else {
+    raise MoonllvmError::BasicBlockHasNoParent
   }
 
   @unsafe.llvm_delete_basic_block(self.as_bb_ref())
-
-  Ok(())
 }
 
 ///| Obtains the `ContextRef` this `BasicBlock` belongs to.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -368,23 +361,37 @@ pub fn BasicBlock::get_context(self: BasicBlock) -> Context {
 
 ///| Gets the name of a `BasicBlock`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = module.add_function("my_fn", fn_type);
 /// let bb = context.append_basic_block(fn_val, "entry");
 ///
-/// inspect!(bb.get_name(), contend="entry");
+/// inspect!(bb.get_name(), content="entry");
 /// ```
 pub fn BasicBlock::get_name(self: BasicBlock) -> String {
   self.as_bb_ref().get_name()
 }
 
+///| Sets the name of a `BasicBlock`.
+///
+/// ## Example
+/// 
+/// ```moonbit
+/// let context = Context::create();
+/// let lmodule = context.create_module("my_mod");
+/// let void_type = context.void_type();
+/// let fn_type = void_type.fn_type([]);
+/// let fn_val = lmodule.add_function("my_fn", fn_type);
+/// let bb = context.append_basic_block(fn_val, "entry");
+///
+/// bb.set_name("renamed_entry");
+/// inspect!(bb.get_name(), content="renamed_entry");
+/// ```
 pub fn BasicBlock::set_name(self: BasicBlock, name: String) -> Unit {
   self.as_bb_ref().as_value_ref().set_name(name)
 }
@@ -462,8 +469,8 @@ pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
 /// let entry_bb = context.append_basic_block(fn_val, "entry");
 /// let next_bb = context.append_basic_block(fn_val, "next");
 ///
-/// assert_true!(entry_bb.get_address().is_none());
-/// assert_true!(next_bb.get_address().is_some());
+/// assert_true!(entry_bb.get_address() is None);
+/// assert_true!(next_bb.get_address() is Some(_));
 /// ```
 pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
 
@@ -471,7 +478,7 @@ pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
     return None
   }
 
-  if self.get_previous_basic_block() is None {
+  guard self.get_previous_basic_block() is Some(_) else {
     return None
   } 
 

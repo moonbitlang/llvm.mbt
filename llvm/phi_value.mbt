@@ -51,13 +51,6 @@ pub fn PhiValue::get_incoming(self: PhiValue, index: UInt) -> (BasicValueEnum, B
   }
 
   let bb = BasicBlock::new(@unsafe.llvm_get_incoming_block(self.as_value_ref(), index))
-  let bb = match bb {
-    Some(bb) => bb
-    None => {
-      println("Invalid BasicBlock")
-      panic()
-    }
-  }
   let value = BasicValueEnum::new(@unsafe.llvm_get_incoming_value(self.as_value_ref(), index))
 
   Some((value, bb))
@@ -67,7 +60,7 @@ pub fn PhiValue::get_incoming(self: PhiValue, index: UInt) -> (BasicValueEnum, B
 ///
 /// The index must be smaller that `count_incoming`. If not, undefined behavior will occur.
 pub fn PhiValue::get_incoming_unchecked(self: PhiValue, index: UInt) -> (BasicValueEnum, BasicBlock) {
-  let bb = BasicBlock::new(@unsafe.llvm_get_incoming_block(self.as_value_ref(), index)).unwrap()
+  let bb = BasicBlock::new(@unsafe.llvm_get_incoming_block(self.as_value_ref(), index))
   let value = BasicValueEnum::new(@unsafe.llvm_get_incoming_value(self.as_value_ref(), index))
 
   (value, bb)
