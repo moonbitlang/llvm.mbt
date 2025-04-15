@@ -18,6 +18,11 @@ pub fn FunctionValue::new(value_ref: @unsafe.LLVMValueRef) -> FunctionValue? {
   )
 }
 
+///| Returns the `Value` that this `FunctionValue` wraps.
+pub fn FunctionValue::as_value(self: FunctionValue) -> Value {
+  self.value
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `FunctionValue` wraps.
 pub fn FunctionValue::as_value_ref(self: FunctionValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
@@ -593,4 +598,6 @@ pub impl Show for FunctionValue with to_string(self: FunctionValue) -> String {
   self.to_string()
 }
 
-
+pub impl Eq for FunctionValue with op_equal(self: FunctionValue, other: FunctionValue) -> Bool {
+  self.as_value() == other.as_value()
+}

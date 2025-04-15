@@ -194,12 +194,12 @@ pub fn FloatValue::dump(self: FloatValue) -> Unit {
   self.value.dump()
 }
 
+///|
 pub impl Show for FloatValue with output(self: FloatValue, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
+///|
 pub impl Show for FloatValue with to_string(self: FloatValue) -> String {
   self.to_string()
 }
-
-

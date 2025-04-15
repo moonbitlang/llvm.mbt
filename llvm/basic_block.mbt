@@ -15,20 +15,15 @@ pub fn BasicBlock::as_bb_ref(self: BasicBlock) -> @unsafe.LLVMBasicBlockRef {
 }
 
 pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBlock? {
-
-  if basic_block_ref.is_null() {
-    return None
-  }
-
-  let bb = BasicBlock::{
-    bb_ref : basic_block_ref
-  }
-  Some(bb)
+  @option.unless(
+    basic_block_ref.is_null(),
+    fn () { BasicBlock::{ bb_ref : basic_block_ref} }
+  )
 }
 
 ///| Obtains the `FunctionValue` that this `BasicBlock` belongs to, if any.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -41,9 +36,9 @@ pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBloc
 ///
 /// assert_eq!(basic_block.get_parent().unwrap(), function);
 ///
-/// basic_block.remove_from_function();
+/// basic_block.remove_from_function!();
 ///
-/// assert_true!(basic_block.get_parent().is_none());
+/// assert_true!(basic_block.get_parent() is None);
 /// ```
 pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
   FunctionValue::new(@unsafe.llvm_get_basic_block_parent(self.as_bb_ref()))
@@ -69,11 +64,10 @@ pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
 ///
-/// assert_true!(basic_block2.get_previous_basic_block().is_none());
-/// assert_eq!(basic_block3.get_previous_basic_block().unwrap(), basic_block2);
+/// assert_true!(basic_block2.get_previous_basic_block() is None);
+/// assert_true!(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
 /// ```
 pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
-
   if self.get_parent() is None {
     return None
   }
@@ -84,7 +78,7 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 
 ///| Gets the `BasicBlock` succeeding the current one, in its own scope, if any.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -102,12 +96,11 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
 ///
-/// assert_true!(basic_block1.get_next_basic_block().is_none());
-/// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block3);
-/// assert_true!(basic_block3.get_next_basic_block().is_none());
+/// assert_true!(basic_block1.get_next_basic_block().is None);
+/// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block3);
+/// assert_true!(basic_block3.get_next_basic_block() is None);
 /// ```
 pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
-
   if self.get_parent() is None {
     return None
   }
@@ -293,11 +286,10 @@ pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> 
 pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_basic_block_terminator(self.as_bb_ref())
 
-  if inst.is_null() {
-    return None
-  }
-
-  Some(InstructionValue::new(inst))
+  @option.unless(
+    inst.is_null(),
+    fn () { InstructionValue::new(inst) }
+  )
 }
 
 // pub fn BasicBlock::get_instructions(self) -> InstructionIter
@@ -321,14 +313,12 @@ pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
 ///
 /// assert_true!(basic_block.get_parent().is_none());
 /// ```
-pub fn remove_from_function(self: BasicBlock) -> Result[Unit, Unit] {
-
-  if self.get_parent() is None {
-    return Err(())
+pub fn remove_from_function(self: BasicBlock) -> Unit!MoonllvmError {
+  guard self.get_parent() is Some(_) else {
+    raise MoonllvmError::BasicBlockHasNoParent
   }
 
   @unsafe.llvm_remove_basic_block_from_parent(self.as_bb_ref())
-  Ok(())
 }
 
 /// Removes this `BasicBlock` completely from memory. This is unsafe because you could easily have other references to the same `BasicBlock`.
@@ -505,3 +495,7 @@ pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
 // pub impl Show for BasicBlock with output(self: BasicBlock, logger: &Logger) -> Unit {
 //   logger.log(self.to_string())
 // }
+
+pub impl Eq for BasicBlock with op_equal(self: BasicBlock, other: BasicBlock) -> Bool {
+  self.as_bb_ref() == other.as_bb_ref()
+}

@@ -72,6 +72,11 @@ fn LLVMAttributeRef::is_equal(self: LLVMAttributeRef, other: LLVMAttributeRef) -
   llvm_same_attr_ref(self, other).to_moonbit_bool()
 }
 
+extern "C" fn llvm_same_bb_ref(bb1: LLVMBasicBlockRef, bb2: LLVMBasicBlockRef) -> LLVMBool = "__llvm_same_bb_ref"
+fn LLVMBasicBlockRef::is_equal(self: LLVMBasicBlockRef, other: LLVMBasicBlockRef) -> Bool {
+  llvm_same_bb_ref(self, other).to_moonbit_bool()
+}
+
 pub extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_is_null"
 pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()

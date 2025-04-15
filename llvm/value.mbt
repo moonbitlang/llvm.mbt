@@ -97,11 +97,13 @@ fn Value::dump(self: Value) -> Unit {
   @unsafe.llvm_dump_value(self.as_value_ref())
 }
 
-impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
+pub impl Show for Value with output(self: Value, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
-
+pub impl Eq for Value with op_equal(self: Value, other: Value) -> Bool {
+  self.as_value_ref() == other.as_value_ref()
+}
 // ============================================
 // CallableValue
 // ============================================

@@ -137,6 +137,10 @@ pub impl Eq for LLVMAttributeRef with op_equal(self: LLVMAttributeRef, other: LL
   self.is_equal(other)
 }
 
+pub impl Eq for LLVMBasicBlockRef with op_equal(self: LLVMBasicBlockRef, other: LLVMBasicBlockRef) -> Bool {
+  self.is_equal(other)
+}
+
 pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
   guard self is LLVMDWARFTypeEncoding(val)
   val
