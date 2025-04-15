@@ -7,7 +7,7 @@ pub struct FunctionType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not function type.
 pub fn FunctionType::new(type_ref: @unsafe.LLVMTypeRef) -> FunctionType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   FunctionType::{
     ty: Type::new(type_ref)

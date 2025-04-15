@@ -9,7 +9,7 @@ pub struct CallSiteValue {
 
 ///| Creates a new `CallSiteValue` from an `@unsafe.LLVMValueRef`.
 pub fn CallSiteValue::new(value_ref: @unsafe.LLVMValueRef) -> CallSiteValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   CallSiteValue::{
     value: Value::new(value_ref)

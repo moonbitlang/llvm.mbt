@@ -7,7 +7,7 @@ pub struct PointerType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not pointer type.
 pub fn PointerType::new(type_ref: @unsafe.LLVMTypeRef) -> PointerType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   PointerType::{
     ty: Type::new(type_ref)

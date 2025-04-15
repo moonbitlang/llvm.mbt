@@ -10,7 +10,7 @@ pub struct FloatValue {
 ///
 /// **unsafe**: Undefined behavior if `value_ref` is not a `FloatValue`.
 pub fn FloatValue::new(value_ref: @unsafe.LLVMValueRef) -> FloatValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   FloatValue::{
     value: Value::new(value_ref)

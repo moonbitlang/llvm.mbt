@@ -8,7 +8,7 @@ pub struct GlobalValue {
 
 ///| Creates a new `GlobalValue` from an `@unsafe.LLVMValueRef`.
 pub fn GlobalValue::new(value_ref: @unsafe.LLVMValueRef) -> GlobalValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   GlobalValue::{
     value: Value::new(value_ref)

@@ -8,7 +8,7 @@ pub struct PhiValue {
 
 ///| creates a new `PhiValue` from an `@unsafe.LLVMValueRef`.
 pub fn PhiValue::new(value_ref: @unsafe.LLVMValueRef) -> PhiValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   PhiValue::{
     value: Value::new(value_ref)

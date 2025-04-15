@@ -10,7 +10,7 @@ pub struct StructValue {
 ///
 /// **unsafe**: Undefined behavior if `value_ref` is not a struct.
 pub fn StructValue::new(value_ref: @unsafe.LLVMValueRef) -> StructValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   StructValue::{
     value: Value::new(value_ref)

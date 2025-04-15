@@ -8,7 +8,7 @@ pub struct VoidType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not void type.
 pub fn VoidType::new(type_ref: @unsafe.LLVMTypeRef) -> VoidType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   VoidType::{
     ty: Type::new(type_ref)

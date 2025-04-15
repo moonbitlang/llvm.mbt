@@ -7,7 +7,7 @@ pub struct StructType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not struct type.
 pub fn StructType::new(type_ref: @unsafe.LLVMTypeRef) -> StructType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   StructType::{
     ty: Type::new(type_ref)

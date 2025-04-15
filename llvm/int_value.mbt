@@ -10,7 +10,7 @@ pub struct IntValue {
 ///
 /// **unsafe**: Undefined behavior if `value_ref` is not an `IntValue`.
 pub fn IntValue::new(value_ref: @unsafe.LLVMValueRef) -> IntValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   IntValue::{
     value: Value::new(value_ref)

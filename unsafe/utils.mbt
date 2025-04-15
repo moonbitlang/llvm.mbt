@@ -81,6 +81,9 @@ pub extern "C" fn llvm_type_is_null(ty: LLVMTypeRef) -> LLVMBool = "__llvm_type_
 pub fn LLVMTypeRef::is_null(self: LLVMTypeRef) -> Bool {
   llvm_type_is_null(self).to_moonbit_bool()
 }
+pub fn LLVMTypeRef::is_not_null(self: LLVMTypeRef) -> Bool {
+  llvm_type_is_null(self).to_moonbit_bool() |> not
+}
 
 pub extern "C" fn llvm_value_is_null(ty: LLVMValueRef) -> LLVMBool = "LLVMIsNull"
 
@@ -88,25 +91,40 @@ pub extern "C" fn llvm_value_ref_is_null(ty: LLVMValueRef) -> LLVMBool = "__llvm
 pub fn LLVMValueRef::is_null(self: LLVMValueRef) -> Bool {
   llvm_value_ref_is_null(self).to_moonbit_bool()
 }
+pub fn LLVMValueRef::is_not_null(self: LLVMValueRef) -> Bool {
+  llvm_value_ref_is_null(self).to_moonbit_bool() |> not
+}
 
 pub extern "C" fn llvm_use_is_null(u: LLVMUseRef) -> LLVMBool = "__llvm_use_is_null"
 pub fn LLVMUseRef::is_null(self: LLVMUseRef) -> Bool {
   llvm_use_is_null(self).to_moonbit_bool()
+}
+pub fn LLVMUseRef::is_not_null(self: LLVMUseRef) -> Bool {
+  llvm_use_is_null(self).to_moonbit_bool() |> not
 }
 
 pub extern "C" fn llvm_bb_is_null(bb: LLVMBasicBlockRef) -> LLVMBool = "__llvm_bb_is_null"
 pub fn LLVMBasicBlockRef::is_null(self: LLVMBasicBlockRef) -> Bool {
   llvm_bb_is_null(self).to_moonbit_bool()
 }
+pub fn LLVMBasicBlockRef::is_not_null(self: LLVMBasicBlockRef) -> Bool {
+  llvm_bb_is_null(self).to_moonbit_bool() |> not
+}
 
 pub extern "C" fn llvm_attr_is_null(attr: LLVMAttributeRef) -> LLVMBool = "__llvm_attr_is_null"
 pub fn LLVMAttributeRef::is_null(self: LLVMAttributeRef) -> Bool {
   llvm_attr_is_null(self).to_moonbit_bool()
 }
+pub fn LLVMAttributeRef::is_not_null(self: LLVMAttributeRef) -> Bool {
+  llvm_attr_is_null(self).to_moonbit_bool() |> not
+}
 
 pub extern "C" fn llvm_comdat_is_null(comdat: LLVMComdatRef) -> LLVMBool = "__llvm_comdat_is_null"
 pub fn LLVMComdatRef::is_null(self: LLVMComdatRef) -> Bool {
   llvm_comdat_is_null(self).to_moonbit_bool()
+}
+pub fn LLVMComdatRef::is_not_null(self: LLVMComdatRef) -> Bool {
+  llvm_comdat_is_null(self).to_moonbit_bool() |> not
 }
 
 fn LLVMBool::into(self: LLVMBool) -> Bool {

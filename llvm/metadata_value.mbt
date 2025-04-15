@@ -8,9 +8,9 @@ pub struct MetadataValue {
 
 ///| Creates a new `MetadataValue` from an `@unsafe.LLVMValueRef`.
 pub fn MetadataValue::new(value_ref: @unsafe.LLVMValueRef) -> MetadataValue {
-  assert_val_ref(value_ref)
-  assert_val_ref(@unsafe.llvm_isa_md_node(value_ref))
-  assert_val_ref(@unsafe.llvm_isa_md_string(value_ref))
+  guard value_ref.is_not_null()
+  guard @unsafe.llvm_isa_md_node(value_ref).is_not_null()
+  guard @unsafe.llvm_isa_md_string(value_ref).is_not_null()
 
   MetadataValue::{
     value: Value::new(value_ref)

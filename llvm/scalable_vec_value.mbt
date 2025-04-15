@@ -8,7 +8,7 @@ pub struct ScalableVectorValue {
 
 ///| Creates a new `ScalableVectorValue` from an `@unsafe.LLVMValueRef`.
 pub fn ScalableVectorValue::new(value_ref: @unsafe.LLVMValueRef) -> ScalableVectorValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   ScalableVectorValue::{
     value: Value::new(value_ref)

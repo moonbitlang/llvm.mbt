@@ -5,7 +5,7 @@ pub struct MetadataType {
 
 ///| Create `MetadataType` from `@unsafe.LLVMTypeRef`
 pub fn MetadataType::new(type_ref: @unsafe.LLVMTypeRef) -> MetadataType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   MetadataType::{
     ty: Type::new(type_ref)

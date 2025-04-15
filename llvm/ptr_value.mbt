@@ -10,7 +10,7 @@ pub struct PointerValue {
 ///
 /// **unsafe**: Undefined behavior if `value_ref` is not a `PointerValue`.
 pub fn PointerValue::new(value_ref: @unsafe.LLVMValueRef) -> PointerValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   PointerValue::{
     value: Value::new(value_ref)

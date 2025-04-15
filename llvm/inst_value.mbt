@@ -8,7 +8,7 @@ pub struct InstructionValue {
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
 pub fn InstructionValue::new(value_ref: @unsafe.LLVMValueRef) -> InstructionValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   InstructionValue::{
     value: Value::new(value_ref)

@@ -10,7 +10,7 @@ pub struct FloatType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not float type.
 pub fn FloatType::new(type_ref: @unsafe.LLVMTypeRef) -> FloatType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   FloatType::{
     ty: Type::new(type_ref)

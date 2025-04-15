@@ -7,7 +7,7 @@ pub struct ArrayType {
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not array type.
 pub fn ArrayType::new(type_ref: @unsafe.LLVMTypeRef) -> ArrayType {
-  assert_type_ref(type_ref)
+  guard type_ref.is_not_null()
 
   ArrayType::{
     ty: Type::new(type_ref)

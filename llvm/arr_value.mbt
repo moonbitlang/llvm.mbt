@@ -8,7 +8,7 @@ pub struct ArrayValue {
 
 ///| Creates a new `ArrayValue` from an `@unsafe.LLVMValueRef`.
 pub fn ArrayValue::new(value_ref: @unsafe.LLVMValueRef) -> ArrayValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   ArrayValue::{
     value: Value::new(value_ref)

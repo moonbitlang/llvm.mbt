@@ -8,7 +8,7 @@ pub struct VectorValue {
 
 ///| Creates a new `VectorValue` from an `@unsafe.LLVMValueRef`.
 pub fn VectorValue::new(value_ref: @unsafe.LLVMValueRef) -> VectorValue {
-  assert_val_ref(value_ref)
+  guard value_ref.is_not_null()
 
   VectorValue::{
     value: Value::new(value_ref)
