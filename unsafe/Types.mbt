@@ -364,7 +364,7 @@ pub fn LLVMOpcode::from_int(idx: Int) -> LLVMOpcode {
   }
 }
 
-pub enum LLVMTypeKind {
+pub(all) enum LLVMTypeKind {
   LLVMVoidTypeKind
   LLVMHalfTypeKind
   LLVMFloatTypeKind
@@ -441,7 +441,7 @@ pub fn LLVMTypeKind::from_int(idx: Int) -> LLVMTypeKind {
   }
 }
 
-pub enum LLVMLinkage {
+pub(all) enum LLVMLinkage {
   LLVMExternalLinkage
   LLVMAvailableExternallyLinkage
   LLVMLinkOnceAnyLinkage
@@ -506,7 +506,7 @@ fn LLVMLinkage::from_int(idx: Int) -> LLVMLinkage {
   }
 }
 
-pub enum LLVMVisibility {
+pub(all) enum LLVMVisibility {
   LLVMDefaultVisibility
   LLVMHiddenVisibility
   LLVMProtectedVisibility
@@ -552,7 +552,7 @@ pub fn LLVMUnnamedAddr::from_int(idx: Int) -> LLVMUnnamedAddr {
   }
 }
 
-pub enum LLVMDLLStorageClass {
+pub(all) enum LLVMDLLStorageClass {
   LLVMDefaultStorageClass
   LLVMDLLImportStorageClass
   LLVMDLLExportStorageClass
@@ -575,7 +575,7 @@ pub fn LLVMDLLStorageClass::from_int(idx: Int) -> LLVMDLLStorageClass {
   }
 }
 
-pub enum LLVMCallConv {
+pub(all) enum LLVMCallConv {
   LLVMCCallConv
   LLVMFastCallConv
   LLVMColdCallConv
@@ -712,7 +712,7 @@ pub fn LLVMCallConv::from_int(i: Int) -> LLVMCallConv {
   }
 }
 
-pub enum LLVMValueKind {
+pub(all) enum LLVMValueKind {
   LLVMArgumentValueKind
   LLVMBasicBlockValueKind
   LLVMMemoryUseValueKind
@@ -807,7 +807,7 @@ pub fn LLVMValueKind::from_int(idx: Int) -> LLVMValueKind {
   }
 }
 
-pub enum LLVMIntPredicate {
+pub(all) enum LLVMIntPredicate {
   LLVMIntEQ
   LLVMIntNE
   LLVMIntUGT
@@ -852,7 +852,7 @@ pub fn LLVMIntPredicate::from_int(idx: Int) -> LLVMIntPredicate {
 }
 
 
-pub enum LLVMRealPredicate {
+pub(all) enum LLVMRealPredicate {
   LLVMRealPredicateFalse
   LLVMRealOEQ
   LLVMRealOGT
@@ -914,7 +914,7 @@ pub fn LLVMRealPredicate::from_int(idx: Int) -> LLVMRealPredicate {
   }
 }
 
-pub enum LLVMLandingPadClauseTy {
+pub(all) enum LLVMLandingPadClauseTy {
   LLVMLandingPadCatch
   LLVMLandingPadFilter
 }
@@ -934,7 +934,7 @@ pub fn LLVMLandingPadClauseTy::from_int(idx: Int) -> LLVMLandingPadClauseTy {
   }
 }
 
-pub enum LLVMThreadLocalMode {
+pub(all) enum LLVMThreadLocalMode {
   LLVMNotThreadLocal
   LLVMGeneralDynamicTLSModel
   LLVMLocalDynamicTLSModel
@@ -963,7 +963,7 @@ pub fn LLVMThreadLocalMode::from_int(idx: Int) -> LLVMThreadLocalMode {
   }
 }
 
-pub enum LLVMAtomicOrdering {
+pub(all) enum LLVMAtomicOrdering {
   LLVMAtomicOrderingNotAtomic
   LLVMAtomicOrderingUnordered
   LLVMAtomicOrderingMonotonic
@@ -998,7 +998,7 @@ pub fn LLVMAtomicOrdering::from_int(idx: Int) -> LLVMAtomicOrdering {
   }
 }
 
-pub enum LLVMAtomicRMWBinOp {
+pub(all) enum LLVMAtomicRMWBinOp {
   LLVMAtomicRMWBinOpXchg
   LLVMAtomicRMWBinOpAdd
   LLVMAtomicRMWBinOpSub
@@ -1063,7 +1063,7 @@ pub fn LLVMAtomicRMWBinOp::from_int(idx: Int) -> LLVMAtomicRMWBinOp {
   }
 }
 
-pub enum LLVMDiagnosticSeverity {
+pub(all) enum LLVMDiagnosticSeverity {
     LLVMDSError
     LLVMDSWarning
     LLVMDSRemark
@@ -1089,7 +1089,7 @@ pub fn LLVMDiagnosticSeverity::from_int(idx: Int) -> LLVMDiagnosticSeverity {
   }
 }
 
-pub enum LLVMInlineAsmDialect {
+pub(all) enum LLVMInlineAsmDialect {
   LLVMInlineAsmDialectATT
   LLVMInlineAsmDialectIntel
 }
@@ -1109,7 +1109,7 @@ pub fn LLVMInlineAsmDialect::from_int(idx: Int) -> LLVMInlineAsmDialect {
   }
 }
 
-pub enum LLVMModuleFlagBehavior {
+pub(all) enum LLVMModuleFlagBehavior {
   /// 
   /// Emits an error if two values disagree, otherwise the resulting value is
   /// that of the operands.
@@ -1204,7 +1204,7 @@ pub fn LLVMModuleFlagBehavior::from_int(idx: Int) -> LLVMModuleFlagBehavior {
 
 
 
-pub enum LLVMTailCallKind {
+pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindNone
   LLVMTailCallKindTail
   LLVMTailCallKindMustTail
@@ -1230,7 +1230,7 @@ pub fn LLVMTailCallKind::from_int(idx: Int) -> LLVMTailCallKind {
   }
 }
 
-pub enum LLVMComdatSelectionKind {
+pub(all) enum LLVMComdatSelectionKind {
   LLVMAnyComdatSelectionKind
   LLVMExactMatchComdatSelectionKind
   LLVMLargestComdatSelectionKind
@@ -1259,7 +1259,7 @@ pub fn LLVMComdatSelectionKind::from_int(idx: Int) -> LLVMComdatSelectionKind {
   }
 }
 
-pub enum LLVMLinkerMode {
+pub(all) enum LLVMLinkerMode {
   LLVMLinkerDestroySource
   LLVMLinkerPreserveSource_Removed
 }
@@ -1279,7 +1279,7 @@ pub fn LLVMLinkerMode::from_int(idx: Int) -> LLVMLinkerMode {
   }
 }
 
-pub enum LLVMCodeGenOptLevel {
+pub(all) enum LLVMCodeGenOptLevel {
     LLVMCodeGenLevelNone
     LLVMCodeGenLevelLess
     LLVMCodeGenLevelDefault
@@ -1305,7 +1305,7 @@ pub fn LLVMCodeGenOptLevel::from_int(idx: Int) -> LLVMCodeGenOptLevel {
   }
 }
 
-pub enum LLVMRelocMode {
+pub(all) enum LLVMRelocMode {
     LLVMRelocDefault
     LLVMRelocStatic
     LLVMRelocPIC
@@ -1340,7 +1340,7 @@ pub fn LLVMRelocMode::from_int(idx: Int) -> LLVMRelocMode {
   }
 }
 
-pub enum LLVMCodeModel {
+pub(all) enum LLVMCodeModel {
     LLVMCodeModelDefault
     LLVMCodeModelJITDefault
     LLVMCodeModelTiny
@@ -1375,7 +1375,7 @@ pub fn LLVMCodeModel::from_int(idx: Int) -> LLVMCodeModel {
   }
 }
 
-pub enum LLVMCodeGenFileType {
+pub(all) enum LLVMCodeGenFileType {
     LLVMAssemblyFile
     LLVMObjectFile
 }
@@ -1395,7 +1395,7 @@ pub fn LLVMCodeGenFileType::from_int(idx: Int) -> LLVMCodeGenFileType {
   }
 }
 
-pub enum LLVMGlobalISelAbortMode {
+pub(all) enum LLVMGlobalISelAbortMode {
   LLVMGlobalISelAbortEnable
   LLVMGlobalISelAbortDisable
   LLVMGlobalISelAbortDisableWithDiag
@@ -1418,7 +1418,7 @@ pub fn LLVMGlobalISelAbortMode::from_int(idx: Int) -> LLVMGlobalISelAbortMode {
   }
 }
 
-pub enum LLVMBinaryType {
+pub(all) enum LLVMBinaryType {
   // Archive file.
   LLVMBinaryTypeArchive
 
@@ -1511,7 +1511,7 @@ pub fn LLVMBinaryType::from_int(idx: Int) -> LLVMBinaryType {
   }
 }
 
-pub enum LLVMDIFlags {
+pub(all) enum LLVMDIFlags {
   LLVMDIFlagZero
   LLVMDIFlagPrivate
   LLVMDIFlagProtected
@@ -1631,7 +1631,7 @@ pub fn LLVMDIFlags::from_int(idx: Int) -> LLVMDIFlags {
 }
 
 ///| Source languages known by DWARF.
-pub enum LLVMDWARFSourceLanguage {
+pub(all) enum LLVMDWARFSourceLanguage {
   LLVMDWARFSourceLanguageC89
   LLVMDWARFSourceLanguageC
   LLVMDWARFSourceLanguageAda83
@@ -1845,7 +1845,7 @@ pub fn LLVMDWARFSourceLanguage::from_int(i: Int) -> LLVMDWARFSourceLanguage {
 }
 
 ///| The amount of debug information to emit.
-pub enum LLVMDWARFEmissionKind {
+pub(all) enum LLVMDWARFEmissionKind {
     LLVMDWARFEmissionNone
     LLVMDWARFEmissionFull
     LLVMDWARFEmissionLineTablesOnly
@@ -1869,7 +1869,7 @@ pub fn LLVMDWARFEmissionKind::from_int(idx: Int) -> LLVMDWARFEmissionKind {
 }
 
 ///| The kind of metadata nodes.
-pub enum LLVMMDNodeKind {
+pub(all) enum LLVMMDNodeKind {
   LLVMMDStringMetadataKind
   LLVMConstantAsMetadataMetadataKind
   LLVMLocalAsMetadataMetadataKind
@@ -1991,7 +1991,7 @@ pub fn LLVMMDNodeKind::from_int(i: Int) -> LLVMMDNodeKind {
   }
 }
 
-pub enum LLVMVerifierFailureAction {
+pub(all) enum LLVMVerifierFailureAction {
   LLVMAbortProcessAction
   LLVMPrintMessageAction
   LLVMReturnStatusAction
@@ -2014,7 +2014,7 @@ pub fn LLVMVerifierFailureAction::from_int(idx: Int) -> LLVMVerifierFailureActio
   }
 }
 
-pub enum LLVMRemarkType {
+pub(all) enum LLVMRemarkType {
   LLVMRemarkTypeUnknown
   LLVMRemarkTypePassed
   LLVMRemarkTypeMissed
@@ -2049,7 +2049,7 @@ pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
   }
 }
 
-pub enum LLVMJITSymbolGenericFlags {
+pub(all) enum LLVMJITSymbolGenericFlags {
   LLVMJITSymbolGenericFlagsNone
   LLVMJITSymbolGenericFlagsExported
   LLVMJITSymbolGenericFlagsWeak
