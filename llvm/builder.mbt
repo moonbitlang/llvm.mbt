@@ -767,9 +767,9 @@ pub fn Builder::build_gep(
   self: Builder,
   pointee_ty: &BasicType,
   ptr: PointerValue,
-  ordered_indices: Array[BasicValueEnum],
+  ordered_indices: Array[&BasicValue],
   name~: String = ""
-) -> BasicValueEnum!BuilderError {
+) -> PointerValue!BuilderError {
   if self.get_positioned() != PositionState::Set {
     raise UnsetPosition
   }
@@ -783,7 +783,7 @@ pub fn Builder::build_gep(
     indices,
     name
   )
-  BasicValueEnum::new(value)
+  PointerValue::new(value)
 }
 
 ///| Build a `getelementptr` instruction with inbounds flag.

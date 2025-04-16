@@ -254,3 +254,66 @@ test "Builder Test - 1" {
 
   context.drop()
 }
+
+test "Builder Test - 2" {
+  let context = @llvm.Context::create()
+  let lmodule = context.create_module("demo")
+  let i32_ty = context.i32_type()
+  let void_ty = context.void_type()
+  let fty = void_ty.fn_type([i32_ty, i32_ty])
+  let fval = lmodule.add_function("foo", fty)
+  let bb = context.append_basic_block(fval, "entry")
+  let builder = context.create_builder()
+  builder.position_at_end(bb)
+  let arg0 = fval.get_nth_param(0).unwrap()
+  // let arg1 = fval.get_nth_param(1).unwrap();
+
+  let iarg0 = arg0.into_int_value()
+  // let iarg1 = arg1.into_int_value();
+
+  // build alloca
+  let forty_two = i32_ty.const_int(42)
+  let alloca = builder.build_alloca!(i32_ty, name="alloca")
+  inspect!(alloca, content="  %alloca = alloca i32, align 4")
+  assert_true!(alloca.as_instruction().unwrap().is_a_alloca_inst())
+  let store42 = builder.build_store!(alloca, forty_two)
+  inspect!(store42, content="  store i32 42, ptr %alloca, align 4")
+  assert_true!(store42.is_a_store_inst())
+  let load42 = builder.build_load!(i32_ty, alloca, name="load42")
+  inspect!(load42, content="  %load42 = load i32, ptr %alloca, align 4")
+  assert_true!(
+    load42.into_int_value().as_instruction().unwrap().is_a_load_inst(),
+  )
+
+  // build_array_alloca
+  let array_alloca = builder.build_array_alloca!(
+    i32_ty,
+    iarg0,
+    name="array_alloca",
+  )
+  inspect!(
+    array_alloca,
+    content="  %array_alloca = alloca i32, i32 %0, align 4",
+  )
+  assert_true!(array_alloca.as_instruction().unwrap().is_a_alloca_inst())
+
+  // build gep
+  let two = i32_ty.const_int(2)
+  let gep = builder.build_gep!(i32_ty, array_alloca, [two], name="gep")
+  inspect!(gep, content="  %gep = getelementptr i32, ptr %array_alloca, i32 2")
+  assert_true!(gep.as_instruction().unwrap().is_a_getelementptr_inst())
+
+  // build inbounds gep
+  let inbounds_gep = builder.build_in_bounds_gep!(
+    i32_ty,
+    array_alloca,
+    [two],
+    name="inbounds_gep",
+  )
+  inspect!(
+    inbounds_gep,
+    content="  %inbounds_gep = getelementptr inbounds i32, ptr %array_alloca, i32 2",
+  )
+  assert_true!(inbounds_gep.as_instruction().unwrap().is_a_getelementptr_inst())
+  context.drop()
+}
