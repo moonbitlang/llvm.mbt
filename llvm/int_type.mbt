@@ -98,7 +98,7 @@ pub fn IntType::const_zero(self: IntType) -> IntValue {
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// inspect!(fn_type, "i32 ()")
 /// ```
-pub fn IntType::fn_type(self: IntType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn IntType::fn_type(self: IntType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

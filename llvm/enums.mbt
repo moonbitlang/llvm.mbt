@@ -619,7 +619,6 @@ pub(all) enum BasicTypeEnum {
   ScalableVectorType(ScalableVectorType);
 }
 
-
 pub fn BasicTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicTypeEnum {
   let kind : @unsafe.LLVMTypeKind = @unsafe.llvm_get_type_kind(type_ref);
   match kind {
@@ -722,7 +721,6 @@ pub impl Show for BasicMetadataTypeEnum with to_string(self) {
 pub impl Show for BasicMetadataTypeEnum with output(self: BasicMetadataTypeEnum, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
-
 
 // pub enum StringRadix {
 //   Binary;

@@ -42,7 +42,7 @@ pub fn FloatType::as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
 /// inspect!(fn_val, "float (i32)")
 /// ```
 pub fn FloatType::fn_type(
-  self: FloatType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false
+  self: FloatType, param_types: Array[&BasicType], is_var_arg~: Bool = false
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }

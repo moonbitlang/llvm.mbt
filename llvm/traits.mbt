@@ -231,87 +231,46 @@ pub impl AggregateValue for StructValue with as_aggregate_value_enum(self: Struc
 //=========================================================
 pub trait AnyValue : AsValue + Show {
   as_any_value_enum(Self) -> AnyValueEnum;
-  is_poison(Self) -> Bool;
 }
 
 pub impl AnyValue for IntValue with as_any_value_enum(self: IntValue) -> AnyValueEnum {
   AnyValueEnum::IntValue(self)
 }
 
-pub impl AnyValue for IntValue with is_poison(self: IntValue) -> Bool {
-  self.as_value().is_poison()
-}
-
 pub impl AnyValue for FloatValue with as_any_value_enum(self: FloatValue) -> AnyValueEnum {
   AnyValueEnum::FloatValue(self)
-}
-
-pub impl AnyValue for FloatValue with is_poison(self: FloatValue) -> Bool {
-  self.as_value().is_poison()
 }
 
 pub impl AnyValue for PointerValue with as_any_value_enum(self: PointerValue) -> AnyValueEnum {
   AnyValueEnum::PointerValue(self)
 }
 
-pub impl AnyValue for PointerValue with is_poison(self: PointerValue) -> Bool {
-  self.as_value().is_poison()
-}
-
 pub impl AnyValue for InstructionValue with as_any_value_enum(self: InstructionValue) -> AnyValueEnum {
   AnyValueEnum::InstructionValue(self)
-}
-
-pub impl AnyValue for InstructionValue with is_poison(self: InstructionValue) -> Bool {
-  self.as_value().is_poison()
 }
 
 pub impl AnyValue for StructValue with as_any_value_enum(self: StructValue) -> AnyValueEnum {
   AnyValueEnum::StructValue(self)
 }
 
-pub impl AnyValue for StructValue with is_poison(self: StructValue) -> Bool {
-  self.as_value().is_poison()
-}
-
 pub impl AnyValue for ArrayValue with as_any_value_enum(self: ArrayValue) -> AnyValueEnum {
   AnyValueEnum::ArrayValue(self)
-}
-
-pub impl AnyValue for ArrayValue with is_poison(self: ArrayValue) -> Bool {
-  self.as_value().is_poison()
 }
 
 pub impl AnyValue for VectorValue with as_any_value_enum(self: VectorValue) -> AnyValueEnum {
   AnyValueEnum::VectorValue(self)
 }
 
-pub impl AnyValue for VectorValue with is_poison(self: VectorValue) -> Bool {
-  self.as_value().is_poison()
-}
-
 pub impl AnyValue for PhiValue with as_any_value_enum(self: PhiValue) -> AnyValueEnum {
   AnyValueEnum::PhiValue(self)
-}
-
-pub impl AnyValue for PhiValue with is_poison(self: PhiValue) -> Bool {
-  self.as_value().is_poison()
 }
 
 pub impl AnyValue for ScalableVectorValue with as_any_value_enum(self: ScalableVectorValue) -> AnyValueEnum {
   AnyValueEnum::ScalableVectorValue(self)
 }
 
-pub impl AnyValue for ScalableVectorValue with is_poison(self: ScalableVectorValue) -> Bool {
-  self.as_value().is_poison()
-}
-
 pub impl AnyValue for MetadataValue with as_any_value_enum(self: MetadataValue) -> AnyValueEnum {
   AnyValueEnum::MetadataValue(self)
-}
-
-pub impl AnyValue for MetadataValue with is_poison(self: MetadataValue) -> Bool {
-  self.as_value().is_poison()
 }
 
 //=========================================================
@@ -319,65 +278,34 @@ pub impl AnyValue for MetadataValue with is_poison(self: MetadataValue) -> Bool 
 //=========================================================
 pub trait BasicValue : AnyValue {
   as_basic_value_enum(Self) -> BasicValueEnum;
-  // as_instruction_value(Self) -> InstructionValue;
-  // get_first_use(Self) -> BasicValueUse/
-  set_name(Self, String) -> Unit;
 }
 
 pub impl BasicValue for IntValue with as_basic_value_enum(self: IntValue) -> BasicValueEnum {
   BasicValueEnum::IntValue(self)
 }
 
-pub impl BasicValue for IntValue with set_name(self: IntValue, name: String) -> Unit {
-  self.set_name(name)
-}
-
 pub impl BasicValue for FloatValue with as_basic_value_enum(self: FloatValue) -> BasicValueEnum {
   BasicValueEnum::FloatValue(self)
-}
-
-pub impl BasicValue for FloatValue with set_name(self: FloatValue, name: String) -> Unit {
-  self.set_name(name)
 }
 
 pub impl BasicValue for PointerValue with as_basic_value_enum(self: PointerValue) -> BasicValueEnum {
   BasicValueEnum::PointerValue(self)
 }
 
-pub impl BasicValue for PointerValue with set_name(self: PointerValue, name: String) -> Unit {
-  self.set_name(name)
-}
-
 pub impl BasicValue for StructValue with as_basic_value_enum(self: StructValue) -> BasicValueEnum {
   BasicValueEnum::StructValue(self)
-}
-
-pub impl BasicValue for StructValue with set_name(self: StructValue, name: String) -> Unit {
-  self.set_name(name)
 }
 
 pub impl BasicValue for ArrayValue with as_basic_value_enum(self: ArrayValue) -> BasicValueEnum {
   BasicValueEnum::ArrayValue(self)
 }
 
-pub impl BasicValue for ArrayValue with set_name(self: ArrayValue, name: String) -> Unit {
-  self.set_name(name)
-}
-
 pub impl BasicValue for VectorValue with as_basic_value_enum(self: VectorValue) -> BasicValueEnum {
   BasicValueEnum::VectorValue(self)
 }
 
-pub impl BasicValue for VectorValue with set_name(self: VectorValue, name: String) -> Unit {
-  self.set_name(name)
-}
-
 pub impl BasicValue for ScalableVectorValue with as_basic_value_enum(self: ScalableVectorValue) -> BasicValueEnum {
   BasicValueEnum::ScalableVectorValue(self)
-}
-
-pub impl BasicValue for ScalableVectorValue with set_name(self: ScalableVectorValue, name: String) -> Unit {
-  self.set_name(name)
 }
 //=========================================================
 // BasicMetadataValue
@@ -723,6 +651,22 @@ pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVect
   AnyTypeEnum::ScalableVectorType(self)
 }
 
+pub impl AnyType for AnyTypeEnum with as_any_type_enum(self: AnyTypeEnum) -> AnyTypeEnum {
+  self
+}
+
+pub impl AnyType for BasicTypeEnum with as_any_type_enum(self: BasicTypeEnum) -> AnyTypeEnum {
+  match self {
+    ArrayType(t) => t.as_any_type_enum()
+    FloatType(t) => t.as_any_type_enum()
+    IntType(t) => t.as_any_type_enum()
+    PointerType(t) => t.as_any_type_enum()
+    StructType(t) => t.as_any_type_enum()
+    VectorType(t) => t.as_any_type_enum()
+    ScalableVectorType(t) => t.as_any_type_enum()
+  }
+}
+
 //=========================================================
 // BasicType
 //=========================================================
@@ -756,10 +700,14 @@ pub impl BasicType for ScalableVectorType with as_basic_type_enum(self: Scalable
   BasicTypeEnum::ScalableVectorType(self)
 }
 
+pub impl BasicType for BasicTypeEnum with as_basic_type_enum(self: BasicTypeEnum) -> BasicTypeEnum {
+  self
+}
+
 //=========================================================
 // BasicMetadataType
 //=========================================================
-pub trait BasicMetadataType : AnyType {
+pub trait BasicMetadataType : AsType {
   as_basic_metadata_type_enum(Self) -> BasicMetadataTypeEnum;
 }
 
@@ -789,4 +737,8 @@ pub impl BasicMetadataType for VectorType with as_basic_metadata_type_enum(self:
 
 pub impl BasicMetadataType for ScalableVectorType with as_basic_metadata_type_enum(self: ScalableVectorType) -> BasicMetadataTypeEnum {
   BasicMetadataTypeEnum::ScalableVectorType(self)
+}
+
+pub impl BasicMetadataType for BasicMetadataTypeEnum with as_basic_metadata_type_enum(self: BasicMetadataTypeEnum) -> BasicMetadataTypeEnum {
+  self
 }

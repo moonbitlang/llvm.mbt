@@ -111,7 +111,7 @@ pub fn ArrayType::get_context(self: ArrayType) -> Context {
 /// let fn_type = array_type.fn_type([i32_type]);
 /// inspect!(fn_type, "[8 x i32] (i32)")
 /// ```
-pub fn ArrayType::fn_type(self: ArrayType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn ArrayType::fn_type(self: ArrayType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

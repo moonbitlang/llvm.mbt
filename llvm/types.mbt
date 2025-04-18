@@ -58,10 +58,9 @@ fn scalable_vec_type(self: Type, size : UInt) -> ScalableVectorType {
 
 }
 
-// TODO: use `prarm_types: Array[&TypeRef]` after compiler bug fixed
-fn Type::fn_type(
+pub fn Type::fn_type(
   self: Type,
-  param_types: Array[&BasicMetadataType],
+  param_types: Array[&BasicType],
   is_var_arg~: Bool = false
 ) -> FunctionType {
   let ret_ty = self.as_type_ref()

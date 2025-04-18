@@ -23,7 +23,7 @@ pub fn MetadataType::as_type_ref(self: MetadataType) -> @unsafe.LLVMTypeRef {
 }
 
 ///| Creates a `FunctionType` with this `MetadataType` for its return type.
-pub fn MetadataType::fn_type(self: MetadataType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn MetadataType::fn_type(self: MetadataType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

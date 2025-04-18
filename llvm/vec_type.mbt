@@ -162,7 +162,7 @@ pub fn VectorType::ptr_type(self: VectorType, address_space: AddressSpace) -> Po
 /// let fn_type = vector_type.fn_type([i32_type]);
 /// inspect!(fn_type, "<8 x i32> (i32)")
 /// ```
-pub fn VectorType::fn_type(self: VectorType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn VectorType::fn_type(self: VectorType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

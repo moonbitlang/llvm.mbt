@@ -152,7 +152,7 @@ pub fn StructType::get_name(self: StructType) -> String {
 /// let fn_type = struct_type.fn_type([i32_type, i64_type]);
 /// inspect!(fn_type, "<{ i32, i64 }> (i32, i64)")
 /// ```
-pub fn StructType::fn_type(self: StructType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool=false) -> FunctionType {
+pub fn StructType::fn_type(self: StructType, param_types: Array[&BasicType], is_var_arg~: Bool=false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

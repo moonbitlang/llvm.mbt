@@ -102,7 +102,7 @@ pub fn PointerType::get_context(self: PointerType) -> Context {
 /// let fn_type = ptr_type.fn_type([i32_type]);
 /// inspect!(fn_type, "ptr (i32)")
 /// ```
-pub fn PointerType::fn_type(self: PointerType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn PointerType::fn_type(self: PointerType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 

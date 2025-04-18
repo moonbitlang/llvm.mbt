@@ -50,7 +50,7 @@ pub fn VoidType::get_context(self: VoidType) -> Context {
 /// let fn_type = void_type.fn_type([i32_type]);
 /// inspect!(fn_type, "void (i32)")
 /// ```
-pub fn VoidType::fn_type(self: VoidType, param_types: Array[&BasicMetadataType], is_var_arg~: Bool = false) -> FunctionType {
+pub fn VoidType::fn_type(self: VoidType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg=is_var_arg)
 }
 
