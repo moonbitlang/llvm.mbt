@@ -1171,7 +1171,7 @@ pub fn Builder::build_malloc(
     raise UnsetPosition
   }
 
-  if not(ty.is_sized()) {
+  if not(ty.as_type().is_sized()) {
     raise AlignmentError("Cannot build malloc call for an unsized type")
   }
 
@@ -1190,7 +1190,7 @@ pub fn Builder::build_array_malloc(
     raise UnsetPosition
   }
 
-  if not(ty.is_sized()) {
+  if not(ty.as_type().is_sized()) {
     raise AlignmentError("Cannot build array malloc call for an unsized type")
   }
 

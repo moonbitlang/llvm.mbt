@@ -27,32 +27,32 @@ pub fn InstructionValue::as_value_ref(self: InstructionValue) -> @unsafe.LLVMVal
 
 ///| Returns whether or not the `InstructionValue` is a load instruction.
 pub fn InstructionValue::is_a_load_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_load_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_load_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a store instruction.
 pub fn InstructionValue::is_a_store_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_store_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_store_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is an alloca instruction.
 pub fn InstructionValue::is_a_alloca_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_alloca_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_alloca_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a getelementptr instruction.
 pub fn InstructionValue::is_a_getelementptr_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a call instruction.
 pub fn InstructionValue::is_a_atomicrmw_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a cmpxchg instruction.
 pub fn InstructionValue::is_a_cmpxchg_inst(self: InstructionValue) -> Bool {
-  @unsafe.llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_not_null()
 }
 
 ///| Creates a clone of this `InstructionValue`, and returns it.

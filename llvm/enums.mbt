@@ -105,22 +105,6 @@ pub fn AnyValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> AnyValueEnum {
   }
 }
 
-pub impl AsValueRef for AnyValueEnum with as_value_ref(self: AnyValueEnum) -> @unsafe.LLVMValueRef {
-  match self {
-    ArrayValue(v) => v.as_value_ref()
-    IntValue(v) => v.as_value_ref()
-    FloatValue(v) => v.as_value_ref()
-    PhiValue(v) => v.as_value_ref()
-    FunctionValue(v) => v.as_value_ref()
-    PointerValue(v) => v.as_value_ref()
-    StructValue(v) => v.as_value_ref()
-    VectorValue(v) => v.as_value_ref()
-    ScalableVectorValue(v) => v.as_value_ref()
-    InstructionValue(v) => v.as_value_ref()
-    MetadataValue(v) => v.as_value_ref()
-  }
-}
-
 pub fn AnyValueEnum::get_type(self: AnyValueEnum) -> AnyTypeEnum {
   AnyTypeEnum::new(self.as_value_ref().get_type())
 }
@@ -179,18 +163,6 @@ pub fn BasicValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> BasicValueEnum {
     @unsafe.LLVMVectorTypeKind => BasicValueEnum::VectorValue(VectorValue::new(val_ref))
     // @unsafe.LLVMScalableVectorTypeKind => BasicValueEnum::ScalableVectorValue(ScalableVectorValue::new(val_ref)) // Check if it ok in llvm-19 above
     _ => abort("Unsupported value kind")
-  }
-}
-
-pub impl AsValueRef for BasicValueEnum with as_value_ref(self) {
-  match self {
-    ArrayValue(v) => v.as_value_ref()
-    IntValue(v) => v.as_value_ref()
-    FloatValue(v) => v.as_value_ref()
-    PointerValue(v) => v.as_value_ref()
-    StructValue(v) => v.as_value_ref()
-    VectorValue(v) => v.as_value_ref()
-    ScalableVectorValue(v) => v.as_value_ref()
   }
 }
 
@@ -357,19 +329,6 @@ pub fn BasicMetadataValueEnum::new(val_ref: @unsafe.LLVMValueRef) -> BasicMetada
   }
 }
 
-pub impl AsValueRef for BasicMetadataValueEnum with as_value_ref(self) {
-  match self {
-    ArrayValue(v) => v.as_value_ref()
-    IntValue(v) => v.as_value_ref()
-    FloatValue(v) => v.as_value_ref()
-    PointerValue(v) => v.as_value_ref()
-    StructValue(v) => v.as_value_ref()
-    VectorValue(v) => v.as_value_ref()
-    ScalableVectorValue(v) => v.as_value_ref()
-    MetadataValue(v) => v.as_value_ref()
-  }
-}
-
 pub fn BasicMetadataValueEnum::is_array_value(self: BasicMetadataValueEnum) -> Bool {
   self is BasicMetadataValueEnum::ArrayValue(_)
 }
@@ -499,20 +458,6 @@ pub fn AnyTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> AnyTypeEnum {
     _ => {
       abort("Unsupported type kind \{kind}");
     }
-  }
-}
-
-pub impl AsTypeRef for AnyTypeEnum with as_type_ref(self) {
-  match self {
-    AnyTypeEnum::ArrayType(v) => v.as_type_ref()
-    AnyTypeEnum::FloatType(v) => v.as_type_ref()
-    AnyTypeEnum::FunctionType(v) => v.as_type_ref()
-    AnyTypeEnum::IntType(v) => v.as_type_ref()
-    AnyTypeEnum::PointerType(v) => v.as_type_ref()
-    AnyTypeEnum::StructType(v) => v.as_type_ref()
-    AnyTypeEnum::VectorType(v) => v.as_type_ref()
-    AnyTypeEnum::ScalableVectorType(v) => v.as_type_ref()
-    AnyTypeEnum::VoidType(v) => v.as_type_ref()
   }
 }
 
@@ -695,18 +640,6 @@ pub fn BasicTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicTypeEnum {
   }
 }
 
-impl AsTypeRef for BasicTypeEnum with as_type_ref(self) {
-  match self {
-    ArrayType(t) => t.as_type_ref()
-    FloatType(t) => t.as_type_ref()
-    IntType(t) => t.as_type_ref()
-    PointerType(t) => t.as_type_ref()
-    StructType(t) => t.as_type_ref()
-    VectorType(t) => t.as_type_ref()
-    ScalableVectorType(t) => t.as_type_ref()
-  }
-}
-
 // only check class type
 pub impl Eq for BasicTypeEnum with op_equal(self: BasicTypeEnum, other: BasicTypeEnum) -> Bool {
   match (self, other) {
@@ -770,19 +703,6 @@ pub fn BasicMetadataTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicMetadat
     _ => {
       abort("Unsupported type kind");
     }
-  }
-}
-
-pub impl AsTypeRef for BasicMetadataTypeEnum with as_type_ref(self) {
-  match self {
-    ArrayType(t) => t.as_type_ref()
-    FloatType(t) => t.as_type_ref()
-    IntType(t) => t.as_type_ref()
-    PointerType(t) => t.as_type_ref()
-    StructType(t) => t.as_type_ref()
-    VectorType(t) => t.as_type_ref()
-    ScalableVectorType(t) => t.as_type_ref()
-    MetadataType(t) => t.as_type_ref()
   }
 }
 

@@ -129,7 +129,3 @@ pub fn CallableValue::fromp(p: PointerValue) -> CallableValue {
     either_value: Right(p)
   }
 }
-
-pub impl AsValueRef for CallableValue with as_value_ref(self: CallableValue) -> @unsafe.LLVMValueRef {
-  self.as_value_ref()
-}

@@ -26,7 +26,7 @@ pub fn ArrayValue::as_value_ref(self: ArrayValue) -> @unsafe.LLVMValueRef {
 }
 
 ///| Creates a new constant `ArrayValue` with the given type and values.
-pub fn ArrayValue::new_const_array[T: AsTypeRef, V: AsValueRef](
+pub fn ArrayValue::new_const_array[T: AsType, V: AsValue](
   ty: T, values: Array[V]
 ) -> ArrayValue {
   let value_refs = values.map(fn (v) { v.as_value_ref() })

@@ -1,64 +1,215 @@
-pub trait AsValueRef {
+pub trait AsValue {
+  as_value(Self) -> Value;
   as_value_ref(Self) -> @unsafe.LLVMValueRef;
 }
 
-impl AsValueRef for Value with as_value_ref(self: Value) -> @unsafe.LLVMValueRef {
+impl AsValue for Value with as_value(self: Value) -> Value {
+  self
+}
+
+impl AsValue for Value with as_value_ref(self: Value) -> @unsafe.LLVMValueRef {
   self.value_ref
 }
 
-pub impl AsValueRef for IntValue with as_value_ref(self: IntValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for IntValue with as_value(self: IntValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for IntValue with as_value_ref(self: IntValue) -> @unsafe.LLVMValueRef {
+  self.value.as_value_ref()
+}
+pub impl AsValue for FloatValue with as_value(self: FloatValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for FloatValue with as_value_ref(self: FloatValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for FloatValue with as_value_ref(self: FloatValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for PointerValue with as_value(self: PointerValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for PointerValue with as_value_ref(self: PointerValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for PointerValue with as_value_ref(self: PointerValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for InstructionValue with as_value(self: InstructionValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for InstructionValue with as_value_ref(self: InstructionValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for InstructionValue with as_value_ref(self: InstructionValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for StructValue with as_value(self: StructValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for StructValue with as_value_ref(self: StructValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for StructValue with as_value_ref(self: StructValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl AsValue for FunctionValue with as_value(self: FunctionValue) -> Value {
+  self.value.as_value()
 }
 
-pub impl AsValueRef for FunctionValue with as_value_ref(
+pub impl AsValue for FunctionValue with as_value_ref(
   self: FunctionValue
 ) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for ArrayValue with as_value_ref(self: ArrayValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for ArrayValue with as_value(self: ArrayValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for ArrayValue with as_value_ref(self: ArrayValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for VectorValue with as_value_ref(self: VectorValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for VectorValue with as_value(self: VectorValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for VectorValue with as_value_ref(self: VectorValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for PhiValue with as_value_ref(self: PhiValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for PhiValue with as_value(self: PhiValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for PhiValue with as_value_ref(self: PhiValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for ScalableVectorValue with as_value_ref(self: ScalableVectorValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for ScalableVectorValue with as_value(self: ScalableVectorValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for ScalableVectorValue with as_value_ref(self: ScalableVectorValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for GlobalValue with as_value_ref(self: GlobalValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for GlobalValue with as_value(self: GlobalValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for GlobalValue with as_value_ref(self: GlobalValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for MetadataValue with as_value_ref(self: MetadataValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for MetadataValue with as_value(self: MetadataValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for MetadataValue with as_value_ref(self: MetadataValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
-pub impl AsValueRef for CallSiteValue with as_value_ref(self: CallSiteValue) -> @unsafe.LLVMValueRef {
+pub impl AsValue for CallSiteValue with as_value(self: CallSiteValue) -> Value {
+  self.value.as_value()
+}
+
+pub impl AsValue for CallSiteValue with as_value_ref(self: CallSiteValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
+
+pub impl AsValue for CallableValue with as_value_ref(self: CallableValue) -> @unsafe.LLVMValueRef {
+  self.as_value_ref()
+}
+
+pub impl AsValue for CallableValue with as_value(self: CallableValue) -> Value {
+  match self.either_value {
+    Left(f) => f.as_value()
+    Right(p) => p.as_value()
+  }
+}
+
+pub impl AsValue for AnyValueEnum with as_value_ref(self: AnyValueEnum) -> @unsafe.LLVMValueRef {
+  match self {
+    ArrayValue(v) => v.as_value_ref()
+    IntValue(v) => v.as_value_ref()
+    FloatValue(v) => v.as_value_ref()
+    PhiValue(v) => v.as_value_ref()
+    FunctionValue(v) => v.as_value_ref()
+    PointerValue(v) => v.as_value_ref()
+    StructValue(v) => v.as_value_ref()
+    VectorValue(v) => v.as_value_ref()
+    ScalableVectorValue(v) => v.as_value_ref()
+    InstructionValue(v) => v.as_value_ref()
+    MetadataValue(v) => v.as_value_ref()
+  }
+}
+
+pub impl AsValue for AnyValueEnum with as_value(self: AnyValueEnum) -> Value {
+  match self {
+    ArrayValue(v) => v.as_value()
+    IntValue(v) => v.as_value()
+    FloatValue(v) => v.as_value()
+    PhiValue(v) => v.as_value()
+    FunctionValue(v) => v.as_value()
+    PointerValue(v) => v.as_value()
+    StructValue(v) => v.as_value()
+    VectorValue(v) => v.as_value()
+    ScalableVectorValue(v) => v.as_value()
+    InstructionValue(v) => v.as_value()
+    MetadataValue(v) => v.as_value()
+  }
+}
+
+pub impl AsValue for BasicValueEnum with as_value_ref(self) {
+  match self {
+    ArrayValue(v) => v.as_value_ref()
+    IntValue(v) => v.as_value_ref()
+    FloatValue(v) => v.as_value_ref()
+    PointerValue(v) => v.as_value_ref()
+    StructValue(v) => v.as_value_ref()
+    VectorValue(v) => v.as_value_ref()
+    ScalableVectorValue(v) => v.as_value_ref()
+  }
+}
+
+pub impl AsValue for BasicValueEnum with as_value(self: BasicValueEnum) -> Value {
+  match self {
+    ArrayValue(v) => v.as_value()
+    IntValue(v) => v.as_value()
+    FloatValue(v) => v.as_value()
+    PointerValue(v) => v.as_value()
+    StructValue(v) => v.as_value()
+    VectorValue(v) => v.as_value()
+    ScalableVectorValue(v) => v.as_value()
+  }
+}
+
+pub impl AsValue for BasicMetadataValueEnum with as_value_ref(self) {
+  match self {
+    ArrayValue(v) => v.as_value_ref()
+    IntValue(v) => v.as_value_ref()
+    FloatValue(v) => v.as_value_ref()
+    PointerValue(v) => v.as_value_ref()
+    StructValue(v) => v.as_value_ref()
+    VectorValue(v) => v.as_value_ref()
+    ScalableVectorValue(v) => v.as_value_ref()
+    MetadataValue(v) => v.as_value_ref()
+  }
+}
+
+pub impl AsValue for BasicMetadataValueEnum with as_value(self: BasicMetadataValueEnum) -> Value {
+  match self {
+    ArrayValue(v) => v.as_value()
+    IntValue(v) => v.as_value()
+    FloatValue(v) => v.as_value()
+    PointerValue(v) => v.as_value()
+    StructValue(v) => v.as_value()
+    VectorValue(v) => v.as_value()
+    ScalableVectorValue(v) => v.as_value()
+    MetadataValue(v) => v.as_value()
+  }
+}
+
+
 //=========================================================
 // AggregateValue
 //=========================================================
@@ -78,7 +229,7 @@ pub impl AggregateValue for StructValue with as_aggregate_value_enum(self: Struc
 //=========================================================
 // AnyValue
 //=========================================================
-pub trait AnyValue : AsValueRef + Show {
+pub trait AnyValue : AsValue + Show {
   as_any_value_enum(Self) -> AnyValueEnum;
   is_poison(Self) -> Bool;
 }
@@ -353,61 +504,186 @@ pub impl VectorBaseValue for ScalableVectorValue with new(
 }
 
 //=========================================================
-// AsTypeRef
+// AsType
 //=========================================================
-pub trait AsTypeRef {
+pub trait AsType {
+  as_type(Self) -> Type;
   as_type_ref(Self) -> @unsafe.LLVMTypeRef
 }
 
-pub impl AsTypeRef for Type with as_type_ref(self: Type) -> @unsafe.LLVMTypeRef {
+pub impl AsType for Type with as_type(self: Type) -> Type {
+  self
+}
+
+pub impl AsType for Type with as_type_ref(self: Type) -> @unsafe.LLVMTypeRef {
   self.type_ref
 }
 
-pub impl AsTypeRef for IntType with as_type_ref(self: IntType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for IntType with as_type(self: IntType) -> Type {
+  self.ty
+}
+
+pub impl AsType for IntType with as_type_ref(self: IntType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for FloatType with as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for FloatType with as_type(self: FloatType) -> Type {
+  self.ty
+}
+
+pub impl AsType for FloatType with as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for VoidType with as_type_ref(self: VoidType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for VoidType with as_type(self: VoidType) -> Type {
+  self.ty
+}
+
+pub impl AsType for VoidType with as_type_ref(self: VoidType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for PointerType with as_type_ref(self: PointerType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for PointerType with as_type(self: PointerType) -> Type {
+  self.ty
+}
+
+pub impl AsType for PointerType with as_type_ref(self: PointerType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for StructType with as_type_ref(self: StructType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for StructType with as_type(self: StructType) -> Type {
+  self.ty
+}
+
+pub impl AsType for StructType with as_type_ref(self: StructType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for FunctionType with as_type_ref(self: FunctionType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for FunctionType with as_type(self: FunctionType) -> Type {
+  self.ty
+}
+
+pub impl AsType for FunctionType with as_type_ref(self: FunctionType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for ArrayType with as_type_ref(self: ArrayType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for ArrayType with as_type(self: ArrayType) -> Type {
+  self.ty
+}
+
+pub impl AsType for ArrayType with as_type_ref(self: ArrayType) -> @unsafe.LLVMTypeRef {
   self.as_type_ref()
 }
 
-pub impl AsTypeRef for VectorType with as_type_ref(self: VectorType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for VectorType with as_type(self: VectorType) -> Type {
+  self.ty
+}
+
+pub impl AsType for VectorType with as_type_ref(self: VectorType) -> @unsafe.LLVMTypeRef {
   self.as_type_ref()
 }
 
-pub impl AsTypeRef for ScalableVectorType with as_type_ref(
+pub impl AsType for ScalableVectorType with as_type(self: ScalableVectorType) -> Type {
+  self.ty
+}
+
+pub impl AsType for ScalableVectorType with as_type_ref(
   self: ScalableVectorType
 ) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
-pub impl AsTypeRef for MetadataType with as_type_ref(self: MetadataType) -> @unsafe.LLVMTypeRef {
+pub impl AsType for MetadataType with as_type(self: MetadataType) -> Type {
+  self.ty
+}
+
+pub impl AsType for MetadataType with as_type_ref(self: MetadataType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
+
+pub impl AsType for AnyTypeEnum with as_type_ref(self) {
+  match self {
+    AnyTypeEnum::ArrayType(v) => v.as_type_ref()
+    AnyTypeEnum::FloatType(v) => v.as_type_ref()
+    AnyTypeEnum::FunctionType(v) => v.as_type_ref()
+    AnyTypeEnum::IntType(v) => v.as_type_ref()
+    AnyTypeEnum::PointerType(v) => v.as_type_ref()
+    AnyTypeEnum::StructType(v) => v.as_type_ref()
+    AnyTypeEnum::VectorType(v) => v.as_type_ref()
+    AnyTypeEnum::ScalableVectorType(v) => v.as_type_ref()
+    AnyTypeEnum::VoidType(v) => v.as_type_ref()
+  }
+}
+
+pub impl AsType for AnyTypeEnum with as_type(self: AnyTypeEnum) -> Type {
+  match self {
+    AnyTypeEnum::ArrayType(v) => v.as_type()
+    AnyTypeEnum::FloatType(v) => v.as_type()
+    AnyTypeEnum::FunctionType(v) => v.as_type()
+    AnyTypeEnum::IntType(v) => v.as_type()
+    AnyTypeEnum::PointerType(v) => v.as_type()
+    AnyTypeEnum::StructType(v) => v.as_type()
+    AnyTypeEnum::VectorType(v) => v.as_type()
+    AnyTypeEnum::ScalableVectorType(v) => v.as_type()
+    AnyTypeEnum::VoidType(v) => v.as_type()
+  }
+}
+
+pub impl AsType for BasicTypeEnum with as_type_ref(self) {
+  match self {
+    ArrayType(t) => t.as_type_ref()
+    FloatType(t) => t.as_type_ref()
+    IntType(t) => t.as_type_ref()
+    PointerType(t) => t.as_type_ref()
+    StructType(t) => t.as_type_ref()
+    VectorType(t) => t.as_type_ref()
+    ScalableVectorType(t) => t.as_type_ref()
+  }
+}
+
+pub impl AsType for BasicTypeEnum with as_type(self: BasicTypeEnum) -> Type {
+  match self {
+    ArrayType(t) => t.as_type()
+    FloatType(t) => t.as_type()
+    IntType(t) => t.as_type()
+    PointerType(t) => t.as_type()
+    StructType(t) => t.as_type()
+    VectorType(t) => t.as_type()
+    ScalableVectorType(t) => t.as_type()
+  }
+}
+
+pub impl AsType for BasicMetadataTypeEnum with as_type_ref(self) {
+  match self {
+    ArrayType(t) => t.as_type_ref()
+    FloatType(t) => t.as_type_ref()
+    IntType(t) => t.as_type_ref()
+    PointerType(t) => t.as_type_ref()
+    StructType(t) => t.as_type_ref()
+    VectorType(t) => t.as_type_ref()
+    ScalableVectorType(t) => t.as_type_ref()
+    MetadataType(t) => t.as_type_ref()
+  }
+}
+
+pub impl AsType for BasicMetadataTypeEnum with as_type(self: BasicMetadataTypeEnum) -> Type {
+  match self {
+    ArrayType(t) => t.as_type()
+    FloatType(t) => t.as_type()
+    IntType(t) => t.as_type()
+    PointerType(t) => t.as_type()
+    StructType(t) => t.as_type()
+    VectorType(t) => t.as_type()
+    ScalableVectorType(t) => t.as_type()
+    MetadataType(t) => t.as_type()
+  }
+}
+
+
 //=========================================================
 // AnyType
 //=========================================================
-pub trait AnyType : AsTypeRef + Show {
+pub trait AnyType : AsType + Show {
   as_any_type_enum(Self) -> AnyTypeEnum;
 }
 
@@ -452,206 +728,32 @@ pub impl AnyType for ScalableVectorType with as_any_type_enum(self: ScalableVect
 //=========================================================
 pub trait BasicType : AnyType {
   as_basic_type_enum(Self) -> BasicTypeEnum;
-  fn_type(Self, Array[&BasicMetadataType], Bool) -> FunctionType;
-  array_type(Self, UInt) -> ArrayType;
-  ptr_type(Self, AddressSpace) -> PointerType;
-  is_sized(Self) -> Bool;
-  size_of(Self) -> IntValue?;
 }
 
 pub impl BasicType for IntType with as_basic_type_enum(self: IntType) -> BasicTypeEnum {
   BasicTypeEnum::IntType(self)
 }
 
-pub impl BasicType for IntType with fn_type(
-  self: IntType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for IntType with array_type(
-  self: IntType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for IntType with ptr_type(self: IntType, address_space: AddressSpace) -> PointerType {
-  self.ptr_type(address_space)
-}
-
-pub impl BasicType for IntType with size_of(self: IntType) -> IntValue? {
-  Some(self.size_of())
-}
-
-pub impl BasicType for IntType with is_sized(self: IntType) -> Bool {
-  self.is_sized()
-}
-
 pub impl BasicType for FloatType with as_basic_type_enum(self: FloatType) -> BasicTypeEnum {
   BasicTypeEnum::FloatType(self)
-}
-
-pub impl BasicType for FloatType with fn_type(
-  self: FloatType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for FloatType with array_type(self: FloatType, size: UInt) -> ArrayType {
-  self.array_type(size)
-}
-
-pub impl BasicType for FloatType with size_of(self: FloatType) -> IntValue? {
-  Some(self.size_of())
-}
-
-pub impl BasicType for FloatType with is_sized(self: FloatType) -> Bool {
-  self.is_sized()
-}
-
-pub impl BasicType for FloatType with ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
-  self.ptr_type(address_space)
 }
 
 pub impl BasicType for PointerType with as_basic_type_enum(self: PointerType) -> BasicTypeEnum {
   BasicTypeEnum::PointerType(self)
 }
 
-pub impl BasicType for PointerType with fn_type(
-  self: PointerType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for PointerType with size_of(self: PointerType) -> IntValue? {
-  Some(self.size_of())
-}
-
-pub impl BasicType for PointerType with is_sized(self: PointerType) -> Bool {
-  self.is_sized()
-}
-
-pub impl BasicType for PointerType with ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
-  self.ptr_type(address_space)
-}
-
-pub impl BasicType for PointerType with array_type(self: PointerType, size: UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
-
 pub impl BasicType for StructType with as_basic_type_enum(self: StructType) -> BasicTypeEnum {
   BasicTypeEnum::StructType(self)
 }
-
-pub impl BasicType for StructType with fn_type(
-  self: StructType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for StructType with size_of(self: StructType) -> IntValue? {
-  self.size_of()
-}
-
-pub impl BasicType for StructType with is_sized(self: StructType) -> Bool {
-  self.is_sized()
-}
-
-
-pub impl BasicType for StructType with array_type(
-  self: StructType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for StructType with ptr_type(
-  self: StructType, address_space: AddressSpace
-) -> PointerType {
-  self.ptr_type(address_space)
-}
-
 pub impl BasicType for ArrayType with as_basic_type_enum(self: ArrayType) -> BasicTypeEnum {
   BasicTypeEnum::ArrayType(self)
 }
-
-pub impl BasicType for ArrayType with fn_type(
-  self: ArrayType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for ArrayType with size_of(self: ArrayType) -> IntValue? {
-  self.size_of()
-}
-
-pub impl BasicType for ArrayType with is_sized(self: ArrayType) -> Bool {
-  self.is_sized()
-}
-
-pub impl BasicType for ArrayType with array_type(self: ArrayType, size: UInt) -> ArrayType {
-  self.array_type(size)
-}
-
-pub impl BasicType for ArrayType with ptr_type(self: ArrayType, address_space: AddressSpace) -> PointerType {
-  self.ptr_type(address_space)
-}
-
 pub impl BasicType for VectorType with as_basic_type_enum(self: VectorType) -> BasicTypeEnum {
   BasicTypeEnum::VectorType(self)
 }
 
 pub impl BasicType for ScalableVectorType with as_basic_type_enum(self: ScalableVectorType) -> BasicTypeEnum {
   BasicTypeEnum::ScalableVectorType(self)
-}
-
-pub impl BasicType for VectorType with size_of(self: VectorType) -> IntValue? {
-  self.size_of()
-}
-
-pub impl BasicType for VectorType with is_sized(self: VectorType) -> Bool {
-  self.is_sized()
-}
-
-pub impl BasicType for VectorType with fn_type(
-  self: VectorType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for VectorType with array_type(
-  self: VectorType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for VectorType with ptr_type(self: VectorType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(@unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()))
-}
-
-pub impl BasicType for ScalableVectorType with size_of(self: ScalableVectorType) -> IntValue? {
-  self.ty.size_of()
-}
-
-pub impl BasicType for ScalableVectorType with is_sized(self: ScalableVectorType) -> Bool {
-  self.ty.is_sized()
-}
-
-pub impl BasicType for ScalableVectorType with fn_type(
-  self: ScalableVectorType, param_types: Array[&BasicMetadataType], is_var_arg: Bool
-) -> FunctionType {
-  self.fn_type(param_types, is_var_arg=is_var_arg)
-}
-
-pub impl BasicType for ScalableVectorType with array_type(
-  self: ScalableVectorType, size: UInt
-) -> ArrayType {
-  self.ty.array_type(size)
-}
-
-pub impl BasicType for ScalableVectorType with ptr_type(
-  self: ScalableVectorType, address_space: AddressSpace
-) -> PointerType {
-  self.ty.ptr_type(address_space)
 }
 
 //=========================================================
