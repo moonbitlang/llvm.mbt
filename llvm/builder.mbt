@@ -87,7 +87,7 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
 pub fn Builder::build_return[T: BasicValue](
   self: Builder, val:T?
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() == PositionState::NotSet {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -127,7 +127,7 @@ pub fn Builder::build_return[T: BasicValue](
 pub fn Builder::build_aggregate_return(
   self: Builder, values: Array[BasicValueEnum]
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -173,7 +173,7 @@ pub fn Builder::build_call(
   args: Array[BasicMetadataValueEnum],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -212,7 +212,7 @@ pub fn Builder::build_direct_call(
   args: Array[BasicMetadataValueEnum],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -303,7 +303,7 @@ pub fn Builder::build_indirect_call(
   args: Array[BasicMetadataValueEnum],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -332,7 +332,7 @@ fn Builder::build_call_help(
   args: Array[BasicMetadataValueEnum],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -353,7 +353,7 @@ fn Builder::build_call_with_operand_bundles_help(
   operand_bundles: Array[OperandBundle],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -454,7 +454,7 @@ pub fn Builder::build_invoke(
   catch_block: BasicBlock,
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -470,7 +470,7 @@ pub fn Builder::build_direct_invoke(
   catch_block: BasicBlock,
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -489,7 +489,7 @@ pub fn Builder::build_indirect_invoke(
   catch_block: BasicBlock,
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -505,7 +505,7 @@ fn Builder::build_invoke_help(
   catch_block: BasicBlock,
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -660,7 +660,7 @@ pub fn Builder::build_landing_pad(
   is_cleanup: Bool,
   name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -753,7 +753,7 @@ pub fn Builder::build_landing_pad(
 pub fn Builder::build_resume(
   self: Builder, value: &BasicValue
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -770,7 +770,7 @@ pub fn Builder::build_gep(
   ordered_indices: Array[&BasicValue],
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -794,7 +794,7 @@ pub fn Builder::build_in_bounds_gep(
   ordered_indices: Array[IntValue],
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -847,7 +847,7 @@ pub fn Builder::build_struct_gep(
   index: UInt,
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -902,7 +902,7 @@ pub fn Builder::build_ptr_diff(
   rhs_ptr: PointerValue,
   name~: String = ""
 ) -> IntValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -922,7 +922,7 @@ pub fn Builder::build_ptr_diff(
 pub fn Builder::build_phi(
   self: Builder, ty: &BasicType, name~: String = ""
 ) -> PhiValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -952,7 +952,7 @@ pub fn Builder::build_phi(
 /// builder.build_return(None).unwrap();
 /// ```
 pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -989,7 +989,7 @@ pub fn Builder::build_load(
   ptr: PointerValue,
   name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1022,7 +1022,7 @@ pub fn Builder::build_load(
 pub fn Builder::build_alloca[T: BasicType](
   self: Builder, ty: T, name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1037,7 +1037,7 @@ pub fn Builder::build_array_alloca[T: BasicType, V: BasicValue](
   size: V,
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1062,7 +1062,7 @@ pub fn Builder::build_memcpy(
   src_align: UInt,
   size: IntValue,
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1103,7 +1103,7 @@ pub fn Builder::build_memove(
   src_align: UInt,
   size: IntValue
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1142,7 +1142,7 @@ pub fn Builder::build_memset(
   val: IntValue,
   size: IntValue
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1167,7 +1167,7 @@ pub fn Builder::build_malloc(
   ty: &BasicType,
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1186,7 +1186,7 @@ pub fn Builder::build_array_malloc(
   size: IntValue,
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1206,7 +1206,7 @@ pub fn Builder::build_free(
   self: Builder,
   ptr: PointerValue
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1251,7 +1251,7 @@ pub fn Builder::insert_instruction(
 pub fn Builder::build_int_unsigned_div[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1284,7 +1284,7 @@ pub fn Builder::build_int_unsigned_div[T: IntMathValue](
 pub fn Builder::build_int_signed_div[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1318,7 +1318,7 @@ pub fn Builder::build_int_signed_div[T: IntMathValue](
 pub fn Builder::build_int_exact_signed_div[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1351,7 +1351,7 @@ pub fn Builder::build_int_exact_signed_div[T: IntMathValue](
 pub fn Builder::build_int_unsigned_rem[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1384,7 +1384,7 @@ pub fn Builder::build_int_unsigned_rem[T: IntMathValue](
 pub fn Builder::build_int_signed_rem[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1408,7 +1408,7 @@ pub fn Builder::build_address_space_cast(
   ptr_type: PointerType,
   name~: String = ""
 ) -> PointerValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1448,7 +1448,7 @@ pub fn Builder::build_address_space_cast(
 pub fn Builder::build_bit_cast[BV: BasicValue, BT: BasicType](
   self: Builder, val:BV, ty:BT, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1489,7 +1489,7 @@ pub fn Builder::build_bit_cast[BV: BasicValue, BT: BasicType](
 pub fn Builder::build_float_rem[T: FloatMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1532,7 +1532,7 @@ pub fn Builder::build_float_rem[T: FloatMathValue](
 pub fn Builder::build_float_div(
   self: Builder, lhs: FloatValue, rhs: FloatValue, name~: String = ""
 ) -> FloatValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1565,7 +1565,7 @@ pub fn Builder::build_float_div(
 pub fn Builder::build_int_add[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1598,7 +1598,7 @@ pub fn Builder::build_int_add[T: IntMathValue](
 pub fn Builder::build_int_nsw_add[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1631,7 +1631,7 @@ pub fn Builder::build_int_nsw_add[T: IntMathValue](
 pub fn Builder::build_int_nuw_add[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1664,7 +1664,7 @@ pub fn Builder::build_int_nuw_add[T: IntMathValue](
 pub fn Builder::build_float_add[T: FloatMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1697,7 +1697,7 @@ pub fn Builder::build_float_add[T: FloatMathValue](
 pub fn Builder::build_xor[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1730,7 +1730,7 @@ pub fn Builder::build_xor[T: IntMathValue](
 pub fn Builder::build_and[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1763,7 +1763,7 @@ pub fn Builder::build_and[T: IntMathValue](
 pub fn Builder::build_or[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1796,7 +1796,7 @@ pub fn Builder::build_or[T: IntMathValue](
 pub fn Builder::build_left_shift[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1835,7 +1835,7 @@ pub fn Builder::build_right_shift[T: IntMathValue](
   sign_extend~: Bool = true,
   name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1872,7 +1872,7 @@ pub fn Builder::build_right_shift[T: IntMathValue](
 pub fn Builder::build_int_sub[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1905,7 +1905,7 @@ pub fn Builder::build_int_sub[T: IntMathValue](
 pub fn Builder::build_int_nsw_sub[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1938,7 +1938,7 @@ pub fn Builder::build_int_nsw_sub[T: IntMathValue](
 pub fn Builder::build_int_nuw_sub[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -1971,7 +1971,7 @@ pub fn Builder::build_int_nuw_sub[T: IntMathValue](
 pub fn Builder::build_float_sub[T: FloatMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2004,7 +2004,7 @@ pub fn Builder::build_float_sub[T: FloatMathValue](
 pub fn Builder::build_int_mul[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2037,7 +2037,7 @@ pub fn Builder::build_int_mul[T: IntMathValue](
 pub fn Builder::build_int_nsw_mul[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2070,7 +2070,7 @@ pub fn Builder::build_int_nsw_mul[T: IntMathValue](
 pub fn Builder::build_int_nuw_mul[T: IntMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2103,7 +2103,7 @@ pub fn Builder::build_int_nuw_mul[T: IntMathValue](
 pub fn Builder::build_float_mul[T: FloatMathValue](
   self: Builder, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2120,7 +2120,7 @@ pub fn Builder::build_binop[T: BasicValue] (
   rhs: T,
   name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2137,7 +2137,7 @@ pub fn Builder::build_cast[T: BasicType, V: BasicValue](
   to_type: T,
   name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2156,7 +2156,7 @@ pub fn Builder::build_cast[T: BasicType, V: BasicValue](
 // pub fn Builder::build_pointer_cast[T: PointerMathValue](
 //   self: Builder, from: T, to:T::BaseType, name~: String = ""
 // ) -> T!BuilderError {
-//   if self.get_positioned() != PositionState::Set {
+//   guard self.get_positioned() == PositionState::Set else {
 //     raise UnsetPosition
 //   }
 //
@@ -2190,7 +2190,7 @@ pub fn Builder::build_cast[T: BasicType, V: BasicValue](
 pub fn Builder::build_int_compare[T: IntMathValue] (
   self: Builder, op: IntPredicate, lhs: T, rhs: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2207,7 +2207,7 @@ pub fn Builder::build_int_compare[T: IntMathValue] (
 pub fn Builder::build_ptr_compare(
   self: Builder, op: IntPredicate, lhs: PointerValue, rhs: PointerValue, name~: String = ""
 ) -> IntValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2245,7 +2245,7 @@ pub fn Builder::build_ptr_compare(
 pub fn Builder::build_float_compare[T: FloatMathValue](
   self: Builder, op: FloatPredicate, lhs: T, rhs: T, name~: String = ""
 ) -> IntValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2262,7 +2262,7 @@ pub fn Builder::build_float_compare[T: FloatMathValue](
 pub fn Builder::build_unconditional_branch(
   self: Builder, destination_block: BasicBlock
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2276,7 +2276,7 @@ pub fn Builder::build_conditional_branch(
   then_block: BasicBlock,
   else_block: BasicBlock
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2295,7 +2295,7 @@ pub fn Builder::build_indirect_branch(
   address: BasicValueEnum,
   destinations: Array[BasicBlock]
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2334,7 +2334,7 @@ pub fn Builder::build_indirect_branch(
 pub fn Builder::build_int_neg[T: IntMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2364,7 +2364,7 @@ pub fn Builder::build_int_neg[T: IntMathValue](
 pub fn Builder::build_int_nsw_neg[T: IntMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2377,7 +2377,7 @@ pub fn Builder::build_int_nsw_neg[T: IntMathValue](
 pub fn Builder::build_int_nuw_neg[T: IntMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2407,7 +2407,7 @@ pub fn Builder::build_int_nuw_neg[T: IntMathValue](
 pub fn Builder::build_float_neg[T: FloatMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2437,7 +2437,7 @@ pub fn Builder::build_float_neg[T: FloatMathValue](
 pub fn Builder::build_not[T: IntMathValue](
   self: Builder, value: T, name~: String = ""
 ) -> T!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2515,7 +2515,7 @@ pub fn Builder::position_at_end(self: Builder, bb: BasicBlock) -> Unit {
 pub fn Builder::build_extract_value[AV: AggregateValue](
   self: Builder, agg: AV, index: UInt, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2575,7 +2575,7 @@ pub fn Builder::build_extract_value[AV: AggregateValue](
 pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
   self: Builder, agg: AV, value: BV, index: UInt, name~: String = ""
 ) -> AggregateValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2624,7 +2624,7 @@ pub fn Builder::build_insert_value[AV: AggregateValue, BV: BasicValue](
 pub fn Builder::build_extract_element(
   self: Builder, vector: VectorValue, index: IntValue, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2663,7 +2663,7 @@ pub fn Builder::build_extract_element(
 pub fn Builder::build_insert_element[V: BasicValue, W: VectorBaseValue](
   self: Builder, vector: W, element: V, index: IntValue, name~: String = ""
 ) -> W!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2679,7 +2679,7 @@ pub fn Builder::build_insert_element[V: BasicValue, W: VectorBaseValue](
 }
 
 pub fn Builder::build_unreachable(self: Builder) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2690,7 +2690,7 @@ pub fn Builder::build_unreachable(self: Builder) -> InstructionValue!BuilderErro
 pub fn Builder::build_fence(
   self: Builder, atomic_ordering: AtomicOrdering, single_thread:Bool, name~: String = ""
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2706,7 +2706,7 @@ pub fn Builder::build_fence(
 pub fn Builder::build_is_null[T: PointerMathValue](
   self: Builder, ptr: T, name~: String = ""
 ) -> IntValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2777,7 +2777,7 @@ pub fn Builder::build_switch(
   else_block: BasicBlock,
   cases: Array[(IntValue, BasicBlock)]
 ) -> InstructionValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2799,7 +2799,7 @@ pub fn Builder::build_switch(
 pub fn Builder::build_select[BV: BasicValue, IMV: IntMathValue](
   self: Builder, condition: IMV, then: BV, else_: BV, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2817,7 +2817,7 @@ pub fn Builder::build_select[BV: BasicValue, IMV: IntMathValue](
 pub fn Builder::build_global_string(
   self: Builder, value: String, name~: String = ""
 ) -> GlobalValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2833,7 +2833,7 @@ pub fn Builder::build_global_string(
 pub fn Builder::build_global_string_ptr(
   self: Builder, value: String, name~: String = ""
 ) -> GlobalValue!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2849,7 +2849,7 @@ pub fn Builder::build_global_string_ptr(
 pub fn Builder::build_shuffle_vector[V: VectorBaseValue](
   self: Builder, left: V, right: V, mask: V, name~: String = ""
 ) -> V!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
@@ -2868,7 +2868,7 @@ pub fn Builder::build_shuffle_vector[V: VectorBaseValue](
 pub fn Builder::build_va_arg[T: BasicType](
   self: Builder, list: PointerValue, ty: T, name~: String = ""
 ) -> BasicValueEnum!BuilderError {
-  if self.get_positioned() != PositionState::Set {
+  guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
   }
 
