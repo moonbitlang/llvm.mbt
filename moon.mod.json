@@ -1,9 +1,12 @@
 {
   "name": "Kaida-Amethyst/llvm",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "readme": "README.md",
   "repository": "https://github.com/Kaida-Amethyst/llvm.mbt",
   "license": "Apache-2.0",
   "keywords": ["Compiler", "llvm", "Native-Only"],
-  "description": "llvm-c binding for Moonbit with friendly API, inspired by Rust-inkwell"
+  "description": "llvm-c binding for Moonbit with friendly API, inspired by Rust-inkwell",
+  "scripts": {
+    "postadd": "curl -O https://raw.githubusercontent.com/Kaida-Amethyst/llvm.mbt/blob/master/env.sh"
+  }
 }
