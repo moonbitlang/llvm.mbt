@@ -42,9 +42,7 @@ jobs:
       - name: download llvm-19 on ubuntu-latest
         if: ${{ matrix.os.name == 'ubuntu-latest' }}
         run: |
-          curl -L -O https://github.com/llvm/llvm-project/releases/download/llvmorg-19.1.7/LLVM-19.1.7-Linux-X64.tar.xz
-          tar xf LLVM-19.1.7-Linux-X64.tar.xz
-          mv LLVM-19.1.7-Linux-X64 llvm-19
+          sudo apt install llvm-19-dev -y
 
       - name: download llvm-19 on macos
         if: ${{ matrix.os.name == 'macos-latest' || matrix.os.name == 'macos-13' }}
