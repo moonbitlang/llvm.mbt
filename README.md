@@ -29,6 +29,15 @@ Install LLVM using Homebrew:
 brew install llvm@19
 ```
 
+#### Ubuntu
+
+Install LLVM using apt:
+
+```bash 
+sudo apt install llvm-19-dev -y
+```
+
+
 #### Linux
 
 It is recommended to install LLVM from source to ensure the correct version.
@@ -172,6 +181,14 @@ Moonbit-llvm 提供了 llvm-c 的 Moonbit 语言绑定，并利用 Moonbit 的�
 
 ```shell
 brew install llvm@19
+```
+
+#### Ubuntu
+
+使用 apt 安装 LLVM:
+
+```bash 
+sudo apt install llvm-19-dev -y
 ```
 
 #### Linux
