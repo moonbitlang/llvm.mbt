@@ -230,8 +230,10 @@ pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> Scalable
   self.ty.scalable_vec_type(size)
 }
 
-// Note: Check if `@unsafe.llvm_get_element_type` is unavailable in llvm-19
-// pub fn PointerType::get_element_type(self: PointerType) -> ...
+// Note: `@unsafe.llvm_get_element_type` is unavailable in llvm-19
+pub fn PointerType::get_element_type(self: PointerType) -> AnyTypeEnum {
+  self.ty.get_element_type()
+}
 
 // TODO: enable this after `new_const_array` is implemented
 pub fn PointerType::const_array(self: PointerType, values: Array[PointerValue]) -> ArrayValue {

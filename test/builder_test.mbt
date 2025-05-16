@@ -7,7 +7,7 @@ test "Builder Test - 1" {
   let fty = void_ty.fn_type([i32_ty, i32_ty]);
 
   let fval = lmodule.add_function("foo", fty);
-  let bb = context.append_basic_block(fval, "entry");
+  let bb = context.append_basic_block(fval, name="entry");
 
   let builder = context.create_builder();
   builder.position_at_end(bb);
@@ -262,7 +262,7 @@ test "Builder Test - 2" {
   let void_ty = context.void_type()
   let fty = void_ty.fn_type([i32_ty, i32_ty])
   let fval = lmodule.add_function("foo", fty)
-  let bb = context.append_basic_block(fval, "entry")
+  let bb = context.append_basic_block(fval, name="entry")
   let builder = context.create_builder()
   builder.position_at_end(bb)
   let arg0 = fval.get_nth_param(0).unwrap()

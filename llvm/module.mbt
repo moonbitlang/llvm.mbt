@@ -235,8 +235,8 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 /// assert_eq!(module.get_first_global().unwrap(), global);
 /// assert_eq!(module.get_last_global().unwrap(), global);
 /// ```
-pub fn Module::add_global(
-  self: Module, ty: &BasicType, addr_space: AddressSpace?, name: String
+pub fn Module::add_global[T: BasicType](
+  self: Module, ty: T, addr_space: AddressSpace?, name: String
 ) -> GlobalValue {
   let val = match addr_space {
     Some(addr_space) => {

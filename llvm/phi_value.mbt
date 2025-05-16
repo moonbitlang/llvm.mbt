@@ -25,18 +25,26 @@ pub fn PhiValue::as_value_ref(self: PhiValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
+pub fn PhiValue::get_type(self: PhiValue) -> BasicTypeEnum {
+  self.value.get_type().as_type_ref() |> BasicTypeEnum::new
+}
+
 // TODO: need check, in inkwell, BasicValueEnum is not implemented for PhiValue
-// pub impl BasicValue for PhiValue with as_basic_value_enum(self: PhiValue) -> BasicValueEnum {
-//   BasicValueEnum::PhiValue(self)
-// }
+pub fn PhiValue::as_basic_value(self: PhiValue) -> BasicValueEnum {
+  BasicValueEnum::new(self.as_value_ref())
+}
 
 ///| Add incoming values to the phi node.
 // TODO: Maybe `add_incoming` and `add_incomings` be better.
-pub fn PhiValue::add_incoming(self: PhiValue, incoming: Array[(&BasicValue, BasicBlock)]) -> Unit {
-  let values = incoming.iter().map(fn (pair) {pair.0.as_value_ref()}).collect()
-  let bbs = incoming.iter().map(fn (pair) {pair.1.as_bb_ref()}).collect()
+pub fn PhiValue::add_incomings(self: PhiValue, incoming: Array[(&BasicValue, BasicBlock)]) -> Unit {
+  let values = incoming.map(fn {(val, _) => val.as_value_ref()})
+  let bbs = incoming.map(fn {(_, bb) => bb.as_bb_ref()})
 
   @unsafe.llvm_add_incoming(self.as_value_ref(), values, bbs)
+}
+
+pub fn PhiValue::add_incoming(self: PhiValue, value: &BasicValue, bb: BasicBlock) -> Unit {
+  @unsafe.llvm_add_incoming(self.as_value_ref(), [value.as_value_ref()], [bb.as_bb_ref()])
 }
 
 ///| Get the number of incoming values of the phi node.

@@ -95,6 +95,7 @@ int32_t llvm_type_kind_to_int(LLVMTypeKind k) {
   case LLVMTargetExtTypeKind:
     return 20;
   default:
+    printf("LLVMTypeKind: %d\n", (int)k);
     panic("Error during LLVMTypeKind Convert to Moonbit");
   }
 }

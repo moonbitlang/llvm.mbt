@@ -1,6 +1,11 @@
 pub trait AsValue {
   as_value(Self) -> Value;
   as_value_ref(Self) -> @unsafe.LLVMValueRef;
+  dump(Self) -> Unit = _
+}
+
+impl AsValue with dump(self) -> Unit {
+  self.as_value_ref().dump()
 }
 
 impl AsValue for Value with as_value(self: Value) -> Value {
@@ -231,6 +236,11 @@ pub impl AggregateValue for StructValue with as_aggregate_value_enum(self: Struc
 //=========================================================
 pub trait AnyValue : AsValue + Show {
   as_any_value_enum(Self) -> AnyValueEnum;
+  get_type(Self) -> AnyTypeEnum = _;
+}
+
+impl AnyValue with get_type(self) -> AnyTypeEnum {
+  self.as_any_value_enum().get_type()
 }
 
 pub impl AnyValue for IntValue with as_any_value_enum(self: IntValue) -> AnyValueEnum {
@@ -278,6 +288,11 @@ pub impl AnyValue for MetadataValue with as_any_value_enum(self: MetadataValue) 
 //=========================================================
 pub trait BasicValue : AnyValue {
   as_basic_value_enum(Self) -> BasicValueEnum;
+  get_type(Self) -> BasicTypeEnum = _;
+}
+
+impl BasicValue with get_type(self) -> BasicTypeEnum {
+  self.as_basic_value_enum().get_type()
 }
 
 pub impl BasicValue for IntValue with as_basic_value_enum(self: IntValue) -> BasicValueEnum {

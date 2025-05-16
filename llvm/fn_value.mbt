@@ -314,7 +314,9 @@ pub fn FunctionValue::drop(self: FunctionValue) -> Unit {
 
 ///| Get the type of the function.
 pub fn FunctionValue::get_type(self: FunctionValue) -> FunctionType {
-  FunctionType::new(self.value.get_type().as_type_ref())
+  //FunctionType::new(self.value.get_type().as_type_ref())
+  //FunctionType::new(self.value.as_value_ref())
+  self.value.as_value_ref() |> @unsafe.llvm_global_get_value_type |> FunctionType::new
 }
 
 pub fn FunctionValue::has_personality_function(self: FunctionValue) -> Bool {

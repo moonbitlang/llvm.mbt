@@ -64,6 +64,15 @@ fn Builder::get_positioned(self: Builder) -> PositionState {
   self.positioned
 }
 
+pub fn Builder::get_insert_block(self: Builder) -> BasicBlock!BuilderError {
+  guard self.get_positioned() == PositionState::Set else {
+    raise UnsetPosition
+  }
+
+  let block_ref = @unsafe.llvm_get_insert_block(self.as_builder_ref())
+  BasicBlock::new(block_ref)
+}
+
 ///| Builds a function return instruction.
 /// It should be provided with `None` if the return type
 /// is void otherwise `Some(value)` should be provided.
@@ -170,13 +179,9 @@ pub fn Builder::build_aggregate_return(
 pub fn Builder::build_call(
   self: Builder, 
   func: FunctionValue, 
-  args: Array[BasicMetadataValueEnum],
+  args: Array[&BasicValue],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
-  guard self.get_positioned() == PositionState::Set else {
-    raise UnsetPosition
-  }
-
   self.build_direct_call!(func, args, name~)
 }
 
@@ -209,7 +214,7 @@ pub fn Builder::build_call(
 pub fn Builder::build_direct_call(
   self: Builder, 
   func: FunctionValue, 
-  args: Array[BasicMetadataValueEnum],
+  args: Array[&BasicValue],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {
@@ -300,7 +305,7 @@ pub fn Builder::build_indirect_call(
   self: Builder,
   fn_type: FunctionType,
   fn_ptr: PointerValue,
-  args: Array[BasicMetadataValueEnum],
+  args: Array[&BasicValue],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {
@@ -329,7 +334,7 @@ fn Builder::build_call_help(
   self: Builder,
   fn_ty: FunctionType,
   fn_val: Value, // FunctionValue Or PointerValue
-  args: Array[BasicMetadataValueEnum],
+  args: Array[&BasicValue],
   name~: String = ""
 ) -> CallSiteValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {
@@ -340,7 +345,7 @@ fn Builder::build_call_help(
   let fty_ref = fn_ty.as_type_ref()
   let fval_ref = fn_val.as_value_ref()
   let args = args.map(fn (v) {v.as_value_ref()})
-
+  
   let r = @unsafe.llvm_build_call2(builder_ref, fty_ref, fval_ref, args, name)
   CallSiteValue::new(r)
 }
@@ -763,11 +768,11 @@ pub fn Builder::build_resume(
 }
 
 ///| Build a `getelementptr` instruction.
-pub fn Builder::build_gep(
+pub fn Builder::build_gep[T: BasicType](
   self: Builder,
-  pointee_ty: &BasicType,
+  pointee_ty: T,
   ptr: PointerValue,
-  ordered_indices: Array[&BasicValue],
+  ordered_indices: Array[IntValue],
   name~: String = ""
 ) -> PointerValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {
@@ -840,9 +845,9 @@ pub fn Builder::build_in_bounds_gep(
 /// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
 /// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
 /// ```
-pub fn Builder::build_struct_gep(
+pub fn Builder::build_struct_gep[T: BasicType](
   self: Builder,
-  pointee_ty: &BasicType,
+  pointee_ty: T,
   ptr: PointerValue,
   index: UInt,
   name~: String = ""
@@ -919,8 +924,8 @@ pub fn Builder::build_ptr_diff(
 }
 
 ///| Builds a `phi` node.
-pub fn Builder::build_phi(
-  self: Builder, ty: &BasicType, name~: String = ""
+pub fn Builder::build_phi[T: BasicType](
+  self: Builder, ty: T, name~: String = ""
 ) -> PhiValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {
     raise UnsetPosition
@@ -944,7 +949,7 @@ pub fn Builder::build_phi(
 /// let i32_seven = i32_type.const_int(7, false);
 /// let fn_type = void_type.fn_type([i32_ptr_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
@@ -959,6 +964,18 @@ pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) 
   let val_ref = val.as_value_ref()
   let ptr_ref = ptr.as_value_ref()
   let inst = @unsafe.llvm_build_store(self.as_builder_ref(), val_ref, ptr_ref)
+  InstructionValue::new(inst)
+}
+
+// REVIEW: May be we need a `StorableValue` trait?
+pub fn Builder::build_store_func(self: Builder, ptr: PointerValue, func: FunctionValue) -> InstructionValue!BuilderError {
+  guard self.get_positioned() == PositionState::Set else {
+    raise UnsetPosition
+  }
+
+  let func_ref = func.as_value_ref()
+  let ptr_ref = ptr.as_value_ref()
+  let inst = @unsafe.llvm_build_store(self.as_builder_ref(), func_ref, ptr_ref)
   InstructionValue::new(inst)
 }
 
@@ -983,9 +1000,9 @@ pub fn Builder::build_store(self: Builder, ptr: PointerValue, val: &BasicValue) 
 ///
 /// builder.build_return(Some(pointee)).unwrap();
 /// ```
-pub fn Builder::build_load(
+pub fn Builder::build_load[T: BasicType](
   self: Builder, 
-  pointee_ty: &BasicType,
+  pointee_ty: T,
   ptr: PointerValue,
   name~: String = ""
 ) -> BasicValueEnum!BuilderError {
@@ -1162,9 +1179,9 @@ pub fn Builder::build_memset(
 }
 
 ///| Build a malloc instruction. Allocates memory on the heap.
-pub fn Builder::build_malloc(
+pub fn Builder::build_malloc[T: BasicType](
   self: Builder,
-  ty: &BasicType,
+  ty: T,
   name~: String = ""
 ) -> PointerValue!BuilderError {
   guard self.get_positioned() == PositionState::Set else {

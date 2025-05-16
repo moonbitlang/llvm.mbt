@@ -109,8 +109,20 @@ pub fn AnyValueEnum::get_type(self: AnyValueEnum) -> AnyTypeEnum {
   AnyTypeEnum::new(self.as_value_ref().get_type())
 }
 
-pub fn AnyValueEnum::is_array_value(self: AnyValueEnum) -> Bool {
-  self is AnyValueEnum::ArrayValue(_)
+pub fn AnyValueEnum::try_as_basic_value_enum(self: AnyValueEnum) -> BasicValueEnum? {
+  match self {
+    ArrayValue(v) => Some(BasicValueEnum::ArrayValue(v))
+    IntValue(v) => Some(BasicValueEnum::IntValue(v))
+    FloatValue(v) => Some(BasicValueEnum::FloatValue(v))
+    PointerValue(v) => Some(BasicValueEnum::PointerValue(v))
+    StructValue(v) => Some(BasicValueEnum::StructValue(v))
+    VectorValue(v) => Some(BasicValueEnum::VectorValue(v))
+    ScalableVectorValue(v) => Some(BasicValueEnum::ScalableVectorValue(v))
+    PhiValue(_) => None
+    FunctionValue(_) => None
+    InstructionValue(_) => None
+    MetadataValue(_) => None
+  }
 }
 
 pub impl Show for AnyValueEnum with to_string(self: AnyValueEnum) -> String {
@@ -202,34 +214,6 @@ pub fn BasicValueEnum::get_type(self: BasicValueEnum) -> BasicTypeEnum {
   }
 }
 
-pub fn BasicValueEnum::is_array_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::ArrayValue(_)
-}
-
-pub fn BasicValueEnum::is_int_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::IntValue(_)
-}
-
-pub fn BasicValueEnum::is_float_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::FloatValue(_)
-}
-
-pub fn BasicValueEnum::is_pointer_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::PointerValue(_)
-}
-
-pub fn BasicValueEnum::is_struct_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::StructValue(_)
-}
-
-pub fn BasicValueEnum::is_vector_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::VectorValue(_)
-}
-
-pub fn BasicValueEnum::is_scalable_vector_value(self: BasicValueEnum) -> Bool {
-  self is BasicValueEnum::ScalableVectorValue(_)
-}
-
 pub fn BasicValueEnum::into_array_value(self: BasicValueEnum) -> ArrayValue {
   match self {
     BasicValueEnum::ArrayValue(v) => v
@@ -280,18 +264,34 @@ pub fn BasicValueEnum::into_scalable_vector_value(self: BasicValueEnum) -> Scala
 
 pub impl Show for BasicValueEnum with to_string(self: BasicValueEnum) -> String {
   match self {
-    BasicValueEnum::ArrayValue(v) => v.to_string()
-    BasicValueEnum::IntValue(v) => v.to_string()
-    BasicValueEnum::FloatValue(v) => v.to_string()
-    BasicValueEnum::PointerValue(v) => v.to_string()
-    BasicValueEnum::StructValue(v) => v.to_string()
-    BasicValueEnum::VectorValue(v) => v.to_string()
-    BasicValueEnum::ScalableVectorValue(v) => v.to_string()
+    ArrayValue(v) => v.to_string()
+    IntValue(v) => v.to_string()
+    FloatValue(v) => v.to_string()
+    PointerValue(v) => v.to_string()
+    StructValue(v) => v.to_string()
+    VectorValue(v) => v.to_string()
+    ScalableVectorValue(v) => v.to_string()
   }
 }
 
 pub impl Show for BasicValueEnum with output(self: BasicValueEnum, logger: &Logger) -> Unit {
   logger.write_string(self.to_string())
+}
+
+pub impl AnyValue for BasicValueEnum with as_any_value_enum(self: BasicValueEnum) -> AnyValueEnum {
+  match self {
+    ArrayValue(v) => AnyValueEnum::ArrayValue(v)
+    IntValue(v) => AnyValueEnum::IntValue(v)
+    FloatValue(v) => AnyValueEnum::FloatValue(v)
+    PointerValue(v) => AnyValueEnum::PointerValue(v)
+    StructValue(v) => AnyValueEnum::StructValue(v)
+    VectorValue(v) => AnyValueEnum::VectorValue(v)
+    ScalableVectorValue(v) => AnyValueEnum::ScalableVectorValue(v)
+  }
+}
+
+pub impl BasicValue for BasicValueEnum with as_basic_value_enum(self: BasicValueEnum) -> BasicValueEnum {
+  self
 }
 
 //=========================================================
@@ -476,6 +476,34 @@ pub impl Eq for AnyTypeEnum with op_equal(self: AnyTypeEnum, other: AnyTypeEnum)
   }
 }
 
+pub fn AnyTypeEnum::try_as_basic_type_enum(self: AnyTypeEnum) -> BasicTypeEnum? {
+  match self {
+    ArrayType(v) => Some(BasicTypeEnum::ArrayType(v))
+    FloatType(v) => Some(BasicTypeEnum::FloatType(v))
+    IntType(v) => Some(BasicTypeEnum::IntType(v))
+    PointerType(v) => Some(BasicTypeEnum::PointerType(v))
+    StructType(v) => Some(BasicTypeEnum::StructType(v))
+    VectorType(v) => Some(BasicTypeEnum::VectorType(v))
+    ScalableVectorType(v) => Some(BasicTypeEnum::ScalableVectorType(v))
+    VoidType(_) => None
+    FunctionType(_) => None
+  }
+}
+
+pub fn AnyTypeEnum::dump(self: AnyTypeEnum) -> Unit {
+  match self {
+    ArrayType(v) => v.dump()
+    FloatType(v) => v.dump()
+    FunctionType(v) => v.dump()
+    IntType(v) => v.dump()
+    PointerType(v) => v.dump()
+    StructType(v) => v.dump()
+    VectorType(v) => v.dump()
+    ScalableVectorType(v) => v.dump()
+    VoidType(v) => v.dump()
+  }
+}
+
 pub fn AnyTypeEnum::is_array_type(self: AnyTypeEnum) -> Bool {
   self is AnyTypeEnum::ArrayType(_)
 }
@@ -637,6 +665,38 @@ pub fn BasicTypeEnum::new(type_ref: @unsafe.LLVMTypeRef) -> BasicTypeEnum {
       abort("Unsupported type kind");
     }
   }
+}
+
+pub fn BasicTypeEnum::get_context(self: BasicTypeEnum) -> Context {
+  match self {
+    ArrayType(t) => t.get_context()
+    FloatType(t) => t.get_context()
+    IntType(t) => t.get_context()
+    PointerType(t) => t.get_context()
+    StructType(t) => t.get_context()
+    VectorType(t) => t.get_context()
+    ScalableVectorType(t) => t.get_context()
+  }
+}
+
+pub fn BasicTypeEnum::ptr_type(self: BasicTypeEnum, addr_sapce: AddressSpace) -> PointerType {
+  match self {
+    ArrayType(t) => t.ptr_type(addr_sapce)
+    FloatType(t) => t.ptr_type(addr_sapce)
+    IntType(t) => t.ptr_type(addr_sapce)
+    PointerType(t) => t.ptr_type(addr_sapce)
+    StructType(t) => t.ptr_type(addr_sapce)
+    VectorType(t) => t.ptr_type(addr_sapce)
+    ScalableVectorType(t) => t.ptr_type(addr_sapce)
+  }
+}
+
+pub fn BasicTypeEnum::fn_type(
+  self: BasicTypeEnum, 
+  param_types: Array[&BasicType], 
+  is_var_arg~: Bool = false
+) -> FunctionType {
+  self.as_type().fn_type(param_types, is_var_arg=is_var_arg)
 }
 
 // only check class type

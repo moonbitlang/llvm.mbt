@@ -7,7 +7,7 @@ test "Basic Block Test" {
   let fn_type = void_ty.fn_type([]);
   let func = lmodule.add_function("do_something", fn_type);
 
-  let bb = context.append_basic_block(func, "entry");
+  let bb = context.append_basic_block(func, name="entry");
 
   // get_parent
   assert_eq!(bb.get_parent().unwrap(), func);
@@ -15,9 +15,9 @@ test "Basic Block Test" {
   assert_true!(bb.get_parent() is None);
 
   // get_previous_basic_block
-  let bb1 = context.append_basic_block(func, "entry");
+  let bb1 = context.append_basic_block(func, name="entry");
   assert_true!(bb1.get_previous_basic_block() is None);
-  let bb2 = context.append_basic_block(func, "next");
+  let bb2 = context.append_basic_block(func, name="next");
   assert_true!(bb2.get_previous_basic_block().unwrap() == bb1);
 
   // get_next_basic_block

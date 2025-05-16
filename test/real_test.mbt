@@ -11,7 +11,7 @@ test "Real Case - Simple Calculation" {
   let i32_ty = context.i32_type();
   let fty = i32_ty.fn_type([i32_ty, i32_ty]);
   let fval = lmodule.add_function("foo", fty);
-  let bb = context.append_basic_block(fval, "entry");
+  let bb = context.append_basic_block(fval, name="entry");
   let builder = context.create_builder();
 
   builder.position_at_end(bb);
@@ -82,11 +82,11 @@ test "Real Case - Simple Branch" {
   let i32_ty = context.i32_type();
   let fty = i32_ty.fn_type([i32_ty]);
   let fval = lmodule.add_function("collatz", fty);
-  let entry_bb = context.append_basic_block(fval, "entry");
-  let loop_bb = context.append_basic_block(fval, "loop");
-  let even_bb = context.append_basic_block(fval, "even");
-  let odd_bb = context.append_basic_block(fval, "odd");
-  let exit_bb = context.append_basic_block(fval, "exit");
+  let entry_bb = context.append_basic_block(fval, name="entry");
+  let loop_bb = context.append_basic_block(fval, name="loop");
+  let even_bb = context.append_basic_block(fval, name="even");
+  let odd_bb = context.append_basic_block(fval, name="odd");
+  let exit_bb = context.append_basic_block(fval, name="exit");
   let builder = context.create_builder();
 
   let zero = i32_ty.const_int(0);

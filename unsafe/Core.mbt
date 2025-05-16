@@ -2310,7 +2310,11 @@ pub fn LLVMValueRef::set_name(self: LLVMValueRef, name: String) -> Unit {
 ///| Dump a representation of a value to stderr.
 /// 
 /// - see llvm::Value::dump()
-pub extern "C" fn llvm_dump_value(val: LLVMValueRef) = "LLVMDumpValue"
+extern "C" fn __llvm_dump_value(val: LLVMValueRef) = "LLVMDumpValue"
+
+pub fn llvm_dump_value(val: LLVMValueRef) -> Unit {
+  __llvm_dump_value(val)
+}
 
 ///| Dump a representation of a value to stderr.
 /// 

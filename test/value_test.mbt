@@ -80,7 +80,7 @@ test "Floating-Point Value Test" {
   let f64_ty = context.f64_type()
   let fty = f64_ty.fn_type([f64_ty])
   let fval = lmodule.add_function("foo", fty)
-  let entry_bb = context.append_basic_block(fval, "entry")
+  let entry_bb = context.append_basic_block(fval, name="entry")
   let builder = context.create_builder()
   builder.position_at_end(entry_bb)
 
@@ -155,7 +155,7 @@ test "Function Value Test" {
   inspect!(foo_val.get_name(), content="foo")
 
   // get_type
-  inspect!(foo_val.get_type(), content="ptr")
+  inspect!(foo_val.get_type(), content="i32 (double, i1)")
 
   // Attributes
   let string_attribute = context.create_string_attribute("my_key", "my_val");
@@ -192,7 +192,7 @@ test "Struct Value Test" {
   assert_true!(struct_val.get_field_at_index(0) is Some(_));
   assert_true!(struct_val.get_field_at_index(1) is Some(_));
   assert_true!(struct_val.get_field_at_index(2) is None);
-  assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+  assert_true!(struct_val.get_field_at_index(0) is Some(IntValue(_)));
 
   // set_field_at_index
   let i32_val2 = i32_ty.const_int(42)

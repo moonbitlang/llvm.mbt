@@ -389,7 +389,7 @@ pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
 /// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::append_basic_block(
-  self: Context, function: FunctionValue, name: String
+  self: Context, function: FunctionValue, name~: String = ""
 ) -> BasicBlock {
   let ctx_ref = self.as_ctx_ref()
   let fn_val_ref = function.as_value_ref()
@@ -419,7 +419,7 @@ pub fn Context::append_basic_block(
 /// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::insert_basic_block_after(
-  self: Context, basic_block: BasicBlock, name: String
+  self: Context, basic_block: BasicBlock, name~: String = ""
 ) -> BasicBlock {
   match basic_block.get_next_basic_block() {
     Some(next_bb) => {
@@ -427,7 +427,7 @@ pub fn Context::insert_basic_block_after(
     }
     None => {
       let parent_fn = basic_block.get_parent().unwrap()
-      self.append_basic_block(parent_fn, name)
+      self.append_basic_block(parent_fn, name~)
     }
   }
 }
