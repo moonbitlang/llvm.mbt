@@ -505,7 +505,7 @@ pub fn Context::prepend_basic_block(
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let ret_instr = builder.build_return(None).unwrap();
+/// let ret_instr = builder.build_return_void().unwrap();
 ///
 /// assert_true!(md_node.is_node());
 ///
@@ -539,7 +539,7 @@ pub fn Context::metadata_node(
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let ret_instr = builder.build_return(None).unwrap();
+/// let ret_instr = builder.build_return_void().unwrap();
 ///
 /// assert_true!(md_string.is_string());
 ///

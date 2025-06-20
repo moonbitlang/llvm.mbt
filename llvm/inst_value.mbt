@@ -484,7 +484,7 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// assert_true!(store_instruction.get_operand(0) is Some(_));
 /// assert_true!(store_instruction.get_operand(1) is Some(_));
@@ -576,7 +576,7 @@ fn InstructionValue::get_operand_unchecked(
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// // This will produce invalid IR:
 /// free_instruction.set_operand(0, f32_val);
@@ -617,7 +617,7 @@ pub fn InstructionValue::set_operand(
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// assert_eq!(store_instruction.get_operand_use(1), arg1.get_first_use());
 /// ```
@@ -666,7 +666,7 @@ fn InstructionValue::get_oprand_use_unchecked(
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// assert_true!(arg1.get_first_use() is Some(_));
 /// ```

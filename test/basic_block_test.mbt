@@ -34,19 +34,19 @@ test "Basic Block Test" {
   builder.position_at_end(bb1)
 
   // TODO: eliminate redundant code when compiler bug fixed.
-  let _ = builder.build_return((None : @llvm.IntValue?))
+  let _ = builder.build_return_void()
 
   // get_first_instruction
   let opcode = bb1.get_first_instruction().unwrap().get_opcode()
-  assert_eq(opcode, @llvm.InstructionOpcode::Return)
+  assert_true(opcode is Return)
 
   // get_last_instruction
   let opcode = bb1.get_last_instruction().unwrap().get_opcode()
-  assert_eq(opcode, @llvm.InstructionOpcode::Return)
+  assert_true(opcode is Return)
 
   // get_terminator
   let opcode = bb1.get_terminator().unwrap().get_opcode()
-  assert_eq(opcode, @llvm.InstructionOpcode::Return)
+  assert_true(opcode is Return)
 
   // get_context
   assert_true(context == bb1.get_context())

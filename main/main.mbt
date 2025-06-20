@@ -52,7 +52,7 @@ fn main_err() -> Unit raise {
   let _ = builder.build_unconditional_branch(loop_bb)
   builder.position_at_end(exit_bb)
   let x_final = builder.build_load(i32_ty, x_ptr).into_int_value()
-  let _ = builder.build_return(Some(x_final))
+  let _ = builder.build_return(x_final)
   println(lmodule)
 }
 

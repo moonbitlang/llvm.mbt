@@ -35,7 +35,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// let arg1_first_use = arg1.get_first_use().unwrap();
 ///
@@ -93,7 +93,7 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// let store_operand_use0 = store_instruction.get_operand_use(0).unwrap();
 /// let store_operand_use1 = store_instruction.get_operand_use(1).unwrap();
@@ -127,7 +127,7 @@ pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return(None).unwrap();
+/// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// let free_operand0 = free_instruction.get_operand(0).unwrap().left().unwrap();
 /// let free_operand0_instruction = free_operand0.as_instruction_value().unwrap();

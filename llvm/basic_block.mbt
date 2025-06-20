@@ -181,7 +181,7 @@ pub fn BasicBlock::move_after(
 /// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
-/// let _ = builder.build_return(None);
+/// let _ = builder.build_return_void();
 ///
 /// let opcode = basic_block.get_first_instruction().unwrap().get_opcode();
 /// assert_true(opcode is Return);
@@ -207,7 +207,7 @@ pub fn BasicBlock::get_first_instruction(
 /// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
-/// let _ = builder.build_return(None);
+/// let _ = builder.build_return_void();
 ///
 /// let opcode = basic_block.get_last_instruction().unwrap().get_opcode();
 /// assert_eq(opcode, InstructionOpcode::Return);
@@ -237,7 +237,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 ///
 /// let v = builder.build_alloca(i32_type, "some_number");
 /// let _ = builder.build_store(v, i32_type.const_int(1, false));
-/// let _ = builder.build_return(None);
+/// let _ = builder.build_return_void();
 ///
 /// let block = fn_value.get_first_basic_block().unwrap();
 /// let some_number = block.get_instruction_with_name("some_number");
@@ -270,7 +270,7 @@ pub fn BasicBlock::get_instruction_with_name(
 /// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
-/// builder.build_return(None);
+/// builder.build_return_void();
 ///
 /// let opcode = basic_block.get_terminator().unwrap().get_opcode()
 /// assert_true(opcode is Return);

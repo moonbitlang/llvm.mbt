@@ -31,7 +31,7 @@ test "Real Case - Simple Calculation" {
   let mul = builder.build_int_mul(a_val, b_val)
   let _ = builder.build_store(c_ptr, mul)
   let c_val = builder.build_load(i32_ty, c_ptr).into_int_value()
-  let _ = builder.build_return(Some(c_val))
+  let _ = builder.build_return(c_val)
   let expect =
     #|define i32 @foo(i32 %0, i32 %1) {
     #|entry:
@@ -108,7 +108,7 @@ test "Real Case - Simple Branch" {
   let _ = builder.build_unconditional_branch(loop_bb)
   builder.position_at_end(exit_bb)
   let x_final = builder.build_load(i32_ty, x_ptr).into_int_value()
-  let _ = builder.build_return(Some(x_final))
+  let _ = builder.build_return(x_final)
   let expect =
     #|define i32 @collatz(i32 %0) {
     #|entry:

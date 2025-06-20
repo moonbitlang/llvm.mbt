@@ -927,7 +927,7 @@ pub fn[T : BasicType] Builder::build_phi(
 ///
 /// builder.position_at_end(entry);
 /// builder.build_store(i32_ptr_param, i32_seven).unwrap();
-/// builder.build_return(None).unwrap();
+/// builder.build_return_void().unwrap();
 /// ```
 pub fn Builder::build_store(
   self : Builder,
@@ -2755,7 +2755,7 @@ pub fn Builder::build_extract_element(
 ///
 /// builder.position_at_end(entry);
 /// builder.build_insert_element(vector_param, i32_seven, i32_zero, "insert").unwrap();
-/// builder.build_return(None).unwrap();
+/// builder.build_return_void().unwrap();
 /// ```
 pub fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(
   self : Builder,
