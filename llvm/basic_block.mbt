@@ -61,7 +61,7 @@ pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
 ///
 /// let basic_block1 = context.append_basic_block(function1, name="entry");
 ///
-/// assert_true(basic_block1.get_previous_basic_block().is None);
+/// assert_true(basic_block1.get_previous_basic_block() is None);
 ///
 /// let function2 = llvm_module.add_function("do_nothing", fn_type);
 ///
@@ -89,7 +89,7 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// let basic_block1 = context.append_basic_block(function1, name="entry");
 ///
-/// assert_true(basic_block1.get_next_basic_block().is None);
+/// assert_true(basic_block1.get_next_basic_block() is None);
 ///
 /// let function2 = llvm_module.add_function("do_nothing", fn_type);
 ///
@@ -154,7 +154,7 @@ pub fn BasicBlock::move_before(
 ///
 /// basic_block1.move_after(basic_block2);
 ///
-/// assert_true(basic_block1.get_next_basic_block().is None());
+/// assert_true(basic_block1.get_next_basic_block() is None());
 /// assert_eq(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
 pub fn BasicBlock::move_after(
@@ -242,7 +242,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 /// let block = fn_value.get_first_basic_block().unwrap();
 /// let some_number = block.get_instruction_with_name("some_number");
 ///
-/// assert_true(some_number.is Some(_));
+/// assert_true(some_number is Some(_));
 /// inspect(some_number.unwrap().get_name().unwrap(), content="some_number")
 /// ```
 pub fn BasicBlock::get_instruction_with_name(
@@ -299,7 +299,7 @@ pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
 ///
 /// basic_block.remove_from_function();
 ///
-/// assert_true(basic_block.get_parent().is None);
+/// assert_true(basic_block.get_parent() is None);
 /// ```
 pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) else {
@@ -439,8 +439,8 @@ pub fn BasicBlock::replace_all_uses_with(
 /// builder.position_at_end(entry);
 /// let branch_inst = builder.build_unconditional_branch(bb1);
 ///
-/// assert_true(bb2.get_first_use().is None);
-/// assert_true(bb1.get_first_use().is Some(_));
+/// assert_true(bb2.get_first_use() is None);
+/// assert_true(bb1.get_first_use() is Some(_));
 /// ```
 pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
   let use_ = self.as_bb_ref().as_value_ref().get_first_use()

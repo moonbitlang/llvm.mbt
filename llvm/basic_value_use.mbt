@@ -39,7 +39,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 ///
 /// let arg1_first_use = arg1.get_first_use().unwrap();
 ///
-/// assert_true(arg1_first_use.get_next_use().is Some(_));
+/// assert_true(arg1_first_use.get_next_use() is Some(_));
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):

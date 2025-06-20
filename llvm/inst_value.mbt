@@ -486,14 +486,14 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 /// let free_instruction = builder.build_free(arg1).unwrap();
 /// let return_instruction = builder.build_return(None).unwrap();
 ///
-/// assert_true!(store_instruction.get_operand(0).is Some(_));
-/// assert_true!(store_instruction.get_operand(1).is Some(_));
-/// assert_true!(store_instruction.get_operand(2).is None);
-/// assert_true!(free_instruction.get_operand(0).is Some(_));
-/// assert_true!(free_instruction.get_operand(1).is Some(_));
-/// assert_true!(free_instruction.get_operand(2).is None);
-/// assert_true!(return_instruction.get_operand(0).is None);
-/// assert_true!(return_instruction.get_operand(1).is None);
+/// assert_true!(store_instruction.get_operand(0) is Some(_));
+/// assert_true!(store_instruction.get_operand(1) is Some(_));
+/// assert_true!(store_instruction.get_operand(2) is None);
+/// assert_true!(free_instruction.get_operand(0) is Some(_));
+/// assert_true!(free_instruction.get_operand(1) is Some(_));
+/// assert_true!(free_instruction.get_operand(2) is None);
+/// assert_true!(return_instruction.get_operand(0) is None);
+/// assert_true!(return_instruction.get_operand(1) is None);
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):
@@ -668,7 +668,7 @@ fn InstructionValue::get_oprand_use_unchecked(
 /// let free_instruction = builder.build_free(arg1).unwrap();
 /// let return_instruction = builder.build_return(None).unwrap();
 ///
-/// assert_true!(arg1.get_first_use().is Some(_));
+/// assert_true!(arg1.get_first_use() is Some(_));
 /// ```
 pub fn InstructionValue::get_first_use(
   self : InstructionValue
