@@ -35,10 +35,10 @@ pub fn FunctionValue::as_value_ref(
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_linkage(), content="External")
+/// inspect(fn_value.get_linkage(), content="External")
 /// ```
 pub fn FunctionValue::get_linkage(self : FunctionValue) -> Linkage {
   let link = @unsafe.llvm_get_linkage(self.as_value_ref())
@@ -54,15 +54,15 @@ pub fn FunctionValue::get_linkage(self : FunctionValue) -> Linkage {
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty]);
 /// let fn_value = lmodule.add_function(
 ///   "foo", fn_type,
 ///   linkage=Some(@llvm.Linkage::Common)
 /// );
 ///
-/// inspect!(fn_value.get_linkage(), content="Common")
+/// inspect(fn_value.get_linkage(), content="Common")
 /// fn_value.set_linkage(Private);
-/// inspect!(fn_value.get_linkage(), content="Private")
+/// inspect(fn_value.get_linkage(), content="Private")
 /// ```
 pub fn FunctionValue::set_linkage(
   self : FunctionValue,
@@ -80,10 +80,10 @@ pub fn FunctionValue::set_linkage(
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// assert_false!(fn_value.is_null());
+/// assert_false(fn_value.is_null());
 /// ```
 pub fn FunctionValue::is_null(self : FunctionValue) -> Bool {
   self.value.is_null()
@@ -98,10 +98,10 @@ pub fn FunctionValue::is_null(self : FunctionValue) -> Bool {
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// assert_false!(fn_value.is_undef());
+/// assert_false(fn_value.is_undef());
 /// ```
 pub fn FunctionValue::is_undef(self : FunctionValue) -> Bool {
   self.value.is_undef()
@@ -119,12 +119,12 @@ pub fn FunctionValue::is_undef(self : FunctionValue) -> Bool {
 //   code != 1
 // }
 
-///| Get the next function in the module.
+///| Get the next function in the llvm_module.
 pub fn FunctionValue::get_next_function(self : FunctionValue) -> FunctionValue? {
   FunctionValue::new(@unsafe.llvm_get_next_function(self.as_value_ref()))
 }
 
-///| Get the previous function in the module.
+///| Get the previous function in the llvm_module.
 pub fn FunctionValue::get_previous_function(
   self : FunctionValue
 ) -> FunctionValue? {
@@ -141,10 +141,10 @@ pub fn FunctionValue::get_previous_function(
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_first_param(), content="Some(i32 %0)")
+/// inspect(fn_value.get_first_param(), content="Some(i32 %0)")
 /// ```
 pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
   let param = @unsafe.llvm_get_first_param(self.as_value_ref())
@@ -165,10 +165,10 @@ pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_last_param(), content="Some(double %1)")
+/// inspect(fn_value.get_last_param(), content="Some(double %1)")
 /// ```
 pub fn FunctionValue::get_last_param(self : FunctionValue) -> BasicValueEnum? {
   let param = @unsafe.llvm_get_last_param(self.as_value_ref())
@@ -206,8 +206,8 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 /// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_nth_param(0), content="Some(double %1)")
-/// inspect!(fn_value.get_nth_param(1), content="Some(i32 %1)")
+/// inspect(fn_value.get_nth_param(0), content="Some(double %1)")
+/// inspect(fn_value.get_nth_param(1), content="Some(i32 %1)")
 /// ```
 pub fn FunctionValue::get_nth_param(
   self : FunctionValue,
@@ -231,7 +231,7 @@ pub fn FunctionValue::get_nth_param(
 /// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// assert_eq!(fn_value.count_params(), 2)
+/// assert_eq(fn_value.count_params(), 2)
 /// ```
 pub fn FunctionValue::count_params(self : FunctionValue) -> UInt {
   @unsafe.llvm_count_params(self.as_value_ref())
@@ -260,7 +260,7 @@ pub fn FunctionValue::get_basic_blocks(
 /// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_params(), [double %0, i32 %1])
+/// inspect(fn_value.get_params(), content="[double %0, i32 %1]")
 /// ```
 pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] {
   let param_refs : Array[@unsafe.LLVMValueRef] = @unsafe.llvm_get_params(
@@ -282,7 +282,7 @@ pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] 
 /// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect!(fn_value.get_name(), contend="foo")
+/// inspect(fn_value.get_name(), content="foo")
 /// ```
 pub fn FunctionValue::get_name(self : FunctionValue) -> String {
   self.value.get_name()
@@ -396,10 +396,10 @@ pub fn FunctionValue::replace_all_uses_with(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
@@ -424,17 +424,17 @@ pub fn FunctionValue::add_attribute(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
 ///
-/// assert_eq!(fn_value.count_attributes(AttributeLoc::Return), 2);
+/// assert_eq(fn_value.count_attributes(AttributeLoc::Return), 2);
 /// ```
 pub fn FunctionValue::count_attributes(
   self : FunctionValue,
@@ -450,19 +450,19 @@ pub fn FunctionValue::count_attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (not implement attribute op_equal)
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
 ///
-/// assert_eq!(fn_value.attributes(AttributeLoc::Return), [string_attribute, enum_attribute]);
+/// assert_eq(fn_value.attributes(AttributeLoc::Return), [string_attribute, enum_attribute]);
 /// ```
 ///
 /// @alert Bug "This Function will cause link error. To be Fixed."
@@ -484,10 +484,10 @@ pub fn FunctionValue::attributes(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
@@ -511,10 +511,10 @@ pub fn FunctionValue::remove_string_attribute(
 ///
 /// ```no_run
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -536,17 +536,17 @@ pub fn FunctionValue::remove_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (not implement attribute op_equal)
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
 ///
-/// assert_eq!(fn_value.get_enum_attribute(AttributeLoc::Return, 1), Some(enum_attribute));
+/// assert_eq(fn_value.get_enum_attribute(AttributeLoc::Return, 1), Some(enum_attribute));
 /// ```
 pub fn FunctionValue::get_enum_attribute(
   self : FunctionValue,
@@ -565,17 +565,17 @@ pub fn FunctionValue::get_enum_attribute(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip (not implement attribute op_equal)
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
 /// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
 ///
-/// assert_eq!(fn_value.get_string_attribute(AttributeLoc::Return, "my_key"), Some(string_attribute));
+/// assert_eq(fn_value.get_string_attribute(AttributeLoc::Return, "my_key"), Some(string_attribute));
 /// ```
 pub fn FunctionValue::get_string_attribute(
   self : FunctionValue,

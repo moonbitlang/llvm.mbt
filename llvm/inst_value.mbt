@@ -411,14 +411,14 @@ pub fn InstructionValue::set_atomic_ordering(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type);
+/// let function = llvm_module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -426,12 +426,12 @@ pub fn InstructionValue::set_atomic_ordering(
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return().unwrap();
+/// let free_instruction = builder.build_free(arg1);
+/// let return_instruction = builder.build_return_void();
 ///
-/// assert_eq!(store_instruction.get_num_operands(), 2);
-/// assert_eq!(free_instruction.get_num_operands(), 2);
-/// assert_eq!(return_instruction.get_num_operands(), 0);
+/// assert_eq(store_instruction.get_num_operands(), 2);
+/// assert_eq(free_instruction.get_num_operands(), 2);
+/// assert_eq(return_instruction.get_num_operands(), 0);
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):
@@ -468,14 +468,14 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type);
+/// let function = llvm_module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -486,14 +486,14 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 /// let free_instruction = builder.build_free(arg1).unwrap();
 /// let return_instruction = builder.build_return_void().unwrap();
 ///
-/// assert_true!(store_instruction.get_operand(0) is Some(_));
-/// assert_true!(store_instruction.get_operand(1) is Some(_));
-/// assert_true!(store_instruction.get_operand(2) is None);
-/// assert_true!(free_instruction.get_operand(0) is Some(_));
-/// assert_true!(free_instruction.get_operand(1) is Some(_));
-/// assert_true!(free_instruction.get_operand(2) is None);
-/// assert_true!(return_instruction.get_operand(0) is None);
-/// assert_true!(return_instruction.get_operand(1) is None);
+/// assert_true(store_instruction.get_operand(0) is Some(_));
+/// assert_true(store_instruction.get_operand(1) is Some(_));
+/// assert_true(store_instruction.get_operand(2) is None);
+/// assert_true(free_instruction.get_operand(0) is Some(_));
+/// assert_true(free_instruction.get_operand(1) is Some(_));
+/// assert_true(free_instruction.get_operand(2) is None);
+/// assert_true(return_instruction.get_operand(0) is None);
+/// assert_true(return_instruction.get_operand(1) is None);
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):
@@ -560,28 +560,28 @@ fn InstructionValue::get_operand_unchecked(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type);
+/// let function = llvm_module.add_function("take_f32_ptr", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return_void().unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
+/// let return_instruction = builder.build_return_void();
 ///
 /// // This will produce invalid IR:
 /// free_instruction.set_operand(0, f32_val);
 ///
-/// assert_eq!(free_instruction.get_operand(0).unwrap().left().unwrap(), f32_val);
+/// assert_eq(free_instruction.get_operand(0).unwrap().left().unwrap(), f32_val);
 /// ```
 // REVIEW: here use `bool` as return type, maybe we need to use `Result`?
 pub fn InstructionValue::set_operand(
@@ -601,15 +601,15 @@ pub fn InstructionValue::set_operand(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let function = llvm_module.add_function("take_f32_ptr", fn_type);
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
@@ -617,9 +617,9 @@ pub fn InstructionValue::set_operand(
 /// let f32_val = f32_type.const_float(@math.PI);
 /// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
 /// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return_void().unwrap();
+/// let return_instruction = builder.build_return_void();
 ///
-/// assert_eq!(store_instruction.get_operand_use(1), arg1.get_first_use());
+/// assert_eq(store_instruction.get_operand_use(1), arg1.get_first_use());
 /// ```
 pub fn InstructionValue::get_oprand_use(
   self : InstructionValue,
@@ -650,25 +650,25 @@ fn InstructionValue::get_oprand_use_unchecked(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let f32_ptr_type = f32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
-/// let function = module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let function = llvm_module.add_function("take_f32_ptr", fn_type);
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return_void().unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
+/// let return_instruction = builder.build_return_void();
 ///
-/// assert_true!(arg1.get_first_use() is Some(_));
+/// assert_true(arg1.get_first_use() is Some(_));
 /// ```
 pub fn InstructionValue::get_first_use(
   self : InstructionValue
@@ -683,21 +683,21 @@ pub fn InstructionValue::get_first_use(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type, i32_type]);
 ///
-/// let function = module.add_function("less", fn_type);
+/// let function = llvm_module.add_function("less", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_int_value();
 /// let arg2 = function.get_nth_param(1).unwrap().into_int_value();
-/// let slt = builder.build_int_compare!(IntPredicate::SLT, arg1, arg2, "less_than");
+/// let slt = builder.build_int_compare(IntPredicate::SLT, arg1, arg2, name="less_than");
 ///
-/// inspect!(slt.as_instruction().get_icmp_predicate().unwrap(), "SLT");
+/// inspect(slt.as_instruction().unwrap().get_icmp_predicate().unwrap(), content="SLT");
 /// ```
 pub fn InstructionValue::get_icmp_predicate(
   self : InstructionValue
@@ -715,23 +715,23 @@ pub fn InstructionValue::get_icmp_predicate(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let bool_type = context.bool_type();
 /// let f32_type = context.i32_type();
 /// let fn_type = bool_type.fn_type([f32_type, f32_type]);
 ///
-/// let function = module.add_function("less", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let function = llvm_module.add_function("less", fn_type);
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_float_value();
 /// let arg2 = function.get_nth_param(1).unwrap().into_float_value();
 /// let olt_pred = FloatPredicate::OLT;
-/// let fcmp = builder.build_float_compare!(olt_pred, arg1, arg2, "less_than");
+/// let fcmp = builder.build_float_compare(olt_pred, arg1, arg2, name="less_than");
 ///
-/// inspect!(fcmp.as_instruction().get_fcmp_predicate().unwrap(), "OLT");
+/// inspect(fcmp.as_instruction().unwrap().get_fcmp_predicate().unwrap(), content="OLT");
 /// ```
 pub fn InstructionValue::get_fcmp_predicate(
   self : InstructionValue

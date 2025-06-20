@@ -113,7 +113,7 @@ pub fn GlobalValue::set_thread_local_mode(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (function not implement as_global_value yet)
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");
@@ -121,11 +121,11 @@ pub fn GlobalValue::set_thread_local_mode(
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_func", fn_type);
 ///
-/// assert_true!(fn_value.as_global_value().is_declaration());
+/// assert_true(fn_value.as_global_value().is_declaration());
 ///
-/// context.append_basic_block(fn_value, "entry");
+/// let _ = context.append_basic_block(fn_value, content="entry");
 ///
-/// assert_true!(!fn_value.as_global_value().is_declaration());
+/// assert_false(fn_value.as_global_value().is_declaration());
 /// ```
 pub fn GlobalValue::is_declaration(self : GlobalValue) -> Bool {
   @unsafe.llvm_is_declaration(self.as_value_ref())

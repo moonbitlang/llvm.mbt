@@ -30,7 +30,7 @@ pub fn FunctionType::as_type_ref(self : FunctionType) -> @unsafe.LLVMTypeRef {
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let ptr_type = fn_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_type, "ptr")
+/// inspect(ptr_type, "ptr")
 /// ```
 pub fn FunctionType::ptr_type(
   self : FunctionType,
@@ -47,7 +47,7 @@ pub fn FunctionType::ptr_type(
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type], is_var_arg=true);
-/// assert_true!(fn_type.is_var_arg())
+/// assert_true(fn_type.is_var_arg())
 /// ```
 pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
   @unsafe.llvm_is_function_var_arg(self.as_type_ref())
@@ -63,7 +63,7 @@ pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
 /// let f64_type = context.f64_type();
 /// let fn_type = i32_type.fn_type([i32_type, f64_type]);
 /// let param_types = fn_type.get_param_types();
-/// inspect!(param_types, "[i32, double]")
+/// inspect(param_types, content="[i32, double]")
 /// ```
 pub fn FunctionType::get_param_types(
   self : FunctionType
@@ -82,7 +82,7 @@ pub fn FunctionType::get_param_types(
 /// let f64_type = context.f64_type();
 /// let fn_type = i32_type.fn_type([i32_type, f64_type]);
 /// let param_count = fn_type.count_param_types();
-/// assert_eq!(param_count, 2)
+/// assert_eq(param_count, 2)
 /// ```
 pub fn FunctionType::count_param_types(self : FunctionType) -> UInt {
   @unsafe.llvm_count_param_types(self.as_type_ref())
@@ -98,7 +98,7 @@ pub fn FunctionType::count_param_types(self : FunctionType) -> UInt {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
-/// assert_false!(fn_type.is_sized())
+/// assert_false(fn_type.is_sized())
 /// ```
 pub fn FunctionType::is_sized(self : FunctionType) -> Bool {
   self.ty.is_sized()
@@ -113,7 +113,7 @@ pub fn FunctionType::is_sized(self : FunctionType) -> Bool {
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_context = fn_type.get_context();
-/// assert_true!(fn_context == context)
+/// assert_true(fn_context == context)
 /// ```
 pub fn FunctionType::get_context(self : FunctionType) -> Context {
   self.ty.get_context()
@@ -129,7 +129,7 @@ pub fn FunctionType::get_context(self : FunctionType) -> Context {
 /// let f64_type = context.f64_type();
 /// let fn_type = i32_type.fn_type([i32_type, f64_type]);
 /// let ret_type = fn_type.get_return_type();
-/// inspect!(ret_type.unwrap(), "double")
+/// inspect(ret_type.unwrap(), content="double")
 /// ```
 pub fn FunctionType::get_return_type(self : FunctionType) -> BasicTypeEnum? {
   let ty = @unsafe.llvm_get_return_type(self.as_type_ref())

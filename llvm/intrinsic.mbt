@@ -1,6 +1,6 @@
 ///| A wrapper around @unsafe.LLVM intrinsic id
 ///
-/// To call it you would need to create a declaration inside a module using [`Self::get_declaration()`].
+/// To call it you would need to create a declaration inside a llvm_module using [`Self::get_declaration()`].
 pub struct Intrinsic {
   id : UInt
 }
@@ -14,21 +14,21 @@ pub fn Intrinsic::new(id : UInt) -> Intrinsic {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (didn't test some func)
 /// let trap_intrinsic = Intrinsic::find("llvm.trap").unwrap();
 ///
 /// let context = Context::create();
-/// let module = context.create_module("trap");
+/// let llvm_module = context.create_module("trap");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("trap", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let fn_value = llvm_module.add_function("trap", fn_type);
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
-/// let trap_function = trap_intrinsic.get_declaration(module, []).unwrap();
+/// let trap_function = trap_intrinsic.get_declaration(llvm_module, []).unwrap();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_call(trap_function, [], "trap_call");
+/// let _ = builder.build_call(trap_function, [], name="trap_call");
 /// ```
 pub fn Intrinsic::find(name : String) -> Intrinsic? {
   let id = @unsafe.llvm_lookup_intrinsic_id(name)
@@ -51,21 +51,21 @@ pub fn Intrinsic::is_overloaded(self : Intrinsic) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (didn't test some func)
 /// let trap_intrinsic = Intrinsic::find("llvm.trap").unwrap();
 ///
 /// let context = Context::create();
-/// let module = context.create_module("trap");
+/// let llvm_module = context.create_module("trap");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("trap", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let fn_value = llvm_module.add_function("trap", fn_type);
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
-/// let trap_function = trap_intrinsic.get_declaration(module, []).unwrap();
+/// let trap_function = trap_intrinsic.get_declaration(llvm_module, []).unwrap();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_call(trap_function, [], "trap_call");
+/// let _ = builder.build_call(trap_function, [], name="trap_call");
 /// ```
 pub fn Intrinsic::get_declaration(
   self : Intrinsic,

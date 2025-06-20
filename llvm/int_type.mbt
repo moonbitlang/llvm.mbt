@@ -27,9 +27,9 @@ pub fn IntType::as_type_ref(self : IntType) -> @unsafe.LLVMTypeRef {
 ///
 /// ```moonbit
 /// let context = Context::create()
-/// let i32_type = IntType::i32_type(context)
+/// let i32_type = content.i32_type()
 /// let i32_val = i32_type.const_int(42, false)
-/// inspect(i32_val, "i32 42")
+/// inspect(i32_val, content="i32 42")
 /// ```
 // TODO: Maybe better explain signextension
 pub fn IntType::const_int(
@@ -73,7 +73,7 @@ pub fn IntType::const_int_arbitrary_precision(
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let all_ones_val = i32_type.const_all_ones();
-/// inspect(all_ones_val, "i32 -1")
+/// inspect(all_ones_val, content="i32 -1")
 /// ```
 pub fn IntType::const_all_ones(self : IntType) -> IntValue {
   let val_ref = @unsafe.llvm_const_all_ones(self.as_type_ref())
@@ -88,7 +88,7 @@ pub fn IntType::const_all_ones(self : IntType) -> IntValue {
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_zero = i8_type.const_zero();
-/// inspect(i8_zero, "i8 0")
+/// inspect(i8_zero, content="i8 0")
 /// ```
 /// @alert bug "This function will cause `ValueRef is Null` error."
 pub fn IntType::const_zero(self : IntType) -> IntValue {
@@ -121,7 +121,7 @@ pub fn IntType::fn_type(
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(16);
-/// inspect(array_type, "[16 x i32]")
+/// inspect(array_type, content="[16 x i32]")
 /// ```
 pub fn IntType::array_type(self : IntType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -149,7 +149,7 @@ pub fn IntType::vec_type(self : IntType, size : UInt) -> VectorType {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vscale_type = i32_type.scalable_vec_type(16);
-/// inspect(vscale_type, "<vscale x 16 x i32>")
+/// inspect(vscale_type, content="<vscale x 16 x i32>")
 /// ```
 pub fn IntType::scalable_vec_type(
   self : IntType,
@@ -215,7 +215,7 @@ pub fn IntType::get_alignment(self : IntType) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn IntType::ptr_type(
   self : IntType,
@@ -234,7 +234,7 @@ pub fn IntType::ptr_type(
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_width = i32_type.get_bit_width();
-/// inspect(i32_width, "32")
+/// inspect(i32_width, content="32")
 /// ```
 pub fn IntType::get_bit_width(self : IntType) -> UInt {
   @unsafe.llvm_get_int_type_width(self.as_type_ref())
@@ -248,7 +248,7 @@ pub fn IntType::get_bit_width(self : IntType) -> UInt {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_undef = i32_type.get_undef();
-/// inspect(i32_undef, "i32 undef")
+/// inspect(i32_undef, content="i32 undef")
 /// ```
 pub fn IntType::get_undef(self : IntType) -> IntValue {
   IntValue::new(self.ty.get_undef())
@@ -262,7 +262,7 @@ pub fn IntType::get_undef(self : IntType) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_poison = i32_type.get_poison();
-/// inspect(i32_poison, "i32 poison")
+/// inspect(i32_poison, content="i32 poison")
 /// ```
 pub fn IntType::get_poison(self : IntType) -> IntValue {
   IntValue::new(self.ty.get_poison())

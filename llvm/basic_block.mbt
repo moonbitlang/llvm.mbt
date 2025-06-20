@@ -235,7 +235,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 /// let entry = context.append_basic_block(fn_value, name="entry");
 /// builder.position_at_end(entry);
 ///
-/// let v = builder.build_alloca(i32_type, "some_number");
+/// let v = builder.build_alloca(i32_type, name="some_number");
 /// let _ = builder.build_store(v, i32_type.const_int(1, false));
 /// let _ = builder.build_return_void();
 ///
@@ -270,7 +270,7 @@ pub fn BasicBlock::get_instruction_with_name(
 /// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
-/// builder.build_return_void();
+/// let _ = builder.build_return_void();
 ///
 /// let opcode = basic_block.get_terminator().unwrap().get_opcode()
 /// assert_true(opcode is Return);
@@ -319,7 +319,7 @@ pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let function = llvm_module.add_function("do_nothing", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// basic_block.delete();
 /// assert_true(function.get_basic_blocks().is_empty());
@@ -341,7 +341,7 @@ pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let function = llvm_module.add_function("do_nothing", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// assert_true(context == basic_block.get_context());
 /// ```

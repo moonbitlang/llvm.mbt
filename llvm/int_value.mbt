@@ -43,9 +43,9 @@ pub fn IntValue::as_value_ref(self : IntValue) -> @unsafe.LLVMValueRef {
 /// builder.position_at_end(bb)
 ///
 /// let x = fval.get_nth_param(0).unwrap().into_int_value()
-/// let xp1 = builder.build_int_add!(x, one, name="xp1")
+/// let xp1 = builder.build_int_add(x, one, name="xp1")
 ///
-/// inspect!(xp1.get_name(), content="xp1")
+/// inspect(xp1.get_name(), content="xp1")
 /// ```
 pub fn IntValue::get_name(self : IntValue) -> String {
   self.value.get_name()
@@ -70,10 +70,10 @@ pub fn IntValue::get_name(self : IntValue) -> String {
 /// builder.position_at_end(bb)
 ///
 /// let x = fval.get_nth_param(0).unwrap().into_int_value()
-/// let xp1 = builder.build_int_add!(x, one)
+/// let xp1 = builder.build_int_add(x, one)
 ///
 /// xp1.set_name("xp1")
-/// inspect!(xp1.get_name(), content="xp1")
+/// inspect(xp1.get_name(), content="xp1")
 /// ```
 pub fn IntValue::set_name(self : IntValue, name : String) -> Unit {
   self.value.set_name(name)
@@ -87,7 +87,7 @@ pub fn IntValue::set_name(self : IntValue, name : String) -> Unit {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42);
-/// inspect!(i32_val.get_type(), content="i32");
+/// inspect(i32_val.get_type(), content="i32");
 /// ```
 pub fn IntValue::get_type(self : IntValue) -> IntType {
   IntType::new(self.value.get_type().as_type_ref())
@@ -101,7 +101,7 @@ pub fn IntValue::get_type(self : IntValue) -> IntType {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42);
-/// assert_false!(i32_val.is_null());
+/// assert_false(i32_val.is_null());
 /// ```
 pub fn IntValue::is_null(self : IntValue) -> Bool {
   self.value.is_null()
@@ -118,9 +118,9 @@ pub fn IntValue::is_null(self : IntValue) -> Bool {
 /// let undef_v = i32_type.get_undef();
 /// let poison = i32_type.get_poison();
 ///
-/// assert_false!(i32_val.is_null());
-/// assert_true!(undef_v.is_undef());
-/// assert_true!(poison.is_undef());
+/// assert_false(i32_val.is_null());
+/// assert_true(undef_v.is_undef());
+/// assert_true(poison.is_undef());
 /// ```
 pub fn IntValue::is_undef(self : IntValue) -> Bool {
   self.value.is_undef()
@@ -140,7 +140,7 @@ pub fn IntValue::as_instruction(self : IntValue) -> InstructionValue? {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
-/// inspect!(forty_two.const_not(), content="i32 -43");
+/// inspect(forty_two.const_not(), content="i32 -43");
 /// ```
 pub fn IntValue::const_not(self : IntValue) -> IntValue {
   @unsafe.llvm_const_not(self.as_value_ref()) |> IntValue::new
@@ -154,7 +154,7 @@ pub fn IntValue::const_not(self : IntValue) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
-/// inspect!(forty_two.const_neg(), content="i32 -42");
+/// inspect(forty_two.const_neg(), content="i32 -42");
 /// ```
 pub fn IntValue::const_neg(self : IntValue) -> IntValue {
   @unsafe.llvm_const_neg(self.as_value_ref()) |> IntValue::new
@@ -168,7 +168,7 @@ pub fn IntValue::const_neg(self : IntValue) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
-/// inspect!(forty_two.const_nsg_neg(), content="i32 -42");
+/// inspect(forty_two.const_nsw_neg(), content="i32 -42");
 /// ```
 pub fn IntValue::const_nsw_neg(self : IntValue) -> IntValue {
   @unsafe.llvm_const_nsw_neg(self.as_value_ref()) |> IntValue::new
@@ -189,7 +189,7 @@ pub fn IntValue::const_nsw_neg(self : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_add(thirty_tri), content="i32 75");
+/// inspect(forty_two.const_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_add(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_add(self.as_value_ref(), rhs.as_value_ref())
@@ -205,7 +205,7 @@ pub fn IntValue::const_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nsw_add(thirty_tri), content="i32 75");
+/// inspect(forty_two.const_nsw_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_nsw_add(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nsw_add(self.as_value_ref(), rhs.as_value_ref())
@@ -221,7 +221,7 @@ pub fn IntValue::const_nsw_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nuw_add(thirty_tri), content="i32 75");
+/// inspect(forty_two.const_nuw_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_nuw_add(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nuw_add(self.as_value_ref(), rhs.as_value_ref())
@@ -237,7 +237,7 @@ pub fn IntValue::const_nuw_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_sub(thirty_tri), content="i32 9");
+/// inspect(forty_two.const_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_sub(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_sub(self.as_value_ref(), rhs.as_value_ref())
@@ -253,7 +253,7 @@ pub fn IntValue::const_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nsw_sub(thirty_tri), content="i32 9");
+/// inspect(forty_two.const_nsw_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_nsw_sub(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nsw_sub(self.as_value_ref(), rhs.as_value_ref())
@@ -269,7 +269,7 @@ pub fn IntValue::const_nsw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nuw_sub(thirty_tri), content="i32 9");
+/// inspect(forty_two.const_nuw_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_nuw_sub(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nuw_sub(self.as_value_ref(), rhs.as_value_ref())
@@ -285,7 +285,7 @@ pub fn IntValue::const_nuw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_mul(thirty_tri), content="i32 1386");
+/// inspect(forty_two.const_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_mul(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_mul(self.as_value_ref(), rhs.as_value_ref())
@@ -301,7 +301,7 @@ pub fn IntValue::const_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nsw_mul(thirty_tri), content="i32 1386");
+/// inspect(forty_two.const_nsw_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_nsw_mul(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nsw_mul(self.as_value_ref(), rhs.as_value_ref())
@@ -317,7 +317,7 @@ pub fn IntValue::const_nsw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_nuw_mul(thirty_tri), content="i32 1386");
+/// inspect(forty_two.const_nuw_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_nuw_mul(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_nuw_mul(self.as_value_ref(), rhs.as_value_ref())
@@ -344,7 +344,7 @@ pub fn IntValue::const_nuw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
 /// let thirty_tri = i32_type.const_int(33);
-/// inspect!(forty_two.const_xor(thirty_tri), content="i32 11");
+/// inspect(forty_two.const_xor(thirty_tri), content="i32 11");
 /// ```
 pub fn IntValue::const_xor(self : IntValue, rhs : IntValue) -> IntValue {
   @unsafe.llvm_const_xor(self.as_value_ref(), rhs.as_value_ref())
@@ -376,7 +376,7 @@ pub fn IntValue::const_to_pointer(
 /// let i32_type = context.i32_type();
 /// let i16_type = context.i16_type();
 /// let max_u16p2 = i32_type.const_int(0x10001);
-/// inspect!(max_u16p2.const_truncate(i16_type), content="i16 1");
+/// inspect(max_u16p2.const_truncate(i16_type), content="i16 1");
 /// ```
 pub fn IntValue::const_truncate(
   self : IntValue,
@@ -421,7 +421,7 @@ pub fn IntValue::const_bit_cast(
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
-/// assert_true!(i64_val.is_const());
+/// assert_true(i64_val.is_const());
 /// ```
 pub fn IntValue::is_const(self : IntValue) -> Bool {
   self.value.is_const()
@@ -437,7 +437,7 @@ pub fn IntValue::is_const(self : IntValue) -> Bool {
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
-/// assert_true!(i64_val.is_constant_int());
+/// assert_true(i64_val.is_constant_int());
 /// ```
 pub fn IntValue::is_constant_int(self : IntValue) -> Bool {
   @unsafe.llvm_isa_constant_int(self.as_value_ref()).is_null() |> not
@@ -452,7 +452,7 @@ pub fn IntValue::is_constant_int(self : IntValue) -> Bool {
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();
 ///
-/// inspect!(i8_all_ones.get_zero_extended_constant(), "Some(255)");
+/// inspect(i8_all_ones.get_zero_extended_constant(), content="Some(255)");
 /// ```
 pub fn IntValue::get_zero_extended_constant(self : IntValue) -> UInt64? {
   if not(self.is_constant_int()) {
@@ -473,8 +473,9 @@ pub fn IntValue::get_zero_extended_constant(self : IntValue) -> UInt64? {
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();
 ///
-/// inspect!(i8_all_ones.get_sign_extended_constant(), "Some(-1)");
+/// inspect(i8_all_ones.get_sign_extended_constant(), content="Some(-1)");
 /// ```
+///
 // RIVEW: Would the following implementation better?
 // @option.when(
 //   self.is_constant_int() && self.get_type().get_bit_width() <= 64,
@@ -514,13 +515,6 @@ pub fn IntValue::print_to_string(self : IntValue) -> String {
   self.value.print_to_string()
 }
 
-///| Dumps the `IntValue` to a string.
-///
-/// It's equivalent to `IntValue::print_to_string`.
-pub fn IntValue::to_string(self : IntValue) -> String {
-  self.value.to_string()
-}
-
 ///| Dump the `IntValue` to stderr.
 ///
 /// It's equivalent to `IntValue::print_to_stderr`.
@@ -530,10 +524,5 @@ pub fn IntValue::dump(self : IntValue) -> Unit {
 
 ///|
 pub impl Show for IntValue with output(self : IntValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for IntValue with to_string(self : IntValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }
