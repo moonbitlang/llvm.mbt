@@ -181,7 +181,7 @@ pub fn BasicBlock::move_after(
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
-/// builder.build_return(None);
+/// let _ = builder.build_return(None);
 ///
 /// let opcode = basic_block.get_first_instruction().unwrap().get_opcode();
 /// assert_eq(opcode, InstructionOpcode::Return);
@@ -204,7 +204,7 @@ pub fn BasicBlock::get_first_instruction(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let function = llvm_module.add_function("do_nothing", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 /// let _ = builder.build_return(None);
@@ -232,17 +232,17 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 ///
 /// let fn_type = void_type.fn_type([i32_ptr_type]);
 /// let fn_value = llvm_module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// builder.position_at_end(entry);
 ///
-/// let var = builder.build_alloca(i32_type, "some_number").unwrap();
-/// builder.build_store(var, i32_type.const_int(1, false)).unwrap();
-/// builder.build_return(None).unwrap();
+/// let v = builder.build_alloca(i32_type, "some_number");
+/// let _ = builder.build_store(v, i32_type.const_int(1, false));
+/// let _ = builder.build_return(None);
 ///
 /// let block = fn_value.get_first_basic_block().unwrap();
 /// let some_number = block.get_instruction_with_name("some_number");
 ///
-/// assert_true(some_number.is_some());
+/// assert_true(some_number.is Some(_));
 /// inspect(some_number.unwrap().get_name().unwrap(), content="some_number")
 /// ```
 pub fn BasicBlock::get_instruction_with_name(
@@ -267,13 +267,13 @@ pub fn BasicBlock::get_instruction_with_name(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let function = llvm_module.add_function("do_nothing", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 /// builder.build_return(None);
 ///
 /// let opcode = basic_block.get_terminator().unwrap().get_opcode()
-/// assert_eq(opcode, InstructionOpcode::Return);
+/// assert_true(opcode is Return);
 /// ```
 pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_basic_block_terminator(self.as_bb_ref())
@@ -293,7 +293,7 @@ pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let function = llvm_module.add_function("do_nothing", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// assert_eq(basic_block.get_parent().unwrap(), function);
 ///
@@ -363,7 +363,7 @@ pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = llvm_module.add_function("my_fn", fn_type);
-/// let bb = context.append_basic_block(fn_val, "entry");
+/// let bb = context.append_basic_block(fn_val, name="entry");
 ///
 /// inspect(bb.get_name(), content="entry");
 /// ```
@@ -381,7 +381,7 @@ pub fn BasicBlock::get_name(self : BasicBlock) -> String {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = lmodule.add_function("my_fn", fn_type);
-/// let bb = context.append_basic_block(fn_val, "entry");
+/// let bb = context.append_basic_block(fn_val, name="entry");
 ///
 /// bb.set_name("renamed_entry");
 /// inspect(bb.get_name(), content="renamed_entry");
@@ -440,7 +440,7 @@ pub fn BasicBlock::replace_all_uses_with(
 /// let branch_inst = builder.build_unconditional_branch(bb1);
 ///
 /// assert_true(bb2.get_first_use().is None);
-/// assert_true(bb1.get_first_use().is_some());
+/// assert_true(bb1.get_first_use().is Some(_));
 /// ```
 pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
   let use_ = self.as_bb_ref().as_value_ref().get_first_use()
