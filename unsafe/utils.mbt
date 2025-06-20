@@ -12,13 +12,13 @@ extern "C" fn c_str_to_moonbit_str(s : CStr) -> String = "c_str_to_moonbit_str"
 extern "C" fn c_str_to_moonbit_str_with_length(s : CStr, len : UInt) -> String = "c_str_to_moonbit_str_with_length"
 
 ///|
-extern "C" fn CStr::new() -> CStr = "new_null_cstr"
+pub extern "C" fn CStr::new() -> CStr = "new_null_cstr"
 
 ///|
 extern "C" fn CStr::create_null() -> CStr = "new_null_cstr"
 
 ///|
-extern "C" fn CStr::free(self : CStr) = "free_cstr"
+pub extern "C" fn CStr::free(self : CStr) = "free_cstr"
 
 ///|
 fn CStr::from(s : String) -> CStr {

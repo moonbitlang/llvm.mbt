@@ -39,7 +39,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 ///
 /// let arg1_first_use = arg1.get_first_use().unwrap();
 ///
-/// assert_true!(arg1_first_use.get_next_use().is_some());
+/// assert_true(arg1_first_use.get_next_use().is_some());
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):
@@ -98,8 +98,8 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 /// let store_operand_use0 = store_instruction.get_operand_use(0).unwrap();
 /// let store_operand_use1 = store_instruction.get_operand_use(1).unwrap();
 ///
-/// assert_eq!(store_operand_use0.get_user(), store_instruction);
-/// assert_eq!(store_operand_use1.get_user(), store_instruction);
+/// assert_eq(store_operand_use0.get_user(), store_instruction);
+/// assert_eq(store_operand_use1.get_user(), store_instruction);
 /// ```
 pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
   AnyValueEnum::new(@unsafe.llvm_get_user(self.as_use_ref()))
@@ -138,7 +138,7 @@ pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
 ///     .left()
 ///     .unwrap();
 ///
-/// assert_eq!(bitcast_use_value, free_operand0);
+/// assert_eq(bitcast_use_value, free_operand0);
 /// ```
 pub fn BasicValueUse::get_used_value(
   self : BasicValueUse
@@ -146,10 +146,8 @@ pub fn BasicValueUse::get_used_value(
   let used_value = @unsafe.llvm_get_used_value(self.as_use_ref())
   let is_basic_block = @unsafe.llvm_isa_basic_block(used_value).is_null() |> not
   if is_basic_block {
-    let bb = BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value))
-    Right(bb)
+    BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value)) |> Right
   } else {
-    let value = BasicValueEnum::new(used_value)
-    Left(value)
+    BasicValueEnum::new(used_value) |> Left
   }
 }

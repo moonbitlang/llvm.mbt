@@ -38,11 +38,11 @@ pub fn BasicBlock::new(
 ///
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
-/// assert_eq!(basic_block.get_parent().unwrap(), function);
+/// assert_eq(basic_block.get_parent().unwrap(), function);
 ///
 /// basic_block.remove_from_function!();
 ///
-/// assert_true!(basic_block.get_parent() is None);
+/// assert_true(basic_block.get_parent() is None);
 /// ```
 pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
   FunctionValue::new(@unsafe.llvm_get_basic_block_parent(self.as_bb_ref()))
@@ -61,15 +61,15 @@ pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
 ///
 /// let basic_block1 = context.append_basic_block(function1, "entry");
 ///
-/// assert_true!(basic_block1.get_previous_basic_block().is_none());
+/// assert_true(basic_block1.get_previous_basic_block().is_none());
 ///
 /// let function2 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
 ///
-/// assert_true!(basic_block2.get_previous_basic_block() is None);
-/// assert_true!(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
+/// assert_true(basic_block2.get_previous_basic_block() is None);
+/// assert_true(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
 /// ```
 pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
   let prev_bb_ref = @unsafe.llvm_get_previous_basic_block(self.as_bb_ref())
@@ -89,16 +89,16 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// let basic_block1 = context.append_basic_block(function1, "entry");
 ///
-/// assert_true!(basic_block1.get_next_basic_block().is_none());
+/// assert_true(basic_block1.get_next_basic_block().is_none());
 ///
 /// let function2 = module.add_function("do_nothing", fn_type);
 ///
 /// let basic_block2 = context.append_basic_block(function2, "entry");
 /// let basic_block3 = context.append_basic_block(function2, "next");
 ///
-/// assert_true!(basic_block1.get_next_basic_block().is None);
-/// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block3);
-/// assert_true!(basic_block3.get_next_basic_block() is None);
+/// assert_true(basic_block1.get_next_basic_block().is None);
+/// assert_true(basic_block2.get_next_basic_block().unwrap() == basic_block3);
+/// assert_true(basic_block3.get_next_basic_block() is None);
 /// ```
 pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
   let next_bb_ref = @unsafe.llvm_get_next_basic_block(self.as_bb_ref())
@@ -124,8 +124,8 @@ pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// basic_block2.move_before(basic_block1);
 ///
-/// assert_true!(basic_block1.get_next_basic_block() is None);
-/// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block1);
+/// assert_true(basic_block1.get_next_basic_block() is None);
+/// assert_true(basic_block2.get_next_basic_block().unwrap() == basic_block1);
 /// ```
 pub fn BasicBlock::move_before(
   self : BasicBlock,
@@ -154,8 +154,8 @@ pub fn BasicBlock::move_before(
 ///
 /// basic_block1.move_after(basic_block2);
 ///
-/// assert_true!(basic_block1.get_next_basic_block().is_none());
-/// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
+/// assert_true(basic_block1.get_next_basic_block().is_none());
+/// assert_eq(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
 pub fn BasicBlock::move_after(
   self : BasicBlock,
@@ -184,7 +184,7 @@ pub fn BasicBlock::move_after(
 /// builder.build_return(None);
 ///
 /// let opcode = basic_block.get_first_instruction().unwrap().get_opcode();
-/// assert_eq!(opcode, InstructionOpcode::Return);
+/// assert_eq(opcode, InstructionOpcode::Return);
 /// ```
 pub fn BasicBlock::get_first_instruction(
   self : BasicBlock
@@ -210,7 +210,7 @@ pub fn BasicBlock::get_first_instruction(
 /// let _ = builder.build_return(None);
 ///
 /// let opcode = basic_block.get_last_instruction().unwrap().get_opcode();
-/// assert_eq!(opcode, InstructionOpcode::Return);
+/// assert_eq(opcode, InstructionOpcode::Return);
 /// ```
 pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_last_instruction(self.as_bb_ref())
@@ -242,8 +242,8 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 /// let block = fn_value.get_first_basic_block().unwrap();
 /// let some_number = block.get_instruction_with_name("some_number");
 ///
-/// assert_true!(some_number.is_some());
-/// inspect!(some_number.unwrap().get_name().unwrap(), content="some_number")
+/// assert_true(some_number.is_some());
+/// inspect(some_number.unwrap().get_name().unwrap(), content="some_number")
 /// ```
 pub fn BasicBlock::get_instruction_with_name(
   self : BasicBlock,
@@ -273,7 +273,7 @@ pub fn BasicBlock::get_instruction_with_name(
 /// builder.build_return(None);
 ///
 /// let opcode = basic_block.get_terminator().unwrap().get_opcode()
-/// assert_eq!(opcode, InstructionOpcode::Return);
+/// assert_eq(opcode, InstructionOpcode::Return);
 /// ```
 pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_basic_block_terminator(self.as_bb_ref())
@@ -295,11 +295,11 @@ pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
 /// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
-/// assert_eq!(basic_block.get_parent().unwrap(), function);
+/// assert_eq(basic_block.get_parent().unwrap(), function);
 ///
 /// basic_block.remove_from_function();
 ///
-/// assert_true!(basic_block.get_parent().is_none());
+/// assert_true(basic_block.get_parent().is_none());
 /// ```
 pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) else {
@@ -322,7 +322,7 @@ pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// basic_block.delete();
-/// assert_true!(function.get_basic_blocks().is_empty());
+/// assert_true(function.get_basic_blocks().is_empty());
 /// ```
 pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) else {
@@ -343,7 +343,7 @@ pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
 /// let function = module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
-/// assert_true!(context == basic_block.get_context());
+/// assert_true(context == basic_block.get_context());
 /// ```
 pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
   Context::new(
@@ -365,7 +365,7 @@ pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
 /// let fn_val = module.add_function("my_fn", fn_type);
 /// let bb = context.append_basic_block(fn_val, "entry");
 ///
-/// inspect!(bb.get_name(), content="entry");
+/// inspect(bb.get_name(), content="entry");
 /// ```
 pub fn BasicBlock::get_name(self : BasicBlock) -> String {
   self.as_bb_ref().get_name()
@@ -384,7 +384,7 @@ pub fn BasicBlock::get_name(self : BasicBlock) -> String {
 /// let bb = context.append_basic_block(fn_val, "entry");
 ///
 /// bb.set_name("renamed_entry");
-/// inspect!(bb.get_name(), content="renamed_entry");
+/// inspect(bb.get_name(), content="renamed_entry");
 /// ```
 pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
   self.as_bb_ref().as_value_ref().set_name(name)
@@ -409,7 +409,7 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 ///
 /// bb1.replace_all_uses_with(bb2);
 ///
-/// assert_eq!(branch_inst.get_operand(0).unwrap().right().unwrap(), bb2);
+/// assert_eq(branch_inst.get_operand(0).unwrap().right().unwrap(), bb2);
 /// ```
 pub fn BasicBlock::replace_all_uses_with(
   self : BasicBlock,
@@ -439,8 +439,8 @@ pub fn BasicBlock::replace_all_uses_with(
 /// builder.position_at_end(entry);
 /// let branch_inst = builder.build_unconditional_branch(bb1);
 ///
-/// assert_true!(bb2.get_first_use().is_none());
-/// assert_true!(bb1.get_first_use().is_some());
+/// assert_true(bb2.get_first_use().is_none());
+/// assert_true(bb1.get_first_use().is_some());
 /// ```
 pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
   let use_ = self.as_bb_ref().as_value_ref().get_first_use()
@@ -463,8 +463,8 @@ pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
 /// let entry_bb = context.append_basic_block(fn_val, "entry");
 /// let next_bb = context.append_basic_block(fn_val, "next");
 ///
-/// assert_true!(entry_bb.get_address() is None);
-/// assert_true!(next_bb.get_address() is Some(_));
+/// assert_true(entry_bb.get_address() is None);
+/// assert_true(next_bb.get_address() is Some(_));
 /// ```
 pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
   guard self.get_parent() is Some(parent) else { return None }
@@ -472,10 +472,8 @@ pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
   let value = PointerValue::new(
     @unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()),
   )
-  if value.is_null() {
-    return None
-  }
-  Some(value)
+  @option.unless(value.is_null(), fn() { value })
+
 }
 
 // pub fn BasicBlock::to_string(self: BasicBlock) -> String {
@@ -486,9 +484,9 @@ pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
 //   self.as_bb_ref().dump()
 // }
 
-// pub impl Show for BasicBlock with output(self: BasicBlock, logger: &Logger) -> Unit {
-//   logger.log(self.to_string())
-// }
+ //pub impl Show for BasicBlock with output(self: BasicBlock, logger: &Logger) -> Unit {
+ //  logger.write_string(self.as_bb_ref().to_string())
+ //}
 
 ///|
 pub impl Eq for BasicBlock with op_equal(self : BasicBlock, other : BasicBlock) -> Bool {

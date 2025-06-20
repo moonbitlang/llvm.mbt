@@ -70,7 +70,7 @@ fn Builder::get_positioned(self : Builder) -> PositionState {
 pub fn Builder::get_insert_block(
   self : Builder
 ) -> BasicBlock raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let block_ref = @unsafe.llvm_get_insert_block(self.as_builder_ref())
   BasicBlock::new(block_ref)
 }
@@ -99,7 +99,7 @@ pub fn[T : BasicValue] Builder::build_return(
   self : Builder,
   val : T?
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let inst = match val {
     Some(val) => {
@@ -135,7 +135,7 @@ pub fn Builder::build_aggregate_return(
   self : Builder,
   values : Array[BasicValueEnum]
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let args = values.map(fn(v) { v.as_value_ref() })
   let ret_v = @unsafe.llvm_build_aggregate_ret(builder_ref, args)
@@ -212,7 +212,7 @@ pub fn Builder::build_direct_call(
   args : Array[&BasicValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let fty = func.get_type()
   let fn_val = func.value
   self.build_call_help(fty, fn_val, args, name~)
@@ -306,7 +306,7 @@ pub fn Builder::build_indirect_call(
   args : Array[&BasicValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   self.build_call_help(fn_type, fn_ptr.value, args, name~)
 }
 
@@ -339,7 +339,7 @@ fn Builder::build_call_help(
   args : Array[&BasicValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let fty_ref = fn_ty.as_type_ref()
   let fval_ref = fn_val.as_value_ref()
@@ -357,7 +357,7 @@ fn Builder::build_call_with_operand_bundles_help(
   operand_bundles : Array[OperandBundle],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let fty_ref = fty.as_type_ref()
   let fval_ref = fn_val.as_value_ref()
@@ -456,7 +456,7 @@ pub fn Builder::build_invoke(
   catch_block : BasicBlock,
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   self.build_direct_invoke(func, args, then_block, catch_block, name~)
 }
 
@@ -469,7 +469,7 @@ pub fn Builder::build_direct_invoke(
   catch_block : BasicBlock,
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let fty = func.get_type()
   let fn_val = func.value
   self.build_invoke_help(fty, fn_val, args, then_block, catch_block, name~)
@@ -485,7 +485,7 @@ pub fn Builder::build_indirect_invoke(
   catch_block : BasicBlock,
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   self.build_invoke_help(
     fn_ty,
     fn_ptr.value,
@@ -506,7 +506,7 @@ fn Builder::build_invoke_help(
   catch_block : BasicBlock,
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let fn_ty_ref = fn_ty.as_type_ref()
   let fn_val_ref = fn_val.as_value_ref()
   let name = match fn_ty.get_return_type() {
@@ -655,7 +655,7 @@ pub fn Builder::build_landing_pad(
   is_cleanup : Bool,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let num_clauses = clauses.length().reinterpret_as_uint()
   let value = @unsafe.llvm_build_landing_pad(
     self.as_builder_ref(),
@@ -742,7 +742,7 @@ pub fn Builder::build_resume(
   self : Builder,
   value : &BasicValue
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value_ref = value.as_value_ref()
   let inst = @unsafe.llvm_build_resume(self.as_builder_ref(), value_ref)
   InstructionValue::new(inst)
@@ -756,7 +756,7 @@ pub fn[T : BasicType] Builder::build_gep(
   ordered_indices : Array[IntValue],
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let ptr_ref = ptr.as_value_ref()
   let indices = ordered_indices.map(fn(v) { v.as_value_ref() })
   let value = @unsafe.llvm_build_gep2(
@@ -777,7 +777,7 @@ pub fn Builder::build_in_bounds_gep(
   ordered_indices : Array[IntValue],
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let ptr_ref = ptr.as_value_ref()
   let indices = ordered_indices.map(fn(v) { v.as_value_ref() })
   let value = @unsafe.llvm_build_in_bounds_gep2(
@@ -814,11 +814,11 @@ pub fn Builder::build_in_bounds_gep(
 /// let i32_ptr = fn_value.get_first_param().unwrap().into_pointer_value();
 /// let struct_ptr = fn_value.get_last_param().unwrap().into_pointer_value();
 ///
-/// assert_true!(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
-/// assert_true!(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
-/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
-/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
-/// assert_true!(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
+/// assert_true(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
+/// assert_true(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
+/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
+/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
+/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
 /// ```
 pub fn[T : BasicType] Builder::build_struct_gep(
   self : Builder,
@@ -827,7 +827,7 @@ pub fn[T : BasicType] Builder::build_struct_gep(
   index : UInt,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let pointee_ty = pointee_ty.as_any_type_enum()
   if not(pointee_ty.is_struct_type()) {
     raise GEPPointee
@@ -875,7 +875,7 @@ pub fn Builder::build_ptr_diff(
   rhs_ptr : PointerValue,
   name~ : String = ""
 ) -> IntValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ptr_ref = lhs_ptr.as_value_ref()
   let rhs_ptr_ref = rhs_ptr.as_value_ref()
   let value = @unsafe.llvm_build_ptr_diff2(
@@ -894,7 +894,7 @@ pub fn[T : BasicType] Builder::build_phi(
   ty : T,
   name~ : String = ""
 ) -> PhiValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_phi(
     self.as_builder_ref(),
     ty.as_type_ref(),
@@ -929,7 +929,7 @@ pub fn Builder::build_store(
   ptr : PointerValue,
   val : &BasicValue
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let val_ref = val.as_value_ref()
   let ptr_ref = ptr.as_value_ref()
   let inst = @unsafe.llvm_build_store(self.as_builder_ref(), val_ref, ptr_ref)
@@ -944,7 +944,7 @@ pub fn Builder::build_store_func(
   ptr : PointerValue,
   func : FunctionValue
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let func_ref = func.as_value_ref()
   let ptr_ref = ptr.as_value_ref()
   let inst = @unsafe.llvm_build_store(self.as_builder_ref(), func_ref, ptr_ref)
@@ -968,7 +968,7 @@ pub fn Builder::build_store_func(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let pointee = builder.build_load!(i32_type, i32_ptr_param, "load2").into_int_value();
+/// let pointee = builder.build_load(i32_type, i32_ptr_param, "load2").into_int_value();
 ///
 /// builder.build_return(Some(pointee)).unwrap();
 /// ```
@@ -978,7 +978,7 @@ pub fn[T : BasicType] Builder::build_load(
   ptr : PointerValue,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let ptr_ref = ptr.as_value_ref()
   let value = @unsafe.llvm_build_load2(
     self.as_builder_ref(),
@@ -1004,18 +1004,18 @@ pub fn[T : BasicType] Builder::build_load(
 /// builder.position_at_end(entry);
 ///
 /// let forty_two = i32_type.const_int(42);
-/// let alloca = builder.build_alloca!(i32_type, "a");
-/// let _ = builder.build_store!(alloca, forty_two);
-/// let load = builder.build_load!(i32_type, alloca, "b");
+/// let alloca = builder.build_alloca(i32_type, "a");
+/// let _ = builder.build_store(alloca, forty_two);
+/// let load = builder.build_load(i32_type, alloca, "b");
 ///
-/// builder.build_return!(Some(load));
+/// builder.build_return(Some(load));
 /// ```
 pub fn[T : BasicType] Builder::build_alloca(
   self : Builder,
   ty : T,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_alloca(
     self.as_builder_ref(),
     ty.as_type_ref(),
@@ -1031,7 +1031,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_array_alloca(
   size : V,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let size_ref = size.as_value_ref()
   let value = @unsafe.llvm_build_array_alloca(
     self.as_builder_ref(),
@@ -1058,7 +1058,7 @@ pub fn Builder::build_memcpy(
   src_align : UInt,
   size : IntValue
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   if not(is_alignment_ok(dst_align)) {
     raise AlignmentError(
       "The dest_align_bytes argument to build_memcpy was not a power of 2.",
@@ -1098,7 +1098,7 @@ pub fn Builder::build_memove(
   src_align : UInt,
   size : IntValue
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   if not(is_alignment_ok(dst_align)) {
     raise AlignmentError(
       "The dest_align_bytes argument to build_memmove was not a power of 2.",
@@ -1135,7 +1135,7 @@ pub fn Builder::build_memset(
   val : IntValue,
   size : IntValue
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   if not(is_alignment_ok(dest_align)) {
     raise AlignmentError(
       "The dest_align_bytes argument to build_memset was not a power of 2.",
@@ -1157,7 +1157,7 @@ pub fn[T : BasicType] Builder::build_malloc(
   ty : T,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   if not(ty.as_type().is_sized()) {
     raise AlignmentError("Cannot build malloc call for an unsized type")
   }
@@ -1176,7 +1176,7 @@ pub fn Builder::build_array_malloc(
   size : IntValue,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   if not(ty.as_type().is_sized()) {
     raise AlignmentError("Cannot build array malloc call for an unsized type")
   }
@@ -1194,7 +1194,7 @@ pub fn Builder::build_free(
   self : Builder,
   ptr : PointerValue
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_free(self.as_builder_ref(), ptr.as_value_ref())
   InstructionValue::new(value)
 }
@@ -1238,7 +1238,7 @@ pub fn Builder::insert_instruction(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let res = builder.build_int_unsigned_div(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = udiv i32 %0, %1");
+/// inspect(res, content="  %res = udiv i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_unsigned_div(
   self : Builder,
@@ -1246,7 +1246,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_div(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_u_div(
@@ -1276,7 +1276,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_div(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let res = builder.build_int_signed_div(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = sdiv i32 %0, %1");
+/// inspect(res, content="  %res = sdiv i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_signed_div(
   self : Builder,
@@ -1284,7 +1284,7 @@ pub fn[T : IntMathValue] Builder::build_int_signed_div(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_s_div(
@@ -1315,7 +1315,7 @@ pub fn[T : IntMathValue] Builder::build_int_signed_div(
 ///
 /// let res = builder.build_int_exact_signed_div(
 ///   lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = sdiv exact i32 %0, %1");
+/// inspect(res, content="  %res = sdiv exact i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_exact_signed_div(
   self : Builder,
@@ -1323,7 +1323,7 @@ pub fn[T : IntMathValue] Builder::build_int_exact_signed_div(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_exact_s_div(
@@ -1353,7 +1353,7 @@ pub fn[T : IntMathValue] Builder::build_int_exact_signed_div(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let res = builder.build_int_unsigned_rem(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = urem i32 %0, %1");
+/// inspect(res, content="  %res = urem i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_unsigned_rem(
   self : Builder,
@@ -1361,7 +1361,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_rem(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_u_rem(
@@ -1391,7 +1391,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_rem(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let res = builder.build_int_signed_rem(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = srem i32 %0, %1");
+/// inspect(res, content="  %res = srem i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_signed_rem(
   self : Builder,
@@ -1399,7 +1399,7 @@ pub fn[T : IntMathValue] Builder::build_int_signed_rem(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_s_rem(
@@ -1426,7 +1426,7 @@ pub fn Builder::build_address_space_cast(
   ptr_type : PointerType,
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let ptr_val_ref = ptr_val.as_value_ref()
   let ptr_type_ref = ptr_type.as_type_ref()
   let value = @unsafe.llvm_build_addr_space_cast(
@@ -1455,8 +1455,8 @@ pub fn Builder::build_address_space_cast(
 ///
 /// let operand = fval.get_first_param().unwrap().into_int_value();
 ///
-/// let res = builder.build_bit_cast!(operand, f32_ty, name="res").unwrap();
-/// inspect!(res, content="  %res = bitcast i32 %0 to float");
+/// let res = builder.build_bit_cast(operand, f32_ty, name="res").unwrap();
+/// inspect(res, content="  %res = bitcast i32 %0 to float");
 /// ```
 // REVIEW: Do we need to check bitwidth?
 pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
@@ -1465,7 +1465,7 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
   ty : BT,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let val_ref = val.as_value_ref()
   let ty_ref = ty.as_type_ref()
@@ -1496,8 +1496,8 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_rem!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = frem float %0, %1");
+/// let res = builder.build_float_rem(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = frem float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_rem(
   self : Builder,
@@ -1505,7 +1505,7 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_f_rem(
@@ -1544,8 +1544,8 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_mul!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = fdiv float %0, %1");
+/// let res = builder.build_float_mul(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = fdiv float %0, %1");
 /// ```
 pub fn Builder::build_float_div(
   self : Builder,
@@ -1553,7 +1553,7 @@ pub fn Builder::build_float_div(
   rhs : FloatValue,
   name~ : String = ""
 ) -> FloatValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_f_div(
@@ -1582,8 +1582,8 @@ pub fn Builder::build_float_div(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_add!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = add i32 %0, %1");
+/// let res = builder.build_int_add(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = add i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_add(
   self : Builder,
@@ -1591,7 +1591,7 @@ pub fn[T : IntMathValue] Builder::build_int_add(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_add(
@@ -1620,8 +1620,8 @@ pub fn[T : IntMathValue] Builder::build_int_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nsw_add!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = add nsw i32 %0, %1");
+/// let res = builder.build_int_nsw_add(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = add nsw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nsw_add(
   self : Builder,
@@ -1629,7 +1629,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_add(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nsw_add(
@@ -1658,8 +1658,8 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nuw_add!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = add nuw i32 %0, %1");
+/// let res = builder.build_int_nuw_add(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = add nuw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nuw_add(
   self : Builder,
@@ -1667,7 +1667,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nuw_add(
@@ -1696,8 +1696,8 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_add!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = fadd float %0, %1");
+/// let res = builder.build_float_add(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = fadd float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_add(
   self : Builder,
@@ -1705,7 +1705,7 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_f_add(
@@ -1734,8 +1734,8 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_xor!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = xor i32 %0, %1");
+/// let res = builder.build_int_xor(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = xor i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_xor(
   self : Builder,
@@ -1743,7 +1743,7 @@ pub fn[T : IntMathValue] Builder::build_xor(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_xor(
@@ -1772,8 +1772,8 @@ pub fn[T : IntMathValue] Builder::build_xor(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_and!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = and i32 %0, %1");
+/// let res = builder.build_int_and(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = and i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_and(
   self : Builder,
@@ -1781,7 +1781,7 @@ pub fn[T : IntMathValue] Builder::build_and(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_and(
@@ -1810,8 +1810,8 @@ pub fn[T : IntMathValue] Builder::build_and(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_or!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = or i32 %0, %1");
+/// let res = builder.build_int_or(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = or i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_or(
   self : Builder,
@@ -1819,7 +1819,7 @@ pub fn[T : IntMathValue] Builder::build_or(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_or(
@@ -1848,8 +1848,8 @@ pub fn[T : IntMathValue] Builder::build_or(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_left_shift!(lhs, rhs, name="res").unwrap();
-/// inspect!(res, content = "  %res = shl i32 %0, %1");
+/// let res = builder.build_left_shift(lhs, rhs, name="res").unwrap();
+/// inspect(res, content = "  %res = shl i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_left_shift(
   self : Builder,
@@ -1857,7 +1857,7 @@ pub fn[T : IntMathValue] Builder::build_left_shift(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_shl(
@@ -1886,12 +1886,12 @@ pub fn[T : IntMathValue] Builder::build_left_shift(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let lshr = builder.build_right_shift!(
+/// let lshr = builder.build_right_shift(
 ///     lhs, rhs, sign_extend=false, name="lshr").unwrap();
-/// inspect!(lshr, content = "  %lshr = lshr i32 %0, %1");
-/// let ashr = builder.build_right_shift!(
+/// inspect(lshr, content = "  %lshr = lshr i32 %0, %1");
+/// let ashr = builder.build_right_shift(
 ///     lhs, rhs, sign_extend=true, name="ashr").unwrap();
-/// inspect!(ashr, content = "  %ashr = ashr i32 %0, %1");
+/// inspect(ashr, content = "  %ashr = ashr i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_right_shift(
   self : Builder,
@@ -1900,7 +1900,7 @@ pub fn[T : IntMathValue] Builder::build_right_shift(
   sign_extend~ : Bool = true,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let val = if sign_extend {
@@ -1928,8 +1928,8 @@ pub fn[T : IntMathValue] Builder::build_right_shift(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_sub!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = sub i32 %0, %1");
+/// let res = builder.build_int_sub(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = sub i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_sub(
   self : Builder,
@@ -1937,7 +1937,7 @@ pub fn[T : IntMathValue] Builder::build_int_sub(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_sub(
@@ -1966,8 +1966,8 @@ pub fn[T : IntMathValue] Builder::build_int_sub(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nsw_sub!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = sub nsw i32 %0, %1");
+/// let res = builder.build_int_nsw_sub(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = sub nsw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nsw_sub(
   self : Builder,
@@ -1975,7 +1975,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_sub(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nsw_sub(
@@ -2004,8 +2004,8 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_sub(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nuw_sub!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = sub nuw i32 %0, %1");
+/// let res = builder.build_int_nuw_sub(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = sub nuw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
   self : Builder,
@@ -2013,7 +2013,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nuw_sub(
@@ -2042,8 +2042,8 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_sub!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = fsub float %0, %1");
+/// let res = builder.build_float_sub(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = fsub float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_sub(
   self : Builder,
@@ -2051,7 +2051,7 @@ pub fn[T : FloatMathValue] Builder::build_float_sub(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_f_sub(
@@ -2080,8 +2080,8 @@ pub fn[T : FloatMathValue] Builder::build_float_sub(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_mul!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = mul i32 %0, %1");
+/// let res = builder.build_int_mul(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = mul i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_mul(
   self : Builder,
@@ -2089,7 +2089,7 @@ pub fn[T : IntMathValue] Builder::build_int_mul(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs = lhs.as_value_ref()
   let rhs = rhs.as_value_ref()
   let value = @unsafe.llvm_build_mul(self.as_builder_ref(), lhs, rhs, name)
@@ -2113,8 +2113,8 @@ pub fn[T : IntMathValue] Builder::build_int_mul(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nsw_mul!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = mul nsw i32 %0, %1");
+/// let res = builder.build_int_nsw_mul(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = mul nsw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nsw_mul(
   self : Builder,
@@ -2122,7 +2122,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_mul(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs = lhs.as_value_ref()
   let rhs = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nsw_mul(self.as_builder_ref(), lhs, rhs, name)
@@ -2146,8 +2146,8 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_mul(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nuw_mul!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = mul nuw i32 %0, %1");
+/// let res = builder.build_int_nuw_mul(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = mul nuw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
   self : Builder,
@@ -2155,7 +2155,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs = lhs.as_value_ref()
   let rhs = rhs.as_value_ref()
   let value = @unsafe.llvm_build_nuw_mul(self.as_builder_ref(), lhs, rhs, name)
@@ -2179,8 +2179,8 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_mul!(lhs, rhs, "res").unwrap();
-/// inspect!(res, content="  %res = fmul float %0, %1");
+/// let res = builder.build_float_mul(lhs, rhs, "res").unwrap();
+/// inspect(res, content="  %res = fmul float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_mul(
   self : Builder,
@@ -2188,7 +2188,7 @@ pub fn[T : FloatMathValue] Builder::build_float_mul(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs = lhs.as_value_ref()
   let rhs = rhs.as_value_ref()
   let value = @unsafe.llvm_build_f_mul(self.as_builder_ref(), lhs, rhs, name)
@@ -2203,7 +2203,7 @@ pub fn[T : BasicValue] Builder::build_binop(
   rhs : T,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let lhs_ref = lhs.as_value_ref()
   let rhs_ref = rhs.as_value_ref()
   let value = @unsafe.llvm_build_bin_op(
@@ -2224,7 +2224,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
   to_type : T,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let val = @unsafe.llvm_build_cast(
     self.as_builder_ref(),
     op.into(),
@@ -2238,7 +2238,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
 // pub fn Builder::build_pointer_cast[T: PointerMathValue](
 //   self: Builder, from: T, to:T::BaseType, name~: String = ""
 // ) -> T!BuilderError {
-//   guard self.get_positioned() == PositionState::Set else {
+//   guard self.get_positioned() is Set else {
 //     raise UnsetPosition
 //   }
 //
@@ -2266,8 +2266,8 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let pred_eq = @llvm.IntPredicate::EQ;
-/// let res = builder.build_int_compare!(pred_eq, lhs, rhs, name="res").unwrap();
-/// inspect!(res, content="  %res = icmp eq i32 %0, %1");
+/// let res = builder.build_int_compare(pred_eq, lhs, rhs, name="res").unwrap();
+/// inspect(res, content="  %res = icmp eq i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_compare(
   self : Builder,
@@ -2276,7 +2276,7 @@ pub fn[T : IntMathValue] Builder::build_int_compare(
   rhs : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let val_ref = @unsafe.llvm_build_icmp(
     self.as_builder_ref(),
     op.into(),
@@ -2295,7 +2295,7 @@ pub fn Builder::build_ptr_compare(
   rhs : PointerValue,
   name~ : String = ""
 ) -> IntValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let val_ref = @unsafe.llvm_build_icmp(
     self.as_builder_ref(),
     op.into(),
@@ -2324,8 +2324,8 @@ pub fn Builder::build_ptr_compare(
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
 /// let pred_oeq = @llvm.FloatPredicate::OEQ;
-/// let res = builder.build_int_compare!(pred_oeq, lhs, rhs, name="res").unwrap();
-/// inspect!(res, content="  %res = fcmp oeq float %0, %1");
+/// let res = builder.build_int_compare(pred_oeq, lhs, rhs, name="res").unwrap();
+/// inspect(res, content="  %res = fcmp oeq float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_compare(
   self : Builder,
@@ -2334,7 +2334,7 @@ pub fn[T : FloatMathValue] Builder::build_float_compare(
   rhs : T,
   name~ : String = ""
 ) -> IntValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let val_ref = @unsafe.llvm_build_fcmp(
     self.as_builder_ref(),
     op.into(),
@@ -2350,7 +2350,7 @@ pub fn Builder::build_unconditional_branch(
   self : Builder,
   destination_block : BasicBlock
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_br(
     self.as_builder_ref(),
     destination_block.bb_ref,
@@ -2365,7 +2365,7 @@ pub fn Builder::build_conditional_branch(
   then_block : BasicBlock,
   else_block : BasicBlock
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_cond_br(
     self.as_builder_ref(),
     comparison.as_value_ref(),
@@ -2381,7 +2381,7 @@ pub fn Builder::build_indirect_branch(
   address : BasicValueEnum,
   destinations : Array[BasicBlock]
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_indirect_br(
     self.as_builder_ref(),
     address.as_value_ref(),
@@ -2409,15 +2409,15 @@ pub fn Builder::build_indirect_branch(
 ///
 /// let operand = fval.get_first_param().unwrap().into_int_value();
 ///
-/// let res = builder.build_int_neg!(operand, name="res").unwrap();
-/// inspect!(res, content="  %res = sub i32 0, %0");
+/// let res = builder.build_int_neg(operand, name="res").unwrap();
+/// inspect(res, content="  %res = sub i32 0, %0");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_neg(
   self : Builder,
   value : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_neg(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2442,15 +2442,15 @@ pub fn[T : IntMathValue] Builder::build_int_neg(
 ///
 /// let operand = fval.get_first_param().unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nsw_neg!(operand, name="res").unwrap();
-/// inspect!(res, content="  %res = sub nsw i32 0, %0");
+/// let res = builder.build_int_nsw_neg(operand, name="res").unwrap();
+/// inspect(res, content="  %res = sub nsw i32 0, %0");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nsw_neg(
   self : Builder,
   value : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_nsw_neg(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2466,7 +2466,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_neg(
   value : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_nuw_neg(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2491,15 +2491,15 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_neg(
 ///
 /// let operand = fval.get_first_param().unwrap().into_float_value();
 ///
-/// let res = builder.build_float_neg!(operand, name="res").unwrap();
-/// inspect!(res, content="  %res = fsub float 0.0, %0");
+/// let res = builder.build_float_neg(operand, name="res").unwrap();
+/// inspect(res, content="  %res = fsub float 0.0, %0");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_neg(
   self : Builder,
   value : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_f_neg(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2524,15 +2524,15 @@ pub fn[T : FloatMathValue] Builder::build_float_neg(
 ///
 /// let operand = fval.get_first_param().unwrap().into_int_value();
 ///
-/// let res = builder.build_not!(operand, name="res").unwrap();
-/// inspect!(res, content="  %res = xor i32 %0, -1");
+/// let res = builder.build_not(operand, name="res").unwrap();
+/// inspect(res, content="  %res = xor i32 %0, -1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_not(
   self : Builder,
   value : T,
   name~ : String = ""
 ) -> T raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_not(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2600,15 +2600,15 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// assert_true!(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+/// assert_true(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
 ///
-/// assert_true!(builder.build_extract_value(array, 0, "extract").unwrap().is_int_value());
-/// assert_true!(builder.build_extract_value(array, 1, "extract").unwrap().is_int_value());
-/// assert_true!(builder.build_extract_value(array, 2, "extract").unwrap().is_int_value());
-/// assert_true!(builder.build_extract_value(array, 3, "extract").is_err());
+/// assert_true(builder.build_extract_value(array, 0, "extract").unwrap().is_int_value());
+/// assert_true(builder.build_extract_value(array, 1, "extract").unwrap().is_int_value());
+/// assert_true(builder.build_extract_value(array, 2, "extract").unwrap().is_int_value());
+/// assert_true(builder.build_extract_value(array, 3, "extract").is_err());
 /// ```
 pub fn[AV : AggregateValue] Builder::build_extract_value(
   self : Builder,
@@ -2616,7 +2616,7 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
   index : UInt,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let size = match agg.as_aggregate_value_enum() {
     AggregateValueEnum::ArrayValue(av) => av.get_type().length()
     AggregateValueEnum::StructValue(sv) => sv.get_type().count_fields()
@@ -2662,10 +2662,10 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// assert_true!(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
-/// assert_true!(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+/// assert_true(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
+/// assert_true(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
 /// ```
 pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
   self : Builder,
@@ -2674,7 +2674,7 @@ pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
   index : UInt,
   name~ : String = ""
 ) -> AggregateValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let size = match agg.as_aggregate_value_enum() {
     AggregateValueEnum::ArrayValue(av) => av.get_type().length()
     AggregateValueEnum::StructValue(sv) => sv.get_type().count_fields()
@@ -2720,7 +2720,7 @@ pub fn Builder::build_extract_element(
   index : IntValue,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_extract_element(
     self.as_builder_ref(),
     vector.as_value_ref(),
@@ -2759,7 +2759,7 @@ pub fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(
   index : IntValue,
   name~ : String = ""
 ) -> W raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_insert_element(
     self.as_builder_ref(),
     vector.as_value_ref(),
@@ -2774,7 +2774,7 @@ pub fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(
 pub fn Builder::build_unreachable(
   self : Builder
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_unreachable(self.as_builder_ref())
   InstructionValue::new(value)
 }
@@ -2786,7 +2786,7 @@ pub fn Builder::build_fence(
   single_thread : Bool,
   name~ : String = ""
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_fence(
     self.as_builder_ref(),
     atomic_ordering.into(),
@@ -2802,7 +2802,7 @@ pub fn[T : PointerMathValue] Builder::build_is_null(
   ptr : T,
   name~ : String = ""
 ) -> IntValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_is_null(
     self.as_builder_ref(),
     ptr.as_value_ref(),
@@ -2874,7 +2874,7 @@ pub fn Builder::build_switch(
   else_block : BasicBlock,
   cases : Array[(IntValue, BasicBlock)]
 ) -> InstructionValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_switch(
     self.as_builder_ref(),
     value.as_value_ref(),
@@ -2900,7 +2900,7 @@ pub fn[BV : BasicValue, IMV : IntMathValue] Builder::build_select(
   else_ : BV,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_select(
     self.as_builder_ref(),
     condition.as_value_ref(),
@@ -2917,7 +2917,7 @@ pub fn Builder::build_global_string(
   value : String,
   name~ : String = ""
 ) -> GlobalValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_global_string(
     self.as_builder_ref(),
     value,
@@ -2932,7 +2932,7 @@ pub fn Builder::build_global_string_ptr(
   value : String,
   name~ : String = ""
 ) -> GlobalValue raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_global_string_ptr(
     self.as_builder_ref(),
     value,
@@ -2949,7 +2949,7 @@ pub fn[V : VectorBaseValue] Builder::build_shuffle_vector(
   mask : V,
   name~ : String = ""
 ) -> V raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_shuffle_vector(
     self.as_builder_ref(),
     left.as_value_ref(),
@@ -2967,7 +2967,7 @@ pub fn[T : BasicType] Builder::build_va_arg(
   ty : T,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
-  guard self.get_positioned() == PositionState::Set else { raise UnsetPosition }
+  guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_va_arg(
     self.as_builder_ref(),
     list.as_value_ref(),

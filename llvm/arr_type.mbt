@@ -31,7 +31,7 @@ pub fn ArrayType::as_type_ref(self : ArrayType) -> @unsafe.LLVMTypeRef {
 /// let array_type = i32_type.array_type(8);
 /// let array_sz = array_type.size_of().unwrap();
 /// let expect = "i64 ptrtoint (ptr getelementptr ([8 x i32], ptr null, i32 1) to i64)"
-/// inspect!(array_sz, content=expect)
+/// inspect(array_sz, content=expect)
 /// ```
 pub fn ArrayType::size_of(self : ArrayType) -> IntValue? {
   self.ty.size_of()
@@ -47,7 +47,7 @@ pub fn ArrayType::size_of(self : ArrayType) -> IntValue? {
 /// let array_type = i32_type.array_type(8);
 /// let array_align = array_type.get_alignment();
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, [8 x i32] }, ptr null, i64 0, i32 1) to i64)"
-/// inspect!(array_align, content=expect)
+/// inspect(array_align, content=expect)
 /// ```
 pub fn ArrayType::get_alignment(self : ArrayType) -> IntValue {
   self.ty.get_alignment()
@@ -61,7 +61,7 @@ pub fn ArrayType::get_alignment(self : ArrayType) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
-/// assert_true!(array_type.is_sized())
+/// assert_true(array_type.is_sized())
 /// ```
 pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
   self.ty.is_sized()
@@ -76,7 +76,7 @@ pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let ptr_type = array_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_type, "ptr")
+/// inspect(ptr_type, "ptr")
 /// ```
 pub fn ArrayType::ptr_type(
   self : ArrayType,
@@ -109,7 +109,7 @@ pub fn ArrayType::get_context(self : ArrayType) -> Context {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let fn_type = array_type.fn_type([i32_type]);
-/// inspect!(fn_type, "[8 x i32] (i32)")
+/// inspect(fn_type, "[8 x i32] (i32)")
 /// ```
 pub fn ArrayType::fn_type(
   self : ArrayType,
@@ -128,8 +128,8 @@ pub fn ArrayType::fn_type(
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_array_type = array_type.array_type(8);
-/// inspect!(array_array_type, "[8 x i32]")
-/// inspect!(array_array_type, "[8 x [8 x i32]]")
+/// inspect(array_array_type, "[8 x i32]")
+/// inspect(array_array_type, "[8 x [8 x i32]]")
 /// ```
 pub fn ArrayType::array_type(self : ArrayType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -157,7 +157,7 @@ pub fn ArrayType::const_zero(self : ArrayType) -> ArrayValue {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_len = array_type.length();
-/// assert_eq!(array_len, 8);
+/// assert_eq(array_len, 8);
 /// ```
 pub fn ArrayType::length(self : ArrayType) -> UInt {
   @unsafe.llvm_get_array_length(self.as_type_ref())
@@ -213,7 +213,7 @@ pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let ele_type = array_type.get_element_type();
-/// inspect!(ele_type, "i32")
+/// inspect(ele_type, "i32")
 /// ```
 pub fn ArrayType::get_element_type(self : ArrayType) -> BasicTypeEnum {
   let ty_ref = self.ty.get_element_type().as_type_ref()
@@ -234,13 +234,6 @@ pub fn ArrayType::print_to_string(self : ArrayType) -> String {
   self.ty.print_to_string()
 }
 
-///| Dumps the `ArrayType` to a string.
-///
-/// It's equivalent to `ArrayType::print_to_string()`.
-pub fn ArrayType::to_string(self : ArrayType) -> String {
-  self.ty.to_string()
-}
-
 ///| Dumps the `ArrayType` to stderr.
 ///
 /// It's equivalent to `ArrayType::print_to_stderr()`.
@@ -250,10 +243,5 @@ pub fn ArrayType::dump(self : ArrayType) -> Unit {
 
 ///|
 pub impl Show for ArrayType with output(self : ArrayType, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for ArrayType with to_string(self : ArrayType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

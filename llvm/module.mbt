@@ -275,8 +275,8 @@ pub fn[T : BasicType] Module::add_global(
 // }
 
 ///|
-pub fn Module::set_inline_assembly(self : Module, asm : String) -> Unit {
-  @unsafe.llvm_set_module_inline_asm(self.module_ref, asm)
+pub fn Module::set_inline_assembly(self : Module, asm_code : String) -> Unit {
+  @unsafe.llvm_set_module_inline_asm(self.module_ref, asm_code)
 }
 
 ///| Appends a `MetaDataValue` to a global list indexed by a particular key.

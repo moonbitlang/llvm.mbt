@@ -44,9 +44,9 @@ fn Value::is_const(self : Value) -> Bool {
 }
 
 ///|
-fn Value::is_poison(self : Value) -> Bool {
-  @unsafe.llvm_is_poison(self.as_value_ref())
-}
+//fn Value::is_poison(self : Value) -> Bool {
+//  @unsafe.llvm_is_poison(self.as_value_ref())
+//}
 
 ///|
 fn Value::set_name(self : Value, name : String) -> Unit {

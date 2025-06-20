@@ -80,7 +80,7 @@ pub fn ArrayValue::replace_all_uses_with(
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23);
 /// let array_val = i64_type.const_array([i64_val]);
-/// assert_true!(array_val.is_const());
+/// assert_true(array_val.is_const());
 /// ```
 pub fn ArrayValue::is_const(self : ArrayValue) -> Bool {
   self.value.is_const()
@@ -94,7 +94,7 @@ pub fn ArrayValue::is_const(self : ArrayValue) -> Bool {
 /// let context = Context::create();
 /// let string = context.const_string(b"my_string", false);
 ///
-/// assert_true!(string.is_const_string());
+/// assert_true(string.is_const_string());
 /// ```
 pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
   // @unsafe.llvm_is_constant_string(self.as_value_ref())
@@ -110,14 +110,13 @@ pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
 /// let context = Context::create();
 /// let string = context.const_string("hello!", true);
 ///
-/// assert_eq!(string.get_string_constant(), Some(result));
+/// assert_eq(string.get_string_constant(), Some(result));
 /// ```
 pub fn ArrayValue::get_string_constant(self : ArrayValue) -> String? {
   let s = @unsafe.llvm_get_as_string(self.as_value_ref())
-  if s.is_empty() {
-    None
-  } else {
-    Some(s)
+  match s.is_empty() {
+    true => None
+    false => Some(s)
   }
 }
 
@@ -135,13 +134,6 @@ pub fn ArrayValue::print_to_string(self : ArrayValue) -> String {
   self.value.print_to_string()
 }
 
-///| Dumps the `ArrayValue` to a string.
-///
-/// It's equivalent to `ArrayValue::print_to_string`.
-pub fn ArrayValue::to_string(self : ArrayValue) -> String {
-  self.value.to_string()
-}
-
 ///| Dumps the `ArrayValue` to stderr.
 ///
 /// It's equivalent to `ArrayValue::print_to_stderr`.
@@ -151,10 +143,5 @@ pub fn ArrayValue::dump(self : ArrayValue) -> Unit {
 
 ///|
 pub impl Show for ArrayValue with output(self : ArrayValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for ArrayValue with to_string(self : ArrayValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

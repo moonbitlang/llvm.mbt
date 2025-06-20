@@ -1,6 +1,6 @@
 {
   "is-main" : false,
-  "import" : [
+  "test-import" : [
     "Kaida-Amethyst/llvm/llvm"
   ],
   "link" : {

@@ -41,8 +41,9 @@ pub fn PhiValue::add_incomings(
   self : PhiValue,
   incoming : Array[(&BasicValue, BasicBlock)]
 ) -> Unit {
-  let values = incoming.map(fn { (val, _) => val.as_value_ref() })
-  let bbs = incoming.map(fn { (_, bb) => bb.as_bb_ref() })
+  let (values, bbs) = incoming.unzip()
+  let values = values.map(v => v.as_value_ref())
+  let bbs = bbs.map(bb => bb.as_bb_ref())
   @unsafe.llvm_add_incoming(self.as_value_ref(), values, bbs)
 }
 

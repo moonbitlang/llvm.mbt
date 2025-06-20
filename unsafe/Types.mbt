@@ -500,7 +500,7 @@ pub(all) enum LLVMTypeKind {
 } derive(Show, Eq)
 
 ///|
-fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
+pub fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
   match self {
     LLVMVoidTypeKind => 0
     LLVMHalfTypeKind => 1
@@ -576,7 +576,7 @@ pub(all) enum LLVMLinkage {
 }
 
 ///|
-fn LLVMLinkage::to_int(self : LLVMLinkage) -> Int {
+pub fn LLVMLinkage::to_int(self : LLVMLinkage) -> Int {
   match self {
     LLVMExternalLinkage => 0
     LLVMAvailableExternallyLinkage => 1

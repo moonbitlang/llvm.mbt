@@ -38,7 +38,7 @@ pub fn CallSiteValue::as_value_ref(
 ///
 /// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
 /// call_site_value.set_tail_call(true);
-/// assert_true!(call_site_value.is_tail_call());
+/// assert_true(call_site_value.is_tail_call());
 /// ```
 pub fn CallSiteValue::set_tail_call(
   self : CallSiteValue,
@@ -66,7 +66,7 @@ pub fn CallSiteValue::set_tail_call(
 ///
 /// call_site_value.set_tail_call(true);
 ///
-/// assert_true!(call_site_value.is_tail_call());
+/// assert_true(call_site_value.is_tail_call());
 /// ```
 pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
   self.as_value_ref().is_tail_call()
@@ -89,7 +89,7 @@ pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
 ///
 /// let call_site = builder.build_call(fn_value, [], "my_fn").unwrap();
 ///
-/// assert_true!(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindNone);
+/// assert_true(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindNone);
 /// ```
 // TODO: use `TailCallKind` instead of `@unsafe.LLVMTailCallKind`
 pub fn CallSiteValue::get_tail_call_kind(
@@ -116,7 +116,7 @@ pub fn CallSiteValue::get_tail_call_kind(
 /// let call_site = builder.build_call(fn_value, [], "my_fn").unwrap();
 ///
 /// call_site.set_tail_call_kind(@unsafe.LLVMTailCallKindTail);
-/// assert_true!(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindTail);
+/// assert_true(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindTail);
 /// ```
 pub fn CallSiteValue::set_tail_call_kind(
   self : CallSiteValue,
@@ -141,7 +141,7 @@ pub fn CallSiteValue::set_tail_call_kind(
 /// builder.position_at_end(entry_bb);
 ///
 /// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
-/// assert_true!(call_site_value.try_as_basic_value().is_right());
+/// assert_true(call_site_value.try_as_basic_value().is_right());
 /// ```
 pub fn CallSiteValue::try_as_basic_value(
   self : CallSiteValue
@@ -209,7 +209,7 @@ pub fn CallSiteValue::add_attribute(
 ///
 /// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
 ///
-/// assert_eq!(call_site_value.get_called_fn_value(), fn_value);
+/// assert_eq(call_site_value.get_called_fn_value(), fn_value);
 /// ```
 pub fn CallSiteValue::get_called_fn_value(
   self : CallSiteValue
@@ -239,7 +239,7 @@ pub fn CallSiteValue::get_called_fn_value(
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
 ///
-/// assert_eq!(call_site_value.count_attributes(AttributeLoc::Return), 2);
+/// assert_eq(call_site_value.count_attributes(AttributeLoc::Return), 2);
 /// ```
 pub fn CallSiteValue::count_attributes(
   self : CallSiteValue,
@@ -273,7 +273,7 @@ pub fn CallSiteValue::count_attributes(
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
 ///
-/// assert_eq!(call_site_value.attributes(ret_attr), [string_attribute, enum_attribute]);
+/// assert_eq(call_site_value.attributes(ret_attr), [string_attribute, enum_attribute]);
 /// ```
 // REVIEW: Possibly need to check attr_refs is null or not
 pub fn CallSiteValue::attributes(
@@ -309,7 +309,7 @@ pub fn CallSiteValue::attributes(
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
 ///
-/// assert_eq!(call_site_value.get_enum_attribute(ret_attr, 1).unwrap(), enum_attribute);
+/// assert_eq(call_site_value.get_enum_attribute(ret_attr, 1).unwrap(), enum_attribute);
 /// ```
 // REVIEW: Possibly need to check attr_ref is null or not
 pub fn CallSiteValue::get_enum_attribute(
@@ -347,7 +347,7 @@ pub fn CallSiteValue::get_enum_attribute(
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
 ///
-/// assert_eq!(call_site_value.get_string_attribute(ret_attr, "my_key").unwrap(), string_attribute);
+/// assert_eq(call_site_value.get_string_attribute(ret_attr, "my_key").unwrap(), string_attribute);
 /// ```
 // REVIEW: Possibly need to check attr_ref is null or not
 pub fn CallSiteValue::get_string_attribute(
@@ -386,7 +386,7 @@ pub fn CallSiteValue::get_string_attribute(
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
 /// call_site_value.remove_enum_attribute(AttributeLoc::Return, 1);
 ///
-/// assert_eq!(call_site_value.get_enum_attribute(AttributeLoc::Return, 1), None);
+/// assert_eq(call_site_value.get_enum_attribute(AttributeLoc::Return, 1), None);
 /// ```
 pub fn CallSiteValue::remove_enum_attribute(
   self : CallSiteValue,
@@ -423,7 +423,7 @@ pub fn CallSiteValue::remove_enum_attribute(
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
 /// call_site_value.remove_string_attribute(AttributeLoc::Return, "my_key");
 ///
-/// assert_eq!(call_site_value.get_string_attribute(AttributeLoc::Return, "my_key"), None);
+/// assert_eq(call_site_value.get_string_attribute(AttributeLoc::Return, "my_key"), None);
 /// ```
 pub fn CallSiteValue::remove_string_attribute(
   self : CallSiteValue,
@@ -456,7 +456,7 @@ pub fn CallSiteValue::remove_string_attribute(
 ///
 /// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
 ///
-/// assert_eq!(call_site_value.count_arguments(), 0);
+/// assert_eq(call_site_value.count_arguments(), 0);
 /// ```
 pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
   @unsafe.llvm_get_num_arg_operands(self.as_value_ref())
@@ -479,7 +479,7 @@ pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
 ///
 /// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
 ///
-/// assert_eq!(call_site_value.get_call_convention(), 0);
+/// assert_eq(call_site_value.get_call_convention(), 0);
 /// ```
 pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
   @unsafe.llvm_get_instruction_call_conv(self.as_value_ref())
@@ -504,7 +504,7 @@ pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
 ///
 /// call_site_value.set_call_convention(2);
 ///
-/// assert_eq!(call_site_value.get_call_convention(), 2);
+/// assert_eq(call_site_value.get_call_convention(), 2);
 /// ```
 pub fn CallSiteValue::set_call_convention(
   self : CallSiteValue,

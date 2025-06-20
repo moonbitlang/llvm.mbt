@@ -6920,7 +6920,9 @@ pub fn LLVMValueRef::set_metadata(
   llvm_set_metadata(self, kind_id, node)
 }
 
-// pub extern "C" fn llvm_instruction_get_all_metadata_other_than_debug_loc(instr: LLVMValueRef, num_entries: Ptr[UInt64]) -> Ptr[LLVMValueMetadataEntry] = "__llvm_instruction_get_all_metadata_other_than_debug_loc"
+// pub extern "C" fn llvm_instruction_get_all_metadata_other_than_debug_loc(
+// instr: LLVMValueRef, num_entries: Ptr[UInt64]
+// ) -> Ptr[LLVMValueMetadataEntry] = "__llvm_instruction_get_all_metadata_other_than_debug_loc"
 
 ///| Get the basic block of an instruction.
 pub extern "C" fn llvm_get_instruction_parent(
@@ -9453,8 +9455,7 @@ extern "C" fn __llvm_get_nuw(arith_inst : LLVMValueRef) -> LLVMBool = "LLVMGetNU
 
 ///| Check if the instruction has the nuw flag set.
 pub fn LLVMValueRef::get_nuw(self : LLVMValueRef) -> Bool {
-  let has_nuw = __llvm_get_nuw(self)
-  to_moonbit_bool(has_nuw)
+  __llvm_get_nuw(self).to_moonbit_bool()
 }
 
 ///| Check if the instruction has the nuw flag set.
@@ -9480,8 +9481,7 @@ extern "C" fn __llvm_get_nsw(arith_inst : LLVMValueRef) -> LLVMBool = "LLVMGetNS
 
 ///| Check if the instruction has the nsw flag set.
 pub fn LLVMValueRef::get_nsw(self : LLVMValueRef) -> Bool {
-  let has_nsw = __llvm_get_nsw(self)
-  to_moonbit_bool(has_nsw)
+  __llvm_get_nsw(self).to_moonbit_bool()
 }
 
 ///| Check if the instruction has the nsw flag set.
@@ -9507,8 +9507,7 @@ extern "C" fn __llvm_get_exact(div_or_shr_inst : LLVMValueRef) -> LLVMBool = "LL
 
 ///| Check if the instruction has the exact flag set.
 pub fn LLVMValueRef::get_exact(self : LLVMValueRef) -> Bool {
-  let is_exact = __llvm_get_exact(self)
-  to_moonbit_bool(is_exact)
+  __llvm_get_exact(self).to_moonbit_bool()
 }
 
 ///| Check if the instruction has the exact flag set.
@@ -9541,16 +9540,14 @@ extern "C" fn __llvm_get_n_neg(non_neg_inst : LLVMValueRef) -> LLVMBool = "LLVMG
 ///
 /// Only valid for zext instructions.
 pub fn llvm_get_n_neg(non_neg_inst : LLVMValueRef) -> Bool {
-  let is_non_neg = __llvm_get_n_neg(non_neg_inst)
-  to_moonbit_bool(is_non_neg)
+  __llvm_get_n_neg(non_neg_inst).to_moonbit_bool()
 }
 
 ///| Gets if the instruction has the non-negative flag set.
 ///
 /// Only valid for zext instructions.
 pub fn LLVMValueRef::get_n_neg(self : LLVMValueRef) -> Bool {
-  let is_non_neg = __llvm_get_n_neg(self)
-  to_moonbit_bool(is_non_neg)
+  __llvm_get_n_neg(self).to_moonbit_bool()
 }
 
 ///| Sets the non-negative flag for the instruction.
@@ -9630,8 +9627,7 @@ extern "C" fn __llvm_can_value_use_fast_math_flags(
 /// phi, and call instructions whose type is a floating point type, or a vector
 /// or array thereof. - see https://llvm.org/docs/LangRef.html#fast-math-flags
 pub fn llvm_can_value_use_fast_math_flags(inst : LLVMValueRef) -> Bool {
-  let can_use = __llvm_can_value_use_fast_math_flags(inst)
-  to_moonbit_bool(can_use)
+  __llvm_can_value_use_fast_math_flags(inst).to_moonbit_bool()
 }
 
 ///| Check if a given value can potentially have fast math flags.
@@ -9652,8 +9648,7 @@ extern "C" fn __llvm_get_is_disjoint(inst : LLVMValueRef) -> LLVMBool = "LLVMGet
 /// 
 /// Only valid for or instructions.
 pub fn LLVMValueRef::get_is_disjoint(self : LLVMValueRef) -> Bool {
-  let is_disjoint = __llvm_get_is_disjoint(self)
-  to_moonbit_bool(is_disjoint)
+  __llvm_get_is_disjoint(self).to_moonbit_bool()
 }
 
 ///| Sets the disjoint flag for the instruction.
@@ -10107,8 +10102,7 @@ extern "C" fn __llvm_get_volatile(
 
 ///| Check if memory access instruction is volatile.
 pub fn llvm_get_volatile(memory_access_inst : LLVMValueRef) -> Bool {
-  let is_volatile = __llvm_get_volatile(memory_access_inst)
-  to_moonbit_bool(is_volatile)
+  __llvm_get_volatile(memory_access_inst).to_moonbit_bool()
 }
 
 ///| Check if memory access instruction is volatile.
@@ -10143,8 +10137,7 @@ extern "C" fn __llvm_get_weak(cmp_xchg_inst : LLVMValueRef) -> LLVMBool = "LLVMG
 
 ///| Check if cmpxchg instruction is weak.
 pub fn llvm_get_weak(cmp_xchg_inst : LLVMValueRef) -> Bool {
-  let is_weak = __llvm_get_weak(cmp_xchg_inst)
-  to_moonbit_bool(is_weak)
+  __llvm_get_weak(cmp_xchg_inst).to_moonbit_bool()
 }
 
 ///|
