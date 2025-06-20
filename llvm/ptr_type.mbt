@@ -31,7 +31,7 @@ pub fn PointerType::as_type_ref(self : PointerType) -> @unsafe.LLVMTypeRef {
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_sz = ptr_type.size_of();
 /// let expect = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)";
-/// inspect!(ptr_sz, content=expect)
+/// inspect(ptr_sz, content=expect)
 /// ```
 pub fn PointerType::size_of(self : PointerType) -> IntValue {
   self.ty.size_of().unwrap()
@@ -52,7 +52,7 @@ pub fn PointerType::is_sized(self : PointerType) -> Bool {
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_align = ptr_type.get_alignment();
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)";
-/// inspect!(ptr_align, content=expect)
+/// inspect(ptr_align, content=expect)
 /// ```
 pub fn PointerType::get_alignment(self : PointerType) -> IntValue {
   self.ty.get_alignment()
@@ -67,7 +67,7 @@ pub fn PointerType::get_alignment(self : PointerType) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_ptr_type = ptr_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_ptr_type, "ptr")
+/// inspect(ptr_ptr_type, content="ptr")
 /// ```
 pub fn PointerType::ptr_type(
   self : PointerType,
@@ -87,7 +87,7 @@ pub fn PointerType::ptr_type(
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_ctx = ptr_type.get_context();
-/// assert_true!(context == ptr_ctx);
+/// assert_true(context == ptr_ctx);
 /// ```
 pub fn PointerType::get_context(self : PointerType) -> Context {
   self.ty.get_context()
@@ -102,7 +102,7 @@ pub fn PointerType::get_context(self : PointerType) -> Context {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let fn_type = ptr_type.fn_type([i32_type]);
-/// inspect!(fn_type, "ptr (i32)")
+/// inspect(fn_type, content="ptr (i32)")
 /// ```
 pub fn PointerType::fn_type(
   self : PointerType,
@@ -121,7 +121,7 @@ pub fn PointerType::fn_type(
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let array_type = ptr_type.array_type(16);
-/// inspect!(array_type, "[16 x ptr]")
+/// inspect(array_type, content="[16 x ptr]")
 /// ```
 pub fn PointerType::array_type(self : PointerType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -136,7 +136,7 @@ pub fn PointerType::array_type(self : PointerType, size : UInt) -> ArrayType {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let addr_space = ptr_type.get_address_space();
-/// inspect!(addr_space, "AddressSpace(0)")
+/// inspect(addr_space, content="AddressSpace(0)")
 /// ```
 pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
   let addr_space = @unsafe.llvm_get_pointer_address_space(self.as_type_ref())
@@ -153,7 +153,7 @@ pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let null_ptr = ptr_type.const_null();
-/// inspect!(null_ptr, "ptr null")
+/// inspect(null_ptr, content="ptr null")
 /// ```
 pub fn PointerType::const_null(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_const_null(self.as_type_ref()))
@@ -169,7 +169,7 @@ pub fn PointerType::const_null(self : PointerType) -> PointerValue {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let null_ptr = ptr_type.const_zero();
-/// inspect!(null_ptr, "ptr null")
+/// inspect(null_ptr, content="ptr null")
 /// ```
 pub fn PointerType::const_zero(self : PointerType) -> PointerValue {
   PointerValue::new(self.ty.const_zero())
@@ -184,7 +184,7 @@ pub fn PointerType::const_zero(self : PointerType) -> PointerValue {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_undef = ptr_type.get_undef();
-/// inspect!(ptr_undef, "ptr undef")
+/// inspect(ptr_undef, content="ptr undef")
 /// ```
 pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_undef(self.as_type_ref()))
@@ -199,7 +199,7 @@ pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let ptr_poison = ptr_type.get_poison();
-/// inspect!(ptr_poison, "ptr poison")
+/// inspect(ptr_poison, content="ptr poison")
 /// ```
 pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
@@ -214,7 +214,7 @@ pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let vector_type = ptr_type.vec_type(16);
-/// inspect!(vector_type, "<16 x ptr>")
+/// inspect(vector_type, content="<16 x ptr>")
 /// ```
 pub fn PointerType::vec_type(self : PointerType, size : UInt) -> VectorType {
   self.ty.vec_type(size)
@@ -229,7 +229,7 @@ pub fn PointerType::vec_type(self : PointerType, size : UInt) -> VectorType {
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let vscale_type = ptr_type.scalable_vec_type(16);
-/// inspect!(vscale_type, "<vscale x 16 x ptr>")
+/// inspect(vscale_type, content="<vscale x 16 x ptr>")
 /// ```
 pub fn PointerType::scalable_vec_type(
   self : PointerType,
@@ -276,13 +276,6 @@ pub fn PointerType::print_to_string(self : PointerType) -> String {
   self.ty.print_to_string()
 }
 
-///| Dump the `PointerType` to a string.
-///
-/// It's equivalent to `PointerType::print_to_string()`.
-pub fn PointerType::to_string(self : PointerType) -> String {
-  self.ty.to_string()
-}
-
 ///| Dump the `PointerType` to stderr.
 ///
 /// It's equivalent to `PointerType::print_to_stderr()`.
@@ -292,10 +285,6 @@ pub fn PointerType::dump(self : PointerType) -> Unit {
 
 ///|
 pub impl Show for PointerType with output(self : PointerType, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
+  logger.write_string(self.ty.to_string())
 }
 
-///|
-pub impl Show for PointerType with to_string(self : PointerType) -> String {
-  self.to_string()
-}

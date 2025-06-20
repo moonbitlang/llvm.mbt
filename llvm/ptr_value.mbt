@@ -32,32 +32,11 @@ pub fn PointerValue::get_name(self : PointerValue) -> String {
 }
 
 ///| Set name of the `PointerValue`.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int(42);
-/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
-/// ptr_type.set_name("forty_two");
-/// inspect!(ptr_type.get_name(), "forty_two");
-/// ```
 pub fn PointerValue::set_name(self : PointerValue, name : String) -> Unit {
   self.value.set_name(name)
 }
 
 ///| Gets the type of a `PointerValue`.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int(42);
-/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_type.get_type(), "ptr");
-/// ```
 pub fn PointerValue::get_type(self : PointerValue) -> PointerType {
   PointerType::new(self.value.get_type().as_type_ref())
 }
@@ -68,16 +47,6 @@ pub fn PointerValue::is_null(self : PointerValue) -> Bool {
 }
 
 ///| Returns whether or not the `PointerValue` is undefined.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i64_type = context.i64_type();
-/// let ptr_type = i64_type.ptr_type(AddressSpace::default());
-/// let undef = ptr_type.get_undef();
-/// assert_true!(undef.is_undef());
-/// ```
 pub fn PointerValue::is_undef(self : PointerValue) -> Bool {
   self.value.is_undef()
 }

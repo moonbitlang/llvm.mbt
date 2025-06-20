@@ -36,10 +36,10 @@ pub fn StructValue::as_value_ref(self : StructValue) -> @unsafe.LLVMValueRef {
 /// let struct_type = context.struct_type([i8_type, i32_type]);
 /// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
 ///
-/// assert_true!(struct_val.get_field_at_index(0) is Some(_));
-/// assert_true!(struct_val.get_field_at_index(1) is Some(_));
-/// assert_true!(struct_val.get_field_at_index(2) is None);
-/// assert_true!(struct_val.get_field_at_index(0).unwrap().is_int_value());
+/// assert_true(struct_val.get_field_at_index(0) is Some(_));
+/// assert_true(struct_val.get_field_at_index(1) is Some(_));
+/// assert_true(struct_val.get_field_at_index(2) is None);
+/// assert_true(struct_val.get_field_at_index(0).unwrap().is_int_value());
 /// ```
 pub fn StructValue::get_field_at_index(
   self : StructValue,
@@ -94,8 +94,8 @@ pub fn StructValue::set_field_at_index(
 /// let struct_type = context.struct_type([i8_type, i32_type]);
 /// let struct_val = struct_type.const_named_struct([i8_val, i32_val]);
 ///
-/// assert_eq!(struct_val.count_fields(), 2);
-/// assert_eq!(struct_val.count_fields(), struct_type.count_fields());
+/// assert_eq(struct_val.count_fields(), 2);
+/// assert_eq(struct_val.count_fields(), struct_type.count_fields());
 /// ```
 pub fn StructValue::count_fields(self : StructValue) -> UInt {
   @unsafe.llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
@@ -151,7 +151,7 @@ pub fn StructValue::replace_all_uses_with(
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23, false);
 /// let struct_val = context.const_struct([i64_val, i64_val]);
-/// assert_true!(struct_val.is_const());
+/// assert_true(struct_val.is_const());
 /// ```
 pub fn StructValue::is_const(self : StructValue) -> Bool {
   self.value.is_const()

@@ -31,7 +31,7 @@ pub fn StructType::as_type_ref(self : StructType) -> @unsafe.LLVMTypeRef {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let field_type = struct_type.get_field_type_at_index(1);
-/// inspect!(field_type.unwrap(), "i64")
+/// inspect(field_type.unwrap(), content="i64")
 /// ```
 pub fn StructType::get_field_type_at_index(
   self : StructType,
@@ -75,7 +75,7 @@ pub fn StructType::const_zero(self : StructType) -> StructValue {
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_sz = struct_type.size_of().unwrap();
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i32, i64 }, ptr null, i32 1) to i64)"
-/// inspect!(struct_sz, content=expect)
+/// inspect(struct_sz, content=expect)
 /// ```
 pub fn StructType::size_of(self : StructType) -> IntValue? {
   self.ty.size_of()
@@ -95,8 +95,8 @@ pub fn StructType::size_of(self : StructType) -> IntValue? {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let opaque_struct = context.struct_type([]);
-/// inspect!(struct_type.is_sized(), content="true")
-/// inspect!(opaque_struct.is_sized(), content="true")
+/// inspect(struct_type.is_sized(), content="true")
+/// inspect(opaque_struct.is_sized(), content="true")
 /// ```
 pub fn StructType::is_sized(self : StructType) -> Bool {
   self.ty.is_sized()
@@ -113,7 +113,7 @@ pub fn StructType::is_sized(self : StructType) -> Bool {
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_align = struct_type.get_alignment();
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, { i32, i64 } }, ptr null, i64 0, i32 1) to i64)"
-/// inspect!(struct_align, content=expect)
+/// inspect(struct_align, content=expect)
 /// ```
 pub fn StructType::get_alignment(self : StructType) -> IntValue {
   self.ty.get_alignment()
@@ -129,7 +129,7 @@ pub fn StructType::get_alignment(self : StructType) -> IntValue {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_ctx = struct_type.get_context();
-/// assert_true!(context == struct_ctx);
+/// assert_true(context == struct_ctx);
 /// ```
 pub fn StructType::get_context(self : StructType) -> Context {
   self.ty.get_context()
@@ -152,7 +152,7 @@ pub fn StructType::get_name(self : StructType) -> String {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let fn_type = struct_type.fn_type([i32_type, i64_type]);
-/// inspect!(fn_type, "<{ i32, i64 }> (i32, i64)")
+/// inspect(fn_type, "<{ i32, i64 }> (i32, i64)")
 /// ```
 pub fn StructType::fn_type(
   self : StructType,
@@ -172,7 +172,7 @@ pub fn StructType::fn_type(
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let array_type = struct_type.array_type(8);
-/// inspect!(array_type, "[8 x { i32, i64 }]")
+/// inspect(array_type, content="[8 x { i32, i64 }]")
 /// ```
 pub fn StructType::array_type(self : StructType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -188,7 +188,7 @@ pub fn StructType::array_type(self : StructType, size : UInt) -> ArrayType {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let ptr_ty = struct_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_ty, "ptr")
+/// inspect(ptr_ty, content="ptr")
 /// ```
 pub fn StructType::ptr_type(
   self : StructType,
@@ -208,7 +208,7 @@ pub fn StructType::ptr_type(
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type], is_packed=true);
-/// assert_true!(struct_type.is_packed())
+/// assert_true(struct_type.is_packed())
 /// ```
 pub fn StructType::is_packed(self : StructType) -> Bool {
   @unsafe.llvm_is_packed_struct(self.as_type_ref())
@@ -221,7 +221,7 @@ pub fn StructType::is_packed(self : StructType) -> Bool {
 /// ```moonbit
 /// let context = Context::create();
 /// let struct_ty = context.opaque_struct_type("opaque_struct");
-/// assert_true!(struct_ty.is_opaque())
+/// assert_true(struct_ty.is_opaque())
 /// ```
 pub fn StructType::is_opaque(self : StructType) -> Bool {
   @unsafe.llvm_is_opaque_struct(self.as_type_ref())
@@ -237,7 +237,7 @@ pub fn StructType::is_opaque(self : StructType) -> Bool {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let field_count = struct_type.count_fields();
-/// assert_eq!(field_count, 2)
+/// assert_eq(field_count, 2)
 /// ```
 pub fn StructType::count_fields(self : StructType) -> UInt {
   @unsafe.llvm_count_struct_element_types(self.as_type_ref())
@@ -253,7 +253,7 @@ pub fn StructType::count_fields(self : StructType) -> UInt {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let field_types = struct_type.get_field_types();
-/// inspect!(field_types, "[i32, i64]")
+/// inspect(field_types, content="[i32, i64]")
 /// ```
 pub fn StructType::get_field_types(self : StructType) -> Array[BasicTypeEnum] {
   let ele_tys = @unsafe.llvm_get_struct_element_types(self.as_type_ref())
@@ -271,7 +271,7 @@ pub fn StructType::get_field_types(self : StructType) -> Array[BasicTypeEnum] {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_undef = struct_type.get_undef();
-/// inspect!(struct_undef, "{ i32, i64 } undef")
+/// inspect(struct_undef, content="{ i32, i64 } undef")
 /// ```
 pub fn StructType::get_undef(self : StructType) -> StructValue {
   StructValue::new(self.ty.get_undef())
@@ -287,7 +287,7 @@ pub fn StructType::get_undef(self : StructType) -> StructValue {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let struct_poison = struct_type.get_poison();
-/// inspect!(struct_poison, "{ i32, i64 } poison")
+/// inspect(struct_poison, content="{ i32, i64 } poison")
 /// ```
 pub fn StructType::get_poison(self : StructType) -> StructValue {
   StructValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
@@ -304,23 +304,25 @@ pub fn StructType::get_poison(self : StructType) -> StructValue {
 /// ```moonbit
 /// let context = Context::create();
 /// let opaque_struct = context.opaque_struct_type("opaque_struct");
-/// assert_true!(opaque_struct.is_opaque())
+/// assert_true(opaque_struct.is_opaque())
 ///
 /// let i32_type = context.i32_type();
 /// let f64_type = context.f64_type();
 /// opaque_struct.set_body([i32_type, f64_type], is_packed=true);
-/// assert_false!(opaque_struct.is_opaque())
-/// inspect!(opaque_struct, "{ i32, double }")
+/// assert_false(opaque_struct.is_opaque())
+/// inspect(opaque_struct, content="{ i32, double }")
 /// ```
 pub fn StructType::set_body(
   self : StructType,
   field_types : Array[&BasicType],
   is_packed~ : Bool = false
-) -> Bool {
-  let is_opaque = self.is_opaque()
+) -> Unit {
+  // TODO: should raise an error.
+  if not(self.is_opaque()) {
+    println("Warning: Setting body of a non-opaque struct type may not work as expected.")
+  }
   let field_types = field_types.map(fn(t) { t.as_type_ref() })
   @unsafe.llvm_struct_set_body(self.as_type_ref(), field_types, is_packed)
-  is_opaque
 }
 
 ///| Creates a constant `ArrayValue`.
@@ -333,7 +335,7 @@ pub fn StructType::set_body(
 /// let struct_type = context.struct_type([i32_type]);
 /// let struct_val = struct_type.const_named_struct([])
 /// let struct_arr = struct_type.const_array([struct_val, struct_val]);
-/// assert_true!(struct_arr.is_const())
+/// assert_true(struct_arr.is_const())
 /// ```
 pub fn StructType::const_array(
   self : StructType,

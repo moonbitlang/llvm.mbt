@@ -25,10 +25,10 @@ pub fn OperandBundle::as_bundle_ref(
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let op_bundle = OperandBundle::create("tag", [i32_type.const_zero()]);
-/// assert_eq!(op_bundle.get_tag().unwrap(), "tag");
+/// inspect(op_bundle.get_tag(), content="tag");
 /// let arg = op_bundle.get_args().nth(0).unwrap().into_int_value();
-/// assert_true!(arg.is_const());
-/// assert_eq!(arg.get_zero_extended_constant().unwrap(), 0);
+/// assert_true(arg.is_const());
+/// assert_eq(arg.get_zero_extended_constant().unwrap(), 0);
 /// ```
 pub fn OperandBundle::create(
   tag : String,
@@ -45,7 +45,7 @@ pub fn OperandBundle::create(
 ///
 /// ```
 /// let op_bundle = OperandBundle::create("tag", []);
-/// inspect!(op_bundle.get_tag(), content="tag");
+/// inspect(op_bundle.get_tag(), content="tag");
 /// ```
 pub fn OperandBundle::get_tag(self : OperandBundle) -> String {
   @unsafe.llvm_get_operand_bundle_tag(self.bundle)
@@ -68,7 +68,7 @@ pub fn OperandBundle::get_tag(self : OperandBundle) -> String {
 ///   [i32_type.const_zero(),
 ///    f32_type.const_float(1.23)]
 /// );
-/// assert_eq!(op_bundle.get_args().length(), 2);
+/// assert_eq(op_bundle.get_args().length(), 2);
 /// ```
 pub fn OperandBundle::get_args(self : OperandBundle) -> Array[BasicValueEnum] {
   let cnt = @unsafe.llvm_get_num_operand_bundle_args(self.as_bundle_ref()).reinterpret_as_int()

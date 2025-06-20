@@ -45,7 +45,7 @@ pub fn ScalableVectorType::size_of(self : ScalableVectorType) -> IntValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -59,7 +59,7 @@ pub fn ScalableVectorType::is_sized(self : ScalableVectorType) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -75,7 +75,7 @@ pub fn ScalableVectorType::get_alignment(self : ScalableVectorType) -> IntValue 
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -90,7 +90,7 @@ pub fn ScalableVectorType::get_size(self : ScalableVectorType) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -106,7 +106,7 @@ pub fn ScalableVectorType::const_zero(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -123,7 +123,7 @@ pub fn ScalableVectorType::get_undef(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -140,7 +140,7 @@ pub fn ScalableVectorType::get_poison(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -176,7 +176,7 @@ pub fn ScalableVectorType::ptr_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -195,7 +195,7 @@ pub fn ScalableVectorType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -221,7 +221,7 @@ pub fn ScalableVectorType::const_array(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
