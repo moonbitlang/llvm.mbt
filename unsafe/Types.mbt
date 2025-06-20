@@ -1,59 +1,93 @@
 // LLVMTypes
+///|
 type LLVMBool Int derive(Eq)
+
+///|
 pub(all) type LLVMAttributeIndex UInt derive(Eq)
+
+///|
 pub(all) type LLVMFastMathFlags UInt derive(Eq)
+
+///|
 pub(all) type LLVMDWARFTypeEncoding UInt derive(Eq)
+
+///|
 pub(all) type LLVMMetadataKind UInt derive(Eq)
 
 // Dummy function just for eliminating the warning
-pub fn LLVMAttributeIndex::new(idx: UInt) -> LLVMAttributeIndex {
+
+///|
+pub fn LLVMAttributeIndex::new(idx : UInt) -> LLVMAttributeIndex {
   LLVMAttributeIndex(idx)
 }
 // Dummy function just for eliminating the warning
-pub fn LLVMFastMathFlags::new(idx: UInt) -> LLVMFastMathFlags {
+
+///|
+pub fn LLVMFastMathFlags::new(idx : UInt) -> LLVMFastMathFlags {
   LLVMFastMathFlags(idx)
 }
 
 // Dummy function just for eliminating the warning
-pub fn LLVMDWARFTypeEncoding::new(idx: UInt) -> LLVMDWARFTypeEncoding {
+
+///|
+pub fn LLVMDWARFTypeEncoding::new(idx : UInt) -> LLVMDWARFTypeEncoding {
   LLVMDWARFTypeEncoding(idx)
 }
 
 // Dummy function just for eliminating the warning
-pub fn LLVMMetadataKind::new(idx: UInt) -> LLVMMetadataKind {
+
+///|
+pub fn LLVMMetadataKind::new(idx : UInt) -> LLVMMetadataKind {
   LLVMMetadataKind(idx)
 }
 
 ///| llvm memory buffer
-pub extern type LLVMMemoryBufferRef
+#external
+pub type LLVMMemoryBufferRef
 
 ///| llvm context
-pub extern type LLVMContextRef
+#external
+pub type LLVMContextRef
 
 ///| llvm module
-pub extern type LLVMModuleRef
+#external
+pub type LLVMModuleRef
 
 ///| llvm BasicBlock
-pub extern type LLVMBasicBlockRef
+#external
+pub type LLVMBasicBlockRef
 
 ///| llvm metadata
-pub extern type LLVMMetadataRef
+#external
+pub type LLVMMetadataRef
 
 ///| llvm md node
-pub extern type LLVMNamedMDNodeRef
-pub extern type LLVMValueMetadataEntry
+#external
+pub type LLVMNamedMDNodeRef
+
+///|
+#external
+pub type LLVMValueMetadataEntry
 
 ///| llvm builder
-pub extern type LLVMBuilderRef
-pub extern type LLVMDIBuilderRef
+#external
+pub type LLVMBuilderRef
+
+///|
+#external
+pub type LLVMDIBuilderRef
 
 ///| llvm module provider
-pub extern type LLVMModuleProviderRef
+#external
+pub type LLVMModuleProviderRef
 
 ///| llvm pass manager
-pub extern type LLVMPassManagerRef
+#external
+pub type LLVMPassManagerRef
 
-pub extern type LLVMPassRegistryRef 
+///|
+#external
+pub type LLVMPassRegistryRef
 
 ///| A set of options passed which are attached to the Pass Manager upon run.
 /// 
@@ -62,96 +96,166 @@ pub extern type LLVMPassRegistryRef
 /// The details for how the different properties of this structure are used can
 /// be found in the source for LLVMRunPasses
 /// 
-pub extern type LLVMPassBuilderOptionsRef
+#external
+pub type LLVMPassBuilderOptionsRef
 
-pub extern type LLVMPassManagerBuilderRef 
+///|
+#external
+pub type LLVMPassManagerBuilderRef
 
 ///| llvm use
-pub extern type LLVMUseRef
+#external
+pub type LLVMUseRef
 
 ///| llvm values
-pub extern type LLVMValueRef
+#external
+pub type LLVMValueRef
 
 ///| llvm types
-pub extern type LLVMTypeRef
+#external
+pub type LLVMTypeRef
 
 ///| llvm operand bundles
-pub extern type LLVMOperandBundleRef
+#external
+pub type LLVMOperandBundleRef
 
 ///| llvm attributes
-pub extern type LLVMAttributeRef
+#external
+pub type LLVMAttributeRef
 
 ///| llvm diagnostic info
-pub extern type LLVMDiagnosticInfoRef
-pub extern type LLVMComdatRef
-pub extern type LLVMModuleFlagEntry
-pub extern type LLVMJITEventListenerRef
-pub extern type LLVMBinaryRef
-pub extern type LLVMTargetRef
-pub extern type LLVMTargetMachineOptionsRef
-pub extern type LLVMTargetMachineRef
+#external
+pub type LLVMDiagnosticInfoRef
+
+///|
+#external
+pub type LLVMComdatRef
+
+///|
+#external
+pub type LLVMModuleFlagEntry
+
+///|
+#external
+pub type LLVMJITEventListenerRef
+
+///|
+#external
+pub type LLVMBinaryRef
+
+///|
+#external
+pub type LLVMTargetRef
+
+///|
+#external
+pub type LLVMTargetMachineOptionsRef
+
+///|
+#external
+pub type LLVMTargetMachineRef
 
 ///| llvm debug record refs
-pub extern type LLVMDbgRecordRef
+#external
+pub type LLVMDbgRecordRef
 
-pub extern type LLVMGenericValueRef
-pub extern type LVMExecutionEngineRef
-pub extern type LVMMCJITMemoryManagerRef
+///|
+#external
+pub type LLVMGenericValueRef
 
-pub extern type LLVMRemarkStringRef
+///|
+#external
+pub type LVMExecutionEngineRef
+
+///|
+#external
+pub type LVMMCJITMemoryManagerRef
+
+///|
+#external
+pub type LLVMRemarkStringRef
 
 ///| Opaque reference to an error instance. Null serves as the 'success' value.
-pub extern type LLVMErrorRef
+#external
+pub type LLVMErrorRef
 
 ///| Represents an address in the executor process.
 pub(all) type LLVMOrcJITTargetAddress UInt64 derive(Show, Eq)
-
 
 ///| Represents an address in the executor process.
 pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq)
 
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
+
+///|
 pub(all) type LLVMJITSymbolTargetFlags UInt derive(Show, Eq)
 
 ///| A reference to an orc::ExecutionSession instance.
-pub extern type LLVMOrcExecutionSessionRef
+#external
+pub type LLVMOrcExecutionSessionRef
 
 ///| A reference to an orc::SymbolStringPool.
-pub extern type LLVMOrcSymbolStringPoolRef
+#external
+pub type LLVMOrcSymbolStringPoolRef
 
 ///| A reference to an orc::SymbolStringPool table entry.
-pub extern type LLVMOrcSymbolStringPoolEntryRef
-pub impl Eq for LLVMTypeRef with op_equal(self: LLVMTypeRef, other: LLVMTypeRef) -> Bool {
+#external
+pub type LLVMOrcSymbolStringPoolEntryRef
+
+///|
+pub impl Eq for LLVMTypeRef with op_equal(
+  self : LLVMTypeRef,
+  other : LLVMTypeRef
+) -> Bool {
   self.is_equal(other)
 }
 
-pub impl Eq for LLVMValueRef with op_equal(self: LLVMValueRef, other: LLVMValueRef) -> Bool {
+///|
+pub impl Eq for LLVMValueRef with op_equal(
+  self : LLVMValueRef,
+  other : LLVMValueRef
+) -> Bool {
   self.is_equal(other)
 }
 
-pub impl Eq for LLVMContextRef with op_equal(self: LLVMContextRef, other: LLVMContextRef) -> Bool {
+///|
+pub impl Eq for LLVMContextRef with op_equal(
+  self : LLVMContextRef,
+  other : LLVMContextRef
+) -> Bool {
   self.is_equal(other)
 }
 
-pub impl Eq for LLVMAttributeRef with op_equal(self: LLVMAttributeRef, other: LLVMAttributeRef) -> Bool {
+///|
+pub impl Eq for LLVMAttributeRef with op_equal(
+  self : LLVMAttributeRef,
+  other : LLVMAttributeRef
+) -> Bool {
   self.is_equal(other)
 }
 
-pub impl Eq for LLVMBasicBlockRef with op_equal(self: LLVMBasicBlockRef, other: LLVMBasicBlockRef) -> Bool {
+///|
+pub impl Eq for LLVMBasicBlockRef with op_equal(
+  self : LLVMBasicBlockRef,
+  other : LLVMBasicBlockRef
+) -> Bool {
   self.is_equal(other)
 }
 
-pub fn LLVMDWARFTypeEncoding::into(self: LLVMDWARFTypeEncoding) -> UInt {
+///|
+pub fn LLVMDWARFTypeEncoding::into(self : LLVMDWARFTypeEncoding) -> UInt {
   guard self is LLVMDWARFTypeEncoding(val)
   val
 }
 
-pub fn LLVMMetadataKind::into(self: LLVMMetadataKind) -> UInt {
+///|
+pub fn LLVMMetadataKind::into(self : LLVMMetadataKind) -> UInt {
   guard self is LLVMMetadataKind(val)
   val
 }
 
 // enums
+
 ///| Instruction opcodes
 pub(all) enum LLVMOpcode {
   LLVMRet
@@ -223,7 +327,8 @@ pub(all) enum LLVMOpcode {
   LLVMCatchSwitch
 }
 
-pub fn LLVMOpcode::to_int(self: LLVMOpcode) -> Int {
+///|
+pub fn LLVMOpcode::to_int(self : LLVMOpcode) -> Int {
   match self {
     LLVMRet => 0
     LLVMBr => 1
@@ -295,7 +400,8 @@ pub fn LLVMOpcode::to_int(self: LLVMOpcode) -> Int {
   }
 }
 
-pub fn LLVMOpcode::from_int(idx: Int) -> LLVMOpcode {
+///|
+pub fn LLVMOpcode::from_int(idx : Int) -> LLVMOpcode {
   match idx {
     0 => LLVMRet
     1 => LLVMBr
@@ -368,6 +474,7 @@ pub fn LLVMOpcode::from_int(idx: Int) -> LLVMOpcode {
   }
 }
 
+///|
 pub(all) enum LLVMTypeKind {
   LLVMVoidTypeKind
   LLVMHalfTypeKind
@@ -392,7 +499,8 @@ pub(all) enum LLVMTypeKind {
   LLVMTargetExtTypeKind
 } derive(Show, Eq)
 
-fn LLVMTypeKind::to_int(self: LLVMTypeKind) -> Int {
+///|
+fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
   match self {
     LLVMVoidTypeKind => 0
     LLVMHalfTypeKind => 1
@@ -418,7 +526,8 @@ fn LLVMTypeKind::to_int(self: LLVMTypeKind) -> Int {
   }
 }
 
-pub fn LLVMTypeKind::from_int(idx: Int) -> LLVMTypeKind {
+///|
+pub fn LLVMTypeKind::from_int(idx : Int) -> LLVMTypeKind {
   match idx {
     0 => LLVMVoidTypeKind
     1 => LLVMHalfTypeKind
@@ -445,6 +554,7 @@ pub fn LLVMTypeKind::from_int(idx: Int) -> LLVMTypeKind {
   }
 }
 
+///|
 pub(all) enum LLVMLinkage {
   LLVMExternalLinkage
   LLVMAvailableExternallyLinkage
@@ -465,7 +575,8 @@ pub(all) enum LLVMLinkage {
   LLVMLinkerPrivateWeakLinkage
 }
 
-fn LLVMLinkage::to_int(self: LLVMLinkage) -> Int {
+///|
+fn LLVMLinkage::to_int(self : LLVMLinkage) -> Int {
   match self {
     LLVMExternalLinkage => 0
     LLVMAvailableExternallyLinkage => 1
@@ -487,7 +598,8 @@ fn LLVMLinkage::to_int(self: LLVMLinkage) -> Int {
   }
 }
 
-fn LLVMLinkage::from_int(idx: Int) -> LLVMLinkage {
+///|
+fn LLVMLinkage::from_int(idx : Int) -> LLVMLinkage {
   match idx {
     0 => LLVMExternalLinkage
     1 => LLVMAvailableExternallyLinkage
@@ -510,13 +622,15 @@ fn LLVMLinkage::from_int(idx: Int) -> LLVMLinkage {
   }
 }
 
+///|
 pub(all) enum LLVMVisibility {
   LLVMDefaultVisibility
   LLVMHiddenVisibility
   LLVMProtectedVisibility
 }
 
-pub fn LLVMVisibility::to_int(self: LLVMVisibility) -> Int {
+///|
+pub fn LLVMVisibility::to_int(self : LLVMVisibility) -> Int {
   match self {
     LLVMDefaultVisibility => 0
     LLVMHiddenVisibility => 1
@@ -524,7 +638,8 @@ pub fn LLVMVisibility::to_int(self: LLVMVisibility) -> Int {
   }
 }
 
-pub fn LLVMVisibility::from_int(idx: Int) -> LLVMVisibility {
+///|
+pub fn LLVMVisibility::from_int(idx : Int) -> LLVMVisibility {
   match idx {
     0 => LLVMDefaultVisibility
     1 => LLVMHiddenVisibility
@@ -533,13 +648,15 @@ pub fn LLVMVisibility::from_int(idx: Int) -> LLVMVisibility {
   }
 }
 
+///|
 pub(all) enum LLVMUnnamedAddr {
   LLVMNoUnnamedAddr
   LLVMLocalUnnamedAddr
   LLVMGlobalUnnamedAddr
 } derive(Show, Eq)
 
-pub fn LLVMUnnamedAddr::to_int(self: LLVMUnnamedAddr) -> Int {
+///|
+pub fn LLVMUnnamedAddr::to_int(self : LLVMUnnamedAddr) -> Int {
   match self {
     LLVMNoUnnamedAddr => 0
     LLVMLocalUnnamedAddr => 1
@@ -547,7 +664,8 @@ pub fn LLVMUnnamedAddr::to_int(self: LLVMUnnamedAddr) -> Int {
   }
 }
 
-pub fn LLVMUnnamedAddr::from_int(idx: Int) -> LLVMUnnamedAddr {
+///|
+pub fn LLVMUnnamedAddr::from_int(idx : Int) -> LLVMUnnamedAddr {
   match idx {
     0 => LLVMNoUnnamedAddr
     1 => LLVMLocalUnnamedAddr
@@ -556,13 +674,15 @@ pub fn LLVMUnnamedAddr::from_int(idx: Int) -> LLVMUnnamedAddr {
   }
 }
 
+///|
 pub(all) enum LLVMDLLStorageClass {
   LLVMDefaultStorageClass
   LLVMDLLImportStorageClass
   LLVMDLLExportStorageClass
 }
 
-pub fn LLVMDLLStorageClass::to_int(self: LLVMDLLStorageClass) -> Int {
+///|
+pub fn LLVMDLLStorageClass::to_int(self : LLVMDLLStorageClass) -> Int {
   match self {
     LLVMDefaultStorageClass => 0
     LLVMDLLImportStorageClass => 1
@@ -570,15 +690,20 @@ pub fn LLVMDLLStorageClass::to_int(self: LLVMDLLStorageClass) -> Int {
   }
 }
 
-pub fn LLVMDLLStorageClass::from_int(idx: Int) -> LLVMDLLStorageClass {
+///|
+pub fn LLVMDLLStorageClass::from_int(idx : Int) -> LLVMDLLStorageClass {
   match idx {
     0 => LLVMDefaultStorageClass
     1 => LLVMDLLImportStorageClass
     2 => LLVMDLLExportStorageClass
-    _ => abort("Invalid LLVMDLLStorageClass Number in `LLVMDLLStorageClass::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMDLLStorageClass Number in `LLVMDLLStorageClass::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMCallConv {
   LLVMCCallConv
   LLVMFastCallConv
@@ -623,53 +748,55 @@ pub(all) enum LLVMCallConv {
   LLVMAMDGPUESCallConv
 }
 
-pub fn LLVMCallConv::to_int(self: LLVMCallConv) -> Int {
+///|
+pub fn LLVMCallConv::to_int(self : LLVMCallConv) -> Int {
   match self {
-  LLVMCCallConv => 0
-  LLVMFastCallConv => 1
-  LLVMColdCallConv => 2
-  LLVMGHCCallConv => 3
-  LLVMHiPECallConv => 4
-  LLVMAnyRegCallConv => 5
-  LLVMPreserveMostCallConv => 6
-  LLVMPreserveAllCallConv => 7
-  LLVMSwiftCallConv => 8
-  LLVMCXXFASTTLSCallConv => 9
-  LLVMX86StdcallCallConv => 10
-  LLVMX86FastcallCallConv => 11
-  LLVMARMAPCSCallConv => 12
-  LLVMARMAAPCSCallConv => 13
-  LLVMARMAAPCSVFPCallConv => 14
-  LLVMMSP430INTRCallConv => 15
-  LLVMX86ThisCallCallConv => 16
-  LLVMPTXKernelCallConv => 17
-  LLVMPTXDeviceCallConv => 18
-  LLVMSPIRFUNCCallConv => 19
-  LLVMSPIRKERNELCallConv => 20
-  LLVMIntelOCLBICallConv => 21
-  LLVMX8664SysVCallConv => 22
-  LLVMWin64CallConv => 23
-  LLVMX86VectorCallCallConv => 24
-  LLVMHHVMCallConv => 25
-  LLVMHHVMCCallConv => 26
-  LLVMX86INTRCallConv => 27
-  LLVMAVRINTRCallConv => 28
-  LLVMAVRSIGNALCallConv => 29
-  LLVMAVRBUILTINCallConv => 30
-  LLVMAMDGPUVSCallConv => 31
-  LLVMAMDGPUGSCallConv => 32
-  LLVMAMDGPUPSCallConv => 33
-  LLVMAMDGPUCSCallConv => 34
-  LLVMAMDGPUKERNELCallConv => 35
-  LLVMX86RegCallCallConv => 36
-  LLVMAMDGPUHSCallConv => 37
-  LLVMMSP430BUILTINCallConv => 38
-  LLVMAMDGPULSCallConv => 39
-  LLVMAMDGPUESCallConv => 40
+    LLVMCCallConv => 0
+    LLVMFastCallConv => 1
+    LLVMColdCallConv => 2
+    LLVMGHCCallConv => 3
+    LLVMHiPECallConv => 4
+    LLVMAnyRegCallConv => 5
+    LLVMPreserveMostCallConv => 6
+    LLVMPreserveAllCallConv => 7
+    LLVMSwiftCallConv => 8
+    LLVMCXXFASTTLSCallConv => 9
+    LLVMX86StdcallCallConv => 10
+    LLVMX86FastcallCallConv => 11
+    LLVMARMAPCSCallConv => 12
+    LLVMARMAAPCSCallConv => 13
+    LLVMARMAAPCSVFPCallConv => 14
+    LLVMMSP430INTRCallConv => 15
+    LLVMX86ThisCallCallConv => 16
+    LLVMPTXKernelCallConv => 17
+    LLVMPTXDeviceCallConv => 18
+    LLVMSPIRFUNCCallConv => 19
+    LLVMSPIRKERNELCallConv => 20
+    LLVMIntelOCLBICallConv => 21
+    LLVMX8664SysVCallConv => 22
+    LLVMWin64CallConv => 23
+    LLVMX86VectorCallCallConv => 24
+    LLVMHHVMCallConv => 25
+    LLVMHHVMCCallConv => 26
+    LLVMX86INTRCallConv => 27
+    LLVMAVRINTRCallConv => 28
+    LLVMAVRSIGNALCallConv => 29
+    LLVMAVRBUILTINCallConv => 30
+    LLVMAMDGPUVSCallConv => 31
+    LLVMAMDGPUGSCallConv => 32
+    LLVMAMDGPUPSCallConv => 33
+    LLVMAMDGPUCSCallConv => 34
+    LLVMAMDGPUKERNELCallConv => 35
+    LLVMX86RegCallCallConv => 36
+    LLVMAMDGPUHSCallConv => 37
+    LLVMMSP430BUILTINCallConv => 38
+    LLVMAMDGPULSCallConv => 39
+    LLVMAMDGPUESCallConv => 40
   }
 }
 
-pub fn LLVMCallConv::from_int(i: Int) -> LLVMCallConv {
+///|
+pub fn LLVMCallConv::from_int(i : Int) -> LLVMCallConv {
   match i {
     0 => LLVMCCallConv
     1 => LLVMFastCallConv
@@ -681,41 +808,42 @@ pub fn LLVMCallConv::from_int(i: Int) -> LLVMCallConv {
     7 => LLVMPreserveAllCallConv
     8 => LLVMSwiftCallConv
     9 => LLVMCXXFASTTLSCallConv
-    10 =>LLVMX86StdcallCallConv
-    11 =>LLVMX86FastcallCallConv
-    12 =>LLVMARMAPCSCallConv
-    13 =>LLVMARMAAPCSCallConv
-    14 =>LLVMARMAAPCSVFPCallConv
-    15 =>LLVMMSP430INTRCallConv
-    16 =>LLVMX86ThisCallCallConv
-    17 =>LLVMPTXKernelCallConv
-    18 =>LLVMPTXDeviceCallConv
-    19 =>LLVMSPIRFUNCCallConv
-    20 =>LLVMSPIRKERNELCallConv
-    21 =>LLVMIntelOCLBICallConv
-    22 =>LLVMX8664SysVCallConv
-    23 =>LLVMWin64CallConv
-    24 =>LLVMX86VectorCallCallConv
-    25 =>LLVMHHVMCallConv
-    26 =>LLVMHHVMCCallConv
-    27 =>LLVMX86INTRCallConv
-    28 =>LLVMAVRINTRCallConv
-    29 =>LLVMAVRSIGNALCallConv
-    30 =>LLVMAVRBUILTINCallConv
-    31 =>LLVMAMDGPUVSCallConv
-    32 =>LLVMAMDGPUGSCallConv
-    33 =>LLVMAMDGPUPSCallConv
-    34 =>LLVMAMDGPUCSCallConv
-    35 =>LLVMAMDGPUKERNELCallConv
-    36 =>LLVMX86RegCallCallConv
-    37 =>LLVMAMDGPUHSCallConv
-    38 =>LLVMMSP430BUILTINCallConv
-    39 =>LLVMAMDGPULSCallConv
-    40 =>LLVMAMDGPUESCallConv
+    10 => LLVMX86StdcallCallConv
+    11 => LLVMX86FastcallCallConv
+    12 => LLVMARMAPCSCallConv
+    13 => LLVMARMAAPCSCallConv
+    14 => LLVMARMAAPCSVFPCallConv
+    15 => LLVMMSP430INTRCallConv
+    16 => LLVMX86ThisCallCallConv
+    17 => LLVMPTXKernelCallConv
+    18 => LLVMPTXDeviceCallConv
+    19 => LLVMSPIRFUNCCallConv
+    20 => LLVMSPIRKERNELCallConv
+    21 => LLVMIntelOCLBICallConv
+    22 => LLVMX8664SysVCallConv
+    23 => LLVMWin64CallConv
+    24 => LLVMX86VectorCallCallConv
+    25 => LLVMHHVMCallConv
+    26 => LLVMHHVMCCallConv
+    27 => LLVMX86INTRCallConv
+    28 => LLVMAVRINTRCallConv
+    29 => LLVMAVRSIGNALCallConv
+    30 => LLVMAVRBUILTINCallConv
+    31 => LLVMAMDGPUVSCallConv
+    32 => LLVMAMDGPUGSCallConv
+    33 => LLVMAMDGPUPSCallConv
+    34 => LLVMAMDGPUCSCallConv
+    35 => LLVMAMDGPUKERNELCallConv
+    36 => LLVMX86RegCallCallConv
+    37 => LLVMAMDGPUHSCallConv
+    38 => LLVMMSP430BUILTINCallConv
+    39 => LLVMAMDGPULSCallConv
+    40 => LLVMAMDGPUESCallConv
     _ => abort("Invalid LLVMCallConv Number in `LLVMCallConv::from_int`")
   }
 }
 
+///|
 pub(all) enum LLVMValueKind {
   LLVMArgumentValueKind
   LLVMBasicBlockValueKind
@@ -746,7 +874,8 @@ pub(all) enum LLVMValueKind {
   LLVMConstantTargetNoneValueKind
 }
 
-pub fn LLVMValueKind::to_int(self: LLVMValueKind) -> Int {
+///|
+pub fn LLVMValueKind::to_int(self : LLVMValueKind) -> Int {
   match self {
     LLVMArgumentValueKind => 0
     LLVMBasicBlockValueKind => 1
@@ -778,7 +907,8 @@ pub fn LLVMValueKind::to_int(self: LLVMValueKind) -> Int {
   }
 }
 
-pub fn LLVMValueKind::from_int(idx: Int) -> LLVMValueKind {
+///|
+pub fn LLVMValueKind::from_int(idx : Int) -> LLVMValueKind {
   match idx {
     0 => LLVMArgumentValueKind
     1 => LLVMBasicBlockValueKind
@@ -811,6 +941,7 @@ pub fn LLVMValueKind::from_int(idx: Int) -> LLVMValueKind {
   }
 }
 
+///|
 pub(all) enum LLVMIntPredicate {
   LLVMIntEQ
   LLVMIntNE
@@ -824,7 +955,8 @@ pub(all) enum LLVMIntPredicate {
   LLVMIntSLE
 }
 
-pub fn LLVMIntPredicate::to_int(self: LLVMIntPredicate) -> Int {
+///|
+pub fn LLVMIntPredicate::to_int(self : LLVMIntPredicate) -> Int {
   match self {
     LLVMIntEQ => 0
     LLVMIntNE => 1
@@ -839,7 +971,8 @@ pub fn LLVMIntPredicate::to_int(self: LLVMIntPredicate) -> Int {
   }
 }
 
-pub fn LLVMIntPredicate::from_int(idx: Int) -> LLVMIntPredicate {
+///|
+pub fn LLVMIntPredicate::from_int(idx : Int) -> LLVMIntPredicate {
   match idx {
     0 => LLVMIntEQ
     1 => LLVMIntNE
@@ -851,11 +984,12 @@ pub fn LLVMIntPredicate::from_int(idx: Int) -> LLVMIntPredicate {
     7 => LLVMIntSGE
     8 => LLVMIntSLT
     9 => LLVMIntSLE
-    _ => abort("Invalid LLVMIntPredicate Number in `LLVMIntPredicate::from_int`")
+    _ =>
+      abort("Invalid LLVMIntPredicate Number in `LLVMIntPredicate::from_int`")
   }
 }
 
-
+///|
 pub(all) enum LLVMRealPredicate {
   LLVMRealPredicateFalse
   LLVMRealOEQ
@@ -875,7 +1009,8 @@ pub(all) enum LLVMRealPredicate {
   LLVMRealPredicateTrue
 }
 
-pub fn LLVMRealPredicate::to_int(self: LLVMRealPredicate) -> Int {
+///|
+pub fn LLVMRealPredicate::to_int(self : LLVMRealPredicate) -> Int {
   match self {
     LLVMRealPredicateFalse => 0
     LLVMRealOEQ => 1
@@ -896,7 +1031,8 @@ pub fn LLVMRealPredicate::to_int(self: LLVMRealPredicate) -> Int {
   }
 }
 
-pub fn LLVMRealPredicate::from_int(idx: Int) -> LLVMRealPredicate {
+///|
+pub fn LLVMRealPredicate::from_int(idx : Int) -> LLVMRealPredicate {
   match idx {
     0 => LLVMRealPredicateFalse
     1 => LLVMRealOEQ
@@ -914,30 +1050,38 @@ pub fn LLVMRealPredicate::from_int(idx: Int) -> LLVMRealPredicate {
     13 => LLVMRealULE
     14 => LLVMRealUNE
     15 => LLVMRealPredicateTrue
-    _ => abort("Invalid LLVMRealPredicate Number in `LLVMRealPredicate::from_int`")
+    _ =>
+      abort("Invalid LLVMRealPredicate Number in `LLVMRealPredicate::from_int`")
   }
 }
 
+///|
 pub(all) enum LLVMLandingPadClauseTy {
   LLVMLandingPadCatch
   LLVMLandingPadFilter
 }
 
-pub fn LLVMLandingPadClauseTy::to_int(self: LLVMLandingPadClauseTy) -> Int {
+///|
+pub fn LLVMLandingPadClauseTy::to_int(self : LLVMLandingPadClauseTy) -> Int {
   match self {
     LLVMLandingPadCatch => 0
     LLVMLandingPadFilter => 1
   }
 }
 
-pub fn LLVMLandingPadClauseTy::from_int(idx: Int) -> LLVMLandingPadClauseTy {
+///|
+pub fn LLVMLandingPadClauseTy::from_int(idx : Int) -> LLVMLandingPadClauseTy {
   match idx {
     0 => LLVMLandingPadCatch
     1 => LLVMLandingPadFilter
-    _ => abort("Invalid LLVMLandingPadClauseTy Number in `LLVMLandingPadClauseTy::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMLandingPadClauseTy Number in `LLVMLandingPadClauseTy::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMThreadLocalMode {
   LLVMNotThreadLocal
   LLVMGeneralDynamicTLSModel
@@ -946,7 +1090,8 @@ pub(all) enum LLVMThreadLocalMode {
   LLVMLocalExecTLSModel
 }
 
-pub fn LLVMThreadLocalMode::to_int(self: LLVMThreadLocalMode) -> Int {
+///|
+pub fn LLVMThreadLocalMode::to_int(self : LLVMThreadLocalMode) -> Int {
   match self {
     LLVMNotThreadLocal => 0
     LLVMGeneralDynamicTLSModel => 1
@@ -956,17 +1101,22 @@ pub fn LLVMThreadLocalMode::to_int(self: LLVMThreadLocalMode) -> Int {
   }
 }
 
-pub fn LLVMThreadLocalMode::from_int(idx: Int) -> LLVMThreadLocalMode {
+///|
+pub fn LLVMThreadLocalMode::from_int(idx : Int) -> LLVMThreadLocalMode {
   match idx {
     0 => LLVMNotThreadLocal
     1 => LLVMGeneralDynamicTLSModel
     2 => LLVMLocalDynamicTLSModel
     3 => LLVMInitialExecTLSModel
     4 => LLVMLocalExecTLSModel
-    _ => abort("Invalid LLVMThreadLocalMode Number in `LLVMThreadLocalMode::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMThreadLocalMode Number in `LLVMThreadLocalMode::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMAtomicOrdering {
   LLVMAtomicOrderingNotAtomic
   LLVMAtomicOrderingUnordered
@@ -977,7 +1127,8 @@ pub(all) enum LLVMAtomicOrdering {
   LLVMAtomicOrderingSequentiallyConsistent
 }
 
-pub fn LLVMAtomicOrdering::to_int(self: LLVMAtomicOrdering) -> Int {
+///|
+pub fn LLVMAtomicOrdering::to_int(self : LLVMAtomicOrdering) -> Int {
   match self {
     LLVMAtomicOrderingNotAtomic => 0
     LLVMAtomicOrderingUnordered => 1
@@ -989,7 +1140,8 @@ pub fn LLVMAtomicOrdering::to_int(self: LLVMAtomicOrdering) -> Int {
   }
 }
 
-pub fn LLVMAtomicOrdering::from_int(idx: Int) -> LLVMAtomicOrdering {
+///|
+pub fn LLVMAtomicOrdering::from_int(idx : Int) -> LLVMAtomicOrdering {
   match idx {
     0 => LLVMAtomicOrderingNotAtomic
     1 => LLVMAtomicOrderingUnordered
@@ -998,10 +1150,14 @@ pub fn LLVMAtomicOrdering::from_int(idx: Int) -> LLVMAtomicOrdering {
     4 => LLVMAtomicOrderingRelease
     5 => LLVMAtomicOrderingAcquireRelease
     6 => LLVMAtomicOrderingSequentiallyConsistent
-    _ => abort("Invalid LLVMAtomicOrdering Number in `LLVMAtomicOrdering::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMAtomicOrdering Number in `LLVMAtomicOrdering::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMAtomicRMWBinOp {
   LLVMAtomicRMWBinOpXchg
   LLVMAtomicRMWBinOpAdd
@@ -1022,7 +1178,8 @@ pub(all) enum LLVMAtomicRMWBinOp {
   LLVMAtomicRMWBinOpUDecWrap
 }
 
-pub fn LLVMAtomicRMWBinOp::to_int(self: LLVMAtomicRMWBinOp) -> Int {
+///|
+pub fn LLVMAtomicRMWBinOp::to_int(self : LLVMAtomicRMWBinOp) -> Int {
   match self {
     LLVMAtomicRMWBinOpXchg => 0
     LLVMAtomicRMWBinOpAdd => 1
@@ -1044,7 +1201,8 @@ pub fn LLVMAtomicRMWBinOp::to_int(self: LLVMAtomicRMWBinOp) -> Int {
   }
 }
 
-pub fn LLVMAtomicRMWBinOp::from_int(idx: Int) -> LLVMAtomicRMWBinOp {
+///|
+pub fn LLVMAtomicRMWBinOp::from_int(idx : Int) -> LLVMAtomicRMWBinOp {
   match idx {
     0 => LLVMAtomicRMWBinOpXchg
     1 => LLVMAtomicRMWBinOpAdd
@@ -1063,18 +1221,23 @@ pub fn LLVMAtomicRMWBinOp::from_int(idx: Int) -> LLVMAtomicRMWBinOp {
     14 => LLVMAtomicRMWBinOpFMin
     15 => LLVMAtomicRMWBinOpUIncWrap
     16 => LLVMAtomicRMWBinOpUDecWrap
-    _ => abort("Invalid LLVMAtomicRMWBinOp Number in `LLVMAtomicRMWBinOp::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMAtomicRMWBinOp Number in `LLVMAtomicRMWBinOp::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMDiagnosticSeverity {
-    LLVMDSError
-    LLVMDSWarning
-    LLVMDSRemark
-    LLVMDSNote
+  LLVMDSError
+  LLVMDSWarning
+  LLVMDSRemark
+  LLVMDSNote
 }
 
-pub fn LLVMDiagnosticSeverity::to_int(self: LLVMDiagnosticSeverity) -> Int {
+///|
+pub fn LLVMDiagnosticSeverity::to_int(self : LLVMDiagnosticSeverity) -> Int {
   match self {
     LLVMDSError => 0
     LLVMDSWarning => 1
@@ -1083,36 +1246,47 @@ pub fn LLVMDiagnosticSeverity::to_int(self: LLVMDiagnosticSeverity) -> Int {
   }
 }
 
-pub fn LLVMDiagnosticSeverity::from_int(idx: Int) -> LLVMDiagnosticSeverity {
+///|
+pub fn LLVMDiagnosticSeverity::from_int(idx : Int) -> LLVMDiagnosticSeverity {
   match idx {
     0 => LLVMDSError
     1 => LLVMDSWarning
     2 => LLVMDSRemark
     3 => LLVMDSNote
-    _ => abort("Invalid LLVMDiagnosticSeverity Number in `LLVMDiagnosticSeverity::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMDiagnosticSeverity Number in `LLVMDiagnosticSeverity::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMInlineAsmDialect {
   LLVMInlineAsmDialectATT
   LLVMInlineAsmDialectIntel
 }
 
-pub fn LLVMInlineAsmDialect::to_int(self: LLVMInlineAsmDialect) -> Int {
+///|
+pub fn LLVMInlineAsmDialect::to_int(self : LLVMInlineAsmDialect) -> Int {
   match self {
     LLVMInlineAsmDialectATT => 0
     LLVMInlineAsmDialectIntel => 1
   }
 }
 
-pub fn LLVMInlineAsmDialect::from_int(idx: Int) -> LLVMInlineAsmDialect {
+///|
+pub fn LLVMInlineAsmDialect::from_int(idx : Int) -> LLVMInlineAsmDialect {
   match idx {
     0 => LLVMInlineAsmDialectATT
     1 => LLVMInlineAsmDialectIntel
-    _ => abort("Invalid LLVMInlineAsmDialect Number in `LLVMInlineAsmDialect::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMInlineAsmDialect Number in `LLVMInlineAsmDialect::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMModuleFlagBehavior {
   /// 
   /// Emits an error if two values disagree, otherwise the resulting value is
@@ -1121,14 +1295,12 @@ pub(all) enum LLVMModuleFlagBehavior {
   /// - see Module::ModFlagBehavior::Error
   /// 
   LLVMModuleFlagBehaviorError
-
   /// Emits a warning if two values disagree. The result value will be the
   /// operand for the flag from the first module being linked.
   /// 
   /// - see Module::ModFlagBehavior::Warning
   /// 
   LLVMModuleFlagBehaviorWarning
-
   /// Adds a requirement that another module flag be present and have a
   /// specified value after linking is performed. The value must be a metadata
   /// pair, where the first element of the pair is the ID of the module flag
@@ -1140,7 +1312,6 @@ pub(all) enum LLVMModuleFlagBehavior {
   /// - see Module::ModFlagBehavior::Require
   /// 
   LLVMModuleFlagBehaviorRequire
-
   /// 
   /// Uses the specified value, regardless of the behavior or value of the
   /// other module. If both modules specify **Override**, but the values
@@ -1149,14 +1320,12 @@ pub(all) enum LLVMModuleFlagBehavior {
   /// - see Module::ModFlagBehavior::Override
   /// 
   LLVMModuleFlagBehaviorOverride
-
-  //// 
+  /// 
   /// Appends the two values, which are required to be metadata nodes.
   /// 
   /// - see Module::ModFlagBehavior::Append
   /// 
   LLVMModuleFlagBehaviorAppend
-
   /// 
   /// Appends the two values, which are required to be metadata
   /// nodes. However, duplicate entries in the second list are dropped
@@ -1167,7 +1336,8 @@ pub(all) enum LLVMModuleFlagBehavior {
   LLVMModuleFlagBehaviorAppendUnique
 }
 
-pub fn LLVMModuleFlagBehavior::to_int(self: LLVMModuleFlagBehavior) -> Int {
+///|
+pub fn LLVMModuleFlagBehavior::to_int(self : LLVMModuleFlagBehavior) -> Int {
   match self {
     LLVMModuleFlagBehaviorError => 0
     LLVMModuleFlagBehaviorWarning => 1
@@ -1178,7 +1348,8 @@ pub fn LLVMModuleFlagBehavior::to_int(self: LLVMModuleFlagBehavior) -> Int {
   }
 }
 
-pub fn LLVMModuleFlagBehavior::from_int(idx: Int) -> LLVMModuleFlagBehavior {
+///|
+pub fn LLVMModuleFlagBehavior::from_int(idx : Int) -> LLVMModuleFlagBehavior {
   match idx {
     0 => LLVMModuleFlagBehaviorError
     1 => LLVMModuleFlagBehaviorWarning
@@ -1186,12 +1357,12 @@ pub fn LLVMModuleFlagBehavior::from_int(idx: Int) -> LLVMModuleFlagBehavior {
     3 => LLVMModuleFlagBehaviorOverride
     4 => LLVMModuleFlagBehaviorAppend
     5 => LLVMModuleFlagBehaviorAppendUnique
-    _ => abort("Invalid LLVMModuleFlagBehavior Number in `LLVMModuleFlagBehavior::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMModuleFlagBehavior Number in `LLVMModuleFlagBehavior::from_int`",
+      )
   }
 }
-
-
-
 
 //
 // /**
@@ -1206,8 +1377,7 @@ pub fn LLVMModuleFlagBehavior::from_int(idx: Int) -> LLVMModuleFlagBehavior {
 //   LLVMAttributeFunctionIndex = -1,
 // };
 
-
-
+///|
 pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindNone
   LLVMTailCallKindTail
@@ -1215,7 +1385,8 @@ pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindNoTail
 }
 
-pub fn LLVMTailCallKind::to_int(self: LLVMTailCallKind) -> Int {
+///|
+pub fn LLVMTailCallKind::to_int(self : LLVMTailCallKind) -> Int {
   match self {
     LLVMTailCallKindNone => 0
     LLVMTailCallKindTail => 1
@@ -1224,16 +1395,19 @@ pub fn LLVMTailCallKind::to_int(self: LLVMTailCallKind) -> Int {
   }
 }
 
-pub fn LLVMTailCallKind::from_int(idx: Int) -> LLVMTailCallKind {
+///|
+pub fn LLVMTailCallKind::from_int(idx : Int) -> LLVMTailCallKind {
   match idx {
     0 => LLVMTailCallKindNone
     1 => LLVMTailCallKindTail
     2 => LLVMTailCallKindMustTail
     3 => LLVMTailCallKindNoTail
-    _ => abort("Invalid LLVMTailCallKind Number in `LLVMTailCallKind::from_int`")
+    _ =>
+      abort("Invalid LLVMTailCallKind Number in `LLVMTailCallKind::from_int`")
   }
 }
 
+///|
 pub(all) enum LLVMComdatSelectionKind {
   LLVMAnyComdatSelectionKind
   LLVMExactMatchComdatSelectionKind
@@ -1242,7 +1416,8 @@ pub(all) enum LLVMComdatSelectionKind {
   LLVMSameSizeComdatSelectionKind
 }
 
-pub fn LLVMComdatSelectionKind::to_int(self: LLVMComdatSelectionKind) -> Int {
+///|
+pub fn LLVMComdatSelectionKind::to_int(self : LLVMComdatSelectionKind) -> Int {
   match self {
     LLVMAnyComdatSelectionKind => 0
     LLVMExactMatchComdatSelectionKind => 1
@@ -1252,30 +1427,37 @@ pub fn LLVMComdatSelectionKind::to_int(self: LLVMComdatSelectionKind) -> Int {
   }
 }
 
-pub fn LLVMComdatSelectionKind::from_int(idx: Int) -> LLVMComdatSelectionKind {
+///|
+pub fn LLVMComdatSelectionKind::from_int(idx : Int) -> LLVMComdatSelectionKind {
   match idx {
     0 => LLVMAnyComdatSelectionKind
     1 => LLVMExactMatchComdatSelectionKind
     2 => LLVMLargestComdatSelectionKind
     3 => LLVMNoDeduplicateComdatSelectionKind
     4 => LLVMSameSizeComdatSelectionKind
-    _ => abort("Invalid LLVMComdatSelectionKind Number in `LLVMComdatSelectionKind::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMComdatSelectionKind Number in `LLVMComdatSelectionKind::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMLinkerMode {
   LLVMLinkerDestroySource
   LLVMLinkerPreserveSource_Removed
 }
 
-pub fn LLVMLinkerMode::to_int(self: LLVMLinkerMode) -> Int {
+///|
+pub fn LLVMLinkerMode::to_int(self : LLVMLinkerMode) -> Int {
   match self {
     LLVMLinkerDestroySource => 0
     LLVMLinkerPreserveSource_Removed => 1
   }
 }
 
-pub fn LLVMLinkerMode::from_int(idx: Int) -> LLVMLinkerMode {
+///|
+pub fn LLVMLinkerMode::from_int(idx : Int) -> LLVMLinkerMode {
   match idx {
     0 => LLVMLinkerDestroySource
     1 => LLVMLinkerPreserveSource_Removed
@@ -1283,14 +1465,16 @@ pub fn LLVMLinkerMode::from_int(idx: Int) -> LLVMLinkerMode {
   }
 }
 
+///|
 pub(all) enum LLVMCodeGenOptLevel {
-    LLVMCodeGenLevelNone
-    LLVMCodeGenLevelLess
-    LLVMCodeGenLevelDefault
-    LLVMCodeGenLevelAggressive
+  LLVMCodeGenLevelNone
+  LLVMCodeGenLevelLess
+  LLVMCodeGenLevelDefault
+  LLVMCodeGenLevelAggressive
 }
 
-pub fn LLVMCodeGenOptLevel::to_int(self: LLVMCodeGenOptLevel) -> Int {
+///|
+pub fn LLVMCodeGenOptLevel::to_int(self : LLVMCodeGenOptLevel) -> Int {
   match self {
     LLVMCodeGenLevelNone => 0
     LLVMCodeGenLevelLess => 1
@@ -1299,27 +1483,33 @@ pub fn LLVMCodeGenOptLevel::to_int(self: LLVMCodeGenOptLevel) -> Int {
   }
 }
 
-pub fn LLVMCodeGenOptLevel::from_int(idx: Int) -> LLVMCodeGenOptLevel {
+///|
+pub fn LLVMCodeGenOptLevel::from_int(idx : Int) -> LLVMCodeGenOptLevel {
   match idx {
     0 => LLVMCodeGenLevelNone
     1 => LLVMCodeGenLevelLess
     2 => LLVMCodeGenLevelDefault
     3 => LLVMCodeGenLevelAggressive
-    _ => abort("Invalid LLVMCodeGenOptLevel Number in `LLVMCodeGenOptLevel::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMCodeGenOptLevel Number in `LLVMCodeGenOptLevel::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMRelocMode {
-    LLVMRelocDefault
-    LLVMRelocStatic
-    LLVMRelocPIC
-    LLVMRelocDynamicNoPic
-    LLVMRelocROPI
-    LLVMRelocRWPI
-    LLVMRelocROPI_RWPI
+  LLVMRelocDefault
+  LLVMRelocStatic
+  LLVMRelocPIC
+  LLVMRelocDynamicNoPic
+  LLVMRelocROPI
+  LLVMRelocRWPI
+  LLVMRelocROPI_RWPI
 }
 
-pub fn LLVMRelocMode::to_int(self: LLVMRelocMode) -> Int {
+///|
+pub fn LLVMRelocMode::to_int(self : LLVMRelocMode) -> Int {
   match self {
     LLVMRelocDefault => 0
     LLVMRelocStatic => 1
@@ -1331,7 +1521,8 @@ pub fn LLVMRelocMode::to_int(self: LLVMRelocMode) -> Int {
   }
 }
 
-pub fn LLVMRelocMode::from_int(idx: Int) -> LLVMRelocMode {
+///|
+pub fn LLVMRelocMode::from_int(idx : Int) -> LLVMRelocMode {
   match idx {
     0 => LLVMRelocDefault
     1 => LLVMRelocStatic
@@ -1344,17 +1535,19 @@ pub fn LLVMRelocMode::from_int(idx: Int) -> LLVMRelocMode {
   }
 }
 
+///|
 pub(all) enum LLVMCodeModel {
-    LLVMCodeModelDefault
-    LLVMCodeModelJITDefault
-    LLVMCodeModelTiny
-    LLVMCodeModelSmall
-    LLVMCodeModelKernel
-    LLVMCodeModelMedium
-    LLVMCodeModelLarge
+  LLVMCodeModelDefault
+  LLVMCodeModelJITDefault
+  LLVMCodeModelTiny
+  LLVMCodeModelSmall
+  LLVMCodeModelKernel
+  LLVMCodeModelMedium
+  LLVMCodeModelLarge
 }
 
-pub fn LLVMCodeModel::to_int(self: LLVMCodeModel) -> Int {
+///|
+pub fn LLVMCodeModel::to_int(self : LLVMCodeModel) -> Int {
   match self {
     LLVMCodeModelDefault => 0
     LLVMCodeModelJITDefault => 1
@@ -1366,7 +1559,8 @@ pub fn LLVMCodeModel::to_int(self: LLVMCodeModel) -> Int {
   }
 }
 
-pub fn LLVMCodeModel::from_int(idx: Int) -> LLVMCodeModel {
+///|
+pub fn LLVMCodeModel::from_int(idx : Int) -> LLVMCodeModel {
   match idx {
     0 => LLVMCodeModelDefault
     1 => LLVMCodeModelJITDefault
@@ -1379,33 +1573,41 @@ pub fn LLVMCodeModel::from_int(idx: Int) -> LLVMCodeModel {
   }
 }
 
+///|
 pub(all) enum LLVMCodeGenFileType {
-    LLVMAssemblyFile
-    LLVMObjectFile
+  LLVMAssemblyFile
+  LLVMObjectFile
 }
 
-pub fn LLVMCodeGenFileType::to_int(self: LLVMCodeGenFileType) -> Int {
+///|
+pub fn LLVMCodeGenFileType::to_int(self : LLVMCodeGenFileType) -> Int {
   match self {
     LLVMAssemblyFile => 0
     LLVMObjectFile => 1
   }
 }
 
-pub fn LLVMCodeGenFileType::from_int(idx: Int) -> LLVMCodeGenFileType {
+///|
+pub fn LLVMCodeGenFileType::from_int(idx : Int) -> LLVMCodeGenFileType {
   match idx {
     0 => LLVMAssemblyFile
     1 => LLVMObjectFile
-    _ => abort("Invalid LLVMCodeGenFileType Number in `LLVMCodeGenFileType::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMCodeGenFileType Number in `LLVMCodeGenFileType::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMGlobalISelAbortMode {
   LLVMGlobalISelAbortEnable
   LLVMGlobalISelAbortDisable
   LLVMGlobalISelAbortDisableWithDiag
 }
 
-pub fn LLVMGlobalISelAbortMode::to_int(self: LLVMGlobalISelAbortMode) -> Int {
+///|
+pub fn LLVMGlobalISelAbortMode::to_int(self : LLVMGlobalISelAbortMode) -> Int {
   match self {
     LLVMGlobalISelAbortEnable => 0
     LLVMGlobalISelAbortDisable => 1
@@ -1413,15 +1615,20 @@ pub fn LLVMGlobalISelAbortMode::to_int(self: LLVMGlobalISelAbortMode) -> Int {
   }
 }
 
-pub fn LLVMGlobalISelAbortMode::from_int(idx: Int) -> LLVMGlobalISelAbortMode {
+///|
+pub fn LLVMGlobalISelAbortMode::from_int(idx : Int) -> LLVMGlobalISelAbortMode {
   match idx {
     0 => LLVMGlobalISelAbortEnable
     1 => LLVMGlobalISelAbortDisable
     2 => LLVMGlobalISelAbortDisableWithDiag
-    _ => abort("Invalid LLVMGlobalISelAbortMode Number in `LLVMGlobalISelAbortMode::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMGlobalISelAbortMode Number in `LLVMGlobalISelAbortMode::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMBinaryType {
   // Archive file.
   LLVMBinaryTypeArchive
@@ -1472,7 +1679,8 @@ pub(all) enum LLVMBinaryType {
   LLVMBinaryTypeOffload
 }
 
-pub fn LLVMBinaryType::to_int(self: LLVMBinaryType) -> Int {
+///|
+pub fn LLVMBinaryType::to_int(self : LLVMBinaryType) -> Int {
   match self {
     LLVMBinaryTypeArchive => 0
     LLVMBinaryTypeMachOUniversalBinary => 1
@@ -1493,7 +1701,8 @@ pub fn LLVMBinaryType::to_int(self: LLVMBinaryType) -> Int {
   }
 }
 
-pub fn LLVMBinaryType::from_int(idx: Int) -> LLVMBinaryType {
+///|
+pub fn LLVMBinaryType::from_int(idx : Int) -> LLVMBinaryType {
   match idx {
     0 => LLVMBinaryTypeArchive
     1 => LLVMBinaryTypeMachOUniversalBinary
@@ -1515,6 +1724,7 @@ pub fn LLVMBinaryType::from_int(idx: Int) -> LLVMBinaryType {
   }
 }
 
+///|
 pub(all) enum LLVMDIFlags {
   LLVMDIFlagZero
   LLVMDIFlagPrivate
@@ -1553,7 +1763,8 @@ pub(all) enum LLVMDIFlags {
   LLVMDIFlagPtrToMemberRep
 }
 
-pub fn LLVMDIFlags::to_int(self: LLVMDIFlags) -> Int {
+///|
+pub fn LLVMDIFlags::to_int(self : LLVMDIFlags) -> Int {
   match self {
     LLVMDIFlagZero => 0
     LLVMDIFlagPrivate => 1
@@ -1593,7 +1804,8 @@ pub fn LLVMDIFlags::to_int(self: LLVMDIFlags) -> Int {
   }
 }
 
-pub fn LLVMDIFlags::from_int(idx: Int) -> LLVMDIFlags {
+///|
+pub fn LLVMDIFlags::from_int(idx : Int) -> LLVMDIFlags {
   match idx {
     0 => LLVMDIFlagZero
     1 => LLVMDIFlagPrivate
@@ -1704,9 +1916,10 @@ pub(all) enum LLVMDWARFSourceLanguage {
   LLVMDWARFSourceLanguageMips_Assembler
   LLVMDWARFSourceLanguageGOOGLE_RenderScript
   LLVMDWARFSourceLanguageBORLAND_Delphi
-};
+}
 
-pub fn LLVMDWARFSourceLanguage::to_int(self: LLVMDWARFSourceLanguage) -> Int{
+///|
+pub fn LLVMDWARFSourceLanguage::to_int(self : LLVMDWARFSourceLanguage) -> Int {
   match self {
     LLVMDWARFSourceLanguageC89 => 0
     LLVMDWARFSourceLanguageC => 1
@@ -1779,7 +1992,8 @@ pub fn LLVMDWARFSourceLanguage::to_int(self: LLVMDWARFSourceLanguage) -> Int{
   }
 }
 
-pub fn LLVMDWARFSourceLanguage::from_int(i: Int) -> LLVMDWARFSourceLanguage {
+///|
+pub fn LLVMDWARFSourceLanguage::from_int(i : Int) -> LLVMDWARFSourceLanguage {
   match i {
     0 => LLVMDWARFSourceLanguageC89
     1 => LLVMDWARFSourceLanguageC
@@ -1844,18 +2058,22 @@ pub fn LLVMDWARFSourceLanguage::from_int(i: Int) -> LLVMDWARFSourceLanguage {
     60 => LLVMDWARFSourceLanguageMips_Assembler
     61 => LLVMDWARFSourceLanguageGOOGLE_RenderScript
     62 => LLVMDWARFSourceLanguageBORLAND_Delphi
-    _ => abort("Invalid LLVMDWARFSourceLanguage Number in `LLVMDWARFSourceLanguage::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMDWARFSourceLanguage Number in `LLVMDWARFSourceLanguage::from_int`",
+      )
   }
 }
 
 ///| The amount of debug information to emit.
 pub(all) enum LLVMDWARFEmissionKind {
-    LLVMDWARFEmissionNone
-    LLVMDWARFEmissionFull
-    LLVMDWARFEmissionLineTablesOnly
+  LLVMDWARFEmissionNone
+  LLVMDWARFEmissionFull
+  LLVMDWARFEmissionLineTablesOnly
 }
 
-pub fn LLVMDWARFEmissionKind::to_int(self: LLVMDWARFEmissionKind) -> Int {
+///|
+pub fn LLVMDWARFEmissionKind::to_int(self : LLVMDWARFEmissionKind) -> Int {
   match self {
     LLVMDWARFEmissionNone => 0
     LLVMDWARFEmissionFull => 1
@@ -1863,12 +2081,16 @@ pub fn LLVMDWARFEmissionKind::to_int(self: LLVMDWARFEmissionKind) -> Int {
   }
 }
 
-pub fn LLVMDWARFEmissionKind::from_int(idx: Int) -> LLVMDWARFEmissionKind {
+///|
+pub fn LLVMDWARFEmissionKind::from_int(idx : Int) -> LLVMDWARFEmissionKind {
   match idx {
     0 => LLVMDWARFEmissionNone
     1 => LLVMDWARFEmissionFull
     2 => LLVMDWARFEmissionLineTablesOnly
-    _ => abort("Invalid LLVMDWARFEmissionKind Number in `LLVMDWARFEmissionKind::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMDWARFEmissionKind Number in `LLVMDWARFEmissionKind::from_int`",
+      )
   }
 }
 
@@ -1910,9 +2132,10 @@ pub(all) enum LLVMMDNodeKind {
   LLVMDIGenericSubrangeMetadataKind
   LLVMDIArgListMetadataKind
   LLVMDIAssignIDMetadataKind
-};
+}
 
-pub fn LLVMMDNodeKind::to_int(self: LLVMMDNodeKind) -> Int {
+///|
+pub fn LLVMMDNodeKind::to_int(self : LLVMMDNodeKind) -> Int {
   match self {
     LLVMMDStringMetadataKind => 0
     LLVMConstantAsMetadataMetadataKind => 1
@@ -1953,7 +2176,8 @@ pub fn LLVMMDNodeKind::to_int(self: LLVMMDNodeKind) -> Int {
   }
 }
 
-pub fn LLVMMDNodeKind::from_int(i: Int) -> LLVMMDNodeKind {
+///|
+pub fn LLVMMDNodeKind::from_int(i : Int) -> LLVMMDNodeKind {
   match i {
     0 => LLVMMDStringMetadataKind
     1 => LLVMConstantAsMetadataMetadataKind
@@ -1995,13 +2219,17 @@ pub fn LLVMMDNodeKind::from_int(i: Int) -> LLVMMDNodeKind {
   }
 }
 
+///|
 pub(all) enum LLVMVerifierFailureAction {
   LLVMAbortProcessAction
   LLVMPrintMessageAction
   LLVMReturnStatusAction
 }
 
-pub fn LLVMVerifierFailureAction::to_int(self: LLVMVerifierFailureAction) -> Int {
+///|
+pub fn LLVMVerifierFailureAction::to_int(
+  self : LLVMVerifierFailureAction
+) -> Int {
   match self {
     LLVMAbortProcessAction => 0
     LLVMPrintMessageAction => 1
@@ -2009,15 +2237,22 @@ pub fn LLVMVerifierFailureAction::to_int(self: LLVMVerifierFailureAction) -> Int
   }
 }
 
-pub fn LLVMVerifierFailureAction::from_int(idx: Int) -> LLVMVerifierFailureAction {
+///|
+pub fn LLVMVerifierFailureAction::from_int(
+  idx : Int
+) -> LLVMVerifierFailureAction {
   match idx {
     0 => LLVMAbortProcessAction
     1 => LLVMPrintMessageAction
     2 => LLVMReturnStatusAction
-    _ => abort("Invalid LLVMVerifierFailureAction Number in `LLVMVerifierFailureAction::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMVerifierFailureAction Number in `LLVMVerifierFailureAction::from_int`",
+      )
   }
 }
 
+///|
 pub(all) enum LLVMRemarkType {
   LLVMRemarkTypeUnknown
   LLVMRemarkTypePassed
@@ -2028,7 +2263,8 @@ pub(all) enum LLVMRemarkType {
   LLVMRemarkTypeFailure
 }
 
-pub fn LLVMRemarkType::to_int(self: LLVMRemarkType) -> Int {
+///|
+pub fn LLVMRemarkType::to_int(self : LLVMRemarkType) -> Int {
   match self {
     LLVMRemarkTypeUnknown => 0
     LLVMRemarkTypePassed => 1
@@ -2040,7 +2276,8 @@ pub fn LLVMRemarkType::to_int(self: LLVMRemarkType) -> Int {
   }
 }
 
-pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
+///|
+pub fn LLVMRemarkType::from_int(idx : Int) -> LLVMRemarkType {
   match idx {
     0 => LLVMRemarkTypeUnknown
     1 => LLVMRemarkTypePassed
@@ -2053,6 +2290,7 @@ pub fn LLVMRemarkType::from_int(idx: Int) -> LLVMRemarkType {
   }
 }
 
+///|
 pub(all) enum LLVMJITSymbolGenericFlags {
   LLVMJITSymbolGenericFlagsNone
   LLVMJITSymbolGenericFlagsExported
@@ -2061,7 +2299,10 @@ pub(all) enum LLVMJITSymbolGenericFlags {
   LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly
 }
 
-pub fn LLVMJITSymbolGenericFlags::to_int(self: LLVMJITSymbolGenericFlags) -> Int {
+///|
+pub fn LLVMJITSymbolGenericFlags::to_int(
+  self : LLVMJITSymbolGenericFlags
+) -> Int {
   match self {
     LLVMJITSymbolGenericFlagsNone => 0
     LLVMJITSymbolGenericFlagsExported => 1
@@ -2071,13 +2312,19 @@ pub fn LLVMJITSymbolGenericFlags::to_int(self: LLVMJITSymbolGenericFlags) -> Int
   }
 }
 
-pub fn LLVMJITSymbolGenericFlags::from_int(idx: Int) -> LLVMJITSymbolGenericFlags {
+///|
+pub fn LLVMJITSymbolGenericFlags::from_int(
+  idx : Int
+) -> LLVMJITSymbolGenericFlags {
   match idx {
     0 => LLVMJITSymbolGenericFlagsNone
     1 => LLVMJITSymbolGenericFlagsExported
     2 => LLVMJITSymbolGenericFlagsWeak
     4 => LLVMJITSymbolGenericFlagsCallable
     8 => LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly
-    _ => abort("Invalid LLVMJITSymbolGenericFlags Number in `LLVMJITSymbolGenericFlags::from_int`")
+    _ =>
+      abort(
+        "Invalid LLVMJITSymbolGenericFlags Number in `LLVMJITSymbolGenericFlags::from_int`",
+      )
   }
 }

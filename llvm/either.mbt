@@ -1,58 +1,67 @@
+///|
 pub enum Either[L, R] {
   Left(L)
   Right(R)
 }
 
-pub fn Either::is_left[L, R](self: Either[L, R]) -> Bool {
+///|
+pub fn[L, R] Either::is_left(self : Either[L, R]) -> Bool {
   match self {
     Left(_) => true
     _ => false
   }
 }
 
-pub fn Either::is_right[L, R](self: Either[L, R]) -> Bool {
+///|
+pub fn[L, R] Either::is_right(self : Either[L, R]) -> Bool {
   match self {
     Right(_) => true
     _ => false
   }
 }
 
-pub fn Either::left[L, R](self: Either[L, R]) -> L? {
+///|
+pub fn[L, R] Either::left(self : Either[L, R]) -> L? {
   match self {
     Left(t) => Some(t)
     _ => None
   }
 }
 
-pub fn Either::right[L, R](self: Either[L, R]) -> R? {
+///|
+pub fn[L, R] Either::right(self : Either[L, R]) -> R? {
   match self {
     Right(k) => Some(k)
     _ => None
   }
 }
 
-pub fn Either::left_unwrap[L, R](self: Either[L, R]) -> L {
+///|
+pub fn[L, R] Either::left_unwrap(self : Either[L, R]) -> L {
   match self {
     Left(t) => t
     _ => abort("Either::left_unwrap: not a left")
   }
 }
 
-pub fn Either::right_unwrap[L, R](self: Either[L, R]) -> R {
+///|
+pub fn[L, R] Either::right_unwrap(self : Either[L, R]) -> R {
   match self {
     Right(k) => k
     _ => abort("Either::right_unwrap: not a right")
   }
 }
 
-pub fn Either::expect_left[L, R](self: Either[L, R], msg: String) -> L {
+///|
+pub fn[L, R] Either::expect_left(self : Either[L, R], msg : String) -> L {
   match self {
     Left(t) => t
     _ => abort(msg)
   }
 }
 
-pub fn Either::expect_right[L, R](self: Either[L, R], msg: String) -> R {
+///|
+pub fn[L, R] Either::expect_right(self : Either[L, R], msg : String) -> R {
   match self {
     Right(k) => k
     _ => abort(msg)

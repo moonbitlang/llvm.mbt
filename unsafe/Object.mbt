@@ -168,4 +168,3 @@
 // /** Deprecated: Use LLVMObjectFileIsSymbolIteratorAtEnd instead. */
 // LLVMBool LLVMIsSymbolIteratorAtEnd(LLVMObjectFileRef ObjectFile,
 //                                    LLVMSymbolIteratorRef SI);
-

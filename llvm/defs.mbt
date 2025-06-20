@@ -1,19 +1,25 @@
 // extern types
 
+///|
 pub type AddressSpace UInt derive(Eq, Show, Default)
+
+///|
 pub type FastMathFlags UInt derive(Eq)
 
-pub fn AddressSpace::into(self: AddressSpace) -> UInt {
-  guard self is AddressSpace(val);
+///|
+pub fn AddressSpace::into(self : AddressSpace) -> UInt {
+  guard self is AddressSpace(val)
   val
 }
 
-pub fn FastMathFlags::into(self: FastMathFlags) -> @unsafe.LLVMFastMathFlags {
+///|
+pub fn FastMathFlags::into(self : FastMathFlags) -> @unsafe.LLVMFastMathFlags {
   guard self is FastMathFlags(f)
   @unsafe.LLVMFastMathFlags(f)
 }
 
-pub fn FastMathFlags::from(f: @unsafe.LLVMFastMathFlags) -> FastMathFlags {
+///|
+pub fn FastMathFlags::from(f : @unsafe.LLVMFastMathFlags) -> FastMathFlags {
   guard f is @unsafe.LLVMFastMathFlags(u)
   FastMathFlags(u)
 }
@@ -65,7 +71,7 @@ pub(all) enum IntPredicate {
 } derive(Eq, Show, Hash)
 
 ///| Convert From `@unsafe.LLVMIntPredicate` to `IntPredicate`
-pub fn IntPredicate::from(p: @unsafe.LLVMIntPredicate) -> IntPredicate {
+pub fn IntPredicate::from(p : @unsafe.LLVMIntPredicate) -> IntPredicate {
   match p {
     @unsafe.LLVMIntEQ => EQ
     @unsafe.LLVMIntNE => NE
@@ -81,7 +87,7 @@ pub fn IntPredicate::from(p: @unsafe.LLVMIntPredicate) -> IntPredicate {
 }
 
 ///| Convert From `IntPredicate` to `@unsafe.LLVMIntPredicate`
-pub fn IntPredicate::into(self: IntPredicate) -> @unsafe.LLVMIntPredicate {
+pub fn IntPredicate::into(self : IntPredicate) -> @unsafe.LLVMIntPredicate {
   match self {
     EQ => @unsafe.LLVMIntEQ
     NE => @unsafe.LLVMIntNE
@@ -118,56 +124,40 @@ pub fn IntPredicate::into(self: IntPredicate) -> @unsafe.LLVMIntPredicate {
 pub(all) enum FloatPredicate {
   /// Returns true if `left` == `right` and neither are NaN
   OEQ
-
   /// Returns true if `left` >= `right` and neither are NaN
-
   OGE
-
   /// Returns true if `left` > `right` and neither are NaN
   OGT
-
   /// Returns true if `left` <= `right` and neither are NaN
   OLE
-
   /// Returns true if `left` < `right` and neither are NaN
   OLT
-
   /// Returns true if `left` != `right` and neither are NaN
   ONE
-
   /// Returns true if neither value is NaN
   ORD
-
   /// Always returns false
   PredicateFalse
-
   /// Always returns true
   PredicateTrue
-
   /// Returns true if `left` == `right` or either is NaN
   UEQ
-
   /// Returns true if `left` >= `right` or either is NaN
   UGE
-
   /// Returns true if `left` > `right` or either is NaN
   UGT
-
   /// Returns true if `left` <= `right` or either is NaN
   ULE
-
   /// Returns true if `left` < `right` or either is NaN
   ULT
-
   /// Returns true if `left` != `right` or either is NaN
   UNE
-
   /// Returns true if either value is NaN
   UNO
 } derive(Eq, Show, Hash)
 
 ///| Convert From `@unsafe.LLVMRealPredicate` to `FloatPredicate`
-fn FloatPredicate::from(p: @unsafe.LLVMRealPredicate) -> FloatPredicate {
+fn FloatPredicate::from(p : @unsafe.LLVMRealPredicate) -> FloatPredicate {
   match p {
     @unsafe.LLVMRealPredicateFalse => FloatPredicate::PredicateFalse
     @unsafe.LLVMRealOEQ => OEQ
@@ -189,7 +179,7 @@ fn FloatPredicate::from(p: @unsafe.LLVMRealPredicate) -> FloatPredicate {
 }
 
 ///| Convert From `FloatPredicate` to `@unsafe.LLVMRealPredicate`
-fn FloatPredicate::into(self: FloatPredicate) -> @unsafe.LLVMRealPredicate {
+fn FloatPredicate::into(self : FloatPredicate) -> @unsafe.LLVMRealPredicate {
   match self {
     FloatPredicate::PredicateFalse => @unsafe.LLVMRealPredicateFalse
     OEQ => @unsafe.LLVMRealOEQ
@@ -210,78 +200,79 @@ fn FloatPredicate::into(self: FloatPredicate) -> @unsafe.LLVMRealPredicate {
   }
 }
 
-
+///|
 pub(all) enum InstructionOpcode {
-    Add
-    AddrSpaceCast
-    Alloca
-    And
-    AShr
-    AtomicCmpXchg
-    AtomicRMW
-    BitCast
-    Br
-    Call
-    CallBr
-    CatchPad
-    CatchRet
-    CatchSwitch
-    CleanupPad
-    CleanupRet
-    ExtractElement
-    ExtractValue
-    FNeg
-    FAdd
-    FCmp
-    FDiv
-    Fence
-    FMul
-    FPExt
-    FPToSI
-    FPToUI
-    FPTrunc
-    Freeze
-    FRem
-    FSub
-    GetElementPtr
-    ICmp
-    IndirectBr
-    InsertElement
-    InsertValue
-    IntToPtr
-    Invoke
-    LandingPad
-    Load
-    LShr
-    Mul
-    Or
-    Phi
-    PtrToInt
-    Resume
-    Return
-    SDiv
-    Select
-    SExt
-    Shl
-    ShuffleVector
-    SIToFP
-    SRem
-    Store
-    Sub
-    Switch
-    Trunc
-    UDiv
-    UIToFP
-    Unreachable
-    URem
-    UserOp1
-    UserOp2
-    VAArg
-    Xor
-    ZExt
+  Add
+  AddrSpaceCast
+  Alloca
+  And
+  AShr
+  AtomicCmpXchg
+  AtomicRMW
+  BitCast
+  Br
+  Call
+  CallBr
+  CatchPad
+  CatchRet
+  CatchSwitch
+  CleanupPad
+  CleanupRet
+  ExtractElement
+  ExtractValue
+  FNeg
+  FAdd
+  FCmp
+  FDiv
+  Fence
+  FMul
+  FPExt
+  FPToSI
+  FPToUI
+  FPTrunc
+  Freeze
+  FRem
+  FSub
+  GetElementPtr
+  ICmp
+  IndirectBr
+  InsertElement
+  InsertValue
+  IntToPtr
+  Invoke
+  LandingPad
+  Load
+  LShr
+  Mul
+  Or
+  Phi
+  PtrToInt
+  Resume
+  Return
+  SDiv
+  Select
+  SExt
+  Shl
+  ShuffleVector
+  SIToFP
+  SRem
+  Store
+  Sub
+  Switch
+  Trunc
+  UDiv
+  UIToFP
+  Unreachable
+  URem
+  UserOp1
+  UserOp2
+  VAArg
+  Xor
+  ZExt
 } derive(Eq, Show, Hash)
 
-pub fn InstructionOpcode::from(code: @unsafe.LLVMOpcode) -> InstructionOpcode {
+///|
+pub fn InstructionOpcode::from(code : @unsafe.LLVMOpcode) -> InstructionOpcode {
   match code {
     @unsafe.LLVMRet => Return
     @unsafe.LLVMBr => Br
@@ -353,7 +344,8 @@ pub fn InstructionOpcode::from(code: @unsafe.LLVMOpcode) -> InstructionOpcode {
   }
 }
 
-pub fn InstructionOpcode::into(self: InstructionOpcode) -> @unsafe.LLVMOpcode {
+///|
+pub fn InstructionOpcode::into(self : InstructionOpcode) -> @unsafe.LLVMOpcode {
   match self {
     Return => @unsafe.LLVMRet
     Br => @unsafe.LLVMBr
@@ -425,23 +417,21 @@ pub fn InstructionOpcode::into(self: InstructionOpcode) -> @unsafe.LLVMOpcode {
   }
 }
 
+///|
 pub(all) enum AtomicOrdering {
   NotAtomic
-
   Unordered
-
   Monotonic
-
   Acquire
-
   Release
-
   AcquireRelease
-
   SequentiallyConsistent
 } derive(Eq, Show, Hash)
 
-pub fn AtomicOrdering::from(aord: @unsafe.LLVMAtomicOrdering) -> AtomicOrdering {
+///|
+pub fn AtomicOrdering::from(
+  aord : @unsafe.LLVMAtomicOrdering
+) -> AtomicOrdering {
   match aord {
     @unsafe.LLVMAtomicOrderingNotAtomic => NotAtomic
     @unsafe.LLVMAtomicOrderingUnordered => Unordered
@@ -453,7 +443,10 @@ pub fn AtomicOrdering::from(aord: @unsafe.LLVMAtomicOrdering) -> AtomicOrdering 
   }
 }
 
-pub fn AtomicOrdering::into(self: AtomicOrdering) -> @unsafe.LLVMAtomicOrdering {
+///|
+pub fn AtomicOrdering::into(
+  self : AtomicOrdering
+) -> @unsafe.LLVMAtomicOrdering {
   match self {
     NotAtomic => @unsafe.LLVMAtomicOrderingNotAtomic
     Unordered => @unsafe.LLVMAtomicOrderingUnordered
@@ -465,59 +458,46 @@ pub fn AtomicOrdering::into(self: AtomicOrdering) -> @unsafe.LLVMAtomicOrdering 
   }
 }
 
+///|
 pub(all) enum AtomicRMWBinOp {
   /// Stores to memory and returns the prior value.
   Xchg
-
   /// Adds to the value in memory and returns the prior value.
   Add
-
   /// Subtract a value off the value in memory and returns the prior value.
   Sub
-
   /// Bitwise and into memory and returns the prior value.
   And
-
   /// Bitwise nands into memory and returns the prior value.
   Nand
-
   /// Bitwise ors into memory and returns the prior value.
   Or
-
   /// Bitwise xors into memory and returns the prior value.
   Xor
-
   /// Sets memory to the signed-greater of the value provided and the value in memory. Returns the value that was in memory.
   Max
-
   /// Sets memory to the signed-lesser of the value provided and the value in memory. Returns the value that was in memory.
   Min
-
   /// Sets memory to the unsigned-greater of the value provided and the value in memory. Returns the value that was in memory.
   UMax
-
   /// Sets memory to the unsigned-lesser of the value provided and the value in memory. Returns the value that was in memory.
   UMin
-
   /// Adds to the float-typed value in memory and returns the prior value.
   FAdd
-
   /// Subtract a float-typed value off the value in memory and returns the prior value.
   FSub
-
   /// Sets memory to the greater of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
   FMax
-
   /// Sets memory to the lesser of the two float-typed values, one provided and one from memory. Returns the value that was in memory.
   FMin
 
   // TODO: need notes
   UIncWrap
-
   UDecWrap
 } derive(Eq, Show, Hash)
 
-pub fn AtomicRMWBinOp::from(op: @unsafe.LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
+///|
+pub fn AtomicRMWBinOp::from(op : @unsafe.LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
   match op {
     @unsafe.LLVMAtomicRMWBinOpXchg => Xchg
     @unsafe.LLVMAtomicRMWBinOpAdd => Add
@@ -539,7 +519,10 @@ pub fn AtomicRMWBinOp::from(op: @unsafe.LLVMAtomicRMWBinOp) -> AtomicRMWBinOp {
   }
 }
 
-pub fn AtomicRMWBinOp::into(self: AtomicRMWBinOp) -> @unsafe.LLVMAtomicRMWBinOp {
+///|
+pub fn AtomicRMWBinOp::into(
+  self : AtomicRMWBinOp
+) -> @unsafe.LLVMAtomicRMWBinOp {
   match self {
     Xchg => @unsafe.LLVMAtomicRMWBinOpXchg
     Add => @unsafe.LLVMAtomicRMWBinOpAdd
@@ -561,6 +544,7 @@ pub fn AtomicRMWBinOp::into(self: AtomicRMWBinOp) -> @unsafe.LLVMAtomicRMWBinOp 
   }
 }
 
+///|
 pub(all) enum OptimizationLevel {
   None
   Less
@@ -569,37 +553,42 @@ pub(all) enum OptimizationLevel {
 } derive(Eq, Show, Hash)
 
 // Note: Check if we really need it
-pub fn OptimizationLevel::from_int(i: Int) -> OptimizationLevel {
+
+///|
+pub fn OptimizationLevel::from_int(i : Int) -> OptimizationLevel {
   match i {
     0 => OptimizationLevel::None
     1 => OptimizationLevel::Less
     2 => OptimizationLevel::Default
     3 => OptimizationLevel::Aggressive
-    _ => abort("Invalid OptimizationLevel Number in `OptimizationLevel::from_int`")
+    _ =>
+      abort("Invalid OptimizationLevel Number in `OptimizationLevel::from_int`")
   }
 }
 
+///|
 pub(all) enum Linkage {
-    Appending
-    AvailableExternally
-    Common
-    DLLExport
-    DLLImport
-    External
-    ExternalWeak
-    Ghost
-    Internal
-    LinkerPrivate
-    LinkerPrivateWeak
-    LinkOnceAny
-    LinkOnceODRAutoHide
-    LinkOnceODR
-    Private
-    WeakAny
-    WeakODR
+  Appending
+  AvailableExternally
+  Common
+  DLLExport
+  DLLImport
+  External
+  ExternalWeak
+  Ghost
+  Internal
+  LinkerPrivate
+  LinkerPrivateWeak
+  LinkOnceAny
+  LinkOnceODRAutoHide
+  LinkOnceODR
+  Private
+  WeakAny
+  WeakODR
 } derive(Show)
 
-pub fn Linkage::from(linkage: @unsafe.LLVMLinkage) -> Linkage {
+///|
+pub fn Linkage::from(linkage : @unsafe.LLVMLinkage) -> Linkage {
   match linkage {
     @unsafe.LLVMExternalLinkage => External
     @unsafe.LLVMAvailableExternallyLinkage => AvailableExternally
@@ -621,7 +610,8 @@ pub fn Linkage::from(linkage: @unsafe.LLVMLinkage) -> Linkage {
   }
 }
 
-pub fn Linkage::into(self: Linkage) -> @unsafe.LLVMLinkage {
+///|
+pub fn Linkage::into(self : Linkage) -> @unsafe.LLVMLinkage {
   match self {
     External => @unsafe.LLVMExternalLinkage
     AvailableExternally => @unsafe.LLVMAvailableExternallyLinkage
@@ -643,16 +633,15 @@ pub fn Linkage::into(self: Linkage) -> @unsafe.LLVMLinkage {
   }
 }
 
-
+///|
 pub(all) enum GlobalVisibility {
   Default
-
   Hidden
-
   Protected
 } derive(Eq, Show, Hash)
 
-pub fn GlobalVisibility::from(v: @unsafe.LLVMVisibility) -> GlobalVisibility {
+///|
+pub fn GlobalVisibility::from(v : @unsafe.LLVMVisibility) -> GlobalVisibility {
   match v {
     @unsafe.LLVMDefaultVisibility => Default
     @unsafe.LLVMHiddenVisibility => Hidden
@@ -660,7 +649,10 @@ pub fn GlobalVisibility::from(v: @unsafe.LLVMVisibility) -> GlobalVisibility {
   }
 }
 
-pub fn GlobalVisibility::into(self: GlobalVisibility) -> @unsafe.LLVMVisibility {
+///|
+pub fn GlobalVisibility::into(
+  self : GlobalVisibility
+) -> @unsafe.LLVMVisibility {
   match self {
     Default => @unsafe.LLVMDefaultVisibility
     Hidden => @unsafe.LLVMHiddenVisibility
@@ -668,19 +660,19 @@ pub fn GlobalVisibility::into(self: GlobalVisibility) -> @unsafe.LLVMVisibility 
   }
 }
 
+///|
 pub(all) enum ThreadLocalMode {
   NotThreadLocal
-
   GeneralDynamic
-
   LocalDynamic
-
   InitialExec
-
   LocalExec
 } derive(Eq, Show, Hash)
 
-pub fn ThreadLocalMode::from(self: @unsafe.LLVMThreadLocalMode) -> ThreadLocalMode {
+///|
+pub fn ThreadLocalMode::from(
+  self : @unsafe.LLVMThreadLocalMode
+) -> ThreadLocalMode {
   match self {
     @unsafe.LLVMNotThreadLocal => NotThreadLocal
     @unsafe.LLVMGeneralDynamicTLSModel => GeneralDynamic
@@ -690,7 +682,10 @@ pub fn ThreadLocalMode::from(self: @unsafe.LLVMThreadLocalMode) -> ThreadLocalMo
   }
 }
 
-pub fn ThreadLocalMode::into(self: ThreadLocalMode) -> @unsafe.LLVMThreadLocalMode {
+///|
+pub fn ThreadLocalMode::into(
+  self : ThreadLocalMode
+) -> @unsafe.LLVMThreadLocalMode {
   match self {
     NotThreadLocal => @unsafe.LLVMNotThreadLocal
     GeneralDynamic => @unsafe.LLVMGeneralDynamicTLSModel
@@ -700,13 +695,15 @@ pub fn ThreadLocalMode::into(self: ThreadLocalMode) -> @unsafe.LLVMThreadLocalMo
   }
 }
 
+///|
 pub(all) enum UnnamedAddress {
   None
   Local
   Global
 } derive(Show, Eq)
 
-pub fn UnnamedAddress::from(uaddr: @unsafe.LLVMUnnamedAddr) -> UnnamedAddress {
+///|
+pub fn UnnamedAddress::from(uaddr : @unsafe.LLVMUnnamedAddr) -> UnnamedAddress {
   match uaddr {
     @unsafe.LLVMNoUnnamedAddr => None
     @unsafe.LLVMLocalUnnamedAddr => Local
@@ -714,7 +711,8 @@ pub fn UnnamedAddress::from(uaddr: @unsafe.LLVMUnnamedAddr) -> UnnamedAddress {
   }
 }
 
-pub fn UnnamedAddress::into(self: UnnamedAddress) -> @unsafe.LLVMUnnamedAddr {
+///|
+pub fn UnnamedAddress::into(self : UnnamedAddress) -> @unsafe.LLVMUnnamedAddr {
   match self {
     None => @unsafe.LLVMNoUnnamedAddr
     Local => @unsafe.LLVMLocalUnnamedAddr
@@ -722,16 +720,17 @@ pub fn UnnamedAddress::into(self: UnnamedAddress) -> @unsafe.LLVMUnnamedAddr {
   }
 }
 
-
+///|
 pub(all) enum DLLStorageClass {
   Default
-
   DLLImport
-
   DLLExport
 } derive(Eq, Show, Hash)
 
-pub fn DLLStorageClass::from(d: @unsafe.LLVMDLLStorageClass) -> DLLStorageClass {
+///|
+pub fn DLLStorageClass::from(
+  d : @unsafe.LLVMDLLStorageClass
+) -> DLLStorageClass {
   match d {
     @unsafe.LLVMDefaultStorageClass => Default
     @unsafe.LLVMDLLImportStorageClass => DLLImport
@@ -739,7 +738,10 @@ pub fn DLLStorageClass::from(d: @unsafe.LLVMDLLStorageClass) -> DLLStorageClass 
   }
 }
 
-pub fn DLLStorageClass::into(self: DLLStorageClass) -> @unsafe.LLVMDLLStorageClass {
+///|
+pub fn DLLStorageClass::into(
+  self : DLLStorageClass
+) -> @unsafe.LLVMDLLStorageClass {
   match self {
     Default => @unsafe.LLVMDefaultStorageClass
     DLLImport => @unsafe.LLVMDLLImportStorageClass
@@ -747,25 +749,33 @@ pub fn DLLStorageClass::into(self: DLLStorageClass) -> @unsafe.LLVMDLLStorageCla
   }
 }
 
+///|
 pub(all) enum InlineAsmDialect {
   ATT
   Intel
 } derive(Eq, Show, Hash)
 
-pub fn InlineAsmDialect::from(d: @unsafe.LLVMInlineAsmDialect) -> InlineAsmDialect {
+///|
+pub fn InlineAsmDialect::from(
+  d : @unsafe.LLVMInlineAsmDialect
+) -> InlineAsmDialect {
   match d {
     @unsafe.LLVMInlineAsmDialectATT => ATT
     @unsafe.LLVMInlineAsmDialectIntel => Intel
   }
 }
 
-pub fn InlineAsmDialect::into(self: InlineAsmDialect) -> @unsafe.LLVMInlineAsmDialect {
+///|
+pub fn InlineAsmDialect::into(
+  self : InlineAsmDialect
+) -> @unsafe.LLVMInlineAsmDialect {
   match self {
     ATT => @unsafe.LLVMInlineAsmDialectATT
     Intel => @unsafe.LLVMInlineAsmDialectIntel
   }
 }
 
+///|
 pub(all) enum FlagBehavior {
   Error
   Warning
@@ -775,7 +785,8 @@ pub(all) enum FlagBehavior {
   AppendUnique
 }
 
-pub fn FlagBehavior::from(fb: @unsafe.LLVMModuleFlagBehavior) -> FlagBehavior {
+///|
+pub fn FlagBehavior::from(fb : @unsafe.LLVMModuleFlagBehavior) -> FlagBehavior {
   match fb {
     @unsafe.LLVMModuleFlagBehaviorError => Error
     @unsafe.LLVMModuleFlagBehaviorWarning => Warning
@@ -786,7 +797,10 @@ pub fn FlagBehavior::from(fb: @unsafe.LLVMModuleFlagBehavior) -> FlagBehavior {
   }
 }
 
-pub fn FlagBehavior::into(self: FlagBehavior) -> @unsafe.LLVMModuleFlagBehavior {
+///|
+pub fn FlagBehavior::into(
+  self : FlagBehavior
+) -> @unsafe.LLVMModuleFlagBehavior {
   match self {
     Error => @unsafe.LLVMModuleFlagBehaviorError
     Warning => @unsafe.LLVMModuleFlagBehaviorWarning
@@ -797,24 +811,24 @@ pub fn FlagBehavior::into(self: FlagBehavior) -> @unsafe.LLVMModuleFlagBehavior 
   }
 }
 
+///|
 pub(all) enum ComdatSelectionKind {
   /// The linker may choose any COMDAT.
   Any
-
   /// The data referenced by the COMDAT must be the same.
   ExactMatch
-
   /// The linker will choose the largest COMDAT.
   Largest
-
   /// No other Module may specify this COMDAT.
   NoDuplicates
-
   /// The data referenced by the COMDAT must be the same size.
   SameSize
 }
 
-pub fn ComdatSelectionKind::from(csk: @unsafe.LLVMComdatSelectionKind) -> ComdatSelectionKind {
+///|
+pub fn ComdatSelectionKind::from(
+  csk : @unsafe.LLVMComdatSelectionKind
+) -> ComdatSelectionKind {
   match csk {
     @unsafe.LLVMAnyComdatSelectionKind => Any
     @unsafe.LLVMExactMatchComdatSelectionKind => ExactMatch
@@ -824,7 +838,10 @@ pub fn ComdatSelectionKind::from(csk: @unsafe.LLVMComdatSelectionKind) -> Comdat
   }
 }
 
-pub fn ComdatSelectionKind::into(self: ComdatSelectionKind) -> @unsafe.LLVMComdatSelectionKind {
+///|
+pub fn ComdatSelectionKind::into(
+  self : ComdatSelectionKind
+) -> @unsafe.LLVMComdatSelectionKind {
   match self {
     Any => @unsafe.LLVMAnyComdatSelectionKind
     ExactMatch => @unsafe.LLVMExactMatchComdatSelectionKind

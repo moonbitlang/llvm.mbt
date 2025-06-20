@@ -1,24 +1,22 @@
 // ==============================================
 // FloatType
 // ==============================================
+
 ///| A `FloatType` is the type of a floating point constant or variable.
 pub struct FloatType {
-  ty: Type
+  ty : Type
 }
 
 ///| Create `FloatType` from `@unsafe.LLVMTypeRef`
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not float type.
-pub fn FloatType::new(type_ref: @unsafe.LLVMTypeRef) -> FloatType {
+pub fn FloatType::new(type_ref : @unsafe.LLVMTypeRef) -> FloatType {
   guard type_ref.is_not_null()
-
-  FloatType::{
-    ty: Type::new(type_ref)
-  }
+  FloatType::{ ty: Type::new(type_ref) }
 }
 
 ///| Return `Type` of `FloatType`.
-pub fn FloatType::as_type(self: FloatType) -> Type {
+pub fn FloatType::as_type(self : FloatType) -> Type {
   self.ty
 }
 
@@ -26,7 +24,7 @@ pub fn FloatType::as_type(self: FloatType) -> Type {
 // pub fn FloatType::safe_new(type_ref: @unsafe.LLVMTypeRef) -> Option[FloatType];
 
 ///| Return `@unsafe.LLVMTypeRef` of `FloatType`
-pub fn FloatType::as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
+pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
@@ -42,9 +40,11 @@ pub fn FloatType::as_type_ref(self: FloatType) -> @unsafe.LLVMTypeRef {
 /// inspect!(fn_val, "float (i32)")
 /// ```
 pub fn FloatType::fn_type(
-  self: FloatType, param_types: Array[&BasicType], is_var_arg~: Bool = false
+  self : FloatType,
+  param_types : Array[&BasicType],
+  is_var_arg~ : Bool = false
 ) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+  self.ty.fn_type(param_types, is_var_arg~)
 }
 
 ///| Creates an `ArrayType` with this `FloatType` as its element type.
@@ -57,7 +57,7 @@ pub fn FloatType::fn_type(
 /// let array_type = f32_type.array_type(16);
 /// inspect!(array_type, "[16 x float]")
 /// ```
-pub fn FloatType::array_type(self: FloatType, size: UInt) -> ArrayType {
+pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -71,7 +71,7 @@ pub fn FloatType::array_type(self: FloatType, size: UInt) -> ArrayType {
 /// let vector_type = f32_type.vec_type(16);
 /// inspect!(vector_type, "<16 x float>")
 /// ```
-pub fn FloatType::vec_type(self: FloatType, size: UInt) -> VectorType {
+pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
   self.ty.vec_type(size)
 }
 
@@ -85,7 +85,10 @@ pub fn FloatType::vec_type(self: FloatType, size: UInt) -> VectorType {
 /// let vscale_type = f32_type.scalable_vec_type(16);
 /// inspect!(vscale_type, "<vscale x 16 x float>")
 /// ```
-pub fn FloatType::scalable_vec_type(self: FloatType, size: UInt) -> ScalableVectorType {
+pub fn FloatType::scalable_vec_type(
+  self : FloatType,
+  size : UInt
+) -> ScalableVectorType {
   self.ty.scalable_vec_type(size)
 }
 
@@ -100,13 +103,18 @@ pub fn FloatType::scalable_vec_type(self: FloatType, size: UInt) -> ScalableVect
 /// let pi = f64_type.const_float(3.1415926);
 /// inspect!(pi, "double 0x400921FB4D12D84A")
 /// ```
-pub fn FloatType::const_float(self: FloatType, val: Double) -> FloatValue {
+pub fn FloatType::const_float(self : FloatType, val : Double) -> FloatValue {
   let val_ref = @unsafe.llvm_const_real(self.as_type_ref(), val)
   FloatValue::new(val_ref)
 }
 
 // FIXME: untested
-pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> FloatValue {
+
+///|
+pub fn FloatType::const_float_from_string(
+  self : FloatType,
+  slice : String
+) -> FloatValue {
   if slice.is_empty() {
     abort("Float string is empty")
   }
@@ -126,7 +134,7 @@ pub fn FloatType::const_float_from_string(self: FloatType, slice: String) -> Flo
 /// let f64_zero = f64_type.const_zero();
 /// inspect!(f64_zero, "double 0.0")
 /// ```
-pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
+pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
 
@@ -141,12 +149,12 @@ pub fn FloatType::const_zero(self: FloatType) -> FloatValue {
 /// let expect = "i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)";
 /// inspect!(f64_sz, content=expect)
 /// ```
-pub fn FloatType::size_of(self: FloatType) -> IntValue {
+pub fn FloatType::size_of(self : FloatType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
 ///| Returns whether this `FloatType` is sized. **Always returns `true`.**
-pub fn FloatType::is_sized(self: FloatType) -> Bool {
+pub fn FloatType::is_sized(self : FloatType) -> Bool {
   self.ty.is_sized()
 }
 
@@ -161,7 +169,7 @@ pub fn FloatType::is_sized(self: FloatType) -> Bool {
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, double }, ptr null, i64 0, i32 1) to i64)"
 /// inspect!(f64_align, content=expect)
 /// ```
-pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
+pub fn FloatType::get_alignment(self : FloatType) -> IntValue {
   self.ty.get_alignment()
 }
 
@@ -175,7 +183,7 @@ pub fn FloatType::get_alignment(self: FloatType) -> IntValue {
 /// let f64_ctx = f64_type.get_context();
 /// assert_true!(context == f64_ctx);
 /// ```
-pub fn FloatType::get_context(self: FloatType) -> Context {
+pub fn FloatType::get_context(self : FloatType) -> Context {
   self.ty.get_context()
 }
 
@@ -189,8 +197,13 @@ pub fn FloatType::get_context(self: FloatType) -> Context {
 /// let ptr_type = f64_type.ptr_type(AddressSpace::default());
 /// inspect!(ptr_type, "ptr")
 /// ```
-pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(@unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()))
+pub fn FloatType::ptr_type(
+  self : FloatType,
+  address_space : AddressSpace
+) -> PointerType {
+  PointerType::new(
+    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+  )
 }
 
 ///| Creates an undefined instance of a `FloatType`.
@@ -203,7 +216,7 @@ pub fn FloatType::ptr_type(self: FloatType, address_space: AddressSpace) -> Poin
 /// let f64_undef = f64_type.get_undef();
 /// inspect!(f64_undef, "double undef")
 /// ```
-pub fn get_undef(self: FloatType) -> FloatValue {
+pub fn get_undef(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_undef())
 }
 
@@ -217,7 +230,7 @@ pub fn get_undef(self: FloatType) -> FloatValue {
 /// let f64_poison = f64_type.get_poison();
 /// inspect!(f64_poison, "double poison")
 /// ```
-pub fn get_poison(self: FloatType) -> FloatValue {
+pub fn get_poison(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())
 }
 
@@ -226,40 +239,46 @@ pub fn get_poison(self: FloatType) -> FloatValue {
 //   GenericValue::new(gv)
 // }
 
-pub fn FloatType::const_array(self: FloatType, values: Array[FloatValue]) -> ArrayValue {
+///|
+pub fn FloatType::const_array(
+  self : FloatType,
+  values : Array[FloatValue]
+) -> ArrayValue {
   ArrayValue::new_const_array(self, values)
 }
 
 ///| Prints the `FloatType` to stderr.
 ///
 /// It's equivalent to `FloatType::dump()`.
-pub fn FloatType::print_to_stderr(self: FloatType) -> Unit {
+pub fn FloatType::print_to_stderr(self : FloatType) -> Unit {
   self.ty.print_to_stderr()
 }
 
 ///| Prints the `FloatType` to a string.
 ///
 /// It's equivalent to `FloatType::to_string()`.
-pub fn FloatType::print_to_string(self: FloatType) -> String {
+pub fn FloatType::print_to_string(self : FloatType) -> String {
   self.ty.print_to_string()
 }
 
 ///| Prints the `FloatType` to a string.
-pub fn FloatType::to_string(self: FloatType) -> String {
+pub fn FloatType::to_string(self : FloatType) -> String {
   self.ty.to_string()
 }
 
 ///| Dumps the `FloatType` to stderr.
 ///
 /// It's equivalent to `FloatType::print_to_stderr()`.
-pub fn FloatType::dump(self: FloatType) -> Unit {
+pub fn FloatType::dump(self : FloatType) -> Unit {
   self.ty.dump()
 }
 
-pub impl Show for FloatType with output(self: FloatType, logger: &Logger) -> Unit {
+///|
+pub impl Show for FloatType with output(self : FloatType, logger : &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
-pub impl Show for FloatType with to_string(self: FloatType) -> String {
+///|
+pub impl Show for FloatType with to_string(self : FloatType) -> String {
   self.to_string()
 }

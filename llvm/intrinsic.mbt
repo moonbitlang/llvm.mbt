@@ -2,12 +2,12 @@
 ///
 /// To call it you would need to create a declaration inside a module using [`Self::get_declaration()`].
 pub struct Intrinsic {
-  id: UInt
+  id : UInt
 }
 
 ///| Create an Intrinsic object from raw @unsafe.LLVM intrinsic id
-pub fn Intrinsic::new(id: UInt) -> Intrinsic {
-  Intrinsic::{ id }
+pub fn Intrinsic::new(id : UInt) -> Intrinsic {
+  Intrinsic::{ id, }
 }
 
 ///| Find llvm intrinsic id from name
@@ -30,20 +30,18 @@ pub fn Intrinsic::new(id: UInt) -> Intrinsic {
 /// builder.position_at_end(entry);
 /// builder.build_call(trap_function, [], "trap_call");
 /// ```
-pub fn Intrinsic::find(name: String) -> Intrinsic? {
+pub fn Intrinsic::find(name : String) -> Intrinsic? {
   let id = @unsafe.llvm_lookup_intrinsic_id(name)
-
   if id == 0 {
     return None
   }
-
   Some(Intrinsic::new(id))
 }
 
 ///| Check if specified intrinsic is overloaded
 ///
 /// Overloaded intrinsics need some argument types to be specified to declare them
-pub fn Intrinsic::is_overloaded(self: Intrinsic) -> Bool {
+pub fn Intrinsic::is_overloaded(self : Intrinsic) -> Bool {
   @unsafe.llvm_intrinsic_is_overloaded(self.id)
 }
 
@@ -70,15 +68,18 @@ pub fn Intrinsic::is_overloaded(self: Intrinsic) -> Bool {
 /// builder.build_call(trap_function, [], "trap_call");
 /// ```
 pub fn Intrinsic::get_declaration(
-  self: Intrinsic, mod: Module, param_types: Array[BasicTypeEnum]
+  self : Intrinsic,
+  mod : Module,
+  param_types : Array[BasicTypeEnum]
 ) -> FunctionValue? {
-  let param_types = param_types.map(fn (t) {t.as_type_ref()})
-
+  let param_types = param_types.map(fn(t) { t.as_type_ref() })
   if self.is_overloaded() && param_types.is_empty() {
     return None
   }
-
-  let r = @unsafe.llvm_get_intrinsic_declaration(mod.as_mod_ref(), self.id, param_types)
-
+  let r = @unsafe.llvm_get_intrinsic_declaration(
+    mod.as_mod_ref(),
+    self.id,
+    param_types,
+  )
   FunctionValue::new(r)
 }

@@ -1,7 +1,8 @@
 // Context
+
 ///| A `Context` is a container for all @unsafe.LLVM entities including `Module`s.
 struct Context {
-  ctx_ref: @unsafe.LLVMContextRef
+  ctx_ref : @unsafe.LLVMContextRef
 } derive(Eq)
 
 ///| Creates a new `Context` from [`@unsafe.LLVMContextRef`].
@@ -9,24 +10,23 @@ struct Context {
 /// **unsafe**: This function is exposed only for interoperability
 /// with other @unsafe.LLVM IR libraries. It's not intended to be used by
 /// most users, hence marked as unsafe.
-pub fn Context::new(ctx_ref: @unsafe.LLVMContextRef) -> Context {
-  Context :: {
-    ctx_ref: ctx_ref
-  }
+pub fn Context::new(ctx_ref : @unsafe.LLVMContextRef) -> Context {
+  Context::{ ctx_ref, }
 }
 
 // NOTE: currently need free memory by hand to avoid memory leak
+
 ///| Drops the `Context` and frees the memory.
 ///
 /// Currently, for big projects, users need to free memory by hand
 /// to avoid memory leaks, until the compiler supports automatic
 /// memory management.
-pub fn Context::drop(self: Context) -> Unit {
+pub fn Context::drop(self : Context) -> Unit {
   @unsafe.llvm_context_dispose(self.as_ctx_ref())
 }
 
 ///| Returns the inner `@unsafe.LLVMContextRef`.
-fn Context::as_ctx_ref(self: Context) -> @unsafe.LLVMContextRef {
+fn Context::as_ctx_ref(self : Context) -> @unsafe.LLVMContextRef {
   self.ctx_ref
 }
 
@@ -42,13 +42,13 @@ pub fn Context::create() -> Context {
   Context::new(@unsafe.llvm_context_create())
 }
 
-
-pub fn Context::create_builder(self: Context) -> Builder {
+///|
+pub fn Context::create_builder(self : Context) -> Builder {
   Builder::new(@unsafe.llvm_create_builder_in_context(self.as_ctx_ref()))
 }
 
-
-pub fn Context::create_module(self: Context, name: String) -> Module {
+///|
+pub fn Context::create_module(self : Context, name : String) -> Module {
   let ctx_ref = self.as_ctx_ref()
   Module::new(ctx_ref.module_create_with_name(name))
 }
@@ -65,7 +65,7 @@ pub fn Context::create_module(self: Context, name: String) -> Module {
 /// let void_ty = context.void_type()
 /// inspect!(void_ty, "void")
 /// ```
-pub fn Context::void_type(self: Context) -> VoidType {
+pub fn Context::void_type(self : Context) -> VoidType {
   let type_ref = @unsafe.llvm_void_type_in_context(self.as_ctx_ref())
   VoidType::new(type_ref)
 }
@@ -79,7 +79,7 @@ pub fn Context::void_type(self: Context) -> VoidType {
 /// let bool_ty = context.bool_type()
 /// inspect!(bool_ty, "i1")
 /// ```
-pub fn Context::bool_type(self: Context) -> IntType {
+pub fn Context::bool_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int1_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
@@ -93,7 +93,7 @@ pub fn Context::bool_type(self: Context) -> IntType {
 /// let i8_ty = context.i8_type()
 /// inspect!(i8_ty, "i8")
 /// ```
-pub fn Context::i8_type(self: Context) -> IntType {
+pub fn Context::i8_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int8_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
@@ -107,7 +107,7 @@ pub fn Context::i8_type(self: Context) -> IntType {
 /// let i16_ty = context.i16_type()
 /// inspect!(i16_ty, "i16")
 /// ```
-pub fn Context::i16_type(self: Context) -> IntType {
+pub fn Context::i16_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int16_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
@@ -121,7 +121,7 @@ pub fn Context::i16_type(self: Context) -> IntType {
 /// let i32_ty = context.i32_type()
 /// inspect!(i32_ty, "i32")
 /// ```
-pub fn Context::i32_type(self: Context) -> IntType {
+pub fn Context::i32_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int32_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
@@ -135,7 +135,7 @@ pub fn Context::i32_type(self: Context) -> IntType {
 /// let i64_ty = context.i64_type()
 /// inspect!(i64_ty, "i64")
 /// ```
-pub fn Context::i64_type(self: Context) -> IntType {
+pub fn Context::i64_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int64_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
@@ -149,11 +149,10 @@ pub fn Context::i64_type(self: Context) -> IntType {
 /// let i128_ty = context.i128_type()
 /// inspect!(i128_ty, "i128")
 /// ```
-pub fn Context::i128_type(self: Context) -> IntType {
+pub fn Context::i128_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int128_type_in_context(self.as_ctx_ref())
   IntType::new(type_ref)
 }
-
 
 ///| Gets the `IntType` representing a custom bit width. It will be assigned the current context.
 ///
@@ -165,7 +164,7 @@ pub fn Context::i128_type(self: Context) -> IntType {
 ///
 /// assert_eq!(i42_type.get_bit_width(), 42);
 /// ```
-pub fn Context::custom_width_int_type(self: Context, bits: UInt) -> IntType {
+pub fn Context::custom_width_int_type(self : Context, bits : UInt) -> IntType {
   let type_ref = @unsafe.llvm_int_type_in_context(self.as_ctx_ref(), bits)
   IntType::new(type_ref)
 }
@@ -180,7 +179,7 @@ pub fn Context::custom_width_int_type(self: Context, bits: UInt) -> IntType {
 ///
 /// assert_true!(md_type.get_context() == context);
 /// ```
-pub fn Context::metadata_type(self: Context) -> MetadataType {
+pub fn Context::metadata_type(self : Context) -> MetadataType {
   let mref = @unsafe.llvm_metadata_type_in_context(self.as_ctx_ref())
   MetadataType::new(mref)
 }
@@ -196,7 +195,7 @@ pub fn Context::metadata_type(self: Context) -> MetadataType {
 /// let half_ty = context.f16_type()
 /// inspect!(half_ty, "half")
 /// ```
-pub fn Context::f16_type(self: Context) -> FloatType {
+pub fn Context::f16_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_half_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -211,7 +210,7 @@ pub fn Context::f16_type(self: Context) -> FloatType {
 /// let f32_ty = context.f32_type()
 /// inspect!(f32_ty, "float")
 /// ```
-pub fn Context::f32_type(self: Context) -> FloatType {
+pub fn Context::f32_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_float_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -226,7 +225,7 @@ pub fn Context::f32_type(self: Context) -> FloatType {
 /// let f64_ty = context.f64_type()
 /// inspect!(f64_ty, "double")
 /// ```
-pub fn Context::f64_type(self: Context) -> FloatType {
+pub fn Context::f64_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_double_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -241,7 +240,7 @@ pub fn Context::f64_type(self: Context) -> FloatType {
 /// let f80_ty = context.x86_f80_type()
 /// inspect!(f80_ty, "x86_fp80")
 /// ```
-pub fn Context::x86_f80_type(self: Context) -> FloatType {
+pub fn Context::x86_f80_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_x86_fp80_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -256,7 +255,7 @@ pub fn Context::x86_f80_type(self: Context) -> FloatType {
 /// let f128_ty = context.f128_type()
 /// inspect!(f128_ty, "fp128")
 /// ```
-pub fn Context::f128_type(self: Context) -> FloatType {
+pub fn Context::f128_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_fp128_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -271,7 +270,7 @@ pub fn Context::f128_type(self: Context) -> FloatType {
 /// let ppc_f128_ty = context.ppc_f128_type()
 /// inspect!(ppc_f128_ty, "ppc_fp128")
 /// ```
-pub fn Context::ppc_f128_type(self: Context) -> FloatType {
+pub fn Context::ppc_f128_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
   let type_ref = @unsafe.llvm_ppc_fp128_type_in_context(ctx_ref)
   FloatType::new(type_ref)
@@ -286,9 +285,15 @@ pub fn Context::ppc_f128_type(self: Context) -> FloatType {
 /// let ptr_ty = context.ptr_type(@llvm::AddressSpace::default())
 /// inspect!(ptr_ty, "ptr")
 /// ```
-pub fn Context::ptr_type(self: Context, addr_space: AddressSpace) -> PointerType {
+pub fn Context::ptr_type(
+  self : Context,
+  addr_space : AddressSpace
+) -> PointerType {
   let ctx_ref = self.as_ctx_ref()
-  let ptr_ty_ref = @unsafe.llvm_pointer_type_in_context(ctx_ref, addr_space.into())
+  let ptr_ty_ref = @unsafe.llvm_pointer_type_in_context(
+    ctx_ref,
+    addr_space.into(),
+  )
   PointerType::new(ptr_ty_ref)
 }
 
@@ -303,13 +308,19 @@ pub fn Context::ptr_type(self: Context, addr_space: AddressSpace) -> PointerType
 /// let struct_ty = context.struct_type([i32_ty, i64_ty])
 /// inspect!(struct_ty, "{ i32, i64 }")
 /// ```
-pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], is_packed~: Bool = false) -> StructType {
-  let field_types = field_types.map(fn (v) {v.as_type_ref()})
-
-  let val_ref = @unsafe.llvm_struct_type_in_context(self.as_ctx_ref(), field_types, is_packed)
-
+pub fn Context::struct_type(
+  self : Context,
+  field_types : Array[&BasicType],
+  is_packed~ : Bool = false
+) -> StructType {
+  let field_types = field_types.map(fn(v) { v.as_type_ref() })
+  let val_ref = @unsafe.llvm_struct_type_in_context(
+    self.as_ctx_ref(),
+    field_types,
+    is_packed,
+  )
   StructType::new(val_ref)
-} 
+}
 
 ///| Gets a named `StructType` from this `Context`.
 ///
@@ -321,12 +332,11 @@ pub fn Context::struct_type(self: Context, field_types: Array[&BasicType], is_pa
 /// let opaque = context.opaque_struct_type("foo");
 /// inspect!(context.get_struct_type("foo").unwrap(), content="%foo = type opaque");
 /// ```
-pub fn Context::get_struct_type(self: Context, name: String) -> StructType? {
+pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
   let ty = @unsafe.llvm_get_type_by_name(self.as_ctx_ref(), name)
   if ty.is_null() {
     return None
   }
-
   Some(StructType::new(ty))
 }
 
@@ -345,11 +355,16 @@ pub fn Context::get_struct_type(self: Context, name: String) -> StructType? {
 /// assert_eq!(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
 /// ```
 pub fn Context::const_struct(
-  self: Context, values: Array[BasicValueEnum], packed~: Bool = false
+  self : Context,
+  values : Array[BasicValueEnum],
+  packed~ : Bool = false
 ) -> StructValue {
-  let args = values.map(fn (v) {v.as_value_ref()})
-
-  let val_ref = @unsafe.llvm_const_struct_in_context(self.as_ctx_ref(), args, packed)
+  let args = values.map(fn(v) { v.as_value_ref() })
+  let val_ref = @unsafe.llvm_const_struct_in_context(
+    self.as_ctx_ref(),
+    args,
+    packed,
+  )
   StructValue::new(val_ref)
 }
 
@@ -363,7 +378,7 @@ pub fn Context::const_struct(
 /// inspect!(opaque_struct_ty, "%opaque_struct = type opaque")
 /// assert_true(opaque_struct_ty.is_opaque())
 /// ```
-pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
+pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType {
   let val_ref = @unsafe.llvm_struct_create_named(self.as_ctx_ref(), name)
   StructType::new(val_ref)
 }
@@ -389,12 +404,15 @@ pub fn Context::opaque_struct_type(self: Context, name: String) -> StructType {
 /// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::append_basic_block(
-  self: Context, function: FunctionValue, name~: String = ""
+  self : Context,
+  function : FunctionValue,
+  name~ : String = ""
 ) -> BasicBlock {
   let ctx_ref = self.as_ctx_ref()
   let fn_val_ref = function.as_value_ref()
-  
-  let bb_ref = @unsafe.llvm_append_basic_block_in_context(ctx_ref, fn_val_ref, name)
+  let bb_ref = @unsafe.llvm_append_basic_block_in_context(
+    ctx_ref, fn_val_ref, name,
+  )
   BasicBlock::new(bb_ref)
 }
 
@@ -419,12 +437,12 @@ pub fn Context::append_basic_block(
 /// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::insert_basic_block_after(
-  self: Context, basic_block: BasicBlock, name~: String = ""
+  self : Context,
+  basic_block : BasicBlock,
+  name~ : String = ""
 ) -> BasicBlock {
   match basic_block.get_next_basic_block() {
-    Some(next_bb) => {
-      self.prepend_basic_block(next_bb, name)
-    }
+    Some(next_bb) => self.prepend_basic_block(next_bb, name)
     None => {
       let parent_fn = basic_block.get_parent().unwrap()
       self.append_basic_block(parent_fn, name~)
@@ -453,10 +471,15 @@ pub fn Context::insert_basic_block_after(
 /// assert_eq!(fn_value.get_last_basic_block().unwrap(), entry_basic_block);
 /// ```
 pub fn Context::prepend_basic_block(
-  self: Context, basic_block: BasicBlock, name: String
+  self : Context,
+  basic_block : BasicBlock,
+  name : String
 ) -> BasicBlock {
-  let val_ref = @unsafe.llvm_insert_basic_block_in_context(self.as_ctx_ref(), basic_block.as_bb_ref(), name)
-
+  let val_ref = @unsafe.llvm_insert_basic_block_in_context(
+    self.as_ctx_ref(),
+    basic_block.as_bb_ref(),
+    name,
+  )
   BasicBlock::new(val_ref)
 }
 
@@ -489,10 +512,10 @@ pub fn Context::prepend_basic_block(
 /// ret_instr.set_metadata(md_node, 0);
 /// ```
 pub fn Context::metadata_node(
-  self: Context,
-  values: Array[&BasicMetadataValue]
+  self : Context,
+  values : Array[&BasicMetadataValue]
 ) -> MetadataValue {
-  let values = values.map(fn (v) {v.as_value_ref()})
+  let values = values.map(fn(v) { v.as_value_ref() })
   let val_ref = @unsafe.llvm_md_node_in_context(self.as_ctx_ref(), values)
   MetadataValue::new(val_ref)
 }
@@ -522,7 +545,7 @@ pub fn Context::metadata_node(
 ///
 /// ret_instr.set_metadata(md_string, 0);
 /// ```
-pub fn Context::metadata_string(self: Context, s: String) -> MetadataValue {
+pub fn Context::metadata_string(self : Context, s : String) -> MetadataValue {
   let val_ref = @unsafe.llvm_md_string_in_context(self.as_ctx_ref(), s)
   MetadataValue::new(val_ref)
 }
@@ -541,7 +564,7 @@ pub fn Context::metadata_string(self: Context, s: String) -> MetadataValue {
 /// // Custom kind id doesn't exist in @unsafe.LLVM until now:
 /// assert_eq!(context.get_kind_id("foo"), FIRST_CUSTOM_METADATA_KIND_ID);
 /// ```
-pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
+pub fn Context::get_kind_id(self : Context, key : String) -> UInt {
   @unsafe.llvm_get_md_kind_id_in_context(self.as_ctx_ref(), key)
 }
 
@@ -555,8 +578,16 @@ pub fn Context::get_kind_id(self: Context, key: String) -> UInt {
 ///
 /// assert_true!(enum_attribute.is_enum());
 /// ```
-pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64) -> Attribute {
-  let attr_ref = @unsafe.llvm_create_enum_attribute(self.as_ctx_ref(), kind_id, val)
+pub fn Context::create_enum_attribute(
+  self : Context,
+  kind_id : UInt,
+  val : UInt64
+) -> Attribute {
+  let attr_ref = @unsafe.llvm_create_enum_attribute(
+    self.as_ctx_ref(),
+    kind_id,
+    val,
+  )
   Attribute::new(attr_ref)
 }
 
@@ -570,8 +601,16 @@ pub fn Context::create_enum_attribute(self: Context, kind_id: UInt, val: UInt64)
 ///
 /// assert_true!(string_attribute.is_string());
 /// ```
-pub fn Context::create_string_attribute(self: Context, key: String, val: String) -> Attribute {
-  let attr_ref = @unsafe.llvm_create_string_attribute(self.as_ctx_ref(), key, val)
+pub fn Context::create_string_attribute(
+  self : Context,
+  key : String,
+  val : String
+) -> Attribute {
+  let attr_ref = @unsafe.llvm_create_string_attribute(
+    self.as_ctx_ref(),
+    key,
+    val,
+  )
   Attribute::new(attr_ref)
 }
 
@@ -593,9 +632,15 @@ pub fn Context::create_string_attribute(self: Context, key: String, val: String)
 /// assert_ne!(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```
 pub fn Context::create_type_attribute(
-  self: Context, kind_id: UInt, ty: AnyTypeEnum
+  self : Context,
+  kind_id : UInt,
+  ty : AnyTypeEnum
 ) -> Attribute {
-  let attr = @unsafe.llvm_create_type_attribute(self.as_ctx_ref(), kind_id, ty.as_type_ref())
+  let attr = @unsafe.llvm_create_type_attribute(
+    self.as_ctx_ref(),
+    kind_id,
+    ty.as_type_ref(),
+  )
   Attribute::new(attr)
 }
 
@@ -609,10 +654,17 @@ pub fn Context::create_type_attribute(
 ///
 /// assert_eq!(string.print_to_string().to_string(), "[9 x i8] my_string");
 /// ```
-pub fn Context::const_string(self: Context, s: String, null_terminated: Bool) -> ArrayValue {
-  let val_ref = @unsafe.llvm_const_string_in_context(self.as_ctx_ref(), s, null_terminated)
+pub fn Context::const_string(
+  self : Context,
+  s : String,
+  null_terminated : Bool
+) -> ArrayValue {
+  let val_ref = @unsafe.llvm_const_string_in_context(
+    self.as_ctx_ref(),
+    s,
+    null_terminated,
+  )
   ArrayValue::new(val_ref)
 }
 
 // pub fn Context::set_diagnostic_handler
-

@@ -42,7 +42,8 @@
 //  passed
 //  * to some other consuming operation, e.g. LLVMGetErrorMessage.
 //  */
-pub extern "C" fn llvm_consume_error(err: LLVMErrorRef) = "LLVMConsumeError"
+///|
+pub extern "C" fn llvm_consume_error(err : LLVMErrorRef) = "LLVMConsumeError"
 //
 // /**
 //  * Returns the given string's error message. This operation consumes the
@@ -51,10 +52,12 @@ pub extern "C" fn llvm_consume_error(err: LLVMErrorRef) = "LLVMConsumeError"
 //  * The caller is responsible for disposing of the string by calling
 //  * LLVMDisposeErrorMessage.
 //  */
-pub extern "C" fn llvm_get_error_message(err: LLVMErrorRef) -> CStr = "LLVMGetErrorMessage"
+
+///|
+pub extern "C" fn llvm_get_error_message(err : LLVMErrorRef) -> CStr = "LLVMGetErrorMessage"
 
 ///| Disposes of the given error message.
-pub extern "C" fn llvm_dispose_error_message(err_msg: CStr) = "LLVMDisposeErrorMessage"
+pub extern "C" fn llvm_dispose_error_message(err_msg : CStr) = "LLVMDisposeErrorMessage"
 //
 // /**
 //  * Returns the type id for llvm StringError.
@@ -62,4 +65,4 @@ pub extern "C" fn llvm_dispose_error_message(err_msg: CStr) = "LLVMDisposeErrorM
 // LLVMErrorTypeId LLVMGetStringErrorTypeId(void);
 
 ///| Creates a string error with the given message.
-pub extern "C" fn llvm_create_string_error(err_msg: CStr) -> LLVMErrorRef = "LLVMCreateStringError"
+pub extern "C" fn llvm_create_string_error(err_msg : CStr) -> LLVMErrorRef = "LLVMCreateStringError"

@@ -1,17 +1,19 @@
-
+///|
 pub struct MemoryBuffer {
-  memory_buffer: @unsafe.LLVMMemoryBufferRef
+  memory_buffer : @unsafe.LLVMMemoryBufferRef
 }
 
-pub fn MemoryBuffer::new(mbuf: @unsafe.LLVMMemoryBufferRef) -> MemoryBuffer {
+///|
+pub fn MemoryBuffer::new(mbuf : @unsafe.LLVMMemoryBufferRef) -> MemoryBuffer {
   // assert_not(mbuf.is_null()))
 
-  MemoryBuffer::{
-    memory_buffer: mbuf
-  }
+  MemoryBuffer::{ memory_buffer: mbuf }
 }
 
-pub fn MemoryBuffer::as_mem_buf(self: MemoryBuffer) -> @unsafe.LLVMMemoryBufferRef {
+///|
+pub fn MemoryBuffer::as_mem_buf(
+  self : MemoryBuffer
+) -> @unsafe.LLVMMemoryBufferRef {
   self.memory_buffer
 }
 
@@ -35,16 +37,19 @@ pub fn MemoryBuffer::as_mem_buf(self: MemoryBuffer) -> @unsafe.LLVMMemoryBufferR
 //   }
 // }
 
-pub fn MemoryBuffer::get_size(self: MemoryBuffer) -> Int {
+///|
+pub fn MemoryBuffer::get_size(self : MemoryBuffer) -> Int {
   @unsafe.llvm_get_buffer_size(self.memory_buffer)
 }
 
 // create_object_file
 
-pub fn MemoryBuffer::dispose(self: MemoryBuffer) -> Unit {
+///|
+pub fn MemoryBuffer::dispose(self : MemoryBuffer) -> Unit {
   @unsafe.llvm_dispose_memory_buffer(self.memory_buffer)
 }
 
-pub fn MemoryBuffer::drop(self: MemoryBuffer) -> Unit {
+///|
+pub fn MemoryBuffer::drop(self : MemoryBuffer) -> Unit {
   self.dispose()
 }

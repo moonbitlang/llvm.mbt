@@ -4,14 +4,12 @@ pub struct Module {
 }
 
 ///| Get a module from an `@unsafe.LLVMModuleRef`.
-pub fn Module::new(module_ref: @unsafe.LLVMModuleRef) -> Module {
-  Module::{
-    module_ref: module_ref
-  }
+pub fn Module::new(module_ref : @unsafe.LLVMModuleRef) -> Module {
+  Module::{ module_ref, }
 }
 
 ///| Return the `@unsafe.LLVMModuleRef` of the module wrapped.
-pub fn Module::as_mod_ref(self: Module) -> @unsafe.LLVMModuleRef {
+pub fn Module::as_mod_ref(self : Module) -> @unsafe.LLVMModuleRef {
   self.module_ref
 }
 
@@ -32,20 +30,20 @@ pub fn Module::as_mod_ref(self: Module) -> @unsafe.LLVMModuleRef {
 /// inspect!(fn_val.get_name(), "my_function");
 /// ```
 pub fn Module::add_function(
-  self: Module, 
-  name: String, 
-  function_ty: FunctionType, 
-  linkage~: Linkage? = None
+  self : Module,
+  name : String,
+  function_ty : FunctionType,
+  linkage~ : Linkage? = None
 ) -> FunctionValue {
   let val_ref = self.module_ref.add_function(name, function_ty.as_type_ref())
   guard FunctionValue::new(val_ref) is Some(fn_val) else {
-    abort("Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function")
+    abort(
+      "Failed to create FunctionValue, Something went wrong, loc: module.mbt: add_function",
+    )
   }
-
   if linkage is Some(linkage) {
     fn_val.set_linkage(linkage)
   }
-
   fn_val
 }
 
@@ -59,9 +57,8 @@ pub fn Module::add_function(
 ///
 /// assert_true!(local_module.get_context() == local_context);
 /// ```
-pub fn Module::get_context(self: Module) -> Context {
+pub fn Module::get_context(self : Module) -> Context {
   let ctx_ref = @unsafe.llvm_get_module_context(self.as_mod_ref())
-
   Context::new(ctx_ref)
 }
 
@@ -81,7 +78,7 @@ pub fn Module::get_context(self: Module) -> Context {
 ///
 /// assert_true!(fn_value == module.get_first_function().unwrap());
 /// ```
-pub fn Module::get_first_function(self: Module) -> FunctionValue? {
+pub fn Module::get_first_function(self : Module) -> FunctionValue? {
   let val_ref = @unsafe.llvm_get_first_function(self.as_mod_ref())
   FunctionValue::new(val_ref)
 }
@@ -102,7 +99,7 @@ pub fn Module::get_first_function(self: Module) -> FunctionValue? {
 ///
 /// assert_eq!(fn_value, module.get_last_function().unwrap());
 /// ```
-pub fn Module::get_last_function(self: Module) -> FunctionValue? {
+pub fn Module::get_last_function(self : Module) -> FunctionValue? {
   let val_ref = @unsafe.llvm_get_last_function(self.as_mod_ref())
   FunctionValue::new(val_ref)
 }
@@ -123,9 +120,8 @@ pub fn Module::get_last_function(self: Module) -> FunctionValue? {
 ///
 /// assert_eq!(fn_value, module.get_function("my_fn").unwrap());
 /// ```
-pub fn Module::get_function(self: Module, name: String) -> FunctionValue? {
+pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
   let val_ref = @unsafe.llvm_get_named_function(self.as_mod_ref(), name)
-
   FunctionValue::new(val_ref)
 }
 
@@ -146,8 +142,8 @@ pub fn Module::get_function(self: Module, name: String) -> FunctionValue? {
 ///
 /// inspect!(names, content="[my_fn]");
 /// ```
-pub fn Module::get_functions(self: Module) -> Array[FunctionValue] {
-  let funcs: Array[FunctionValue] = Array::new()
+pub fn Module::get_functions(self : Module) -> Array[FunctionValue] {
+  let funcs : Array[FunctionValue] = Array::new()
   let func = self.get_first_function()
   loop func {
     Some(f) => {
@@ -171,7 +167,7 @@ pub fn Module::get_functions(self: Module) -> Array[FunctionValue] {
 /// let opaque = context.opaque_struct_type("foo");
 /// assert_true!(module.get_struct_type("foo").unwrap() == opaque);
 /// ```
-pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
+pub fn Module::get_struct_type(self : Module, name : String) -> StructType? {
   self.get_context().get_struct_type(name)
 }
 
@@ -194,7 +190,6 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 // pub fn Module::set_triple(self: Module, triple: TargetTriple) -> Unit {
 //   @unsafe.llvm_set_target(self.as_mod_ref(), triple.as_string())
 // }
-
 
 // Gets the `TargetTriple` assigned to this `Module`. If none has been
 // assigned, the triple will default to "".
@@ -235,18 +230,22 @@ pub fn Module::get_struct_type(self: Module, name:String) -> StructType? {
 /// assert_eq!(module.get_first_global().unwrap(), global);
 /// assert_eq!(module.get_last_global().unwrap(), global);
 /// ```
-pub fn Module::add_global[T: BasicType](
-  self: Module, ty: T, addr_space: AddressSpace?, name: String
+pub fn[T : BasicType] Module::add_global(
+  self : Module,
+  ty : T,
+  addr_space : AddressSpace?,
+  name : String
 ) -> GlobalValue {
   let val = match addr_space {
-    Some(addr_space) => {
-      @unsafe.llvm_add_global_in_address_space(self.as_mod_ref(), ty.as_type_ref(), name, addr_space.into())
-    }
-    None => {
-      @unsafe.llvm_add_global(self.as_mod_ref(), ty.as_type_ref(), name)
-    }
+    Some(addr_space) =>
+      @unsafe.llvm_add_global_in_address_space(
+        self.as_mod_ref(),
+        ty.as_type_ref(),
+        name,
+        addr_space.into(),
+      )
+    None => @unsafe.llvm_add_global(self.as_mod_ref(), ty.as_type_ref(), name)
   }
-
   GlobalValue::new(val)
 }
 
@@ -275,7 +274,8 @@ pub fn Module::add_global[T: BasicType](
 //   @unsafe.llvm_print_module_to_file(self.module_ref, file.as_file_ref())
 // }
 
-pub fn Module::set_inline_assembly(self: Module, asm: String) -> Unit {
+///|
+pub fn Module::set_inline_assembly(self : Module, asm : String) -> Unit {
   @unsafe.llvm_set_module_inline_asm(self.module_ref, asm)
 }
 
@@ -314,14 +314,18 @@ pub fn Module::set_inline_assembly(self: Module, asm: String) -> Unit {
 /// assert_eq!(md_1[1].into_float_value(), f32_val);
 /// ```
 pub fn Module::add_global_metadata(
-  self: Module, name: String, metadata: MetadataValue
+  self : Module,
+  name : String,
+  metadata : MetadataValue
 ) -> Result[Unit, String] {
   if not(metadata.is_node()) {
     return Err("MetadataValue is not a node".to_string())
   }
-
-  @unsafe.llvm_add_named_metadata_operand(self.as_mod_ref(), name, metadata.as_value_ref())
-
+  @unsafe.llvm_add_named_metadata_operand(
+    self.as_mod_ref(),
+    name,
+    metadata.as_value_ref(),
+  )
   Ok(())
 }
 
@@ -359,7 +363,7 @@ pub fn Module::add_global_metadata(
 /// assert_eq!(md_1[0].into_int_value(), bool_val);
 /// assert_eq!(md_1[1].into_float_value(), f32_val);
 /// ```
-pub fn Module::get_global_metadata_size(self: Module, key: String) -> UInt {
+pub fn Module::get_global_metadata_size(self : Module, key : String) -> UInt {
   @unsafe.llvm_get_named_metadata_num_operands(self.as_mod_ref(), key)
 }
 
@@ -397,10 +401,15 @@ pub fn Module::get_global_metadata_size(self: Module, key: String) -> UInt {
 /// assert_eq!(md_1[0].into_int_value(), bool_val);
 /// assert_eq!(md_1[1].into_float_value(), f32_val);
 /// ```
-pub fn Module::get_global_metadata(self: Module, key: String) -> Array[MetadataValue] {
-  let metadata_ref = @unsafe.llvm_get_named_metadata_operands(self.as_mod_ref(), key)
-
-  metadata_ref.map(fn (r) { MetadataValue::new(r) })
+pub fn Module::get_global_metadata(
+  self : Module,
+  key : String
+) -> Array[MetadataValue] {
+  let metadata_ref = @unsafe.llvm_get_named_metadata_operands(
+    self.as_mod_ref(),
+    key,
+  )
+  metadata_ref.map(fn(r) { MetadataValue::new(r) })
 }
 
 ///| Gets the first `GlobalValue` in a module.
@@ -418,9 +427,8 @@ pub fn Module::get_global_metadata(self: Module, key: String) -> Array[MetadataV
 ///
 /// assert_true!(module.get_first_global().unwrap() == global);
 /// ```
-pub fn Module::get_first_global(self: Module) -> GlobalValue? {
+pub fn Module::get_first_global(self : Module) -> GlobalValue? {
   let val_ref = @unsafe.llvm_get_first_global(self.as_mod_ref())
-
   if val_ref.is_null() {
     None
   } else {
@@ -443,9 +451,8 @@ pub fn Module::get_first_global(self: Module) -> GlobalValue? {
 ///
 /// assert_true!(module.get_last_global().unwrap() == global);
 /// ```
-pub fn Module::get_last_global(self: Module) -> GlobalValue? {
+pub fn Module::get_last_global(self : Module) -> GlobalValue? {
   let val_ref = @unsafe.llvm_get_last_global(self.as_mod_ref())
-
   if val_ref.is_null() {
     None
   } else {
@@ -468,9 +475,8 @@ pub fn Module::get_last_global(self: Module) -> GlobalValue? {
 ///
 /// assert_true!(module.get_global("my_global").unwrap() == global);
 /// ```
-pub fn Module::get_global(self: Module, name: String) -> GlobalValue? {
+pub fn Module::get_global(self : Module, name : String) -> GlobalValue? {
   let val_ref = @unsafe.llvm_get_named_global(self.as_mod_ref(), name)
-
   if val_ref.is_null() {
     None
   } else {
@@ -493,7 +499,7 @@ pub fn Module::get_global(self: Module, name: String) -> GlobalValue? {
 ///
 /// assert_eq!(module.get_name().to_str(), Ok("my_mdoule"));
 /// ```
-pub fn Module::get_name(self: Module) -> String {
+pub fn Module::get_name(self : Module) -> String {
   @unsafe.llvm_get_module_identifier(self.module_ref)
 }
 
@@ -509,7 +515,7 @@ pub fn Module::get_name(self: Module) -> String {
 ///
 /// inspect!(module.get_name()), content="my_module2");
 /// ```
-pub fn Module::set_name(self: Module, name: String) -> Unit {
+pub fn Module::set_name(self : Module, name : String) -> Unit {
   @unsafe.llvm_set_module_identifier(self.module_ref, name)
 }
 
@@ -528,7 +534,7 @@ pub fn Module::set_name(self: Module, name: String) -> Unit {
 /// inspect!(module.get_name(), contend="my_mod");
 /// inspect!(module.get_source_file_name(), contend="my_mod.mbt");
 /// ```
-pub fn Module::get_source_filename(self: Module) -> String {
+pub fn Module::get_source_filename(self : Module) -> String {
   @unsafe.llvm_get_source_file_name(self.module_ref)
 }
 
@@ -547,7 +553,7 @@ pub fn Module::get_source_filename(self: Module) -> String {
 /// inspect!(module.get_name(), contend="my_mod");
 /// inspect!(module.get_source_file_name(), contend="my_mod.mbt");
 /// ```
-pub fn Module::set_source_filename(self: Module, name: String) -> Unit {
+pub fn Module::set_source_filename(self : Module, name : String) -> Unit {
   @unsafe.llvm_set_source_file_name(self.module_ref, name)
 }
 
@@ -602,40 +608,40 @@ pub fn Module::set_source_filename(self: Module, name: String) -> Unit {
 //   @unsafe.llvm_get_module_debug_metadata_version(self.module_ref)
 // }
 
-pub fn Module::drop(self: Module) -> Unit {
+///|
+pub fn Module::drop(self : Module) -> Unit {
   @unsafe.llvm_dispose_module(self.module_ref)
 }
 
 ///| Dumps the `Module` to stderr.
 ///
 /// It's equivalent to `Module::dump`.
-pub fn Module::print_to_stderr(self: Module) -> Unit {
+pub fn Module::print_to_stderr(self : Module) -> Unit {
   @unsafe.llvm_dump_module(self.module_ref)
 }
 
 ///| Dumps the `Module` to string.
 ///
 /// It's equivalent to `Module::to_string`.
-pub fn Module::print_to_string(self: Module) -> String {
+pub fn Module::print_to_string(self : Module) -> String {
   @unsafe.llvm_print_module_to_string(self.module_ref)
 }
-
 
 ///| Dumps the `Module` to string.
 ///
 /// It's equivalent to `Module::print_to_string`.
-pub fn Module::to_string(self: Module) -> String {
+pub fn Module::to_string(self : Module) -> String {
   @unsafe.llvm_print_module_to_string(self.module_ref)
 }
 
 ///| Dumps the `Module` to stderr.
 ///
 /// It's equivalent to `Module::print_to_stderr`.
-pub fn Module::dump(self: Module) -> Unit {
+pub fn Module::dump(self : Module) -> Unit {
   @unsafe.llvm_dump_module(self.module_ref)
 }
 
-pub impl Show for Module with output(self: Module, logger: &Logger) {
+///|
+pub impl Show for Module with output(self : Module, logger : &Logger) {
   logger.write_string(self.to_string())
 }
-

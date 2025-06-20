@@ -1,39 +1,36 @@
 // ============================================
 // GlobalValue
 // ============================================
+
 ///| A `GlobalValue` is a value that represents a global variable.
 pub struct GlobalValue {
-  value: Value
+  value : Value
 }
 
 ///| Creates a new `GlobalValue` from an `@unsafe.LLVMValueRef`.
-pub fn GlobalValue::new(value_ref: @unsafe.LLVMValueRef) -> GlobalValue {
+pub fn GlobalValue::new(value_ref : @unsafe.LLVMValueRef) -> GlobalValue {
   guard value_ref.is_not_null()
-
-  GlobalValue::{
-    value: Value::new(value_ref)
-  }
+  GlobalValue::{ value: Value::new(value_ref) }
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `GlobalValue` wraps.
-pub fn GlobalValue::as_value_ref(self: GlobalValue) -> @unsafe.LLVMValueRef {
+pub fn GlobalValue::as_value_ref(self : GlobalValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
 
 ///| Get the name of the `GlobalValue`.
-pub fn GlobalValue::get_name(self: GlobalValue) -> String {
+pub fn GlobalValue::get_name(self : GlobalValue) -> String {
   self.value.get_name()
 }
 
-////| Set name of the `GlobalValue`.
-pub fn GlobalValue::set_name(self: GlobalValue, name: String) -> Unit {
+///| Set name of the `GlobalValue`.
+pub fn GlobalValue::set_name(self : GlobalValue, name : String) -> Unit {
   self.value.set_name(name)
 }
 
 ///| Get the previous global value in the module.
-pub fn GlobalValue::get_previous_global(self: GlobalValue) -> GlobalValue? {
+pub fn GlobalValue::get_previous_global(self : GlobalValue) -> GlobalValue? {
   let value_ref = @unsafe.llvm_get_previous_global(self.as_value_ref())
-  
   if value_ref.is_null() {
     None
   } else {
@@ -42,9 +39,8 @@ pub fn GlobalValue::get_previous_global(self: GlobalValue) -> GlobalValue? {
 }
 
 ///| Get the next global value in the module.
-pub fn GlobalValue::get_next_global(self: GlobalValue) -> GlobalValue? {
+pub fn GlobalValue::get_next_global(self : GlobalValue) -> GlobalValue? {
   let value_ref = @unsafe.llvm_get_next_global(self.as_value_ref())
-  
   if value_ref.is_null() {
     None
   } else {
@@ -52,7 +48,8 @@ pub fn GlobalValue::get_next_global(self: GlobalValue) -> GlobalValue? {
   }
 }
 
-pub fn GlobalValue::get_dll_storge_class(self: GlobalValue) -> DLLStorageClass {
+///|
+pub fn GlobalValue::get_dll_storge_class(self : GlobalValue) -> DLLStorageClass {
   let dc = @unsafe.llvm_get_dll_storage_class(self.as_value_ref())
   DLLStorageClass::from(dc)
 }
@@ -62,9 +59,9 @@ pub fn GlobalValue::get_dll_storge_class(self: GlobalValue) -> DLLStorageClass {
 //   @unsafe.llvm_set_dll_storage_class(self.as_value_ref(), storage_class)
 // }
 
-pub fn GlobalValue::get_initializer(self: GlobalValue) -> Option[BasicValueEnum] {
+///|
+pub fn GlobalValue::get_initializer(self : GlobalValue) -> BasicValueEnum? {
   let value_ref = @unsafe.llvm_get_initializer(self.as_value_ref())
-
   if value_ref.is_null() {
     None
   } else {
@@ -72,28 +69,44 @@ pub fn GlobalValue::get_initializer(self: GlobalValue) -> Option[BasicValueEnum]
   }
 }
 
-pub fn GlobalValue::set_initializer(self: GlobalValue, value: BasicValueEnum) -> Unit {
+///|
+pub fn GlobalValue::set_initializer(
+  self : GlobalValue,
+  value : BasicValueEnum
+) -> Unit {
   @unsafe.llvm_set_initializer(self.as_value_ref(), value.as_value_ref())
 }
 
-pub fn GlobalValue::is_thread_local(self: GlobalValue) -> Bool {
+///|
+pub fn GlobalValue::is_thread_local(self : GlobalValue) -> Bool {
   @unsafe.llvm_is_thread_local(self.as_value_ref())
 }
 
-pub fn GlobalValue::set_thread_local(self: GlobalValue, is_thread_local: Bool) -> Unit {
+///|
+pub fn GlobalValue::set_thread_local(
+  self : GlobalValue,
+  is_thread_local : Bool
+) -> Unit {
   @unsafe.llvm_set_thread_local(self.as_value_ref(), is_thread_local)
 }
 
-pub fn GlobalValue::get_thread_local_mode(self: GlobalValue) -> ThreadLocalMode {
+///|
+pub fn GlobalValue::get_thread_local_mode(
+  self : GlobalValue
+) -> ThreadLocalMode {
   let t = @unsafe.llvm_get_thread_local_mode(self.as_value_ref())
   ThreadLocalMode::from(t)
 }
 
+///|
 pub fn GlobalValue::set_thread_local_mode(
-  self: GlobalValue,
-  thread_local_mode: ThreadLocalMode
+  self : GlobalValue,
+  thread_local_mode : ThreadLocalMode
 ) -> Unit {
-  @unsafe.llvm_set_thread_local_mode(self.as_value_ref(), thread_local_mode.into())
+  @unsafe.llvm_set_thread_local_mode(
+    self.as_value_ref(),
+    thread_local_mode.into(),
+  )
 }
 
 ///| Determines whether or not a `GlobalValue` is a declaration or a definition.
@@ -114,84 +127,128 @@ pub fn GlobalValue::set_thread_local_mode(
 ///
 /// assert_true!(!fn_value.as_global_value().is_declaration());
 /// ```
-pub fn GlobalValue::is_declaration(self: GlobalValue) -> Bool {
+pub fn GlobalValue::is_declaration(self : GlobalValue) -> Bool {
   @unsafe.llvm_is_declaration(self.as_value_ref())
 }
 
-pub fn GlobalValue::has_unnamed_addr(self: GlobalValue) -> Bool {
-  @unsafe.llvm_get_unnamed_address(self.as_value_ref()) == @unsafe.LLVMUnnamedAddr::LLVMGlobalUnnamedAddr
+///|
+pub fn GlobalValue::has_unnamed_addr(self : GlobalValue) -> Bool {
+  @unsafe.llvm_get_unnamed_address(self.as_value_ref()) ==
+  @unsafe.LLVMUnnamedAddr::LLVMGlobalUnnamedAddr
 }
 
 // REVIEW: Would use `UnnamedAddr` instead of `@unsafe.LLVMUnnamedAddr` be better?
-pub fn GlobalValue::set_unnamed_addr(self: GlobalValue, has_unnamed_addr: Bool) -> Unit {
+
+///|
+pub fn GlobalValue::set_unnamed_addr(
+  self : GlobalValue,
+  has_unnamed_addr : Bool
+) -> Unit {
   // @unsafe.llvm_set_unnamed_addr(self.as_value_ref(), has_unnamed_addr)
   if has_unnamed_addr {
-    @unsafe.llvm_set_unnamed_address(self.as_value_ref(), @unsafe.LLVMUnnamedAddr::LLVMGlobalUnnamedAddr)
+    @unsafe.llvm_set_unnamed_address(
+      self.as_value_ref(),
+      @unsafe.LLVMUnnamedAddr::LLVMGlobalUnnamedAddr,
+    )
   } else {
-    @unsafe.llvm_set_unnamed_address(self.as_value_ref(), @unsafe.LLVMUnnamedAddr::LLVMNoUnnamedAddr)
+    @unsafe.llvm_set_unnamed_address(
+      self.as_value_ref(),
+      @unsafe.LLVMUnnamedAddr::LLVMNoUnnamedAddr,
+    )
   }
 }
 
-pub fn GlobalValue::is_constant(self: GlobalValue) -> Bool {
+///|
+pub fn GlobalValue::is_constant(self : GlobalValue) -> Bool {
   @unsafe.llvm_is_global_constant(self.as_value_ref())
 }
 
-pub fn GlobalValue::set_constant(self: GlobalValue, is_constant: Bool) -> Unit {
+///|
+pub fn GlobalValue::set_constant(
+  self : GlobalValue,
+  is_constant : Bool
+) -> Unit {
   @unsafe.llvm_set_global_constant(self.as_value_ref(), is_constant)
 }
 
-pub fn GlobalValue::is_externally_initialized(self: GlobalValue) -> Bool {
+///|
+pub fn GlobalValue::is_externally_initialized(self : GlobalValue) -> Bool {
   @unsafe.llvm_is_externally_initialized(self.as_value_ref())
 }
 
-pub fn GlobalValue::set_externally_initialized(self: GlobalValue, is_externally_initialized: Bool) -> Unit {
-  @unsafe.llvm_set_externally_initialized(self.as_value_ref(), is_externally_initialized)
+///|
+pub fn GlobalValue::set_externally_initialized(
+  self : GlobalValue,
+  is_externally_initialized : Bool
+) -> Unit {
+  @unsafe.llvm_set_externally_initialized(
+    self.as_value_ref(),
+    is_externally_initialized,
+  )
 }
 
-pub fn GlobalValue::set_visibility(self: GlobalValue, visibility: GlobalVisibility) -> Unit {
+///|
+pub fn GlobalValue::set_visibility(
+  self : GlobalValue,
+  visibility : GlobalVisibility
+) -> Unit {
   @unsafe.llvm_set_visibility(self.as_value_ref(), visibility.into())
 }
 
-pub fn GlobalVisibility::get_visibility(self: GlobalValue) -> GlobalVisibility {
+///|
+pub fn GlobalVisibility::get_visibility(self : GlobalValue) -> GlobalVisibility {
   let v = @unsafe.llvm_get_visibility(self.as_value_ref())
   GlobalVisibility::from(v)
 }
 
-pub fn GlobalValue::get_section(self: GlobalValue) -> String {
+///|
+pub fn GlobalValue::get_section(self : GlobalValue) -> String {
   @unsafe.llvm_get_section(self.as_value_ref())
 }
 
-pub fn GlobalValue::set_section(self: GlobalValue, section: String) -> Unit {
+///|
+pub fn GlobalValue::set_section(self : GlobalValue, section : String) -> Unit {
   @unsafe.llvm_set_section(self.as_value_ref(), section)
 }
 
-pub fn GlobalValue::delete(self: GlobalValue) -> Unit {
+///|
+pub fn GlobalValue::delete(self : GlobalValue) -> Unit {
   @unsafe.llvm_delete_global(self.as_value_ref())
 }
 
 ///| Attempt to convert this `GlobalValue` to a `PointerValue`, if possible.
-pub fn GlobalValue::as_pointer_value(self: GlobalValue) -> PointerValue {
+pub fn GlobalValue::as_pointer_value(self : GlobalValue) -> PointerValue {
   PointerValue::new(self.as_value_ref())
 }
 
-pub fn GlobalValue::get_alignment(self: GlobalValue) -> UInt {
+///|
+pub fn GlobalValue::get_alignment(self : GlobalValue) -> UInt {
   @unsafe.llvm_get_alignment(self.as_value_ref())
 }
 
-pub fn GlobalValue::set_alignment(self: GlobalValue, alignment: UInt) -> Unit {
+///|
+pub fn GlobalValue::set_alignment(self : GlobalValue, alignment : UInt) -> Unit {
   @unsafe.llvm_set_alignment(self.as_value_ref(), alignment)
 }
 
+///|
 pub fn GlobalValue::set_metadata(
-  self: GlobalValue, metadata: MetadataValue, kind_id: UInt
+  self : GlobalValue,
+  metadata : MetadataValue,
+  kind_id : UInt
 ) -> Unit {
-  @unsafe.llvm_global_set_metadata(self.as_value_ref(), kind_id, metadata.as_metadata_ref())
+  @unsafe.llvm_global_set_metadata(
+    self.as_value_ref(),
+    kind_id,
+    metadata.as_metadata_ref(),
+  )
 }
 
 // TODO: enable it when `@unsafe.llvm_get_metadata` is available
-pub fn GlobalValue::get_comdat(self: GlobalValue) -> Comdat? {
-  let comdat_ref = @unsafe.llvm_get_comdat(self.as_value_ref())
 
+///|
+pub fn GlobalValue::get_comdat(self : GlobalValue) -> Comdat? {
+  let comdat_ref = @unsafe.llvm_get_comdat(self.as_value_ref())
   if comdat_ref.is_null() {
     None
   } else {
@@ -199,25 +256,27 @@ pub fn GlobalValue::get_comdat(self: GlobalValue) -> Comdat? {
   }
 }
 
+///|
 pub fn GlobalValue::set_unnamed_address(
-  self: GlobalValue, unnamed_address: UnnamedAddress
+  self : GlobalValue,
+  unnamed_address : UnnamedAddress
 ) -> Unit {
   @unsafe.llvm_set_unnamed_address(self.as_value_ref(), unnamed_address.into())
 }
 
 ///| Get the linkage of the `GlobalValue`.
-pub fn GlobalValue::get_linkage(self: GlobalValue) -> Linkage {
+pub fn GlobalValue::get_linkage(self : GlobalValue) -> Linkage {
   let linkage = @unsafe.llvm_get_linkage(self.as_value_ref())
   Linkage::from(linkage)
 }
 
 ///| Set the linkage of the `GlobalValue`.
-pub fn GlobalValue::set_linkage(self: GlobalValue, linkage: Linkage) -> Unit {
+pub fn GlobalValue::set_linkage(self : GlobalValue, linkage : Linkage) -> Unit {
   @unsafe.llvm_set_linkage(self.as_value_ref(), linkage.into())
 }
 
 ///| Get the type of the `GlobalValue`.
-pub fn GlobalValue::get_value_type(self: GlobalValue) -> AnyTypeEnum {
+pub fn GlobalValue::get_value_type(self : GlobalValue) -> AnyTypeEnum {
   let ty = @unsafe.llvm_global_get_value_type(self.as_value_ref())
   AnyTypeEnum::new(ty)
 }
@@ -225,37 +284,37 @@ pub fn GlobalValue::get_value_type(self: GlobalValue) -> AnyTypeEnum {
 ///| Dumps the `GlobalValue` to stderr.
 ///
 /// It's equivalent to `GlobalValue::dump`.
-pub fn GlobalValue::print_to_stderr(self: GlobalValue) -> Unit {
+pub fn GlobalValue::print_to_stderr(self : GlobalValue) -> Unit {
   self.value.print_to_stderr()
 }
 
 ///| Dumps the `GlobalValue` to a string.
 ///
 /// It's equivalent to `GlobalValue::to_string`.
-pub fn GlobalValue::print_to_string(self: GlobalValue) -> String {
+pub fn GlobalValue::print_to_string(self : GlobalValue) -> String {
   self.value.print_to_string()
 }
 
 ///| Dumps the `GlobalValue` to a string.
 ///
 /// It's equivalent to `GlobalValue::print_to_string`.
-pub fn GlobalValue::to_string(self: GlobalValue) -> String {
+pub fn GlobalValue::to_string(self : GlobalValue) -> String {
   self.value.to_string()
 }
 
 ///| Dumps the `GlobalValue` to stderr.
 ///
 /// It's equivalent to `GlobalValue::print_to_stderr`.
-pub fn GlobalValue::dump(self: GlobalValue) -> Unit {
+pub fn GlobalValue::dump(self : GlobalValue) -> Unit {
   self.value.dump()
 }
 
-pub impl Show for GlobalValue with output(self: GlobalValue, logger: &Logger) -> Unit {
+///|
+pub impl Show for GlobalValue with output(self : GlobalValue, logger : &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
-pub impl Show for GlobalValue with to_string(self: GlobalValue) -> String {
+///|
+pub impl Show for GlobalValue with to_string(self : GlobalValue) -> String {
   self.to_string()
 }
-
-

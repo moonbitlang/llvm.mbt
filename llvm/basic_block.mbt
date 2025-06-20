@@ -10,17 +10,19 @@ pub struct BasicBlock {
 }
 
 ///| Return `@unsafe.LLVMBasicBlockRef` of this `BasicBlock` wrapped.
-pub fn BasicBlock::as_bb_ref(self: BasicBlock) -> @unsafe.LLVMBasicBlockRef {
+pub fn BasicBlock::as_bb_ref(self : BasicBlock) -> @unsafe.LLVMBasicBlockRef {
   self.bb_ref
 }
 
-pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBlock {
+///|
+pub fn BasicBlock::new(
+  basic_block_ref : @unsafe.LLVMBasicBlockRef
+) -> BasicBlock {
   guard basic_block_ref.is_not_null() else {
     println("basic block ref is null")
     panic()
   }
-
-  BasicBlock::{ bb_ref : basic_block_ref }
+  BasicBlock::{ bb_ref: basic_block_ref }
 }
 
 ///| Obtains the `FunctionValue` that this `BasicBlock` belongs to, if any.
@@ -42,7 +44,7 @@ pub fn BasicBlock::new(basic_block_ref : @unsafe.LLVMBasicBlockRef) -> BasicBloc
 ///
 /// assert_true!(basic_block.get_parent() is None);
 /// ```
-pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
+pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
   FunctionValue::new(@unsafe.llvm_get_basic_block_parent(self.as_bb_ref()))
 }
 
@@ -69,12 +71,9 @@ pub fn BasicBlock::get_parent(self: BasicBlock) -> FunctionValue? {
 /// assert_true!(basic_block2.get_previous_basic_block() is None);
 /// assert_true!(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
 /// ```
-pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
+pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
   let prev_bb_ref = @unsafe.llvm_get_previous_basic_block(self.as_bb_ref())
-  @option.when(
-    prev_bb_ref.is_not_null(),
-    fn () { BasicBlock::new(prev_bb_ref) }
-  )
+  @option.when(prev_bb_ref.is_not_null(), fn() { BasicBlock::new(prev_bb_ref) })
 }
 
 ///| Gets the `BasicBlock` succeeding the current one, in its own scope, if any.
@@ -101,14 +100,12 @@ pub fn BasicBlock::get_previous_basic_block(self: BasicBlock) -> BasicBlock? {
 /// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block3);
 /// assert_true!(basic_block3.get_next_basic_block() is None);
 /// ```
-pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
+pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
   let next_bb_ref = @unsafe.llvm_get_next_basic_block(self.as_bb_ref())
-  @option.when(
-    next_bb_ref.is_not_null(),
-    fn () { BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref())) }
-  )
+  @option.when(next_bb_ref.is_not_null(), fn() {
+    BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref()))
+  })
 }
-
 
 ///| Prepends one `BasicBlock` before another.
 /// It returns `Err(())` when either `BasicBlock` has no parent, as @unsafe.LLVM assumes they both have parents.
@@ -130,11 +127,13 @@ pub fn BasicBlock::get_next_basic_block(self: BasicBlock) -> BasicBlock? {
 /// assert_true!(basic_block1.get_next_basic_block() is None);
 /// assert_true!(basic_block2.get_next_basic_block().unwrap() == basic_block1);
 /// ```
-pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Unit!MoonllvmError {
+pub fn BasicBlock::move_before(
+  self : BasicBlock,
+  other : BasicBlock
+) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) && other.get_parent() is Some(_) else {
     raise MoonllvmError::BasicBlockHasNoParent
   }
-
   @unsafe.llvm_move_basic_block_before(self.as_bb_ref(), other.as_bb_ref())
 }
 
@@ -158,14 +157,15 @@ pub fn BasicBlock::move_before(self: BasicBlock, other: BasicBlock) -> Unit!Moon
 /// assert_true!(basic_block1.get_next_basic_block().is_none());
 /// assert_eq!(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
-pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Unit!MoonllvmError {
+pub fn BasicBlock::move_after(
+  self : BasicBlock,
+  other : BasicBlock
+) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) && other.get_parent() is Some(_) else {
     raise MoonllvmError::BasicBlockHasNoParent
   }
-
   @unsafe.llvm_move_basic_block_after(self.as_bb_ref(), other.as_bb_ref())
 }
-
 
 ///| Obtains the first `InstructionValue` in this `BasicBlock`, if any.
 ///
@@ -186,13 +186,11 @@ pub fn BasicBlock::move_after(self: BasicBlock, other: BasicBlock) -> Unit!Moonl
 /// let opcode = basic_block.get_first_instruction().unwrap().get_opcode();
 /// assert_eq!(opcode, InstructionOpcode::Return);
 /// ```
-pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? {
+pub fn BasicBlock::get_first_instruction(
+  self : BasicBlock
+) -> InstructionValue? {
   let inst = @unsafe.llvm_get_first_instruction(self.as_bb_ref())
-
-  @option.when(
-    inst.is_not_null(),
-    fn () { InstructionValue::new(inst) }
-  )
+  @option.when(inst.is_not_null(), fn() { InstructionValue::new(inst) })
 }
 
 ///| Obtains the last `InstructionValue` in this `BasicBlock`, if any. A `BasicBlock` must have a last instruction to be valid.
@@ -214,15 +212,10 @@ pub fn BasicBlock::get_first_instruction(self: BasicBlock) -> InstructionValue? 
 /// let opcode = basic_block.get_last_instruction().unwrap().get_opcode();
 /// assert_eq!(opcode, InstructionOpcode::Return);
 /// ```
-pub fn BasicBlock::get_last_instruction(self: BasicBlock) -> InstructionValue? {
+pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_last_instruction(self.as_bb_ref())
-
-  @option.when(
-    inst.is_not_null(),
-    fn () { InstructionValue::new(inst) }
-  )
+  @option.when(inst.is_not_null(), fn() { InstructionValue::new(inst) })
 }
-
 
 ///| Performs a linear lookup to obtain a instruction based on the name
 ///
@@ -252,7 +245,10 @@ pub fn BasicBlock::get_last_instruction(self: BasicBlock) -> InstructionValue? {
 /// assert_true!(some_number.is_some());
 /// inspect!(some_number.unwrap().get_name().unwrap(), content="some_number")
 /// ```
-pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> InstructionValue? {
+pub fn BasicBlock::get_instruction_with_name(
+  self : BasicBlock,
+  name : String
+) -> InstructionValue? {
   let inst = self.get_first_instruction()
   match inst {
     Some(inst) => inst.get_instruction_with_name(name)
@@ -279,13 +275,9 @@ pub fn BasicBlock::get_instruction_with_name(self: BasicBlock, name: String) -> 
 /// let opcode = basic_block.get_terminator().unwrap().get_opcode()
 /// assert_eq!(opcode, InstructionOpcode::Return);
 /// ```
-pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
+pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
   let inst = @unsafe.llvm_get_basic_block_terminator(self.as_bb_ref())
-
-  @option.when(
-    inst.is_not_null(),
-    fn () { InstructionValue::new(inst) }
-  )
+  @option.when(inst.is_not_null(), fn() { InstructionValue::new(inst) })
 }
 
 // pub fn BasicBlock::get_instructions(self) -> InstructionIter
@@ -309,15 +301,14 @@ pub fn BasicBlock::get_terminator(self: BasicBlock) -> InstructionValue? {
 ///
 /// assert_true!(basic_block.get_parent().is_none());
 /// ```
-pub fn remove_from_function(self: BasicBlock) -> Unit!MoonllvmError {
+pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) else {
     raise MoonllvmError::BasicBlockHasNoParent
   }
-
   @unsafe.llvm_remove_basic_block_from_parent(self.as_bb_ref())
 }
 
-/// Removes this `BasicBlock` completely from memory. This is unsafe because you could easily have other references to the same `BasicBlock`.
+///| Removes this `BasicBlock` completely from memory. This is unsafe because you could easily have other references to the same `BasicBlock`.
 /// It returns `Err(())` when it has no parent to delete from, as @unsafe.LLVM assumes it has a parent.
 ///
 /// ## Example (Not Tested)
@@ -333,11 +324,10 @@ pub fn remove_from_function(self: BasicBlock) -> Unit!MoonllvmError {
 /// basic_block.delete();
 /// assert_true!(function.get_basic_blocks().is_empty());
 /// ```
-pub fn BasicBlock::delete(self: BasicBlock) -> Unit!MoonllvmError {
+pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
   guard self.get_parent() is Some(_) else {
     raise MoonllvmError::BasicBlockHasNoParent
   }
-
   @unsafe.llvm_delete_basic_block(self.as_bb_ref())
 }
 
@@ -355,8 +345,12 @@ pub fn BasicBlock::delete(self: BasicBlock) -> Unit!MoonllvmError {
 ///
 /// assert_true!(context == basic_block.get_context());
 /// ```
-pub fn BasicBlock::get_context(self: BasicBlock) -> Context {
-  Context::new(@unsafe.llvm_get_type_context(@unsafe.llvm_type_of(self.as_bb_ref().as_value_ref())))
+pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
+  Context::new(
+    @unsafe.llvm_get_type_context(
+      @unsafe.llvm_type_of(self.as_bb_ref().as_value_ref()),
+    ),
+  )
 }
 
 ///| Gets the name of a `BasicBlock`.
@@ -373,7 +367,7 @@ pub fn BasicBlock::get_context(self: BasicBlock) -> Context {
 ///
 /// inspect!(bb.get_name(), content="entry");
 /// ```
-pub fn BasicBlock::get_name(self: BasicBlock) -> String {
+pub fn BasicBlock::get_name(self : BasicBlock) -> String {
   self.as_bb_ref().get_name()
 }
 
@@ -392,7 +386,7 @@ pub fn BasicBlock::get_name(self: BasicBlock) -> String {
 /// bb.set_name("renamed_entry");
 /// inspect!(bb.get_name(), content="renamed_entry");
 /// ```
-pub fn BasicBlock::set_name(self: BasicBlock, name: String) -> Unit {
+pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
   self.as_bb_ref().as_value_ref().set_name(name)
 }
 
@@ -417,10 +411,12 @@ pub fn BasicBlock::set_name(self: BasicBlock, name: String) -> Unit {
 ///
 /// assert_eq!(branch_inst.get_operand(0).unwrap().right().unwrap(), bb2);
 /// ```
-pub fn BasicBlock::replace_all_uses_with(self: BasicBlock, other: BasicBlock) -> Unit {
+pub fn BasicBlock::replace_all_uses_with(
+  self : BasicBlock,
+  other : BasicBlock
+) -> Unit {
   let value = self.as_bb_ref().as_value_ref()
   let other = other.as_bb_ref().as_value_ref()
-
   if value != other {
     value.replace_all_uses_with(other)
   }
@@ -446,13 +442,11 @@ pub fn BasicBlock::replace_all_uses_with(self: BasicBlock, other: BasicBlock) ->
 /// assert_true!(bb2.get_first_use().is_none());
 /// assert_true!(bb1.get_first_use().is_some());
 /// ```
-pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
+pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
   let use_ = self.as_bb_ref().as_value_ref().get_first_use()
-
   if use_.is_null() {
     return None
   }
-
   Some(BasicValueUse::new(use_))
 }
 
@@ -472,22 +466,15 @@ pub fn BasicBlock::get_first_use(self: BasicBlock) -> BasicValueUse? {
 /// assert_true!(entry_bb.get_address() is None);
 /// assert_true!(next_bb.get_address() is Some(_));
 /// ```
-pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
-
-  guard self.get_parent() is Some(parent) else {
-    return None
-  }
-
-  guard self.get_previous_basic_block() is Some(_) else {
-    return None
-  } 
-
-  let value = PointerValue::new(@unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()))
-
+pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
+  guard self.get_parent() is Some(parent) else { return None }
+  guard self.get_previous_basic_block() is Some(_) else { return None }
+  let value = PointerValue::new(
+    @unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()),
+  )
   if value.is_null() {
     return None
   }
-
   Some(value)
 }
 
@@ -503,6 +490,7 @@ pub fn BasicBlock::get_address(self: BasicBlock) -> PointerValue? {
 //   logger.log(self.to_string())
 // }
 
-pub impl Eq for BasicBlock with op_equal(self: BasicBlock, other: BasicBlock) -> Bool {
+///|
+pub impl Eq for BasicBlock with op_equal(self : BasicBlock, other : BasicBlock) -> Bool {
   self.as_bb_ref() == other.as_bb_ref()
 }

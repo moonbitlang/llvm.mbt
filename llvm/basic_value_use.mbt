@@ -1,17 +1,15 @@
 ///| it's equivalent to @unsafe.LLVM's `Use` class
 pub struct BasicValueUse {
-  use_ref: @unsafe.LLVMUseRef
+  use_ref : @unsafe.LLVMUseRef
 }
 
 ///| Get a value from an `@unsafe.LLVMUseRef`.
-pub fn BasicValueUse::new(use_ref: @unsafe.LLVMUseRef) -> BasicValueUse {
-  BasicValueUse::{
-    use_ref
-  }
+pub fn BasicValueUse::new(use_ref : @unsafe.LLVMUseRef) -> BasicValueUse {
+  BasicValueUse::{ use_ref, }
 }
 
 ///| Return the `@unsafe.LLVMUseRef` of the `BasicValueUse` wrapped.
-pub fn BasicValueUse::as_use_ref(self: BasicValueUse) -> @unsafe.LLVMUseRef {
+pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
   self.use_ref
 }
 
@@ -64,9 +62,8 @@ pub fn BasicValueUse::as_use_ref(self: BasicValueUse) -> @unsafe.LLVMUseRef {
 /// which makes the arg1 (%0) uses clear:
 /// 1) In the store instruction
 /// 2) In the pointer bitcast
-pub fn BasicValueUse::get_next_use(self: BasicValueUse) -> BasicValueUse? {
-  let use_ref = @unsafe.llvm_get_next_use(self.as_use_ref());
-
+pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
+  let use_ref = @unsafe.llvm_get_next_use(self.as_use_ref())
   if use_ref.is_null() {
     None
   } else {
@@ -104,7 +101,7 @@ pub fn BasicValueUse::get_next_use(self: BasicValueUse) -> BasicValueUse? {
 /// assert_eq!(store_operand_use0.get_user(), store_instruction);
 /// assert_eq!(store_operand_use1.get_user(), store_instruction);
 /// ```
-pub fn BasicValueUse::get_user(self: BasicValueUse) -> AnyValueEnum {
+pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
   AnyValueEnum::new(@unsafe.llvm_get_user(self.as_use_ref()))
 }
 
@@ -143,11 +140,11 @@ pub fn BasicValueUse::get_user(self: BasicValueUse) -> AnyValueEnum {
 ///
 /// assert_eq!(bitcast_use_value, free_operand0);
 /// ```
-pub fn BasicValueUse::get_used_value(self: BasicValueUse) -> Either[BasicValueEnum, BasicBlock] {
+pub fn BasicValueUse::get_used_value(
+  self : BasicValueUse
+) -> Either[BasicValueEnum, BasicBlock] {
   let used_value = @unsafe.llvm_get_used_value(self.as_use_ref())
-
   let is_basic_block = @unsafe.llvm_isa_basic_block(used_value).is_null() |> not
-
   if is_basic_block {
     let bb = BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value))
     Right(bb)

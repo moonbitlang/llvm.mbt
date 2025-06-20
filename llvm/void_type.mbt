@@ -7,21 +7,18 @@ pub struct VoidType {
 ///| Create `VoidType` from `@unsafe.LLVMTypeRef`
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not void type.
-pub fn VoidType::new(type_ref: @unsafe.LLVMTypeRef) -> VoidType {
+pub fn VoidType::new(type_ref : @unsafe.LLVMTypeRef) -> VoidType {
   guard type_ref.is_not_null()
-
-  VoidType::{
-    ty: Type::new(type_ref)
-  }
+  VoidType::{ ty: Type::new(type_ref) }
 }
 
 ///| Return `@unsafe.LLVMTypeRef` of `VoidType`
-pub fn VoidType::as_type_ref(self: VoidType) -> @unsafe.LLVMTypeRef {
+pub fn VoidType::as_type_ref(self : VoidType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
 ///| Return whether this `VoidType` is sized. **Always returns `false`.**
-pub fn VoidType::is_sized(self: VoidType) -> Bool {
+pub fn VoidType::is_sized(self : VoidType) -> Bool {
   self.ty.is_sized()
 }
 
@@ -35,7 +32,7 @@ pub fn VoidType::is_sized(self: VoidType) -> Bool {
 /// let void_ctx = void_type.get_context();
 /// assert_true!(context == void_ctx);
 /// ```
-pub fn VoidType::get_context(self: VoidType) -> Context {
+pub fn VoidType::get_context(self : VoidType) -> Context {
   self.ty.get_context()
 }
 
@@ -50,8 +47,12 @@ pub fn VoidType::get_context(self: VoidType) -> Context {
 /// let fn_type = void_type.fn_type([i32_type]);
 /// inspect!(fn_type, "void (i32)")
 /// ```
-pub fn VoidType::fn_type(self: VoidType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+pub fn VoidType::fn_type(
+  self : VoidType,
+  param_types : Array[&BasicType],
+  is_var_arg~ : Bool = false
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg~)
 }
 
 ///| Gets the alignment of this `VoidType`. Value may vary depending on the target architecture.
@@ -65,38 +66,40 @@ pub fn VoidType::fn_type(self: VoidType, param_types: Array[&BasicType], is_var_
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, void }, ptr null, i64 0, i32 1) to i64)"
 /// inspect!(void_align, content=expect)
 /// ```
-pub fn VoidType::get_alignment(self: VoidType) -> IntValue {
+pub fn VoidType::get_alignment(self : VoidType) -> IntValue {
   self.ty.get_alignment()
 }
 
 ///| Dumps the `VoidType` to stderr.
 ///
 /// It's equivalent to `VoidType::dump()`.
-pub fn VoidType::print_to_stderr(self: VoidType) -> Unit {
+pub fn VoidType::print_to_stderr(self : VoidType) -> Unit {
   self.ty.print_to_stderr()
 }
 
 ///| Prints the `VoidType` to a string.
 ///
 /// It's equivalent to `VoidType::to_string()`.
-pub fn VoidType::print_to_string(self: VoidType) -> String {
+pub fn VoidType::print_to_string(self : VoidType) -> String {
   self.ty.print_to_string()
 }
 
 ///| Prints the `VoidType` to a string.
-pub fn VoidType::to_string(self: VoidType) -> String {
+pub fn VoidType::to_string(self : VoidType) -> String {
   self.ty.to_string()
 }
 
 ///| Dumps the `VoidType` to stderr.
-pub fn VoidType::dump(self: VoidType) -> Unit {
+pub fn VoidType::dump(self : VoidType) -> Unit {
   self.ty.dump()
 }
 
-pub impl Show for VoidType with output(self: VoidType, logger: &Logger) -> Unit {
+///|
+pub impl Show for VoidType with output(self : VoidType, logger : &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
-pub impl Show for VoidType with to_string(self: VoidType) -> String {
+///|
+pub impl Show for VoidType with to_string(self : VoidType) -> String {
   self.to_string()
 }

@@ -1,14 +1,12 @@
+///|
 test "Integer Type Test" {
-
   let context = @llvm.Context::create()
-
   let bool_ty = context.bool_type()
   let i8_ty = context.i8_type()
   let i16_ty = context.i16_type()
   let i32_ty = context.i32_type()
   let i64_ty = context.i64_type()
   let i128_ty = context.i128_type()
-
   inspect(bool_ty, content="i1")
   inspect(i8_ty, content="i8")
   inspect(i16_ty, content="i16")
@@ -76,27 +74,27 @@ test "Integer Type Test" {
   // size_of
   inspect(
     bool_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i1, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i1, ptr null, i32 1) to i64)",
   )
   inspect(
     i8_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i8, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i8, ptr null, i32 1) to i64)",
   )
   inspect(
     i16_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i16, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i16, ptr null, i32 1) to i64)",
   )
   inspect(
     i32_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)",
   )
   inspect(
     i64_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i64, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i64, ptr null, i32 1) to i64)",
   )
   inspect(
     i128_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (i128, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (i128, ptr null, i32 1) to i64)",
   )
 
   // is_sized
@@ -110,27 +108,27 @@ test "Integer Type Test" {
   // get_alignment
   inspect(
     bool_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i1 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i1 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     i8_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i8 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i8 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     i16_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i16 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i16 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     i32_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i32 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i32 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     i64_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i64 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i64 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     i128_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, i128 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, i128 }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // ptr_type
@@ -165,21 +163,20 @@ test "Integer Type Test" {
   inspect(i32_ty.get_poison(), content="i32 poison")
   inspect(i64_ty.get_poison(), content="i64 poison")
   inspect(i128_ty.get_poison(), content="i128 poison")
-
   context.drop()
 }
 
 // TODO: test `fn_type`, `const_array`, `const_float_from_string`.
+
+///|
 test "Floating-point Type Test" {
   let context = @llvm.Context::create()
-
   let half_ty = context.f16_type()
   let float_ty = context.f32_type()
   let double_ty = context.f64_type()
   let x86_f80_ty = context.x86_f80_type()
   let f128_ty = context.f128_type()
   let ppc_f128_ty = context.ppc_f128_type()
-
   inspect(half_ty, content="half")
   inspect(float_ty, content="float")
   inspect(double_ty, content="double")
@@ -188,29 +185,20 @@ test "Floating-point Type Test" {
   inspect(ppc_f128_ty, content="ppc_fp128")
 
   // const_float
-  inspect(
-    half_ty.const_float(3.1415926),
-    content="half 0xH4248"
-  )
-  inspect(
-    float_ty.const_float(3.1415926),
-    content="float 0x400921FB40000000"
-  )
-  inspect(
-    double_ty.const_float(3.1415926),
-    content="double 0x400921FB4D12D84A"
-  )
+  inspect(half_ty.const_float(3.1415926), content="half 0xH4248")
+  inspect(float_ty.const_float(3.1415926), content="float 0x400921FB40000000")
+  inspect(double_ty.const_float(3.1415926), content="double 0x400921FB4D12D84A")
   inspect(
     x86_f80_ty.const_float(3.1415926),
-    content="x86_fp80 0xK4000C90FDA6896C25000"
+    content="x86_fp80 0xK4000C90FDA6896C25000",
   )
   inspect(
     f128_ty.const_float(3.1415926),
-    content="fp128 0xLA0000000000000004000921FB4D12D84"
+    content="fp128 0xLA0000000000000004000921FB4D12D84",
   )
   inspect(
     ppc_f128_ty.const_float(3.1415926),
-    content="ppc_fp128 0xM400921FB4D12D84A0000000000000000"
+    content="ppc_fp128 0xM400921FB4D12D84A0000000000000000",
   )
 
   // array_type
@@ -235,7 +223,10 @@ test "Floating-point Type Test" {
   inspect(double_ty.scalable_vec_type(8), content="<vscale x 8 x double>")
   inspect(x86_f80_ty.scalable_vec_type(16), content="<vscale x 16 x x86_fp80>")
   inspect(f128_ty.scalable_vec_type(32), content="<vscale x 32 x fp128>")
-  inspect(ppc_f128_ty.scalable_vec_type(64), content="<vscale x 64 x ppc_fp128>")
+  inspect(
+    ppc_f128_ty.scalable_vec_type(64),
+    content="<vscale x 64 x ppc_fp128>",
+  )
 
   // get_context
   assert_true(half_ty.get_context() == context)
@@ -248,27 +239,27 @@ test "Floating-point Type Test" {
   // size of
   inspect(
     half_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (half, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (half, ptr null, i32 1) to i64)",
   )
   inspect(
     float_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (float, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (float, ptr null, i32 1) to i64)",
   )
   inspect(
     double_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)",
   )
   inspect(
     x86_f80_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (x86_fp80, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (x86_fp80, ptr null, i32 1) to i64)",
   )
   inspect(
     f128_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (fp128, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (fp128, ptr null, i32 1) to i64)",
   )
   inspect(
     ppc_f128_ty.size_of(),
-    content="i64 ptrtoint (ptr getelementptr (ppc_fp128, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (ppc_fp128, ptr null, i32 1) to i64)",
   )
 
   // is_sized
@@ -282,27 +273,27 @@ test "Floating-point Type Test" {
   // get_alignment
   inspect(
     half_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, half }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, half }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     float_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, float }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, float }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     double_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, double }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, double }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     x86_f80_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, x86_fp80 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, x86_fp80 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     f128_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, fp128 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, fp128 }, ptr null, i64 0, i32 1) to i64)",
   )
   inspect(
     ppc_f128_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, ppc_fp128 }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, ppc_fp128 }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // ptr_type
@@ -329,38 +320,31 @@ test "Floating-point Type Test" {
   inspect(x86_f80_ty.get_poison(), content="x86_fp80 poison")
   inspect(f128_ty.get_poison(), content="fp128 poison")
   inspect(ppc_f128_ty.get_poison(), content="ppc_fp128 poison")
-
   context.drop()
 }
 
+///|
 test "Void Type Test" {
   let context = @llvm.Context::create()
-
   let void_ty = context.void_type()
-
   inspect(void_ty, content="void")
-
   inspect(void_ty.fn_type([], is_var_arg=false), content="void ()")
-  
   inspect(
     void_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, void }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, void }, ptr null, i64 0, i32 1) to i64)",
   )
-
   assert_false(void_ty.is_sized())
   assert_true(void_ty.get_context() == context)
   context.drop()
 }
 
+///|
 test "Struct Type Test" {
   let context = @llvm.Context::create()
-
   let i32_ty = context.i32_type()
   let f64_ty = context.f64_type()
-
   let struct_ty = context.struct_type([i32_ty, f64_ty])
   let opaque_struct_ty = context.opaque_struct_type("foo")
-
   inspect(struct_ty, content="{ i32, double }")
   inspect(opaque_struct_ty, content="%foo = type opaque")
 
@@ -377,17 +361,14 @@ test "Struct Type Test" {
   assert_false(opaque_struct_ty.is_sized())
   inspect(
     struct_ty.size_of().unwrap(),
-    content="i64 ptrtoint (ptr getelementptr ({ i32, double }, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i32, double }, ptr null, i32 1) to i64)",
   )
-  inspect(
-    opaque_struct_ty.size_of(),
-    content="None"
-  )
+  inspect(opaque_struct_ty.size_of(), content="None")
 
   // get_alignment
   inspect(
     struct_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, { i32, double } }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, { i32, double } }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // get_context
@@ -396,7 +377,7 @@ test "Struct Type Test" {
   // fn_type
   inspect(
     struct_ty.fn_type([i32_ty, f64_ty]),
-    content="{ i32, double } (i32, double)"
+    content="{ i32, double } (i32, double)",
   )
 
   // array_type
@@ -430,36 +411,30 @@ test "Struct Type Test" {
 
   // set body (The following code is problematic)
   let i64_ty = context.i64_type()
-  let _ = struct_ty.set_body(
-    [i32_ty, i64_ty]
-  )
-  let _ = opaque_struct_ty.set_body(
-    [i64_ty, f64_ty],is_packed=true
-  )
+  let _ = struct_ty.set_body([i32_ty, i64_ty])
+  let _ = opaque_struct_ty.set_body([i64_ty, f64_ty], is_packed=true)
   inspect(opaque_struct_ty, content="%foo = type <{ i64, double }>")
   assert_true(opaque_struct_ty.is_packed())
   inspect(struct_ty.get_field_types(), content="[i32, i64]")
   inspect(opaque_struct_ty.get_field_types(), content="[i64, double]")
   inspect(opaque_struct_ty.get_undef(), content="%foo undef")
-
   context.drop()
 }
 
+///|
 test "Function Type Test" {
   let context = @llvm.Context::create()
-
   let i32_ty = context.i32_type()
   let f32_ty = context.f32_type()
   let f64_ty = context.f64_type()
-
   let foo = i32_ty.fn_type([])
   let bar = f32_ty.fn_type([i32_ty])
   let baz = f64_ty.fn_type([i32_ty, i32_ty])
 
   // print
-  inspect(foo, content ="i32 ()")
-  inspect(bar, content = "float (i32)")
-  inspect(baz, content = "double (i32, i32)")
+  inspect(foo, content="i32 ()")
+  inspect(bar, content="float (i32)")
+  inspect(baz, content="double (i32, i32)")
 
   // is_var_arg
   assert_false(foo.is_var_arg())
@@ -496,10 +471,10 @@ test "Function Type Test" {
   inspect(foo.get_return_type().unwrap(), content="i32")
   inspect(bar.get_return_type().unwrap(), content="float")
   inspect(baz.get_return_type().unwrap(), content="double")
-
   context.drop()
 }
 
+///|
 test "Array Type Test" {
   let context = @llvm.Context::create()
   let i32_ty = context.i32_type()
@@ -511,13 +486,13 @@ test "Array Type Test" {
   // size_of
   inspect(
     arr_ty.size_of().unwrap(),
-    content="i64 ptrtoint (ptr getelementptr ([8 x i32], ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ([8 x i32], ptr null, i32 1) to i64)",
   )
 
   // get_alignment
   inspect(
     arr_ty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, [8 x i32] }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, [8 x i32] }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // ptr_type
@@ -541,13 +516,12 @@ test "Array Type Test" {
 
   // get_element_type
   inspect(arr_ty.get_element_type(), content="i32")
-
   context.drop()
 }
 
+///|
 test "Vector Type Test" {
   let context = @llvm.Context::create()
-
   let i32_ty = context.i32_type()
   let i32_vty = i32_ty.vec_type(8)
 
@@ -557,7 +531,7 @@ test "Vector Type Test" {
   // size_of
   inspect(
     i32_vty.size_of().unwrap(),
-    content="i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)",
   )
 
   // is_sized
@@ -566,7 +540,7 @@ test "Vector Type Test" {
   // get_alignment
   inspect(
     i32_vty.get_alignment(),
-    content="i64 ptrtoint (ptr getelementptr ({ i1, <8 x i32> }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, <8 x i32> }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // get_size
@@ -590,7 +564,6 @@ test "Vector Type Test" {
   let fty2 = i32_vty.fn_type([i32_ty])
   inspect(fty1, content="i32 (<8 x i32>)")
   inspect(fty2, content="<8 x i32> (i32)")
-
   let arr_ty = i32_vty.array_type(4)
   inspect(arr_ty, content="[4 x <8 x i32>]")
 
@@ -598,12 +571,11 @@ test "Vector Type Test" {
 
   // get_context
   assert_true(i32_vty.get_context() == context)
-
   context.drop()
 }
 
+///|
 test "Pointer Type Test" {
-
   let context = @llvm.Context::create()
   let i32_ty = context.i32_type()
   let ptr_ty = i32_ty.ptr_type(@llvm.AddressSpace::default())
@@ -612,7 +584,7 @@ test "Pointer Type Test" {
   let ptr_sz = ptr_ty.size_of()
   inspect(
     ptr_sz,
-    content = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)",
   )
 
   // is sized
@@ -622,7 +594,7 @@ test "Pointer Type Test" {
   let ptr_align = ptr_ty.get_alignment()
   inspect(
     ptr_align,
-    content="i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)"
+    content="i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)",
   )
 
   // get_context

@@ -1,26 +1,23 @@
 ///| A `PointerType` is the type of a pointer constant or variable.
 pub struct PointerType {
-  ty: Type
+  ty : Type
 }
 
 ///| Create `PointerType` from `@unsafe.LLVMTypeRef`
 ///
 /// **Unsafe**: Undefined behavior if `type_ref` is not pointer type.
-pub fn PointerType::new(type_ref: @unsafe.LLVMTypeRef) -> PointerType {
+pub fn PointerType::new(type_ref : @unsafe.LLVMTypeRef) -> PointerType {
   guard type_ref.is_not_null()
-
-  PointerType::{
-    ty: Type::new(type_ref)
-  }
+  PointerType::{ ty: Type::new(type_ref) }
 }
 
 ///| Returns the `Type` of this `PointerType`.
-pub fn PointerType::as_type(self: PointerType) -> Type {
+pub fn PointerType::as_type(self : PointerType) -> Type {
   self.ty
 }
 
 ///| Return `@unsafe.LLVMTypeRef` of `PointerType`
-pub fn PointerType::as_type_ref(self: PointerType) -> @unsafe.LLVMTypeRef {
+pub fn PointerType::as_type_ref(self : PointerType) -> @unsafe.LLVMTypeRef {
   self.ty.as_type_ref()
 }
 
@@ -36,12 +33,12 @@ pub fn PointerType::as_type_ref(self: PointerType) -> @unsafe.LLVMTypeRef {
 /// let expect = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)";
 /// inspect!(ptr_sz, content=expect)
 /// ```
-pub fn PointerType::size_of(self: PointerType) -> IntValue {
+pub fn PointerType::size_of(self : PointerType) -> IntValue {
   self.ty.size_of().unwrap()
 }
 
 ///| Returns whether this `PointerType` is sized. **Always returns `true`.**
-pub fn PointerType::is_sized(self: PointerType) -> Bool {
+pub fn PointerType::is_sized(self : PointerType) -> Bool {
   self.ty.is_sized()
 }
 
@@ -57,7 +54,7 @@ pub fn PointerType::is_sized(self: PointerType) -> Bool {
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, ptr }, ptr null, i64 0, i32 1) to i64)";
 /// inspect!(ptr_align, content=expect)
 /// ```
-pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
+pub fn PointerType::get_alignment(self : PointerType) -> IntValue {
   self.ty.get_alignment()
 }
 
@@ -72,8 +69,13 @@ pub fn PointerType::get_alignment(self: PointerType) -> IntValue {
 /// let ptr_ptr_type = ptr_type.ptr_type(AddressSpace::default());
 /// inspect!(ptr_ptr_type, "ptr")
 /// ```
-pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> PointerType {
-  PointerType::new(@unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()))
+pub fn PointerType::ptr_type(
+  self : PointerType,
+  address_space : AddressSpace
+) -> PointerType {
+  PointerType::new(
+    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+  )
 }
 
 ///| Gets a reference to the `Context` this `PointerType` was created in.
@@ -87,7 +89,7 @@ pub fn PointerType::ptr_type(self: PointerType, address_space: AddressSpace) -> 
 /// let ptr_ctx = ptr_type.get_context();
 /// assert_true!(context == ptr_ctx);
 /// ```
-pub fn PointerType::get_context(self: PointerType) -> Context {
+pub fn PointerType::get_context(self : PointerType) -> Context {
   self.ty.get_context()
 }
 
@@ -102,8 +104,12 @@ pub fn PointerType::get_context(self: PointerType) -> Context {
 /// let fn_type = ptr_type.fn_type([i32_type]);
 /// inspect!(fn_type, "ptr (i32)")
 /// ```
-pub fn PointerType::fn_type(self: PointerType, param_types: Array[&BasicType], is_var_arg~: Bool = false) -> FunctionType {
-  self.ty.fn_type(param_types, is_var_arg=is_var_arg)
+pub fn PointerType::fn_type(
+  self : PointerType,
+  param_types : Array[&BasicType],
+  is_var_arg~ : Bool = false
+) -> FunctionType {
+  self.ty.fn_type(param_types, is_var_arg~)
 }
 
 ///| Creates an `ArrayType` with this `PointerType` as its element type.
@@ -117,7 +123,7 @@ pub fn PointerType::fn_type(self: PointerType, param_types: Array[&BasicType], i
 /// let array_type = ptr_type.array_type(16);
 /// inspect!(array_type, "[16 x ptr]")
 /// ```
-pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
+pub fn PointerType::array_type(self : PointerType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
@@ -132,9 +138,8 @@ pub fn PointerType::array_type(self: PointerType, size: UInt) -> ArrayType {
 /// let addr_space = ptr_type.get_address_space();
 /// inspect!(addr_space, "AddressSpace(0)")
 /// ```
-pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
+pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
   let addr_space = @unsafe.llvm_get_pointer_address_space(self.as_type_ref())
-
   AddressSpace(addr_space)
 }
 
@@ -150,7 +155,7 @@ pub fn PointerType::get_address_space(self: PointerType) -> AddressSpace {
 /// let null_ptr = ptr_type.const_null();
 /// inspect!(null_ptr, "ptr null")
 /// ```
-pub fn PointerType::const_null(self: PointerType) -> PointerValue {
+pub fn PointerType::const_null(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_const_null(self.as_type_ref()))
 }
 
@@ -166,7 +171,7 @@ pub fn PointerType::const_null(self: PointerType) -> PointerValue {
 /// let null_ptr = ptr_type.const_zero();
 /// inspect!(null_ptr, "ptr null")
 /// ```
-pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
+pub fn PointerType::const_zero(self : PointerType) -> PointerValue {
   PointerValue::new(self.ty.const_zero())
 }
 
@@ -181,7 +186,7 @@ pub fn PointerType::const_zero(self: PointerType) -> PointerValue {
 /// let ptr_undef = ptr_type.get_undef();
 /// inspect!(ptr_undef, "ptr undef")
 /// ```
-pub fn PointerType::get_undef(self: PointerType) -> PointerValue {
+pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_undef(self.as_type_ref()))
 }
 
@@ -196,7 +201,7 @@ pub fn PointerType::get_undef(self: PointerType) -> PointerValue {
 /// let ptr_poison = ptr_type.get_poison();
 /// inspect!(ptr_poison, "ptr poison")
 /// ```
-pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
+pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
 }
 
@@ -211,7 +216,7 @@ pub fn PointerType::get_poison(self: PointerType) -> PointerValue {
 /// let vector_type = ptr_type.vec_type(16);
 /// inspect!(vector_type, "<16 x ptr>")
 /// ```
-pub fn PointerType::vec_type(self: PointerType, size: UInt) -> VectorType {
+pub fn PointerType::vec_type(self : PointerType, size : UInt) -> VectorType {
   self.ty.vec_type(size)
 }
 
@@ -226,60 +231,71 @@ pub fn PointerType::vec_type(self: PointerType, size: UInt) -> VectorType {
 /// let vscale_type = ptr_type.scalable_vec_type(16);
 /// inspect!(vscale_type, "<vscale x 16 x ptr>")
 /// ```
-pub fn PointerType::scalable_vec_type(self: PointerType, size: UInt) -> ScalableVectorType {
+pub fn PointerType::scalable_vec_type(
+  self : PointerType,
+  size : UInt
+) -> ScalableVectorType {
   self.ty.scalable_vec_type(size)
 }
 
 // Note: `@unsafe.llvm_get_element_type` is unavailable in llvm-19
-pub fn PointerType::get_element_type(self: PointerType) -> AnyTypeEnum {
+
+///|
+pub fn PointerType::get_element_type(self : PointerType) -> AnyTypeEnum {
   self.ty.get_element_type()
 }
 
 // TODO: enable this after `new_const_array` is implemented
-pub fn PointerType::const_array(self: PointerType, values: Array[PointerValue]) -> ArrayValue {
+
+///|
+pub fn PointerType::const_array(
+  self : PointerType,
+  values : Array[PointerValue]
+) -> ArrayValue {
   ArrayValue::new_const_array(self, values)
 }
 
-
 // NOTE: above llvm-15
+
 ///| Determine whether this pointer is opaque.
-pub fn PointerType::is_opaque(self: PointerType) -> Bool {
+pub fn PointerType::is_opaque(self : PointerType) -> Bool {
   @unsafe.llvm_pointer_type_is_opaque(self.as_type_ref())
 }
 
 ///| Dump the `PointerType` to stderr.
 ///
 /// It's equivalent to `PointerType::dump()`.
-pub fn PointerType::print_to_stderr(self: PointerType) -> Unit {
+pub fn PointerType::print_to_stderr(self : PointerType) -> Unit {
   self.ty.print_to_stderr()
 }
 
 ///| Dump the `PointerType` to a string.
 ///
 /// It's equivalent to `PointerType::to_string()`.
-pub fn PointerType::print_to_string(self: PointerType) -> String {
+pub fn PointerType::print_to_string(self : PointerType) -> String {
   self.ty.print_to_string()
 }
 
 ///| Dump the `PointerType` to a string.
 ///
 /// It's equivalent to `PointerType::print_to_string()`.
-pub fn PointerType::to_string(self: PointerType) -> String {
+pub fn PointerType::to_string(self : PointerType) -> String {
   self.ty.to_string()
 }
 
 ///| Dump the `PointerType` to stderr.
 ///
 /// It's equivalent to `PointerType::print_to_stderr()`.
-pub fn PointerType::dump(self: PointerType) -> Unit {
+pub fn PointerType::dump(self : PointerType) -> Unit {
   self.ty.dump()
 }
 
-pub impl Show for PointerType with output(self: PointerType, logger: &Logger) -> Unit {
+///|
+pub impl Show for PointerType with output(self : PointerType, logger : &Logger) -> Unit {
   logger.write_string(self.to_string())
 }
 
-pub impl Show for PointerType with to_string(self: PointerType) -> String {
+///|
+pub impl Show for PointerType with to_string(self : PointerType) -> String {
   self.to_string()
 }
-

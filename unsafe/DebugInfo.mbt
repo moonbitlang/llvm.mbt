@@ -5,13 +5,18 @@
 //  * The current debug metadata version number.
 //  */
 // unsigned LLVMDebugMetadataVersion(void);
+///|
 pub extern "C" fn llvm_debug_metadata_version() -> UInt = "__llvm_debug_metadata_version"
 //
 // /**
 //  * The version of debug metadata that's present in the provided \c Module.
 //  */
 // unsigned LLVMGetModuleDebugMetadataVersion(LLVMModuleRef Module);
-pub extern "C" fn llvm_get_module_debug_metadata_version(mod_ref: LLVMModuleRef) -> UInt = "__llvm_get_module_debug_metadata_version"
+
+///|
+pub extern "C" fn llvm_get_module_debug_metadata_version(
+  mod_ref : LLVMModuleRef
+) -> UInt = "__llvm_get_module_debug_metadata_version"
 //
 // /**
 //  * Strip debug info in the module if it exists.
@@ -20,14 +25,22 @@ pub extern "C" fn llvm_get_module_debug_metadata_version(mod_ref: LLVMModuleRef)
 //  * Return true if module is modified.
 //  */
 // LLVMBool LLVMStripModuleDebugInfo(LLVMModuleRef Module);
-pub extern "C" fn llvm_strip_module_debug_info(mod_ref: LLVMModuleRef) -> LLVMBool = "__llvm_strip_module_debug_info"
+
+///|
+pub extern "C" fn llvm_strip_module_debug_info(
+  mod_ref : LLVMModuleRef
+) -> LLVMBool = "__llvm_strip_module_debug_info"
 //
 // /**
 //  * Construct a builder for a module, and do not allow for unresolved nodes
 //  * attached to the module.
 //  */
 // LLVMDIBuilderRef LLVMCreateDIBuilderDisallowUnresolved(LLVMModuleRef M);
-pub extern "C" fn llvm_create_di_builder_disallow_unresolved(mod_ref: LLVMModuleRef) -> LLVMDIBuilderRef = "__llvm_create_di_builder_disallow_unresolved"
+
+///|
+pub extern "C" fn llvm_create_di_builder_disallow_unresolved(
+  mod_ref : LLVMModuleRef
+) -> LLVMDIBuilderRef = "__llvm_create_di_builder_disallow_unresolved"
 //
 // /**
 //  * Construct a builder for a module and collect unresolved nodes attached
@@ -35,20 +48,28 @@ pub extern "C" fn llvm_create_di_builder_disallow_unresolved(mod_ref: LLVMModule
 //  * \c LLVMDIBuilderFinalize.
 //  */
 // LLVMDIBuilderRef LLVMCreateDIBuilder(LLVMModuleRef M);
-pub extern "C" fn llvm_create_di_builder(mod_ref: LLVMModuleRef) -> LLVMDIBuilderRef = "__llvm_create_di_builder"
+
+///|
+pub extern "C" fn llvm_create_di_builder(
+  mod_ref : LLVMModuleRef
+) -> LLVMDIBuilderRef = "__llvm_create_di_builder"
 //
 // /**
 //  * Deallocates the \c DIBuilder and everything it owns.
 //  * @note You must call \c LLVMDIBuilderFinalize before this
 //  */
 // void LLVMDisposeDIBuilder(LLVMDIBuilderRef Builder);
-pub extern "C" fn llvm_dispose_di_builder(builder_ref: LLVMDIBuilderRef) = "__llvm_dispose_di_builder"
+
+///|
+pub extern "C" fn llvm_dispose_di_builder(builder_ref : LLVMDIBuilderRef) = "__llvm_dispose_di_builder"
 //
 // /**
 //  * Construct any deferred debug info descriptors.
 //  */
 // void LLVMDIBuilderFinalize(LLVMDIBuilderRef Builder);
-pub extern "C" fn llvm_di_builder_finalize(builder_ref: LLVMDIBuilderRef) = "__llvm_di_builder_finalize"
+
+///|
+pub extern "C" fn llvm_di_builder_finalize(builder_ref : LLVMDIBuilderRef) = "__llvm_di_builder_finalize"
 //
 // /**
 //  * Finalize a specific subprogram.
@@ -56,7 +77,12 @@ pub extern "C" fn llvm_di_builder_finalize(builder_ref: LLVMDIBuilderRef) = "__l
 //  */
 // void LLVMDIBuilderFinalizeSubprogram(LLVMDIBuilderRef Builder,
 //                                      LLVMMetadataRef Subprogram);
-pub extern "C" fn llvm_di_builder_finalize_subprogram(builder_ref: LLVMDIBuilderRef, subprogram_ref: LLVMMetadataRef) = "__llvm_di_builder_finalize_subprogram"
+
+///|
+pub extern "C" fn llvm_di_builder_finalize_subprogram(
+  builder_ref : LLVMDIBuilderRef,
+  subprogram_ref : LLVMMetadataRef
+) = "__llvm_di_builder_finalize_subprogram"
 //
 // /**
 //  * A CompileUnit provides an anchor for all debugging
@@ -290,7 +316,9 @@ pub extern "C" fn llvm_di_builder_finalize_subprogram(builder_ref: LLVMDIBuilder
 ///| Get the line number of this debug location.
 /// 
 /// - see `DILocation::getLine()`
-pub extern "C" fn llvm_di_location_get_line(location_ref: LLVMMetadataRef) -> UInt = "__llvm_di_location_get_line"
+pub extern "C" fn llvm_di_location_get_line(
+  location_ref : LLVMMetadataRef
+) -> UInt = "__llvm_di_location_get_line"
 //
 // /**
 //  * Get the column number of this debug location.
@@ -304,7 +332,9 @@ pub extern "C" fn llvm_di_location_get_line(location_ref: LLVMMetadataRef) -> UI
 /// 
 /// - see `DILocation::getColumn()`
 /// 
-pub extern "C" fn llvm_di_location_get_column(location_ref: LLVMMetadataRef) -> UInt = "__llvm_di_location_get_column"
+pub extern "C" fn llvm_di_location_get_column(
+  location_ref : LLVMMetadataRef
+) -> UInt = "__llvm_di_location_get_column"
 //
 // /**
 //  * Get the local scope associated with this debug location.
@@ -318,7 +348,9 @@ pub extern "C" fn llvm_di_location_get_column(location_ref: LLVMMetadataRef) -> 
 /// 
 /// - see `DILocation::getScope()`
 /// 
-pub extern "C" fn llvm_di_location_get_scope(location_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_location_get_scope"
+pub extern "C" fn llvm_di_location_get_scope(
+  location_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_location_get_scope"
 
 // /**
 //  * Get the "inline at" location associated with this debug location.
@@ -332,7 +364,9 @@ pub extern "C" fn llvm_di_location_get_scope(location_ref: LLVMMetadataRef) -> L
 /// 
 /// - see `DILocation::getInlinedAt()`
 /// 
-pub extern "C" fn llvm_di_location_get_inlined_at(location_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_location_get_inlined_at"
+pub extern "C" fn llvm_di_location_get_inlined_at(
+  location_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_location_get_inlined_at"
 //
 // /**
 //  * Get the metadata of the file associated with a given scope.
@@ -346,7 +380,9 @@ pub extern "C" fn llvm_di_location_get_inlined_at(location_ref: LLVMMetadataRef)
 /// 
 /// - see `DIScope::getFile()`
 /// 
-pub extern "C" fn llvm_di_scope_get_file(scope_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_scope_get_file"
+pub extern "C" fn llvm_di_scope_get_file(
+  scope_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_scope_get_file"
 
 //
 // /**
@@ -362,12 +398,17 @@ pub extern "C" fn llvm_di_scope_get_file(scope_ref: LLVMMetadataRef) -> LLVMMeta
 /// 
 /// - see `DIFile::getDirectory()`
 /// 
-pub fn llvm_di_file_get_directory(file_ref: LLVMMetadataRef) -> String {
-  let len: Ref[UInt] = Ref::new(0);
+pub fn llvm_di_file_get_directory(file_ref : LLVMMetadataRef) -> String {
+  let len : Ref[UInt] = Ref::new(0)
   let cstr = __llvm_di_file_get_directory(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
-extern "C" fn __llvm_di_file_get_directory(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_directory"
+
+///|
+extern "C" fn __llvm_di_file_get_directory(
+  file_ref : LLVMMetadataRef,
+  len : Ref[UInt]
+) -> CStr = "__llvm_di_file_get_directory"
 
 // /**
 //  * Get the name of a given file.
@@ -381,13 +422,17 @@ extern "C" fn __llvm_di_file_get_directory(file_ref: LLVMMetadataRef, len: Ref[U
 ///| Get the name of a given file.
 /// 
 /// - see `DIFile::getFilename()`
-pub fn llvm_di_file_get_filename(file_ref: LLVMMetadataRef) -> String {
-  let len: Ref[UInt] = Ref::new(0);
+pub fn llvm_di_file_get_filename(file_ref : LLVMMetadataRef) -> String {
+  let len : Ref[UInt] = Ref::new(0)
   let cstr = __llvm_di_file_get_filename(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
 
-extern "C" fn __llvm_di_file_get_filename(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_filename"
+///|
+extern "C" fn __llvm_di_file_get_filename(
+  file_ref : LLVMMetadataRef,
+  len : Ref[UInt]
+) -> CStr = "__llvm_di_file_get_filename"
 
 //
 // /**
@@ -402,13 +447,17 @@ extern "C" fn __llvm_di_file_get_filename(file_ref: LLVMMetadataRef, len: Ref[UI
 ///| Get the source of a given file.
 /// 
 /// - see `DIFile::getSource()`
-pub fn llvm_di_file_get_source(file_ref: LLVMMetadataRef) -> String {
-  let len: Ref[UInt] = Ref::new(0);
+pub fn llvm_di_file_get_source(file_ref : LLVMMetadataRef) -> String {
+  let len : Ref[UInt] = Ref::new(0)
   let cstr = __llvm_di_file_get_source(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
 
-extern "C" fn __llvm_di_file_get_source(file_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_file_get_source"
+///|
+extern "C" fn __llvm_di_file_get_source(
+  file_ref : LLVMMetadataRef,
+  len : Ref[UInt]
+) -> CStr = "__llvm_di_file_get_source"
 // /**
 //  * Create a type array.
 //  * \param Builder        The DIBuilder.
@@ -567,13 +616,21 @@ extern "C" fn __llvm_di_file_get_source(file_ref: LLVMMetadataRef, len: Ref[UInt
 //                                    size_t NameLen);
 
 ///| Create a DWARF unspecified type.
-pub fn llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuilderRef, name: String) -> LLVMMetadataRef {
-  let cstr = moonbit_str_to_c_str(name);
-  let len = name.length().to_uint64();
+pub fn llvm_di_builder_create_unspecified_type(
+  builder_ref : LLVMDIBuilderRef,
+  name : String
+) -> LLVMMetadataRef {
+  let cstr = moonbit_str_to_c_str(name)
+  let len = name.length().to_uint64()
   __llvm_di_builder_create_unspecified_type(builder_ref, cstr, len)
 }
 
-extern "C" fn __llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuilderRef, name: CStr, name_len: UInt64) -> LLVMMetadataRef = "__llvm_di_builder_create_unspecified_type"
+///|
+extern "C" fn __llvm_di_builder_create_unspecified_type(
+  builder_ref : LLVMDIBuilderRef,
+  name : CStr,
+  name_len : UInt64
+) -> LLVMMetadataRef = "__llvm_di_builder_create_unspecified_type"
 
 // /**
 //  * Create debugging information entry for a basic
@@ -756,7 +813,11 @@ extern "C" fn __llvm_di_builder_create_unspecified_type(builder_ref: LLVMDIBuild
 //                                  LLVMMetadataRef Type);
 
 ///| Create debugging information entry for a qualified type, e.g. 'const int'.
-pub extern "C" fn llvm_di_builder_create_qualified_type(builder_ref: LLVMDIBuilderRef, tag: UInt, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_qualified_type"
+pub extern "C" fn llvm_di_builder_create_qualified_type(
+  builder_ref : LLVMDIBuilderRef,
+  tag : UInt,
+  type_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_builder_create_qualified_type"
 //
 // /**
 //  * Create debugging information entry for a c++
@@ -768,7 +829,13 @@ pub extern "C" fn llvm_di_builder_create_qualified_type(builder_ref: LLVMDIBuild
 // LLVMMetadataRef
 // LLVMDIBuilderCreateReferenceType(LLVMDIBuilderRef Builder, unsigned Tag,
 //                                  LLVMMetadataRef Type);
-pub extern "C" fn llvm_di_builder_create_reference_type(builder_ref: LLVMDIBuilderRef, tag: UInt, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_reference_type"
+
+///|
+pub extern "C" fn llvm_di_builder_create_reference_type(
+  builder_ref : LLVMDIBuilderRef,
+  tag : UInt,
+  type_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_builder_create_reference_type"
 //
 // /**
 //  * Create C++11 nullptr type.
@@ -776,7 +843,11 @@ pub extern "C" fn llvm_di_builder_create_reference_type(builder_ref: LLVMDIBuild
 //  */
 // LLVMMetadataRef
 // LLVMDIBuilderCreateNullPtrType(LLVMDIBuilderRef Builder);
-pub extern "C" fn llvm_di_builder_create_null_ptr_type(builder_ref: LLVMDIBuilderRef) -> LLVMMetadataRef = "__llvm_di_builder_create_null_ptr_type"
+
+///|
+pub extern "C" fn llvm_di_builder_create_null_ptr_type(
+  builder_ref : LLVMDIBuilderRef
+) -> LLVMMetadataRef = "__llvm_di_builder_create_null_ptr_type"
 //
 // /**
 //  * Create debugging information entry for a typedef.
@@ -919,7 +990,12 @@ pub extern "C" fn llvm_di_builder_create_null_ptr_type(builder_ref: LLVMDIBuilde
 // LLVMMetadataRef
 // LLVMDIBuilderCreateArtificialType(LLVMDIBuilderRef Builder,
 //                                   LLVMMetadataRef Type);
-pub extern "C" fn llvm_di_builder_create_artificial_type(builder_ref: LLVMDIBuilderRef, type_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_builder_create_artificial_type"
+
+///|
+pub extern "C" fn llvm_di_builder_create_artificial_type(
+  builder_ref : LLVMDIBuilderRef,
+  type_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_builder_create_artificial_type"
 //
 // /**
 //  * Get the name of this DIType.
@@ -933,13 +1009,17 @@ pub extern "C" fn llvm_di_builder_create_artificial_type(builder_ref: LLVMDIBuil
 ///| Get the name of this DIType.
 /// 
 /// - see `DIType::getName()`
-pub fn llvm_di_type_get_name(type_ref: LLVMMetadataRef) -> String {
-  let len: Ref[UInt] = Ref::new(0);
+pub fn llvm_di_type_get_name(type_ref : LLVMMetadataRef) -> String {
+  let len : Ref[UInt] = Ref::new(0)
   let cstr = __llvm_di_type_get_name(type_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
 
-extern "C" fn __llvm_di_type_get_name(type_ref: LLVMMetadataRef, len: Ref[UInt]) -> CStr = "__llvm_di_type_get_name"
+///|
+extern "C" fn __llvm_di_type_get_name(
+  type_ref : LLVMMetadataRef,
+  len : Ref[UInt]
+) -> CStr = "__llvm_di_type_get_name"
 //
 // /**
 //  * Get the size of this DIType in bits.
@@ -952,7 +1032,9 @@ extern "C" fn __llvm_di_type_get_name(type_ref: LLVMMetadataRef, len: Ref[UInt])
 ///| Get the size of this DIType in bits.
 /// 
 /// - see `DIType::getSizeInBits()`
-pub extern "C" fn llvm_di_type_get_size_in_bits(type_ref: LLVMMetadataRef) -> UInt64 = "__llvm_di_type_get_size_in_bits"
+pub extern "C" fn llvm_di_type_get_size_in_bits(
+  type_ref : LLVMMetadataRef
+) -> UInt64 = "__llvm_di_type_get_size_in_bits"
 
 // /**
 //  * Get the offset of this DIType in bits.
@@ -961,7 +1043,11 @@ pub extern "C" fn llvm_di_type_get_size_in_bits(type_ref: LLVMMetadataRef) -> UI
 //  * @see DIType::getOffsetInBits()
 //  */
 // uint64_t LLVMDITypeGetOffsetInBits(LLVMMetadataRef DType);
-pub extern "C" fn llvm_di_type_get_offset_in_bits(type_ref: LLVMMetadataRef) -> UInt64 = "__llvm_di_type_get_offset_in_bits"
+
+///|
+pub extern "C" fn llvm_di_type_get_offset_in_bits(
+  type_ref : LLVMMetadataRef
+) -> UInt64 = "__llvm_di_type_get_offset_in_bits"
 //
 // /**
 //  * Get the alignment of this DIType in bits.
@@ -974,7 +1060,9 @@ pub extern "C" fn llvm_di_type_get_offset_in_bits(type_ref: LLVMMetadataRef) -> 
 ///| Get the alignment of this DIType in bits.
 /// 
 /// - see `DIType::getAlignInBits()`
-pub extern "C" fn llvm_di_type_get_align_in_bits(type_ref: LLVMMetadataRef) -> UInt = "__llvm_di_type_get_align_in_bits"
+pub extern "C" fn llvm_di_type_get_align_in_bits(
+  type_ref : LLVMMetadataRef
+) -> UInt = "__llvm_di_type_get_align_in_bits"
 //
 // /**
 //  * Get the source line where this DIType is declared.
@@ -987,7 +1075,7 @@ pub extern "C" fn llvm_di_type_get_align_in_bits(type_ref: LLVMMetadataRef) -> U
 ///| Get the source line where this DIType is declared.
 /// 
 /// - see `DIType::getLine()`
-pub extern "C" fn llvm_di_type_get_line(type_ref: LLVMMetadataRef) -> UInt = "__llvm_di_type_get_line"
+pub extern "C" fn llvm_di_type_get_line(type_ref : LLVMMetadataRef) -> UInt = "__llvm_di_type_get_line"
 
 // /**
 //  * Get the flags associated with this DIType.
@@ -1000,7 +1088,9 @@ pub extern "C" fn llvm_di_type_get_line(type_ref: LLVMMetadataRef) -> UInt = "__
 ///| Get the flags associated with this DIType.
 /// 
 /// - see `DIType::getFlags()`
-pub extern "C" fn llvm_di_type_get_flags(type_ref: LLVMMetadataRef) -> LLVMDIFlags = "__llvm_di_type_get_flags"
+pub extern "C" fn llvm_di_type_get_flags(
+  type_ref : LLVMMetadataRef
+) -> LLVMDIFlags = "__llvm_di_type_get_flags"
 
 //
 // /**
@@ -1014,7 +1104,11 @@ pub extern "C" fn llvm_di_type_get_flags(type_ref: LLVMMetadataRef) -> LLVMDIFla
 //                                                  int64_t Count);
 
 ///| Create a descriptor for a value range.
-pub extern "C" fn llvm_di_builder_get_or_create_subrange(builder_ref: LLVMDIBuilderRef, lower_bound: Int64, count: Int64) -> LLVMMetadataRef = "__llvm_di_builder_get_or_create_subrange"
+pub extern "C" fn llvm_di_builder_get_or_create_subrange(
+  builder_ref : LLVMDIBuilderRef,
+  lower_bound : Int64,
+  count : Int64
+) -> LLVMMetadataRef = "__llvm_di_builder_get_or_create_subrange"
 
 // LLVMMetadataRef LLVMDIBuilderGetOrCreateArray(LLVMDIBuilderRef Builder,
 //                                               LLVMMetadataRef *Data,
@@ -1041,7 +1135,10 @@ pub extern "C" fn llvm_di_builder_get_or_create_subrange(builder_ref: LLVMDIBuil
 //                                            uint64_t Value);
 
 ///| Create a new descriptor for the specified variable that does not have an address, but does have a constant value.
-pub extern "C" fn llvm_di_builder_create_constant_value_expression(builder_ref: LLVMDIBuilderRef, value: UInt64) -> LLVMMetadataRef = "__llvm_di_builder_create_constant_value_expression"
+pub extern "C" fn llvm_di_builder_create_constant_value_expression(
+  builder_ref : LLVMDIBuilderRef,
+  value : UInt64
+) -> LLVMMetadataRef = "__llvm_di_builder_create_constant_value_expression"
 
 //
 // /**
@@ -1073,14 +1170,18 @@ pub extern "C" fn llvm_di_builder_create_constant_value_expression(builder_ref: 
 // uint16_t LLVMGetDINodeTag(LLVMMetadataRef MD);
 
 ///| Get the dwarf::Tag of a DINode
-pub extern "C" fn llvm_get_di_node_tag(metadata_ref: LLVMMetadataRef) -> UInt16 = "__llvm_get_di_node_tag"
+pub extern "C" fn llvm_get_di_node_tag(
+  metadata_ref : LLVMMetadataRef
+) -> UInt16 = "__llvm_get_di_node_tag"
 
 // LLVMMetadataRef LLVMDIGlobalVariableExpressionGetVariable(LLVMMetadataRef GVE);
 
 ///| Retrieves the DIVariable associated with this global variable expression.
 ///
 ///  - see `llvm::DIGlobalVariableExpression::getVariable()`
-pub extern "C" fn llvm_di_global_variable_expression_get_variable(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_variable"
+pub extern "C" fn llvm_di_global_variable_expression_get_variable(
+  metadata_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_variable"
 
 // LLVMMetadataRef LLVMDIGlobalVariableExpressionGetExpression(
 //     LLVMMetadataRef GVE);
@@ -1088,28 +1189,36 @@ pub extern "C" fn llvm_di_global_variable_expression_get_variable(metadata_ref: 
 ///| Retrieves the \c DIExpression associated with this global variable expression.
 ///
 /// - see `llvm::DIGlobalVariableExpression::getExpression()`
-pub extern "C" fn llvm_di_global_variable_expression_get_expression(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_expression"
+pub extern "C" fn llvm_di_global_variable_expression_get_expression(
+  metadata_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_global_variable_expression_get_expression"
 
 // LLVMMetadataRef LLVMDIVariableGetFile(LLVMMetadataRef Var);
 
 ///| Get the metadata of the file associated with a given variable.
 /// 
 /// - `see DIVariable::getFile()`
-pub extern "C" fn llvm_di_variable_get_file(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_variable_get_file"
+pub extern "C" fn llvm_di_variable_get_file(
+  metadata_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_variable_get_file"
 
 // LLVMMetadataRef LLVMDIVariableGetScope(LLVMMetadataRef Var);
 
 ///| Get the metadata of the scope associated with a given variable.
 /// 
 /// - see `DIVariable::getScope()`
-pub extern "C" fn llvm_di_variable_get_scope(metadata_ref: LLVMMetadataRef) -> LLVMMetadataRef = "__llvm_di_variable_get_scope"
+pub extern "C" fn llvm_di_variable_get_scope(
+  metadata_ref : LLVMMetadataRef
+) -> LLVMMetadataRef = "__llvm_di_variable_get_scope"
 
 // unsigned LLVMDIVariableGetLine(LLVMMetadataRef Var);
 
 ///| Get the source line where this DIVariable is declared.
 /// 
 /// - see `DIVariable::getLine()`
-pub extern "C" fn llvm_di_variable_get_line(metadata_ref: LLVMMetadataRef) -> UInt = "__llvm_di_variable_get_line"
+pub extern "C" fn llvm_di_variable_get_line(
+  metadata_ref : LLVMMetadataRef
+) -> UInt = "__llvm_di_variable_get_line"
 //
 // /**
 //  * Create a new temporary \c MDNode.  Suitable for use in constructing cyclic
@@ -1122,18 +1231,24 @@ pub extern "C" fn llvm_di_variable_get_line(metadata_ref: LLVMMetadataRef) -> UI
 // LLVMMetadataRef LLVMTemporaryMDNode(LLVMContextRef Ctx, LLVMMetadataRef *Data,
 //                                     size_t NumElements);
 
-
 // void LLVMDisposeTemporaryMDNode(LLVMMetadataRef TempNode);
+
 ///| Deallocate a temporary node.
 /// 
 /// Calls replaceAllUsesWith(nullptr) before deleting, so any remaining
 /// references will be reset.
-pub extern "C" fn llvm_dispose_temporary_md_node(metadata_ref: LLVMMetadataRef) = "__llvm_dispose_temporary_md_node"
+pub extern "C" fn llvm_dispose_temporary_md_node(
+  metadata_ref : LLVMMetadataRef
+) = "__llvm_dispose_temporary_md_node"
 
 // void LLVMMetadataReplaceAllUsesWith(LLVMMetadataRef TempTargetMetadata,
 //                                     LLVMMetadataRef Replacement);
+
 ///| Replace all uses of temporary metadata.
-pub extern "C" fn llvm_metadata_replace_all_uses_with(temp_target_metadata: LLVMMetadataRef, replacement: LLVMMetadataRef) = "__llvm_metadata_replace_all_uses_with"
+pub extern "C" fn llvm_metadata_replace_all_uses_with(
+  temp_target_metadata : LLVMMetadataRef,
+  replacement : LLVMMetadataRef
+) = "__llvm_metadata_replace_all_uses_with"
 //
 // /**
 //  * Create a new descriptor for the specified global variable that is temporary
@@ -1177,18 +1292,18 @@ pub extern "C" fn llvm_metadata_replace_all_uses_with(temp_target_metadata: LLVM
 //     LLVMDIBuilderRef Builder, LLVMValueRef Storage, LLVMMetadataRef VarInfo,
 //     LLVMMetadataRef Expr, LLVMMetadataRef DebugLoc, LLVMValueRef Instr);
 
-/// The debug format can be switched later after inserting the records using
+///| The debug format can be switched later after inserting the records using
 /// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
 /// 
 /// Only use in "new debug format" (LLVMIsNewDbgInfoFormat() is true).
 /// See https://llvm.org/docs/RemoveDIsDebugInfo.html#c-api-changes
 pub extern "C" fn llvm_di_builder_insert_declare_record_before(
-  builder_ref: LLVMDIBuilderRef,
-  storage: LLVMValueRef,
-  var_info: LLVMMetadataRef,
-  expr: LLVMMetadataRef,
-  debug_loc: LLVMMetadataRef,
-  instr: LLVMValueRef
+  builder_ref : LLVMDIBuilderRef,
+  storage : LLVMValueRef,
+  var_info : LLVMMetadataRef,
+  expr : LLVMMetadataRef,
+  debug_loc : LLVMMetadataRef,
+  instr : LLVMValueRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_declare_record_before"
 //
 // /**
@@ -1224,12 +1339,12 @@ pub extern "C" fn llvm_di_builder_insert_declare_record_before(
 /// The debug format can be switched later after inserting the records using
 /// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
 pub extern "C" fn llvm_di_builder_insert_declare_record_at_end(
-  builder_ref: LLVMDIBuilderRef,
-  storage: LLVMValueRef,
-  var_info: LLVMMetadataRef,
-  expr: LLVMMetadataRef,
-  debug_loc: LLVMMetadataRef,
-  block: LLVMBasicBlockRef
+  builder_ref : LLVMDIBuilderRef,
+  storage : LLVMValueRef,
+  var_info : LLVMMetadataRef,
+  expr : LLVMMetadataRef,
+  debug_loc : LLVMMetadataRef,
+  block : LLVMBasicBlockRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_declare_record_at_end"
 
 // /**
@@ -1260,12 +1375,12 @@ pub extern "C" fn llvm_di_builder_insert_declare_record_at_end(
 /// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
 /// 
 pub extern "C" fn llvm_di_builder_insert_dbg_value_record_before(
-  builder_ref: LLVMDIBuilderRef,
-  val: LLVMValueRef,
-  var_info: LLVMMetadataRef,
-  expr: LLVMMetadataRef,
-  debug_loc: LLVMMetadataRef,
-  instr: LLVMValueRef
+  builder_ref : LLVMDIBuilderRef,
+  val : LLVMValueRef,
+  var_info : LLVMMetadataRef,
+  expr : LLVMMetadataRef,
+  debug_loc : LLVMMetadataRef,
+  instr : LLVMValueRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_dbg_value_record_before"
 
 // /**
@@ -1301,12 +1416,12 @@ pub extern "C" fn llvm_di_builder_insert_dbg_value_record_before(
 /// The debug format can be switched later after inserting the records using
 /// LLVMSetIsNewDbgInfoFormat, if needed for legacy or transitionary reasons.
 pub extern "C" fn llvm_di_builder_insert_dbg_value_record_at_end(
-  builder_ref: LLVMDIBuilderRef,
-  val: LLVMValueRef,
-  var_info: LLVMMetadataRef,
-  expr: LLVMMetadataRef,
-  debug_loc: LLVMMetadataRef,
-  block: LLVMBasicBlockRef
+  builder_ref : LLVMDIBuilderRef,
+  val : LLVMValueRef,
+  var_info : LLVMMetadataRef,
+  expr : LLVMMetadataRef,
+  debug_loc : LLVMMetadataRef,
+  block : LLVMBasicBlockRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_dbg_value_record_at_end"
 
 // /**
@@ -1351,29 +1466,35 @@ pub extern "C" fn llvm_di_builder_insert_dbg_value_record_at_end(
 ///| Get the metadata of the subprogram attached to a function.
 /// 
 /// - see `llvm::Function::getSubprogram()`
-pub extern "C" fn llvm_get_subprogram(func: LLVMValueRef) -> LLVMMetadataRef = "__llvm_get_subprogram"
+pub extern "C" fn llvm_get_subprogram(func : LLVMValueRef) -> LLVMMetadataRef = "__llvm_get_subprogram"
 
 // void LLVMSetSubprogram(LLVMValueRef Func, LLVMMetadataRef SP);
 
 ///| Set the subprogram attached to a function.
 ///
 /// - see `llvm::Function::setSubprogram()`
-pub extern "C" fn llvm_set_subprogram(func: LLVMValueRef, sp: LLVMMetadataRef) = "__llvm_set_subprogram"
+pub extern "C" fn llvm_set_subprogram(
+  func : LLVMValueRef,
+  sp : LLVMMetadataRef
+) = "__llvm_set_subprogram"
 
 // unsigned LLVMDISubprogramGetLine(LLVMMetadataRef Subprogram);
 
 ///| Get the line associated with a given subprogram.
 ///
 /// - see `DISubprogram::getLine()`
-pub extern "C" fn llvm_di_subprogram_get_line(subprogram: LLVMMetadataRef) -> UInt = "__llvm_di_subprogram_get_line"
-
+pub extern "C" fn llvm_di_subprogram_get_line(
+  subprogram : LLVMMetadataRef
+) -> UInt = "__llvm_di_subprogram_get_line"
 
 // LLVMMetadataRef LLVMInstructionGetDebugLoc(LLVMValueRef Inst);
 
 ///| Get the debug location for the given instruction.
 ///
 /// - see `llvm::Instruction::getDebugLoc()`
-pub extern "C" fn llvm_instruction_get_debug_loc(inst: LLVMValueRef) -> LLVMMetadataRef = "__llvm_instruction_get_debug_loc"
+pub extern "C" fn llvm_instruction_get_debug_loc(
+  inst : LLVMValueRef
+) -> LLVMMetadataRef = "__llvm_instruction_get_debug_loc"
 
 // void LLVMInstructionSetDebugLoc(LLVMValueRef Inst, LLVMMetadataRef Loc);
 
@@ -1382,7 +1503,10 @@ pub extern "C" fn llvm_instruction_get_debug_loc(inst: LLVMValueRef) -> LLVMMeta
 /// To clear the location metadata of the given instruction, pass NULL to Loc.
 ///
 /// - see `llvm::Instruction::setDebugLoc()`
-pub extern "C" fn llvm_instruction_set_debug_loc(inst: LLVMValueRef, loc: LLVMMetadataRef) = "__llvm_instruction_set_debug_loc"
+pub extern "C" fn llvm_instruction_set_debug_loc(
+  inst : LLVMValueRef,
+  loc : LLVMMetadataRef
+) = "__llvm_instruction_set_debug_loc"
 
 //
 // /**
@@ -1421,10 +1545,10 @@ pub extern "C" fn llvm_instruction_set_debug_loc(inst: LLVMValueRef, loc: LLVMMe
 ///
 /// - see `llvm::DIBuilder::insertLabel()`
 pub extern "C" fn llvm_di_builder_insert_label_before(
-  builder_ref: LLVMDIBuilderRef,
-  label_info: LLVMMetadataRef,
-  location: LLVMMetadataRef,
-  insert_before: LLVMValueRef
+  builder_ref : LLVMDIBuilderRef,
+  label_info : LLVMMetadataRef,
+  location : LLVMMetadataRef,
+  insert_before : LLVMValueRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_label_before"
 
 // LLVMDbgRecordRef LLVMDIBuilderInsertLabelAtEnd(
@@ -1435,10 +1559,10 @@ pub extern "C" fn llvm_di_builder_insert_label_before(
 ///
 /// - see `llvm::DIBuilder::insertLabel()`
 pub extern "C" fn llvm_di_builder_insert_label_at_end(
-  builder_ref: LLVMDIBuilderRef,
-  label_info: LLVMMetadataRef,
-  location: LLVMMetadataRef,
-  insert_at_end: LLVMBasicBlockRef
+  builder_ref : LLVMDIBuilderRef,
+  label_info : LLVMMetadataRef,
+  location : LLVMMetadataRef,
+  insert_at_end : LLVMBasicBlockRef
 ) -> LLVMDbgRecordRef = "__llvm_di_builder_insert_label_at_end"
 
 // LLVMMetadataKind LLVMGetMetadataKind(LLVMMetadataRef Metadata);
@@ -1446,4 +1570,6 @@ pub extern "C" fn llvm_di_builder_insert_label_at_end(
 ///| Obtain the enumerated type of a Metadata instance.
 ///
 /// - see `llvm::Metadata::getMetadataID()`
-pub extern "C" fn llvm_get_metadata_kind(metadata_ref: LLVMMetadataRef) -> LLVMMetadataKind = "__llvm_get_metadata_kind"
+pub extern "C" fn llvm_get_metadata_kind(
+  metadata_ref : LLVMMetadataRef
+) -> LLVMMetadataKind = "__llvm_get_metadata_kind"

@@ -1,6 +1,5 @@
-
 ///|
-pub type! MoonllvmError {
+pub suberror MoonllvmError {
   BasicBlockHasNoParent
 }
 
