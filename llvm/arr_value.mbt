@@ -77,6 +77,7 @@ pub fn ArrayValue::replace_all_uses_with(
 /// ## Example
 ///
 /// ```moonbit
+/// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23);
 /// let array_val = i64_type.const_array([i64_val]);
@@ -92,9 +93,9 @@ pub fn ArrayValue::is_const(self : ArrayValue) -> Bool {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let string = context.const_string(b"my_string", false);
+/// let s = context.const_string("my_string", false);
 ///
-/// assert_true(string.is_const_string());
+/// assert_true(s.is_const_string());
 /// ```
 pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
   // @unsafe.llvm_is_constant_string(self.as_value_ref())
@@ -110,7 +111,7 @@ pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
 /// let context = Context::create();
 /// let string = context.const_string("hello!", true);
 ///
-/// assert_eq(string.get_string_constant(), Some(result));
+/// assert_true(string.get_string_constant() is Some(_));
 /// ```
 pub fn ArrayValue::get_string_constant(self : ArrayValue) -> String? {
   let s = @unsafe.llvm_get_as_string(self.as_value_ref())

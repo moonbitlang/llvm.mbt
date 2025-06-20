@@ -76,7 +76,7 @@ pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let ptr_type = array_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn ArrayType::ptr_type(
   self : ArrayType,
@@ -94,7 +94,7 @@ pub fn ArrayType::ptr_type(
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_ctx = array_type.get_context();
-/// assert_true!(context == array_ctx);
+/// assert_true(context == array_ctx);
 /// ```
 pub fn ArrayType::get_context(self : ArrayType) -> Context {
   self.ty.get_context()
@@ -109,7 +109,7 @@ pub fn ArrayType::get_context(self : ArrayType) -> Context {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let fn_type = array_type.fn_type([i32_type]);
-/// inspect(fn_type, "[8 x i32] (i32)")
+/// inspect(fn_type, content="[8 x i32] (i32)")
 /// ```
 pub fn ArrayType::fn_type(
   self : ArrayType,
@@ -128,8 +128,8 @@ pub fn ArrayType::fn_type(
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_array_type = array_type.array_type(8);
-/// inspect(array_array_type, "[8 x i32]")
-/// inspect(array_array_type, "[8 x [8 x i32]]")
+/// inspect(array_array_type, content="[8 x i32]")
+/// inspect(array_array_type, content="[8 x [8 x i32]]")
 /// ```
 pub fn ArrayType::array_type(self : ArrayType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -198,7 +198,7 @@ pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_poison = array_type.get_poison();
-/// inspect!(array_poison, "[8 x i32] poison")
+/// inspect!(array_poison, content="[8 x i32] poison")
 /// ```
 pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
   ArrayValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
@@ -213,7 +213,7 @@ pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let ele_type = array_type.get_element_type();
-/// inspect(ele_type, "i32")
+/// inspect(ele_type, content="i32")
 /// ```
 pub fn ArrayType::get_element_type(self : ArrayType) -> BasicTypeEnum {
   let ty_ref = self.ty.get_element_type().as_type_ref()

@@ -31,16 +31,16 @@ pub fn BasicBlock::new(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let prog = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = prog.add_function("do_nothing", fn_type);
 ///
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// assert_eq(basic_block.get_parent().unwrap(), function);
 ///
-/// basic_block.remove_from_function!();
+/// basic_block.remove_from_function();
 ///
 /// assert_true(basic_block.get_parent() is None);
 /// ```
@@ -54,19 +54,19 @@ pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function1 = module.add_function("do_nothing", fn_type);
+/// let function1 = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block1 = context.append_basic_block(function1, "entry");
+/// let basic_block1 = context.append_basic_block(function1, name="entry");
 ///
-/// assert_true(basic_block1.get_previous_basic_block().is_none());
+/// assert_true(basic_block1.get_previous_basic_block().is None);
 ///
-/// let function2 = module.add_function("do_nothing", fn_type);
+/// let function2 = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block2 = context.append_basic_block(function2, "entry");
-/// let basic_block3 = context.append_basic_block(function2, "next");
+/// let basic_block2 = context.append_basic_block(function2, name="entry");
+/// let basic_block3 = context.append_basic_block(function2, name="next");
 ///
 /// assert_true(basic_block2.get_previous_basic_block() is None);
 /// assert_true(basic_block3.get_previous_basic_block().unwrap() == basic_block2);
@@ -82,19 +82,19 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function1 = module.add_function("do_nothing", fn_type);
+/// let function1 = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block1 = context.append_basic_block(function1, "entry");
+/// let basic_block1 = context.append_basic_block(function1, name="entry");
 ///
-/// assert_true(basic_block1.get_next_basic_block().is_none());
+/// assert_true(basic_block1.get_next_basic_block().is None);
 ///
-/// let function2 = module.add_function("do_nothing", fn_type);
+/// let function2 = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block2 = context.append_basic_block(function2, "entry");
-/// let basic_block3 = context.append_basic_block(function2, "next");
+/// let basic_block2 = context.append_basic_block(function2, name="entry");
+/// let basic_block3 = context.append_basic_block(function2, name="next");
 ///
 /// assert_true(basic_block1.get_next_basic_block().is None);
 /// assert_true(basic_block2.get_next_basic_block().unwrap() == basic_block3);
@@ -114,13 +114,13 @@ pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block1 = context.append_basic_block(function, "entry");
-/// let basic_block2 = context.append_basic_block(function, "next");
+/// let basic_block1 = context.append_basic_block(function, name="entry");
+/// let basic_block2 = context.append_basic_block(function, name="next");
 ///
 /// basic_block2.move_before(basic_block1);
 ///
@@ -144,17 +144,17 @@ pub fn BasicBlock::move_before(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 ///
-/// let basic_block1 = context.append_basic_block(function, "entry");
-/// let basic_block2 = context.append_basic_block(function, "next");
+/// let basic_block1 = context.append_basic_block(function, name="entry");
+/// let basic_block2 = context.append_basic_block(function, name="next");
 ///
 /// basic_block1.move_after(basic_block2);
 ///
-/// assert_true(basic_block1.get_next_basic_block().is_none());
+/// assert_true(basic_block1.get_next_basic_block().is None());
 /// assert_eq(basic_block2.get_next_basic_block().unwrap(), basic_block1);
 /// ```
 pub fn BasicBlock::move_after(
@@ -174,10 +174,10 @@ pub fn BasicBlock::move_after(
 /// ```moonbit
 /// let context = Context::create();
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -200,10 +200,10 @@ pub fn BasicBlock::get_first_instruction(
 /// ```moonbit
 /// let context = Context::create();
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -223,7 +223,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ret");
+/// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
 ///
 /// let void_type = context.void_type();
@@ -231,7 +231,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
 ///
 /// let fn_type = void_type.fn_type([i32_ptr_type]);
-/// let fn_value = module.add_function("ret", fn_type);
+/// let fn_value = llvm_module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, "entry");
 /// builder.position_at_end(entry);
 ///
@@ -263,10 +263,10 @@ pub fn BasicBlock::get_instruction_with_name(
 /// ```moonbit
 /// let context = Context::create();
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// builder.position_at_end(basic_block);
@@ -289,10 +289,10 @@ pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// assert_eq(basic_block.get_parent().unwrap(), function);
@@ -315,10 +315,10 @@ pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// basic_block.delete();
@@ -337,10 +337,10 @@ pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_module");
+/// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let function = module.add_function("do_nothing", fn_type);
+/// let function = llvm_module.add_function("do_nothing", fn_type);
 /// let basic_block = context.append_basic_block(function, "entry");
 ///
 /// assert_true(context == basic_block.get_context());
@@ -359,10 +359,10 @@ pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_val = module.add_function("my_fn", fn_type);
+/// let fn_val = llvm_module.add_function("my_fn", fn_type);
 /// let bb = context.append_basic_block(fn_val, "entry");
 ///
 /// inspect(bb.get_name(), content="entry");
@@ -397,10 +397,10 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 /// ```moonbit
 /// let context = Context::create();
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_val = module.add_function("my_fn", fn_type);
+/// let fn_val = llvm_module.add_function("my_fn", fn_type);
 /// let entry = context.append_basic_block(fn_val, "entry");
 /// let bb1 = context.append_basic_block(fn_val, "bb1");
 /// let bb2 = context.append_basic_block(fn_val, "bb2");
@@ -428,11 +428,11 @@ pub fn BasicBlock::replace_all_uses_with(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("ivs");
+/// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_val = module.add_function("my_fn", fn_type);
+/// let fn_val = llvm_module.add_function("my_fn", fn_type);
 /// let entry = context.append_basic_block(fn_val, "entry");
 /// let bb1 = context.append_basic_block(fn_val, "bb1");
 /// let bb2 = context.append_basic_block(fn_val, "bb2");
@@ -456,10 +456,10 @@ pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_val = module.add_function("my_fn", fn_type);
+/// let fn_val = llvm_module.add_function("my_fn", fn_type);
 /// let entry_bb = context.append_basic_block(fn_val, "entry");
 /// let next_bb = context.append_basic_block(fn_val, "next");
 ///
