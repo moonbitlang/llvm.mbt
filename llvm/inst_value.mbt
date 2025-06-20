@@ -488,12 +488,12 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 ///
 /// assert_true!(store_instruction.get_operand(0).is_some());
 /// assert_true!(store_instruction.get_operand(1).is_some());
-/// assert_true!(store_instruction.get_operand(2).is_none());
+/// assert_true!(store_instruction.get_operand(2).is None);
 /// assert_true!(free_instruction.get_operand(0).is_some());
 /// assert_true!(free_instruction.get_operand(1).is_some());
-/// assert_true!(free_instruction.get_operand(2).is_none());
-/// assert_true!(return_instruction.get_operand(0).is_none());
-/// assert_true!(return_instruction.get_operand(1).is_none());
+/// assert_true!(free_instruction.get_operand(2).is None);
+/// assert_true!(return_instruction.get_operand(0).is None);
+/// assert_true!(return_instruction.get_operand(1).is None);
 /// ```
 ///
 /// will generate @unsafe.LLVM IR roughly like (varying slightly across @unsafe.LLVM versions):

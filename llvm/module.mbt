@@ -70,7 +70,7 @@ pub fn Module::get_context(self : Module) -> Context {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 ///
-/// assert_true!(module.get_first_function().is_none());
+/// assert_true!(module.get_first_function().is None);
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
@@ -91,7 +91,7 @@ pub fn Module::get_first_function(self : Module) -> FunctionValue? {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 ///
-/// assert_true!(module.get_last_function().is_none());
+/// assert_true!(module.get_last_function().is None);
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
@@ -112,7 +112,7 @@ pub fn Module::get_last_function(self : Module) -> FunctionValue? {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 ///
-/// assert_true!(module.get_function("my_fn").is_none());
+/// assert_true!(module.get_function("my_fn").is None);
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
@@ -131,7 +131,7 @@ pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 ///
-/// assert_true!(module.get_function("my_fn").is_none());
+/// assert_true!(module.get_function("my_fn").is None);
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
@@ -162,7 +162,7 @@ pub fn Module::get_functions(self : Module) -> Array[FunctionValue] {
 /// let context = Context::create();
 /// let module = context.create_module("my_module");
 ///
-/// assert_true!(module.get_struct_type("foo").is_none());
+/// assert_true!(module.get_struct_type("foo").is None);
 ///
 /// let opaque = context.opaque_struct_type("foo");
 /// assert_true!(module.get_struct_type("foo").unwrap() == opaque);
@@ -421,7 +421,7 @@ pub fn Module::get_global_metadata(
 /// let i8_type = context.i8_type();
 /// let module = context.create_module("mod");
 ///
-/// assert_true!(module.get_first_global().is_none());
+/// assert_true!(module.get_first_global().is None);
 ///
 /// let global = module.add_global(i8_type, Some(AddressSpace::from(4)), "my_global");
 ///
@@ -445,7 +445,7 @@ pub fn Module::get_first_global(self : Module) -> GlobalValue? {
 /// let module = context.create_module("mod");
 /// let i8_type = context.i8_type();
 ///
-/// assert_true!(module.get_last_global().is_none());
+/// assert_true!(module.get_last_global().is None);
 ///
 /// let global = module.add_global(i8_type, Some(AddressSpace::from(4)), "my_global");
 ///
@@ -469,7 +469,7 @@ pub fn Module::get_last_global(self : Module) -> GlobalValue? {
 /// let module = context.create_module("mod");
 /// let i8_type = context.i8_type();
 ///
-/// assert_true!(module.get_global("my_global").is_none());
+/// assert_true!(module.get_global("my_global").is None);
 ///
 /// let global = module.add_global(i8_type, Some(AddressSpace::from(4u16)), "my_global");
 ///
