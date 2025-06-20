@@ -183,7 +183,7 @@ pub fn ArrayType::is_empty(self : ArrayType) -> Bool {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_undef = array_type.get_undef();
-/// inspect!(array_undef, "[8 x i32] undef")
+/// inspect(array_undef, content="[8 x i32] undef")
 /// ```
 pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
   ArrayValue::new(self.ty.get_undef())
@@ -198,7 +198,7 @@ pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
 /// let array_poison = array_type.get_poison();
-/// inspect!(array_poison, content="[8 x i32] poison")
+/// inspect(array_poison, content="[8 x i32] poison")
 /// ```
 pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
   ArrayValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))

@@ -97,17 +97,22 @@ pub fn Builder::get_insert_block(
 /// ```
 pub fn[T : BasicValue] Builder::build_return(
   self : Builder,
-  val : T?
+  val : T
 ) -> InstructionValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
-  let inst = match val {
-    Some(val) => {
-      let val_ref = val.as_value_ref()
-      @unsafe.llvm_build_ret(builder_ref, val_ref)
-    }
-    None => @unsafe.llvm_build_ret_void(builder_ref)
-  }
+  let val_ref = val.as_value_ref()
+  let inst = @unsafe.llvm_build_ret(builder_ref, val_ref)
+  InstructionValue::new(inst)
+}
+
+///|
+pub fn Builder::build_return_void(
+  self : Builder
+) -> InstructionValue raise BuilderError {
+  guard self.get_positioned() is Set else { raise UnsetPosition }
+  let builder_ref = self.as_builder_ref()
+  let inst = @unsafe.llvm_build_ret_void(builder_ref)
   InstructionValue::new(inst)
 }
 
