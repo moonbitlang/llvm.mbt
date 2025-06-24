@@ -2597,23 +2597,23 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 ///
 /// builder.position_at_end(entry);
 ///
-/// let array_alloca = builder.build_alloca(array_type, "array_alloca").unwrap();
+/// let array_alloca = builder.build_alloca(array_type, "array_alloca");
 ///
-/// let array = builder.build_load(i32_type, array_alloca, "array_load").unwrap().into_array_value();
+/// let array = builder.build_load(i32_type, array_alloca, "array_load").into_array_value();
 ///
 /// let const_int1 = i32_type.const_int(2, false);
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// assert_true(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+/// let _ = builder.build_insert_value(array, const_int1, 0, "insert");
+/// let _ = builder.build_insert_value(array, const_int2, 1, "insert");
+/// let _ = builder.build_insert_value(array, const_int3, 2, "insert");
+/// // builder.build_insert_value(array, const_int3, 3, "insert");
 ///
-/// assert_true(builder.build_extract_value(array, 0, "extract").unwrap().is_int_value());
-/// assert_true(builder.build_extract_value(array, 1, "extract").unwrap().is_int_value());
-/// assert_true(builder.build_extract_value(array, 2, "extract").unwrap().is_int_value());
-/// assert_true(builder.build_extract_value(array, 3, "extract").is_err());
+/// assert_true(builder.build_extract_value(array, 0, "extract").is_int_value());
+/// assert_true(builder.build_extract_value(array, 1, "extract").is_int_value());
+/// assert_true(builder.build_extract_value(array, 2, "extract").is_int_value());
+/// // builder.build_extract_value(array, 3, "extract");
 /// ```
 pub fn[AV : AggregateValue] Builder::build_extract_value(
   self : Builder,
@@ -2660,17 +2660,17 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let array_alloca = builder.build_alloca(array_type, "array_alloca").unwrap();
-/// let array = builder.build_load(i32_type, array_alloca, "array_load").unwrap().into_array_value();
+/// let array_alloca = builder.build_alloca(array_type, "array_alloca");
+/// let array = builder.build_load(i32_type, array_alloca, "array_load").into_array_value();
 ///
 /// let const_int1 = i32_type.const_int(2, false);
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// assert_true(builder.build_insert_value(array, const_int1, 0, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int2, 1, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int3, 2, "insert").is_ok());
-/// assert_true(builder.build_insert_value(array, const_int3, 3, "insert").is_err());
+/// let _ = builder.build_insert_value(array, const_int1, 0, "insert");
+/// let _ = builder.build_insert_value(array, const_int2, 1, "insert");
+/// let _ = builder.build_insert_value(array, const_int3, 2, "insert");
+/// // builder.build_insert_value(array, const_int3, 3, "insert");
 /// ```
 pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
   self : Builder,
