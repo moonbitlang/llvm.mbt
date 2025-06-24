@@ -127,11 +127,11 @@ fn main {
   let param_a = f.get_nth_param(0).unwrap()
   let param_b = f.get_nth_param(1).unwrap()
 
-  let bb = context.append_basic_block(f, "entry")
+  let bb = context.append_basic_block(f, name="entry")
   builder.position_at_end(bb)
 
-  let sum = builder.build_add(param_a, param_b, "sum")
-  let _ = builder.build_return?(Some(sum))
+  let sum = builder.build_add(param_a, param_b, name="sum")
+  let _ = builder.build_return(sum)
 
   println(llvm_module)
 }
@@ -281,11 +281,11 @@ fn main {
   let param_a = f.get_nth_param(0).unwrap()
   let param_b = f.get_nth_param(1).unwrap()
 
-  let bb = context.append_basic_block(f, "entry")
+  let bb = context.append_basic_block(f, name="entry")
   builder.position_at_end(bb)
 
-  let sum = builder.build_add(param_a, param_b, "sum")
-  let _ = builder.build_return?(Some(sum))
+  let sum = builder.build_add(param_a, param_b, name="sum")
+  let _ = builder.build_return(sum)
 
   println(llvm_module)
 }

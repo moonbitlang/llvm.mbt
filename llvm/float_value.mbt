@@ -38,7 +38,7 @@ pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
 /// let fval = lmodule.add_function("foo", fty)
 /// let one = f64_ty.const_float(1.0)
 ///
-/// let bb = context.append_basic_block(fval, "entry")
+/// let bb = context.append_basic_block(fval, name="entry")
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///
@@ -65,7 +65,7 @@ pub fn FloatValue::get_name(self : FloatValue) -> String {
 /// let fval = lmodule.add_function("foo", fty)
 /// let one = f64_ty.const_float(1.0)
 ///
-/// let bb = context.append_basic_block(fval, "entry")
+/// let bb = context.append_basic_block(fval, name="entry")
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///

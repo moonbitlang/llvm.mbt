@@ -397,7 +397,7 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 1);
 ///
-/// let last_basic_block = context.append_basic_block(fn_value, "last");
+/// let last_basic_block = context.append_basic_block(fn_value, name="last");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 2);
 /// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);

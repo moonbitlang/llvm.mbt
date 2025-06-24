@@ -1273,7 +1273,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_div(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("sdiv", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///

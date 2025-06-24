@@ -689,7 +689,7 @@ pub fn InstructionValue::get_first_use(
 /// let fn_type = i32_type.fn_type([i32_type, i32_type]);
 ///
 /// let function = llvm_module.add_function("less", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///

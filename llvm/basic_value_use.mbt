@@ -27,7 +27,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
@@ -85,15 +85,15 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return_void().unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
+/// let return_instruction = builder.build_return_void();
 ///
 /// let store_operand_use0 = store_instruction.get_operand_use(0).unwrap();
 /// let store_operand_use1 = store_instruction.get_operand_use(1).unwrap();
@@ -119,14 +119,14 @@ pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
 /// let return_instruction = builder.build_return_void().unwrap();
 ///
 /// let free_operand0 = free_instruction.get_operand(0).unwrap().left().unwrap();

@@ -123,7 +123,7 @@ pub fn GlobalValue::set_thread_local_mode(
 ///
 /// assert_true(fn_value.as_global_value().is_declaration());
 ///
-/// let _ = context.append_basic_block(fn_value, content="entry");
+/// let _ = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_false(fn_value.as_global_value().is_declaration());
 /// ```

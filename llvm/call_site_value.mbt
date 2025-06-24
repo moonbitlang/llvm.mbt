@@ -173,7 +173,7 @@ pub fn CallSiteValue::try_as_basic_value(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, [], name="my_fn");
 ///
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -450,7 +450,7 @@ pub fn CallSiteValue::remove_string_attribute(
 /// let fn_value = module.add_function("my_fn", fn_type);
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
-/// let entry_bb = context.append_basic_block(fn_value, "entry");
+/// let entry_bb = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_bb);
 ///
@@ -496,7 +496,7 @@ pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_fn", fn_type);
-/// let entry_bb = context.append_basic_block(fn_value, "entry");
+/// let entry_bb = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_bb);
 ///
@@ -528,11 +528,11 @@ pub fn CallSiteValue::set_call_convention(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_fn", fn_type);
-/// let entry_bb = context.append_basic_block(fn_value, "entry");
+/// let entry_bb = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, [], name="my_fn").unwrap();
 ///
 /// call_site_value.set_alignment_attribute(AttributeLoc::Param(0), 2);
 /// ```

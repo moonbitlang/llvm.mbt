@@ -38,7 +38,7 @@ pub fn IntValue::as_value_ref(self : IntValue) -> @unsafe.LLVMValueRef {
 /// let fval = lmodule.add_function("foo", fty)
 /// let one = i32_ty.const_int(1)
 ///
-/// let bb = context.append_basic_block(fval, "entry")
+/// let bb = context.append_basic_block(fval, name="entry")
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///
@@ -65,7 +65,7 @@ pub fn IntValue::get_name(self : IntValue) -> String {
 /// let fval = lmodule.add_function("foo", fty)
 /// let one = i32_ty.const_int(1)
 ///
-/// let bb = context.append_basic_block(fval, "entry")
+/// let bb = context.append_basic_block(fval, name="entry")
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///
