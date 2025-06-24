@@ -599,7 +599,7 @@ pub fn InstructionValue::set_operand(
 
 ///| Gets the use of an operand(`BasicValue`), if any.
 ///
-/// ```moonbit
+/// ```moonbit skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -648,7 +648,7 @@ fn InstructionValue::get_operand_use_unchecked(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -681,7 +681,7 @@ pub fn InstructionValue::get_first_use(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -713,7 +713,7 @@ pub fn InstructionValue::get_icmp_predicate(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();

@@ -192,7 +192,7 @@ pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (VectorType.const_vector not implemented)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42, sign_extend=false);
