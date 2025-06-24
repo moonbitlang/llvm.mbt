@@ -62,7 +62,7 @@ pub fn IntType::const_int_arbitrary_precision(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let all_ones_val = i32_type.const_all_ones();
@@ -155,7 +155,7 @@ pub fn IntType::scalable_vec_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_ctx = i32_type.get_context();

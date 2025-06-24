@@ -24,9 +24,9 @@ pub fn VoidType::is_sized(self : VoidType) -> Bool {
 
 ///| Gets a reference to the `Context` this `VoidType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let void_type = context.void_type();
 /// let void_ctx = void_type.get_context();
