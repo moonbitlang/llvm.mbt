@@ -3,6 +3,10 @@
 ///|
 pub type AddressSpace UInt derive(Eq, Show, Default)
 
+pub fn AddressSpace::from(v: UInt) -> AddressSpace {
+  AddressSpace(v)
+}
+
 ///|
 pub type FastMathFlags UInt derive(Eq)
 

@@ -37,18 +37,18 @@ pub fn[L, R] Either::right(self : Either[L, R]) -> R? {
 }
 
 ///|
-pub fn[L, R] Either::left_unwrap(self : Either[L, R]) -> L {
+pub fn[L, R] Either::unwrap_left(self : Either[L, R]) -> L {
   match self {
     Left(t) => t
-    _ => abort("Either::left_unwrap: not a left")
+    _ => abort("Either::unwrap_left: not a left")
   }
 }
 
 ///|
-pub fn[L, R] Either::right_unwrap(self : Either[L, R]) -> R {
+pub fn[L, R] Either::unwrap_right(self : Either[L, R]) -> R {
   match self {
     Right(k) => k
-    _ => abort("Either::right_unwrap: not a right")
+    _ => abort("Either::unwrap_right: not a right")
   }
 }
 

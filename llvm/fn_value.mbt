@@ -228,7 +228,7 @@ pub fn FunctionValue::get_nth_param(
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
 /// assert_eq(fn_value.count_params(), 2)
@@ -257,7 +257,7 @@ pub fn FunctionValue::get_basic_blocks(
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
 /// inspect(fn_value.get_params(), content="[double %0, i32 %1]")
@@ -279,7 +279,7 @@ pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] 
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
 /// inspect(fn_value.get_name(), content="foo")

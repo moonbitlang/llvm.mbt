@@ -162,7 +162,7 @@ pub fn Context::i128_type(self : Context) -> IntType {
 /// let context = Context::create();
 /// let i48_type = context.custom_width_int_type(48);
 ///
-/// assert_eq(i42_type.get_bit_width(), 42);
+/// assert_eq(i48_type.get_bit_width(), 48);
 /// ```
 pub fn Context::custom_width_int_type(self : Context, bits : UInt) -> IntType {
   let type_ref = @unsafe.llvm_int_type_in_context(self.as_ctx_ref(), bits)
@@ -329,7 +329,7 @@ pub fn Context::struct_type(
 /// ```moonbit
 /// let context = Context::create();
 /// inspect(context.get_struct_type("foo"), content="None");
-/// let opaque = context.opaque_struct_type("foo");
+/// let _ = context.opaque_struct_type("foo");
 /// inspect(context.get_struct_type("foo").unwrap(), content="%foo = type opaque");
 /// ```
 pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
@@ -350,9 +350,11 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 /// let i16_type = context.i16_type();
 /// let f32_one = f32_type.const_float(1.);
 /// let i16_two = i16_type.const_int(2, sign_extend=false);
-/// let const_struct = context.const_struct([i16_two, f32_one], false);
+/// let const_struct = context.const_struct([i16_two, f32_one]);
 ///
-/// assert_eq(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
+/// assert_eq(const_struct.get_type().get_field_types() == 
+///   [i16_type.as_basic_type_enum(), f32_type.as_basic_type_enum()]
+/// );
 /// ```
 pub fn Context::const_struct(
   self : Context,
@@ -422,10 +424,10 @@ pub fn Context::append_basic_block(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 1);
@@ -433,8 +435,8 @@ pub fn Context::append_basic_block(
 /// let last_basic_block = context.insert_basic_block_after(entry_basic_block, name="last");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 2);
-/// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
-/// assert_eq(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// assert_true(fn_value.get_first_basic_block().unwrap() == entry_basic_block);
+/// assert_true(fn_value.get_last_basic_block().unwrap() == last_basic_block);
 /// ```
 pub fn Context::insert_basic_block_after(
   self : Context,
@@ -494,22 +496,21 @@ pub fn Context::prepend_basic_block(
 /// let f32_type = context.f32_type();
 /// let f32_zero = f32_type.const_float(0.);
 /// let md_node = context.metadata_node([i8_two, f32_zero]);
-/// let f32_one = f32_type.const_float(1.);
 /// let void_type = context.void_type();
 ///
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let fn_type = void_type.fn_type([f32_type]);
-/// let fn_value = module.add_function("my_func", fn_type);
+/// let fn_value = llvm_module.add_function("my_func", fn_type);
 /// let entry_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let _ = builder.build_return_void();
+/// let ret_instr = builder.build_return_void();
 ///
 /// assert_true(md_node.is_node());
 ///
-/// ret_instr.set_metadata(md_node, 0);
+/// let _ = ret_instr.set_metadata(md_node, 0);
 /// ```
 pub fn Context::metadata_node(
   self : Context,
@@ -528,18 +529,17 @@ pub fn Context::metadata_node(
 /// let context = Context::create();
 /// let md_string = context.metadata_string("Floats are awesome!");
 /// let f32_type = context.f32_type();
-/// let f32_one = f32_type.const_float(1.);
 /// let void_type = context.void_type();
 ///
 /// let builder = context.create_builder();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let fn_type = void_type.fn_type([f32_type]);
-/// let fn_value = module.add_function("my_func", fn_type);
+/// let fn_value = llvm_module.add_function("my_func", fn_type);
 /// let entry_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let _ = builder.build_return_void();
+/// let ret_instr = builder.build_return_void();
 ///
 /// assert_true(md_string.is_string());
 ///
@@ -631,10 +631,10 @@ pub fn Context::create_string_attribute(
 /// assert_eq(type_attribute.get_type_value(), any_type);
 /// assert_ne(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```
-pub fn Context::create_type_attribute(
+pub fn[T: AnyType] Context::create_type_attribute(
   self : Context,
   kind_id : UInt,
-  ty : AnyTypeEnum
+  ty : T
 ) -> Attribute {
   let attr = @unsafe.llvm_create_type_attribute(
     self.as_ctx_ref(),

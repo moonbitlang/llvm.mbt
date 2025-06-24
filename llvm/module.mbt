@@ -135,7 +135,7 @@ pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
 ///
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = llvm_module.add_function("my_fn", fn_type);
+/// let _ = llvm_module.add_function("my_fn", fn_type);
 ///
 /// let names = llvm_module
 ///     .get_functions().map(fn (f) { f.get_name() });
@@ -447,7 +447,7 @@ pub fn Module::get_first_global(self : Module) -> GlobalValue? {
 ///
 /// assert_true(llvm_module.get_last_global() is None);
 ///
-/// let global = llvm_module.add_global(i8_type, Some(AddressSpace(4)), "my_global");
+/// let global = llvm_module.add_global(i8_type, Some(AddressSpace::from(4)), "my_global");
 ///
 /// assert_true(llvm_module.get_last_global().unwrap() == global);
 /// ```

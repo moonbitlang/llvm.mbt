@@ -86,8 +86,7 @@ pub fn Builder::get_insert_block(
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
-/// let arg_types = [i32_type];
-/// let fn_type = i32_type.fn_type(arg_types);
+/// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_value = llvm_module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
@@ -155,7 +154,7 @@ pub fn Builder::build_aggregate_return(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (due to not good type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -169,7 +168,6 @@ pub fn Builder::build_aggregate_return(
 /// builder.position_at_end(entry);
 ///
 /// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], name="call")
-///     .unwrap()
 ///     .try_as_basic_value()
 ///     .left()
 ///     .unwrap();
@@ -179,7 +177,7 @@ pub fn Builder::build_aggregate_return(
 pub fn Builder::build_call(
   self : Builder,
   func : FunctionValue,
-  args : Array[&BasicValue],
+  args : Array[&BasicMetadataValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
   self.build_direct_call(func, args, name~)
@@ -190,7 +188,7 @@ pub fn Builder::build_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (due to not good type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -208,12 +206,12 @@ pub fn Builder::build_call(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(ret_val);
+/// let _ = builder.build_return(ret_val);
 /// ```
 pub fn Builder::build_direct_call(
   self : Builder,
   func : FunctionValue,
-  args : Array[&BasicValue],
+  args : Array[&BasicMetadataValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
@@ -244,7 +242,6 @@ pub fn Builder::build_direct_call(
 ///     fn_value,
 ///     [i32_type.const_zero()],
 ///     [OperandBundle::create("tag", [i32_type.const_zero()])],
-///     "func_ret"
 /// )
 ///     .try_as_basic_value()
 ///     .unwrap_left();
@@ -304,7 +301,7 @@ pub fn Builder::build_indirect_call(
   self : Builder,
   fn_type : FunctionType,
   fn_ptr : PointerValue,
-  args : Array[&BasicValue],
+  args : Array[&BasicMetadataValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
@@ -337,7 +334,7 @@ fn Builder::build_call_help(
   self : Builder,
   fn_ty : FunctionType,
   fn_val : Value, // FunctionValue Or PointerValue
-  args : Array[&BasicValue],
+  args : Array[&BasicMetadataValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
@@ -803,8 +800,7 @@ pub fn Builder::build_in_bounds_gep(
 /// let void_type = context.void_type();
 /// let i32_ty = context.i32_type();
 /// let i32_ptr_ty = i32_ty.ptr_type(AddressSpace::default());
-/// let field_types = [i32_ty, i32_ty];
-/// let struct_ty = context.struct_type(field_types);
+/// let struct_ty = context.struct_type([i32_ty, i32_ty]);
 /// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty]);
 /// let fn_value = llvm_module.add_function("tmp_func", fn_type);
@@ -866,8 +862,8 @@ pub fn[T : BasicType] Builder::build_struct_gep(
 /// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2);
-/// builder.build_return();
+/// let _ = builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2);
+/// let _ = builder.build_return_void();
 /// ```
 pub fn Builder::build_ptr_diff(
   self : Builder,
@@ -958,7 +954,7 @@ pub fn Builder::build_store_func(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let lmodule = context.create_module("demo");
+/// let llvm_module = context.create_module("demo");
 /// let builder = context.create_builder();
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -1735,7 +1731,7 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_xor(lhs, rhs, name="res");
+/// let res = builder.build_xor(lhs, rhs, name="res");
 /// inspect(res, content="  %res = xor i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_xor(
@@ -1773,7 +1769,7 @@ pub fn[T : IntMathValue] Builder::build_xor(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_and(lhs, rhs, name="res");
+/// let res = builder.build_and(lhs, rhs, name="res");
 /// inspect(res, content="  %res = and i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_and(
@@ -1811,7 +1807,7 @@ pub fn[T : IntMathValue] Builder::build_and(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_or(lhs, rhs, name="res");
+/// let res = builder.build_or(lhs, rhs, name="res");
 /// inspect(res, content="  %res = or i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_or(
@@ -2035,7 +2031,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
-/// let fval = lmodule.add_function("sub", fval);
+/// let fval = lmodule.add_function("sub", fty);
 /// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
@@ -2172,7 +2168,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
-/// let fval = lmodule.add_function("mul", fval);
+/// let fval = lmodule.add_function("mul", fty);
 /// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
@@ -2314,6 +2310,7 @@ pub fn Builder::build_ptr_compare(
 /// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
+/// let i32_ty = context.i32_type();
 /// let f32_ty = context.f32_type();
 /// let fty = i32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("add", fty);
@@ -2325,7 +2322,7 @@ pub fn Builder::build_ptr_compare(
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
 /// let pred_oeq = @llvm.FloatPredicate::OEQ;
-/// let res = builder.build_int_compare(pred_oeq, lhs, rhs, name="res");
+/// let res = builder.build_float_compare(pred_oeq, lhs, rhs, name="res");
 /// inspect(res, content="  %res = fcmp oeq float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_compare(
@@ -2584,7 +2581,6 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 /// let void_type = context.void_type();
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
-/// let struct_type = context.struct_type([i32_type, f32_type]);
 /// let array_type = i32_type.array_type(3);
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = llvm_module.add_function("av_fn", fn_type);
@@ -2606,9 +2602,9 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 /// let _ = builder.build_insert_value(array, const_int3, 2);
 /// // builder.build_insert_value(array, const_int3, 3);
 ///
-/// assert_true(builder.build_extract_value(array, 0).is_int_value());
-/// assert_true(builder.build_extract_value(array, 1).is_int_value());
-/// assert_true(builder.build_extract_value(array, 2).is_int_value());
+/// assert_true(builder.build_extract_value(array, 0) is IntValue(_));
+/// assert_true(builder.build_extract_value(array, 1) is IntValue(_));
+/// assert_true(builder.build_extract_value(array, 2) is IntValue(_));
 /// // builder.build_extract_value(array, 3);
 /// ```
 pub fn[AV : AggregateValue] Builder::build_extract_value(
@@ -2645,9 +2641,7 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let void_type = context.void_type();
-/// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
-/// let struct_type = context.struct_type([i32_type, f32_type]);
 /// let array_type = i32_type.array_type(3);
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = llvm_module.add_function("av_fn", fn_type);
@@ -2750,7 +2744,7 @@ pub fn Builder::build_extract_element(
 /// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_insert_element(vector_param, i32_seven, i32_zero, name="insert");
+/// let _ = builder.build_insert_element(vector_param, i32_seven, i32_zero, name="insert");
 /// let _ = builder.build_return_void();
 /// ```
 pub fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(

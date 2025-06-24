@@ -574,12 +574,12 @@ fn InstructionValue::get_operand_unchecked(
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let _ = builder.build_store(arg1, f32_val);
 /// let free_instruction = builder.build_free(arg1);
-/// let return_instruction = builder.build_return_void();
+/// let _ = builder.build_return_void();
 ///
 /// // This will produce invalid IR:
-/// free_instruction.set_operand(0, f32_val);
+/// let _ = free_instruction.set_operand(0, f32_val);
 ///
 /// assert_eq(free_instruction.get_operand(0).unwrap().left().unwrap(), f32_val);
 /// ```

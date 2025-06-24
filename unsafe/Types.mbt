@@ -1383,7 +1383,7 @@ pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindTail
   LLVMTailCallKindMustTail
   LLVMTailCallKindNoTail
-}
+} derive(Eq)
 
 ///|
 pub fn LLVMTailCallKind::to_int(self : LLVMTailCallKind) -> Int {

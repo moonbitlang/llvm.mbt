@@ -52,7 +52,7 @@ pub fn Attribute::is_string(self : Attribute) -> Bool {
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
 /// let type_attribute = context.create_type_attribute(
 ///     kind_id,
-///     context.i32_type().into(),
+///     context.i32_type(),
 /// );
 ///
 /// assert_true(type_attribute.is_type());

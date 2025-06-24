@@ -201,8 +201,8 @@ pub fn CallSiteValue::add_attribute(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = llvm_module.add_function("my_fn", fn_type);
-/// let string_attribute = context.create_string_attribute("my_key", "my_val");
-/// let enum_attribute = context.create_enum_attribute(1, 1);
+/// let _ = context.create_string_attribute("my_key", "my_val");
+/// let _ = context.create_enum_attribute(1, 1);
 /// let entry_bb = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_bb);
@@ -448,8 +448,8 @@ pub fn CallSiteValue::remove_string_attribute(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = llvm_module.add_function("my_fn", fn_type);
-/// let string_attribute = context.create_string_attribute("my_key", "my_val");
-/// let enum_attribute = context.create_enum_attribute(1, 1);
+/// let _ = context.create_string_attribute("my_key", "my_val");
+/// let _ = context.create_enum_attribute(1, 1);
 /// let entry_bb = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_bb);

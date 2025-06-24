@@ -409,7 +409,7 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 ///
 /// bb1.replace_all_uses_with(bb2);
 ///
-/// assert_eq(branch_inst.get_operand(0).unwrap().right().unwrap(), bb2);
+/// assert_true(branch_inst.get_operand(0).unwrap().unwrap_right() == bb2);
 /// ```
 pub fn BasicBlock::replace_all_uses_with(
   self : BasicBlock,
@@ -437,7 +437,7 @@ pub fn BasicBlock::replace_all_uses_with(
 /// let bb1 = context.append_basic_block(fn_val, name="bb1");
 /// let bb2 = context.append_basic_block(fn_val, name="bb2");
 /// builder.position_at_end(entry);
-/// let branch_inst = builder.build_unconditional_branch(bb1);
+/// let _ = builder.build_unconditional_branch(bb1);
 ///
 /// assert_true(bb2.get_first_use() is None);
 /// assert_true(bb1.get_first_use() is Some(_));
