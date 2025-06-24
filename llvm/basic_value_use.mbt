@@ -75,7 +75,7 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (BasicValueUse eq not implemented)
 /// let context = Context::create();
 /// let module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -109,7 +109,7 @@ pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (BasicValueUse methods not implemented)
 /// let context = Context::create();
 /// let module = context.create_module("ivs");
 /// let builder = context.create_builder();

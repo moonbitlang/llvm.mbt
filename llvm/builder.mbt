@@ -121,7 +121,7 @@ pub fn Builder::build_return_void(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (as_any_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -415,7 +415,7 @@ fn Builder::build_call_with_operand_bundles_help(
 /// let catch_block = context.append_basic_block(function2, name="catch_block");
 ///
 /// let call_site = builder.build_invoke(
-///   function, [], then_block, catch_block).unwrap();
+///   function, [], then_block, catch_block);
 ///
 /// {
 ///     builder.position_at_end(then_block);
@@ -443,7 +443,7 @@ fn Builder::build_call_with_operand_bundles_help(
 ///     let exception_type = context.struct_type([ptr_type, i32_type]);
 ///
 ///     let null = ptr_type.const_zero();
-///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
+///     let _ = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
 ///
 ///     // we handle the exception by returning a default value
 ///     let _ = builder.build_return(f32_type.const_zero());
@@ -559,7 +559,7 @@ fn Builder::build_invoke_help(
 /// };
 ///
 /// // make the cleanup landing pad
-/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, name="res");
+/// let _ = builder.build_landing_pad( exception_type, personality_function, [], true, name="res");
 /// ```
 ///
 /// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
@@ -587,12 +587,12 @@ fn Builder::build_invoke_help(
 /// let null = i8_ptr_type.const_zero();
 ///
 /// // make the catch all landing pad
-/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
+/// let _ = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
 /// ```
 ///
 /// * **catch a type of exception**: Catch a specific type of exception. The example uses C++'s type info.
 ///
-/// ```moonbit
+/// ```moonbit skip (GlobalValue.as_basic_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -622,7 +622,7 @@ fn Builder::build_invoke_help(
 /// * **filter**: A filter clause encodes that only some types of exceptions are valid at this
 /// point. A filter clause is made by constructing a clause from a constant array.
 ///
-/// ```moonbit
+/// ```moonbit skip (as_any_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();

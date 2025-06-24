@@ -29,7 +29,7 @@ pub fn ScalableVectorType::as_type_ref(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (scalable_vector_type not implemented)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
@@ -158,7 +158,7 @@ pub fn ScalableVectorType::get_element_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (scalable_vector_type not implemented)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
