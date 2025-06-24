@@ -1,16 +1,14 @@
 ///|
 pub suberror MoonllvmError {
   BasicBlockHasNoParent
-}
-
-///|
-pub impl Show for MoonllvmError with to_string(self) -> String {
-  match self {
-    BasicBlockHasNoParent => "BasicBlock has no parent function"
-  }
+  MetadataNotNode
 }
 
 ///|
 pub impl Show for MoonllvmError with output(self, logger) {
-  logger.write_string(self.to_string())
+  let msg = match self {
+    BasicBlockHasNoParent => "BasicBlock has no parent function"
+    MetadataNotNode => "Metadata is expetced to be a node"
+  }
+  logger.write_string(msg)
 }

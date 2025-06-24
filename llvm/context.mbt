@@ -352,7 +352,7 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 /// let i16_two = i16_type.const_int(2, sign_extend=false);
 /// let const_struct = context.const_struct([i16_two, f32_one]);
 ///
-/// assert_eq(const_struct.get_type().get_field_types() == 
+/// assert_true(const_struct.get_type().get_field_types() == 
 ///   [i16_type.as_basic_type_enum(), f32_type.as_basic_type_enum()]
 /// );
 /// ```
@@ -543,7 +543,7 @@ pub fn Context::metadata_node(
 ///
 /// assert_true(md_string.is_string());
 ///
-/// ret_instr.set_metadata(md_string, 0);
+/// let _ = ret_instr.set_metadata(md_string, 0);
 /// ```
 pub fn Context::metadata_string(self : Context, s : String) -> MetadataValue {
   let val_ref = @unsafe.llvm_md_string_in_context(self.as_ctx_ref(), s)

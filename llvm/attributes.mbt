@@ -249,7 +249,7 @@ pub fn AttributeLoc::get_index(self : AttributeLoc) -> UInt {
 }
 
 ///|
-pub fn op_equal(self : Attribute, other : Attribute) -> Bool {
+pub impl Eq for Attribute with op_equal(self, other) {
   if self.is_enum() && other.is_enum() {
     return self.get_enum_kind_id() == other.get_enum_kind_id() &&
       self.get_enum_value() == other.get_enum_value()

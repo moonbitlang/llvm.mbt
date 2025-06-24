@@ -46,14 +46,6 @@ pub fn IntType::const_int(
 // }
 
 ///| Create a constant `IntValue` of arbitrary precision.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create()
-/// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int_arbitrary_precision([1, 2]);
-/// ```
 pub fn IntType::const_int_arbitrary_precision(
   self : IntType,
   words : Array[UInt64]

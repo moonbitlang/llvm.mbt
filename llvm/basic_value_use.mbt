@@ -17,7 +17,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();

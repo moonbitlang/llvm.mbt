@@ -1299,6 +1299,10 @@ LLVMBool __llvm_same_attr_ref(void *attr1, void *attr2) {
 // bb1: LLVMBasicBlockRef, bb2: LLVMBasicBlockRef
 LLVMBool __llvm_same_bb_ref(void *bb1, void *bb2) { return bb1 == bb2 ? 1 : 0; }
 
+LLVMBool __llvm_same_global_value_ref(void *gv1, void *gv2) {
+  return gv1 == gv2 ? 1 : 0;
+}
+
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {
   LLVMGetVersion(major, minor, patch);
 }

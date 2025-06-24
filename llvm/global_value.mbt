@@ -318,3 +318,7 @@ pub impl Show for GlobalValue with output(self : GlobalValue, logger : &Logger) 
 pub impl Show for GlobalValue with to_string(self : GlobalValue) -> String {
   self.to_string()
 }
+
+pub impl Eq for GlobalValue with op_equal(self : GlobalValue, other : GlobalValue) -> Bool {
+  self.as_value_ref() == other.as_value_ref()
+}

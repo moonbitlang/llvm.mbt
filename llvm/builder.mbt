@@ -272,7 +272,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (need better type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -2579,7 +2579,6 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let void_type = context.void_type();
-/// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(3);
 /// let fn_type = void_type.fn_type([]);

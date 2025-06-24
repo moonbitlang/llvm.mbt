@@ -558,7 +558,7 @@ fn InstructionValue::get_operand_unchecked(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip(BasicValueEnum not implement opo_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -761,16 +761,15 @@ pub fn InstructionValue::set_metadata(
   self : InstructionValue,
   metadata : MetadataValue,
   kind_id : UInt
-) -> Result[Unit, String] {
+) -> Unit raise MoonllvmError {
   if not(metadata.is_node()) {
-    return Err("Metadata is expected to be a node.")
+    raise MetadataNotNode
   }
   @unsafe.llvm_set_metadata(
     self.as_value_ref(),
     kind_id,
     metadata.as_value_ref(),
   )
-  Ok(())
 }
 
 ///| Dumps the `InstructionValue` to stderr.

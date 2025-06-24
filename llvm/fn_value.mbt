@@ -203,7 +203,7 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_type.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
 /// inspect(fn_value.get_nth_param(0), content="Some(double %1)")
@@ -235,6 +235,13 @@ pub fn FunctionValue::get_nth_param(
 /// ```
 pub fn FunctionValue::count_params(self : FunctionValue) -> UInt {
   @unsafe.llvm_count_params(self.as_value_ref())
+}
+
+///|
+pub fn FunctionValue::count_basic_blocks(
+  self : FunctionValue
+) -> UInt {
+  @unsafe.llvm_count_basic_blocks(self.as_value_ref())
 }
 
 ///| Get basic blocks of the function.
