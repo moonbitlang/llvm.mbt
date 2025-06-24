@@ -419,7 +419,7 @@ pub fn InstructionValue::set_atomic_ordering(
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = llvm_module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
@@ -476,7 +476,7 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = llvm_module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
@@ -568,7 +568,7 @@ fn InstructionValue::get_operand_unchecked(
 /// let fn_type = void_type.fn_type([f32_ptr_type]);
 ///
 /// let function = llvm_module.add_function("take_f32_ptr", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///

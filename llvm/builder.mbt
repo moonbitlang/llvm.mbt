@@ -692,7 +692,7 @@ pub fn Builder::build_landing_pad(
 ///
 /// // we will pretend this function can throw an exception
 /// let function = module.add_function("bomb", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
@@ -701,14 +701,14 @@ pub fn Builder::build_landing_pad(
 /// builder.build_return(val=Some(pi)).unwrap();
 ///
 /// let function2 = module.add_function("wrapper", fn_type);
-/// let basic_block2 = context.append_basic_block(function2, "entry");
+/// let basic_block2 = context.append_basic_block(function2, name="entry");
 ///
 /// builder.position_at_end(basic_block2);
 ///
-/// let then_block = context.append_basic_block(function2, "then_block");
-/// let catch_block = context.append_basic_block(function2, "catch_block");
+/// let then_block = context.append_basic_block(function2, name="then_block");
+/// let catch_block = context.append_basic_block(function2, name="catch_block");
 ///
-/// let call_site = builder.build_invoke(function, [], then_block, catch_block, "get_pi").unwrap();
+/// let call_site = builder.build_invoke(function, [], then_block, catch_block, name = "get_pi").unwrap();
 ///
 /// {
 ///     builder.position_at_end(then_block);
@@ -1235,7 +1235,7 @@ pub fn Builder::insert_instruction(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("udiv", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1311,7 +1311,7 @@ pub fn[T : IntMathValue] Builder::build_int_signed_div(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("sdiv", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1350,7 +1350,7 @@ pub fn[T : IntMathValue] Builder::build_int_exact_signed_div(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("urem", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1388,7 +1388,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_rem(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("srem", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1454,7 +1454,7 @@ pub fn Builder::build_address_space_cast(
 /// let f32_ty = context.f32_type();
 /// let fty = i32_ty.fn_type([f32_ty]);
 /// let fval = lmodule.add_function("bit_cast", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1494,7 +1494,7 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("rem", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1542,7 +1542,7 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("div", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1580,7 +1580,7 @@ pub fn Builder::build_float_div(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1618,7 +1618,7 @@ pub fn[T : IntMathValue] Builder::build_int_add(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1656,7 +1656,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_add(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1694,14 +1694,14 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_add(lhs, rhs, "res");
+/// let res = builder.build_float_add(lhs, rhs, name="res");
 /// inspect(res, content="  %res = fadd float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_add(
@@ -1732,7 +1732,7 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1770,7 +1770,7 @@ pub fn[T : IntMathValue] Builder::build_xor(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1808,7 +1808,7 @@ pub fn[T : IntMathValue] Builder::build_and(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1846,7 +1846,7 @@ pub fn[T : IntMathValue] Builder::build_or(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1884,7 +1884,7 @@ pub fn[T : IntMathValue] Builder::build_left_shift(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1926,7 +1926,7 @@ pub fn[T : IntMathValue] Builder::build_right_shift(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -1964,7 +1964,7 @@ pub fn[T : IntMathValue] Builder::build_int_sub(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2002,7 +2002,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_sub(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2040,7 +2040,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("sub", fval);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2078,7 +2078,7 @@ pub fn[T : FloatMathValue] Builder::build_float_sub(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2111,7 +2111,7 @@ pub fn[T : IntMathValue] Builder::build_int_mul(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2144,7 +2144,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_mul(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2177,7 +2177,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("mul", fval);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2263,7 +2263,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty, i32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2321,7 +2321,7 @@ pub fn Builder::build_ptr_compare(
 /// let f32_ty = context.f32_type();
 /// let fty = i32_ty.fn_type([f32_ty, f32_ty]);
 /// let fval = lmodule.add_function("add", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2408,7 +2408,7 @@ pub fn Builder::build_indirect_branch(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty]);
 /// let fval = lmodule.add_function("neg", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2441,7 +2441,7 @@ pub fn[T : IntMathValue] Builder::build_int_neg(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty]);
 /// let fval = lmodule.add_function("neg", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2490,7 +2490,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_neg(
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty]);
 /// let fval = lmodule.add_function("neg", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2523,7 +2523,7 @@ pub fn[T : FloatMathValue] Builder::build_float_neg(
 /// let i32_ty = context.i32_type();
 /// let fty = i32_ty.fn_type([i32_ty]);
 /// let fval = lmodule.add_function("not", fty);
-/// let entry_bb = context.append_basic_block(fval, "entry");
+/// let entry_bb = context.append_basic_block(fval, name="entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
 ///
@@ -2660,17 +2660,17 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let array_alloca = builder.build_alloca(array_type, "array_alloca");
-/// let array = builder.build_load(i32_type, array_alloca, "array_load").into_array_value();
+/// let array_alloca = builder.build_alloca(array_type, name="array_alloca");
+/// let array = builder.build_load(i32_type, array_alloca, name="array_load").into_array_value();
 ///
 /// let const_int1 = i32_type.const_int(2, false);
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// let _ = builder.build_insert_value(array, const_int1, 0, "insert");
-/// let _ = builder.build_insert_value(array, const_int2, 1, "insert");
-/// let _ = builder.build_insert_value(array, const_int3, 2, "insert");
-/// // builder.build_insert_value(array, const_int3, 3, "insert");
+/// let _ = builder.build_insert_value(array, const_int1, 0);
+/// let _ = builder.build_insert_value(array, const_int2, 1);
+/// let _ = builder.build_insert_value(array, const_int3, 2);
+/// let _ = builder.build_insert_value(array, const_int3, 3);
 /// ```
 pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
   self : Builder,

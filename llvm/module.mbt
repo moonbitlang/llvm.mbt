@@ -371,7 +371,7 @@ pub fn Module::get_global_metadata_size(self : Module, key : String) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();

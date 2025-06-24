@@ -162,7 +162,7 @@ pub fn Context::i128_type(self : Context) -> IntType {
 /// let context = Context::create();
 /// let i48_type = context.custom_width_int_type(48);
 ///
-/// assert_eq!(i42_type.get_bit_width(), 42);
+/// assert_eq(i42_type.get_bit_width(), 42);
 /// ```
 pub fn Context::custom_width_int_type(self : Context, bits : UInt) -> IntType {
   let type_ref = @unsafe.llvm_int_type_in_context(self.as_ctx_ref(), bits)
@@ -177,7 +177,7 @@ pub fn Context::custom_width_int_type(self : Context, bits : UInt) -> IntType {
 /// let context = Context::create();
 /// let md_type = context.metadata_type();
 ///
-/// assert_true!(md_type.get_context() == context);
+/// assert_true(md_type.get_context() == context);
 /// ```
 pub fn Context::metadata_type(self : Context) -> MetadataType {
   let mref = @unsafe.llvm_metadata_type_in_context(self.as_ctx_ref())
@@ -352,7 +352,7 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 /// let i16_two = i16_type.const_int(2, false);
 /// let const_struct = context.const_struct([i16_two, f32_one], false);
 ///
-/// assert_eq!(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
+/// assert_eq(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
 /// ```
 pub fn Context::const_struct(
   self : Context,
@@ -395,13 +395,13 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 /// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 1);
+/// assert_eq(fn_value.count_basic_blocks(), 1);
 ///
 /// let last_basic_block = context.append_basic_block(fn_value, "last");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 2);
-/// assert_eq!(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
-/// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// assert_eq(fn_value.count_basic_blocks(), 2);
+/// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
+/// assert_eq(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::append_basic_block(
   self : Context,
@@ -428,13 +428,13 @@ pub fn Context::append_basic_block(
 /// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 1);
+/// assert_eq(fn_value.count_basic_blocks(), 1);
 ///
 /// let last_basic_block = context.insert_basic_block_after(entry_basic_block, "last");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 2);
-/// assert_eq!(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
-/// assert_eq!(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// assert_eq(fn_value.count_basic_blocks(), 2);
+/// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
+/// assert_eq(fn_value.get_last_basic_block().unwrap(), last_basic_block);
 /// ```
 pub fn Context::insert_basic_block_after(
   self : Context,
@@ -462,13 +462,13 @@ pub fn Context::insert_basic_block_after(
 /// let fn_value = module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 1);
+/// assert_eq(fn_value.count_basic_blocks(), 1);
 ///
 /// let first_basic_block = context.prepend_basic_block(entry_basic_block, "first");
 ///
-/// assert_eq!(fn_value.count_basic_blocks(), 2);
-/// assert_eq!(fn_value.get_first_basic_block().unwrap(), first_basic_block);
-/// assert_eq!(fn_value.get_last_basic_block().unwrap(), entry_basic_block);
+/// assert_eq(fn_value.count_basic_blocks(), 2);
+/// assert_eq(fn_value.get_first_basic_block().unwrap(), first_basic_block);
+/// assert_eq(fn_value.get_last_basic_block().unwrap(), entry_basic_block);
 /// ```
 pub fn Context::prepend_basic_block(
   self : Context,
@@ -507,7 +507,7 @@ pub fn Context::prepend_basic_block(
 ///
 /// let _ = builder.build_return_void();
 ///
-/// assert_true!(md_node.is_node());
+/// assert_true(md_node.is_node());
 ///
 /// ret_instr.set_metadata(md_node, 0);
 /// ```
@@ -541,7 +541,7 @@ pub fn Context::metadata_node(
 ///
 /// let _ = builder.build_return_void();
 ///
-/// assert_true!(md_string.is_string());
+/// assert_true(md_string.is_string());
 ///
 /// ret_instr.set_metadata(md_string, 0);
 /// ```
@@ -554,15 +554,15 @@ pub fn Context::metadata_string(self : Context, s : String) -> MetadataValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (not implemenbt FIRST_CUSTOM_METADATA_KIND_ID)
 /// let context = Context::create();
 ///
-/// assert_eq!(context.get_kind_id("dbg"), 0);
-/// assert_eq!(context.get_kind_id("tbaa"), 1);
-/// assert_eq!(context.get_kind_id("prof"), 2);
+/// assert_eq(context.get_kind_id("dbg"), 0);
+/// assert_eq(context.get_kind_id("tbaa"), 1);
+/// assert_eq(context.get_kind_id("prof"), 2);
 ///
 /// // Custom kind id doesn't exist in @unsafe.LLVM until now:
-/// assert_eq!(context.get_kind_id("foo"), FIRST_CUSTOM_METADATA_KIND_ID);
+/// assert_eq(context.get_kind_id("foo"), FIRST_CUSTOM_METADATA_KIND_ID);
 /// ```
 pub fn Context::get_kind_id(self : Context, key : String) -> UInt {
   @unsafe.llvm_get_md_kind_id_in_context(self.as_ctx_ref(), key)
@@ -576,7 +576,7 @@ pub fn Context::get_kind_id(self : Context, key : String) -> UInt {
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///
-/// assert_true!(enum_attribute.is_enum());
+/// assert_true(enum_attribute.is_enum());
 /// ```
 pub fn Context::create_enum_attribute(
   self : Context,
@@ -599,7 +599,7 @@ pub fn Context::create_enum_attribute(
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key_123", "my_val");
 ///
-/// assert_true!(string_attribute.is_string());
+/// assert_true(string_attribute.is_string());
 /// ```
 pub fn Context::create_string_attribute(
   self : Context,
@@ -618,7 +618,7 @@ pub fn Context::create_string_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip (not implement op_equal)
 /// let context = Context::create();
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
 /// let any_type = context.i32_type().as_any_type_enum();
@@ -627,9 +627,9 @@ pub fn Context::create_string_attribute(
 ///     any_type,
 /// );
 ///
-/// assert_true!(type_attribute.is_type());
-/// assert_eq!(type_attribute.get_type_value(), any_type);
-/// assert_ne!(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
+/// assert_true(type_attribute.is_type());
+/// assert_eq(type_attribute.get_type_value(), any_type);
+/// assert_ne(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```
 pub fn Context::create_type_attribute(
   self : Context,
@@ -650,9 +650,9 @@ pub fn Context::create_type_attribute(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// let string = context.const_string(b"my_string", false);
+/// let s = context.const_string("my_string", false);
 ///
-/// assert_eq!(string.print_to_string().to_string(), "[9 x i8] my_string");
+/// inspect(s, content="[9 x i8] my_string");
 /// ```
 pub fn Context::const_string(
   self : Context,

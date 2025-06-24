@@ -195,7 +195,7 @@ pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let i32_val = i32_type.const_int(42, sign_extend~=false);
+/// let i32_val = i32_type.const_int(42, sign_extend=false);
 /// let i32_vty = i32_type.vec_type(2);
 /// let i32_const_vec = i32_vty.const_vector([i32_val, i32_val]);
 /// assert_true(i32_const_vec.is_const())
