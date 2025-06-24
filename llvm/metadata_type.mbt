@@ -30,9 +30,9 @@ pub fn MetadataType::fn_type(
 
 ///| Gets a reference to the `Context` this `MetadataType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let md_type = context.metadata_type();
 /// let md_context = md_type.get_context();

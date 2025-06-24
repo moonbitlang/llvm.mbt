@@ -57,7 +57,7 @@ pub fn ArrayType::get_alignment(self : ArrayType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);

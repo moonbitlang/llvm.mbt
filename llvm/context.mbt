@@ -88,7 +88,7 @@ pub fn Context::bool_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let i8_ty = context.i8_type()
 /// inspect(i8_ty, content="i8")
