@@ -93,7 +93,7 @@ pub fn Builder::get_insert_block(
 /// let i32_arg = fn_value.get_first_param().unwrap();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_return?(Some(i32_arg)).unwrap();
+/// let _ = builder.build_return(i32_arg);
 /// ```
 pub fn[T : BasicValue] Builder::build_return(
   self : Builder,
@@ -134,11 +134,11 @@ pub fn Builder::build_return_void(
 /// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
-/// builder.build_aggregate_return?([i32_three, i32_seven]).unwrap();
+/// let _ = builder.build_aggregate_return([i32_three, i32_seven]);
 /// ```
 pub fn Builder::build_aggregate_return(
   self : Builder,
-  values : Array[BasicValueEnum]
+  values : Array[&BasicValue]
 ) -> InstructionValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
@@ -168,7 +168,7 @@ pub fn Builder::build_aggregate_return(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], "call")
+/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], name="call")
 ///     .unwrap()
 ///     .try_as_basic_value()
 ///     .left()
@@ -203,13 +203,13 @@ pub fn Builder::build_call(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], "call")
+/// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], name="call")
 ///     .unwrap()
 ///     .try_as_basic_value()
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(Some(ret_val)).unwrap();
+/// builder.build_return(ret_val).unwrap();
 /// ```
 pub fn Builder::build_direct_call(
   self : Builder,
@@ -255,7 +255,7 @@ pub fn Builder::build_direct_call(
 pub fn Builder::build_direct_call_with_operand_bundles(
   self : Builder,
   func : FunctionValue,
-  args : Array[BasicMetadataValueEnum],
+  args : Array[&BasicMetadataValue],
   operand_bundles : Array[OperandBundle],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
@@ -264,7 +264,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
   self.build_call_with_operand_bundles_help(
     fty,
     fn_val,
-    args,
+    args.map(v => v.as_basic_metadata_value_enum()),
     operand_bundles,
     name~,
   )
@@ -323,14 +323,14 @@ pub fn Builder::build_indirect_call_with_operand_bundles(
   self : Builder,
   fn_type : FunctionType,
   fn_ptr : PointerValue,
-  args : Array[BasicMetadataValueEnum],
+  args : Array[&BasicMetadataValue],
   operand_bundles : Array[OperandBundle],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
   self.build_call_with_operand_bundles_help(
     fn_type,
     fn_ptr.value,
-    args,
+    args.map(v => v.as_basic_metadata_value_enum()),
     operand_bundles,
     name~,
   )
@@ -419,7 +419,7 @@ fn Builder::build_call_with_operand_bundles_help(
 /// let catch_block = context.append_basic_block(function2, name="catch_block");
 ///
 /// let call_site = builder.build_invoke(
-///   function, [], then_block, catch_block, "get_pi").unwrap();
+///   function, [], then_block, catch_block).unwrap();
 ///
 /// {
 ///     builder.position_at_end(then_block);
@@ -811,7 +811,7 @@ pub fn Builder::build_in_bounds_gep(
 /// let struct_ty = context.struct_type(field_types);
 /// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty]);
-/// let fn_value = module.add_function("", fn_type);
+/// let fn_value = module.add_function("tmp_func", fn_type);
 /// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
@@ -819,11 +819,11 @@ pub fn Builder::build_in_bounds_gep(
 /// let i32_ptr = fn_value.get_first_param().unwrap().into_pointer_value();
 /// let struct_ptr = fn_value.get_last_param().unwrap().into_pointer_value();
 ///
-/// assert_true(builder.build_struct_gep(i32_ty, i32_ptr, 0, "struct_gep").is_err());
-/// assert_true(builder.build_struct_gep(i32_ty, i32_ptr, 10, "struct_gep").is_err());
-/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 0, "struct_gep").is_ok());
-/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 1, "struct_gep").is_ok());
-/// assert_true(builder.build_struct_gep(struct_ty, struct_ptr, 2, "struct_gep").is_err());
+/// assert_true((try? builder.build_struct_gep(i32_ty, i32_ptr, 0)) is Err(_));
+/// assert_true((try? builder.build_struct_gep(i32_ty, i32_ptr, 10)) is Err(_));
+/// assert_true((try? builder.build_struct_gep(struct_ty, struct_ptr, 0)) is Ok(_));
+/// assert_true((try? builder.build_struct_gep(struct_ty, struct_ptr, 1)) is Ok(_));
+/// assert_true((try? builder.build_struct_gep(struct_ty, struct_ptr, 2)) is Err(_));
 /// ```
 pub fn[T : BasicType] Builder::build_struct_gep(
   self : Builder,
@@ -870,7 +870,7 @@ pub fn[T : BasicType] Builder::build_struct_gep(
 /// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2, "diff").unwrap();
+/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2).unwrap();
 /// builder.build_return().unwrap();
 /// ```
 pub fn Builder::build_ptr_diff(
@@ -973,7 +973,7 @@ pub fn Builder::build_store_func(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let pointee = builder.build_load(i32_type, i32_ptr_param, "load2").into_int_value();
+/// let pointee = builder.build_load(i32_type, i32_ptr_param).into_int_value();
 ///
 /// let _ = builder.build_return(pointee);
 /// ```

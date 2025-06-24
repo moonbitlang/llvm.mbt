@@ -36,7 +36,7 @@ pub fn CallSiteValue::as_value_ref(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 /// call_site_value.set_tail_call(true);
 /// assert_true(call_site_value.is_tail_call());
 /// ```
@@ -62,7 +62,7 @@ pub fn CallSiteValue::set_tail_call(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.set_tail_call(true);
 ///
@@ -87,7 +87,7 @@ pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site = builder.build_call(fn_value, []).unwrap();
 ///
 /// assert_true(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindNone);
 /// ```
@@ -113,7 +113,7 @@ pub fn CallSiteValue::get_tail_call_kind(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site.set_tail_call_kind(@unsafe.LLVMTailCallKindTail);
 /// assert_true(call_site.get_tail_call_kind() == @unsafe.LLVMTailCallKindTail);
@@ -140,7 +140,7 @@ pub fn CallSiteValue::set_tail_call_kind(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 /// assert_true(call_site_value.try_as_basic_value().is_right());
 /// ```
 pub fn CallSiteValue::try_as_basic_value(
@@ -173,7 +173,7 @@ pub fn CallSiteValue::try_as_basic_value(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], name="my_fn");
+/// let call_site_value = builder.build_call(fn_value, []);
 ///
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -207,7 +207,7 @@ pub fn CallSiteValue::add_attribute(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// assert_eq(call_site_value.get_called_fn_value(), fn_value);
 /// ```
@@ -234,7 +234,7 @@ pub fn CallSiteValue::get_called_fn_value(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -268,7 +268,7 @@ pub fn CallSiteValue::count_attributes(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 /// let ret_attr = AttributeLoc::Return;
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
@@ -304,7 +304,7 @@ pub fn CallSiteValue::attributes(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 /// let ret_attr = AttributeLoc::Return;
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
@@ -342,7 +342,7 @@ pub fn CallSiteValue::get_enum_attribute(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 /// let ret_attr = AttributeLoc::Return;
 /// call_site_value.add_attribute(ret_attr, string_attribute);
 /// call_site_value.add_attribute(ret_attr, enum_attribute);
@@ -380,7 +380,7 @@ pub fn CallSiteValue::get_string_attribute(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -417,7 +417,7 @@ pub fn CallSiteValue::remove_enum_attribute(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.add_attribute(AttributeLoc::Return, string_attribute);
 /// call_site_value.add_attribute(AttributeLoc::Return, enum_attribute);
@@ -454,7 +454,7 @@ pub fn CallSiteValue::remove_string_attribute(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// assert_eq(call_site_value.count_arguments(), 0);
 /// ```
@@ -477,7 +477,7 @@ pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// assert_eq(call_site_value.get_call_convention(), 0);
 /// ```
@@ -500,7 +500,7 @@ pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], "my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.set_call_convention(2);
 ///
@@ -532,7 +532,7 @@ pub fn CallSiteValue::set_call_convention(
 ///
 /// builder.position_at_end(entry_bb);
 ///
-/// let call_site_value = builder.build_call(fn_value, [], name="my_fn").unwrap();
+/// let call_site_value = builder.build_call(fn_value, []).unwrap();
 ///
 /// call_site_value.set_alignment_attribute(AttributeLoc::Param(0), 2);
 /// ```
