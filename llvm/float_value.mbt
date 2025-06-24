@@ -43,9 +43,9 @@ pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
 /// builder.position_at_end(bb)
 ///
 /// let x = fval.get_nth_param(0).unwrap().into_int_value()
-/// let xp1 = builder.build_int_add!(x, one, name="xp1")
+/// let xp1 = builder.build_int_add(x, one, name="xp1")
 ///
-/// inspect!(xp1.get_name(), content="xp1")
+/// inspect(xp1.get_name(), content="xp1")
 /// ```
 pub fn FloatValue::get_name(self : FloatValue) -> String {
   self.value.get_name()
@@ -70,10 +70,10 @@ pub fn FloatValue::get_name(self : FloatValue) -> String {
 /// builder.position_at_end(bb)
 ///
 /// let x = fval.get_nth_param(0).unwrap().into_int_value()
-/// let xp1 = builder.build_int_add!(x, one)
+/// let xp1 = builder.build_int_add(x, one)
 ///
 /// xp1.set_name("xp1")
-/// inspect!(xp1.get_name(), content="xp1")
+/// inspect(xp1.get_name(), content="xp1")
 /// ```
 pub fn FloatValue::set_name(self : FloatValue, name : String) -> Unit {
   self.value.set_name(name)
@@ -87,7 +87,7 @@ pub fn FloatValue::set_name(self : FloatValue, name : String) -> Unit {
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.14);
-/// inspect!(pi.get_type(), "float");
+/// inspect(pi.get_type(), content="float");
 /// ```
 pub fn FloatValue::get_type(self : FloatValue) -> FloatType {
   FloatType::new(self.value.get_type().as_type_ref())
@@ -106,7 +106,7 @@ pub fn FloatValue::is_null(self : FloatValue) -> Bool {
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let undef = f64_type.get_undef();
-/// assert_true!(undef.is_undef());
+/// assert_true(undef.is_undef());
 /// ```
 pub fn FloatValue::is_undef(self : FloatValue) -> Bool {
   self.value.is_undef()
@@ -132,7 +132,7 @@ pub fn FloatValue::as_instruction(self : FloatValue) -> InstructionValue? {
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_val = f64_type.const_float(1.2);
-/// assert_true!(f64_val.is_const());
+/// assert_true(f64_val.is_const());
 /// ```
 pub fn FloatValue::is_const(self : FloatValue) -> Bool {
   self.value.is_const()
@@ -149,7 +149,7 @@ pub fn FloatValue::is_const(self : FloatValue) -> Bool {
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.14);
 ///
-/// inspect!(pi.get_constant(), "Some((3.14, false))");
+/// inspect(pi.get_constant(), content="Some((3.14, false))");
 /// ```
 pub fn FloatValue::get_constant(self : FloatValue) -> (Double, Bool)? {
   if not(self.is_const()) {

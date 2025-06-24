@@ -28,10 +28,11 @@ pub fn VectorType::as_type_ref(self : VectorType) -> @unsafe.LLVMTypeRef {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_sz = vector_type.size_of().unwrap();
 /// let expect = "i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)"
-/// inspect!(vector_sz, content=expect)
+/// inspect(vector_sz, content=expect)
+/// ```
 pub fn VectorType::size_of(self : VectorType) -> IntValue? {
   self.ty.size_of()
 }
@@ -43,8 +44,8 @@ pub fn VectorType::size_of(self : VectorType) -> IntValue? {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
-/// assert_true!(vector_type.is_sized())
+/// let vector_type = i32_type.vec_type(8);
+/// assert_true(vector_type.is_sized())
 /// ```
 pub fn VectorType::is_sized(self : VectorType) -> Bool {
   self.ty.is_sized()
@@ -57,10 +58,10 @@ pub fn VectorType::is_sized(self : VectorType) -> Bool {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_align = vector_type.get_alignment();
 /// let expect = "i64 ptrtoint (ptr getelementptr ({ i1, <8 x i32> }, ptr null, i64 0, i32 1) to i64)"
-/// inspect!(vector_align, content=expect)
+/// inspect(vector_align, content=expect)
 /// ```
 pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
   self.ty.get_alignment()
@@ -73,7 +74,7 @@ pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_sz = vector_type.get_size();
 /// assert_eq!(vector_sz, 8);
 /// ```
@@ -94,9 +95,9 @@ pub fn VectorType::get_size(self : VectorType) -> UInt {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_undef = vector_type.get_undef();
-/// inspect!(vector_undef, "<8 x i32> undef")
+/// inspect(vector_undef, content="<8 x i32> undef")
 /// ```
 pub fn VectorType::get_undef(self : VectorType) -> VectorValue {
   VectorValue::new(self.ty.get_undef())
@@ -109,9 +110,9 @@ pub fn VectorType::get_undef(self : VectorType) -> VectorValue {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_poison = vector_type.get_poison();
-/// inspect!(vector_poison, "<8 x i32> poison")
+/// inspect(vector_poison, content="<8 x i32> poison")
 /// ```
 pub fn VectorType::get_poison(self : VectorType) -> VectorValue {
   VectorValue::new(self.ty.get_poison())
@@ -124,9 +125,9 @@ pub fn VectorType::get_poison(self : VectorType) -> VectorValue {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let ele_type = vector_type.get_element_type();
-/// inspect!(ele_type, "i32")
+/// inspect(ele_type, content="i32")
 /// ```
 pub fn VectorType::get_element_type(self : VectorType) -> BasicTypeEnum {
   let ty_ref = self.ty.get_element_type().as_type_ref()
@@ -140,9 +141,9 @@ pub fn VectorType::get_element_type(self : VectorType) -> BasicTypeEnum {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let ptr_type = vector_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn VectorType::ptr_type(
   self : VectorType,
@@ -160,9 +161,9 @@ pub fn VectorType::ptr_type(
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let fn_type = vector_type.fn_type([i32_type]);
-/// inspect!(fn_type, "<8 x i32> (i32)")
+/// inspect(fn_type, content="<8 x i32> (i32)")
 /// ```
 pub fn VectorType::fn_type(
   self : VectorType,
@@ -179,9 +180,9 @@ pub fn VectorType::fn_type(
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(4);
+/// let vector_type = i32_type.vec_type(4);
 /// let array_type = vector_type.array_type(8);
-/// inspect!(array_type, "[8 x <4 x i32>]")
+/// inspect(array_type, content="[8 x <4 x i32>]")
 /// ```
 pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -194,10 +195,10 @@ pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let i32_val = i32_type.const_int(42, false);
-/// let i32_vty = i32_type.vector_type(2);
+/// let i32_val = i32_type.const_int(42, sign_extend~=false);
+/// let i32_vty = i32_type.vec_type(2);
 /// let i32_const_vec = i32_vty.const_vector([i32_val, i32_val]);
-/// assert_true!(i32_const_vec.is_const())
+/// assert_true(i32_const_vec.is_const())
 /// ```
 pub fn VectorType::const_array(
   self : VectorType,
@@ -213,9 +214,9 @@ pub fn VectorType::const_array(
 /// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vector_type(8);
+/// let vector_type = i32_type.vec_type(8);
 /// let vector_ctx = vector_type.get_context();
-/// assert_true!(context == vector_ctx);
+/// assert_true(context == vector_ctx);
 /// ```
 pub fn VectorType::get_context(self : VectorType) -> Context {
   self.ty.get_context()
