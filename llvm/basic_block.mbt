@@ -103,7 +103,7 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
   let next_bb_ref = @unsafe.llvm_get_next_basic_block(self.as_bb_ref())
   @option.when(next_bb_ref.is_not_null(), fn() {
-    BasicBlock::new(@unsafe.llvm_get_next_basic_block(self.as_bb_ref()))
+    BasicBlock::new(next_bb_ref)
   })
 }
 
@@ -401,9 +401,9 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = llvm_module.add_function("my_fn", fn_type);
-/// let entry = context.append_basic_block(fn_val, content="entry");
-/// let bb1 = context.append_basic_block(fn_val, content="bb1");
-/// let bb2 = context.append_basic_block(fn_val, content="bb2");
+/// let entry = context.append_basic_block(fn_val, name="entry");
+/// let bb1 = context.append_basic_block(fn_val, name="bb1");
+/// let bb2 = context.append_basic_block(fn_val, name="bb2");
 /// builder.position_at_end(entry);
 /// let branch_inst = builder.build_unconditional_branch(bb1).unwrap();
 ///
@@ -433,9 +433,9 @@ pub fn BasicBlock::replace_all_uses_with(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = llvm_module.add_function("my_fn", fn_type);
-/// let entry = context.append_basic_block(fn_val, content="entry");
-/// let bb1 = context.append_basic_block(fn_val, content="bb1");
-/// let bb2 = context.append_basic_block(fn_val, content="bb2");
+/// let entry = context.append_basic_block(fn_val, name="entry");
+/// let bb1 = context.append_basic_block(fn_val, name="bb1");
+/// let bb2 = context.append_basic_block(fn_val, name="bb2");
 /// builder.position_at_end(entry);
 /// let branch_inst = builder.build_unconditional_branch(bb1);
 ///
@@ -460,8 +460,8 @@ pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_val = llvm_module.add_function("my_fn", fn_type);
-/// let entry_bb = context.append_basic_block(fn_val, content="entry");
-/// let next_bb = context.append_basic_block(fn_val, content="next");
+/// let entry_bb = context.append_basic_block(fn_val, name="entry");
+/// let next_bb = context.append_basic_block(fn_val, name="next");
 ///
 /// assert_true(entry_bb.get_address() is None);
 /// assert_true(next_bb.get_address() is Some(_));
