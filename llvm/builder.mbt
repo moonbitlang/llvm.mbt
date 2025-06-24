@@ -174,7 +174,7 @@ pub fn Builder::build_aggregate_return(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(Some(&ret_val)).unwrap();
+/// builder.build_return(Some(&ret_val));
 /// ```
 pub fn Builder::build_call(
   self : Builder,
@@ -209,7 +209,7 @@ pub fn Builder::build_call(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(ret_val).unwrap();
+/// builder.build_return(ret_val);
 /// ```
 pub fn Builder::build_direct_call(
   self : Builder,
@@ -250,7 +250,7 @@ pub fn Builder::build_direct_call(
 ///     .unwrap()
 ///     .try_as_basic_value()
 ///     .unwrap_left();
-/// builder.build_return(Some(ret_val)).unwrap();
+/// builder.build_return(Some(ret_val));
 /// ```
 pub fn Builder::build_direct_call_with_operand_bundles(
   self : Builder,
@@ -301,7 +301,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 ///     .left()
 ///     .unwrap();
 ///
-/// builder.build_return(Some(ret_val)).unwrap();
+/// builder.build_return(Some(ret_val));
 /// ```
 ///
 pub fn Builder::build_indirect_call(
@@ -447,10 +447,10 @@ fn Builder::build_call_with_operand_bundles_help(
 ///     let exception_type = context.struct_type([ptr_type, i32_type]);
 ///
 ///     let null = ptr_type.const_zero();
-///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res").unwrap();
+///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
 ///
 ///     // we handle the exception by returning a default value
-///     builder.build_return(val=Some(f32_type.const_zero())).unwrap();
+///     builder.build_return(val=Some(f32_type.const_zero()));
 /// }
 /// ```
 pub fn Builder::build_invoke(
@@ -563,7 +563,7 @@ fn Builder::build_invoke_help(
 /// };
 ///
 /// // make the cleanup landing pad
-/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, name="res").unwrap();
+/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, name="res");
 /// ```
 ///
 /// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
@@ -591,7 +591,7 @@ fn Builder::build_invoke_help(
 /// let null = i8_ptr_type.const_zero();
 ///
 /// // make the catch all landing pad
-/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res");
 /// ```
 ///
 /// * **catch a type of exception**: Catch a specific type of exception. The example uses C++'s type info.
@@ -620,7 +620,7 @@ fn Builder::build_invoke_help(
 ///
 /// // make the catch landing pad
 /// let clause = type_info_int.as_basic_value_enum();
-/// let res = builder.build_landing_pad(exception_type, personality_function, [clause], false, name="res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [clause], false, name="res");
 /// ```
 ///
 /// * **filter**: A filter clause encodes that only some types of exceptions are valid at this
@@ -650,7 +650,7 @@ fn Builder::build_invoke_help(
 ///
 /// // make the filter landing pad
 /// let filter_pattern = i8_ptr_type.const_array([type_info_int.as_any_value_enum().into_pointer_value()]);
-/// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, name="res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, name="res");
 /// ```
 pub fn Builder::build_landing_pad(
   self : Builder,
@@ -698,7 +698,7 @@ pub fn Builder::build_landing_pad(
 ///
 /// let pi = f32_type.const_float(@math.PI);
 ///
-/// builder.build_return(val=Some(pi)).unwrap();
+/// builder.build_return(val=Some(pi));
 ///
 /// let function2 = module.add_function("wrapper", fn_type);
 /// let basic_block2 = context.append_basic_block(function2, name="entry");
@@ -708,7 +708,7 @@ pub fn Builder::build_landing_pad(
 /// let then_block = context.append_basic_block(function2, name="then_block");
 /// let catch_block = context.append_basic_block(function2, name="catch_block");
 ///
-/// let call_site = builder.build_invoke(function, [], then_block, catch_block, name = "get_pi").unwrap();
+/// let call_site = builder.build_invoke(function, [], then_block, catch_block, name = "get_pi");
 ///
 /// {
 ///     builder.position_at_end(then_block);
@@ -716,7 +716,7 @@ pub fn Builder::build_landing_pad(
 ///     // in the then_block, the `call_site` value is defined and can be used
 ///     let result = call_site.try_as_basic_value().left().unwrap();
 ///
-///     builder.build_return(val=Some(result)).unwrap();
+///     builder.build_return(val=Some(result));
 /// }
 ///
 /// {
@@ -870,8 +870,8 @@ pub fn[T : BasicType] Builder::build_struct_gep(
 /// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2).unwrap();
-/// builder.build_return().unwrap();
+/// builder.build_ptr_diff(i32_ptr_type, i32_ptr_param1, i32_ptr_param2);
+/// builder.build_return();
 /// ```
 pub fn Builder::build_ptr_diff(
   self : Builder,
@@ -926,8 +926,8 @@ pub fn[T : BasicType] Builder::build_phi(
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_store(i32_ptr_param, i32_seven).unwrap();
-/// builder.build_return_void().unwrap();
+/// builder.build_store(i32_ptr_param, i32_seven);
+/// builder.build_return_void();
 /// ```
 pub fn Builder::build_store(
   self : Builder,

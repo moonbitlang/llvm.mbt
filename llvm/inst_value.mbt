@@ -425,7 +425,7 @@ pub fn InstructionValue::set_atomic_ordering(
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
 /// let free_instruction = builder.build_free(arg1);
 /// let return_instruction = builder.build_return_void();
 ///
@@ -482,9 +482,9 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
-/// let return_instruction = builder.build_return_void().unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
+/// let return_instruction = builder.build_return_void();
 ///
 /// assert_true(store_instruction.get_operand(0) is Some(_));
 /// assert_true(store_instruction.get_operand(1) is Some(_));
@@ -615,8 +615,8 @@ pub fn InstructionValue::set_operand(
 ///
 /// let arg1 = function.get_first_param().unwrap().into_pointer_value();
 /// let f32_val = f32_type.const_float(@math.PI);
-/// let store_instruction = builder.build_store(arg1, f32_val).unwrap();
-/// let free_instruction = builder.build_free(arg1).unwrap();
+/// let store_instruction = builder.build_store(arg1, f32_val);
+/// let free_instruction = builder.build_free(arg1);
 /// let return_instruction = builder.build_return_void();
 ///
 /// assert_eq(store_instruction.get_operand_use(1), arg1.get_first_use());

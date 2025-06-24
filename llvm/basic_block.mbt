@@ -405,7 +405,7 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 /// let bb1 = context.append_basic_block(fn_val, name="bb1");
 /// let bb2 = context.append_basic_block(fn_val, name="bb2");
 /// builder.position_at_end(entry);
-/// let branch_inst = builder.build_unconditional_branch(bb1).unwrap();
+/// let branch_inst = builder.build_unconditional_branch(bb1);
 ///
 /// bb1.replace_all_uses_with(bb2);
 ///
