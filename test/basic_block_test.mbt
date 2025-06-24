@@ -25,11 +25,15 @@ test "Basic Block Test" {
   bb2.move_before(bb1)
   assert_true(bb1.get_next_basic_block() is None)
   assert_true(bb2.get_next_basic_block().unwrap() == bb1)
+  assert_true(bb2.get_previous_basic_block() is None)
+  assert_true(bb1.get_previous_basic_block().unwrap() == bb2)
 
   // move_after
   bb2.move_after(bb1)
   assert_true(bb1.get_next_basic_block().unwrap() == bb2)
   assert_true(bb2.get_next_basic_block() is None)
+  assert_true(bb1.get_previous_basic_block() is None)
+  assert_true(bb2.get_previous_basic_block().unwrap() == bb1)
   let builder = context.create_builder()
   builder.position_at_end(bb1)
 

@@ -13,7 +13,7 @@ This project offers two types of interfaces:
 
 ## Notes
 
-Due to the ongoing development of the Moonbit language and its build system, this project is still under testing phrase, using this project may currently involve some complexity, and issues such as linking errors or memory leaks may occur. We are actively addressing these issues and improving the experience as the Moonbit compiler evolves. We look forward to delivering an exceptional LLVM development experience with future versions of Moonbit and Moonbit-LLVM.
+Due to the ongoing development of the Moonbit language and its build system, this project is still under testing phase, using this project may currently involve some complexity, and issues such as linking errors or memory leaks may occur. We are actively addressing these issues and improving the experience as the Moonbit compiler evolves. We look forward to delivering an exceptional LLVM development experience with future versions of Moonbit and Moonbit-LLVM.
 
 ## Quick Start
 
