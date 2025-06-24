@@ -919,7 +919,7 @@ pub fn[T : BasicType] Builder::build_phi(
 /// let void_type = context.void_type();
 /// let i32_type = context.i32_type();
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let i32_seven = i32_type.const_int(7, false);
+/// let i32_seven = i32_type.const_int(7, sign_extend=false);
 /// let fn_type = void_type.fn_type([i32_ptr_type]);
 /// let fn_value = llvm_module.add_function("ret", fn_type);
 /// let entry = context.append_basic_block(fn_value, name="entry");
@@ -2601,9 +2601,9 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 ///
 /// let array = builder.build_load(i32_type, array_alloca).into_array_value();
 ///
-/// let const_int1 = i32_type.const_int(2, false);
-/// let const_int2 = i32_type.const_int(5, false);
-/// let const_int3 = i32_type.const_int(6, false);
+/// let const_int1 = i32_type.const_int(2, sign_extend=false);
+/// let const_int2 = i32_type.const_int(5, sign_extend=false);
+/// let const_int3 = i32_type.const_int(6, sign_extend=false);
 ///
 /// let _ = builder.build_insert_value(array, const_int1, 0);
 /// let _ = builder.build_insert_value(array, const_int2, 1);
@@ -2663,9 +2663,9 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 /// let array_alloca = builder.build_alloca(array_type, name="array_alloca");
 /// let array = builder.build_load(i32_type, array_alloca, name="array_load").into_array_value();
 ///
-/// let const_int1 = i32_type.const_int(2, false);
-/// let const_int2 = i32_type.const_int(5, false);
-/// let const_int3 = i32_type.const_int(6, false);
+/// let const_int1 = i32_type.const_int(2, sign_extend=false);
+/// let const_int2 = i32_type.const_int(5, sign_extend=false);
+/// let const_int3 = i32_type.const_int(6, sign_extend=false);
 ///
 /// let _ = builder.build_insert_value(array, const_int1, 0);
 /// let _ = builder.build_insert_value(array, const_int2, 1);
@@ -2705,7 +2705,7 @@ pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let i32_type = context.i32_type();
-/// let i32_zero = i32_type.const_int(0, false);
+/// let i32_zero = i32_type.const_int(0, sign_extend=false);
 /// let vec_type = i32_type.vec_type(2);
 /// let fn_type = i32_type.fn_type([vec_type]);
 /// let fn_value = llvm_module.add_function("vec_fn", fn_type);

@@ -39,7 +39,7 @@ pub fn StructValue::as_value_ref(self : StructValue) -> @unsafe.LLVMValueRef {
 /// assert_true(struct_val.get_field_at_index(0) is Some(_));
 /// assert_true(struct_val.get_field_at_index(1) is Some(_));
 /// assert_true(struct_val.get_field_at_index(2) is None);
-/// assert_true(struct_val.get_field_at_index(0).unwrap().is_int_value());
+/// assert_true(struct_val.get_field_at_index(0).unwrap() is IntValue(_));
 /// ```
 pub fn StructValue::get_field_at_index(
   self : StructValue,
@@ -149,7 +149,7 @@ pub fn StructValue::replace_all_uses_with(
 /// ```moonbit
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
-/// let i64_val = i64_type.const_int(23, false);
+/// let i64_val = i64_type.const_int(23, sign_extend=false);
 /// let struct_val = context.const_struct([i64_val, i64_val]);
 /// assert_true(struct_val.is_const());
 /// ```

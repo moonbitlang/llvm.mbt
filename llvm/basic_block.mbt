@@ -236,7 +236,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 /// builder.position_at_end(entry);
 ///
 /// let v = builder.build_alloca(i32_type, name="some_number");
-/// let _ = builder.build_store(v, i32_type.const_int(1, false));
+/// let _ = builder.build_store(v, i32_type.const_int(1, sign_extend=false));
 /// let _ = builder.build_return_void();
 ///
 /// let block = fn_value.get_first_basic_block().unwrap();

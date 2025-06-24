@@ -288,7 +288,7 @@ pub fn Module::set_inline_assembly(self : Module, asm_code : String) -> Unit {
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
 /// let f32_type = context.f32_type();
-/// let bool_val = bool_type.const_int(0, false);
+/// let bool_val = bool_type.const_int(0, sign_extend=false);
 /// let f32_val = f32_type.const_float(0.0);
 ///
 /// assert_eq(llvm_module.get_global_metadata_size("my_md"), 0);
@@ -338,7 +338,7 @@ pub fn Module::add_global_metadata(
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
 /// let f32_type = context.f32_type();
-/// let bool_val = bool_type.const_int(0, false);
+/// let bool_val = bool_type.const_int(0, sign_extend = false);
 /// let f32_val = f32_type.const_float(0.0);
 ///
 /// assert_eq(llvm_module.get_global_metadata_size("my_md"), 0);
@@ -376,7 +376,7 @@ pub fn Module::get_global_metadata_size(self : Module, key : String) -> UInt {
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
 /// let f32_type = context.f32_type();
-/// let bool_val = bool_type.const_int(0, false);
+/// let bool_val = bool_type.const_int(0, sign_extend=false);
 /// let f32_val = f32_type.const_float(0.0);
 ///
 /// assert_eq(llvm_module.get_global_metadata_size("my_md"), 0);

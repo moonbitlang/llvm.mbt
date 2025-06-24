@@ -349,14 +349,14 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 /// let f32_type = context.f32_type();
 /// let i16_type = context.i16_type();
 /// let f32_one = f32_type.const_float(1.);
-/// let i16_two = i16_type.const_int(2, false);
+/// let i16_two = i16_type.const_int(2, sign_extend=false);
 /// let const_struct = context.const_struct([i16_two, f32_one], false);
 ///
 /// assert_eq(const_struct.get_type().get_field_types(), [i16_type, f32_type]);
 /// ```
 pub fn Context::const_struct(
   self : Context,
-  values : Array[BasicValueEnum],
+  values : Array[&BasicValue],
   packed~ : Bool = false
 ) -> StructValue {
   let args = values.map(fn(v) { v.as_value_ref() })
@@ -490,7 +490,7 @@ pub fn Context::prepend_basic_block(
 /// ```moonbit
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
-/// let i8_two = i8_type.const_int(2, false);
+/// let i8_two = i8_type.const_int(2, sign_extend=false);
 /// let f32_type = context.f32_type();
 /// let f32_zero = f32_type.const_float(0.);
 /// let md_node = context.metadata_node([i8_two, f32_zero]);
