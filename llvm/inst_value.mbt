@@ -621,7 +621,7 @@ pub fn InstructionValue::set_operand(
 ///
 /// assert_eq(store_instruction.get_operand_use(1), arg1.get_first_use());
 /// ```
-pub fn InstructionValue::get_oprand_use(
+pub fn InstructionValue::get_operand_use(
   self : InstructionValue,
   index : UInt
 ) -> BasicValueUse? {
@@ -629,11 +629,11 @@ pub fn InstructionValue::get_oprand_use(
   if index >= num_operands {
     return None
   }
-  self.get_oprand_use_unchecked(index)
+  self.get_operand_use_unchecked(index)
 }
 
 ///|
-fn InstructionValue::get_oprand_use_unchecked(
+fn InstructionValue::get_operand_use_unchecked(
   self : InstructionValue,
   index : UInt
 ) -> BasicValueUse? {
@@ -642,7 +642,7 @@ fn InstructionValue::get_oprand_use_unchecked(
 }
 
 // TODO: should return array or iter?
-// pub fn InstructionValue::get_oprand_uses(self: InstructionValue) ->
+// pub fn InstructionValue::get_operand_uses(self: InstructionValue) ->
 
 ///| Gets the first use of an `InstructionValue` if any.
 ///

@@ -1095,7 +1095,7 @@ pub fn Builder::build_memcpy(
 /// The final argument should be a pointer-sized integer.
 ///
 /// Returns an `Err(BuilderError::AlignmentError)` if the source or destination alignments are not a power of 2 under 2^64.
-pub fn Builder::build_memove(
+pub fn Builder::build_memmove(
   self : Builder,
   dest : PointerValue,
   dst_align : UInt,
