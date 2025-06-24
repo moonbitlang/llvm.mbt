@@ -37,7 +37,7 @@ pub fn ScalableVectorValue::as_value_ref(
 /// let i8_scalable_vec_type = i8_type.scalable_vec_type(3);
 /// let i8_scalable_vec_zero = i8_scalable_vec_type.const_zero();
 ///
-/// assert_true!(i8_scalable_vec_zero.is_const());
+/// assert_true(i8_scalable_vec_zero.is_const());
 /// ```
 pub fn ScalableVectorValue::is_const(self : ScalableVectorValue) -> Bool {
   self.value.is_const()

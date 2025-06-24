@@ -76,7 +76,7 @@ pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
 /// let vector_sz = vector_type.get_size();
-/// assert_eq!(vector_sz, 8);
+/// assert_eq(vector_sz, 8);
 /// ```
 pub fn VectorType::get_size(self : VectorType) -> UInt {
   @unsafe.llvm_get_vector_size(self.as_type_ref())

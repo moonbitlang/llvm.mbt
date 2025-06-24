@@ -227,8 +227,8 @@ pub fn Module::get_struct_type(self : Module, name : String) -> StructType? {
 /// let i8_type = context.i8_type();
 /// let global = llvm_module.add_global(i8_type, Some(AddressSpace(1)), "my_global");
 ///
-/// assert_eq(llvm_module.get_first_global().unwrap(), global);
-/// assert_eq(llvm_module.get_last_global().unwrap(), global);
+/// assert_true(llvm_module.get_first_global() == global);
+/// assert_true(llvm_module.get_last_global() == global);
 /// ```
 pub fn[T : BasicType] Module::add_global(
   self : Module,
@@ -497,7 +497,7 @@ pub fn Module::get_global(self : Module, name : String) -> GlobalValue? {
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
-/// assert_eq(llvm_module.get_name() is "my_mdoule");
+/// assert_true(llvm_module.get_name() is "my_mdoule");
 /// ```
 pub fn Module::get_name(self : Module) -> String {
   @unsafe.llvm_get_module_identifier(self.module_ref)

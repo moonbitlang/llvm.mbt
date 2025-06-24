@@ -430,7 +430,7 @@ pub fn Context::append_basic_block(
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 1);
 ///
-/// let last_basic_block = context.insert_basic_block_after(entry_basic_block, "last");
+/// let last_basic_block = context.insert_basic_block_after(entry_basic_block, name="last");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 2);
 /// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);

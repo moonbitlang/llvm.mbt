@@ -204,7 +204,6 @@ pub fn Builder::build_call(
 /// builder.position_at_end(entry);
 ///
 /// let ret_val = builder.build_call(fn_value, [i32_arg, md_string], name="call")
-///     .unwrap()
 ///     .try_as_basic_value()
 ///     .left()
 ///     .unwrap();
@@ -247,7 +246,6 @@ pub fn Builder::build_direct_call(
 ///     [OperandBundle::create("tag", [i32_type.const_zero()])],
 ///     "func_ret"
 /// )
-///     .unwrap()
 ///     .try_as_basic_value()
 ///     .unwrap_left();
 /// let _ = builder.build_return(ret_val);
@@ -294,9 +292,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 /// let ret_val = builder.build_indirect_call(
 ///   fn_value.get_type(),
 ///   function_pointer,
-///   [i32_arg, md_string],
-///   "call")
-///     .unwrap()
+///   [i32_arg, md_string])
 ///     .try_as_basic_value()
 ///     .left()
 ///     .unwrap();
@@ -656,7 +652,7 @@ pub fn Builder::build_landing_pad(
   self : Builder,
   exception_type : &BasicType,
   personality_function : FunctionValue,
-  clauses : Array[BasicValueEnum],
+  clauses : Array[&BasicValue],
   is_cleanup : Bool,
   name~ : String = ""
 ) -> BasicValueEnum raise BuilderError {
@@ -926,8 +922,8 @@ pub fn[T : BasicType] Builder::build_phi(
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_store(i32_ptr_param, i32_seven);
-/// builder.build_return_void();
+/// let _ = builder.build_store(i32_ptr_param, i32_seven);
+/// let _ = builder.build_return_void();
 /// ```
 pub fn Builder::build_store(
   self : Builder,

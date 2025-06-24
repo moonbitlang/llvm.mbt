@@ -43,7 +43,7 @@ pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
 /// builder.position_at_end(bb)
 ///
 /// let x = fval.get_nth_param(0).unwrap().into_int_value()
-/// let xp1 = builder.build_int_add(x, one, name="xp1")
+/// let xp1 = builder.build_float_add(x, one, name="xp1")
 ///
 /// inspect(xp1.get_name(), content="xp1")
 /// ```
