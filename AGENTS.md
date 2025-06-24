@@ -9,6 +9,10 @@
 
 - `moon test`: 运行代码中的测试，务必注意使用`moon test --target native`。否则将会出现大量无关错误。注意这一命令也会运行注释文档内的测试，只要这个注释内的文档的代码标记是`moonbit`或者`mbt`，注意只能是这两种，如果代码标记有其它说明，例如`moonbit skip`，`moon test`将不会运行这段代码。
 
+## Moonbit提供的其它工具
+
+- `moon help` 可以列出所有`moon`所支持的工具。
+
 ## 常见问题
 
 1. `#include <llvm-c/Analysis.h>` no such file or directory.
