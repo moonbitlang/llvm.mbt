@@ -89,7 +89,7 @@ pub fn Builder::get_insert_block(
 /// let arg_types = [i32_type];
 /// let fn_type = i32_type.fn_type(arg_types);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 ///
 /// builder.position_at_end(entry);
@@ -131,7 +131,7 @@ pub fn Builder::build_return_void(
 /// let struct_type = context.struct_type([i32_type, i32_type]);
 /// let fn_type = struct_type.fn_type([]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
 /// builder.build_aggregate_return?([i32_three, i32_seven]).unwrap();
@@ -162,7 +162,7 @@ pub fn Builder::build_aggregate_return(
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
 ///
@@ -197,7 +197,7 @@ pub fn Builder::build_call(
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
 ///
@@ -237,7 +237,7 @@ pub fn Builder::build_direct_call(
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_value = module.add_function("func", fn_type);
 ///
-/// let basic_block = context.append_basic_block(fn_value, "entry");
+/// let basic_block = context.append_basic_block(fn_value, name="entry");
 /// builder.position_at_end(basic_block);
 ///
 /// // %func_ret = call i32 @func(i32 0) [ "tag"(i32 0) ]
@@ -284,7 +284,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_arg = fn_value.get_first_param().unwrap();
 /// let md_string = context.metadata_string("a metadata");
 ///
@@ -402,21 +402,21 @@ fn Builder::build_call_with_operand_bundles_help(
 ///
 /// // we will pretend this function can throw an exception
 /// let function = module.add_function("bomb", fn_type);
-/// let basic_block = context.append_basic_block(function, "entry");
+/// let basic_block = context.append_basic_block(function, name="entry");
 ///
 /// builder.position_at_end(basic_block);
 ///
 /// let pi = f32_type.const_float(@math.PI);
 ///
-/// builder.build_return(val=Some(pi)).unwrap();
+/// let _ = builder.build_return(pi);
 ///
 /// let function2 = module.add_function("wrapper", fn_type);
-/// let basic_block2 = context.append_basic_block(function2, "entry");
+/// let basic_block2 = context.append_basic_block(function2, name="entry");
 ///
 /// builder.position_at_end(basic_block2);
 ///
-/// let then_block = context.append_basic_block(function2, "then_block");
-/// let catch_block = context.append_basic_block(function2, "catch_block");
+/// let then_block = context.append_basic_block(function2, name="then_block");
+/// let catch_block = context.append_basic_block(function2, name="catch_block");
 ///
 /// let call_site = builder.build_invoke(
 ///   function, [], then_block, catch_block, "get_pi").unwrap();
@@ -427,7 +427,7 @@ fn Builder::build_call_with_operand_bundles_help(
 ///     // in the then_block, the `call_site` value is defined and can be used
 ///     let result = call_site.try_as_basic_value().left().unwrap();
 ///
-///     builder.build_return(val=Some(result)).unwrap();
+///     let _ = builder.build_return(result);
 /// }
 ///
 /// {
@@ -736,11 +736,11 @@ pub fn Builder::build_landing_pad(
 ///     let exception_type = context.struct_type([i8_ptr_type, i32_type]);
 ///
 ///     // make the landing pad; must give a concrete type to the slice
-///     let res = builder.build_landing_pad(exception_type, personality_function, [], true, "res").unwrap();
+///     let res = builder.build_landing_pad(exception_type, personality_function, [], true, name="res");
 ///
 ///     // do cleanup ...
 ///
-///     builder.build_resume(res).unwrap();
+///     let _ = builder.build_resume(res);
 /// }
 /// ```
 pub fn Builder::build_resume(
@@ -812,7 +812,7 @@ pub fn Builder::build_in_bounds_gep(
 /// let struct_ptr_ty = struct_ty.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([i32_ptr_ty, struct_ptr_ty]);
 /// let fn_value = module.add_function("", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
 ///
@@ -865,7 +865,7 @@ pub fn[T : BasicType] Builder::build_struct_gep(
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let fn_type = void_type.fn_type([i32_ptr_type, i32_ptr_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_ptr_param1 = fn_value.get_first_param().unwrap().into_pointer_value();
 /// let i32_ptr_param2 = fn_value.get_nth_param(1).unwrap().into_pointer_value();
 ///
@@ -968,14 +968,14 @@ pub fn Builder::build_store_func(
 /// let i32_ptr_type = i32_type.ptr_type(AddressSpace::default());
 /// let fn_type = i32_type.fn_type([i32_ptr_type]);
 /// let fn_value = module.add_function("ret", fn_type);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let i32_ptr_param = fn_value.get_first_param().unwrap().into_pointer_value();
 ///
 /// builder.position_at_end(entry);
 ///
 /// let pointee = builder.build_load(i32_type, i32_ptr_param, "load2").into_int_value();
 ///
-/// builder.build_return(Some(pointee)).unwrap();
+/// let _ = builder.build_return(pointee);
 /// ```
 pub fn[T : BasicType] Builder::build_load(
   self : Builder,
@@ -1005,7 +1005,7 @@ pub fn[T : BasicType] Builder::build_load(
 /// let i32_type = context.i32_type();
 /// let fty = i32_type.fn_type([]);
 /// let fn_value = module.add_function("foo", fty);
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// builder.position_at_end(entry);
 ///
 /// let forty_two = i32_type.const_int(42);
@@ -1013,7 +1013,7 @@ pub fn[T : BasicType] Builder::build_load(
 /// let _ = builder.build_store(alloca, forty_two);
 /// let load = builder.build_load(i32_type, alloca, "b");
 ///
-/// builder.build_return(Some(load));
+/// let _ = builder.build_return(load);
 /// ```
 pub fn[T : BasicType] Builder::build_alloca(
   self : Builder,
@@ -2593,7 +2593,7 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("av_fn", fn_type);
 /// let builder = context.create_builder();
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
 ///
@@ -2656,7 +2656,7 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("av_fn", fn_type);
 /// let builder = context.create_builder();
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry);
 ///
@@ -2710,14 +2710,14 @@ pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
 /// let fn_type = i32_type.fn_type([vec_type]);
 /// let fn_value = module.add_function("vec_fn", fn_type);
 /// let builder = context.create_builder();
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
 ///
 /// builder.position_at_end(entry);
 ///
-/// let extracted = builder.build_extract_element(vector_param, i32_zero, "insert").unwrap();
+/// let extracted = builder.build_extract_element(vector_param, i32_zero, name="insert");
 ///
-/// builder.build_return(Some(extracted)).unwrap();
+/// let _ = builder.build_return(extracted);
 /// ```
 pub fn Builder::build_extract_element(
   self : Builder,
@@ -2750,12 +2750,12 @@ pub fn Builder::build_extract_element(
 /// let fn_type = void_type.fn_type([vec_type]);
 /// let fn_value = module.add_function("vec_fn", fn_type);
 /// let builder = context.create_builder();
-/// let entry = context.append_basic_block(fn_value, "entry");
+/// let entry = context.append_basic_block(fn_value, name="entry");
 /// let vector_param = fn_value.get_first_param().unwrap().into_vector_value();
 ///
 /// builder.position_at_end(entry);
-/// builder.build_insert_element(vector_param, i32_seven, i32_zero, "insert").unwrap();
-/// builder.build_return_void().unwrap();
+/// builder.build_insert_element(vector_param, i32_seven, i32_zero, name="insert");
+/// let _ = builder.build_return_void();
 /// ```
 pub fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(
   self : Builder,

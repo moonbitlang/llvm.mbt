@@ -393,7 +393,7 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_fn", fn_type);
-/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+/// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
 ///
@@ -426,7 +426,7 @@ pub fn Context::append_basic_block(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_fn", fn_type);
-/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+/// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
 ///
@@ -460,7 +460,7 @@ pub fn Context::insert_basic_block_after(
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
 /// let fn_value = module.add_function("my_fn", fn_type);
-/// let entry_basic_block = context.append_basic_block(fn_value, "entry");
+/// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq!(fn_value.count_basic_blocks(), 1);
 ///
@@ -501,11 +501,11 @@ pub fn Context::prepend_basic_block(
 /// let module = context.create_module("my_mod");
 /// let fn_type = void_type.fn_type([f32_type]);
 /// let fn_value = module.add_function("my_func", fn_type);
-/// let entry_block = context.append_basic_block(fn_value, "entry");
+/// let entry_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let ret_instr = builder.build_return_void().unwrap();
+/// let _ = builder.build_return_void();
 ///
 /// assert_true!(md_node.is_node());
 ///
@@ -535,11 +535,11 @@ pub fn Context::metadata_node(
 /// let module = context.create_module("my_mod");
 /// let fn_type = void_type.fn_type([f32_type]);
 /// let fn_value = module.add_function("my_func", fn_type);
-/// let entry_block = context.append_basic_block(fn_value, "entry");
+/// let entry_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// builder.position_at_end(entry_block);
 ///
-/// let ret_instr = builder.build_return_void().unwrap();
+/// let _ = builder.build_return_void();
 ///
 /// assert_true!(md_string.is_string());
 ///
