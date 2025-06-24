@@ -27,13 +27,13 @@ pub fn VectorValue::as_value_ref(self : VectorValue) -> @unsafe.LLVMValueRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip(VectorType::const_zero)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_vec_type = i8_type.vec_type(3);
 /// let i8_vec_zero = i8_vec_type.const_zero();
 ///
-/// assert_true!(i8_vec_zero.is_const());
+/// assert_true(i8_vec_zero.is_const());
 /// ```
 pub fn VectorValue::is_const(self : VectorValue) -> Bool {
   self.value.is_const()

@@ -35,7 +35,7 @@ pub fn ScalableVectorType::as_type_ref(
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_sz = scalable_vector_type.size_of().unwrap();
 /// let expect = ""
-/// inspect!(scalable_vector_sz, content=expect)
+/// inspect(scalable_vector_sz, content=expect)
 /// ```
 pub fn ScalableVectorType::size_of(self : ScalableVectorType) -> IntValue? {
   self.ty.size_of()
@@ -49,7 +49,7 @@ pub fn ScalableVectorType::size_of(self : ScalableVectorType) -> IntValue? {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
-/// assert_true!(scalable_vector_type.is_sized())
+/// assert_true(scalable_vector_type.is_sized())
 /// ```
 pub fn ScalableVectorType::is_sized(self : ScalableVectorType) -> Bool {
   self.ty.is_sized()
@@ -65,7 +65,7 @@ pub fn ScalableVectorType::is_sized(self : ScalableVectorType) -> Bool {
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_align = scalable_vector_type.get_alignment();
 /// let expect = ""
-/// inspect!(scalable_vector_align, content=expect)
+/// inspect(scalable_vector_align, content=expect)
 /// ```
 pub fn ScalableVectorType::get_alignment(self : ScalableVectorType) -> IntValue {
   self.ty.get_alignment()
@@ -111,7 +111,7 @@ pub fn ScalableVectorType::const_zero(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_undef = scalable_vector_type.get_undef();
-/// inspect!(scalable_vector_undef, "<8 x i32> undef")
+/// inspect(scalable_vector_undef, content="<8 x i32> undef")
 /// ```
 pub fn ScalableVectorType::get_undef(
   self : ScalableVectorType
@@ -128,7 +128,7 @@ pub fn ScalableVectorType::get_undef(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_poison = scalable_vector_type.get_poison();
-/// inspect!(scalable_vector_poison, "<8 x i32> poison")
+/// inspect(scalable_vector_poison, content="<8 x i32> poison")
 /// ```
 pub fn ScalableVectorType::get_poison(
   self : ScalableVectorType
@@ -145,7 +145,7 @@ pub fn ScalableVectorType::get_poison(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let ele_type = scalable_vector_type.get_element_type();
-/// inspect!(ele_type, "i32")
+/// inspect(ele_type, content="i32")
 /// ```
 pub fn ScalableVectorType::get_element_type(
   self : ScalableVectorType
@@ -163,7 +163,7 @@ pub fn ScalableVectorType::get_element_type(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let ptr_type = scalable_vector_type.ptr_type(AddressSpace::default());
-/// inspect!(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn ScalableVectorType::ptr_type(
   self : ScalableVectorType,
@@ -181,7 +181,7 @@ pub fn ScalableVectorType::ptr_type(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let fn_type = scalable_vector_type.fn_type([i32_type]);
-/// inspect!(fn_type, "<8 x i32> (i32)")
+/// inspect(fn_type, content="<8 x i32> (i32)")
 /// ```
 pub fn ScalableVectorType::fn_type(
   self : ScalableVectorType,
@@ -200,7 +200,7 @@ pub fn ScalableVectorType::fn_type(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let array_type = scalable_vector_type.array_type(8);
-/// inspect!(array_type, "[8 x <8 x i32>]")
+/// inspect(array_type, content="[8 x <8 x i32>]")
 /// ```
 pub fn ScalableVectorType::array_type(
   self : ScalableVectorType,
@@ -226,7 +226,7 @@ pub fn ScalableVectorType::const_array(
 /// let i32_type = context.i32_type();
 /// let scalable_vector_type = i32_type.scalable_vector_type(8);
 /// let scalable_vector_ctx = scalable_vector_type.get_context();
-/// assert_true!(context == scalable_vector_ctx);
+/// assert_true(context == scalable_vector_ctx);
 /// ```
 pub fn ScalableVectorType::get_context(self : ScalableVectorType) -> Context {
   self.ty.get_context()
