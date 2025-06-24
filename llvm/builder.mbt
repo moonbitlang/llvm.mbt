@@ -447,7 +447,7 @@ fn Builder::build_call_with_operand_bundles_help(
 ///     let exception_type = context.struct_type([ptr_type, i32_type]);
 ///
 ///     let null = ptr_type.const_zero();
-///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, "res").unwrap();
+///     let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res").unwrap();
 ///
 ///     // we handle the exception by returning a default value
 ///     builder.build_return(val=Some(f32_type.const_zero())).unwrap();
@@ -563,7 +563,7 @@ fn Builder::build_invoke_help(
 /// };
 ///
 /// // make the cleanup landing pad
-/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, "res").unwrap();
+/// let res = builder.build_landing_pad( exception_type, personality_function, [], true, name="res").unwrap();
 /// ```
 ///
 /// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
@@ -591,7 +591,7 @@ fn Builder::build_invoke_help(
 /// let null = i8_ptr_type.const_zero();
 ///
 /// // make the catch all landing pad
-/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, "res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [null], false, name="res").unwrap();
 /// ```
 ///
 /// * **catch a type of exception**: Catch a specific type of exception. The example uses C++'s type info.
@@ -620,7 +620,7 @@ fn Builder::build_invoke_help(
 ///
 /// // make the catch landing pad
 /// let clause = type_info_int.as_basic_value_enum();
-/// let res = builder.build_landing_pad(exception_type, personality_function, [clause], false, "res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [clause], false, name="res").unwrap();
 /// ```
 ///
 /// * **filter**: A filter clause encodes that only some types of exceptions are valid at this
@@ -650,7 +650,7 @@ fn Builder::build_invoke_help(
 ///
 /// // make the filter landing pad
 /// let filter_pattern = i8_ptr_type.const_array([type_info_int.as_any_value_enum().into_pointer_value()]);
-/// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, "res").unwrap();
+/// let res = builder.build_landing_pad(exception_type, personality_function, [filter_pattern], false, name="res").unwrap();
 /// ```
 pub fn Builder::build_landing_pad(
   self : Builder,
@@ -1009,9 +1009,9 @@ pub fn[T : BasicType] Builder::build_load(
 /// builder.position_at_end(entry);
 ///
 /// let forty_two = i32_type.const_int(42);
-/// let alloca = builder.build_alloca(i32_type, "a");
+/// let alloca = builder.build_alloca(i32_type, name="a");
 /// let _ = builder.build_store(alloca, forty_two);
-/// let load = builder.build_load(i32_type, alloca, "b");
+/// let load = builder.build_load(i32_type, alloca, name="b");
 ///
 /// let _ = builder.build_return(load);
 /// ```
@@ -2597,22 +2597,22 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 ///
 /// builder.position_at_end(entry);
 ///
-/// let array_alloca = builder.build_alloca(array_type, "array_alloca");
+/// let array_alloca = builder.build_alloca(array_type, name="array_alloca");
 ///
-/// let array = builder.build_load(i32_type, array_alloca, "array_load").into_array_value();
+/// let array = builder.build_load(i32_type, array_alloca, name="array_load").into_array_value();
 ///
 /// let const_int1 = i32_type.const_int(2, false);
 /// let const_int2 = i32_type.const_int(5, false);
 /// let const_int3 = i32_type.const_int(6, false);
 ///
-/// let _ = builder.build_insert_value(array, const_int1, 0, "insert");
-/// let _ = builder.build_insert_value(array, const_int2, 1, "insert");
-/// let _ = builder.build_insert_value(array, const_int3, 2, "insert");
+/// let _ = builder.build_insert_value(array, const_int1, 0, name="insert");
+/// let _ = builder.build_insert_value(array, const_int2, 1, name="insert");
+/// let _ = builder.build_insert_value(array, const_int3, 2, name="insert");
 /// // builder.build_insert_value(array, const_int3, 3, "insert");
 ///
-/// assert_true(builder.build_extract_value(array, 0, "extract").is_int_value());
-/// assert_true(builder.build_extract_value(array, 1, "extract").is_int_value());
-/// assert_true(builder.build_extract_value(array, 2, "extract").is_int_value());
+/// assert_true(builder.build_extract_value(array, 0, name="extract").is_int_value());
+/// assert_true(builder.build_extract_value(array, 1, name="extract").is_int_value());
+/// assert_true(builder.build_extract_value(array, 2, name="extract").is_int_value());
 /// // builder.build_extract_value(array, 3, "extract");
 /// ```
 pub fn[AV : AggregateValue] Builder::build_extract_value(
