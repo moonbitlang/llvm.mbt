@@ -1460,7 +1460,7 @@ pub fn Builder::build_address_space_cast(
 ///
 /// let operand = fval.get_first_param().unwrap().into_int_value();
 ///
-/// let res = builder.build_bit_cast(operand, f32_ty, name="res").unwrap();
+/// let res = builder.build_bit_cast(operand, f32_ty, name="res");
 /// inspect(res, content="  %res = bitcast i32 %0 to float");
 /// ```
 // REVIEW: Do we need to check bitwidth?
@@ -1493,7 +1493,7 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
-/// let fval = lmodule.add_function("rem", fval);
+/// let fval = lmodule.add_function("rem", fty);
 /// let entry_bb = context.append_basic_block(fval, "entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
@@ -1501,7 +1501,7 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_rem(lhs, rhs, "res").unwrap();
+/// let res = builder.build_float_rem(lhs, rhs, "res");
 /// inspect(res, content="  %res = frem float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_rem(
@@ -1541,7 +1541,7 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
-/// let fval = lmodule.add_function("div", fval);
+/// let fval = lmodule.add_function("div", fty);
 /// let entry_bb = context.append_basic_block(fval, "entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
@@ -1549,7 +1549,7 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_mul(lhs, rhs, "res").unwrap();
+/// let res = builder.build_float_div(lhs, rhs, "res");
 /// inspect(res, content="  %res = fdiv float %0, %1");
 /// ```
 pub fn Builder::build_float_div(
@@ -1587,7 +1587,7 @@ pub fn Builder::build_float_div(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_add(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_add(lhs, rhs, "res");
 /// inspect(res, content="  %res = add i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_add(
@@ -1625,7 +1625,7 @@ pub fn[T : IntMathValue] Builder::build_int_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nsw_add(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_nsw_add(lhs, rhs, "res");
 /// inspect(res, content="  %res = add nsw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nsw_add(
@@ -1663,7 +1663,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_nuw_add(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_nuw_add(lhs, rhs, "res");
 /// inspect(res, content="  %res = add nuw i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_int_nuw_add(
@@ -1693,7 +1693,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
 /// let fty = f32_ty.fn_type([f32_ty, f32_ty]);
-/// let fval = lmodule.add_function("add", fval);
+/// let fval = lmodule.add_function("add", fty);
 /// let entry_bb = context.append_basic_block(fval, "entry");
 /// let builder = context.create_builder();
 /// builder.position_at_end(entry_bb);
@@ -1701,7 +1701,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
 /// let lhs = fval.get_nth_param(0).unwrap().into_float_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_float_value();
 ///
-/// let res = builder.build_float_add(lhs, rhs, "res").unwrap();
+/// let res = builder.build_float_add(lhs, rhs, "res");
 /// inspect(res, content="  %res = fadd float %0, %1");
 /// ```
 pub fn[T : FloatMathValue] Builder::build_float_add(
@@ -1739,7 +1739,7 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_xor(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_xor(lhs, rhs, "res");
 /// inspect(res, content="  %res = xor i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_xor(
@@ -1777,7 +1777,7 @@ pub fn[T : IntMathValue] Builder::build_xor(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_and(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_and(lhs, rhs, "res");
 /// inspect(res, content="  %res = and i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_and(
@@ -1815,7 +1815,7 @@ pub fn[T : IntMathValue] Builder::build_and(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_int_or(lhs, rhs, "res").unwrap();
+/// let res = builder.build_int_or(lhs, rhs, "res");
 /// inspect(res, content="  %res = or i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_or(
@@ -1853,7 +1853,7 @@ pub fn[T : IntMathValue] Builder::build_or(
 /// let lhs = fval.get_first_param().unwrap().into_int_value();
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
-/// let res = builder.build_left_shift(lhs, rhs, name="res").unwrap();
+/// let res = builder.build_left_shift(lhs, rhs, name="res");
 /// inspect(res, content = "  %res = shl i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_left_shift(
@@ -1892,10 +1892,10 @@ pub fn[T : IntMathValue] Builder::build_left_shift(
 /// let rhs = fval.get_nth_param(1).unwrap().into_int_value();
 ///
 /// let lshr = builder.build_right_shift(
-///     lhs, rhs, sign_extend=false, name="lshr").unwrap();
+///     lhs, rhs, sign_extend=false, name="lshr");
 /// inspect(lshr, content = "  %lshr = lshr i32 %0, %1");
 /// let ashr = builder.build_right_shift(
-///     lhs, rhs, sign_extend=true, name="ashr").unwrap();
+///     lhs, rhs, sign_extend=true, name="ashr");
 /// inspect(ashr, content = "  %ashr = ashr i32 %0, %1");
 /// ```
 pub fn[T : IntMathValue] Builder::build_right_shift(
