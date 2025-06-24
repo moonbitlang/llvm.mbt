@@ -76,7 +76,7 @@ pub fn ArrayValue::replace_all_uses_with(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23);

@@ -102,7 +102,7 @@ pub fn Context::i8_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let i16_ty = context.i16_type()
 /// inspect(i16_ty, content="i16")
@@ -116,7 +116,7 @@ pub fn Context::i16_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// inspect(i32_ty, content="i32")
@@ -130,7 +130,7 @@ pub fn Context::i32_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let i64_ty = context.i64_type()
 /// inspect(i64_ty, content="i64")
