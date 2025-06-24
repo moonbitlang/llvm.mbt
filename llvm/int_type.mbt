@@ -103,7 +103,7 @@ pub fn IntType::const_zero(self : IntType) -> IntValue {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
-/// inspect(fn_type, "i32 ()")
+/// inspect(fn_type, content="i32 ()")
 /// ```
 pub fn IntType::fn_type(
   self : IntType,
@@ -135,7 +135,7 @@ pub fn IntType::array_type(self : IntType, size : UInt) -> ArrayType {
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(16);
-/// inspect(vector_type, "<16 x i32>")
+/// inspect(vector_type, content="<16 x i32>")
 /// ```
 pub fn IntType::vec_type(self : IntType, size : UInt) -> VectorType {
   self.ty.vec_type(size)

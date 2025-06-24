@@ -152,7 +152,7 @@ pub fn StructType::get_name(self : StructType) -> String {
 /// let i64_type = context.i64_type();
 /// let struct_type = context.struct_type([i32_type, i64_type]);
 /// let fn_type = struct_type.fn_type([i32_type, i64_type]);
-/// inspect(fn_type, "<{ i32, i64 }> (i32, i64)")
+/// inspect(fn_type, content="<{ i32, i64 }> (i32, i64)")
 /// ```
 pub fn StructType::fn_type(
   self : StructType,

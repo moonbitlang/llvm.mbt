@@ -27,7 +27,7 @@ pub fn Module::as_mod_ref(self : Module) -> @unsafe.LLVMModuleRef {
 /// let fn_type = context.f32_type().fn_type([]);
 /// let fn_val = llvm_module.add_function("my_function", fn_type);
 ///
-/// inspect(fn_val.get_name(), "my_function");
+/// inspect(fn_val.get_name(), content="my_function");
 /// ```
 pub fn Module::add_function(
   self : Module,

@@ -37,7 +37,7 @@ pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
 /// let fn_val = f32_type.fn_type([i32_type]);
-/// inspect(fn_val, "float (i32)")
+/// inspect(fn_val, content="float (i32)")
 /// ```
 pub fn FloatType::fn_type(
   self : FloatType,
@@ -55,7 +55,7 @@ pub fn FloatType::fn_type(
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let array_type = f32_type.array_type(16);
-/// inspect(array_type, "[16 x float]")
+/// inspect(array_type, content="[16 x float]")
 /// ```
 pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
@@ -69,7 +69,7 @@ pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vector_type = f32_type.vec_type(16);
-/// inspect(vector_type, "<16 x float>")
+/// inspect(vector_type, content="<16 x float>")
 /// ```
 pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
   self.ty.vec_type(size)
@@ -83,7 +83,7 @@ pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vscale_type = f32_type.scalable_vec_type(16);
-/// inspect(vscale_type, "<vscale x 16 x float>")
+/// inspect(vscale_type, content="<vscale x 16 x float>")
 /// ```
 pub fn FloatType::scalable_vec_type(
   self : FloatType,
@@ -101,7 +101,7 @@ pub fn FloatType::scalable_vec_type(
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.1415926);
-/// inspect(pi, "double 0x400921FB4D12D84A")
+/// inspect(pi, content="double 0x400921FB4D12D84A")
 /// ```
 pub fn FloatType::const_float(self : FloatType, val : Double) -> FloatValue {
   let val_ref = @unsafe.llvm_const_real(self.as_type_ref(), val)
@@ -132,7 +132,7 @@ pub fn FloatType::const_float_from_string(
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_zero = f64_type.const_zero();
-/// inspect(f64_zero, "double 0.0")
+/// inspect(f64_zero, content="double 0.0")
 /// ```
 pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
@@ -195,7 +195,7 @@ pub fn FloatType::get_context(self : FloatType) -> Context {
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let ptr_type = f64_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn FloatType::ptr_type(
   self : FloatType,
@@ -214,7 +214,7 @@ pub fn FloatType::ptr_type(
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_undef = f64_type.get_undef();
-/// inspect(f64_undef, "double undef")
+/// inspect(f64_undef, content="double undef")
 /// ```
 pub fn get_undef(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_undef())
@@ -228,7 +228,7 @@ pub fn get_undef(self : FloatType) -> FloatValue {
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_poison = f64_type.get_poison();
-/// inspect(f64_poison, "double poison")
+/// inspect(f64_poison, content="double poison")
 /// ```
 pub fn get_poison(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.get_poison())

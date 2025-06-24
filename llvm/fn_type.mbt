@@ -30,7 +30,7 @@ pub fn FunctionType::as_type_ref(self : FunctionType) -> @unsafe.LLVMTypeRef {
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
 /// let ptr_type = fn_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, "ptr")
+/// inspect(ptr_type, content="ptr")
 /// ```
 pub fn FunctionType::ptr_type(
   self : FunctionType,
