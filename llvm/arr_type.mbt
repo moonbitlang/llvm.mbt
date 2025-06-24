@@ -23,9 +23,9 @@ pub fn ArrayType::as_type_ref(self : ArrayType) -> @unsafe.LLVMTypeRef {
 
 ///| Gets the size of this `ArrayType`. Value may vary depending on the target architecture.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -39,9 +39,9 @@ pub fn ArrayType::size_of(self : ArrayType) -> IntValue? {
 
 ///| Gets the alignment of this `ArrayType`. Value may vary depending on the target architecture.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -69,9 +69,9 @@ pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
 
 ///| Creates a `PointerType` with this `ArrayType` for its element type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -87,9 +87,9 @@ pub fn ArrayType::ptr_type(
 
 ///| Gets a reference to the `Context` this `ArrayType` was created in.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -102,9 +102,9 @@ pub fn ArrayType::get_context(self : ArrayType) -> Context {
 
 ///| Creates a `FunctionType` with this `ArrayType` for its return type.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -152,7 +152,7 @@ pub fn ArrayType::const_zero(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -208,7 +208,7 @@ pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
