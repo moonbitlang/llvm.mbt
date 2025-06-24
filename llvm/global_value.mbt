@@ -49,7 +49,7 @@ pub fn GlobalValue::get_next_global(self : GlobalValue) -> GlobalValue? {
 }
 
 ///|
-pub fn GlobalValue::get_dll_storge_class(self : GlobalValue) -> DLLStorageClass {
+pub fn GlobalValue::get_dll_storage_class(self : GlobalValue) -> DLLStorageClass {
   let dc = @unsafe.llvm_get_dll_storage_class(self.as_value_ref())
   DLLStorageClass::from(dc)
 }
