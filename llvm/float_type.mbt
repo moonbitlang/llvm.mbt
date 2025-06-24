@@ -32,7 +32,7 @@ pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
@@ -51,7 +51,7 @@ pub fn FloatType::fn_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let array_type = f32_type.array_type(16);
@@ -65,7 +65,7 @@ pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vector_type = f32_type.vec_type(16);
@@ -128,11 +128,11 @@ pub fn FloatType::const_float_from_string(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_zero = f64_type.const_zero();
-/// inspect(f64_zero, content="double 0.0")
+/// inspect(f64_zero, content="double 0.000000e+00")
 /// ```
 pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
@@ -177,7 +177,7 @@ pub fn FloatType::get_alignment(self : FloatType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_ctx = f64_type.get_context();

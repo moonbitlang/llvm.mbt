@@ -30,7 +30,7 @@ pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let lmodule = context.create_module("demo")
 /// let f64_ty = context.f64_type()
@@ -57,7 +57,7 @@ pub fn FloatValue::get_name(self : FloatValue) -> String {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let lmodule = context.create_module("demo")
 /// let f64_ty = context.f64_type()
@@ -83,10 +83,10 @@ pub fn FloatValue::set_name(self : FloatValue, name : String) -> Unit {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
-/// let f64_type = context.f64_type();
-/// let pi = f64_type.const_float(3.14);
+/// let f32_type = context.f32_type();
+/// let pi = f32_type.const_float(3.14);
 /// inspect(pi.get_type(), content="float");
 /// ```
 pub fn FloatValue::get_type(self : FloatValue) -> FloatType {
@@ -102,7 +102,7 @@ pub fn FloatValue::is_null(self : FloatValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let undef = f64_type.get_undef();
@@ -128,7 +128,7 @@ pub fn FloatValue::as_instruction(self : FloatValue) -> InstructionValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_val = f64_type.const_float(1.2);
@@ -144,7 +144,7 @@ pub fn FloatValue::is_const(self : FloatValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.14);
