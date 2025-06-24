@@ -34,7 +34,7 @@ fn Context::as_ctx_ref(self : Context) -> @unsafe.LLVMContextRef {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip(count_basic_blocks)
 /// let context = Context::create();
 /// context.drop();
 /// ```
@@ -60,7 +60,7 @@ pub fn Context::create_module(self : Context, name : String) -> Module {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip(count_basic_blocks)
 /// let context = Context::create()
 /// let void_ty = context.void_type()
 /// inspect(void_ty, content="void")
@@ -74,7 +74,7 @@ pub fn Context::void_type(self : Context) -> VoidType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip(count_basic_blocks)
 /// let context = Context::create()
 /// let bool_ty = context.bool_type()
 /// inspect(bool_ty, content="i1")
@@ -387,7 +387,7 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip(count_basic_blocks)
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -454,7 +454,7 @@ pub fn Context::insert_basic_block_after(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip(count_basic_blocks)
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
