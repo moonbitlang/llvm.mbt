@@ -30,7 +30,7 @@ pub fn FunctionValue::as_value_ref(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -49,7 +49,7 @@ pub fn FunctionValue::get_linkage(self : FunctionValue) -> Linkage {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -75,7 +75,7 @@ pub fn FunctionValue::set_linkage(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -93,7 +93,7 @@ pub fn FunctionValue::is_null(self : FunctionValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -135,7 +135,7 @@ pub fn FunctionValue::get_previous_function(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -159,7 +159,7 @@ pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -222,7 +222,7 @@ pub fn FunctionValue::get_nth_param(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -278,7 +278,7 @@ pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] 
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
