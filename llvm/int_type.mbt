@@ -25,7 +25,7 @@ pub fn IntType::as_type_ref(self : IntType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let i32_type = context.i32_type()
 /// let i32_val = i32_type.const_int(42, sign_extend=false)

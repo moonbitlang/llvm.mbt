@@ -32,7 +32,7 @@ pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
@@ -51,7 +51,7 @@ pub fn FloatType::fn_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let array_type = f32_type.array_type(16);
@@ -65,7 +65,7 @@ pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vector_type = f32_type.vec_type(16);
@@ -79,7 +79,7 @@ pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vscale_type = f32_type.scalable_vec_type(16);
@@ -97,7 +97,7 @@ pub fn FloatType::scalable_vec_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.1415926);
@@ -128,7 +128,7 @@ pub fn FloatType::const_float_from_string(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_zero = f64_type.const_zero();
