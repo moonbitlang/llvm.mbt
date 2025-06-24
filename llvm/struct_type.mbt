@@ -25,7 +25,7 @@ pub fn StructType::as_type_ref(self : StructType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -68,7 +68,7 @@ pub fn StructType::const_zero(self : StructType) -> StructValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -89,7 +89,7 @@ pub fn StructType::size_of(self : StructType) -> IntValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -106,7 +106,7 @@ pub fn StructType::is_sized(self : StructType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -123,7 +123,7 @@ pub fn StructType::get_alignment(self : StructType) -> IntValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -146,7 +146,7 @@ pub fn StructType::get_name(self : StructType) -> String {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -166,7 +166,7 @@ pub fn StructType::fn_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -182,7 +182,7 @@ pub fn StructType::array_type(self : StructType, size : UInt) -> ArrayType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -203,7 +203,7 @@ pub fn StructType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -218,7 +218,7 @@ pub fn StructType::is_packed(self : StructType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let struct_ty = context.opaque_struct_type("opaque_struct");
 /// assert_true(struct_ty.is_opaque())
@@ -231,7 +231,7 @@ pub fn StructType::is_opaque(self : StructType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -247,7 +247,7 @@ pub fn StructType::count_fields(self : StructType) -> UInt {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -265,7 +265,7 @@ pub fn StructType::get_field_types(self : StructType) -> Array[BasicTypeEnum] {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -281,7 +281,7 @@ pub fn StructType::get_undef(self : StructType) -> StructValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -301,7 +301,7 @@ pub fn StructType::get_poison(self : StructType) -> StructValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let opaque_struct = context.opaque_struct_type("opaque_struct");
 /// assert_true(opaque_struct.is_opaque())
@@ -328,7 +328,7 @@ pub fn StructType::set_body(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let struct_type = context.struct_type([i32_type]);

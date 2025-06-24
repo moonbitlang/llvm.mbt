@@ -20,7 +20,7 @@ pub fn Module::as_mod_ref(self : Module) -> @unsafe.LLVMModuleRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (GlobalValue equality not supported)
+/// ```moonbit skip skip (GlobalValue equality not supported)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
@@ -51,7 +51,7 @@ pub fn Module::add_function(
 ///
 /// # Example
 ///
-/// ```moonbit skip (GlobalValue equality not supported)
+/// ```moonbit skip skip (GlobalValue equality not supported)
 /// let local_context = Context::create();
 /// let local_module = local_context.create_module("my_module");
 ///
@@ -66,7 +66,7 @@ pub fn Module::get_context(self : Module) -> Context {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (GlobalValue equality not supported)
+/// ```moonbit skip skip (GlobalValue equality not supported)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -87,7 +87,7 @@ pub fn Module::get_first_function(self : Module) -> FunctionValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (GlobalValue equality not supported)
+/// ```moonbit skip skip (GlobalValue equality not supported)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -108,7 +108,7 @@ pub fn Module::get_last_function(self : Module) -> FunctionValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -127,7 +127,7 @@ pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
 
 ///| Return functions in this `llvm_module`.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -158,7 +158,7 @@ pub fn Module::get_functions(self : Module) -> Array[FunctionValue] {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (structType not implement op_equal)
+/// ```moonbit skip skip (structType not implement op_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
@@ -221,7 +221,7 @@ pub fn Module::get_struct_type(self : Module, name : String) -> StructType? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (GlobalValue equality not supported)
+/// ```moonbit skip skip (GlobalValue equality not supported)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("mod");
 /// let i8_type = context.i8_type();
@@ -283,7 +283,7 @@ pub fn Module::set_inline_assembly(self : Module, asm_code : String) -> Unit {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (some func not implemented)
+/// ```moonbit skip skip (some func not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
@@ -333,7 +333,7 @@ pub fn Module::add_global_metadata(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (some func not implemented)
+/// ```moonbit skip skip (some func not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
@@ -371,7 +371,7 @@ pub fn Module::get_global_metadata_size(self : Module, key : String) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let bool_type = context.bool_type();
@@ -416,7 +416,7 @@ pub fn Module::get_global_metadata(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (llvm_module not implement op_equal)
+/// ```moonbit skip skip (llvm_module not implement op_equal)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let llvm_module = context.create_module("mod");
@@ -440,7 +440,7 @@ pub fn Module::get_first_global(self : Module) -> GlobalValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("mod");
 /// let i8_type = context.i8_type();
@@ -464,7 +464,7 @@ pub fn Module::get_last_global(self : Module) -> GlobalValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (llvm_module not implement op_equal)
+/// ```moonbit skip skip (llvm_module not implement op_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("mod");
 /// let i8_type = context.i8_type();
@@ -493,7 +493,7 @@ pub fn Module::get_global(self : Module, name : String) -> GlobalValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
@@ -507,7 +507,7 @@ pub fn Module::get_name(self : Module) -> String {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
@@ -523,7 +523,7 @@ pub fn Module::set_name(self : Module, name : String) -> Unit {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -542,7 +542,7 @@ pub fn Module::get_source_filename(self : Module) -> String {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -561,7 +561,7 @@ pub fn Module::set_source_filename(self : Module, name : String) -> Unit {
 //
 // ## Example (Not Tested)
 //
-// ```moonbit skip
+// ```moonbit skip skip
 // let context = Context::create();
 // let llvm_module = context.create_module("mod");
 // let module2 = context.create_module("mod2");

@@ -21,7 +21,7 @@ pub fn OperandBundle::as_bundle_ref(
 ///
 /// ## Example
 ///
-/// ```moonbit skip (Array.nth not implemented)
+/// ```moonbit skip skip (Array.nth not implemented)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let op_bundle = OperandBundle::create("tag", [i32_type.const_zero()]);

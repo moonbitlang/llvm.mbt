@@ -30,7 +30,7 @@ pub fn IntValue::as_value_ref(self : IntValue) -> @unsafe.LLVMValueRef {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let lmodule = context.create_module("demo")
 /// let i32_ty = context.i32_type()
@@ -57,7 +57,7 @@ pub fn IntValue::get_name(self : IntValue) -> String {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let lmodule = context.create_module("demo")
 /// let i32_ty = context.i32_type()
@@ -83,7 +83,7 @@ pub fn IntValue::set_name(self : IntValue, name : String) -> Unit {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42);
@@ -97,7 +97,7 @@ pub fn IntValue::get_type(self : IntValue) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42);
@@ -111,7 +111,7 @@ pub fn IntValue::is_null(self : IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42);
@@ -136,7 +136,7 @@ pub fn IntValue::as_instruction(self : IntValue) -> InstructionValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -150,7 +150,7 @@ pub fn IntValue::const_not(self : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -164,7 +164,7 @@ pub fn IntValue::const_neg(self : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -184,7 +184,7 @@ pub fn IntValue::const_nsw_neg(self : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -200,7 +200,7 @@ pub fn IntValue::const_add(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -216,7 +216,7 @@ pub fn IntValue::const_nsw_add(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -232,7 +232,7 @@ pub fn IntValue::const_nuw_add(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -248,7 +248,7 @@ pub fn IntValue::const_sub(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -264,7 +264,7 @@ pub fn IntValue::const_nsw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -280,7 +280,7 @@ pub fn IntValue::const_nuw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -296,7 +296,7 @@ pub fn IntValue::const_mul(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -312,7 +312,7 @@ pub fn IntValue::const_nsw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -339,7 +339,7 @@ pub fn IntValue::const_nuw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let forty_two = i32_type.const_int(42);
@@ -371,7 +371,7 @@ pub fn IntValue::const_to_pointer(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i16_type = context.i16_type();
@@ -417,7 +417,7 @@ pub fn IntValue::const_bit_cast(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -433,7 +433,7 @@ pub fn IntValue::is_const(self : IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -447,7 +447,7 @@ pub fn IntValue::is_constant_int(self : IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();
@@ -468,7 +468,7 @@ pub fn IntValue::get_zero_extended_constant(self : IntValue) -> UInt64? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();

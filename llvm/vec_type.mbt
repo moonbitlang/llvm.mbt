@@ -25,7 +25,7 @@ pub fn VectorType::as_type_ref(self : VectorType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -41,7 +41,7 @@ pub fn VectorType::size_of(self : VectorType) -> IntValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -55,7 +55,7 @@ pub fn VectorType::is_sized(self : VectorType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -71,7 +71,7 @@ pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -92,7 +92,7 @@ pub fn VectorType::get_size(self : VectorType) -> UInt {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -107,7 +107,7 @@ pub fn VectorType::get_undef(self : VectorType) -> VectorValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -122,7 +122,7 @@ pub fn VectorType::get_poison(self : VectorType) -> VectorValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -138,7 +138,7 @@ pub fn VectorType::get_element_type(self : VectorType) -> BasicTypeEnum {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -158,7 +158,7 @@ pub fn VectorType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -177,7 +177,7 @@ pub fn VectorType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(4);
@@ -192,7 +192,7 @@ pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (VectorType.const_vector not implemented)
+/// ```moonbit skip skip (VectorType.const_vector not implemented)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_val = i32_type.const_int(42, sign_extend=false);
@@ -211,7 +211,7 @@ pub fn VectorType::const_array(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);

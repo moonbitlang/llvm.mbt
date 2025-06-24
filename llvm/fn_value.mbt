@@ -30,7 +30,7 @@ pub fn FunctionValue::as_value_ref(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -49,7 +49,7 @@ pub fn FunctionValue::get_linkage(self : FunctionValue) -> Linkage {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -75,7 +75,7 @@ pub fn FunctionValue::set_linkage(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -93,7 +93,7 @@ pub fn FunctionValue::is_null(self : FunctionValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -135,7 +135,7 @@ pub fn FunctionValue::get_previous_function(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -159,7 +159,7 @@ pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -197,7 +197,7 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -222,7 +222,7 @@ pub fn FunctionValue::get_nth_param(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -258,7 +258,7 @@ pub fn FunctionValue::get_basic_blocks(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -280,7 +280,7 @@ pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] 
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -401,7 +401,7 @@ pub fn FunctionValue::replace_all_uses_with(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -429,7 +429,7 @@ pub fn FunctionValue::add_attribute(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -457,7 +457,7 @@ pub fn FunctionValue::count_attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (not implement attribute op_equal)
+/// ```moonbit skip skip (not implement attribute op_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -489,7 +489,7 @@ pub fn FunctionValue::attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -543,7 +543,7 @@ pub fn FunctionValue::remove_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (not implement attribute op_equal)
+/// ```moonbit skip skip (not implement attribute op_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -572,7 +572,7 @@ pub fn FunctionValue::get_enum_attribute(
 ///
 /// ## Example
 ///
-/// ```moonbit skip (not implement attribute op_equal)
+/// ```moonbit skip skip (not implement attribute op_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();

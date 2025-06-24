@@ -14,7 +14,7 @@ pub fn Intrinsic::new(id : UInt) -> Intrinsic {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (didn't test some func)
+/// ```moonbit skip skip (didn't test some func)
 /// let trap_intrinsic = Intrinsic::find("llvm.trap").unwrap();
 ///
 /// let context = Context::create();
@@ -51,7 +51,7 @@ pub fn Intrinsic::is_overloaded(self : Intrinsic) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (didn't test some func)
+/// ```moonbit skip skip (didn't test some func)
 /// let trap_intrinsic = Intrinsic::find("llvm.trap").unwrap();
 ///
 /// let context = Context::create();

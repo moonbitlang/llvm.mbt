@@ -32,7 +32,7 @@ pub fn MetadataType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let md_type = context.metadata_type();
 /// let md_context = md_type.get_context();

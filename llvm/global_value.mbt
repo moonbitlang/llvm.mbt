@@ -113,7 +113,7 @@ pub fn GlobalValue::set_thread_local_mode(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (function not implement as_global_value yet)
+/// ```moonbit skip skip (function not implement as_global_value yet)
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let module = context.create_module("my_mod");

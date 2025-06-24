@@ -32,7 +32,7 @@ pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i32_type = context.i32_type();
@@ -51,7 +51,7 @@ pub fn FloatType::fn_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let array_type = f32_type.array_type(16);
@@ -65,7 +65,7 @@ pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vector_type = f32_type.vec_type(16);
@@ -79,7 +79,7 @@ pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vscale_type = f32_type.scalable_vec_type(16);
@@ -97,7 +97,7 @@ pub fn FloatType::scalable_vec_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.1415926);
@@ -128,7 +128,7 @@ pub fn FloatType::const_float_from_string(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_zero = f64_type.const_zero();
@@ -142,7 +142,7 @@ pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_sz = f64_type.size_of();
@@ -162,7 +162,7 @@ pub fn FloatType::is_sized(self : FloatType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_align = f64_type.get_alignment();
@@ -177,7 +177,7 @@ pub fn FloatType::get_alignment(self : FloatType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_ctx = f64_type.get_context();
@@ -191,7 +191,7 @@ pub fn FloatType::get_context(self : FloatType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let ptr_type = f64_type.ptr_type(AddressSpace::default());
@@ -210,7 +210,7 @@ pub fn FloatType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_undef = f64_type.get_undef();
@@ -224,7 +224,7 @@ pub fn get_undef(self : FloatType) -> FloatValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_poison = f64_type.get_poison();

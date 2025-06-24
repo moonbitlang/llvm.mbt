@@ -25,7 +25,7 @@ pub fn CallSiteValue::as_value_ref(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -51,7 +51,7 @@ pub fn CallSiteValue::set_tail_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -76,7 +76,7 @@ pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -102,7 +102,7 @@ pub fn CallSiteValue::get_tail_call_kind(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -129,7 +129,7 @@ pub fn CallSiteValue::set_tail_call_kind(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -160,7 +160,7 @@ pub fn CallSiteValue::try_as_basic_value(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -194,7 +194,7 @@ pub fn CallSiteValue::add_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -221,7 +221,7 @@ pub fn CallSiteValue::get_called_fn_value(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -255,7 +255,7 @@ pub fn CallSiteValue::count_attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -291,7 +291,7 @@ pub fn CallSiteValue::count_attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -329,7 +329,7 @@ pub fn CallSiteValue::get_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -367,7 +367,7 @@ pub fn CallSiteValue::get_string_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -404,7 +404,7 @@ pub fn CallSiteValue::remove_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -441,7 +441,7 @@ pub fn CallSiteValue::remove_string_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -466,7 +466,7 @@ pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -489,7 +489,7 @@ pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");

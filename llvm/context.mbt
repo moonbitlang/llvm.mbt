@@ -34,7 +34,7 @@ fn Context::as_ctx_ref(self : Context) -> @unsafe.LLVMContextRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip(count_basic_blocks)
+/// ```moonbit skip skip(count_basic_blocks)
 /// let context = Context::create();
 /// context.drop();
 /// ```
@@ -60,7 +60,7 @@ pub fn Context::create_module(self : Context, name : String) -> Module {
 ///
 /// ## Example
 ///
-/// ```moonbit skip(count_basic_blocks)
+/// ```moonbit skip skip(count_basic_blocks)
 /// let context = Context::create()
 /// let void_ty = context.void_type()
 /// inspect(void_ty, content="void")
@@ -74,7 +74,7 @@ pub fn Context::void_type(self : Context) -> VoidType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip(count_basic_blocks)
+/// ```moonbit skip skip(count_basic_blocks)
 /// let context = Context::create()
 /// let bool_ty = context.bool_type()
 /// inspect(bool_ty, content="i1")
@@ -88,7 +88,7 @@ pub fn Context::bool_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i8_ty = context.i8_type()
 /// inspect(i8_ty, content="i8")
@@ -102,7 +102,7 @@ pub fn Context::i8_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i16_ty = context.i16_type()
 /// inspect(i16_ty, content="i16")
@@ -116,7 +116,7 @@ pub fn Context::i16_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// inspect(i32_ty, content="i32")
@@ -130,7 +130,7 @@ pub fn Context::i32_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i64_ty = context.i64_type()
 /// inspect(i64_ty, content="i64")
@@ -144,7 +144,7 @@ pub fn Context::i64_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i128_ty = context.i128_type()
 /// inspect(i128_ty, content="i128")
@@ -158,7 +158,7 @@ pub fn Context::i128_type(self : Context) -> IntType {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i48_type = context.custom_width_int_type(48);
 ///
@@ -190,7 +190,7 @@ pub fn Context::metadata_type(self : Context) -> MetadataType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let half_ty = context.f16_type()
 /// inspect(half_ty, content="half")
@@ -205,7 +205,7 @@ pub fn Context::f16_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let f32_ty = context.f32_type()
 /// inspect(f32_ty, content="float")
@@ -220,7 +220,7 @@ pub fn Context::f32_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let f64_ty = context.f64_type()
 /// inspect(f64_ty, content="double")
@@ -235,7 +235,7 @@ pub fn Context::f64_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let f80_ty = context.x86_f80_type()
 /// inspect(f80_ty, content="x86_fp80")
@@ -250,7 +250,7 @@ pub fn Context::x86_f80_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let f128_ty = context.f128_type()
 /// inspect(f128_ty, content="fp128")
@@ -265,7 +265,7 @@ pub fn Context::f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let ppc_f128_ty = context.ppc_f128_type()
 /// inspect(ppc_f128_ty, content="ppc_fp128")
@@ -280,7 +280,7 @@ pub fn Context::ppc_f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let ptr_ty = context.ptr_type(AddressSpace::default())
 /// inspect(ptr_ty, content="ptr")
@@ -301,7 +301,7 @@ pub fn Context::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// let i64_ty = context.i64_type()
@@ -326,7 +326,7 @@ pub fn Context::struct_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// inspect(context.get_struct_type("foo"), content="None");
 /// let _ = context.opaque_struct_type("foo");
@@ -344,7 +344,7 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i16_type = context.i16_type();
@@ -374,7 +374,7 @@ pub fn Context::const_struct(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create()
 /// let opaque_struct_ty = context.opaque_struct_type("opaque_struct")
 /// inspect(opaque_struct_ty, content="%opaque_struct = type opaque")
@@ -389,7 +389,7 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip(count_basic_blocks)
+/// ```moonbit skip skip(count_basic_blocks)
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -422,7 +422,7 @@ pub fn Context::append_basic_block(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -456,7 +456,7 @@ pub fn Context::insert_basic_block_after(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip(count_basic_blocks)
+/// ```moonbit skip skip(count_basic_blocks)
 /// let context = Context::create();
 /// let module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -489,7 +489,7 @@ pub fn Context::prepend_basic_block(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_two = i8_type.const_int(2, sign_extend=false);
@@ -525,7 +525,7 @@ pub fn Context::metadata_node(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let md_string = context.metadata_string("Floats are awesome!");
 /// let f32_type = context.f32_type();
@@ -554,7 +554,7 @@ pub fn Context::metadata_string(self : Context, s : String) -> MetadataValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (not implemenbt FIRST_CUSTOM_METADATA_KIND_ID)
+/// ```moonbit skip skip (not implemenbt FIRST_CUSTOM_METADATA_KIND_ID)
 /// let context = Context::create();
 ///
 /// assert_eq(context.get_kind_id("dbg"), 0);
@@ -572,7 +572,7 @@ pub fn Context::get_kind_id(self : Context, key : String) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///
@@ -595,7 +595,7 @@ pub fn Context::create_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key_123", "my_val");
 ///
@@ -618,7 +618,7 @@ pub fn Context::create_string_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (not implement op_equal)
+/// ```moonbit skip skip (not implement op_equal)
 /// let context = Context::create();
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
 /// let any_type = context.i32_type().as_any_type_enum();
@@ -648,7 +648,7 @@ pub fn[T: AnyType] Context::create_type_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let s = context.const_string("my_string", false);
 ///

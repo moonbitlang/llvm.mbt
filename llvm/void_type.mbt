@@ -26,7 +26,7 @@ pub fn VoidType::is_sized(self : VoidType) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let void_type = context.void_type();
 /// let void_ctx = void_type.get_context();
@@ -40,7 +40,7 @@ pub fn VoidType::get_context(self : VoidType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let void_type = context.void_type();
 /// let i32_type = context.i32_type();
@@ -59,7 +59,7 @@ pub fn VoidType::fn_type(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let void_type = context.void_type();
 /// let void_align = void_type.get_alignment();

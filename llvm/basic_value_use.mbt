@@ -17,7 +17,7 @@ pub fn BasicValueUse::as_use_ref(self : BasicValueUse) -> @unsafe.LLVMUseRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (get_first_use not implemented)
+/// ```moonbit skip skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -75,7 +75,7 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (BasicValueUse eq not implemented)
+/// ```moonbit skip skip (BasicValueUse eq not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -109,7 +109,7 @@ pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (BasicValueUse methods not implemented)
+/// ```moonbit skip skip (BasicValueUse methods not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();

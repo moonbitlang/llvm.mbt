@@ -27,7 +27,7 @@ pub fn VectorValue::as_value_ref(self : VectorValue) -> @unsafe.LLVMValueRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip(VectorType::const_zero)
+/// ```moonbit skip skip(VectorType::const_zero)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_vec_type = i8_type.vec_type(3);

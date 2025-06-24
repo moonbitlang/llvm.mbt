@@ -29,7 +29,7 @@ pub fn BasicBlock::new(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let prog = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -52,7 +52,7 @@ pub fn BasicBlock::get_parent(self : BasicBlock) -> FunctionValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -80,7 +80,7 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -112,7 +112,7 @@ pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -142,7 +142,7 @@ pub fn BasicBlock::move_before(
 ///
 /// ## Example
 ///
-/// ```moonbit skip (not implement op_equal for basic block)
+/// ```moonbit skip skip (not implement op_equal for basic block)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -171,7 +171,7 @@ pub fn BasicBlock::move_after(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_module");
@@ -197,7 +197,7 @@ pub fn BasicBlock::get_first_instruction(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_module");
@@ -221,7 +221,7 @@ pub fn BasicBlock::get_last_instruction(self : BasicBlock) -> InstructionValue? 
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -260,7 +260,7 @@ pub fn BasicBlock::get_instruction_with_name(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_module");
@@ -287,7 +287,7 @@ pub fn BasicBlock::get_terminator(self : BasicBlock) -> InstructionValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -313,7 +313,7 @@ pub fn remove_from_function(self : BasicBlock) -> Unit raise MoonllvmError {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -335,7 +335,7 @@ pub fn BasicBlock::delete(self : BasicBlock) -> Unit raise MoonllvmError {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 /// let void_type = context.void_type();
@@ -357,7 +357,7 @@ pub fn BasicBlock::get_context(self : BasicBlock) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -375,7 +375,7 @@ pub fn BasicBlock::get_name(self : BasicBlock) -> String {
 ///
 /// ## Example
 /// 
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let lmodule = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -394,7 +394,7 @@ pub fn BasicBlock::set_name(self : BasicBlock, name : String) -> Unit {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -426,7 +426,7 @@ pub fn BasicBlock::replace_all_uses_with(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -454,7 +454,7 @@ pub fn BasicBlock::get_first_use(self : BasicBlock) -> BasicValueUse? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();

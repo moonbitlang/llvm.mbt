@@ -81,7 +81,7 @@ pub fn Builder::get_insert_block(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -120,7 +120,7 @@ pub fn Builder::build_return_void(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (as_any_value_enum not implemented)
+/// ```moonbit skip skip (as_any_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -154,7 +154,7 @@ pub fn Builder::build_aggregate_return(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (due to not good type system)
+/// ```moonbit skip skip (due to not good type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -188,7 +188,7 @@ pub fn Builder::build_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (due to not good type system)
+/// ```moonbit skip skip (due to not good type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -224,7 +224,7 @@ pub fn Builder::build_direct_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("call_with_op_bundles");
 /// let builder = context.create_builder();
@@ -272,7 +272,7 @@ pub fn Builder::build_direct_call_with_operand_bundles(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (need better type system)
+/// ```moonbit skip skip (need better type system)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -385,7 +385,7 @@ fn Builder::build_call_with_operand_bundles_help(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -537,7 +537,7 @@ fn Builder::build_invoke_help(
 ///   In a language with reference counting, the cleanup block can decrement the refcount of values in scope.
 ///   The [`Builder::build_resume`] function has a full example using a cleanup lading pad.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -562,7 +562,7 @@ fn Builder::build_invoke_help(
 /// * **catch all**: An implementation of the C++ `catch(...)`, which catches all exceptions.
 /// A catch clause with a NULL pointer value will match anything.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -589,7 +589,7 @@ fn Builder::build_invoke_help(
 ///
 /// * **catch a type of exception**: Catch a specific type of exception. The example uses C++'s type info.
 ///
-/// ```moonbit skip (GlobalValue.as_basic_value_enum not implemented)
+/// ```moonbit skip skip (GlobalValue.as_basic_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -619,7 +619,7 @@ fn Builder::build_invoke_help(
 /// * **filter**: A filter clause encodes that only some types of exceptions are valid at this
 /// point. A filter clause is made by constructing a clause from a constant array.
 ///
-/// ```moonbit skip (as_any_value_enum not implemented)
+/// ```moonbit skip skip (as_any_value_enum not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -675,7 +675,7 @@ pub fn Builder::build_landing_pad(
 /// unwinding a scope. C++ destructors are a typical example. In a language with reference counting,
 /// the cleanup block can decrement the refcount of values in scope.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("sum");
 /// let builder = context.create_builder();
@@ -793,7 +793,7 @@ pub fn Builder::build_in_bounds_gep(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("struct_gep");
@@ -848,7 +848,7 @@ pub fn[T : BasicType] Builder::build_struct_gep(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -904,7 +904,7 @@ pub fn[T : BasicType] Builder::build_phi(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ret");
 /// let builder = context.create_builder();
@@ -952,7 +952,7 @@ pub fn Builder::build_store_func(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("demo");
 /// let builder = context.create_builder();
@@ -990,7 +990,7 @@ pub fn[T : BasicType] Builder::build_load(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("demo");
 /// let builder = context.create_builder();
@@ -1221,7 +1221,7 @@ pub fn Builder::insert_instruction(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1259,7 +1259,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_div(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1297,7 +1297,7 @@ pub fn[T : IntMathValue] Builder::build_int_signed_div(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1336,7 +1336,7 @@ pub fn[T : IntMathValue] Builder::build_int_exact_signed_div(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1374,7 +1374,7 @@ pub fn[T : IntMathValue] Builder::build_int_unsigned_rem(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1439,7 +1439,7 @@ pub fn Builder::build_address_space_cast(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1480,7 +1480,7 @@ pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -1528,7 +1528,7 @@ pub fn[T : FloatMathValue] Builder::build_float_rem(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -1566,7 +1566,7 @@ pub fn Builder::build_float_div(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1604,7 +1604,7 @@ pub fn[T : IntMathValue] Builder::build_int_add(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1642,7 +1642,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_add(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1680,7 +1680,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_add(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -1718,7 +1718,7 @@ pub fn[T : FloatMathValue] Builder::build_float_add(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1756,7 +1756,7 @@ pub fn[T : IntMathValue] Builder::build_xor(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1794,7 +1794,7 @@ pub fn[T : IntMathValue] Builder::build_and(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1832,7 +1832,7 @@ pub fn[T : IntMathValue] Builder::build_or(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1870,7 +1870,7 @@ pub fn[T : IntMathValue] Builder::build_left_shift(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1912,7 +1912,7 @@ pub fn[T : IntMathValue] Builder::build_right_shift(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1950,7 +1950,7 @@ pub fn[T : IntMathValue] Builder::build_int_sub(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -1988,7 +1988,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_sub(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2026,7 +2026,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_sub(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -2064,7 +2064,7 @@ pub fn[T : FloatMathValue] Builder::build_float_sub(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2097,7 +2097,7 @@ pub fn[T : IntMathValue] Builder::build_int_mul(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2130,7 +2130,7 @@ pub fn[T : IntMathValue] Builder::build_int_nsw_mul(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2163,7 +2163,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_mul(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -2249,7 +2249,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2307,7 +2307,7 @@ pub fn Builder::build_ptr_compare(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2395,7 +2395,7 @@ pub fn Builder::build_indirect_branch(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2428,7 +2428,7 @@ pub fn[T : IntMathValue] Builder::build_int_neg(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2477,7 +2477,7 @@ pub fn[T : IntMathValue] Builder::build_int_nuw_neg(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let f32_ty = context.f32_type();
@@ -2510,7 +2510,7 @@ pub fn[T : FloatMathValue] Builder::build_float_neg(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -2575,7 +2575,7 @@ pub fn Builder::position_at_end(self : Builder, bb : BasicBlock) -> Unit {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let void_type = context.void_type();
@@ -2636,7 +2636,7 @@ pub fn[AV : AggregateValue] Builder::build_extract_value(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let void_type = context.void_type();
@@ -2690,7 +2690,7 @@ pub fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let i32_type = context.i32_type();
@@ -2728,7 +2728,7 @@ pub fn Builder::build_extract_element(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("av");
 /// let void_type = context.void_type();

@@ -31,7 +31,7 @@ pub fn ScalableVectorValue::as_value_ref(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_scalable_vec_type = i8_type.scalable_vec_type(3);

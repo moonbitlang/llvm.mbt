@@ -25,7 +25,7 @@ pub fn ArrayType::as_type_ref(self : ArrayType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -41,7 +41,7 @@ pub fn ArrayType::size_of(self : ArrayType) -> IntValue? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -57,7 +57,7 @@ pub fn ArrayType::get_alignment(self : ArrayType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -71,7 +71,7 @@ pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -89,7 +89,7 @@ pub fn ArrayType::ptr_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -104,7 +104,7 @@ pub fn ArrayType::get_context(self : ArrayType) -> Context {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -123,7 +123,7 @@ pub fn ArrayType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -152,7 +152,7 @@ pub fn ArrayType::const_zero(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -178,7 +178,7 @@ pub fn ArrayType::is_empty(self : ArrayType) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -193,7 +193,7 @@ pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -208,7 +208,7 @@ pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);

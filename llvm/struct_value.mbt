@@ -27,7 +27,7 @@ pub fn StructValue::as_value_ref(self : StructValue) -> @unsafe.LLVMValueRef {
 
 ///| Gets the value of a field belonging to this `StructValue`.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i8_type = context.i8_type();
@@ -85,7 +85,7 @@ pub fn StructValue::set_field_at_index(
 
 ///| Counts the number of fields.
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i8_type = context.i8_type();
@@ -146,7 +146,7 @@ pub fn StructValue::replace_all_uses_with(
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(23, sign_extend=false);

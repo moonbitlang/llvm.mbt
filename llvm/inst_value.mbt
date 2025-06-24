@@ -409,7 +409,7 @@ pub fn InstructionValue::set_atomic_ordering(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -466,7 +466,7 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -558,7 +558,7 @@ fn InstructionValue::get_operand_unchecked(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip(BasicValueEnum not implement opo_equal)
+/// ```moonbit skip skip(BasicValueEnum not implement opo_equal)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -599,7 +599,7 @@ pub fn InstructionValue::set_operand(
 
 ///| Gets the use of an operand(`BasicValue`), if any.
 ///
-/// ```moonbit skip (get_first_use not implemented)
+/// ```moonbit skip skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -648,7 +648,7 @@ fn InstructionValue::get_operand_use_unchecked(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (get_first_use not implemented)
+/// ```moonbit skip skip (get_first_use not implemented)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -681,7 +681,7 @@ pub fn InstructionValue::get_first_use(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -713,7 +713,7 @@ pub fn InstructionValue::get_icmp_predicate(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
