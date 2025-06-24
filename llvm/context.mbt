@@ -63,7 +63,7 @@ pub fn Context::create_module(self : Context, name : String) -> Module {
 /// ```moonbit
 /// let context = Context::create()
 /// let void_ty = context.void_type()
-/// inspect!(void_ty, "void")
+/// inspect(void_ty, content="void")
 /// ```
 pub fn Context::void_type(self : Context) -> VoidType {
   let type_ref = @unsafe.llvm_void_type_in_context(self.as_ctx_ref())
@@ -77,7 +77,7 @@ pub fn Context::void_type(self : Context) -> VoidType {
 /// ```moonbit
 /// let context = Context::create()
 /// let bool_ty = context.bool_type()
-/// inspect!(bool_ty, "i1")
+/// inspect(bool_ty, content="i1")
 /// ```
 pub fn Context::bool_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int1_type_in_context(self.as_ctx_ref())
@@ -91,7 +91,7 @@ pub fn Context::bool_type(self : Context) -> IntType {
 /// ```moonbit
 /// let context = Context::create()
 /// let i8_ty = context.i8_type()
-/// inspect!(i8_ty, "i8")
+/// inspect(i8_ty, content="i8")
 /// ```
 pub fn Context::i8_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int8_type_in_context(self.as_ctx_ref())
@@ -105,7 +105,7 @@ pub fn Context::i8_type(self : Context) -> IntType {
 /// ```moonbit
 /// let context = Context::create()
 /// let i16_ty = context.i16_type()
-/// inspect!(i16_ty, "i16")
+/// inspect(i16_ty, content="i16")
 /// ```
 pub fn Context::i16_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int16_type_in_context(self.as_ctx_ref())
@@ -119,7 +119,7 @@ pub fn Context::i16_type(self : Context) -> IntType {
 /// ```moonbit
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
-/// inspect!(i32_ty, "i32")
+/// inspect(i32_ty, content="i32")
 /// ```
 pub fn Context::i32_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int32_type_in_context(self.as_ctx_ref())
@@ -133,7 +133,7 @@ pub fn Context::i32_type(self : Context) -> IntType {
 /// ```moonbit
 /// let context = Context::create()
 /// let i64_ty = context.i64_type()
-/// inspect!(i64_ty, "i64")
+/// inspect(i64_ty, content="i64")
 /// ```
 pub fn Context::i64_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int64_type_in_context(self.as_ctx_ref())
@@ -147,7 +147,7 @@ pub fn Context::i64_type(self : Context) -> IntType {
 /// ```moonbit
 /// let context = Context::create()
 /// let i128_ty = context.i128_type()
-/// inspect!(i128_ty, "i128")
+/// inspect(i128_ty, content="i128")
 /// ```
 pub fn Context::i128_type(self : Context) -> IntType {
   let type_ref = @unsafe.llvm_int128_type_in_context(self.as_ctx_ref())
@@ -193,7 +193,7 @@ pub fn Context::metadata_type(self : Context) -> MetadataType {
 /// ```moonbit
 /// let context = Context::create()
 /// let half_ty = context.f16_type()
-/// inspect!(half_ty, "half")
+/// inspect(half_ty, content="half")
 /// ```
 pub fn Context::f16_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -208,7 +208,7 @@ pub fn Context::f16_type(self : Context) -> FloatType {
 /// ```moonbit
 /// let context = Context::create()
 /// let f32_ty = context.f32_type()
-/// inspect!(f32_ty, "float")
+/// inspect(f32_ty, content="float")
 /// ```
 pub fn Context::f32_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -223,7 +223,7 @@ pub fn Context::f32_type(self : Context) -> FloatType {
 /// ```moonbit
 /// let context = Context::create()
 /// let f64_ty = context.f64_type()
-/// inspect!(f64_ty, "double")
+/// inspect(f64_ty, content="double")
 /// ```
 pub fn Context::f64_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -238,7 +238,7 @@ pub fn Context::f64_type(self : Context) -> FloatType {
 /// ```moonbit
 /// let context = Context::create()
 /// let f80_ty = context.x86_f80_type()
-/// inspect!(f80_ty, "x86_fp80")
+/// inspect(f80_ty, content="x86_fp80")
 /// ```
 pub fn Context::x86_f80_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -253,7 +253,7 @@ pub fn Context::x86_f80_type(self : Context) -> FloatType {
 /// ```moonbit
 /// let context = Context::create()
 /// let f128_ty = context.f128_type()
-/// inspect!(f128_ty, "fp128")
+/// inspect(f128_ty, content="fp128")
 /// ```
 pub fn Context::f128_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -268,7 +268,7 @@ pub fn Context::f128_type(self : Context) -> FloatType {
 /// ```moonbit
 /// let context = Context::create()
 /// let ppc_f128_ty = context.ppc_f128_type()
-/// inspect!(ppc_f128_ty, "ppc_fp128")
+/// inspect(ppc_f128_ty, content="ppc_fp128")
 /// ```
 pub fn Context::ppc_f128_type(self : Context) -> FloatType {
   let ctx_ref = self.as_ctx_ref()
@@ -282,8 +282,8 @@ pub fn Context::ppc_f128_type(self : Context) -> FloatType {
 ///
 /// ```moonbit
 /// let context = Context::create()
-/// let ptr_ty = context.ptr_type(@llvm::AddressSpace::default())
-/// inspect!(ptr_ty, "ptr")
+/// let ptr_ty = context.ptr_type(AddressSpace::default())
+/// inspect(ptr_ty, content="ptr")
 /// ```
 pub fn Context::ptr_type(
   self : Context,
@@ -306,7 +306,7 @@ pub fn Context::ptr_type(
 /// let i32_ty = context.i32_type()
 /// let i64_ty = context.i64_type()
 /// let struct_ty = context.struct_type([i32_ty, i64_ty])
-/// inspect!(struct_ty, "{ i32, i64 }")
+/// inspect(struct_ty, content="{ i32, i64 }")
 /// ```
 pub fn Context::struct_type(
   self : Context,
@@ -328,9 +328,9 @@ pub fn Context::struct_type(
 ///
 /// ```moonbit
 /// let context = Context::create();
-/// inspect!(context.get_struct_type("foo"), content="None");
+/// inspect(context.get_struct_type("foo"), content="None");
 /// let opaque = context.opaque_struct_type("foo");
-/// inspect!(context.get_struct_type("foo").unwrap(), content="%foo = type opaque");
+/// inspect(context.get_struct_type("foo").unwrap(), content="%foo = type opaque");
 /// ```
 pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
   let ty = @unsafe.llvm_get_type_by_name(self.as_ctx_ref(), name)
@@ -375,7 +375,7 @@ pub fn Context::const_struct(
 /// ```moonbit
 /// let context = Context::create()
 /// let opaque_struct_ty = context.opaque_struct_type("opaque_struct")
-/// inspect!(opaque_struct_ty, "%opaque_struct = type opaque")
+/// inspect(opaque_struct_ty, content="%opaque_struct = type opaque")
 /// assert_true(opaque_struct_ty.is_opaque())
 /// ```
 pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType {
