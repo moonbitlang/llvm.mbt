@@ -3,7 +3,8 @@
 ///|
 pub type AddressSpace UInt derive(Eq, Show, Default)
 
-pub fn AddressSpace::from(v: UInt) -> AddressSpace {
+///|
+pub fn AddressSpace::from(v : UInt) -> AddressSpace {
   AddressSpace(v)
 }
 

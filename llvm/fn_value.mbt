@@ -238,9 +238,7 @@ pub fn FunctionValue::count_params(self : FunctionValue) -> UInt {
 }
 
 ///|
-pub fn FunctionValue::count_basic_blocks(
-  self : FunctionValue
-) -> UInt {
+pub fn FunctionValue::count_basic_blocks(self : FunctionValue) -> UInt {
   @unsafe.llvm_count_basic_blocks(self.as_value_ref())
 }
 

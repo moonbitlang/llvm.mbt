@@ -317,9 +317,7 @@ pub fn StructType::set_body(
   field_types : Array[&BasicType],
   is_packed~ : Bool = false
 ) -> Unit raise MoonllvmError {
-  guard self.is_opaque() else {
-    raise SetBodyForNonOpaqueStruct
-  }
+  guard self.is_opaque() else { raise SetBodyForNonOpaqueStruct }
   let field_types = field_types.map(fn(t) { t.as_type_ref() })
   @unsafe.llvm_struct_set_body(self.as_type_ref(), field_types, is_packed)
 }

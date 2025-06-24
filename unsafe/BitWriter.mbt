@@ -5,6 +5,7 @@
 // /** Writes a module to the specified path. Returns 0 on success. */
 // int LLVMWriteBitcodeToFile(LLVMModuleRef M, const char *Path);
 // TODO: Implement C function
+
 ///|
 extern "C" fn __llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,

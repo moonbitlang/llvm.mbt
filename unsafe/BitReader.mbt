@@ -10,6 +10,7 @@
 // LLVMBool LLVMParseBitcode(LLVMMemoryBufferRef MemBuf, LLVMModuleRef *OutModule,
 //                           char **OutMessage);
 // TODO: Implement C function
+
 ///|
 pub extern "C" fn llvm_parse_bitcode(
   mem_buf : LLVMMemoryBufferRef

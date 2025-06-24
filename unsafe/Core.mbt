@@ -8,7 +8,7 @@ pub extern "C" fn llvm_shutdown() = "LLVMShutdown"
 // 
 // The version components are returned via the function's three output
 // parameters or skipped if a NULL pointer was supplied.
-// 
+//
 
 ///|
 pub fn llvm_get_version() -> (UInt, UInt, UInt) {
@@ -5712,7 +5712,7 @@ pub fn llvm_intrinsic_get_name(id : UInt) -> String {
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
 
-// Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead. 
+// Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead.
 
 ///|
 extern "C" fn __llvm_intrinsic_copy_overloaded_name(
@@ -11505,7 +11505,7 @@ pub fn LLVMValueRef::get_num_mask_elements(self : LLVMValueRef) -> UInt {
 // 
 // returns a constant that specifies that the result of a ShuffleVectorInst
 // is undefined.
-// 
+//
 
 ///|
 pub extern "C" fn llvm_get_undef_mask_elem() -> Int = "LLVMGetUndefMaskElem"

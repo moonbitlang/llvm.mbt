@@ -1,6 +1,7 @@
 // ===================================
 // Values
 // ===================================
+
 ///|
 struct Value {
   value_ref : @unsafe.LLVMValueRef

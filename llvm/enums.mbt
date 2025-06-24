@@ -1,6 +1,7 @@
 //=========================================================
 // AggregateValueEnum
 //=========================================================
+
 ///|
 pub(all) enum AggregateValueEnum {
   ArrayValue(ArrayValue)

@@ -42,6 +42,7 @@
 //  passed
 //  * to some other consuming operation, e.g. LLVMGetErrorMessage.
 //  */
+
 ///|
 pub extern "C" fn llvm_consume_error(err : LLVMErrorRef) = "LLVMConsumeError"
 //

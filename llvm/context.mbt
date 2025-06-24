@@ -631,7 +631,7 @@ pub fn Context::create_string_attribute(
 /// assert_eq(type_attribute.get_type_value(), any_type);
 /// assert_ne(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```
-pub fn[T: AnyType] Context::create_type_attribute(
+pub fn[T : AnyType] Context::create_type_attribute(
   self : Context,
   kind_id : UInt,
   ty : T

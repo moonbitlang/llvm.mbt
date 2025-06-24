@@ -102,9 +102,7 @@ pub fn BasicBlock::get_previous_basic_block(self : BasicBlock) -> BasicBlock? {
 /// ```
 pub fn BasicBlock::get_next_basic_block(self : BasicBlock) -> BasicBlock? {
   let next_bb_ref = @unsafe.llvm_get_next_basic_block(self.as_bb_ref())
-  @option.when(next_bb_ref.is_not_null(), fn() {
-    BasicBlock::new(next_bb_ref)
-  })
+  @option.when(next_bb_ref.is_not_null(), fn() { BasicBlock::new(next_bb_ref) })
 }
 
 ///| Prepends one `BasicBlock` before another.
@@ -473,7 +471,6 @@ pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
     @unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()),
   )
   @option.unless(value.is_null(), fn() { value })
-
 }
 
 // pub fn BasicBlock::to_string(self: BasicBlock) -> String {
@@ -484,9 +481,9 @@ pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
 //   self.as_bb_ref().dump()
 // }
 
- //pub impl Show for BasicBlock with output(self: BasicBlock, logger: &Logger) -> Unit {
- //  logger.write_string(self.as_bb_ref().to_string())
- //}
+//pub impl Show for BasicBlock with output(self: BasicBlock, logger: &Logger) -> Unit {
+//  logger.write_string(self.as_bb_ref().to_string())
+//}
 
 ///|
 pub impl Eq for BasicBlock with op_equal(self : BasicBlock, other : BasicBlock) -> Bool {

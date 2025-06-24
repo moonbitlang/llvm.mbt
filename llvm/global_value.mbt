@@ -49,7 +49,9 @@ pub fn GlobalValue::get_next_global(self : GlobalValue) -> GlobalValue? {
 }
 
 ///|
-pub fn GlobalValue::get_dll_storage_class(self : GlobalValue) -> DLLStorageClass {
+pub fn GlobalValue::get_dll_storage_class(
+  self : GlobalValue
+) -> DLLStorageClass {
   let dc = @unsafe.llvm_get_dll_storage_class(self.as_value_ref())
   DLLStorageClass::from(dc)
 }
@@ -319,6 +321,10 @@ pub impl Show for GlobalValue with to_string(self : GlobalValue) -> String {
   self.to_string()
 }
 
-pub impl Eq for GlobalValue with op_equal(self : GlobalValue, other : GlobalValue) -> Bool {
+///|
+pub impl Eq for GlobalValue with op_equal(
+  self : GlobalValue,
+  other : GlobalValue
+) -> Bool {
   self.as_value_ref() == other.as_value_ref()
 }

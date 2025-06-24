@@ -5,6 +5,7 @@
 //  * The current debug metadata version number.
 //  */
 // unsigned LLVMDebugMetadataVersion(void);
+
 ///|
 pub extern "C" fn llvm_debug_metadata_version() -> UInt = "__llvm_debug_metadata_version"
 //

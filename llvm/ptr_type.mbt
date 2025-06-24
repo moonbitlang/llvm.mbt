@@ -287,4 +287,3 @@ pub fn PointerType::dump(self : PointerType) -> Unit {
 pub impl Show for PointerType with output(self : PointerType, logger : &Logger) -> Unit {
   logger.write_string(self.ty.to_string())
 }
-

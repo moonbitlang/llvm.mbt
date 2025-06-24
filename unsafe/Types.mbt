@@ -1,4 +1,5 @@
 // LLVMTypes
+
 ///|
 type LLVMBool Int derive(Eq)
 
