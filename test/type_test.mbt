@@ -410,6 +410,7 @@ test "Struct Type Test" {
   inspect(opaque_struct_ty.get_poison(), content="%foo poison")
 
   // set body (The following code is problematic)
+  let struct_ty = context.opaque_struct_type("foo")
   let i64_ty = context.i64_type()
   let _ = struct_ty.set_body([i32_ty, i64_ty])
   let _ = opaque_struct_ty.set_body([i64_ty, f64_ty], is_packed=true)

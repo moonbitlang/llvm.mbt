@@ -30,6 +30,7 @@ pub fn IntType::as_type_ref(self : IntType) -> @unsafe.LLVMTypeRef {
 /// let i32_type = context.i32_type()
 /// let i32_val = i32_type.const_int(42, sign_extend=false)
 /// inspect(i32_val, content="i32 42")
+/// context.drop()
 /// ```
 // TODO: Maybe better explain signextension
 pub fn IntType::const_int(

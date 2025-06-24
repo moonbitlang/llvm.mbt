@@ -255,7 +255,7 @@ pub fn CallSiteValue::count_attributes(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let builder = context.create_builder();
 /// let llvm_module = context.create_module("my_mod");
@@ -276,16 +276,16 @@ pub fn CallSiteValue::count_attributes(
 /// assert_eq(call_site_value.attributes(ret_attr), [string_attribute, enum_attribute]);
 /// ```
 // REVIEW: Possibly need to check attr_refs is null or not
-pub fn CallSiteValue::attributes(
-  self : CallSiteValue,
-  loc : AttributeLoc
-) -> Array[Attribute] {
-  let attr_refs = @unsafe.llvm_get_call_site_attributes(
-    self.as_value_ref(),
-    loc.get_index(),
-  )
-  attr_refs.map(fn(r) { Attribute::new(r) })
-}
+//pub fn CallSiteValue::attributes(
+//  self : CallSiteValue,
+//  loc : AttributeLoc
+//) -> Array[Attribute] {
+//  let attr_refs = @unsafe.llvm_get_call_site_attributes(
+//    self.as_value_ref(),
+//    loc.get_index(),
+//  )
+//  attr_refs.map(fn(r) { Attribute::new(r) })
+//}
 
 ///| Gets an enum `Attribute` on this `CallSiteValue` at an index and kind id.
 ///

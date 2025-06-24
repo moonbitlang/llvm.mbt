@@ -270,7 +270,7 @@ pub fn llvm_create_string_attribute(
 extern "C" fn __llvm_get_string_attribute_kind(
   a : LLVMAttributeRef,
   size : Ref[UInt]
-) -> CStr = "__llvm_get_string_attribute_kind"
+) -> CStr = "LLVMGetStringAttributeKind"
 
 ///|
 pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String {
@@ -283,7 +283,7 @@ pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String {
 extern "C" fn __llvm_get_string_attribute_value(
   a : LLVMAttributeRef,
   size : Ref[UInt]
-) -> CStr = "__llvm_get_string_attribute_value"
+) -> CStr = "LLVMGetStringAttributeValue"
 
 ///|
 pub fn llvm_get_string_attribute_value(a : LLVMAttributeRef) -> String {
@@ -7250,10 +7250,10 @@ pub extern "C" fn llvm_get_call_site_attribute_count(
 ) -> UInt = "LLVMGetCallSiteAttributeCount"
 
 ///|
-pub extern "C" fn llvm_get_call_site_attributes(
-  c : LLVMValueRef,
-  idx : LLVMAttributeIndex
-) -> Array[LLVMAttributeRef] = "__llvm_get_call_site_attributes"
+//pub extern "C" fn llvm_get_call_site_attributes(
+//  c : LLVMValueRef,
+//  idx : LLVMAttributeIndex
+//) -> Array[LLVMAttributeRef] = "__llvm_get_call_site_attributes"
 
 ///|
 pub extern "C" fn llvm_get_call_site_enum_attribute(
@@ -8396,7 +8396,7 @@ extern "C" fn __llvm_build_invoke2(
   then : LLVMBasicBlockRef,
   catch_block : LLVMBasicBlockRef,
   name : CStr
-) -> LLVMValueRef = "__llvm_build_invoke2"
+) -> LLVMValueRef = "LLVMBuildInvoke2"
 
 ///| Build an invoke instruction.
 pub fn llvm_build_invoke2(
