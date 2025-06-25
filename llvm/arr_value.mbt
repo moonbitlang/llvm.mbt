@@ -91,7 +91,7 @@ pub fn ArrayValue::is_const(self : ArrayValue) -> Bool {
 ///
 /// # Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let s = context.const_string("my_string", false);
 ///
@@ -107,7 +107,7 @@ pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let string = context.const_string("hello!", true);
 ///
