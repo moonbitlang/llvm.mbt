@@ -25,7 +25,7 @@ pub fn VectorType::as_type_ref(self : VectorType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -41,7 +41,7 @@ pub fn VectorType::size_of(self : VectorType) -> IntValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -55,7 +55,7 @@ pub fn VectorType::is_sized(self : VectorType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
