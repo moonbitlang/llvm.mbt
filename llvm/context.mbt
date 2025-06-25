@@ -482,7 +482,7 @@ pub fn Context::prepend_basic_block(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_two = i8_type.const_int(2, sign_extend=false);
@@ -518,7 +518,7 @@ pub fn Context::metadata_node(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let md_string = context.metadata_string("Floats are awesome!");
 /// let f32_type = context.f32_type();
@@ -565,7 +565,7 @@ pub fn Context::get_kind_id(self : Context, key : String) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///
@@ -588,7 +588,7 @@ pub fn Context::create_enum_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key_123", "my_val");
 ///
