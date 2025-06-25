@@ -92,7 +92,7 @@ pub fn IntType::const_zero(self : IntType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
@@ -138,7 +138,7 @@ pub fn IntType::vec_type(self : IntType, size : UInt) -> VectorType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vscale_type = i32_type.scalable_vec_type(16);
@@ -169,7 +169,7 @@ pub fn IntType::get_context(self : IntType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_sz = i32_type.size_of();
@@ -189,7 +189,7 @@ pub fn IntType::is_sized(self : IntType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_align = i32_type.get_alignment();
@@ -237,7 +237,7 @@ pub fn IntType::get_bit_width(self : IntType) -> UInt {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_undef = i32_type.get_undef();
@@ -251,7 +251,7 @@ pub fn IntType::get_undef(self : IntType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i32_poison = i32_type.get_poison();
