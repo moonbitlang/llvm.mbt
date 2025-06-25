@@ -148,7 +148,7 @@ pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -164,7 +164,7 @@ pub fn PointerType::const_null(self : PointerType) -> PointerValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -179,7 +179,7 @@ pub fn PointerType::const_zero(self : PointerType) -> PointerValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -194,7 +194,7 @@ pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -209,7 +209,7 @@ pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
@@ -224,7 +224,7 @@ pub fn PointerType::vec_type(self : PointerType, size : UInt) -> VectorType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let ptr_type = i32_type.ptr_type(AddressSpace::default());
