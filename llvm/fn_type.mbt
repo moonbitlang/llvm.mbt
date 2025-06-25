@@ -25,7 +25,7 @@ pub fn FunctionType::as_type_ref(self : FunctionType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
@@ -43,7 +43,7 @@ pub fn FunctionType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type], is_var_arg=true);
@@ -57,7 +57,7 @@ pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let f64_type = context.f64_type();
@@ -76,7 +76,7 @@ pub fn FunctionType::get_param_types(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let f64_type = context.f64_type();
@@ -94,7 +94,7 @@ pub fn FunctionType::count_param_types(self : FunctionType) -> UInt {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
@@ -108,7 +108,7 @@ pub fn FunctionType::is_sized(self : FunctionType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let fn_type = i32_type.fn_type([i32_type]);
@@ -123,7 +123,7 @@ pub fn FunctionType::get_context(self : FunctionType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let f64_type = context.f64_type();
