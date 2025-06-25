@@ -144,7 +144,7 @@ pub fn Context::i64_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let i128_ty = context.i128_type()
 /// inspect(i128_ty, content="i128")
@@ -158,7 +158,7 @@ pub fn Context::i128_type(self : Context) -> IntType {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i48_type = context.custom_width_int_type(48);
 ///
@@ -190,7 +190,7 @@ pub fn Context::metadata_type(self : Context) -> MetadataType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let half_ty = context.f16_type()
 /// inspect(half_ty, content="half")
@@ -205,7 +205,7 @@ pub fn Context::f16_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let f32_ty = context.f32_type()
 /// inspect(f32_ty, content="float")
@@ -220,7 +220,7 @@ pub fn Context::f32_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let f64_ty = context.f64_type()
 /// inspect(f64_ty, content="double")
@@ -235,7 +235,7 @@ pub fn Context::f64_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let f80_ty = context.x86_f80_type()
 /// inspect(f80_ty, content="x86_fp80")
@@ -250,7 +250,7 @@ pub fn Context::x86_f80_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let f128_ty = context.f128_type()
 /// inspect(f128_ty, content="fp128")
@@ -265,7 +265,7 @@ pub fn Context::f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let ppc_f128_ty = context.ppc_f128_type()
 /// inspect(ppc_f128_ty, content="ppc_fp128")
@@ -280,7 +280,7 @@ pub fn Context::ppc_f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let ptr_ty = context.ptr_type(AddressSpace::default())
 /// inspect(ptr_ty, content="ptr")
@@ -301,7 +301,7 @@ pub fn Context::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// let i64_ty = context.i64_type()
@@ -326,7 +326,7 @@ pub fn Context::struct_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// inspect(context.get_struct_type("foo"), content="None");
 /// let _ = context.opaque_struct_type("foo");
@@ -344,7 +344,7 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i16_type = context.i16_type();
