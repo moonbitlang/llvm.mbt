@@ -25,7 +25,7 @@ pub fn StructType::as_type_ref(self : StructType) -> @unsafe.LLVMTypeRef {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -68,7 +68,7 @@ pub fn StructType::const_zero(self : StructType) -> StructValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -89,7 +89,7 @@ pub fn StructType::size_of(self : StructType) -> IntValue? {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
@@ -106,7 +106,7 @@ pub fn StructType::is_sized(self : StructType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let i64_type = context.i64_type();
