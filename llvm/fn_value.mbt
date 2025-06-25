@@ -197,7 +197,7 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
@@ -206,8 +206,8 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 /// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
-/// inspect(fn_value.get_nth_param(0), content="Some(double %1)")
-/// inspect(fn_value.get_nth_param(1), content="Some(i32 %1)")
+/// inspect(fn_value.get_nth_param(0), content="Some(i32 %0)")
+/// inspect(fn_value.get_nth_param(1), content="Some(double %1)")
 /// ```
 pub fn FunctionValue::get_nth_param(
   self : FunctionValue,
@@ -256,13 +256,13 @@ pub fn FunctionValue::get_basic_blocks(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = @llvm.Context::create();
 /// let lmodule = context.create_module("demo");
 /// let i32_ty = context.i32_type();
 /// let f64_ty = context.f64_type();
 /// let void_ty = context.void_type();
-/// let fn_type = void_ty.fn_type([i32_ty, f64_ty]);
+/// let fn_type = void_ty.fn_type([f64_ty, i32_ty]);
 /// let fn_value = lmodule.add_function("foo", fn_type);
 ///
 /// inspect(fn_value.get_params(), content="[double %0, i32 %1]")
@@ -408,8 +408,8 @@ pub fn FunctionValue::replace_all_uses_with(
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
-/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
-/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+/// fn_value.add_attribute(Return, string_attribute);
+/// fn_value.add_attribute(Return, enum_attribute);
 /// ```
 pub fn FunctionValue::add_attribute(
   self : FunctionValue,
@@ -436,8 +436,8 @@ pub fn FunctionValue::add_attribute(
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 /// let enum_attribute = context.create_enum_attribute(1, 1);
 ///
-/// fn_value.add_attribute(AttributeLoc::Return, string_attribute);
-/// fn_value.add_attribute(AttributeLoc::Return, enum_attribute);
+/// fn_value.add_attribute(Return, string_attribute);
+/// fn_value.add_attribute(Return, enum_attribute);
 ///
 /// assert_eq(fn_value.count_attributes(AttributeLoc::Return), 2);
 /// ```
@@ -471,7 +471,6 @@ pub fn FunctionValue::count_attributes(
 /// ```
 ///
 /// @alert Bug "This Function will cause link error. To be Fixed."
-///
 pub fn FunctionValue::attributes(
   self : FunctionValue,
   loc : AttributeLoc
@@ -485,7 +484,7 @@ pub fn FunctionValue::attributes(
 
 ///| Removes a string `Attribute` belonging to the specified location in this `FunctionValue`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -514,7 +513,7 @@ pub fn FunctionValue::remove_string_attribute(
 ///
 /// # Example (Not Tested)
 ///
-/// ```no_run
+/// ```moonbit
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();

@@ -1,6 +1,6 @@
 // Context
 
-///| A `Context` is a container for all @unsafe.LLVM entities including `Module`s.
+///| A `Context` is a container for all @unsafe.LLVM entities including `llvm_module`s.
 struct Context {
   ctx_ref : @unsafe.LLVMContextRef
 } derive(Eq)
@@ -31,13 +31,6 @@ fn Context::as_ctx_ref(self : Context) -> @unsafe.LLVMContextRef {
 }
 
 ///| Creates a new `Context`.
-///
-/// ## Example
-///
-/// ```moonbit skip skip(count_basic_blocks)
-/// let context = Context::create();
-/// context.drop();
-/// ```
 pub fn Context::create() -> Context {
   Context::new(@unsafe.llvm_context_create())
 }
@@ -60,7 +53,7 @@ pub fn Context::create_module(self : Context, name : String) -> Module {
 ///
 /// ## Example
 ///
-/// ```moonbit skip skip(count_basic_blocks)
+/// ```moonbit
 /// let context = Context::create()
 /// let void_ty = context.void_type()
 /// inspect(void_ty, content="void")
@@ -74,7 +67,7 @@ pub fn Context::void_type(self : Context) -> VoidType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip skip(count_basic_blocks)
+/// ```moonbit
 /// let context = Context::create()
 /// let bool_ty = context.bool_type()
 /// inspect(bool_ty, content="i1")
@@ -144,7 +137,7 @@ pub fn Context::i64_type(self : Context) -> IntType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let i128_ty = context.i128_type()
 /// inspect(i128_ty, content="i128")
@@ -156,9 +149,9 @@ pub fn Context::i128_type(self : Context) -> IntType {
 
 ///| Gets the `IntType` representing a custom bit width. It will be assigned the current context.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create();
 /// let i48_type = context.custom_width_int_type(48);
 ///
@@ -171,9 +164,9 @@ pub fn Context::custom_width_int_type(self : Context, bits : UInt) -> IntType {
 
 ///| Gets the `MetadataType` representing 128 bit width. It will be assigned the current context.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```
+/// ```moonbit
 /// let context = Context::create();
 /// let md_type = context.metadata_type();
 ///
@@ -190,7 +183,7 @@ pub fn Context::metadata_type(self : Context) -> MetadataType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let half_ty = context.f16_type()
 /// inspect(half_ty, content="half")
@@ -205,7 +198,7 @@ pub fn Context::f16_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let f32_ty = context.f32_type()
 /// inspect(f32_ty, content="float")
@@ -220,7 +213,7 @@ pub fn Context::f32_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let f64_ty = context.f64_type()
 /// inspect(f64_ty, content="double")
@@ -235,7 +228,7 @@ pub fn Context::f64_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let f80_ty = context.x86_f80_type()
 /// inspect(f80_ty, content="x86_fp80")
@@ -250,7 +243,7 @@ pub fn Context::x86_f80_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let f128_ty = context.f128_type()
 /// inspect(f128_ty, content="fp128")
@@ -265,7 +258,7 @@ pub fn Context::f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let ppc_f128_ty = context.ppc_f128_type()
 /// inspect(ppc_f128_ty, content="ppc_fp128")
@@ -280,7 +273,7 @@ pub fn Context::ppc_f128_type(self : Context) -> FloatType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let ptr_ty = context.ptr_type(AddressSpace::default())
 /// inspect(ptr_ty, content="ptr")
@@ -301,7 +294,7 @@ pub fn Context::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create()
 /// let i32_ty = context.i32_type()
 /// let i64_ty = context.i64_type()
@@ -326,7 +319,7 @@ pub fn Context::struct_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit skip (I think llvm has no such function?)
 /// let context = Context::create();
 /// inspect(context.get_struct_type("foo"), content="None");
 /// let _ = context.opaque_struct_type("foo");
@@ -342,9 +335,9 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 
 ///| Creates a constant `StructValue` from constant values.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i16_type = context.i16_type();
@@ -374,7 +367,7 @@ pub fn Context::const_struct(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create()
 /// let opaque_struct_ty = context.opaque_struct_type("opaque_struct")
 /// inspect(opaque_struct_ty, content="%opaque_struct = type opaque")
@@ -387,14 +380,14 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 
 ///| Append a named `BasicBlock` at the end of the referenced `FunctionValue`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip skip(count_basic_blocks)
+/// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 1);
@@ -402,8 +395,8 @@ pub fn Context::opaque_struct_type(self : Context, name : String) -> StructType 
 /// let last_basic_block = context.append_basic_block(fn_value, name="last");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 2);
-/// assert_eq(fn_value.get_first_basic_block().unwrap(), entry_basic_block);
-/// assert_eq(fn_value.get_last_basic_block().unwrap(), last_basic_block);
+/// assert_true(fn_value.get_first_basic_block().unwrap() == entry_basic_block);
+/// assert_true(fn_value.get_last_basic_block().unwrap() == last_basic_block);
 /// ```
 pub fn Context::append_basic_block(
   self : Context,
@@ -422,7 +415,7 @@ pub fn Context::append_basic_block(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
@@ -454,14 +447,14 @@ pub fn Context::insert_basic_block_after(
 
 ///| Prepend a named `BasicBlock` before the referenced `BasicBlock`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip skip(count_basic_blocks)
+/// ```moonbit
 /// let context = Context::create();
-/// let module = context.create_module("my_mod");
+/// let llvm_module = context.create_module("my_mod");
 /// let void_type = context.void_type();
 /// let fn_type = void_type.fn_type([]);
-/// let fn_value = module.add_function("my_fn", fn_type);
+/// let fn_value = llvm_module.add_function("my_fn", fn_type);
 /// let entry_basic_block = context.append_basic_block(fn_value, name="entry");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 1);
@@ -469,8 +462,8 @@ pub fn Context::insert_basic_block_after(
 /// let first_basic_block = context.prepend_basic_block(entry_basic_block, "first");
 ///
 /// assert_eq(fn_value.count_basic_blocks(), 2);
-/// assert_eq(fn_value.get_first_basic_block().unwrap(), first_basic_block);
-/// assert_eq(fn_value.get_last_basic_block().unwrap(), entry_basic_block);
+/// assert_true(fn_value.get_first_basic_block().unwrap() == first_basic_block);
+/// assert_true(fn_value.get_last_basic_block().unwrap() == entry_basic_block);
 /// ```
 pub fn Context::prepend_basic_block(
   self : Context,
@@ -648,11 +641,11 @@ pub fn[T : AnyType] Context::create_type_attribute(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let s = context.const_string("my_string", false);
 ///
-/// inspect(s, content="[9 x i8] my_string");
+/// inspect(s, content="[10 x i8] c\"my_string\\00\"");
 /// ```
 pub fn Context::const_string(
   self : Context,

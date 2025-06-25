@@ -127,7 +127,7 @@ pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
 
 ///| Return functions in this `llvm_module`.
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_mod");
 ///
@@ -140,7 +140,7 @@ pub fn Module::get_function(self : Module, name : String) -> FunctionValue? {
 /// let names = llvm_module
 ///     .get_functions().map(fn (f) { f.get_name() });
 ///
-/// inspect(names, content="[my_fn]");
+/// inspect(names, content="[\"my_fn\"]");
 /// ```
 pub fn Module::get_functions(self : Module) -> Array[FunctionValue] {
   let funcs : Array[FunctionValue] = Array::new()
@@ -491,13 +491,13 @@ pub fn Module::get_global(self : Module, name : String) -> GlobalValue? {
 
 ///| Gets the name of this `llvm_module`.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create();
 /// let llvm_module = context.create_module("my_module");
 ///
-/// assert_true(llvm_module.get_name() is "my_mdoule");
+/// inspect(llvm_module.get_name(), content="my_module");
 /// ```
 pub fn Module::get_name(self : Module) -> String {
   @unsafe.llvm_get_module_identifier(self.module_ref)
@@ -521,7 +521,7 @@ pub fn Module::set_name(self : Module, name : String) -> Unit {
 
 ///| Gets the source file name. It defaults to the llvm_module identifier but is separate from it.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();
@@ -540,7 +540,7 @@ pub fn Module::get_source_filename(self : Module) -> String {
 
 ///| Sets the source file name. It defaults to the llvm_module identifier but is separate from it.
 ///
-/// ## Example (Not Tested)
+/// ## Example
 ///
 /// ```moonbit
 /// let context = Context::create();

@@ -123,13 +123,13 @@ pub fn FunctionType::get_context(self : FunctionType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit skip (test failed)
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let f64_type = context.f64_type();
 /// let fn_type = i32_type.fn_type([i32_type, f64_type]);
 /// let ret_type = fn_type.get_return_type();
-/// inspect(ret_type.unwrap(), content="double")
+/// inspect(ret_type.unwrap(), content="i32")
 /// ```
 pub fn FunctionType::get_return_type(self : FunctionType) -> BasicTypeEnum? {
   let ty = @unsafe.llvm_get_return_type(self.as_type_ref())
