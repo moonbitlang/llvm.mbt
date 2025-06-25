@@ -409,7 +409,7 @@ pub fn InstructionValue::set_atomic_ordering(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
@@ -466,7 +466,7 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let llvm_module = context.create_module("ivs");
 /// let builder = context.create_builder();
