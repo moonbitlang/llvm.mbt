@@ -123,7 +123,7 @@ pub fn ArrayType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -178,7 +178,7 @@ pub fn ArrayType::is_empty(self : ArrayType) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
@@ -193,7 +193,7 @@ pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let array_type = i32_type.array_type(8);
