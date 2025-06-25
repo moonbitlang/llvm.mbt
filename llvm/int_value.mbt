@@ -417,7 +417,7 @@ pub fn IntValue::const_bit_cast(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -433,7 +433,7 @@ pub fn IntValue::is_const(self : IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i64_type = context.i64_type();
 /// let i64_val = i64_type.const_int(42);
@@ -447,7 +447,7 @@ pub fn IntValue::is_constant_int(self : IntValue) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();
@@ -468,7 +468,7 @@ pub fn IntValue::get_zero_extended_constant(self : IntValue) -> UInt64? {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let i8_type = context.i8_type();
 /// let i8_all_ones = i8_type.const_all_ones();
