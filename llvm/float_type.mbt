@@ -79,7 +79,7 @@ pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let vscale_type = f32_type.scalable_vec_type(16);
@@ -97,7 +97,7 @@ pub fn FloatType::scalable_vec_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let pi = f64_type.const_float(3.1415926);
@@ -142,7 +142,7 @@ pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_sz = f64_type.size_of();
@@ -162,7 +162,7 @@ pub fn FloatType::is_sized(self : FloatType) -> Bool {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_align = f64_type.get_alignment();
@@ -191,7 +191,7 @@ pub fn FloatType::get_context(self : FloatType) -> Context {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let ptr_type = f64_type.ptr_type(AddressSpace::default());
@@ -210,7 +210,7 @@ pub fn FloatType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_undef = f64_type.get_undef();
@@ -224,7 +224,7 @@ pub fn get_undef(self : FloatType) -> FloatValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let f64_type = context.f64_type();
 /// let f64_poison = f64_type.get_poison();

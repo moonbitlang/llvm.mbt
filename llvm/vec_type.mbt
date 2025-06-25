@@ -71,7 +71,7 @@ pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -92,7 +92,7 @@ pub fn VectorType::get_size(self : VectorType) -> UInt {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -107,7 +107,7 @@ pub fn VectorType::get_undef(self : VectorType) -> VectorValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -122,7 +122,7 @@ pub fn VectorType::get_poison(self : VectorType) -> VectorValue {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -138,7 +138,7 @@ pub fn VectorType::get_element_type(self : VectorType) -> BasicTypeEnum {
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -158,7 +158,7 @@ pub fn VectorType::ptr_type(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
@@ -177,7 +177,7 @@ pub fn VectorType::fn_type(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(4);
@@ -211,7 +211,7 @@ pub fn VectorType::const_array(
 ///
 /// ## Example
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let vector_type = i32_type.vec_type(8);
