@@ -118,7 +118,7 @@ pub fn Attribute::get_enum_kind_id_is_valid(self : Attribute) -> Bool {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// assert_eq(Attribute::get_last_enum_kind_id(), 56);
 /// ```
 pub fn Attribute::get_last_enum_kind_id() -> UInt {
@@ -129,7 +129,7 @@ pub fn Attribute::get_last_enum_kind_id() -> UInt {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let enum_attribute = context.create_enum_attribute(0, 10);
 ///
@@ -147,7 +147,7 @@ pub fn Attribute::get_enum_value(self : Attribute) -> UInt64 {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
@@ -164,7 +164,7 @@ pub fn Attribute::get_string_kind_id(self : Attribute) -> String {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let string_attribute = context.create_string_attribute("my_key", "my_val");
 ///
@@ -181,7 +181,7 @@ pub fn Attribute::get_string_value(self : Attribute) -> String {
 ///
 /// # Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit skip (test failed)
 /// let context = Context::create();
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
 /// let any_type = context.i32_type().as_any_type_enum();

@@ -224,7 +224,7 @@ pub fn Builder::build_direct_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit skip
+/// ```moonbit
 /// let context = Context::create();
 /// let llvm_module = context.create_module("call_with_op_bundles");
 /// let builder = context.create_builder();
