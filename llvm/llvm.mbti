@@ -1,0 +1,1555 @@
+package "Kaida-Amethyst/llvm/llvm"
+
+import(
+  "Kaida-Amethyst/llvm/unsafe"
+)
+
+// Values
+fn raise_builder_error(Int) -> Int raise BuilderError
+
+// Types and methods
+pub type AddressSpace UInt
+fn AddressSpace::from(UInt) -> Self
+fn AddressSpace::inner(Self) -> UInt
+fn AddressSpace::into(Self) -> UInt
+impl Default for AddressSpace
+impl Eq for AddressSpace
+impl Show for AddressSpace
+
+pub(all) enum AggregateValueEnum {
+  ArrayValue(ArrayValue)
+  StructValue(StructValue)
+}
+fn AggregateValueEnum::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn AggregateValueEnum::into_array_value(Self) -> ArrayValue
+fn AggregateValueEnum::into_struct_value(Self) -> StructValue
+fn AggregateValueEnum::is_array_value(Self) -> Bool
+fn AggregateValueEnum::is_struct_value(Self) -> Bool
+fn AggregateValueEnum::new(@unsafe.LLVMValueRef) -> Self
+impl Show for AggregateValueEnum
+
+pub(all) enum AnyTypeEnum {
+  ArrayType(ArrayType)
+  FloatType(FloatType)
+  FunctionType(FunctionType)
+  IntType(IntType)
+  PointerType(PointerType)
+  StructType(StructType)
+  VectorType(VectorType)
+  ScalableVectorType(ScalableVectorType)
+  VoidType(VoidType)
+}
+fn AnyTypeEnum::dump(Self) -> Unit
+fn AnyTypeEnum::into_array_type(Self) -> ArrayType
+fn AnyTypeEnum::into_float_type(Self) -> FloatType
+fn AnyTypeEnum::into_function_type(Self) -> FunctionType
+fn AnyTypeEnum::into_int_type(Self) -> IntType
+fn AnyTypeEnum::into_pointer_type(Self) -> PointerType
+fn AnyTypeEnum::into_scalable_vector_type(Self) -> ScalableVectorType
+fn AnyTypeEnum::into_struct_type(Self) -> StructType
+fn AnyTypeEnum::into_vector_type(Self) -> VectorType
+fn AnyTypeEnum::into_void_type(Self) -> VoidType
+fn AnyTypeEnum::is_array_type(Self) -> Bool
+fn AnyTypeEnum::is_float_type(Self) -> Bool
+fn AnyTypeEnum::is_function_type(Self) -> Bool
+fn AnyTypeEnum::is_int_type(Self) -> Bool
+fn AnyTypeEnum::is_pointer_type(Self) -> Bool
+fn AnyTypeEnum::is_scalable_vector_type(Self) -> Bool
+fn AnyTypeEnum::is_struct_type(Self) -> Bool
+fn AnyTypeEnum::is_vector_type(Self) -> Bool
+fn AnyTypeEnum::is_void_type(Self) -> Bool
+fn AnyTypeEnum::new(@unsafe.LLVMTypeRef) -> Self
+fn AnyTypeEnum::try_as_basic_type_enum(Self) -> BasicTypeEnum?
+impl AnyType for AnyTypeEnum
+impl AsType for AnyTypeEnum
+impl Eq for AnyTypeEnum
+impl Show for AnyTypeEnum
+
+pub(all) enum AnyValueEnum {
+  ArrayValue(ArrayValue)
+  IntValue(IntValue)
+  FloatValue(FloatValue)
+  PhiValue(PhiValue)
+  FunctionValue(FunctionValue)
+  PointerValue(PointerValue)
+  StructValue(StructValue)
+  VectorValue(VectorValue)
+  ScalableVectorValue(ScalableVectorValue)
+  InstructionValue(InstructionValue)
+  MetadataValue(MetadataValue)
+}
+fn AnyValueEnum::get_type(Self) -> AnyTypeEnum
+fn AnyValueEnum::new(@unsafe.LLVMValueRef) -> Self
+fn AnyValueEnum::try_as_basic_value_enum(Self) -> BasicValueEnum?
+impl AsValue for AnyValueEnum
+impl Show for AnyValueEnum
+
+pub struct ArrayType {
+  ty : Type
+}
+fn ArrayType::array_type(Self, UInt) -> Self
+fn ArrayType::as_type(Self) -> Type
+fn ArrayType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn ArrayType::const_array(Self, Array[BasicValueEnum]) -> ArrayValue
+fn ArrayType::const_zero(Self) -> ArrayValue
+fn ArrayType::dump(Self) -> Unit
+fn ArrayType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn ArrayType::get_alignment(Self) -> IntValue
+fn ArrayType::get_context(Self) -> Context
+fn ArrayType::get_element_type(Self) -> BasicTypeEnum
+fn ArrayType::get_poison(Self) -> ArrayValue
+fn ArrayType::get_undef(Self) -> ArrayValue
+fn ArrayType::is_empty(Self) -> Bool
+fn ArrayType::is_sized(Self) -> Bool
+fn ArrayType::len(Self) -> UInt
+fn ArrayType::length(Self) -> UInt
+fn ArrayType::new(@unsafe.LLVMTypeRef) -> Self
+fn ArrayType::print_to_stderr(Self) -> Unit
+fn ArrayType::print_to_string(Self) -> String
+fn ArrayType::ptr_type(Self, AddressSpace) -> PointerType
+fn ArrayType::size_of(Self) -> IntValue?
+impl AnyType for ArrayType
+impl AsType for ArrayType
+impl BasicMetadataType for ArrayType
+impl BasicType for ArrayType
+impl Show for ArrayType
+
+pub struct ArrayValue {
+  value : Value
+}
+fn ArrayValue::as_instruction(Self) -> InstructionValue?
+fn ArrayValue::as_value(Self) -> Value
+fn ArrayValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn ArrayValue::dump(Self) -> Unit
+fn ArrayValue::get_name(Self) -> String
+fn ArrayValue::get_string_constant(Self) -> String?
+fn ArrayValue::get_type(Self) -> ArrayType
+fn ArrayValue::is_const(Self) -> Bool
+fn ArrayValue::is_const_string(Self) -> Bool
+fn ArrayValue::is_null(Self) -> Bool
+fn ArrayValue::is_undef(Self) -> Bool
+fn ArrayValue::new(@unsafe.LLVMValueRef) -> Self
+fn[T : AsType, V : AsValue] ArrayValue::new_const_array(T, Array[V]) -> Self
+fn ArrayValue::print_to_stderr(Self) -> Unit
+fn ArrayValue::print_to_string(Self) -> String
+fn ArrayValue::replace_all_uses_with(Self, Self) -> Unit
+fn ArrayValue::set_name(Self, String) -> Unit
+impl AggregateValue for ArrayValue
+impl AnyValue for ArrayValue
+impl AsValue for ArrayValue
+impl BasicMetadataValue for ArrayValue
+impl BasicValue for ArrayValue
+impl Show for ArrayValue
+
+pub(all) enum AtomicOrdering {
+  NotAtomic
+  Unordered
+  Monotonic
+  Acquire
+  Release
+  AcquireRelease
+  SequentiallyConsistent
+}
+fn AtomicOrdering::from(@unsafe.LLVMAtomicOrdering) -> Self
+fn AtomicOrdering::into(Self) -> @unsafe.LLVMAtomicOrdering
+impl Eq for AtomicOrdering
+impl Hash for AtomicOrdering
+impl Show for AtomicOrdering
+
+pub(all) enum AtomicRMWBinOp {
+  Xchg
+  Add
+  Sub
+  And
+  Nand
+  Or
+  Xor
+  Max
+  Min
+  UMax
+  UMin
+  FAdd
+  FSub
+  FMax
+  FMin
+  UIncWrap
+  UDecWrap
+}
+fn AtomicRMWBinOp::from(@unsafe.LLVMAtomicRMWBinOp) -> Self
+fn AtomicRMWBinOp::into(Self) -> @unsafe.LLVMAtomicRMWBinOp
+impl Eq for AtomicRMWBinOp
+impl Hash for AtomicRMWBinOp
+impl Show for AtomicRMWBinOp
+
+pub struct Attribute {
+  attribute : @unsafe.LLVMAttributeRef
+}
+fn Attribute::as_attr_ref(Self) -> @unsafe.LLVMAttributeRef
+fn Attribute::get_enum_kind_id(Self) -> UInt
+fn Attribute::get_enum_kind_id_is_valid(Self) -> Bool
+fn Attribute::get_enum_value(Self) -> UInt64
+fn Attribute::get_last_enum_kind_id() -> UInt
+fn Attribute::get_named_enum_kind_id(String) -> UInt
+fn Attribute::get_string_kind_id(Self) -> String
+fn Attribute::get_string_value(Self) -> String
+fn Attribute::get_type_value(Self) -> AnyTypeEnum
+fn Attribute::is_enum(Self) -> Bool
+fn Attribute::is_string(Self) -> Bool
+fn Attribute::is_type(Self) -> Bool
+fn Attribute::new(@unsafe.LLVMAttributeRef) -> Self
+fn Attribute::to_string(Self) -> String
+impl Eq for Attribute
+impl Show for Attribute
+
+pub(all) enum AttributeLoc {
+  Return
+  Param(UInt)
+  Function
+}
+fn AttributeLoc::get_index(Self) -> UInt
+fn AttributeLoc::new(Int) -> Self
+
+pub struct BasicBlock {
+  bb_ref : @unsafe.LLVMBasicBlockRef
+}
+fn BasicBlock::as_bb_ref(Self) -> @unsafe.LLVMBasicBlockRef
+fn BasicBlock::delete(Self) -> Unit raise MoonllvmError
+fn BasicBlock::get_address(Self) -> PointerValue?
+fn BasicBlock::get_context(Self) -> Context
+fn BasicBlock::get_first_instruction(Self) -> InstructionValue?
+fn BasicBlock::get_first_use(Self) -> BasicValueUse?
+fn BasicBlock::get_instruction_with_name(Self, String) -> InstructionValue?
+fn BasicBlock::get_last_instruction(Self) -> InstructionValue?
+fn BasicBlock::get_name(Self) -> String
+fn BasicBlock::get_next_basic_block(Self) -> Self?
+fn BasicBlock::get_parent(Self) -> FunctionValue?
+fn BasicBlock::get_previous_basic_block(Self) -> Self?
+fn BasicBlock::get_terminator(Self) -> InstructionValue?
+fn BasicBlock::move_after(Self, Self) -> Unit raise MoonllvmError
+fn BasicBlock::move_before(Self, Self) -> Unit raise MoonllvmError
+fn BasicBlock::new(@unsafe.LLVMBasicBlockRef) -> Self
+fn BasicBlock::remove_from_function(Self) -> Unit raise MoonllvmError
+fn BasicBlock::replace_all_uses_with(Self, Self) -> Unit
+fn BasicBlock::set_name(Self, String) -> Unit
+impl Eq for BasicBlock
+
+pub(all) enum BasicMetadataTypeEnum {
+  ArrayType(ArrayType)
+  FloatType(FloatType)
+  IntType(IntType)
+  PointerType(PointerType)
+  StructType(StructType)
+  VectorType(VectorType)
+  ScalableVectorType(ScalableVectorType)
+  MetadataType(MetadataType)
+}
+fn BasicMetadataTypeEnum::new(@unsafe.LLVMTypeRef) -> Self
+impl AsType for BasicMetadataTypeEnum
+impl BasicMetadataType for BasicMetadataTypeEnum
+impl Show for BasicMetadataTypeEnum
+
+pub(all) enum BasicMetadataValueEnum {
+  ArrayValue(ArrayValue)
+  IntValue(IntValue)
+  FloatValue(FloatValue)
+  PointerValue(PointerValue)
+  StructValue(StructValue)
+  VectorValue(VectorValue)
+  ScalableVectorValue(ScalableVectorValue)
+  MetadataValue(MetadataValue)
+}
+fn BasicMetadataValueEnum::into_array_value(Self) -> ArrayValue
+fn BasicMetadataValueEnum::into_float_value(Self) -> FloatValue
+fn BasicMetadataValueEnum::into_int_value(Self) -> IntValue
+fn BasicMetadataValueEnum::into_pointer_value(Self) -> PointerValue
+fn BasicMetadataValueEnum::into_struct_value(Self) -> StructValue
+fn BasicMetadataValueEnum::into_vector_value(Self) -> VectorValue
+fn BasicMetadataValueEnum::is_array_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_float_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_int_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_metadata_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_pointer_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_scalable_vector_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_struct_value(Self) -> Bool
+fn BasicMetadataValueEnum::is_vector_value(Self) -> Bool
+fn BasicMetadataValueEnum::new(@unsafe.LLVMValueRef) -> Self
+impl AsValue for BasicMetadataValueEnum
+impl Show for BasicMetadataValueEnum
+
+pub(all) enum BasicTypeEnum {
+  ArrayType(ArrayType)
+  FloatType(FloatType)
+  IntType(IntType)
+  PointerType(PointerType)
+  StructType(StructType)
+  VectorType(VectorType)
+  ScalableVectorType(ScalableVectorType)
+}
+fn BasicTypeEnum::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn BasicTypeEnum::get_context(Self) -> Context
+fn BasicTypeEnum::new(@unsafe.LLVMTypeRef) -> Self
+fn BasicTypeEnum::ptr_type(Self, AddressSpace) -> PointerType
+impl AnyType for BasicTypeEnum
+impl AsType for BasicTypeEnum
+impl BasicType for BasicTypeEnum
+impl Eq for BasicTypeEnum
+impl Show for BasicTypeEnum
+
+pub(all) enum BasicValueEnum {
+  ArrayValue(ArrayValue)
+  IntValue(IntValue)
+  FloatValue(FloatValue)
+  PointerValue(PointerValue)
+  StructValue(StructValue)
+  VectorValue(VectorValue)
+  ScalableVectorValue(ScalableVectorValue)
+}
+fn BasicValueEnum::get_name(Self) -> String
+fn BasicValueEnum::get_type(Self) -> BasicTypeEnum
+fn BasicValueEnum::into_array_value(Self) -> ArrayValue
+fn BasicValueEnum::into_float_value(Self) -> FloatValue
+fn BasicValueEnum::into_int_value(Self) -> IntValue
+fn BasicValueEnum::into_pointer_value(Self) -> PointerValue
+fn BasicValueEnum::into_scalable_vector_value(Self) -> ScalableVectorValue
+fn BasicValueEnum::into_struct_value(Self) -> StructValue
+fn BasicValueEnum::into_vector_value(Self) -> VectorValue
+fn BasicValueEnum::new(@unsafe.LLVMValueRef) -> Self
+fn BasicValueEnum::set_name(Self, String) -> Unit
+impl AnyValue for BasicValueEnum
+impl AsValue for BasicValueEnum
+impl BasicValue for BasicValueEnum
+impl Show for BasicValueEnum
+
+pub struct BasicValueUse {
+  use_ref : @unsafe.LLVMUseRef
+}
+fn BasicValueUse::as_use_ref(Self) -> @unsafe.LLVMUseRef
+fn BasicValueUse::get_next_use(Self) -> Self?
+fn BasicValueUse::get_used_value(Self) -> Either[BasicValueEnum, BasicBlock]
+fn BasicValueUse::get_user(Self) -> AnyValueEnum
+fn BasicValueUse::new(@unsafe.LLVMUseRef) -> Self
+
+pub struct Builder {
+  builder_ref : @unsafe.LLVMBuilderRef
+  mut positioned : PositionState
+}
+fn Builder::build_address_space_cast(Self, PointerValue, PointerType, name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_aggregate_return(Self, Array[&BasicValue]) -> InstructionValue raise BuilderError
+fn[T : BasicType] Builder::build_alloca(Self, T, name~ : String = ..) -> PointerValue raise BuilderError
+fn[T : IntMathValue] Builder::build_and(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : BasicType, V : BasicValue] Builder::build_array_alloca(Self, T, V, name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_array_malloc(Self, &BasicType, IntValue, name~ : String = ..) -> PointerValue raise BuilderError
+fn[T : BasicValue] Builder::build_binop(Self, InstructionOpcode, T, T, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(Self, BV, BT, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn Builder::build_call(Self, FunctionValue, Array[&BasicMetadataValue], name~ : String = ..) -> CallSiteValue raise BuilderError
+fn[T : BasicType, V : BasicValue] Builder::build_cast(Self, InstructionOpcode, V, T, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn Builder::build_conditional_branch(Self, IntValue, BasicBlock, BasicBlock) -> InstructionValue raise BuilderError
+fn Builder::build_direct_call(Self, FunctionValue, Array[&BasicMetadataValue], name~ : String = ..) -> CallSiteValue raise BuilderError
+fn Builder::build_direct_call_with_operand_bundles(Self, FunctionValue, Array[&BasicMetadataValue], Array[OperandBundle], name~ : String = ..) -> CallSiteValue raise BuilderError
+fn Builder::build_direct_invoke(Self, FunctionValue, Array[BasicValueEnum], BasicBlock, BasicBlock, name~ : String = ..) -> CallSiteValue raise BuilderError
+fn Builder::build_extract_element(Self, VectorValue, IntValue, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[AV : AggregateValue] Builder::build_extract_value(Self, AV, UInt, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn Builder::build_fence(Self, AtomicOrdering, Bool, name~ : String = ..) -> InstructionValue raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_add(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_compare(Self, FloatPredicate, T, T, name~ : String = ..) -> IntValue raise BuilderError
+fn Builder::build_float_div(Self, FloatValue, FloatValue, name~ : String = ..) -> FloatValue raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_mul(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_neg(Self, T, name~ : String = ..) -> T raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_rem(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : FloatMathValue] Builder::build_float_sub(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn Builder::build_free(Self, PointerValue) -> InstructionValue raise BuilderError
+fn[T : BasicType] Builder::build_gep(Self, T, PointerValue, Array[IntValue], name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_global_string(Self, String, name~ : String = ..) -> GlobalValue raise BuilderError
+fn Builder::build_global_string_ptr(Self, String, name~ : String = ..) -> GlobalValue raise BuilderError
+fn Builder::build_in_bounds_gep(Self, &BasicType, PointerValue, Array[IntValue], name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_indirect_branch(Self, BasicValueEnum, Array[BasicBlock]) -> InstructionValue raise BuilderError
+fn Builder::build_indirect_call(Self, FunctionType, PointerValue, Array[&BasicMetadataValue], name~ : String = ..) -> CallSiteValue raise BuilderError
+fn Builder::build_indirect_call_with_operand_bundles(Self, FunctionType, PointerValue, Array[&BasicMetadataValue], Array[OperandBundle], name~ : String = ..) -> CallSiteValue raise BuilderError
+fn Builder::build_indirect_invoke(Self, FunctionType, PointerValue, Array[BasicValueEnum], BasicBlock, BasicBlock, name~ : String = ..) -> CallSiteValue raise BuilderError
+fn[V : BasicValue, W : VectorBaseValue] Builder::build_insert_element(Self, W, V, IntValue, name~ : String = ..) -> W raise BuilderError
+fn[AV : AggregateValue, BV : BasicValue] Builder::build_insert_value(Self, AV, BV, UInt, name~ : String = ..) -> AggregateValueEnum raise BuilderError
+fn[T : IntMathValue] Builder::build_int_add(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_compare(Self, IntPredicate, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_exact_signed_div(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_mul(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_neg(Self, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nsw_add(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nsw_mul(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nsw_neg(Self, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nsw_sub(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nuw_add(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nuw_mul(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nuw_neg(Self, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_nuw_sub(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_signed_div(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_signed_rem(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_sub(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_unsigned_div(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_int_unsigned_rem(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn Builder::build_invoke(Self, FunctionValue, Array[BasicValueEnum], BasicBlock, BasicBlock, name~ : String = ..) -> CallSiteValue raise BuilderError
+fn[T : PointerMathValue] Builder::build_is_null(Self, T, name~ : String = ..) -> IntValue raise BuilderError
+fn Builder::build_landing_pad(Self, &BasicType, FunctionValue, Array[&BasicValue], Bool, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[T : IntMathValue] Builder::build_left_shift(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : BasicType] Builder::build_load(Self, T, PointerValue, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[T : BasicType] Builder::build_malloc(Self, T, name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_memcpy(Self, PointerValue, UInt, PointerValue, UInt, IntValue) -> PointerValue raise BuilderError
+fn Builder::build_memmove(Self, PointerValue, UInt, PointerValue, UInt, IntValue) -> PointerValue raise BuilderError
+fn Builder::build_memset(Self, PointerValue, UInt, IntValue, IntValue) -> PointerValue raise BuilderError
+fn[T : IntMathValue] Builder::build_not(Self, T, name~ : String = ..) -> T raise BuilderError
+fn[T : IntMathValue] Builder::build_or(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn[T : BasicType] Builder::build_phi(Self, T, name~ : String = ..) -> PhiValue raise BuilderError
+fn Builder::build_ptr_compare(Self, IntPredicate, PointerValue, PointerValue, name~ : String = ..) -> IntValue raise BuilderError
+fn Builder::build_ptr_diff(Self, &BasicType, PointerValue, PointerValue, name~ : String = ..) -> IntValue raise BuilderError
+fn Builder::build_resume(Self, &BasicValue) -> InstructionValue raise BuilderError
+fn[T : BasicValue] Builder::build_return(Self, T) -> InstructionValue raise BuilderError
+fn Builder::build_return_void(Self) -> InstructionValue raise BuilderError
+fn[T : IntMathValue] Builder::build_right_shift(Self, T, T, sign_extend~ : Bool = .., name~ : String = ..) -> T raise BuilderError
+fn[BV : BasicValue, IMV : IntMathValue] Builder::build_select(Self, IMV, BV, BV, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[V : VectorBaseValue] Builder::build_shuffle_vector(Self, V, V, V, name~ : String = ..) -> V raise BuilderError
+fn Builder::build_store(Self, PointerValue, &BasicValue) -> InstructionValue raise BuilderError
+fn Builder::build_store_func(Self, PointerValue, FunctionValue) -> InstructionValue raise BuilderError
+fn[T : BasicType] Builder::build_struct_gep(Self, T, PointerValue, UInt, name~ : String = ..) -> PointerValue raise BuilderError
+fn Builder::build_switch(Self, IntValue, BasicBlock, Array[(IntValue, BasicBlock)]) -> InstructionValue raise BuilderError
+fn Builder::build_unconditional_branch(Self, BasicBlock) -> InstructionValue raise BuilderError
+fn Builder::build_unreachable(Self) -> InstructionValue raise BuilderError
+fn[T : BasicType] Builder::build_va_arg(Self, PointerValue, T, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[T : IntMathValue] Builder::build_xor(Self, T, T, name~ : String = ..) -> T raise BuilderError
+fn Builder::clear_insertion_position(Self) -> Unit
+fn Builder::get_insert_block(Self) -> BasicBlock raise BuilderError
+fn Builder::insert_instruction(Self, InstructionValue, String?) -> Unit
+fn Builder::new(@unsafe.LLVMBuilderRef) -> Self
+fn Builder::position_at(Self, BasicBlock, InstructionValue) -> Unit
+fn Builder::position_at_end(Self, BasicBlock) -> Unit
+fn Builder::position_before(Self, InstructionValue) -> Unit
+
+pub suberror BuilderError {
+  UnsetPosition
+  AlignmentError(String)
+  ExtractOutOfRange
+  BitwidthError(String)
+  PointeeTypeMismatch(String)
+  ValueTypeMismatch(String)
+  OrderingError(String)
+  GEPPointee
+  GEPIndex
+}
+
+pub struct CallSiteValue {
+  value : Value
+}
+fn CallSiteValue::add_attribute(Self, AttributeLoc, Attribute) -> Unit
+fn CallSiteValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn CallSiteValue::count_arguments(Self) -> UInt
+fn CallSiteValue::count_attributes(Self, AttributeLoc) -> UInt
+fn CallSiteValue::dump(Self) -> Unit
+fn CallSiteValue::get_call_convention(Self) -> UInt
+fn CallSiteValue::get_called_fn_value(Self) -> FunctionValue
+fn CallSiteValue::get_enum_attribute(Self, AttributeLoc, UInt) -> Attribute?
+fn CallSiteValue::get_string_attribute(Self, AttributeLoc, String) -> Attribute?
+fn CallSiteValue::get_tail_call_kind(Self) -> @unsafe.LLVMTailCallKind
+fn CallSiteValue::is_tail_call(Self) -> Bool
+fn CallSiteValue::new(@unsafe.LLVMValueRef) -> Self
+fn CallSiteValue::print_to_stderr(Self) -> Unit
+fn CallSiteValue::print_to_string(Self) -> String
+fn CallSiteValue::remove_enum_attribute(Self, AttributeLoc, UInt) -> Unit
+fn CallSiteValue::remove_string_attribute(Self, AttributeLoc, String) -> Unit
+fn CallSiteValue::set_alignment_attribute(Self, AttributeLoc, UInt) -> Unit
+fn CallSiteValue::set_call_convention(Self, UInt) -> Unit
+fn CallSiteValue::set_tail_call(Self, Bool) -> Unit
+fn CallSiteValue::set_tail_call_kind(Self, @unsafe.LLVMTailCallKind) -> Unit
+fn CallSiteValue::to_string(Self) -> String
+fn CallSiteValue::try_as_basic_value(Self) -> Either[BasicValueEnum, InstructionValue]
+impl AsValue for CallSiteValue
+impl Show for CallSiteValue
+
+pub struct CallableValue {
+  either_value : Either[FunctionValue, PointerValue]
+}
+fn CallableValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn CallableValue::fromf(FunctionValue) -> Self
+fn CallableValue::fromp(PointerValue) -> Self
+impl AsValue for CallableValue
+
+pub struct Comdat {
+  comdat_ref : @unsafe.LLVMComdatRef
+}
+fn Comdat::as_comdat_ref(Self) -> @unsafe.LLVMComdatRef
+fn Comdat::get_selection_kind(Self) -> ComdatSelectionKind
+fn Comdat::new(@unsafe.LLVMComdatRef) -> Self
+fn Comdat::set_selection_kind(Self, ComdatSelectionKind) -> Unit
+
+pub(all) enum ComdatSelectionKind {
+  Any
+  ExactMatch
+  Largest
+  NoDuplicates
+  SameSize
+}
+fn ComdatSelectionKind::from(@unsafe.LLVMComdatSelectionKind) -> Self
+fn ComdatSelectionKind::into(Self) -> @unsafe.LLVMComdatSelectionKind
+
+type Context
+fn Context::append_basic_block(Self, FunctionValue, name~ : String = ..) -> BasicBlock
+fn Context::bool_type(Self) -> IntType
+fn Context::const_string(Self, String, Bool) -> ArrayValue
+fn Context::const_struct(Self, Array[&BasicValue], packed~ : Bool = ..) -> StructValue
+fn Context::create() -> Self
+fn Context::create_builder(Self) -> Builder
+fn Context::create_enum_attribute(Self, UInt, UInt64) -> Attribute
+fn Context::create_module(Self, String) -> Module
+fn Context::create_string_attribute(Self, String, String) -> Attribute
+fn[T : AnyType] Context::create_type_attribute(Self, UInt, T) -> Attribute
+fn Context::custom_width_int_type(Self, UInt) -> IntType
+fn Context::drop(Self) -> Unit
+fn Context::f128_type(Self) -> FloatType
+fn Context::f16_type(Self) -> FloatType
+fn Context::f32_type(Self) -> FloatType
+fn Context::f64_type(Self) -> FloatType
+fn Context::get_kind_id(Self, String) -> UInt
+fn Context::get_struct_type(Self, String) -> StructType?
+fn Context::i128_type(Self) -> IntType
+fn Context::i16_type(Self) -> IntType
+fn Context::i32_type(Self) -> IntType
+fn Context::i64_type(Self) -> IntType
+fn Context::i8_type(Self) -> IntType
+fn Context::insert_basic_block_after(Self, BasicBlock, name~ : String = ..) -> BasicBlock
+fn Context::metadata_node(Self, Array[&BasicMetadataValue]) -> MetadataValue
+fn Context::metadata_string(Self, String) -> MetadataValue
+fn Context::metadata_type(Self) -> MetadataType
+fn Context::new(@unsafe.LLVMContextRef) -> Self
+fn Context::opaque_struct_type(Self, String) -> StructType
+fn Context::ppc_f128_type(Self) -> FloatType
+fn Context::prepend_basic_block(Self, BasicBlock, String) -> BasicBlock
+fn Context::ptr_type(Self, AddressSpace) -> PointerType
+fn Context::struct_type(Self, Array[&BasicType], is_packed~ : Bool = ..) -> StructType
+fn Context::void_type(Self) -> VoidType
+fn Context::x86_f80_type(Self) -> FloatType
+impl Eq for Context
+
+pub(all) enum DLLStorageClass {
+  Default
+  DLLImport
+  DLLExport
+}
+fn DLLStorageClass::from(@unsafe.LLVMDLLStorageClass) -> Self
+fn DLLStorageClass::into(Self) -> @unsafe.LLVMDLLStorageClass
+impl Eq for DLLStorageClass
+impl Hash for DLLStorageClass
+impl Show for DLLStorageClass
+
+pub struct DebugInfoBuilder {
+  builder : @unsafe.LLVMDIBuilderRef
+}
+fn DebugInfoBuilder::new(@unsafe.LLVMDIBuilderRef) -> Self
+
+pub enum Either[L, R] {
+  Left(L)
+  Right(R)
+}
+fn[L, R] Either::expect_left(Self[L, R], String) -> L
+fn[L, R] Either::expect_right(Self[L, R], String) -> R
+fn[L, R] Either::is_left(Self[L, R]) -> Bool
+fn[L, R] Either::is_right(Self[L, R]) -> Bool
+fn[L, R] Either::left(Self[L, R]) -> L?
+fn[L, R] Either::right(Self[L, R]) -> R?
+fn[L, R] Either::unwrap_left(Self[L, R]) -> L
+fn[L, R] Either::unwrap_right(Self[L, R]) -> R
+
+pub type FastMathFlags UInt
+fn FastMathFlags::from(@unsafe.LLVMFastMathFlags) -> Self
+fn FastMathFlags::inner(Self) -> UInt
+fn FastMathFlags::into(Self) -> @unsafe.LLVMFastMathFlags
+impl Eq for FastMathFlags
+
+pub(all) enum FlagBehavior {
+  Error
+  Warning
+  Require
+  Override
+  Append
+  AppendUnique
+}
+fn FlagBehavior::from(@unsafe.LLVMModuleFlagBehavior) -> Self
+fn FlagBehavior::into(Self) -> @unsafe.LLVMModuleFlagBehavior
+
+pub(all) enum FloatPredicate {
+  OEQ
+  OGE
+  OGT
+  OLE
+  OLT
+  ONE
+  ORD
+  PredicateFalse
+  PredicateTrue
+  UEQ
+  UGE
+  UGT
+  ULE
+  ULT
+  UNE
+  UNO
+}
+impl Eq for FloatPredicate
+impl Hash for FloatPredicate
+impl Show for FloatPredicate
+
+pub struct FloatType {
+  ty : Type
+}
+fn FloatType::array_type(Self, UInt) -> ArrayType
+fn FloatType::as_type(Self) -> Type
+fn FloatType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn FloatType::const_array(Self, Array[FloatValue]) -> ArrayValue
+fn FloatType::const_float(Self, Double) -> FloatValue
+fn FloatType::const_float_from_string(Self, String) -> FloatValue
+fn FloatType::const_zero(Self) -> FloatValue
+fn FloatType::dump(Self) -> Unit
+fn FloatType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn FloatType::get_alignment(Self) -> IntValue
+fn FloatType::get_context(Self) -> Context
+fn FloatType::get_poison(Self) -> FloatValue
+fn FloatType::get_undef(Self) -> FloatValue
+fn FloatType::is_sized(Self) -> Bool
+fn FloatType::new(@unsafe.LLVMTypeRef) -> Self
+fn FloatType::print_to_stderr(Self) -> Unit
+fn FloatType::print_to_string(Self) -> String
+fn FloatType::ptr_type(Self, AddressSpace) -> PointerType
+fn FloatType::scalable_vec_type(Self, UInt) -> ScalableVectorType
+fn FloatType::size_of(Self) -> IntValue
+fn FloatType::vec_type(Self, UInt) -> VectorType
+impl AnyType for FloatType
+impl AsType for FloatType
+impl BasicMetadataType for FloatType
+impl BasicType for FloatType
+impl Show for FloatType
+
+pub struct FloatValue {
+  value : Value
+}
+fn FloatValue::as_instruction(Self) -> InstructionValue?
+fn FloatValue::as_value(Self) -> Value
+fn FloatValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn FloatValue::dump(Self) -> Unit
+fn FloatValue::get_constant(Self) -> (Double, Bool)?
+fn FloatValue::get_name(Self) -> String
+fn FloatValue::get_type(Self) -> FloatType
+fn FloatValue::is_const(Self) -> Bool
+fn FloatValue::is_null(Self) -> Bool
+fn FloatValue::is_undef(Self) -> Bool
+fn FloatValue::new(@unsafe.LLVMValueRef) -> Self
+fn FloatValue::print_to_stderr(Self) -> Unit
+fn FloatValue::print_to_string(Self) -> String
+fn FloatValue::replace_all_uses_with(Self, Self) -> Unit
+fn FloatValue::set_name(Self, String) -> Unit
+fn FloatValue::to_string(Self) -> String
+impl AnyValue for FloatValue
+impl AsValue for FloatValue
+impl BasicMetadataValue for FloatValue
+impl BasicValue for FloatValue
+impl FloatMathValue for FloatValue
+impl Show for FloatValue
+
+pub struct FunctionType {
+  ty : Type
+}
+fn FunctionType::as_type(Self) -> Type
+fn FunctionType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn FunctionType::count_param_types(Self) -> UInt
+fn FunctionType::dump(Self) -> Unit
+fn FunctionType::get_context(Self) -> Context
+fn FunctionType::get_param_types(Self) -> Array[BasicTypeEnum]
+fn FunctionType::get_return_type(Self) -> BasicTypeEnum?
+fn FunctionType::is_sized(Self) -> Bool
+fn FunctionType::is_var_arg(Self) -> Bool
+fn FunctionType::new(@unsafe.LLVMTypeRef) -> Self
+fn FunctionType::print_to_stderr(Self) -> Unit
+fn FunctionType::print_to_string(Self) -> String
+fn FunctionType::ptr_type(Self, AddressSpace) -> PointerType
+fn FunctionType::to_string(Self) -> String
+impl AnyType for FunctionType
+impl AsType for FunctionType
+impl Show for FunctionType
+
+pub struct FunctionValue {
+  value : Value
+}
+fn FunctionValue::add_attribute(Self, AttributeLoc, Attribute) -> Unit
+fn FunctionValue::as_global_value(Self) -> GlobalValue
+fn FunctionValue::as_value(Self) -> Value
+fn FunctionValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn FunctionValue::attributes(Self, AttributeLoc) -> Array[Attribute]
+fn FunctionValue::count_attributes(Self, AttributeLoc) -> UInt
+fn FunctionValue::count_basic_blocks(Self) -> UInt
+fn FunctionValue::count_params(Self) -> UInt
+fn FunctionValue::delete(Self) -> Unit
+fn FunctionValue::drop(Self) -> Unit
+fn FunctionValue::dump(Self) -> Unit
+fn FunctionValue::get_basic_blocks(Self) -> Array[BasicBlock]
+fn FunctionValue::get_call_convention(Self) -> UInt
+fn FunctionValue::get_enum_attribute(Self, AttributeLoc, UInt) -> Attribute?
+fn FunctionValue::get_first_basic_block(Self) -> BasicBlock?
+fn FunctionValue::get_first_param(Self) -> BasicValueEnum?
+fn FunctionValue::get_gc(Self) -> String
+fn FunctionValue::get_intrinsic_id(Self) -> UInt
+fn FunctionValue::get_last_basic_block(Self) -> BasicBlock?
+fn FunctionValue::get_last_param(Self) -> BasicValueEnum?
+fn FunctionValue::get_linkage(Self) -> Linkage
+fn FunctionValue::get_name(Self) -> String
+fn FunctionValue::get_next_function(Self) -> Self?
+fn FunctionValue::get_nth_param(Self, UInt) -> BasicValueEnum?
+fn FunctionValue::get_params(Self) -> Array[BasicValueEnum]
+fn FunctionValue::get_personality_function(Self) -> Self?
+fn FunctionValue::get_previous_function(Self) -> Self?
+fn FunctionValue::get_string_attribute(Self, AttributeLoc, String) -> Attribute?
+fn FunctionValue::get_type(Self) -> FunctionType
+fn FunctionValue::has_personality_function(Self) -> Bool
+fn FunctionValue::is_null(Self) -> Bool
+fn FunctionValue::is_undef(Self) -> Bool
+fn FunctionValue::new(@unsafe.LLVMValueRef) -> Self?
+fn FunctionValue::print_to_stderr(Self) -> Unit
+fn FunctionValue::print_to_string(Self) -> String
+fn FunctionValue::remove_enum_attribute(Self, AttributeLoc, UInt) -> Unit
+fn FunctionValue::remove_string_attribute(Self, AttributeLoc, String) -> Unit
+fn FunctionValue::replace_all_uses_with(Self, Self) -> Unit
+fn FunctionValue::set_call_convention(Self, UInt) -> Unit
+fn FunctionValue::set_gc(Self, String) -> Unit
+fn FunctionValue::set_linkage(Self, Linkage) -> Unit
+fn FunctionValue::set_param_alignment(Self, UInt, UInt) -> Unit
+fn FunctionValue::set_personality_function(Self, Self) -> Unit
+fn FunctionValue::to_string(Self) -> String
+impl AsValue for FunctionValue
+impl Eq for FunctionValue
+impl Show for FunctionValue
+
+pub struct GlobalValue {
+  value : Value
+}
+fn GlobalValue::as_pointer_value(Self) -> PointerValue
+fn GlobalValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn GlobalValue::delete(Self) -> Unit
+fn GlobalValue::dump(Self) -> Unit
+fn GlobalValue::get_alignment(Self) -> UInt
+fn GlobalValue::get_comdat(Self) -> Comdat?
+fn GlobalValue::get_dll_storage_class(Self) -> DLLStorageClass
+fn GlobalValue::get_initializer(Self) -> BasicValueEnum?
+fn GlobalValue::get_linkage(Self) -> Linkage
+fn GlobalValue::get_name(Self) -> String
+fn GlobalValue::get_next_global(Self) -> Self?
+fn GlobalValue::get_previous_global(Self) -> Self?
+fn GlobalValue::get_section(Self) -> String
+fn GlobalValue::get_thread_local_mode(Self) -> ThreadLocalMode
+fn GlobalValue::get_value_type(Self) -> AnyTypeEnum
+fn GlobalValue::has_unnamed_addr(Self) -> Bool
+fn GlobalValue::is_constant(Self) -> Bool
+fn GlobalValue::is_declaration(Self) -> Bool
+fn GlobalValue::is_externally_initialized(Self) -> Bool
+fn GlobalValue::is_thread_local(Self) -> Bool
+fn GlobalValue::new(@unsafe.LLVMValueRef) -> Self
+fn GlobalValue::print_to_stderr(Self) -> Unit
+fn GlobalValue::print_to_string(Self) -> String
+fn GlobalValue::set_alignment(Self, UInt) -> Unit
+fn GlobalValue::set_constant(Self, Bool) -> Unit
+fn GlobalValue::set_externally_initialized(Self, Bool) -> Unit
+fn GlobalValue::set_initializer(Self, BasicValueEnum) -> Unit
+fn GlobalValue::set_linkage(Self, Linkage) -> Unit
+fn GlobalValue::set_metadata(Self, MetadataValue, UInt) -> Unit
+fn GlobalValue::set_name(Self, String) -> Unit
+fn GlobalValue::set_section(Self, String) -> Unit
+fn GlobalValue::set_thread_local(Self, Bool) -> Unit
+fn GlobalValue::set_thread_local_mode(Self, ThreadLocalMode) -> Unit
+fn GlobalValue::set_unnamed_addr(Self, Bool) -> Unit
+fn GlobalValue::set_unnamed_address(Self, UnnamedAddress) -> Unit
+fn GlobalValue::set_visibility(Self, GlobalVisibility) -> Unit
+fn GlobalValue::to_string(Self) -> String
+impl AsValue for GlobalValue
+impl Eq for GlobalValue
+impl Show for GlobalValue
+
+pub(all) enum GlobalVisibility {
+  Default
+  Hidden
+  Protected
+}
+fn GlobalVisibility::from(@unsafe.LLVMVisibility) -> Self
+fn GlobalVisibility::get_visibility(GlobalValue) -> Self
+fn GlobalVisibility::into(Self) -> @unsafe.LLVMVisibility
+impl Eq for GlobalVisibility
+impl Hash for GlobalVisibility
+impl Show for GlobalVisibility
+
+pub(all) enum InlineAsmDialect {
+  ATT
+  Intel
+}
+fn InlineAsmDialect::from(@unsafe.LLVMInlineAsmDialect) -> Self
+fn InlineAsmDialect::into(Self) -> @unsafe.LLVMInlineAsmDialect
+impl Eq for InlineAsmDialect
+impl Hash for InlineAsmDialect
+impl Show for InlineAsmDialect
+
+pub(all) enum InstructionOpcode {
+  Add
+  AddrSpaceCast
+  Alloca
+  And
+  AShr
+  AtomicCmpXchg
+  AtomicRMW
+  BitCast
+  Br
+  Call
+  CallBr
+  CatchPad
+  CatchRet
+  CatchSwitch
+  CleanupPad
+  CleanupRet
+  ExtractElement
+  ExtractValue
+  FNeg
+  FAdd
+  FCmp
+  FDiv
+  Fence
+  FMul
+  FPExt
+  FPToSI
+  FPToUI
+  FPTrunc
+  Freeze
+  FRem
+  FSub
+  GetElementPtr
+  ICmp
+  IndirectBr
+  InsertElement
+  InsertValue
+  IntToPtr
+  Invoke
+  LandingPad
+  Load
+  LShr
+  Mul
+  Or
+  Phi
+  PtrToInt
+  Resume
+  Return
+  SDiv
+  Select
+  SExt
+  Shl
+  ShuffleVector
+  SIToFP
+  SRem
+  Store
+  Sub
+  Switch
+  Trunc
+  UDiv
+  UIToFP
+  Unreachable
+  URem
+  UserOp1
+  UserOp2
+  VAArg
+  Xor
+  ZExt
+}
+fn InstructionOpcode::from(@unsafe.LLVMOpcode) -> Self
+fn InstructionOpcode::into(Self) -> @unsafe.LLVMOpcode
+impl Eq for InstructionOpcode
+impl Hash for InstructionOpcode
+impl Show for InstructionOpcode
+
+pub struct InstructionValue {
+  value : Value
+}
+fn InstructionValue::as_value(Self) -> Value
+fn InstructionValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn InstructionValue::can_use_fast_math_flags(Self) -> Bool
+fn InstructionValue::dump(Self) -> Unit
+fn InstructionValue::erase_from_basic_block(Self) -> Unit
+fn InstructionValue::explicit_clone(Self) -> Self
+fn InstructionValue::get_alignment(Self) -> Result[UInt, String]
+fn InstructionValue::get_allocated_type(Self) -> Result[BasicTypeEnum, String]
+fn InstructionValue::get_atomic_ordering(Self) -> Result[AtomicOrdering, String]
+fn InstructionValue::get_disjoint_flag(Self) -> Bool?
+fn InstructionValue::get_fast_math_flags(Self) -> FastMathFlags?
+fn InstructionValue::get_fcmp_predicate(Self) -> FloatPredicate?
+fn InstructionValue::get_first_use(Self) -> BasicValueUse?
+fn InstructionValue::get_gep_source_element_type(Self) -> Result[BasicTypeEnum, String]
+fn InstructionValue::get_icmp_predicate(Self) -> IntPredicate?
+fn InstructionValue::get_instruction_with_name(Self, String) -> Self?
+fn InstructionValue::get_metadata(Self, UInt) -> MetadataValue?
+fn InstructionValue::get_name(Self) -> String?
+fn InstructionValue::get_next_instruction(Self) -> Self?
+fn InstructionValue::get_non_negative_flag(Self) -> Bool?
+fn InstructionValue::get_num_operands(Self) -> UInt
+fn InstructionValue::get_opcode(Self) -> InstructionOpcode
+fn InstructionValue::get_operand(Self, UInt) -> Either[BasicValueEnum, BasicBlock]?
+fn InstructionValue::get_operand_use(Self, UInt) -> BasicValueUse?
+fn InstructionValue::get_parent(Self) -> BasicBlock?
+fn InstructionValue::get_previous_instruction(Self) -> Self?
+fn InstructionValue::get_tail_call_kind(Self) -> @unsafe.LLVMTailCallKind?
+fn InstructionValue::get_type(Self) -> AnyTypeEnum
+fn InstructionValue::get_volatile(Self) -> Result[Bool, String]
+fn InstructionValue::has_metadata(Self) -> Bool
+fn InstructionValue::is_a_alloca_inst(Self) -> Bool
+fn InstructionValue::is_a_atomicrmw_inst(Self) -> Bool
+fn InstructionValue::is_a_cmpxchg_inst(Self) -> Bool
+fn InstructionValue::is_a_getelementptr_inst(Self) -> Bool
+fn InstructionValue::is_a_load_inst(Self) -> Bool
+fn InstructionValue::is_a_store_inst(Self) -> Bool
+fn InstructionValue::is_conditional(Self) -> Bool
+fn InstructionValue::is_tail_call(Self) -> Bool
+fn InstructionValue::is_terminator(Self) -> Bool
+fn InstructionValue::new(@unsafe.LLVMValueRef) -> Self
+fn InstructionValue::print_to_stderr(Self) -> Unit
+fn InstructionValue::print_to_string(Self) -> String
+fn InstructionValue::remove_from_basic_block(Self) -> Unit
+fn InstructionValue::replace_all_uses_with(Self, Self) -> Unit
+fn InstructionValue::set_alignment(Self, UInt) -> Result[Unit, String]
+fn InstructionValue::set_atomic_ordering(Self, AtomicOrdering) -> Result[Unit, String]
+fn InstructionValue::set_disjoint_flag(Self, Bool) -> Unit
+fn InstructionValue::set_fast_math_flags(Self, FastMathFlags) -> Unit
+fn InstructionValue::set_metadata(Self, MetadataValue, UInt) -> Unit raise MoonllvmError
+fn InstructionValue::set_name(Self, String) -> Unit
+fn InstructionValue::set_non_negative_flag(Self, Bool) -> Unit
+fn InstructionValue::set_operand(Self, UInt, &BasicValue) -> Bool
+fn InstructionValue::set_volatile(Self, Bool) -> Result[Unit, String]
+fn InstructionValue::to_string(Self) -> String
+impl AnyValue for InstructionValue
+impl AsValue for InstructionValue
+impl Show for InstructionValue
+
+pub(all) enum IntPredicate {
+  EQ
+  NE
+  UGT
+  UGE
+  ULT
+  ULE
+  SGT
+  SGE
+  SLT
+  SLE
+}
+fn IntPredicate::from(@unsafe.LLVMIntPredicate) -> Self
+fn IntPredicate::into(Self) -> @unsafe.LLVMIntPredicate
+impl Eq for IntPredicate
+impl Hash for IntPredicate
+impl Show for IntPredicate
+
+pub struct IntType {
+  ty : Type
+}
+fn IntType::array_type(Self, UInt) -> ArrayType
+fn IntType::as_type(Self) -> Type
+fn IntType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn IntType::const_all_ones(Self) -> IntValue
+fn IntType::const_array(Self, Array[IntValue]) -> ArrayValue
+fn IntType::const_int(Self, UInt64, sign_extend~ : Bool = ..) -> IntValue
+fn IntType::const_int_arbitrary_precision(Self, Array[UInt64]) -> IntValue
+fn IntType::const_zero(Self) -> IntValue
+fn IntType::dump(Self) -> Unit
+fn IntType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn IntType::get_alignment(Self) -> IntValue
+fn IntType::get_bit_width(Self) -> UInt
+fn IntType::get_context(Self) -> Context
+fn IntType::get_poison(Self) -> IntValue
+fn IntType::get_undef(Self) -> IntValue
+fn IntType::is_sized(Self) -> Bool
+fn IntType::new(@unsafe.LLVMTypeRef) -> Self
+fn IntType::print_to_stderr(Self) -> Unit
+fn IntType::print_to_string(Self) -> String
+fn IntType::ptr_type(Self, AddressSpace) -> PointerType
+fn IntType::scalable_vec_type(Self, UInt) -> ScalableVectorType
+fn IntType::size_of(Self) -> IntValue
+fn IntType::vec_type(Self, UInt) -> VectorType
+impl AnyType for IntType
+impl AsType for IntType
+impl BasicMetadataType for IntType
+impl BasicType for IntType
+impl Show for IntType
+
+pub struct IntValue {
+  value : Value
+}
+fn IntValue::as_instruction(Self) -> InstructionValue?
+fn IntValue::as_value(Self) -> Value
+fn IntValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn IntValue::const_add(Self, Self) -> Self
+fn IntValue::const_bit_cast(Self, IntType) -> Self
+fn IntValue::const_mul(Self, Self) -> Self
+fn IntValue::const_neg(Self) -> Self
+fn IntValue::const_not(Self) -> Self
+fn IntValue::const_nsw_add(Self, Self) -> Self
+fn IntValue::const_nsw_mul(Self, Self) -> Self
+fn IntValue::const_nsw_neg(Self) -> Self
+fn IntValue::const_nsw_sub(Self, Self) -> Self
+fn IntValue::const_nuw_add(Self, Self) -> Self
+fn IntValue::const_nuw_mul(Self, Self) -> Self
+fn IntValue::const_nuw_sub(Self, Self) -> Self
+fn IntValue::const_sub(Self, Self) -> Self
+fn IntValue::const_to_pointer(Self, PointerType) -> PointerValue
+fn IntValue::const_truncate(Self, IntType) -> Self
+fn IntValue::const_truncate_or_bit_cast(Self, IntType) -> Self
+fn IntValue::const_xor(Self, Self) -> Self
+fn IntValue::dump(Self) -> Unit
+fn IntValue::get_name(Self) -> String
+fn IntValue::get_sign_extended_constant(Self) -> Int64?
+fn IntValue::get_type(Self) -> IntType
+fn IntValue::get_zero_extended_constant(Self) -> UInt64?
+fn IntValue::is_const(Self) -> Bool
+fn IntValue::is_constant_int(Self) -> Bool
+fn IntValue::is_null(Self) -> Bool
+fn IntValue::is_undef(Self) -> Bool
+fn IntValue::new(@unsafe.LLVMValueRef) -> Self
+fn IntValue::print_to_stderr(Self) -> Unit
+fn IntValue::print_to_string(Self) -> String
+fn IntValue::replace_all_uses_with(Self, Self) -> Unit
+fn IntValue::set_name(Self, String) -> Unit
+impl AnyValue for IntValue
+impl AsValue for IntValue
+impl BasicMetadataValue for IntValue
+impl BasicValue for IntValue
+impl IntMathValue for IntValue
+impl Show for IntValue
+
+pub struct Intrinsic {
+  id : UInt
+}
+fn Intrinsic::find(String) -> Self?
+fn Intrinsic::get_declaration(Self, Module, Array[BasicTypeEnum]) -> FunctionValue?
+fn Intrinsic::is_overloaded(Self) -> Bool
+fn Intrinsic::new(UInt) -> Self
+
+pub(all) enum Linkage {
+  Appending
+  AvailableExternally
+  Common
+  DLLExport
+  DLLImport
+  External
+  ExternalWeak
+  Ghost
+  Internal
+  LinkerPrivate
+  LinkerPrivateWeak
+  LinkOnceAny
+  LinkOnceODRAutoHide
+  LinkOnceODR
+  Private
+  WeakAny
+  WeakODR
+}
+fn Linkage::from(@unsafe.LLVMLinkage) -> Self
+fn Linkage::into(Self) -> @unsafe.LLVMLinkage
+impl Show for Linkage
+
+pub struct MemoryBuffer {
+  memory_buffer : @unsafe.LLVMMemoryBufferRef
+}
+fn MemoryBuffer::as_mem_buf(Self) -> @unsafe.LLVMMemoryBufferRef
+fn MemoryBuffer::dispose(Self) -> Unit
+fn MemoryBuffer::drop(Self) -> Unit
+fn MemoryBuffer::get_size(Self) -> Int
+fn MemoryBuffer::new(@unsafe.LLVMMemoryBufferRef) -> Self
+
+pub struct MetadataType {
+  ty : Type
+}
+fn MetadataType::as_type(Self) -> Type
+fn MetadataType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn MetadataType::dump(Self) -> Unit
+fn MetadataType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn MetadataType::get_context(Self) -> Context
+fn MetadataType::new(@unsafe.LLVMTypeRef) -> Self
+fn MetadataType::print_to_stderr(Self) -> Unit
+fn MetadataType::print_to_string(Self) -> String
+fn MetadataType::to_string(Self) -> String
+impl AsType for MetadataType
+impl Show for MetadataType
+
+pub struct MetadataValue {
+  value : Value
+}
+fn MetadataValue::as_metadata_ref(Self) -> @unsafe.LLVMMetadataRef
+fn MetadataValue::as_value(Self) -> Value
+fn MetadataValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn MetadataValue::dump(Self) -> Unit
+fn MetadataValue::get_name(Self) -> String
+fn MetadataValue::get_node_size(Self) -> UInt
+fn MetadataValue::get_string_value(Self) -> String?
+fn MetadataValue::is_node(Self) -> Bool
+fn MetadataValue::is_string(Self) -> Bool
+fn MetadataValue::new(@unsafe.LLVMValueRef) -> Self
+fn MetadataValue::print_to_stderr(Self) -> Unit
+fn MetadataValue::print_to_string(Self) -> String
+fn MetadataValue::replace_all_uses_with(Self, Self) -> Unit
+fn MetadataValue::to_string(Self) -> String
+impl AnyValue for MetadataValue
+impl AsValue for MetadataValue
+impl BasicMetadataValue for MetadataValue
+impl Show for MetadataValue
+
+pub struct Module {
+  module_ref : @unsafe.LLVMModuleRef
+}
+fn Module::add_function(Self, String, FunctionType, linkage~ : Linkage? = ..) -> FunctionValue
+fn[T : BasicType] Module::add_global(Self, T, AddressSpace?, String) -> GlobalValue
+fn Module::add_global_metadata(Self, String, MetadataValue) -> Result[Unit, String]
+fn Module::as_mod_ref(Self) -> @unsafe.LLVMModuleRef
+fn Module::drop(Self) -> Unit
+fn Module::dump(Self) -> Unit
+fn Module::get_context(Self) -> Context
+fn Module::get_first_function(Self) -> FunctionValue?
+fn Module::get_first_global(Self) -> GlobalValue?
+fn Module::get_function(Self, String) -> FunctionValue?
+fn Module::get_functions(Self) -> Array[FunctionValue]
+fn Module::get_global(Self, String) -> GlobalValue?
+fn Module::get_global_metadata(Self, String) -> Array[MetadataValue]
+fn Module::get_global_metadata_size(Self, String) -> UInt
+fn Module::get_last_function(Self) -> FunctionValue?
+fn Module::get_last_global(Self) -> GlobalValue?
+fn Module::get_name(Self) -> String
+fn Module::get_source_filename(Self) -> String
+fn Module::get_struct_type(Self, String) -> StructType?
+fn Module::new(@unsafe.LLVMModuleRef) -> Self
+fn Module::print_to_stderr(Self) -> Unit
+fn Module::print_to_string(Self) -> String
+fn Module::set_inline_assembly(Self, String) -> Unit
+fn Module::set_name(Self, String) -> Unit
+fn Module::set_source_filename(Self, String) -> Unit
+impl Show for Module
+
+pub suberror MoonllvmError {
+  BasicBlockHasNoParent
+  SetBodyForNonOpaqueStruct
+  MetadataNotNode
+}
+impl Show for MoonllvmError
+
+pub struct OperandBundle {
+  bundle : @unsafe.LLVMOperandBundleRef
+}
+fn OperandBundle::as_bundle_ref(Self) -> @unsafe.LLVMOperandBundleRef
+fn OperandBundle::create(String, Array[&AnyValue]) -> Self
+fn OperandBundle::drop(Self) -> Unit
+fn OperandBundle::get_args(Self) -> Array[BasicValueEnum]
+fn OperandBundle::get_tag(Self) -> String
+fn OperandBundle::new(@unsafe.LLVMOperandBundleRef) -> Self
+
+pub(all) enum OptimizationLevel {
+  None
+  Less
+  Default
+  Aggressive
+}
+fn OptimizationLevel::from_int(Int) -> Self
+impl Eq for OptimizationLevel
+impl Hash for OptimizationLevel
+impl Show for OptimizationLevel
+
+pub struct PassBuilderOptions {
+  options_ref : @unsafe.LLVMPassBuilderOptionsRef
+}
+fn PassBuilderOptions::as_options_ref(Self) -> @unsafe.LLVMPassBuilderOptionsRef
+fn PassBuilderOptions::new() -> Self
+fn PassBuilderOptions::set_call_graph_profile(Self, Bool) -> Unit
+fn PassBuilderOptions::set_debug_logging(Self, Bool) -> Unit
+fn PassBuilderOptions::set_forget_all_scev_in_loop_unroll(Self, Bool) -> Unit
+fn PassBuilderOptions::set_licm_mssa_no_acc_for_promotion_cap(Self, UInt) -> Unit
+fn PassBuilderOptions::set_licm_mssa_opt_cap(Self, UInt) -> Unit
+fn PassBuilderOptions::set_loop_interleaving(Self, Bool) -> Unit
+fn PassBuilderOptions::set_loop_slp_vectorization(Self, Bool) -> Unit
+fn PassBuilderOptions::set_loop_unrolling(Self, Bool) -> Unit
+fn PassBuilderOptions::set_loop_vectorization(Self, Bool) -> Unit
+fn PassBuilderOptions::set_merge_functions(Self, Bool) -> Unit
+fn PassBuilderOptions::set_verify_each(Self, Bool) -> Unit
+
+pub struct PhiValue {
+  value : Value
+}
+fn PhiValue::add_incoming(Self, &BasicValue, BasicBlock) -> Unit
+fn PhiValue::add_incomings(Self, Array[(&BasicValue, BasicBlock)]) -> Unit
+fn PhiValue::as_basic_value(Self) -> BasicValueEnum
+fn PhiValue::as_instruction(Self) -> InstructionValue?
+fn PhiValue::as_value(Self) -> Value
+fn PhiValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn PhiValue::count_incoming(Self) -> UInt
+fn PhiValue::dump(Self) -> Unit
+fn PhiValue::get_incoming(Self, UInt) -> (BasicValueEnum, BasicBlock)?
+fn PhiValue::get_incoming_unchecked(Self, UInt) -> (BasicValueEnum, BasicBlock)
+fn PhiValue::get_name(Self) -> String
+fn PhiValue::get_type(Self) -> BasicTypeEnum
+fn PhiValue::is_null(Self) -> Bool
+fn PhiValue::is_undef(Self) -> Bool
+fn PhiValue::new(@unsafe.LLVMValueRef) -> Self
+fn PhiValue::print_to_stderr(Self) -> Unit
+fn PhiValue::print_to_string(Self) -> String
+fn PhiValue::replace_all_uses_with(Self, Self) -> Unit
+fn PhiValue::set_name(Self, String) -> Unit
+fn PhiValue::to_string(Self) -> String
+impl AnyValue for PhiValue
+impl AsValue for PhiValue
+impl Show for PhiValue
+
+pub struct PointerType {
+  ty : Type
+}
+fn PointerType::array_type(Self, UInt) -> ArrayType
+fn PointerType::as_type(Self) -> Type
+fn PointerType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn PointerType::const_array(Self, Array[PointerValue]) -> ArrayValue
+fn PointerType::const_null(Self) -> PointerValue
+fn PointerType::const_zero(Self) -> PointerValue
+fn PointerType::dump(Self) -> Unit
+fn PointerType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn PointerType::get_address_space(Self) -> AddressSpace
+fn PointerType::get_alignment(Self) -> IntValue
+fn PointerType::get_context(Self) -> Context
+fn PointerType::get_element_type(Self) -> AnyTypeEnum
+fn PointerType::get_poison(Self) -> PointerValue
+fn PointerType::get_undef(Self) -> PointerValue
+fn PointerType::is_opaque(Self) -> Bool
+fn PointerType::is_sized(Self) -> Bool
+fn PointerType::new(@unsafe.LLVMTypeRef) -> Self
+fn PointerType::print_to_stderr(Self) -> Unit
+fn PointerType::print_to_string(Self) -> String
+fn PointerType::ptr_type(Self, AddressSpace) -> Self
+fn PointerType::scalable_vec_type(Self, UInt) -> ScalableVectorType
+fn PointerType::size_of(Self) -> IntValue
+fn PointerType::vec_type(Self, UInt) -> VectorType
+impl AnyType for PointerType
+impl AsType for PointerType
+impl BasicMetadataType for PointerType
+impl BasicType for PointerType
+impl Show for PointerType
+
+pub struct PointerValue {
+  value : Value
+}
+fn PointerValue::as_instruction(Self) -> InstructionValue?
+fn PointerValue::as_value(Self) -> Value
+fn PointerValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn PointerValue::const_address_space_cast(Self, PointerType) -> Self
+fn PointerValue::const_cast(Self, PointerType) -> Self
+fn PointerValue::const_gep(Self, &BasicType, Array[IntValue]) -> Self
+fn PointerValue::const_in_bounds_gep(Self, &BasicType, Array[IntValue]) -> Self
+fn PointerValue::const_to_int(Self, IntType) -> IntValue
+fn PointerValue::dump(Self) -> Unit
+fn PointerValue::get_name(Self) -> String
+fn PointerValue::get_type(Self) -> PointerType
+fn PointerValue::is_const(Self) -> Bool
+fn PointerValue::is_null(Self) -> Bool
+fn PointerValue::is_undef(Self) -> Bool
+fn PointerValue::new(@unsafe.LLVMValueRef) -> Self
+fn PointerValue::print_to_stderr(Self) -> Unit
+fn PointerValue::print_to_string(Self) -> String
+fn PointerValue::replace_all_uses_with(Self, Self) -> Unit
+fn PointerValue::set_name(Self, String) -> Unit
+fn PointerValue::to_string(Self) -> String
+impl AnyValue for PointerValue
+impl AsValue for PointerValue
+impl BasicMetadataValue for PointerValue
+impl BasicValue for PointerValue
+impl PointerMathValue for PointerValue
+impl Show for PointerValue
+
+type PositionState
+impl Eq for PositionState
+impl Show for PositionState
+
+pub struct ScalableVectorType {
+  ty : Type
+}
+fn ScalableVectorType::array_type(Self, UInt) -> ArrayType
+fn ScalableVectorType::as_type(Self) -> Type
+fn ScalableVectorType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn ScalableVectorType::const_array(Self, Array[ScalableVectorValue]) -> ArrayValue
+fn ScalableVectorType::const_zero(Self) -> ScalableVectorValue
+fn ScalableVectorType::dump(Self) -> Unit
+fn ScalableVectorType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn ScalableVectorType::get_alignment(Self) -> IntValue
+fn ScalableVectorType::get_context(Self) -> Context
+fn ScalableVectorType::get_element_type(Self) -> BasicTypeEnum
+fn ScalableVectorType::get_poison(Self) -> ScalableVectorValue
+fn ScalableVectorType::get_size(Self) -> UInt
+fn ScalableVectorType::get_undef(Self) -> ScalableVectorValue
+fn ScalableVectorType::is_sized(Self) -> Bool
+fn ScalableVectorType::new(@unsafe.LLVMTypeRef) -> Self
+fn ScalableVectorType::print_to_stderr(Self) -> Unit
+fn ScalableVectorType::print_to_string(Self) -> String
+fn ScalableVectorType::ptr_type(Self, AddressSpace) -> PointerType
+fn ScalableVectorType::size_of(Self) -> IntValue?
+fn ScalableVectorType::to_string(Self) -> String
+impl AnyType for ScalableVectorType
+impl AsType for ScalableVectorType
+impl BasicMetadataType for ScalableVectorType
+impl BasicType for ScalableVectorType
+impl Show for ScalableVectorType
+
+pub struct ScalableVectorValue {
+  value : Value
+}
+fn ScalableVectorValue::as_instruction(Self) -> InstructionValue?
+fn ScalableVectorValue::as_value(Self) -> Value
+fn ScalableVectorValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn ScalableVectorValue::const_extract_element(Self, IntValue) -> BasicValueEnum
+fn ScalableVectorValue::const_insert_element(Self, &BasicValue, IntValue) -> BasicValueEnum
+fn ScalableVectorValue::const_shuffle_vector(Self, Self, Self) -> Self
+fn ScalableVectorValue::dump(Self) -> Unit
+fn ScalableVectorValue::get_name(Self) -> String
+fn ScalableVectorValue::get_type(Self) -> ScalableVectorType
+fn ScalableVectorValue::is_const(Self) -> Bool
+fn ScalableVectorValue::is_null(Self) -> Bool
+fn ScalableVectorValue::is_undef(Self) -> Bool
+fn ScalableVectorValue::new(@unsafe.LLVMValueRef) -> Self
+fn ScalableVectorValue::print_to_stderr(Self) -> Unit
+fn ScalableVectorValue::print_to_string(Self) -> String
+fn ScalableVectorValue::replace_all_uses_with(Self, Self) -> Unit
+fn ScalableVectorValue::set_name(Self, String) -> Unit
+fn ScalableVectorValue::to_string(Self) -> String
+impl AnyValue for ScalableVectorValue
+impl AsValue for ScalableVectorValue
+impl BasicMetadataValue for ScalableVectorValue
+impl BasicValue for ScalableVectorValue
+impl FloatMathValue for ScalableVectorValue
+impl IntMathValue for ScalableVectorValue
+impl PointerMathValue for ScalableVectorValue
+impl VectorBaseValue for ScalableVectorValue
+impl Show for ScalableVectorValue
+
+pub struct StructType {
+  ty : Type
+}
+fn StructType::array_type(Self, UInt) -> ArrayType
+fn StructType::as_type(Self) -> Type
+fn StructType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn StructType::const_array(Self, Array[StructValue]) -> ArrayValue
+fn StructType::const_named_struct(Self, Array[&BasicValue]) -> StructValue
+fn StructType::const_zero(Self) -> StructValue
+fn StructType::count_fields(Self) -> UInt
+fn StructType::dump(Self) -> Unit
+fn StructType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn StructType::get_alignment(Self) -> IntValue
+fn StructType::get_context(Self) -> Context
+fn StructType::get_field_type_at_index(Self, UInt) -> BasicTypeEnum?
+fn StructType::get_field_types(Self) -> Array[BasicTypeEnum]
+fn StructType::get_name(Self) -> String
+fn StructType::get_poison(Self) -> StructValue
+fn StructType::get_undef(Self) -> StructValue
+fn StructType::is_opaque(Self) -> Bool
+fn StructType::is_packed(Self) -> Bool
+fn StructType::is_sized(Self) -> Bool
+fn StructType::new(@unsafe.LLVMTypeRef) -> Self
+fn StructType::print_to_stderr(Self) -> Unit
+fn StructType::print_to_string(Self) -> String
+fn StructType::ptr_type(Self, AddressSpace) -> PointerType
+fn StructType::set_body(Self, Array[&BasicType], is_packed~ : Bool = ..) -> Unit raise MoonllvmError
+fn StructType::size_of(Self) -> IntValue?
+fn StructType::to_string(Self) -> String
+impl AnyType for StructType
+impl AsType for StructType
+impl BasicMetadataType for StructType
+impl BasicType for StructType
+impl Show for StructType
+
+pub struct StructValue {
+  value : Value
+}
+fn StructValue::as_instruction(Self) -> InstructionValue?
+fn StructValue::as_value(Self) -> Value
+fn StructValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn StructValue::count_fields(Self) -> UInt
+fn StructValue::dump(Self) -> Unit
+fn StructValue::get_field_at_index(Self, UInt) -> BasicValueEnum?
+fn StructValue::get_name(Self) -> String
+fn StructValue::get_type(Self) -> StructType
+fn StructValue::is_const(Self) -> Bool
+fn StructValue::is_null(Self) -> Bool
+fn StructValue::is_undef(Self) -> Bool
+fn StructValue::new(@unsafe.LLVMValueRef) -> Self
+fn StructValue::print_to_stderr(Self) -> Unit
+fn StructValue::print_to_string(Self) -> String
+fn StructValue::replace_all_uses_with(Self, Self) -> Unit
+fn StructValue::set_field_at_index(Self, UInt, &BasicValue) -> Bool
+fn StructValue::set_name(Self, String) -> Unit
+fn StructValue::to_string(Self) -> String
+impl AggregateValue for StructValue
+impl AnyValue for StructValue
+impl AsValue for StructValue
+impl BasicMetadataValue for StructValue
+impl BasicValue for StructValue
+impl Show for StructValue
+
+pub(all) enum ThreadLocalMode {
+  NotThreadLocal
+  GeneralDynamic
+  LocalDynamic
+  InitialExec
+  LocalExec
+}
+fn ThreadLocalMode::from(@unsafe.LLVMThreadLocalMode) -> Self
+fn ThreadLocalMode::into(Self) -> @unsafe.LLVMThreadLocalMode
+impl Eq for ThreadLocalMode
+impl Hash for ThreadLocalMode
+impl Show for ThreadLocalMode
+
+type Type
+fn Type::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+impl AsType for Type
+
+pub(all) enum UnnamedAddress {
+  None
+  Local
+  Global
+}
+fn UnnamedAddress::from(@unsafe.LLVMUnnamedAddr) -> Self
+fn UnnamedAddress::into(Self) -> @unsafe.LLVMUnnamedAddr
+impl Eq for UnnamedAddress
+impl Show for UnnamedAddress
+
+type Value
+impl Eq for Value
+impl Show for Value
+
+pub struct VectorType {
+  ty : Type
+}
+fn VectorType::array_type(Self, UInt) -> ArrayType
+fn VectorType::as_type(Self) -> Type
+fn VectorType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn VectorType::const_array(Self, Array[VectorValue]) -> ArrayValue
+fn VectorType::dump(Self) -> Unit
+fn VectorType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn VectorType::get_alignment(Self) -> IntValue
+fn VectorType::get_context(Self) -> Context
+fn VectorType::get_element_type(Self) -> BasicTypeEnum
+fn VectorType::get_poison(Self) -> VectorValue
+fn VectorType::get_size(Self) -> UInt
+fn VectorType::get_undef(Self) -> VectorValue
+fn VectorType::is_sized(Self) -> Bool
+fn VectorType::new(@unsafe.LLVMTypeRef) -> Self
+fn VectorType::print_to_stderr(Self) -> Unit
+fn VectorType::print_to_string(Self) -> String
+fn VectorType::ptr_type(Self, AddressSpace) -> PointerType
+fn VectorType::size_of(Self) -> IntValue?
+fn VectorType::to_string(Self) -> String
+impl AnyType for VectorType
+impl AsType for VectorType
+impl BasicMetadataType for VectorType
+impl BasicType for VectorType
+impl Show for VectorType
+
+pub struct VectorValue {
+  value : Value
+}
+fn VectorValue::as_instruction(Self) -> InstructionValue?
+fn VectorValue::as_value(Self) -> Value
+fn VectorValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
+fn VectorValue::const_shuffle_vector(Self, Self, Self) -> Self
+fn VectorValue::dump(Self) -> Unit
+fn VectorValue::get_name(Self) -> String
+fn VectorValue::get_type(Self) -> VectorType
+fn VectorValue::is_const(Self) -> Bool
+fn VectorValue::is_constant_data_vector(Self) -> Bool
+fn VectorValue::is_constant_vector(Self) -> Bool
+fn VectorValue::is_null(Self) -> Bool
+fn VectorValue::is_undef(Self) -> Bool
+fn VectorValue::new(@unsafe.LLVMValueRef) -> Self
+fn VectorValue::print_to_stderr(Self) -> Unit
+fn VectorValue::print_to_string(Self) -> String
+fn VectorValue::replace_all_uses_with(Self, Self) -> Unit
+fn VectorValue::set_name(Self, String) -> Unit
+fn VectorValue::to_string(Self) -> String
+impl AnyValue for VectorValue
+impl AsValue for VectorValue
+impl BasicMetadataValue for VectorValue
+impl BasicValue for VectorValue
+impl FloatMathValue for VectorValue
+impl IntMathValue for VectorValue
+impl PointerMathValue for VectorValue
+impl VectorBaseValue for VectorValue
+impl Show for VectorValue
+
+pub struct VoidType {
+  ty : Type
+}
+fn VoidType::as_type_ref(Self) -> @unsafe.LLVMTypeRef
+fn VoidType::dump(Self) -> Unit
+fn VoidType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
+fn VoidType::get_alignment(Self) -> IntValue
+fn VoidType::get_context(Self) -> Context
+fn VoidType::is_sized(Self) -> Bool
+fn VoidType::new(@unsafe.LLVMTypeRef) -> Self
+fn VoidType::print_to_stderr(Self) -> Unit
+fn VoidType::print_to_string(Self) -> String
+fn VoidType::to_string(Self) -> String
+impl AnyType for VoidType
+impl AsType for VoidType
+impl Show for VoidType
+
+// Type aliases
+
+// Traits
+pub trait AggregateValue : AnyValue {
+  as_aggregate_value_enum(Self) -> AggregateValueEnum
+}
+
+pub trait AnyType : AsType + Show {
+  as_any_type_enum(Self) -> AnyTypeEnum
+}
+
+pub trait AnyValue : AsValue + Show {
+  as_any_value_enum(Self) -> AnyValueEnum
+  get_type(Self) -> AnyTypeEnum
+}
+
+pub trait AsType {
+  as_type(Self) -> Type
+  as_type_ref(Self) -> @unsafe.LLVMTypeRef
+}
+
+pub trait AsValue {
+  as_value(Self) -> Value
+  as_value_ref(Self) -> @unsafe.LLVMValueRef
+  dump(Self) -> Unit
+}
+
+pub trait BasicMetadataType : AsType {
+  as_basic_metadata_type_enum(Self) -> BasicMetadataTypeEnum
+}
+
+pub trait BasicMetadataValue : AnyValue {
+  as_basic_metadata_value_enum(Self) -> BasicMetadataValueEnum
+}
+
+pub trait BasicType : AnyType {
+  as_basic_type_enum(Self) -> BasicTypeEnum
+}
+
+pub trait BasicValue : AnyValue {
+  as_basic_value_enum(Self) -> BasicValueEnum
+  get_type(Self) -> BasicTypeEnum
+}
+
+pub trait FloatMathValue : BasicValue {
+  new(@unsafe.LLVMValueRef) -> Self
+}
+
+pub trait IntMathValue : BasicValue {
+  new(@unsafe.LLVMValueRef) -> Self
+}
+
+pub trait PointerMathValue : BasicValue {
+  new(@unsafe.LLVMValueRef) -> Self
+}
+
+pub trait VectorBaseValue : BasicValue {
+  new(@unsafe.LLVMValueRef) -> Self
+}
+
