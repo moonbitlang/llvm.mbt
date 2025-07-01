@@ -5,13 +5,13 @@
 ///| A value resulting from a function call. It may have function attributes applied to it.
 // This struct may be removed in the future in favor of an `InstructionValue<CallSite>` type.
 pub struct CallSiteValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `CallSiteValue` from an `@unsafe.LLVMValueRef`.
 pub fn CallSiteValue::new(value_ref : @unsafe.LLVMValueRef) -> CallSiteValue {
   guard value_ref.is_not_null()
-  CallSiteValue::{ value: Value::new(value_ref) }
+  CallSiteValue::{ value: ValueRef::new(value_ref) }
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `CallSiteValue` wraps.

@@ -4,18 +4,18 @@
 
 ///| A `FunctionValue` is a value that represents a function.
 pub struct FunctionValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `FunctionValue` from an `@unsafe.LLVMValueRef`.
 pub fn FunctionValue::new(value_ref : @unsafe.LLVMValueRef) -> FunctionValue? {
   @option.unless(value_ref.is_null(), fn() {
-    FunctionValue::{ value: Value::new(value_ref) }
+    FunctionValue::{ value: ValueRef::new(value_ref) }
   })
 }
 
-///| Returns the `Value` that this `FunctionValue` wraps.
-pub fn FunctionValue::as_value(self : FunctionValue) -> Value {
+///| Returns the `ValueRef` that this `FunctionValue` wraps.
+pub fn FunctionValue::as_value(self : FunctionValue) -> ValueRef {
   self.value
 }
 

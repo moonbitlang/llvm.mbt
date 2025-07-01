@@ -4,7 +4,7 @@
 
 ///| A `PointerValue` is a value that represents a pointer.
 pub struct PointerValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub struct PointerValue {
 /// **unsafe**: Undefined behavior if `value_ref` is not a `PointerValue`.
 pub fn PointerValue::new(value_ref : @unsafe.LLVMValueRef) -> PointerValue {
   guard value_ref.is_not_null()
-  PointerValue::{ value: Value::new(value_ref) }
+  PointerValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `PointerValue` wraps.
-pub fn PointerValue::as_value(self : PointerValue) -> Value {
+///| Returns the `ValueRef` that this `PointerValue` wraps.
+pub fn PointerValue::as_value(self : PointerValue) -> ValueRef {
   self.value
 }
 

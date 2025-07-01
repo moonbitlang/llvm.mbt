@@ -4,7 +4,7 @@
 
 ///| An `IntValue` is a value that represents an integer.
 pub struct IntValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub struct IntValue {
 /// **unsafe**: Undefined behavior if `value_ref` is not an `IntValue`.
 pub fn IntValue::new(value_ref : @unsafe.LLVMValueRef) -> IntValue {
   guard value_ref.is_not_null()
-  IntValue::{ value: Value::new(value_ref) }
+  IntValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `IntValue` wraps.
-pub fn IntValue::as_value(self : IntValue) -> Value {
+///| Returns the `ValueRef` that this `IntValue` wraps.
+pub fn IntValue::as_value(self : IntValue) -> ValueRef {
   self.value
 }
 

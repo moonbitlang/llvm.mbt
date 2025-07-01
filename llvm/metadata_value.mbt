@@ -4,7 +4,7 @@
 
 ///| A `MetadataValue` is a value that represents a metadata node.
 pub struct MetadataValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `MetadataValue` from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub fn MetadataValue::new(value_ref : @unsafe.LLVMValueRef) -> MetadataValue {
   guard value_ref.is_not_null()
   guard @unsafe.llvm_isa_md_node(value_ref).is_not_null()
   guard @unsafe.llvm_isa_md_string(value_ref).is_not_null()
-  MetadataValue::{ value: Value::new(value_ref) }
+  MetadataValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `MetadataValue` wraps.
-pub fn MetadataValue::as_value(self : MetadataValue) -> Value {
+///| Returns the `ValueRef` that this `MetadataValue` wraps.
+pub fn MetadataValue::as_value(self : MetadataValue) -> ValueRef {
   self.value
 }
 

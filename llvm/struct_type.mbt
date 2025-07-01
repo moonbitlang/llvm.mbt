@@ -1,6 +1,6 @@
 ///| A `StructType` is the type of a heterogeneous container of types.
 pub struct StructType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `StructType` from `@unsafe.LLVMTypeRef`
@@ -8,11 +8,11 @@ pub struct StructType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not struct type.
 pub fn StructType::new(type_ref : @unsafe.LLVMTypeRef) -> StructType {
   guard type_ref.is_not_null()
-  StructType::{ ty: Type::new(type_ref) }
+  StructType::{ ty: TypeRef::new(type_ref) }
 }
 
 ///|
-pub fn StructType::as_type(self : StructType) -> Type {
+pub fn StructType::as_type(self : StructType) -> TypeRef {
   self.ty
 }
 

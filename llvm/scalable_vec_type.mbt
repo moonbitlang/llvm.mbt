@@ -1,6 +1,6 @@
 ///| A `ScalableVectorType` is the type of a scalable multiple value SIMD constant or variable.
 pub struct ScalableVectorType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `ScalableVectorType` from `@unsafe.LLVMTypeRef`
@@ -10,11 +10,11 @@ pub fn ScalableVectorType::new(
   type_ref : @unsafe.LLVMTypeRef
 ) -> ScalableVectorType {
   guard type_ref.is_not_null()
-  ScalableVectorType::{ ty: Type::new(type_ref) }
+  ScalableVectorType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `Type` of this `ScalableVectorType`.
-pub fn ScalableVectorType::as_type(self : ScalableVectorType) -> Type {
+///| Returns the `TypeRef` of this `ScalableVectorType`.
+pub fn ScalableVectorType::as_type(self : ScalableVectorType) -> TypeRef {
   self.ty
 }
 

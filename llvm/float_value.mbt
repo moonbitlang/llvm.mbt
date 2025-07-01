@@ -4,7 +4,7 @@
 
 ///| A `FloatValue` is a value that represents a floating point number.
 pub struct FloatValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub struct FloatValue {
 /// **unsafe**: Undefined behavior if `value_ref` is not a `FloatValue`.
 pub fn FloatValue::new(value_ref : @unsafe.LLVMValueRef) -> FloatValue {
   guard value_ref.is_not_null()
-  FloatValue::{ value: Value::new(value_ref) }
+  FloatValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `FloatValue` wraps.
-pub fn FloatValue::as_value(self : FloatValue) -> Value {
+///| Returns the `ValueRef` that this `FloatValue` wraps.
+pub fn FloatValue::as_value(self : FloatValue) -> ValueRef {
   self.value
 }
 

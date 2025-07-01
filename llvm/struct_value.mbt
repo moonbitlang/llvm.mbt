@@ -4,7 +4,7 @@
 
 ///| A `StructValue` is a value that represents a struct.
 pub struct StructValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub struct StructValue {
 /// **unsafe**: Undefined behavior if `value_ref` is not a struct.
 pub fn StructValue::new(value_ref : @unsafe.LLVMValueRef) -> StructValue {
   guard value_ref.is_not_null()
-  StructValue::{ value: Value::new(value_ref) }
+  StructValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `StructValue` wraps.
-pub fn StructValue::as_value(self : StructValue) -> Value {
+///| Returns the `ValueRef` that this `StructValue` wraps.
+pub fn StructValue::as_value(self : StructValue) -> ValueRef {
   self.value
 }
 

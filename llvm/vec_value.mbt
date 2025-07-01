@@ -4,17 +4,17 @@
 
 ///| A `VectorValue` is a value that represents a vector.
 pub struct VectorValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `VectorValue` from an `@unsafe.LLVMValueRef`.
 pub fn VectorValue::new(value_ref : @unsafe.LLVMValueRef) -> VectorValue {
   guard value_ref.is_not_null()
-  VectorValue::{ value: Value::new(value_ref) }
+  VectorValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `VectorValue` wraps.
-pub fn VectorValue::as_value(self : VectorValue) -> Value {
+///| Returns the `ValueRef` that this `VectorValue` wraps.
+pub fn VectorValue::as_value(self : VectorValue) -> ValueRef {
   self.value
 }
 

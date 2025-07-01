@@ -1,6 +1,6 @@
 ///| A `VectorType` is the type of a multiple value SIMD constant or variable.
 pub struct VectorType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `VectorType` from `@unsafe.LLVMTypeRef`
@@ -8,11 +8,11 @@ pub struct VectorType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not vector type.
 pub fn VectorType::new(type_ref : @unsafe.LLVMTypeRef) -> VectorType {
   guard type_ref.is_not_null()
-  VectorType::{ ty: Type::new(type_ref) }
+  VectorType::{ ty: TypeRef::new(type_ref) }
 }
 
 ///|
-pub fn VectorType::as_type(self : VectorType) -> Type {
+pub fn VectorType::as_type(self : VectorType) -> TypeRef {
   self.ty
 }
 

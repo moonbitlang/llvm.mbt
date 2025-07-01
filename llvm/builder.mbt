@@ -333,7 +333,7 @@ pub fn Builder::build_indirect_call_with_operand_bundles(
 fn Builder::build_call_help(
   self : Builder,
   fn_ty : FunctionType,
-  fn_val : Value, // FunctionValue Or PointerValue
+  fn_val : ValueRef, // FunctionValue Or PointerValue
   args : Array[&BasicMetadataValue],
   name~ : String = ""
 ) -> CallSiteValue raise BuilderError {
@@ -350,7 +350,7 @@ fn Builder::build_call_help(
 fn Builder::build_call_with_operand_bundles_help(
   self : Builder,
   fty : FunctionType,
-  fn_val : Value, // FunctionValue Or PointerValue
+  fn_val : ValueRef, // FunctionValue Or PointerValue
   args : Array[BasicMetadataValueEnum],
   operand_bundles : Array[OperandBundle],
   name~ : String = ""
@@ -498,7 +498,7 @@ pub fn Builder::build_indirect_invoke(
 fn Builder::build_invoke_help(
   self : Builder,
   fn_ty : FunctionType,
-  fn_val : Value,
+  fn_val : ValueRef,
   args : Array[BasicValueEnum],
   then_block : BasicBlock,
   catch_block : BasicBlock,

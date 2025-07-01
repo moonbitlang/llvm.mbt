@@ -1,6 +1,6 @@
 ///| An `ArrayType` is the type of contiguous constants or variables.
 pub struct ArrayType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `ArrayType` from `@unsafe.LLVMTypeRef`
@@ -8,11 +8,11 @@ pub struct ArrayType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not array type.
 pub fn ArrayType::new(type_ref : @unsafe.LLVMTypeRef) -> ArrayType {
   guard type_ref.is_not_null()
-  ArrayType::{ ty: Type::new(type_ref) }
+  ArrayType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `Type` of this `ArrayType`.
-pub fn ArrayType::as_type(self : ArrayType) -> Type {
+///| Returns the `TypeRef` of this `ArrayType`.
+pub fn ArrayType::as_type(self : ArrayType) -> TypeRef {
   self.ty
 }
 

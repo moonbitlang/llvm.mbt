@@ -1,6 +1,6 @@
 ///| A `PointerType` is the type of a pointer constant or variable.
 pub struct PointerType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `PointerType` from `@unsafe.LLVMTypeRef`
@@ -8,11 +8,11 @@ pub struct PointerType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not pointer type.
 pub fn PointerType::new(type_ref : @unsafe.LLVMTypeRef) -> PointerType {
   guard type_ref.is_not_null()
-  PointerType::{ ty: Type::new(type_ref) }
+  PointerType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `Type` of this `PointerType`.
-pub fn PointerType::as_type(self : PointerType) -> Type {
+///| Returns the `TypeRef` of this `PointerType`.
+pub fn PointerType::as_type(self : PointerType) -> TypeRef {
   self.ty
 }
 

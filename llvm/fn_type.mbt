@@ -1,6 +1,6 @@
 ///| A `FunctionType` is the type of a function variable.
 pub struct FunctionType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `FunctionType` from `@unsafe.LLVMTypeRef`
@@ -8,11 +8,11 @@ pub struct FunctionType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not function type.
 pub fn FunctionType::new(type_ref : @unsafe.LLVMTypeRef) -> FunctionType {
   guard type_ref.is_not_null()
-  FunctionType::{ ty: Type::new(type_ref) }
+  FunctionType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `Type` of this `FunctionType`.
-pub fn FunctionType::as_type(self : FunctionType) -> Type {
+///| Returns the `TypeRef` of this `FunctionType`.
+pub fn FunctionType::as_type(self : FunctionType) -> TypeRef {
   self.ty
 }
 

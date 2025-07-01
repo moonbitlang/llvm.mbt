@@ -4,7 +4,7 @@
 
 ///| A `FloatType` is the type of a floating point constant or variable.
 pub struct FloatType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `FloatType` from `@unsafe.LLVMTypeRef`
@@ -12,11 +12,11 @@ pub struct FloatType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not float type.
 pub fn FloatType::new(type_ref : @unsafe.LLVMTypeRef) -> FloatType {
   guard type_ref.is_not_null()
-  FloatType::{ ty: Type::new(type_ref) }
+  FloatType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Return `Type` of `FloatType`.
-pub fn FloatType::as_type(self : FloatType) -> Type {
+///| Return `TypeRef` of `FloatType`.
+pub fn FloatType::as_type(self : FloatType) -> TypeRef {
   self.ty
 }
 

@@ -4,17 +4,17 @@
 
 ///| An `ArrayValue` is a value that represents an array.
 pub struct ArrayValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `ArrayValue` from an `@unsafe.LLVMValueRef`.
 pub fn ArrayValue::new(value_ref : @unsafe.LLVMValueRef) -> ArrayValue {
   guard value_ref.is_not_null()
-  ArrayValue::{ value: Value::new(value_ref) }
+  ArrayValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `ArrayValue` wraps.
-pub fn ArrayValue::as_value(self : ArrayValue) -> Value {
+///| Returns the `ValueRef` that this `ArrayValue` wraps.
+pub fn ArrayValue::as_value(self : ArrayValue) -> ValueRef {
   self.value
 }
 

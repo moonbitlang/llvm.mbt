@@ -4,17 +4,17 @@
 
 ///| A `PhiValue` is a value that represents a phi node.
 pub struct PhiValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| creates a new `PhiValue` from an `@unsafe.LLVMValueRef`.
 pub fn PhiValue::new(value_ref : @unsafe.LLVMValueRef) -> PhiValue {
   guard value_ref.is_not_null()
-  PhiValue::{ value: Value::new(value_ref) }
+  PhiValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `PhiValue` wraps.
-pub fn PhiValue::as_value(self : PhiValue) -> Value {
+///| Returns the `ValueRef` that this `PhiValue` wraps.
+pub fn PhiValue::as_value(self : PhiValue) -> ValueRef {
   self.value
 }
 

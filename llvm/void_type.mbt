@@ -1,7 +1,7 @@
 ///| A `VoidType` is a special type with no possible direct instances.
 /// It's only useful as a function return type.
 pub struct VoidType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `VoidType` from `@unsafe.LLVMTypeRef`
@@ -9,7 +9,7 @@ pub struct VoidType {
 /// **Unsafe**: Undefined behavior if `type_ref` is not void type.
 pub fn VoidType::new(type_ref : @unsafe.LLVMTypeRef) -> VoidType {
   guard type_ref.is_not_null()
-  VoidType::{ ty: Type::new(type_ref) }
+  VoidType::{ ty: TypeRef::new(type_ref) }
 }
 
 ///| Return `@unsafe.LLVMTypeRef` of `VoidType`

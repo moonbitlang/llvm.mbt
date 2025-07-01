@@ -1,16 +1,16 @@
 ///| A `MetadataType` is the type of a metadata.
 pub struct MetadataType {
-  ty : Type
+  ty : TypeRef
 }
 
 ///| Create `MetadataType` from `@unsafe.LLVMTypeRef`
 pub fn MetadataType::new(type_ref : @unsafe.LLVMTypeRef) -> MetadataType {
   guard type_ref.is_not_null()
-  MetadataType::{ ty: Type::new(type_ref) }
+  MetadataType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `Type` of this `MetadataType`.
-pub fn MetadataType::as_type(self : MetadataType) -> Type {
+///| Returns the `TypeRef` of this `MetadataType`.
+pub fn MetadataType::as_type(self : MetadataType) -> TypeRef {
   self.ty
 }
 

@@ -1,6 +1,6 @@
 ///|
 pub trait AsValue {
-  as_value(Self) -> Value
+  as_value(Self) -> ValueRef
   as_value_ref(Self) -> @unsafe.LLVMValueRef
   dump(Self) -> Unit = _
 }
@@ -11,17 +11,17 @@ impl AsValue with dump(self) -> Unit {
 }
 
 ///|
-impl AsValue for Value with as_value(self : Value) -> Value {
+impl AsValue for ValueRef with as_value(self : ValueRef) -> ValueRef {
   self
 }
 
 ///|
-impl AsValue for Value with as_value_ref(self : Value) -> @unsafe.LLVMValueRef {
-  self.value_ref
+impl AsValue for ValueRef with as_value_ref(self : ValueRef) -> @unsafe.LLVMValueRef {
+  self.inner()
 }
 
 ///|
-pub impl AsValue for IntValue with as_value(self : IntValue) -> Value {
+pub impl AsValue for IntValue with as_value(self : IntValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -31,7 +31,7 @@ pub impl AsValue for IntValue with as_value_ref(self : IntValue) -> @unsafe.LLVM
 }
 
 ///|
-pub impl AsValue for FloatValue with as_value(self : FloatValue) -> Value {
+pub impl AsValue for FloatValue with as_value(self : FloatValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -41,7 +41,7 @@ pub impl AsValue for FloatValue with as_value_ref(self : FloatValue) -> @unsafe.
 }
 
 ///|
-pub impl AsValue for PointerValue with as_value(self : PointerValue) -> Value {
+pub impl AsValue for PointerValue with as_value(self : PointerValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -51,7 +51,7 @@ pub impl AsValue for PointerValue with as_value_ref(self : PointerValue) -> @uns
 }
 
 ///|
-pub impl AsValue for InstructionValue with as_value(self : InstructionValue) -> Value {
+pub impl AsValue for InstructionValue with as_value(self : InstructionValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -61,7 +61,7 @@ pub impl AsValue for InstructionValue with as_value_ref(self : InstructionValue)
 }
 
 ///|
-pub impl AsValue for StructValue with as_value(self : StructValue) -> Value {
+pub impl AsValue for StructValue with as_value(self : StructValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -71,7 +71,7 @@ pub impl AsValue for StructValue with as_value_ref(self : StructValue) -> @unsaf
 }
 
 ///|
-pub impl AsValue for FunctionValue with as_value(self : FunctionValue) -> Value {
+pub impl AsValue for FunctionValue with as_value(self : FunctionValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -81,7 +81,7 @@ pub impl AsValue for FunctionValue with as_value_ref(self : FunctionValue) -> @u
 }
 
 ///|
-pub impl AsValue for ArrayValue with as_value(self : ArrayValue) -> Value {
+pub impl AsValue for ArrayValue with as_value(self : ArrayValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -91,7 +91,7 @@ pub impl AsValue for ArrayValue with as_value_ref(self : ArrayValue) -> @unsafe.
 }
 
 ///|
-pub impl AsValue for VectorValue with as_value(self : VectorValue) -> Value {
+pub impl AsValue for VectorValue with as_value(self : VectorValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -101,7 +101,7 @@ pub impl AsValue for VectorValue with as_value_ref(self : VectorValue) -> @unsaf
 }
 
 ///|
-pub impl AsValue for PhiValue with as_value(self : PhiValue) -> Value {
+pub impl AsValue for PhiValue with as_value(self : PhiValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -113,7 +113,7 @@ pub impl AsValue for PhiValue with as_value_ref(self : PhiValue) -> @unsafe.LLVM
 ///|
 pub impl AsValue for ScalableVectorValue with as_value(
   self : ScalableVectorValue
-) -> Value {
+) -> ValueRef {
   self.value.as_value()
 }
 
@@ -125,7 +125,7 @@ pub impl AsValue for ScalableVectorValue with as_value_ref(
 }
 
 ///|
-pub impl AsValue for GlobalValue with as_value(self : GlobalValue) -> Value {
+pub impl AsValue for GlobalValue with as_value(self : GlobalValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -135,7 +135,7 @@ pub impl AsValue for GlobalValue with as_value_ref(self : GlobalValue) -> @unsaf
 }
 
 ///|
-pub impl AsValue for MetadataValue with as_value(self : MetadataValue) -> Value {
+pub impl AsValue for MetadataValue with as_value(self : MetadataValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -145,7 +145,7 @@ pub impl AsValue for MetadataValue with as_value_ref(self : MetadataValue) -> @u
 }
 
 ///|
-pub impl AsValue for CallSiteValue with as_value(self : CallSiteValue) -> Value {
+pub impl AsValue for CallSiteValue with as_value(self : CallSiteValue) -> ValueRef {
   self.value.as_value()
 }
 
@@ -160,7 +160,7 @@ pub impl AsValue for CallableValue with as_value_ref(self : CallableValue) -> @u
 }
 
 ///|
-pub impl AsValue for CallableValue with as_value(self : CallableValue) -> Value {
+pub impl AsValue for CallableValue with as_value(self : CallableValue) -> ValueRef {
   match self.either_value {
     Left(f) => f.as_value()
     Right(p) => p.as_value()
@@ -185,7 +185,7 @@ pub impl AsValue for AnyValueEnum with as_value_ref(self : AnyValueEnum) -> @uns
 }
 
 ///|
-pub impl AsValue for AnyValueEnum with as_value(self : AnyValueEnum) -> Value {
+pub impl AsValue for AnyValueEnum with as_value(self : AnyValueEnum) -> ValueRef {
   match self {
     ArrayValue(v) => v.as_value()
     IntValue(v) => v.as_value()
@@ -215,7 +215,7 @@ pub impl AsValue for BasicValueEnum with as_value_ref(self) {
 }
 
 ///|
-pub impl AsValue for BasicValueEnum with as_value(self : BasicValueEnum) -> Value {
+pub impl AsValue for BasicValueEnum with as_value(self : BasicValueEnum) -> ValueRef {
   match self {
     ArrayValue(v) => v.as_value()
     IntValue(v) => v.as_value()
@@ -244,7 +244,7 @@ pub impl AsValue for BasicMetadataValueEnum with as_value_ref(self) {
 ///|
 pub impl AsValue for BasicMetadataValueEnum with as_value(
   self : BasicMetadataValueEnum
-) -> Value {
+) -> ValueRef {
   match self {
     ArrayValue(v) => v.as_value()
     IntValue(v) => v.as_value()
@@ -583,22 +583,22 @@ pub impl VectorBaseValue for ScalableVectorValue with new(
 
 ///|
 pub trait AsType {
-  as_type(Self) -> Type
+  as_type(Self) -> TypeRef
   as_type_ref(Self) -> @unsafe.LLVMTypeRef
 }
 
 ///|
-pub impl AsType for Type with as_type(self : Type) -> Type {
+pub impl AsType for TypeRef with as_type(self : TypeRef) -> TypeRef {
   self
 }
 
 ///|
-pub impl AsType for Type with as_type_ref(self : Type) -> @unsafe.LLVMTypeRef {
-  self.type_ref
+pub impl AsType for TypeRef with as_type_ref(self : TypeRef) -> @unsafe.LLVMTypeRef {
+  self.inner()
 }
 
 ///|
-pub impl AsType for IntType with as_type(self : IntType) -> Type {
+pub impl AsType for IntType with as_type(self : IntType) -> TypeRef {
   self.ty
 }
 
@@ -608,7 +608,7 @@ pub impl AsType for IntType with as_type_ref(self : IntType) -> @unsafe.LLVMType
 }
 
 ///|
-pub impl AsType for FloatType with as_type(self : FloatType) -> Type {
+pub impl AsType for FloatType with as_type(self : FloatType) -> TypeRef {
   self.ty
 }
 
@@ -618,7 +618,7 @@ pub impl AsType for FloatType with as_type_ref(self : FloatType) -> @unsafe.LLVM
 }
 
 ///|
-pub impl AsType for VoidType with as_type(self : VoidType) -> Type {
+pub impl AsType for VoidType with as_type(self : VoidType) -> TypeRef {
   self.ty
 }
 
@@ -628,7 +628,7 @@ pub impl AsType for VoidType with as_type_ref(self : VoidType) -> @unsafe.LLVMTy
 }
 
 ///|
-pub impl AsType for PointerType with as_type(self : PointerType) -> Type {
+pub impl AsType for PointerType with as_type(self : PointerType) -> TypeRef {
   self.ty
 }
 
@@ -638,7 +638,7 @@ pub impl AsType for PointerType with as_type_ref(self : PointerType) -> @unsafe.
 }
 
 ///|
-pub impl AsType for StructType with as_type(self : StructType) -> Type {
+pub impl AsType for StructType with as_type(self : StructType) -> TypeRef {
   self.ty
 }
 
@@ -648,7 +648,7 @@ pub impl AsType for StructType with as_type_ref(self : StructType) -> @unsafe.LL
 }
 
 ///|
-pub impl AsType for FunctionType with as_type(self : FunctionType) -> Type {
+pub impl AsType for FunctionType with as_type(self : FunctionType) -> TypeRef {
   self.ty
 }
 
@@ -658,7 +658,7 @@ pub impl AsType for FunctionType with as_type_ref(self : FunctionType) -> @unsaf
 }
 
 ///|
-pub impl AsType for ArrayType with as_type(self : ArrayType) -> Type {
+pub impl AsType for ArrayType with as_type(self : ArrayType) -> TypeRef {
   self.ty
 }
 
@@ -668,7 +668,7 @@ pub impl AsType for ArrayType with as_type_ref(self : ArrayType) -> @unsafe.LLVM
 }
 
 ///|
-pub impl AsType for VectorType with as_type(self : VectorType) -> Type {
+pub impl AsType for VectorType with as_type(self : VectorType) -> TypeRef {
   self.ty
 }
 
@@ -678,7 +678,7 @@ pub impl AsType for VectorType with as_type_ref(self : VectorType) -> @unsafe.LL
 }
 
 ///|
-pub impl AsType for ScalableVectorType with as_type(self : ScalableVectorType) -> Type {
+pub impl AsType for ScalableVectorType with as_type(self : ScalableVectorType) -> TypeRef {
   self.ty
 }
 
@@ -690,7 +690,7 @@ pub impl AsType for ScalableVectorType with as_type_ref(
 }
 
 ///|
-pub impl AsType for MetadataType with as_type(self : MetadataType) -> Type {
+pub impl AsType for MetadataType with as_type(self : MetadataType) -> TypeRef {
   self.ty
 }
 
@@ -715,7 +715,7 @@ pub impl AsType for AnyTypeEnum with as_type_ref(self) {
 }
 
 ///|
-pub impl AsType for AnyTypeEnum with as_type(self : AnyTypeEnum) -> Type {
+pub impl AsType for AnyTypeEnum with as_type(self : AnyTypeEnum) -> TypeRef {
   match self {
     AnyTypeEnum::ArrayType(v) => v.as_type()
     AnyTypeEnum::FloatType(v) => v.as_type()
@@ -743,7 +743,7 @@ pub impl AsType for BasicTypeEnum with as_type_ref(self) {
 }
 
 ///|
-pub impl AsType for BasicTypeEnum with as_type(self : BasicTypeEnum) -> Type {
+pub impl AsType for BasicTypeEnum with as_type(self : BasicTypeEnum) -> TypeRef {
   match self {
     ArrayType(t) => t.as_type()
     FloatType(t) => t.as_type()
@@ -772,7 +772,7 @@ pub impl AsType for BasicMetadataTypeEnum with as_type_ref(self) {
 ///|
 pub impl AsType for BasicMetadataTypeEnum with as_type(
   self : BasicMetadataTypeEnum
-) -> Type {
+) -> TypeRef {
   match self {
     ArrayType(t) => t.as_type()
     FloatType(t) => t.as_type()

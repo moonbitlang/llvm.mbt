@@ -4,7 +4,7 @@
 
 ///| A `ScalableVectorValue` is a value that represents a scalable vector.
 pub struct ScalableVectorValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `ScalableVectorValue` from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub fn ScalableVectorValue::new(
   value_ref : @unsafe.LLVMValueRef
 ) -> ScalableVectorValue {
   guard value_ref.is_not_null()
-  ScalableVectorValue::{ value: Value::new(value_ref) }
+  ScalableVectorValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `ScalableVectorValue` wraps.
-pub fn ScalableVectorValue::as_value(self : ScalableVectorValue) -> Value {
+///| Returns the `ValueRef` that this `ScalableVectorValue` wraps.
+pub fn ScalableVectorValue::as_value(self : ScalableVectorValue) -> ValueRef {
   self.value
 }
 

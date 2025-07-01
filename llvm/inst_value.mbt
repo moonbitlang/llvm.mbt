@@ -4,7 +4,7 @@
 
 ///| An `InstructionValue` is a value that represents an instruction.
 pub struct InstructionValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Get a value from an `@unsafe.LLVMValueRef`.
@@ -12,11 +12,11 @@ pub fn InstructionValue::new(
   value_ref : @unsafe.LLVMValueRef
 ) -> InstructionValue {
   guard value_ref.is_not_null()
-  InstructionValue::{ value: Value::new(value_ref) }
+  InstructionValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `Value` that this `InstructionValue` wraps.
-pub fn InstructionValue::as_value(self : InstructionValue) -> Value {
+///| Returns the `ValueRef` that this `InstructionValue` wraps.
+pub fn InstructionValue::as_value(self : InstructionValue) -> ValueRef {
   self.value
 }
 
@@ -286,7 +286,7 @@ pub fn InstructionValue::get_volatile(
     not(self.is_a_store_inst()) &&
     not(self.is_a_atomicrmw_inst()) &&
     not(self.is_a_cmpxchg_inst()) {
-    return Err("Value is not a load, store, atomicrmw or cmpxchg instruction")
+    return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
   }
   Ok(@unsafe.llvm_get_volatile(self.as_value_ref()))
 }
@@ -301,7 +301,7 @@ pub fn InstructionValue::set_volatile(
     not(self.is_a_store_inst()) &&
     not(self.is_a_atomicrmw_inst()) &&
     not(self.is_a_cmpxchg_inst()) {
-    return Err("Value is not a load, store, atomicrmw or cmpxchg instruction")
+    return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
   }
   self.as_value_ref().set_volatile(flag)
   Ok(())
@@ -313,7 +313,7 @@ pub fn InstructionValue::get_allocated_type(
   self : InstructionValue
 ) -> Result[BasicTypeEnum, String] {
   if not(self.is_a_alloca_inst()) {
-    return Err("Value is not an alloca instruction")
+    return Err("ValueRef is not an alloca instruction")
   }
   Ok(BasicTypeEnum::new(@unsafe.llvm_get_allocated_type(self.as_value_ref())))
 }
@@ -324,7 +324,7 @@ pub fn InstructionValue::get_gep_source_element_type(
   self : InstructionValue
 ) -> Result[BasicTypeEnum, String] {
   if not(self.is_a_getelementptr_inst()) {
-    return Err("Value is not a getelementptr instruction")
+    return Err("ValueRef is not a getelementptr instruction")
   }
   Ok(
     BasicTypeEnum::new(
@@ -341,7 +341,7 @@ pub fn InstructionValue::get_alignment(
   if not(self.is_a_alloca_inst()) &&
     not(self.is_a_load_inst()) &&
     not(self.is_a_store_inst()) {
-    return Err("Value is not a load, store or alloca instruction")
+    return Err("ValueRef is not a load, store or alloca instruction")
   }
   Ok(@unsafe.llvm_get_alignment(self.as_value_ref()))
 }
@@ -358,7 +358,7 @@ pub fn InstructionValue::set_alignment(
   if not(self.is_a_alloca_inst()) &&
     not(self.is_a_load_inst()) &&
     not(self.is_a_store_inst()) {
-    return Err("Value is not a load, store or alloca instruction")
+    return Err("ValueRef is not a load, store or alloca instruction")
   }
   @unsafe.llvm_set_alignment(self.as_value_ref(), alignment)
   Ok(())
@@ -370,7 +370,7 @@ pub fn InstructionValue::get_atomic_ordering(
   self : InstructionValue
 ) -> Result[AtomicOrdering, String] {
   if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
-    return Err("Value is not a load or store instruction")
+    return Err("ValueRef is not a load or store instruction")
   }
   let ord = @unsafe.llvm_get_ordering(self.as_value_ref())
   Ok(AtomicOrdering::from(ord))
@@ -383,7 +383,7 @@ pub fn InstructionValue::set_atomic_ordering(
   ordering : AtomicOrdering
 ) -> Result[Unit, String] {
   if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
-    return Err("Value is not a load or store instruction")
+    return Err("ValueRef is not a load or store instruction")
   }
   match ordering {
     AtomicOrdering::Release =>

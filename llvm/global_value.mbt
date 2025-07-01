@@ -4,13 +4,13 @@
 
 ///| A `GlobalValue` is a value that represents a global variable.
 pub struct GlobalValue {
-  value : Value
+  value : ValueRef
 }
 
 ///| Creates a new `GlobalValue` from an `@unsafe.LLVMValueRef`.
 pub fn GlobalValue::new(value_ref : @unsafe.LLVMValueRef) -> GlobalValue {
   guard value_ref.is_not_null()
-  GlobalValue::{ value: Value::new(value_ref) }
+  GlobalValue::{ value: ValueRef::new(value_ref) }
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `GlobalValue` wraps.
