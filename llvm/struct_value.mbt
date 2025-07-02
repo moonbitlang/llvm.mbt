@@ -15,12 +15,22 @@ pub fn StructValue::new(value_ref : @unsafe.LLVMValueRef) -> StructValue {
   StructValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for StructValue with base(self) {
+  self.value
+}
+
+pub impl Value for StructValue with as_value_enum(self) {
+  StructValue(self)
+}
+
 ///| Returns the `ValueRef` that this `StructValue` wraps.
+#deprecated("deprecated")
 pub fn StructValue::as_value(self : StructValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `StructValue` wraps.
+#deprecated("deprecated")
 pub fn StructValue::as_value_ref(self : StructValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
@@ -157,35 +167,7 @@ pub fn StructValue::is_const(self : StructValue) -> Bool {
   self.value.is_const()
 }
 
-///| Dump the `StructValue` to stderr.
-///
-/// It's equivalent to `StructValue::dump`.
-pub fn StructValue::print_to_stderr(self : StructValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dump the `StructValue` to a string.
-///
-/// It's equivalent to `StructValue::print_to_string`.
-pub fn StructValue::print_to_string(self : StructValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dump the `StructValue` to a string.
-///
-/// It's equivalent to `StructValue::print_to_string`.
-pub fn StructValue::to_string(self : StructValue) -> String {
-  self.value.to_string()
-}
-
-///| Dump the `StructValue` to stderr
-///
-/// It's equivalent to `StructValue::print_to_stderr`.
-pub fn StructValue::dump(self : StructValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for StructValue with output(self : StructValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
+  logger.write_string(self.value.to_string())
 }

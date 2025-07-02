@@ -15,12 +15,22 @@ pub fn InstructionValue::new(
   InstructionValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for InstructionValue with base(self) {
+  self.value
+}
+
+pub impl Value for InstructionValue with as_value_enum(self) {
+  InstructionValue(self)
+}
+
 ///| Returns the `ValueRef` that this `InstructionValue` wraps.
+#deprecated("deprecated")
 pub fn InstructionValue::as_value(self : InstructionValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `InstructionValue` wraps.
+#deprecated("deprecated")
 pub fn InstructionValue::as_value_ref(
   self : InstructionValue
 ) -> @unsafe.LLVMValueRef {
@@ -29,17 +39,17 @@ pub fn InstructionValue::as_value_ref(
 
 ///| Returns whether or not the `InstructionValue` is a load instruction.
 pub fn InstructionValue::is_a_load_inst(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_load_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_load_inst(self.inner()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a store instruction.
 pub fn InstructionValue::is_a_store_inst(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_store_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_store_inst(self.inner()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is an alloca instruction.
 pub fn InstructionValue::is_a_alloca_inst(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_alloca_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_alloca_inst(self.inner()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a getelementptr instruction.

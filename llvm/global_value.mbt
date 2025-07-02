@@ -13,7 +13,16 @@ pub fn GlobalValue::new(value_ref : @unsafe.LLVMValueRef) -> GlobalValue {
   GlobalValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for GlobalValue with base(self) {
+  self.value
+}
+
+pub impl Value for GlobalValue with as_value_enum(self) {
+  GlobalValue(self)
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `GlobalValue` wraps.
+#deprecated("deprecated")
 pub fn GlobalValue::as_value_ref(self : GlobalValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }

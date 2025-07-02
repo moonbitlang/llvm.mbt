@@ -15,12 +15,22 @@ pub fn PointerValue::new(value_ref : @unsafe.LLVMValueRef) -> PointerValue {
   PointerValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for PointerValue with base(self) {
+  self.value
+}
+
+pub impl Value for PointerValue with as_value_enum(self) {
+  PointerValue(self)
+}
+
 ///| Returns the `ValueRef` that this `PointerValue` wraps.
+#deprecated("deprecated")
 pub fn PointerValue::as_value(self : PointerValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `PointerValue` wraps.
+#deprecated("deprecated")
 pub fn PointerValue::as_value_ref(self : PointerValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
@@ -132,43 +142,10 @@ pub fn PointerValue::replace_all_uses_with(
   self.value.replace_all_uses_with(new_value.value)
 }
 
-///| Dumps the `PointerValue` to stderr.
-///
-/// It's equivalent to `PointerValue::dump`.
-pub fn PointerValue::print_to_stderr(self : PointerValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `PointerValue` to a string.
-///
-/// It's equivalent to `PointerValue::to_string`.
-pub fn PointerValue::print_to_string(self : PointerValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `PointerValue` to stderr.
-///
-/// It's equivalent to `PointerValue::print_to_string`.
-pub fn PointerValue::to_string(self : PointerValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `PointerValue` to stderr.
-///
-/// It's equivalent to `PointerValue::print_to_stderr`.
-pub fn PointerValue::dump(self : PointerValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for PointerValue with output(
   self : PointerValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for PointerValue with to_string(self : PointerValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

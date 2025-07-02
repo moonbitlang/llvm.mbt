@@ -14,7 +14,17 @@ pub fn CallSiteValue::new(value_ref : @unsafe.LLVMValueRef) -> CallSiteValue {
   CallSiteValue::{ value: ValueRef::new(value_ref) }
 }
 
+
+pub impl Value for CallSiteValue with base(self) {
+  self.value
+}
+
+pub impl Value for CallSiteValue with as_value_enum(self) {
+  CallSiteValue(self)
+}
+
 ///| Returns the `@unsafe.LLVMValueRef` that this `CallSiteValue` wraps.
+#deprecated("deprecated")
 pub fn CallSiteValue::as_value_ref(
   self : CallSiteValue
 ) -> @unsafe.LLVMValueRef {
@@ -558,43 +568,10 @@ pub fn CallSiteValue::set_alignment_attribute(
 //   bundle_refs.map(fn (r) {OperandBundle::new(r)})
 // }
 
-///| Dumps the `CallSiteValue` to stderr.
-///
-/// It's equivalent to `CallSiteValue::dump`.
-pub fn CallSiteValue::print_to_stderr(self : CallSiteValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `CallSiteValue` to a string.
-///
-/// It's equivalent to `CallSiteValue::to_string`.
-pub fn CallSiteValue::print_to_string(self : CallSiteValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `CallSiteValue` to a string.
-///
-/// It's equivalent to `CallSiteValue::print_to_string`.
-pub fn CallSiteValue::to_string(self : CallSiteValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `CallSiteValue` to stderr.
-///
-/// It's equivalent to `CallSiteValue::print_to_stderr`.
-pub fn CallSiteValue::dump(self : CallSiteValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for CallSiteValue with output(
   self : CallSiteValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for CallSiteValue with to_string(self : CallSiteValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

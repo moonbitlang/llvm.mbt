@@ -13,12 +13,22 @@ pub fn VectorValue::new(value_ref : @unsafe.LLVMValueRef) -> VectorValue {
   VectorValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for VectorValue with base(self) {
+  self.value
+}
+
+pub impl Value for VectorValue with as_value_enum(self) {
+  VectorValue(self)
+}
+
 ///| Returns the `ValueRef` that this `VectorValue` wraps.
+#deprecated("deprecated")
 pub fn VectorValue::as_value(self : VectorValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `VectorValue` wraps.
+#deprecated("deprecated")
 pub fn VectorValue::as_value_ref(self : VectorValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
@@ -104,31 +114,6 @@ pub fn VectorValue::const_shuffle_vector(
 }
 
 ///|
-pub fn VectorValue::print_to_stderr(self : VectorValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///|
-pub fn VectorValue::print_to_string(self : VectorValue) -> String {
-  self.value.print_to_string()
-}
-
-///|
-pub fn VectorValue::to_string(self : VectorValue) -> String {
-  self.value.to_string()
-}
-
-///|
-pub fn VectorValue::dump(self : VectorValue) -> Unit {
-  self.value.dump()
-}
-
-///|
 pub impl Show for VectorValue with output(self : VectorValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for VectorValue with to_string(self : VectorValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

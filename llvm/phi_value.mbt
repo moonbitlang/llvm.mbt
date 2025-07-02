@@ -13,12 +13,23 @@ pub fn PhiValue::new(value_ref : @unsafe.LLVMValueRef) -> PhiValue {
   PhiValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for PhiValue with base(self) {
+  self.value
+}
+
+pub impl Value for PhiValue with as_value_enum(self) {
+  PhiValue(self)
+}
+
+
 ///| Returns the `ValueRef` that this `PhiValue` wraps.
+#deprecated("deprecated")
 pub fn PhiValue::as_value(self : PhiValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `PhiValue` wraps.
+#deprecated("deprecated")
 pub fn PhiValue::as_value_ref(self : PhiValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }

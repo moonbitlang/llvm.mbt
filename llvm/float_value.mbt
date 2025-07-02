@@ -15,12 +15,22 @@ pub fn FloatValue::new(value_ref : @unsafe.LLVMValueRef) -> FloatValue {
   FloatValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for FloatValue with base(self) {
+  self.value
+}
+
+pub impl Value for FloatValue with as_value_enum(self) {
+  FloatValue(self)
+}
+
 ///| Returns the `ValueRef` that this `FloatValue` wraps.
+#deprecated("deprecated")
 pub fn FloatValue::as_value(self : FloatValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `FloatValue` wraps.
+#deprecated("deprecated")
 pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
@@ -167,40 +177,7 @@ pub fn FloatValue::replace_all_uses_with(
   self.value.replace_all_uses_with(new_value.value)
 }
 
-///| Dumps the `FloatValue` to stderr.
-///
-/// It's equivalent to `FloatValue::dump`.
-pub fn FloatValue::print_to_stderr(self : FloatValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `FloatValue` to a string.
-///
-/// It's equivalent to `FloatValue::to_string`.
-pub fn FloatValue::print_to_string(self : FloatValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `FloatValue` to a string.
-///
-/// It's equivalent to `FloatValue::print_to_string`.
-pub fn FloatValue::to_string(self : FloatValue) -> String {
-  self.value.to_string()
-}
-
-///| Dump the `FloatValue` to stderr.
-///
-/// It's equivalent to `FloatValue::print_to_stderr`.
-pub fn FloatValue::dump(self : FloatValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for FloatValue with output(self : FloatValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for FloatValue with to_string(self : FloatValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

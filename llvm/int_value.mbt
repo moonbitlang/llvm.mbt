@@ -15,12 +15,22 @@ pub fn IntValue::new(value_ref : @unsafe.LLVMValueRef) -> IntValue {
   IntValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for IntValue with base(self) {
+  self.value
+}
+
+pub impl Value for IntValue with as_value_enum(self) {
+  IntValue(self)
+}
+
 ///| Returns the `ValueRef` that this `IntValue` wraps.
+#deprecated("deprecated")
 pub fn IntValue::as_value(self : IntValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `IntValue` wraps.
+#deprecated("deprecated")
 pub fn IntValue::as_value_ref(self : IntValue) -> @unsafe.LLVMValueRef {
   self.value.as_value_ref()
 }
@@ -504,23 +514,23 @@ pub fn IntValue::replace_all_uses_with(
 ///| Dumps the `IntValue` to stderr.
 ///
 /// It's equivalent to `IntValue::dump`.
-pub fn IntValue::print_to_stderr(self : IntValue) -> Unit {
-  self.value.print_to_stderr()
-}
+//pub fn IntValue::print_to_stderr(self : IntValue) -> Unit {
+//  self.value.print_to_stderr()
+//}
 
 ///| Dumps the `IntValue` to a string.
 ///
 /// It's equivalent to `IntValue::to_string`.
-pub fn IntValue::print_to_string(self : IntValue) -> String {
-  self.value.print_to_string()
-}
+//pub fn IntValue::print_to_string(self : IntValue) -> String {
+//  self.value.print_to_string()
+//}
 
 ///| Dump the `IntValue` to stderr.
 ///
 /// It's equivalent to `IntValue::print_to_stderr`.
-pub fn IntValue::dump(self : IntValue) -> Unit {
-  self.value.dump()
-}
+//pub fn IntValue::dump(self : IntValue) -> Unit {
+//  self.value.dump()
+//}
 
 ///|
 pub impl Show for IntValue with output(self : IntValue, logger : &Logger) -> Unit {

@@ -14,12 +14,22 @@ pub fn FunctionValue::new(value_ref : @unsafe.LLVMValueRef) -> FunctionValue? {
   })
 }
 
+pub impl Value for FunctionValue with base(self) {
+  self.value
+}
+
+pub impl Value for FunctionValue with as_value_enum(self) {
+  FunctionValue(self)
+}
+
 ///| Returns the `ValueRef` that this `FunctionValue` wraps.
+#deprecated("deprecated")
 pub fn FunctionValue::as_value(self : FunctionValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `FunctionValue` wraps.
+#deprecated("deprecated")
 pub fn FunctionValue::as_value_ref(
   self : FunctionValue
 ) -> @unsafe.LLVMValueRef {
@@ -636,45 +646,12 @@ pub fn FunctionValue::as_global_value(self : FunctionValue) -> GlobalValue {
 //   self.value.set_section(section)
 // }
 
-///| Dumps the `FunctionValue` to stderr.
-///
-/// It's equivalent to `FunctionValue::dump`.
-pub fn FunctionValue::print_to_stderr(self : FunctionValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `FunctionValue` to a string.
-///
-/// It's equivalent to `FunctionValue::print_to_string`.
-pub fn FunctionValue::print_to_string(self : FunctionValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `FunctionValue` to a string.
-///
-/// It's equivalent to `FunctionValue::print_to_string`.
-pub fn FunctionValue::to_string(self : FunctionValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `FunctionValue` to stderr.
-///
-/// It's equivalent to `FunctionValue::print_to_stderr`.
-pub fn FunctionValue::dump(self : FunctionValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for FunctionValue with output(
   self : FunctionValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for FunctionValue with to_string(self : FunctionValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }
 
 ///|

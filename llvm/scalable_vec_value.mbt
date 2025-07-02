@@ -15,12 +15,21 @@ pub fn ScalableVectorValue::new(
   ScalableVectorValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `ValueRef` that this `ScalableVectorValue` wraps.
+pub impl Value for ScalableVectorValue with base(self) {
+  self.value
+}
+
+pub impl Value for ScalableVectorValue with as_value_enum(self) {
+  ScalableVectorValue(self)
+}
+
+#deprecated("deprecated")
 pub fn ScalableVectorValue::as_value(self : ScalableVectorValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `ScalableVectorValue` wraps.
+#deprecated("deprecated")
 pub fn ScalableVectorValue::as_value_ref(
   self : ScalableVectorValue
 ) -> @unsafe.LLVMValueRef {
@@ -132,45 +141,10 @@ pub fn ScalableVectorValue::const_shuffle_vector(
   )
 }
 
-///| Dumps the `ScalableVectorValue` to stderr.
-///
-/// It's equivalent to `ScalableVectorValue::dump`.
-pub fn ScalableVectorValue::print_to_stderr(self : ScalableVectorValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `ScalableVectorValue` to a string.
-///
-/// It's equivalent to `ScalableVectorValue::to_string`.
-pub fn ScalableVectorValue::print_to_string(
-  self : ScalableVectorValue
-) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `ScalableVectorValue` to a string.
-///
-/// It's equivalent to `ScalableVectorValue::print_to_string`.
-pub fn ScalableVectorValue::to_string(self : ScalableVectorValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `ScalableVectorValue` to stderr.
-///
-/// It's equivalent to `ScalableVectorValue::print_to_stderr`.
-pub fn ScalableVectorValue::dump(self : ScalableVectorValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for ScalableVectorValue with output(
   self : ScalableVectorValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for ScalableVectorValue with to_string(self : ScalableVectorValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

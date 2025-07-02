@@ -15,12 +15,22 @@ pub fn MetadataValue::new(value_ref : @unsafe.LLVMValueRef) -> MetadataValue {
   MetadataValue::{ value: ValueRef::new(value_ref) }
 }
 
+pub impl Value for MetadataValue with base(self) {
+  self.value
+}
+
+pub impl Value for MetadataValue with as_value_enum(self) {
+  MetadataValue(self)
+}
+
 ///| Returns the `ValueRef` that this `MetadataValue` wraps.
+#deprecated("deprecated")
 pub fn MetadataValue::as_value(self : MetadataValue) -> ValueRef {
   self.value
 }
 
 ///| Returns the `@unsafe.LLVMValueRef` that this `MetadataValue` wraps.
+#deprecated("deprecated")
 pub fn MetadataValue::as_value_ref(
   self : MetadataValue
 ) -> @unsafe.LLVMValueRef {
@@ -88,43 +98,10 @@ pub fn MetadataValue::replace_all_uses_with(
   self.value.replace_all_uses_with(new_value.value)
 }
 
-///| Dumps the `MetadataValue` to stderr.
-///
-/// It's equivalent to `MetadataValue::dump`.
-pub fn MetadataValue::print_to_stderr(self : MetadataValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `MetadataValue` to a string.
-///
-/// It's equivalent to `MetadataValue::to_string`.
-pub fn MetadataValue::print_to_string(self : MetadataValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `MetadataValue` to a string.
-///
-/// It's equivalent to `MetadataValue::print_to_string`.
-pub fn MetadataValue::to_string(self : MetadataValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `MetadataValue` to stderr.
-///
-/// It's equivalent to `MetadataValue::print_to_stderr`.
-pub fn MetadataValue::dump(self : MetadataValue) -> Unit {
-  self.value.dump()
-}
-
 ///|
 pub impl Show for MetadataValue with output(
   self : MetadataValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for MetadataValue with to_string(self : MetadataValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }
