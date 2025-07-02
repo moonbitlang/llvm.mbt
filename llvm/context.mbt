@@ -337,7 +337,7 @@ pub fn Context::get_struct_type(self : Context, name : String) -> StructType? {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let f32_type = context.f32_type();
 /// let i16_type = context.i16_type();

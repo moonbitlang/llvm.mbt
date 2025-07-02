@@ -44,7 +44,7 @@ pub impl BasicValue for FloatValue with as_basic_value_enum(self) {
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///
-/// let x = fval.get_nth_param(0).unwrap().into_float_value()
+/// guard fval.get_nth_param(0).unwrap().as_basic_value_enum() is FloatValue(x)
 /// let xp1 = builder.build_float_add(x, one, name="xp1")
 ///
 /// inspect(xp1.get_name(), content="xp1")
@@ -71,7 +71,7 @@ pub fn FloatValue::get_name(self : FloatValue) -> String {
 /// let builder = context.create_builder()
 /// builder.position_at_end(bb)
 ///
-/// let x = fval.get_nth_param(0).unwrap().into_float_value()
+/// guard fval.get_nth_param(0).unwrap().as_basic_value_enum() is FloatValue(x)
 /// let xp1 = builder.build_float_add(x, one)
 ///
 /// xp1.set_name("xp1")

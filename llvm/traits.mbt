@@ -9,6 +9,17 @@ pub trait Type {
   inner(Self) -> @unsafe.LLVMTypeRef = _
   dump(Self) -> Unit = _;
   is_sized(Self) -> Bool = _;
+  type_name(Self) -> String = _;
+  into_void_type(Self) -> VoidType raise MoonllvmError = _;
+  into_int_type(Self) -> IntType raise MoonllvmError = _;
+  into_float_type(Self) -> FloatType raise MoonllvmError = _;
+  into_pointer_type(Self) -> PointerType raise MoonllvmError = _;
+  into_struct_type(Self) -> StructType raise MoonllvmError = _;
+  into_function_type(Self) -> FunctionType raise MoonllvmError = _;
+  into_array_type(Self) -> ArrayType raise MoonllvmError = _;
+  into_vector_type(Self) -> VectorType raise MoonllvmError = _;
+  into_scalable_vector_type(Self) -> ScalableVectorType raise MoonllvmError = _;
+  into_metadata_type(Self) -> MetadataType raise MoonllvmError = _;
 }
 
 impl Type with try_as_basic_type_enum(self) {
@@ -36,6 +47,91 @@ impl Type with dump(self) {
 
 impl Type with is_sized(self) {
   self.base().is_sized()
+}
+
+impl Type with type_name(self) {
+  match self.as_type_enum() {
+    VoidType(v) => v.type_name()
+    IntType(v) => v.type_name()
+    FloatType(v) => v.type_name()
+    PointerType(v) => v.type_name()
+    StructType(v) => v.type_name()
+    FunctionType(v) => v.type_name()
+    ArrayType(v) => v.type_name()
+    VectorType(v) => v.type_name()
+    ScalableVectorType(v) => v.type_name()
+    MetadataType(v) => v.type_name()
+  }
+}
+
+impl Type with into_void_type(self) {
+  guard self.as_type_enum() is VoidType(v) else {
+    raise IntoTypeError("Expected `void`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_int_type(self) {
+  guard self.as_type_enum() is IntType(v) else {
+    raise IntoTypeError("Expected `int`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_float_type(self) {
+  guard self.as_type_enum() is FloatType(v) else {
+    raise IntoTypeError("Expected `float`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_pointer_type(self) {
+  guard self.as_type_enum() is PointerType(v) else {
+    raise IntoTypeError("Expected `pointer`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_struct_type(self) {
+  guard self.as_type_enum() is StructType(v) else {
+    raise IntoTypeError("Expected `struct`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_function_type(self) {
+  guard self.as_type_enum() is FunctionType(v) else {
+    raise IntoTypeError("Expected `function`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_array_type(self) {
+  guard self.as_type_enum() is ArrayType(v) else {
+    raise IntoTypeError("Expected `array`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_vector_type(self) {
+  guard self.as_type_enum() is VectorType(v) else {
+    raise IntoTypeError("Expected `vector`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_scalable_vector_type(self) {
+  guard self.as_type_enum() is ScalableVectorType(v) else {
+    raise IntoTypeError("Expected `scalable vector`, got `\{self.type_name()}`")
+  }
+  v
+}
+
+impl Type with into_metadata_type(self) {
+  guard self.as_type_enum() is MetadataType(v) else {
+    raise IntoTypeError("Expected `metadata`, got `\{self.type_name()}`")
+  }
+  v
 }
 
 pub impl Show for &Type with output(self, logger) {
@@ -191,6 +287,19 @@ pub trait Value {
   inner(Self) -> @unsafe.LLVMValueRef = _
   dump(Self) -> Unit = _;
   get_type(Self) -> &Type = _;
+  into_int_value(Self) -> IntValue raise MoonllvmError = _;
+  into_float_value(Self) -> FloatValue raise MoonllvmError = _;
+  into_pointer_value(Self) -> PointerValue raise MoonllvmError = _;
+  into_struct_value(Self) -> StructValue raise MoonllvmError = _;
+  into_function_value(Self) -> FunctionValue raise MoonllvmError = _;
+  into_array_value(Self) -> ArrayValue raise MoonllvmError = _;
+  into_vector_value(Self) -> VectorValue raise MoonllvmError = _;
+  into_phi_value(Self) -> PhiValue raise MoonllvmError = _;
+  into_scalable_vector_value(Self) -> ScalableVectorValue raise MoonllvmError = _;
+  into_metadata_value(Self) -> MetadataValue raise MoonllvmError = _;
+  into_call_site_value(Self) -> CallSiteValue raise MoonllvmError = _;
+  into_global_value(Self) -> GlobalValue raise MoonllvmError = _;
+  into_instruction_value(Self) -> InstructionValue raise MoonllvmError = _;
 }
 
 impl Value with inner(self) {
@@ -204,6 +313,97 @@ impl Value with dump(self) {
 impl Value with get_type(self) {
   let type_ref = self.base().get_type()
   TypeEnum::init(type_ref.inner()).as_type_class()
+}
+
+impl Value with into_int_value(self) {
+  guard self.as_value_enum() is IntValue(v) else {
+    raise IntoValueError("Expected an `int`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_float_value(self) {
+  guard self.as_value_enum() is FloatValue(v) else {
+    raise IntoValueError("Expected a `float`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_pointer_value(self) {
+  guard self.as_value_enum() is PointerValue(v) else {
+    raise IntoValueError("Expected a `pointer`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_struct_value(self) {
+  guard self.as_value_enum() is StructValue(v) else {
+    raise IntoValueError("Expected a `struct`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_function_value(self) {
+  guard self.as_value_enum() is FunctionValue(v) else {
+    raise IntoValueError("Expected a `function`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_array_value(self) {
+  guard self.as_value_enum() is ArrayValue(v) else {
+    raise IntoValueError("Expected an `array`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_vector_value(self) {
+  guard self.as_value_enum() is VectorValue(v) else {
+    raise IntoValueError("Expected a `vector`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_phi_value(self) {
+  guard self.as_value_enum() is PhiValue(v) else {
+    raise IntoValueError("Expected a `phi`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_scalable_vector_value(self) {
+  guard self.as_value_enum() is ScalableVectorValue(v) else {
+    raise IntoValueError("Expected a `scalable vector`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_metadata_value(self) {
+  guard self.as_value_enum() is MetadataValue(v) else {
+    raise IntoValueError("Expected `metadata`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_call_site_value(self) {
+  guard self.as_value_enum() is CallSiteValue(v) else {
+    raise IntoValueError("Expected a `call site`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_global_value(self) {
+  guard self.as_value_enum() is GlobalValue(v) else {
+    raise IntoValueError("Expected a `global`, got `\{self.get_type().type_name()}`")
+  }
+  v
+}
+
+impl Value with into_instruction_value(self) {
+  guard self.as_value_enum() is InstructionValue(v) else {
+    raise IntoValueError("Expected an `instruction`, got `\{self.get_type().type_name()}`")
+  }
+  v
 }
 
 pub impl Show for &Value with output(self, logger) {

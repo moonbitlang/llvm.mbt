@@ -224,7 +224,7 @@ pub fn Builder::build_direct_call(
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit skip
 /// let context = Context::create();
 /// let llvm_module = context.create_module("call_with_op_bundles");
 /// let builder = context.create_builder();
@@ -808,8 +808,8 @@ pub fn Builder::build_in_bounds_gep(
 ///
 /// builder.position_at_end(entry);
 ///
-/// let i32_ptr = fn_value.get_first_param().unwrap().into_pointer_value();
-/// let struct_ptr = fn_value.get_last_param().unwrap().into_pointer_value();
+/// guard fn_value.get_first_param().unwrap().as_basic_value_enum() is PointerValue(i32_ptr)
+/// guard fn_value.get_last_param().unwrap().as_basic_value_enum() is PointerValue(struct_ptr)
 ///
 /// assert_true((try? builder.build_struct_gep(i32_ty, i32_ptr, 0)) is Err(_));
 /// assert_true((try? builder.build_struct_gep(i32_ty, i32_ptr, 10)) is Err(_));
@@ -1456,18 +1456,18 @@ pub fn Builder::build_address_space_cast(
 /// inspect(res, content="  %res = bitcast i32 %0 to float");
 /// ```
 // REVIEW: Do we need to check bitwidth?
-pub fn[BV : BasicValue, BT : BasicType] Builder::build_bit_cast(
+pub fn Builder::build_bit_cast(
   self : Builder,
-  val : BV,
-  ty : BT,
+  val : &BasicValue,
+  ty : &BasicType,
   name~ : String = ""
-) -> BasicValueEnum raise BuilderError {
+) -> &BasicValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let builder_ref = self.as_builder_ref()
   let val_ref = val.inner()
   let ty_ref = ty.inner()
   let value = @unsafe.llvm_build_bit_cast(builder_ref, val_ref, ty_ref, name)
-  BasicValueEnum::init(value)
+  BasicValueEnum::init(value).as_basic_value_class()
 }
 
 // pub fn build_int_s_extend_or_bit_cast<T: IntMathValue<'ctx>>(
@@ -2719,7 +2719,7 @@ pub fn Builder::build_extract_element(
   vector : VectorValue,
   index : IntValue,
   name~ : String = ""
-) -> BasicValueEnum raise BuilderError {
+) -> &BasicValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let value = @unsafe.llvm_build_extract_element(
     self.as_builder_ref(),
@@ -2727,7 +2727,7 @@ pub fn Builder::build_extract_element(
     index.inner(),
     name,
   )
-  BasicValueEnum::init(value)
+  BasicValueEnum::init(value).as_basic_value_class()
 }
 
 ///| Builds an insert element instruction which inserts a `BasicValue` into a vector and returns the resulting vector.

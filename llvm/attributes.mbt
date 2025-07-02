@@ -93,7 +93,7 @@ pub fn Attribute::get_named_enum_kind_id(name : String) -> UInt {
 /// ```moonbit
 /// let context = Context::create();
 /// let kind_id = Attribute::get_named_enum_kind_id("sret");
-/// let any_type = context.i32_type().as_any_type_enum();
+/// let any_type = context.i32_type()
 /// let type_attribute = context.create_type_attribute(
 ///     kind_id,
 ///     any_type,
