@@ -9,10 +9,10 @@ test "Builder Test - 1" {
   let bb = context.append_basic_block(fval, name="entry")
   let builder = context.create_builder()
   builder.position_at_end(bb)
-  let arg0 = fval.get_nth_param(0).unwrap()
-  let arg1 = fval.get_nth_param(1).unwrap()
-  let iarg0 = arg0.into_int_value()
-  let iarg1 = arg1.into_int_value()
+  guard fval.get_nth_param(0).unwrap().as_basic_value_enum() is IntValue(iarg0)
+  guard fval.get_nth_param(1).unwrap().as_basic_value_enum() is IntValue(iarg1)
+  //let iarg0 = arg0.into_int_value()
+  //let iarg1 = arg1.into_int_value()
   let add = builder.build_int_add(iarg0, iarg1)
   inspect(add, content="  %2 = add i32 %0, %1")
   let nsw_add = builder.build_int_nsw_add(iarg0, iarg1)
@@ -68,12 +68,8 @@ test "Builder Test - 1" {
   let not = builder.build_not(iarg0)
   inspect(not, content="  %18 = xor i32 %0, -1")
   let f32_ty = context.f32_type()
-  let farg0 = builder
-    .build_bit_cast(iarg0, f32_ty, name="f0")
-    .into_float_value()
-  let farg1 = builder
-    .build_bit_cast(iarg1, f32_ty, name="f1")
-    .into_float_value()
+  guard builder.build_bit_cast(iarg0, f32_ty, name="f0") is FloatValue(farg0)
+  guard builder.build_bit_cast(iarg1, f32_ty, name="f1") is FloatValue(farg1)
   inspect(farg0, content="  %f0 = bitcast i32 %0 to float")
   inspect(farg1, content="  %f1 = bitcast i32 %1 to float")
   let fadd = builder.build_float_add(farg0, farg1)
@@ -292,7 +288,7 @@ test "Builder Test - 2" {
   let arg0 = fval.get_nth_param(0).unwrap()
   // let arg1 = fval.get_nth_param(1).unwrap();
 
-  let iarg0 = arg0.into_int_value()
+  guard arg0.as_basic_value_enum() is IntValue(iarg0)
   // let iarg1 = arg1.into_int_value();
 
   // build alloca
@@ -303,10 +299,10 @@ test "Builder Test - 2" {
   let store42 = builder.build_store(alloca, forty_two)
   inspect(store42, content="  store i32 42, ptr %alloca, align 4")
   assert_true(store42.is_a_store_inst())
-  let load42 = builder.build_load(i32_ty, alloca, name="load42")
+  guard builder.build_load(i32_ty, alloca, name="load42").as_basic_value_enum() is IntValue(load42)
   inspect(load42, content="  %load42 = load i32, ptr %alloca, align 4")
   assert_true(
-    load42.into_int_value().as_instruction().unwrap().is_a_load_inst(),
+    load42.as_instruction().unwrap().is_a_load_inst(),
   )
 
   // build_array_alloca

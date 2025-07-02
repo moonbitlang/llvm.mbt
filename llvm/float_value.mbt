@@ -23,16 +23,8 @@ pub impl Value for FloatValue with as_value_enum(self) {
   FloatValue(self)
 }
 
-///| Returns the `ValueRef` that this `FloatValue` wraps.
-#deprecated("deprecated")
-pub fn FloatValue::as_value(self : FloatValue) -> ValueRef {
-  self.value
-}
-
-///| Returns the `@unsafe.LLVMValueRef` that this `FloatValue` wraps.
-#deprecated("deprecated")
-pub fn FloatValue::as_value_ref(self : FloatValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl BasicValue for FloatValue with as_basic_value_enum(self) {
+  FloatValue(self)
 }
 
 ///| Gets name of the `FloatValue`.
@@ -100,7 +92,7 @@ pub fn FloatValue::set_name(self : FloatValue, name : String) -> Unit {
 /// inspect(pi.get_type(), content="float");
 /// ```
 pub fn FloatValue::get_type(self : FloatValue) -> FloatType {
-  FloatType::new(self.value.get_type().as_type_ref())
+  FloatType::new(self.value.get_type().inner())
 }
 
 ///| Returns whether or not the `FloatValue` is null.
@@ -131,7 +123,7 @@ pub fn FloatValue::as_instruction(self : FloatValue) -> InstructionValue? {
 // TODO: const ops: add, sub, mul ...
 // -----------------------
 // pub fn FloatValue::const_compare(self: FloatValue, op: FloatPredicate, rhs: FloatValue) -> IntValue {
-//   IntValue::new(@unsafe.llvm_const_fcmp(op.into(). self.as_value_ref(), rhs.as_value_ref())
+//   IntValue::new(@unsafe.llvm_const_fcmp(op.into(). self.inner(), rhs.inner())
 // }
 
 ///| Determines whether or not a `FloatValue` is a constant.
@@ -165,7 +157,7 @@ pub fn FloatValue::get_constant(self : FloatValue) -> (Double, Bool)? {
   if not(self.is_const()) {
     return None
   }
-  let (v, lossy) = @unsafe.llvm_const_real_get_double(self.as_value_ref())
+  let (v, lossy) = @unsafe.llvm_const_real_get_double(self.inner())
   Some((v, lossy))
 }
 

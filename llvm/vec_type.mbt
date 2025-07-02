@@ -11,14 +11,16 @@ pub fn VectorType::new(type_ref : @unsafe.LLVMTypeRef) -> VectorType {
   VectorType::{ ty: TypeRef::new(type_ref) }
 }
 
-///|
-pub fn VectorType::as_type(self : VectorType) -> TypeRef {
+pub impl Type for VectorType with base(self) {
   self.ty
 }
 
-///| Returns the `@unsafe.LLVMTypeRef` of this `VectorType`.
-pub fn VectorType::as_type_ref(self : VectorType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for VectorType with as_type_enum(self) {
+  VectorType(self)
+}
+
+pub impl BasicType for VectorType with as_basic_type_enum(self) {
+  VectorType(self)
 }
 
 ///| Gets the size of this `VectorType`. Value may vary depending on the target architecture.
@@ -79,13 +81,13 @@ pub fn VectorType::get_alignment(self : VectorType) -> IntValue {
 /// assert_eq(vector_sz, 8);
 /// ```
 pub fn VectorType::get_size(self : VectorType) -> UInt {
-  @unsafe.llvm_get_vector_size(self.as_type_ref())
+  @unsafe.llvm_get_vector_size(self.inner())
 }
 
 // pub fn VectorType::const_vector
 
 // pub fn VectorType::const_zero(self: VectorType) -> VectorValue {
-//   VectorValue::new(@unsafe.llvm_const_zero(self.as_type_ref()))
+//   VectorValue::new(@unsafe.llvm_const_zero(self.inner()))
 // }
 
 ///| Creates an undefined instance of a `VectorType`.
@@ -129,9 +131,9 @@ pub fn VectorType::get_poison(self : VectorType) -> VectorValue {
 /// let ele_type = vector_type.get_element_type();
 /// inspect(ele_type, content="i32")
 /// ```
-pub fn VectorType::get_element_type(self : VectorType) -> BasicTypeEnum {
-  let ty_ref = self.ty.get_element_type().as_type_ref()
-  BasicTypeEnum::new(ty_ref)
+pub fn VectorType::get_element_type(self : VectorType) -> &BasicType {
+  let ty_ref = self.ty.get_element_type().inner()
+  BasicTypeEnum::init(ty_ref).as_basic_type_class()
 }
 
 ///| Creates a `PointerType` with this `VectorType` for its element type.
@@ -150,7 +152,7 @@ pub fn VectorType::ptr_type(
   address_space : AddressSpace
 ) -> PointerType {
   PointerType::new(
-    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
   )
 }
 
@@ -204,6 +206,7 @@ pub fn VectorType::const_array(
   self : VectorType,
   values : Array[VectorValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
 }
 
@@ -222,38 +225,7 @@ pub fn VectorType::get_context(self : VectorType) -> Context {
   self.ty.get_context()
 }
 
-///| Prints this `VectorType` to stderr.
-///
-/// It's equivalent to `VectorType::dump`.
-pub fn VectorType::print_to_stderr(self : VectorType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Prints this `VectorType` to a string.
-///
-/// It's equivalent to `VectorType::to_string`.
-pub fn VectorType::print_to_string(self : VectorType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Converts this `VectorType` to a string.
-pub fn VectorType::to_string(self : VectorType) -> String {
-  self.ty.to_string()
-}
-
-///| Prints this `VectorType` to stderr.
-///
-/// It's equivalent to `VectorType::print_to_stderr`.
-pub fn VectorType::dump(self : VectorType) -> Unit {
-  self.ty.dump()
-}
-
 ///|
 pub impl Show for VectorType with output(self : VectorType, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for VectorType with to_string(self : VectorType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

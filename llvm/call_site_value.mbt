@@ -23,14 +23,6 @@ pub impl Value for CallSiteValue with as_value_enum(self) {
   CallSiteValue(self)
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `CallSiteValue` wraps.
-#deprecated("deprecated")
-pub fn CallSiteValue::as_value_ref(
-  self : CallSiteValue
-) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
-
 ///| Sets whether or not this call is a tail call.
 ///
 /// ## Example (Not Tested)
@@ -54,7 +46,7 @@ pub fn CallSiteValue::set_tail_call(
   self : CallSiteValue,
   tail_call : Bool
 ) -> Unit {
-  self.as_value_ref().set_tail_call(tail_call)
+  self.inner().set_tail_call(tail_call)
 }
 
 ///| Determines whether or not this call is a tail call.
@@ -79,7 +71,7 @@ pub fn CallSiteValue::set_tail_call(
 /// assert_true(call_site_value.is_tail_call());
 /// ```
 pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
-  self.as_value_ref().is_tail_call()
+  self.inner().is_tail_call()
 }
 
 ///| Returns tail, musttail, and notail attributes.
@@ -105,7 +97,7 @@ pub fn CallSiteValue::is_tail_call(self : CallSiteValue) -> Bool {
 pub fn CallSiteValue::get_tail_call_kind(
   self : CallSiteValue
 ) -> @unsafe.LLVMTailCallKind {
-  self.as_value_ref().get_tail_call_kind()
+  self.inner().get_tail_call_kind()
 }
 
 ///| Sets tail, musttail, and notail attributes.
@@ -132,7 +124,7 @@ pub fn CallSiteValue::set_tail_call_kind(
   self : CallSiteValue,
   kind : @unsafe.LLVMTailCallKind
 ) -> Unit {
-  self.as_value_ref().set_tail_call_kind(kind)
+  self.inner().set_tail_call_kind(kind)
 }
 
 ///| Try to convert this `CallSiteValue` to a `BasicValueEnum` if not a void return type.
@@ -157,12 +149,12 @@ pub fn CallSiteValue::try_as_basic_value(
   self : CallSiteValue
 ) -> Either[BasicValueEnum, InstructionValue] {
   let kind = @unsafe.llvm_get_type_kind(
-    @unsafe.llvm_type_of(self.as_value_ref()),
+    @unsafe.llvm_type_of(self.inner()),
   )
   match kind {
     @unsafe.LLVMTypeKind::LLVMVoidTypeKind =>
-      Right(InstructionValue::new(self.as_value_ref()))
-    _ => Left(BasicValueEnum::new(self.as_value_ref()))
+      Right(InstructionValue::new(self.inner()))
+    _ => Left(BasicValueEnum::init(self.inner()))
   }
 }
 
@@ -194,7 +186,7 @@ pub fn CallSiteValue::add_attribute(
   attribute : Attribute
 ) -> Unit {
   @unsafe.llvm_add_call_site_attribute(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     attribute.attribute,
   )
@@ -224,7 +216,7 @@ pub fn CallSiteValue::add_attribute(
 pub fn CallSiteValue::get_called_fn_value(
   self : CallSiteValue
 ) -> FunctionValue {
-  FunctionValue::new(@unsafe.llvm_get_called_value(self.as_value_ref())).unwrap()
+  FunctionValue::new(@unsafe.llvm_get_called_value(self.inner())).unwrap()
 }
 
 ///| Counts the number of `Attribute`s on this `CallSiteValue` at an index.
@@ -256,7 +248,7 @@ pub fn CallSiteValue::count_attributes(
   loc : AttributeLoc
 ) -> UInt {
   @unsafe.llvm_get_call_site_attribute_count(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
   )
 }
@@ -291,7 +283,7 @@ pub fn CallSiteValue::count_attributes(
 //  loc : AttributeLoc
 //) -> Array[Attribute] {
 //  let attr_refs = @unsafe.llvm_get_call_site_attributes(
-//    self.as_value_ref(),
+//    self.inner(),
 //    loc.get_index(),
 //  )
 //  attr_refs.map(fn(r) { Attribute::new(r) })
@@ -328,7 +320,7 @@ pub fn CallSiteValue::get_enum_attribute(
   kind_id : UInt
 ) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_call_site_enum_attribute(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     kind_id,
   )
@@ -366,7 +358,7 @@ pub fn CallSiteValue::get_string_attribute(
   key : String
 ) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_call_site_string_attribute(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     key,
   )
@@ -404,7 +396,7 @@ pub fn CallSiteValue::remove_enum_attribute(
   kind_id : UInt
 ) -> Unit {
   @unsafe.llvm_remove_call_site_enum_attribute(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     kind_id,
   )
@@ -441,7 +433,7 @@ pub fn CallSiteValue::remove_string_attribute(
   key : String
 ) -> Unit {
   @unsafe.llvm_remove_call_site_string_attribute(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     key,
   )
@@ -469,7 +461,7 @@ pub fn CallSiteValue::remove_string_attribute(
 /// assert_eq(call_site_value.count_arguments(), 0);
 /// ```
 pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
-  @unsafe.llvm_get_num_arg_operands(self.as_value_ref())
+  @unsafe.llvm_get_num_arg_operands(self.inner())
 }
 
 ///| Gets the calling convention for this `CallSiteValue`.
@@ -492,7 +484,7 @@ pub fn CallSiteValue::count_arguments(self : CallSiteValue) -> UInt {
 /// assert_eq(call_site_value.get_call_convention(), 0);
 /// ```
 pub fn CallSiteValue::get_call_convention(self : CallSiteValue) -> UInt {
-  @unsafe.llvm_get_instruction_call_conv(self.as_value_ref())
+  @unsafe.llvm_get_instruction_call_conv(self.inner())
 }
 
 ///| Sets the calling convention for this `CallSiteValue`.
@@ -520,7 +512,7 @@ pub fn CallSiteValue::set_call_convention(
   self : CallSiteValue,
   call_conv : UInt
 ) -> Unit {
-  @unsafe.llvm_set_instruction_call_conv(self.as_value_ref(), call_conv)
+  @unsafe.llvm_set_instruction_call_conv(self.inner(), call_conv)
 }
 
 ///| Shortcut for setting the alignment `Attribute` for this `CallSiteValue`.
@@ -557,14 +549,14 @@ pub fn CallSiteValue::set_alignment_attribute(
     panic()
   }
   @unsafe.llvm_set_instr_param_alignment(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     alignment,
   )
 }
 
 // pub fn CallSiteValue::get_operand_bundles(self: CallSiteValue) -> Array[OperandBundle] {
-//   let bundle_refs = @unsafe.llvm_get_instruction_operand_bundles(self.as_value_ref())
+//   let bundle_refs = @unsafe.llvm_get_instruction_operand_bundles(self.inner())
 //   bundle_refs.map(fn (r) {OperandBundle::new(r)})
 // }
 

@@ -11,14 +11,16 @@ pub fn IntType::new(type_ref : @unsafe.LLVMTypeRef) -> IntType {
   IntType::{ ty: TypeRef::new(type_ref) }
 }
 
-///|
-pub fn IntType::as_type(self : IntType) -> TypeRef {
+pub impl Type for IntType with base(self) {
   self.ty
 }
 
-///| Return `@unsafe.LLVMTypeRef` of `IntType`
-pub fn IntType::as_type_ref(self : IntType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for IntType with as_type_enum(self) {
+  IntType(self)
+}
+
+pub impl BasicType for IntType with as_basic_type_enum(self) {
+  IntType(self)
 }
 
 ///| Creates an `IntValue` representing a constant value of this `IntType`. It will be automatically assigned this `IntType`'s `Context`.
@@ -38,7 +40,7 @@ pub fn IntType::const_int(
   val : UInt64,
   sign_extend~ : Bool = true
 ) -> IntValue {
-  let val_ref = @unsafe.llvm_const_int(self.as_type_ref(), val, sign_extend)
+  let val_ref = @unsafe.llvm_const_int(self.inner(), val, sign_extend)
   IntValue::new(val_ref)
 }
 
@@ -52,7 +54,7 @@ pub fn IntType::const_int_arbitrary_precision(
   words : Array[UInt64]
 ) -> IntValue {
   let val_ref = @unsafe.llvm_const_int_of_arbitrary_precision(
-    self.as_type_ref(),
+    self.inner(),
     words,
   )
   IntValue::new(val_ref)
@@ -69,7 +71,7 @@ pub fn IntType::const_int_arbitrary_precision(
 /// inspect(all_ones_val, content="i32 -1")
 /// ```
 pub fn IntType::const_all_ones(self : IntType) -> IntValue {
-  let val_ref = @unsafe.llvm_const_all_ones(self.as_type_ref())
+  let val_ref = @unsafe.llvm_const_all_ones(self.inner())
   IntValue::new(val_ref)
 }
 
@@ -215,7 +217,7 @@ pub fn IntType::ptr_type(
   address_space : AddressSpace
 ) -> PointerType {
   PointerType::new(
-    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
   )
 }
 
@@ -230,7 +232,7 @@ pub fn IntType::ptr_type(
 /// inspect(i32_width, content="32")
 /// ```
 pub fn IntType::get_bit_width(self : IntType) -> UInt {
-  @unsafe.llvm_get_int_type_width(self.as_type_ref())
+  @unsafe.llvm_get_int_type_width(self.inner())
 }
 
 ///| Creates an undefined instance of an `IntType`.
@@ -262,7 +264,7 @@ pub fn IntType::get_poison(self : IntType) -> IntValue {
 }
 
 // pub fn IntType::create_generic_value(self: IntType, value: UInt64, is_signed: Bool) -> GenericValue {
-//   let gv = @unsafe.llvm_create_generic_value_of_int(self.as_type_ref(), value, is_signed)
+//   let gv = @unsafe.llvm_create_generic_value_of_int(self.inner(), value, is_signed)
 //   GenericValue::new(gv)
 // }
 
@@ -273,28 +275,8 @@ pub fn IntType::const_array(
   self : IntType,
   values : Array[IntValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
-}
-
-///| Dumps the `IntType` to stderr.
-///
-/// It's equivalent to `IntType::print_to_stderr`.
-pub fn IntType::print_to_stderr(self : IntType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Dumps the `IntType` to a string.
-///
-/// It's equivalent to `IntType::to_string`.
-pub fn IntType::print_to_string(self : IntType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dumps the `IntType` to stderr.
-///
-/// It's equivalent to `IntType::print_to_stderr`.
-pub fn IntType::dump(self : IntType) -> Unit {
-  self.ty.dump()
 }
 
 ///|

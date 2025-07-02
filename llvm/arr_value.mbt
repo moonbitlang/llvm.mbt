@@ -13,23 +13,29 @@ pub fn ArrayValue::new(value_ref : @unsafe.LLVMValueRef) -> ArrayValue {
   ArrayValue::{ value: ValueRef::new(value_ref) }
 }
 
-///| Returns the `ValueRef` that this `ArrayValue` wraps.
-pub fn ArrayValue::as_value(self : ArrayValue) -> ValueRef {
+pub impl Value for ArrayValue with base(self) {
   self.value
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `ArrayValue` wraps.
-pub fn ArrayValue::as_value_ref(self : ArrayValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl Value for ArrayValue with as_value_enum(self) {
+  ArrayValue(self)
+}
+
+pub impl BasicValue for ArrayValue with as_basic_value_enum(self) {
+  ArrayValue(self)
+}
+
+pub impl AggregateValue for ArrayValue with as_aggregate_value_enum(self) {
+  ArrayValue(self)
 }
 
 ///| Creates a new constant `ArrayValue` with the given type and values.
-pub fn[T : AsType, V : AsValue] ArrayValue::new_const_array(
-  ty : T,
-  values : Array[V]
+pub fn ArrayValue::new_const_array(
+  ty : &Type,
+  values : Array[&Value]
 ) -> ArrayValue {
-  let value_refs = values.map(fn(v) { v.as_value_ref() })
-  let value_ref = @unsafe.llvm_const_array(ty.as_type_ref(), value_refs)
+  let value_refs = values.map(v => v.inner() )
+  let value_ref = @unsafe.llvm_const_array(ty.inner(), value_refs)
   ArrayValue::new(value_ref)
 }
 
@@ -45,7 +51,7 @@ pub fn ArrayValue::set_name(self : ArrayValue, name : String) -> Unit {
 
 ///| Get the type of the `ArrayValue`.
 pub fn ArrayValue::get_type(self : ArrayValue) -> ArrayType {
-  ArrayType::new(self.value.get_type().as_type_ref())
+  ArrayType::new(self.value.get_type().inner())
 }
 
 ///| Determines whether or not this `ArrayValue` is null.
@@ -98,8 +104,8 @@ pub fn ArrayValue::is_const(self : ArrayValue) -> Bool {
 /// assert_true(s.is_const_string());
 /// ```
 pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
-  // @unsafe.llvm_is_constant_string(self.as_value_ref())
-  self.as_value_ref().is_constant_string()
+  // @unsafe.llvm_is_constant_string(self.inner())
+  self.inner().is_constant_string()
 }
 
 ///| Obtain the string from the ArrayValue
@@ -114,32 +120,11 @@ pub fn ArrayValue::is_const_string(self : ArrayValue) -> Bool {
 /// assert_true(string.get_string_constant() is Some(_));
 /// ```
 pub fn ArrayValue::get_string_constant(self : ArrayValue) -> String? {
-  let s = @unsafe.llvm_get_as_string(self.as_value_ref())
+  let s = @unsafe.llvm_get_as_string(self.inner())
   match s.is_empty() {
     true => None
     false => Some(s)
   }
-}
-
-///| Dumps the `ArrayValue` to stderr.
-///
-/// It's equivalent to `ArrayValue::dump`.
-pub fn ArrayValue::print_to_stderr(self : ArrayValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `ArrayValue` to a string.
-///
-/// It's equivalent to `ArrayValue::print_to_string`.
-pub fn ArrayValue::print_to_string(self : ArrayValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `ArrayValue` to stderr.
-///
-/// It's equivalent to `ArrayValue::print_to_stderr`.
-pub fn ArrayValue::dump(self : ArrayValue) -> Unit {
-  self.value.dump()
 }
 
 ///|

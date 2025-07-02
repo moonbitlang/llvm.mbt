@@ -194,16 +194,16 @@ pub fn Attribute::get_string_value(self : Attribute) -> String {
 /// assert_eq(type_attribute.get_type_value(), any_type);
 /// assert_false(type_attribute.get_type_value() == context.i64_type().as_any_type_enum());
 /// ```
-pub fn Attribute::get_type_value(self : Attribute) -> AnyTypeEnum {
+pub fn Attribute::get_type_value(self : Attribute) -> &Type {
   if not(self.is_type()) {
     abort("Attribute is not a type")
   }
-  AnyTypeEnum::new(@unsafe.llvm_get_type_attribute_value(self.as_attr_ref()))
+  TypeEnum::init(@unsafe.llvm_get_type_attribute_value(self.as_attr_ref())).as_type_class()
 }
 
 ///|
-pub fn Attribute::to_string(self : Attribute) -> String {
-  if self.is_string() {
+pub impl Show for Attribute with output(self : Attribute, logger : &Logger) {
+  let s = if self.is_string() {
     "string_attribute (\{self.get_string_value()})"
   } else if self.is_enum() {
     "enum_attribute (\{self.get_enum_value()})"
@@ -212,16 +212,7 @@ pub fn Attribute::to_string(self : Attribute) -> String {
   } else {
     "Unknown attribute (Maybe error)"
   }
-}
-
-///|
-pub impl Show for Attribute with to_string(self : Attribute) {
-  self.to_string()
-}
-
-///|
-pub impl Show for Attribute with output(self : Attribute, logger : &Logger) {
-  logger.write_string(self.to_string())
+  logger.write_string(s)
 }
 
 ///| An `AttributeLoc` determines where on a function an attribute is assigned to.

@@ -11,15 +11,18 @@ pub fn PointerType::new(type_ref : @unsafe.LLVMTypeRef) -> PointerType {
   PointerType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `TypeRef` of this `PointerType`.
-pub fn PointerType::as_type(self : PointerType) -> TypeRef {
+pub impl Type for PointerType with base(self) {
   self.ty
 }
 
-///| Return `@unsafe.LLVMTypeRef` of `PointerType`
-pub fn PointerType::as_type_ref(self : PointerType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for PointerType with as_type_enum(self) {
+  PointerType(self)
 }
+
+pub impl BasicType for PointerType with as_basic_type_enum(self) {
+  PointerType(self)
+}
+
 
 ///| Gets the size of this `PointerType`. Value may vary depending on the target architecture.
 ///
@@ -74,7 +77,7 @@ pub fn PointerType::ptr_type(
   address_space : AddressSpace
 ) -> PointerType {
   PointerType::new(
-    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
   )
 }
 
@@ -139,7 +142,7 @@ pub fn PointerType::array_type(self : PointerType, size : UInt) -> ArrayType {
 /// inspect(addr_space, content="AddressSpace(0)")
 /// ```
 pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
-  let addr_space = @unsafe.llvm_get_pointer_address_space(self.as_type_ref())
+  let addr_space = @unsafe.llvm_get_pointer_address_space(self.inner())
   AddressSpace(addr_space)
 }
 
@@ -156,7 +159,7 @@ pub fn PointerType::get_address_space(self : PointerType) -> AddressSpace {
 /// inspect(null_ptr, content="ptr null")
 /// ```
 pub fn PointerType::const_null(self : PointerType) -> PointerValue {
-  PointerValue::new(@unsafe.llvm_const_null(self.as_type_ref()))
+  PointerValue::new(@unsafe.llvm_const_null(self.inner()))
 }
 
 ///| Creates a constant null value of this `PointerType`.
@@ -187,7 +190,7 @@ pub fn PointerType::const_zero(self : PointerType) -> PointerValue {
 /// inspect(ptr_undef, content="ptr undef")
 /// ```
 pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
-  PointerValue::new(@unsafe.llvm_get_undef(self.as_type_ref()))
+  PointerValue::new(@unsafe.llvm_get_undef(self.inner()))
 }
 
 ///| Creates a poison instance of a `PointerType`.
@@ -202,7 +205,7 @@ pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
 /// inspect(ptr_poison, content="ptr poison")
 /// ```
 pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
-  PointerValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
+  PointerValue::new(@unsafe.llvm_get_poison(self.inner()))
 }
 
 ///| Creates a `VectorType` with this `PointerType` as its element type.
@@ -241,7 +244,7 @@ pub fn PointerType::scalable_vec_type(
 // Note: `@unsafe.llvm_get_element_type` is unavailable in llvm-19
 
 ///|
-pub fn PointerType::get_element_type(self : PointerType) -> AnyTypeEnum {
+pub fn PointerType::get_element_type(self : PointerType) -> &Type {
   self.ty.get_element_type()
 }
 
@@ -252,6 +255,7 @@ pub fn PointerType::const_array(
   self : PointerType,
   values : Array[PointerValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
 }
 
@@ -259,28 +263,7 @@ pub fn PointerType::const_array(
 
 ///| Determine whether this pointer is opaque.
 pub fn PointerType::is_opaque(self : PointerType) -> Bool {
-  @unsafe.llvm_pointer_type_is_opaque(self.as_type_ref())
-}
-
-///| Dump the `PointerType` to stderr.
-///
-/// It's equivalent to `PointerType::dump()`.
-pub fn PointerType::print_to_stderr(self : PointerType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Dump the `PointerType` to a string.
-///
-/// It's equivalent to `PointerType::to_string()`.
-pub fn PointerType::print_to_string(self : PointerType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dump the `PointerType` to stderr.
-///
-/// It's equivalent to `PointerType::print_to_stderr()`.
-pub fn PointerType::dump(self : PointerType) -> Unit {
-  self.ty.dump()
+  @unsafe.llvm_pointer_type_is_opaque(self.inner())
 }
 
 ///|

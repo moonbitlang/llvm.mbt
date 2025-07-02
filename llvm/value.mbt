@@ -93,16 +93,6 @@ fn ValueRef::get_first_use(self : ValueRef) -> BasicValueUse? {
 // pub fn set_section(self: ValueRef) -> String?
 
 ///|
-fn ValueRef::print_to_stderr(self : ValueRef) -> Unit {
-  @unsafe.llvm_dump_value(self.as_value_ref())
-}
-
-///|
-fn ValueRef::print_to_string(self : ValueRef) -> String {
-  @unsafe.llvm_print_value_to_string(self.as_value_ref())
-}
-
-///|
 fn ValueRef::to_string(self : ValueRef) -> String {
   @unsafe.llvm_print_value_to_string(self.as_value_ref())
 }
@@ -135,8 +125,8 @@ pub fn CallableValue::as_value_ref(
   self : CallableValue
 ) -> @unsafe.LLVMValueRef {
   match self.either_value {
-    Left(f) => f.as_value_ref()
-    Right(p) => p.as_value_ref()
+    Left(f) => f.inner()
+    Right(p) => p.inner()
   }
 }
 

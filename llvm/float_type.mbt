@@ -15,18 +15,21 @@ pub fn FloatType::new(type_ref : @unsafe.LLVMTypeRef) -> FloatType {
   FloatType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Return `TypeRef` of `FloatType`.
-pub fn FloatType::as_type(self : FloatType) -> TypeRef {
+pub impl Type for FloatType with base(self) {
   self.ty
+}
+
+pub impl Type for FloatType with as_type_enum(self) {
+  FloatType(self)
+}
+
+pub impl BasicType for FloatType with as_basic_type_enum(self) {
+  FloatType(self)
 }
 
 // use get_kind to check if it is float type
 // pub fn FloatType::safe_new(type_ref: @unsafe.LLVMTypeRef) -> Option[FloatType];
 
-///| Return `@unsafe.LLVMTypeRef` of `FloatType`
-pub fn FloatType::as_type_ref(self : FloatType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
-}
 
 ///| Creates a constant `FloatValue` of this `FloatType`.
 ///
@@ -104,7 +107,7 @@ pub fn FloatType::scalable_vec_type(
 /// inspect(pi, content="double 0x400921FB4D12D84A")
 /// ```
 pub fn FloatType::const_float(self : FloatType, val : Double) -> FloatValue {
-  let val_ref = @unsafe.llvm_const_real(self.as_type_ref(), val)
+  let val_ref = @unsafe.llvm_const_real(self.inner(), val)
   FloatValue::new(val_ref)
 }
 
@@ -120,7 +123,7 @@ pub fn FloatType::const_float_from_string(
   }
 
   // TODO: use `@unsafe.llvm_const_real_of_string` instead
-  let r = @unsafe.llvm_const_real_of_string_and_size(self.as_type_ref(), slice)
+  let r = @unsafe.llvm_const_real_of_string_and_size(self.inner(), slice)
   FloatValue::new(r)
 }
 
@@ -202,7 +205,7 @@ pub fn FloatType::ptr_type(
   address_space : AddressSpace
 ) -> PointerType {
   PointerType::new(
-    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
   )
 }
 
@@ -235,7 +238,7 @@ pub fn get_poison(self : FloatType) -> FloatValue {
 }
 
 // pub fn FloatType::create_generic_value(self: FloatType, value: Double) -> GenericValue {
-//   let gv = @unsafe.llvm_create_generic_value_of_float(self.as_type_ref(), value)
+//   let gv = @unsafe.llvm_create_generic_value_of_float(self.inner(), value)
 //   GenericValue::new(gv)
 // }
 
@@ -244,28 +247,8 @@ pub fn FloatType::const_array(
   self : FloatType,
   values : Array[FloatValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
-}
-
-///| Prints the `FloatType` to stderr.
-///
-/// It's equivalent to `FloatType::dump()`.
-pub fn FloatType::print_to_stderr(self : FloatType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Prints the `FloatType` to a string.
-///
-/// It's equivalent to `FloatType::to_string()`.
-pub fn FloatType::print_to_string(self : FloatType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dumps the `FloatType` to stderr.
-///
-/// It's equivalent to `FloatType::print_to_stderr()`.
-pub fn FloatType::dump(self : FloatType) -> Unit {
-  self.ty.dump()
 }
 
 ///|

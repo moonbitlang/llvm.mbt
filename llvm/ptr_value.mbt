@@ -23,17 +23,10 @@ pub impl Value for PointerValue with as_value_enum(self) {
   PointerValue(self)
 }
 
-///| Returns the `ValueRef` that this `PointerValue` wraps.
-#deprecated("deprecated")
-pub fn PointerValue::as_value(self : PointerValue) -> ValueRef {
-  self.value
+pub impl BasicValue for PointerValue with as_basic_value_enum(self) {
+  PointerValue(self)
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `PointerValue` wraps.
-#deprecated("deprecated")
-pub fn PointerValue::as_value_ref(self : PointerValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
 
 ///| Gets the name of a `PointerValue`.
 /// If the value is a constant, this will return an empty string.
@@ -48,7 +41,7 @@ pub fn PointerValue::set_name(self : PointerValue, name : String) -> Unit {
 
 ///| Gets the type of a `PointerValue`.
 pub fn PointerValue::get_type(self : PointerValue) -> PointerType {
-  PointerType::new(self.value.get_type().as_type_ref())
+  PointerType::new(self.value.get_type().inner())
 }
 
 ///| Returns whether or not the `PointerValue` is null.
@@ -77,10 +70,10 @@ pub fn PointerValue::const_gep(
   ty : &BasicType,
   ordered_indices : Array[IntValue]
 ) -> PointerValue {
-  let indices = ordered_indices.map(fn(index) { index.as_value_ref() })
+  let indices = ordered_indices.map(fn(index) { index.inner() })
   let value_ref = @unsafe.llvm_const_gep2(
-    ty.as_type_ref(),
-    self.as_value_ref(),
+    ty.inner(),
+    self.inner(),
     indices,
   )
   PointerValue::new(value_ref)
@@ -92,10 +85,10 @@ pub fn PointerValue::const_in_bounds_gep(
   ty : &BasicType,
   ordered_indices : Array[IntValue]
 ) -> PointerValue {
-  let indices = ordered_indices.map(fn(index) { index.as_value_ref() })
+  let indices = ordered_indices.map(fn(index) { index.inner() })
   let value_ref = @unsafe.llvm_const_in_bounds_gep2(
-    ty.as_type_ref(),
-    self.as_value_ref(),
+    ty.inner(),
+    self.inner(),
     indices,
   )
   PointerValue::new(value_ref)
@@ -107,7 +100,7 @@ pub fn PointerValue::const_to_int(
   int_type : IntType
 ) -> IntValue {
   IntValue::new(
-    @unsafe.llvm_const_ptr_to_int(self.as_value_ref(), int_type.as_type_ref()),
+    @unsafe.llvm_const_ptr_to_int(self.inner(), int_type.inner()),
   )
 }
 
@@ -117,7 +110,7 @@ pub fn PointerValue::const_cast(
   ptr_type : PointerType
 ) -> PointerValue {
   PointerValue::new(
-    @unsafe.llvm_const_pointer_cast(self.as_value_ref(), ptr_type.as_type_ref()),
+    @unsafe.llvm_const_pointer_cast(self.inner(), ptr_type.inner()),
   )
 }
 
@@ -128,8 +121,8 @@ pub fn const_address_space_cast(
 ) -> PointerValue {
   PointerValue::new(
     @unsafe.llvm_const_addr_space_cast(
-      self.as_value_ref(),
-      ptr_type.as_type_ref(),
+      self.inner(),
+      ptr_type.inner(),
     ),
   )
 }

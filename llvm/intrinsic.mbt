@@ -70,9 +70,9 @@ pub fn Intrinsic::is_overloaded(self : Intrinsic) -> Bool {
 pub fn Intrinsic::get_declaration(
   self : Intrinsic,
   mod : Module,
-  param_types : Array[BasicTypeEnum]
+  param_types : Array[&BasicType]
 ) -> FunctionValue? {
-  let param_types = param_types.map(fn(t) { t.as_type_ref() })
+  let param_types = param_types.map( t=> t.inner())
   if self.is_overloaded() && param_types.is_empty() {
     return None
   }

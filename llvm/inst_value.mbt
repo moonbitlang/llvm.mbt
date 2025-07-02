@@ -23,20 +23,6 @@ pub impl Value for InstructionValue with as_value_enum(self) {
   InstructionValue(self)
 }
 
-///| Returns the `ValueRef` that this `InstructionValue` wraps.
-#deprecated("deprecated")
-pub fn InstructionValue::as_value(self : InstructionValue) -> ValueRef {
-  self.value
-}
-
-///| Returns the `@unsafe.LLVMValueRef` that this `InstructionValue` wraps.
-#deprecated("deprecated")
-pub fn InstructionValue::as_value_ref(
-  self : InstructionValue
-) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
-
 ///| Returns whether or not the `InstructionValue` is a load instruction.
 pub fn InstructionValue::is_a_load_inst(self : InstructionValue) -> Bool {
   @unsafe.llvm_isa_load_inst(self.inner()).is_not_null()
@@ -56,17 +42,17 @@ pub fn InstructionValue::is_a_alloca_inst(self : InstructionValue) -> Bool {
 pub fn InstructionValue::is_a_getelementptr_inst(
   self : InstructionValue
 ) -> Bool {
-  @unsafe.llvm_isa_get_element_ptr_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_get_element_ptr_inst(self.inner()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a call instruction.
 pub fn InstructionValue::is_a_atomicrmw_inst(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_atomic_rmw_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_atomic_rmw_inst(self.inner()).is_not_null()
 }
 
 ///| Returns whether or not the `InstructionValue` is a cmpxchg instruction.
 pub fn InstructionValue::is_a_cmpxchg_inst(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_atomic_cmp_xchg_inst(self.as_value_ref()).is_not_null()
+  @unsafe.llvm_isa_atomic_cmp_xchg_inst(self.inner()).is_not_null()
 }
 
 ///| Creates a clone of this `InstructionValue`, and returns it.
@@ -74,12 +60,12 @@ pub fn InstructionValue::is_a_cmpxchg_inst(self : InstructionValue) -> Bool {
 pub fn InstructionValue::explicit_clone(
   self : InstructionValue
 ) -> InstructionValue {
-  InstructionValue::new(@unsafe.llvm_instruction_clone(self.as_value_ref()))
+  InstructionValue::new(@unsafe.llvm_instruction_clone(self.inner()))
 }
 
 ///| Gets the name of an `InstructionValue`.
 pub fn InstructionValue::get_name(self : InstructionValue) -> String? {
-  @option.unless(self.get_type().is_void_type(), fn() { self.value.get_name() })
+  @option.unless(self.get_type().as_type_enum() is VoidType(_), fn() { self.value.get_name() })
 }
 
 ///| Set name of the `InstructionValue`.
@@ -106,15 +92,15 @@ pub fn InstructionValue::get_instruction_with_name(
 }
 
 ///| Get type of the `InstructionValue`.
-pub fn InstructionValue::get_type(self : InstructionValue) -> AnyTypeEnum {
-  AnyTypeEnum::new(self.value.get_type().as_type_ref())
+pub fn InstructionValue::get_type(self : InstructionValue) -> &Type {
+  TypeEnum::init(self.value.get_type().inner()).as_type_class()
 }
 
 ///| Get the opcode of the `InstructionValue`.
 pub fn InstructionValue::get_opcode(
   self : InstructionValue
 ) -> InstructionOpcode {
-  let opcode = @unsafe.llvm_get_instruction_opcode(self.as_value_ref())
+  let opcode = @unsafe.llvm_get_instruction_opcode(self.inner())
   InstructionOpcode::from(opcode)
 }
 
@@ -122,7 +108,7 @@ pub fn InstructionValue::get_opcode(
 pub fn InstructionValue::get_previous_instruction(
   self : InstructionValue
 ) -> InstructionValue? {
-  let value_ref = @unsafe.llvm_get_previous_instruction(self.as_value_ref())
+  let value_ref = @unsafe.llvm_get_previous_instruction(self.inner())
   @option.unless(value_ref.is_null(), fn() { InstructionValue::new(value_ref) })
 }
 
@@ -130,7 +116,7 @@ pub fn InstructionValue::get_previous_instruction(
 pub fn InstructionValue::get_next_instruction(
   self : InstructionValue
 ) -> InstructionValue? {
-  let value_ref = @unsafe.llvm_get_next_instruction(self.as_value_ref())
+  let value_ref = @unsafe.llvm_get_next_instruction(self.inner())
   @option.unless(value_ref.is_null(), fn() { InstructionValue::new(value_ref) })
 }
 
@@ -141,32 +127,32 @@ pub fn InstructionValue::get_next_instruction(
 pub fn InstructionValue::erase_from_basic_block(
   self : InstructionValue
 ) -> Unit {
-  @unsafe.llvm_instruction_erase_from_parent(self.as_value_ref())
+  @unsafe.llvm_instruction_erase_from_parent(self.inner())
 }
 
 ///| Remove the instruction from the basic block.
 pub fn InstructionValue::remove_from_basic_block(
   self : InstructionValue
 ) -> Unit {
-  @unsafe.llvm_instruction_remove_from_parent(self.as_value_ref())
+  @unsafe.llvm_instruction_remove_from_parent(self.inner())
 }
 
 ///| Get the parent of the instruction.
 // REVIEW: what happen if the parent been deleted?
 pub fn InstructionValue::get_parent(self : InstructionValue) -> BasicBlock? {
-  let p = @unsafe.llvm_get_instruction_parent(self.as_value_ref())
+  let p = @unsafe.llvm_get_instruction_parent(self.inner())
   @option.unless(p.is_null(), fn() { BasicBlock::new(p) })
 }
 
 ///| Returns if the instruction is a terminator
 pub fn InstructionValue::is_terminator(self : InstructionValue) -> Bool {
-  @unsafe.llvm_isa_terminator_inst(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_terminator_inst(self.inner()).is_null()
 }
 
 ///| Returns if a **terminator** is conditional or not
 pub fn InstructionValue::is_conditional(self : InstructionValue) -> Bool {
   if self.is_terminator() {
-    @unsafe.llvm_is_conditional(self.as_value_ref())
+    @unsafe.llvm_is_conditional(self.inner())
   } else {
     false
   }
@@ -175,7 +161,7 @@ pub fn InstructionValue::is_conditional(self : InstructionValue) -> Bool {
 ///| Returns if the instruction is tail call or not.
 pub fn InstructionValue::is_tail_call(self : InstructionValue) -> Bool {
   if self.get_opcode() is InstructionOpcode::Call {
-    @unsafe.llvm_is_tail_call(self.as_value_ref())
+    @unsafe.llvm_is_tail_call(self.inner())
   } else {
     false
   }
@@ -188,7 +174,7 @@ pub fn InstructionValue::get_tail_call_kind(
   self : InstructionValue
 ) -> @unsafe.LLVMTailCallKind? {
   if self.get_opcode() is InstructionOpcode::Call {
-    Some(@unsafe.llvm_get_tail_call_kind(self.as_value_ref()))
+    Some(@unsafe.llvm_get_tail_call_kind(self.inner()))
   } else {
     None
   }
@@ -200,7 +186,7 @@ pub fn InstructionValue::get_tail_call_kind(
 pub fn InstructionValue::can_use_fast_math_flags(
   self : InstructionValue
 ) -> Bool {
-  @unsafe.llvm_can_value_use_fast_math_flags(self.as_value_ref())
+  @unsafe.llvm_can_value_use_fast_math_flags(self.inner())
 }
 
 ///| Get `fast math flags` of supported instructions.
@@ -212,7 +198,7 @@ pub fn InstructionValue::get_fast_math_flags(
   self : InstructionValue
 ) -> FastMathFlags? {
   if self.can_use_fast_math_flags() {
-    let f = @unsafe.llvm_get_fast_math_flags(self.as_value_ref())
+    let f = @unsafe.llvm_get_fast_math_flags(self.inner())
     Some(FastMathFlags::from(f))
   } else {
     None
@@ -229,7 +215,7 @@ pub fn InstructionValue::set_fast_math_flags(
   flags : FastMathFlags
 ) -> Unit {
   if self.can_use_fast_math_flags() {
-    @unsafe.llvm_set_fast_math_flags(self.as_value_ref(), flags.into())
+    @unsafe.llvm_set_fast_math_flags(self.inner(), flags.into())
   }
 }
 
@@ -240,7 +226,7 @@ pub fn InstructionValue::get_non_negative_flag(
   self : InstructionValue
 ) -> Bool? {
   @option.when(self.get_opcode() is InstructionOpcode::ZExt, fn() {
-    @unsafe.llvm_get_n_neg(self.as_value_ref())
+    @unsafe.llvm_get_n_neg(self.inner())
   })
 }
 
@@ -252,7 +238,7 @@ pub fn InstructionValue::set_non_negative_flag(
   flag : Bool
 ) -> Unit {
   if self.get_opcode() is InstructionOpcode::ZExt {
-    @unsafe.llvm_set_n_neg(self.as_value_ref(), flag)
+    @unsafe.llvm_set_n_neg(self.inner(), flag)
   }
 }
 
@@ -261,7 +247,7 @@ pub fn InstructionValue::set_non_negative_flag(
 /// Calling this function on other instructions is safe and returns `None`.
 pub fn InstructionValue::get_disjoint_flag(self : InstructionValue) -> Bool? {
   if self.get_opcode() is InstructionOpcode::Or {
-    Some(self.as_value_ref().get_is_disjoint())
+    Some(self.inner().get_is_disjoint())
   } else {
     None
   }
@@ -275,7 +261,7 @@ pub fn InstructionValue::set_disjoint_flag(
   flag : Bool
 ) -> Unit {
   if self.get_opcode() is InstructionOpcode::Or {
-    self.as_value_ref().set_is_disjoint(flag)
+    self.inner().set_is_disjoint(flag)
   }
 }
 
@@ -298,7 +284,7 @@ pub fn InstructionValue::get_volatile(
     not(self.is_a_cmpxchg_inst()) {
     return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
   }
-  Ok(@unsafe.llvm_get_volatile(self.as_value_ref()))
+  Ok(@unsafe.llvm_get_volatile(self.inner()))
 }
 
 ///| Sets whether or not a memory access instruction is volatile.
@@ -313,7 +299,7 @@ pub fn InstructionValue::set_volatile(
     not(self.is_a_cmpxchg_inst()) {
     return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
   }
-  self.as_value_ref().set_volatile(flag)
+  self.inner().set_volatile(flag)
   Ok(())
 }
 
@@ -321,25 +307,25 @@ pub fn InstructionValue::set_volatile(
 /// SubTypes: Only apply to alloca instruction
 pub fn InstructionValue::get_allocated_type(
   self : InstructionValue
-) -> Result[BasicTypeEnum, String] {
+) -> Result[&BasicType, String] {
   if not(self.is_a_alloca_inst()) {
     return Err("ValueRef is not an alloca instruction")
   }
-  Ok(BasicTypeEnum::new(@unsafe.llvm_get_allocated_type(self.as_value_ref())))
+  Ok(BasicTypeEnum::init(@unsafe.llvm_get_allocated_type(self.inner())).as_basic_type_class())
 }
 
 ///| Returns the source element type of the given GEP.
 /// SubTypes: Only apply to GetElementPtr instruction
 pub fn InstructionValue::get_gep_source_element_type(
   self : InstructionValue
-) -> Result[BasicTypeEnum, String] {
+) -> Result[&BasicType, String] {
   if not(self.is_a_getelementptr_inst()) {
     return Err("ValueRef is not a getelementptr instruction")
   }
   Ok(
-    BasicTypeEnum::new(
-      @unsafe.llvm_get_gep_source_element_type(self.as_value_ref()),
-    ),
+    BasicTypeEnum::init(
+      @unsafe.llvm_get_gep_source_element_type(self.inner()),
+    ).as_basic_type_class(),
   )
 }
 
@@ -353,7 +339,7 @@ pub fn InstructionValue::get_alignment(
     not(self.is_a_store_inst()) {
     return Err("ValueRef is not a load, store or alloca instruction")
   }
-  Ok(@unsafe.llvm_get_alignment(self.as_value_ref()))
+  Ok(@unsafe.llvm_get_alignment(self.inner()))
 }
 
 ///| Returns alignment on a memory access instruction or alloca.
@@ -370,7 +356,7 @@ pub fn InstructionValue::set_alignment(
     not(self.is_a_store_inst()) {
     return Err("ValueRef is not a load, store or alloca instruction")
   }
-  @unsafe.llvm_set_alignment(self.as_value_ref(), alignment)
+  @unsafe.llvm_set_alignment(self.inner(), alignment)
   Ok(())
 }
 
@@ -382,7 +368,7 @@ pub fn InstructionValue::get_atomic_ordering(
   if not(self.is_a_load_inst()) && not(self.is_a_store_inst()) {
     return Err("ValueRef is not a load or store instruction")
   }
-  let ord = @unsafe.llvm_get_ordering(self.as_value_ref())
+  let ord = @unsafe.llvm_get_ordering(self.inner())
   Ok(AtomicOrdering::from(ord))
 }
 
@@ -410,7 +396,7 @@ pub fn InstructionValue::set_atomic_ordering(
       }
     _ => ()
   }
-  @unsafe.llvm_set_ordering(self.as_value_ref(), ordering.into())
+  @unsafe.llvm_set_ordering(self.inner(), ordering.into())
   Ok(())
 }
 
@@ -468,7 +454,7 @@ pub fn InstructionValue::set_atomic_ordering(
 /// 4) Void return has zero: void is not a value and does not count as an operand
 /// even though the return instruction can take values.
 pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
-  @unsafe.llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
+  @unsafe.llvm_get_num_operands(self.inner()).reinterpret_as_uint()
 }
 
 ///| Obtains the operand an `InstructionValue` has at a given index if any.
@@ -545,7 +531,7 @@ fn InstructionValue::get_operand_unchecked(
   self : InstructionValue,
   index : UInt
 ) -> Either[BasicValueEnum, BasicBlock]? {
-  let operand = @unsafe.llvm_get_operand(self.as_value_ref(), index)
+  let operand = @unsafe.llvm_get_operand(self.inner(), index)
   if operand.is_null() {
     return None
   }
@@ -555,7 +541,7 @@ fn InstructionValue::get_operand_unchecked(
     let bb = BasicBlock::new(bb_ref)
     Some(Right(bb))
   } else {
-    let value = BasicValueEnum::new(operand)
+    let value = BasicValueEnum::init(operand)
     Some(Left(value))
   }
 }
@@ -603,7 +589,7 @@ pub fn InstructionValue::set_operand(
   if index >= num_operands {
     return false
   }
-  @unsafe.llvm_set_operand(self.as_value_ref(), index, val.as_value_ref())
+  @unsafe.llvm_set_operand(self.inner(), index, val.inner())
   true
 }
 
@@ -647,7 +633,7 @@ fn InstructionValue::get_operand_use_unchecked(
   self : InstructionValue,
   index : UInt
 ) -> BasicValueUse? {
-  let use_ = @unsafe.llvm_get_operand_use(self.as_value_ref(), index)
+  let use_ = @unsafe.llvm_get_operand_use(self.inner(), index)
   @option.unless(use_.is_null(), fn() { BasicValueUse::new(use_) })
 }
 
@@ -713,7 +699,7 @@ pub fn InstructionValue::get_icmp_predicate(
   self : InstructionValue
 ) -> IntPredicate? {
   @option.when(self.get_opcode() is InstructionOpcode::ICmp, fn() {
-    let p = @unsafe.llvm_get_icmp_predicate(self.as_value_ref())
+    let p = @unsafe.llvm_get_icmp_predicate(self.inner())
     IntPredicate::from(p)
   })
 }
@@ -747,14 +733,14 @@ pub fn InstructionValue::get_fcmp_predicate(
   self : InstructionValue
 ) -> FloatPredicate? {
   @option.when(self.get_opcode() is InstructionOpcode::FCmp, fn() {
-    let p = @unsafe.llvm_get_fcmp_predicate(self.as_value_ref())
+    let p = @unsafe.llvm_get_fcmp_predicate(self.inner())
     FloatPredicate::from(p)
   })
 }
 
 ///| Determines whether or not this `Instruction` has any associated metadata.
 pub fn InstructionValue::has_metadata(self : InstructionValue) -> Bool {
-  @unsafe.llvm_has_metadata(self.as_value_ref())
+  @unsafe.llvm_has_metadata(self.inner())
 }
 
 ///| Gets the `MetadataValue` associated with this `Instruction` at a specific `kind_id`.
@@ -762,7 +748,7 @@ pub fn InstructionValue::get_metadata(
   self : InstructionValue,
   kind_id : UInt
 ) -> MetadataValue? {
-  let metadata = @unsafe.llvm_get_metadata(self.as_value_ref(), kind_id)
+  let metadata = @unsafe.llvm_get_metadata(self.inner(), kind_id)
   @option.unless(metadata.is_null(), fn() { MetadataValue::new(metadata) })
 }
 
@@ -776,38 +762,10 @@ pub fn InstructionValue::set_metadata(
     raise MetadataNotNode
   }
   @unsafe.llvm_set_metadata(
-    self.as_value_ref(),
+    self.inner(),
     kind_id,
-    metadata.as_value_ref(),
+    metadata.inner(),
   )
-}
-
-///| Dumps the `InstructionValue` to stderr.
-///
-/// It's equivalent to `InstructionValue::dump`.
-pub fn InstructionValue::print_to_stderr(self : InstructionValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `InstructionValue` to a string.
-///
-/// It's equivalent to `InstructionValue::to_string`.
-pub fn InstructionValue::print_to_string(self : InstructionValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `InstructionValue` to a string.
-///
-/// It's equivalent to `InstructionValue::print_to_string`.
-pub fn InstructionValue::to_string(self : InstructionValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `InstructionValue` to stderr.
-///
-/// It's equivalent to `InstructionValue::print_to_stderr`.
-pub fn InstructionValue::dump(self : InstructionValue) -> Unit {
-  self.value.dump()
 }
 
 ///|
@@ -815,10 +773,5 @@ pub impl Show for InstructionValue with output(
   self : InstructionValue,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for InstructionValue with to_string(self : InstructionValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

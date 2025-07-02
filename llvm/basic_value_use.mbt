@@ -101,8 +101,8 @@ pub fn BasicValueUse::get_next_use(self : BasicValueUse) -> BasicValueUse? {
 /// assert_eq(store_operand_use0.get_user(), store_instruction);
 /// assert_eq(store_operand_use1.get_user(), store_instruction);
 /// ```
-pub fn BasicValueUse::get_user(self : BasicValueUse) -> AnyValueEnum {
-  AnyValueEnum::new(@unsafe.llvm_get_user(self.as_use_ref()))
+pub fn BasicValueUse::get_user(self : BasicValueUse) -> ValueEnum {
+  ValueEnum::init(@unsafe.llvm_get_user(self.as_use_ref()))
 }
 
 ///| Gets the used value (a `BasicValueEnum` or `BasicBlock`) of this use.
@@ -148,6 +148,6 @@ pub fn BasicValueUse::get_used_value(
   if is_basic_block {
     BasicBlock::new(@unsafe.llvm_value_as_basic_block(used_value)) |> Right
   } else {
-    BasicValueEnum::new(used_value) |> Left
+    BasicValueEnum::init(used_value) |> Left
   }
 }

@@ -12,9 +12,12 @@ pub fn VoidType::new(type_ref : @unsafe.LLVMTypeRef) -> VoidType {
   VoidType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Return `@unsafe.LLVMTypeRef` of `VoidType`
-pub fn VoidType::as_type_ref(self : VoidType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for VoidType with base(self) {
+  self.ty
+}
+
+pub impl Type for VoidType with as_type_enum(self) {
+  VoidType(self)
 }
 
 ///| Return whether this `VoidType` is sized. **Always returns `false`.**
@@ -70,36 +73,7 @@ pub fn VoidType::get_alignment(self : VoidType) -> IntValue {
   self.ty.get_alignment()
 }
 
-///| Dumps the `VoidType` to stderr.
-///
-/// It's equivalent to `VoidType::dump()`.
-pub fn VoidType::print_to_stderr(self : VoidType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Prints the `VoidType` to a string.
-///
-/// It's equivalent to `VoidType::to_string()`.
-pub fn VoidType::print_to_string(self : VoidType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Prints the `VoidType` to a string.
-pub fn VoidType::to_string(self : VoidType) -> String {
-  self.ty.to_string()
-}
-
-///| Dumps the `VoidType` to stderr.
-pub fn VoidType::dump(self : VoidType) -> Unit {
-  self.ty.dump()
-}
-
 ///|
 pub impl Show for VoidType with output(self : VoidType, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for VoidType with to_string(self : VoidType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

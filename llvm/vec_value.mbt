@@ -21,16 +21,12 @@ pub impl Value for VectorValue with as_value_enum(self) {
   VectorValue(self)
 }
 
-///| Returns the `ValueRef` that this `VectorValue` wraps.
-#deprecated("deprecated")
-pub fn VectorValue::as_value(self : VectorValue) -> ValueRef {
-  self.value
+pub impl BasicValue for VectorValue with as_basic_value_enum(self) {
+  VectorValue(self)
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `VectorValue` wraps.
-#deprecated("deprecated")
-pub fn VectorValue::as_value_ref(self : VectorValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl AggregateValue for VectorValue with as_aggregate_value_enum(self) {
+  VectorValue(self)
 }
 
 ///| Determines whether or not a `VectorValue` is a constant.
@@ -51,12 +47,12 @@ pub fn VectorValue::is_const(self : VectorValue) -> Bool {
 
 ///|
 pub fn VectorValue::is_constant_vector(self : VectorValue) -> Bool {
-  @unsafe.llvm_isa_constant_vector(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_constant_vector(self.inner()).is_null()
 }
 
 ///|
 pub fn VectorValue::is_constant_data_vector(self : VectorValue) -> Bool {
-  @unsafe.llvm_isa_constant_data_vector(self.as_value_ref()).is_null()
+  @unsafe.llvm_isa_constant_data_vector(self.inner()).is_null()
 }
 
 ///| Gets the name of a `VectorValue`.
@@ -72,7 +68,7 @@ pub fn VectorValue::set_name(self : VectorValue, name : String) -> Unit {
 
 ///|
 pub fn VectorValue::get_type(self : VectorValue) -> VectorType {
-  VectorType::new(self.value.get_type().as_type_ref())
+  VectorType::new(self.value.get_type().inner())
 }
 
 ///|
@@ -106,9 +102,9 @@ pub fn VectorValue::const_shuffle_vector(
 ) -> VectorValue {
   VectorValue::new(
     @unsafe.llvm_const_shuffle_vector(
-      self.as_value_ref(),
-      right.as_value_ref(),
-      mask.as_value_ref(),
+      self.inner(),
+      right.inner(),
+      mask.inner(),
     ),
   )
 }

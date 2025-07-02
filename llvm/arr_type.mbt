@@ -11,14 +11,16 @@ pub fn ArrayType::new(type_ref : @unsafe.LLVMTypeRef) -> ArrayType {
   ArrayType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `TypeRef` of this `ArrayType`.
-pub fn ArrayType::as_type(self : ArrayType) -> TypeRef {
+pub impl Type for ArrayType with base(self) {
   self.ty
 }
 
-///| Returns the `@unsafe.LLVMTypeRef` of this `ArrayType`.
-pub fn ArrayType::as_type_ref(self : ArrayType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for ArrayType with as_type_enum(self) {
+  ArrayType(self)
+}
+
+pub impl BasicType for ArrayType with as_basic_type_enum(self) {
+  ArrayType(self)
 }
 
 ///| Gets the size of this `ArrayType`. Value may vary depending on the target architecture.
@@ -138,8 +140,9 @@ pub fn ArrayType::array_type(self : ArrayType, size : UInt) -> ArrayType {
 ///| Creates a constant `ArrayValue` of `ArrayValue`s.
 pub fn ArrayType::const_array(
   self : ArrayType,
-  values : Array[BasicValueEnum]
+  values : Array[&BasicValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
 }
 
@@ -160,13 +163,13 @@ pub fn ArrayType::const_zero(self : ArrayType) -> ArrayValue {
 /// assert_eq(array_len, 8);
 /// ```
 pub fn ArrayType::length(self : ArrayType) -> UInt {
-  @unsafe.llvm_get_array_length(self.as_type_ref())
+  @unsafe.llvm_get_array_length(self.inner())
 }
 
 ///| Gets the length of this `ArrayType`.
 /// It is equivalent to `ArrayType::length`.
 pub fn ArrayType::len(self : ArrayType) -> UInt {
-  @unsafe.llvm_get_array_length(self.as_type_ref())
+  @unsafe.llvm_get_array_length(self.inner())
 }
 
 ///| Returns `true` if this `ArrayType` contains no elements.
@@ -201,7 +204,7 @@ pub fn ArrayType::get_undef(self : ArrayType) -> ArrayValue {
 /// inspect(array_poison, content="[8 x i32] poison")
 /// ```
 pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
-  ArrayValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
+  ArrayValue::new(@unsafe.llvm_get_poison(self.inner()))
 }
 
 ///| Gets the element type of this `ArrayType`.
@@ -215,30 +218,9 @@ pub fn ArrayType::get_poison(self : ArrayType) -> ArrayValue {
 /// let ele_type = array_type.get_element_type();
 /// inspect(ele_type, content="i32")
 /// ```
-pub fn ArrayType::get_element_type(self : ArrayType) -> BasicTypeEnum {
-  let ty_ref = self.ty.get_element_type().as_type_ref()
-  BasicTypeEnum::new(ty_ref)
-}
-
-///| Dumps the `ArrayType` to stderr.
-///
-/// It's equivalent to `ArrayType::dump()`.
-pub fn ArrayType::print_to_stderr(self : ArrayType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Dumps the `ArrayType` to a string.
-///
-/// It's equivalent to `ArrayType::to_string()`.
-pub fn ArrayType::print_to_string(self : ArrayType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dumps the `ArrayType` to stderr.
-///
-/// It's equivalent to `ArrayType::print_to_stderr()`.
-pub fn ArrayType::dump(self : ArrayType) -> Unit {
-  self.ty.dump()
+pub fn ArrayType::get_element_type(self : ArrayType) -> &BasicType {
+  let ty_ref = self.ty.get_element_type().inner()
+  BasicTypeEnum::init(ty_ref).as_basic_type_class()
 }
 
 ///|

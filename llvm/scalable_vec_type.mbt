@@ -13,16 +13,17 @@ pub fn ScalableVectorType::new(
   ScalableVectorType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `TypeRef` of this `ScalableVectorType`.
-pub fn ScalableVectorType::as_type(self : ScalableVectorType) -> TypeRef {
+
+pub impl Type for ScalableVectorType with base(self) {
   self.ty
 }
 
-///| Returns the `@unsafe.LLVMTypeRef` of this `ScalableVectorType`.
-pub fn ScalableVectorType::as_type_ref(
-  self : ScalableVectorType
-) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for ScalableVectorType with as_type_enum(self) {
+  ScalableVectorType(self)
+}
+
+pub impl BasicType for ScalableVectorType with as_basic_type_enum(self) {
+  ScalableVectorType(self)
 }
 
 ///| Gets the size of this `ScalableVectorType`. Value may vary depending on the target architecture.
@@ -83,7 +84,7 @@ pub fn ScalableVectorType::get_alignment(self : ScalableVectorType) -> IntValue 
 /// assert_eq!(scalable_vector_sz, 8);
 /// ```
 pub fn ScalableVectorType::get_size(self : ScalableVectorType) -> UInt {
-  @unsafe.llvm_get_vector_size(self.as_type_ref())
+  @unsafe.llvm_get_vector_size(self.inner())
 }
 
 ///| Creates a constant zero value of this `ScalableVectorType`.
@@ -150,8 +151,8 @@ pub fn ScalableVectorType::get_poison(
 pub fn ScalableVectorType::get_element_type(
   self : ScalableVectorType
 ) -> BasicTypeEnum {
-  let ty_ref = self.ty.get_element_type().as_type_ref()
-  BasicTypeEnum::new(ty_ref)
+  let ty_ref = self.ty.get_element_type().inner()
+  BasicTypeEnum::init(ty_ref)
 }
 
 ///| Creates a `PointerType` with this `ScalableVectorType` for its element type.
@@ -214,6 +215,7 @@ pub fn ScalableVectorType::const_array(
   self : ScalableVectorType,
   values : Array[ScalableVectorValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
 }
 
@@ -232,41 +234,10 @@ pub fn ScalableVectorType::get_context(self : ScalableVectorType) -> Context {
   self.ty.get_context()
 }
 
-///| Prints this `ScalableVectorType` to stderr.
-///
-/// It's equivalent to `ScalableVectorType::dump`.
-pub fn ScalableVectorType::print_to_stderr(self : ScalableVectorType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Prints this `ScalableVectorType` to a string.
-///
-/// It's equivalent to `ScalableVectorType::to_string`.
-pub fn ScalableVectorType::print_to_string(self : ScalableVectorType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Converts this `ScalableVectorType` to a string.
-pub fn ScalableVectorType::to_string(self : ScalableVectorType) -> String {
-  self.ty.to_string()
-}
-
-///| Prints this `ScalableVectorType` to stderr.
-///
-/// It's equivalent to `ScalableVectorType::print_to_stderr`.
-pub fn ScalableVectorType::dump(self : ScalableVectorType) -> Unit {
-  self.ty.dump()
-}
-
 ///|
 pub impl Show for ScalableVectorType with output(
   self : ScalableVectorType,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for ScalableVectorType with to_string(self : ScalableVectorType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

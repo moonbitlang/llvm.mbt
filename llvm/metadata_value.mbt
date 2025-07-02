@@ -23,25 +23,11 @@ pub impl Value for MetadataValue with as_value_enum(self) {
   MetadataValue(self)
 }
 
-///| Returns the `ValueRef` that this `MetadataValue` wraps.
-#deprecated("deprecated")
-pub fn MetadataValue::as_value(self : MetadataValue) -> ValueRef {
-  self.value
-}
-
-///| Returns the `@unsafe.LLVMValueRef` that this `MetadataValue` wraps.
-#deprecated("deprecated")
-pub fn MetadataValue::as_value_ref(
-  self : MetadataValue
-) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
-
 ///| Returns the `@unsafe.LLVMMetadataRef` that this `MetadataValue` wraps.
 pub fn MetadataValue::as_metadata_ref(
   self : MetadataValue
 ) -> @unsafe.LLVMMetadataRef {
-  @unsafe.llvm_value_as_metadata(self.as_value_ref())
+  @unsafe.llvm_value_as_metadata(self.inner())
 }
 
 ///| Get the name of the `MetadataValue`.
@@ -53,12 +39,12 @@ pub fn MetadataValue::get_name(self : MetadataValue) -> String {
 
 ///|
 pub fn MetadataValue::is_node(self : MetadataValue) -> Bool {
-  @unsafe.llvm_isa_md_node(self.as_value_ref()) == self.as_value_ref()
+  @unsafe.llvm_isa_md_node(self.inner()) == self.inner()
 }
 
 ///|
 pub fn MetadataValue::is_string(self : MetadataValue) -> Bool {
-  @unsafe.llvm_isa_md_string(self.as_value_ref()) == self.as_value_ref()
+  @unsafe.llvm_isa_md_string(self.inner()) == self.inner()
 }
 
 ///|
@@ -66,7 +52,7 @@ pub fn MetadataValue::get_string_value(self : MetadataValue) -> String? {
   if self.is_node() {
     None
   } else {
-    Some(@unsafe.llvm_get_md_string(self.as_value_ref()))
+    Some(@unsafe.llvm_get_md_string(self.inner()))
   }
 }
 
@@ -75,7 +61,7 @@ pub fn MetadataValue::get_node_size(self : MetadataValue) -> UInt {
   if self.is_string() {
     0
   } else {
-    @unsafe.llvm_get_md_node_num_operands(self.as_value_ref())
+    @unsafe.llvm_get_md_node_num_operands(self.inner())
   }
 }
 
@@ -86,7 +72,7 @@ pub fn MetadataValue::get_node_size(self : MetadataValue) -> UInt {
 //     return Array::new()
 //   }
 //
-//   let operands = @unsafe.llvm_get_md_node_operands(self.as_value_ref())
+//   let operands = @unsafe.llvm_get_md_node_operands(self.inner())
 //   operands.map(fn (op) {BasicMetadataValueEnum::new(op)})
 // }
 

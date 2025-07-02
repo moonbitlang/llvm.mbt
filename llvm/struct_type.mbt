@@ -11,14 +11,17 @@ pub fn StructType::new(type_ref : @unsafe.LLVMTypeRef) -> StructType {
   StructType::{ ty: TypeRef::new(type_ref) }
 }
 
-///|
-pub fn StructType::as_type(self : StructType) -> TypeRef {
+
+pub impl Type for StructType with base(self) {
   self.ty
 }
 
-///|
-pub fn StructType::as_type_ref(self : StructType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for StructType with as_type_enum(self) {
+  StructType(self)
+}
+
+pub impl BasicType for StructType with as_basic_type_enum(self) {
+  StructType(self)
 }
 
 ///| Gets the type of a field belonging to this `StructType`.
@@ -36,7 +39,7 @@ pub fn StructType::as_type_ref(self : StructType) -> @unsafe.LLVMTypeRef {
 pub fn StructType::get_field_type_at_index(
   self : StructType,
   index : UInt
-) -> BasicTypeEnum? {
+) -> &BasicType? {
   // TODO: need to think about how to handle this when `opaque` is true
   if self.is_opaque() {
     return None
@@ -44,8 +47,8 @@ pub fn StructType::get_field_type_at_index(
   if index >= self.count_fields() {
     return None
   }
-  let t = @unsafe.llvm_struct_get_type_at_index(self.as_type_ref(), index)
-  let t = BasicTypeEnum::new(t)
+  let t = @unsafe.llvm_struct_get_type_at_index(self.inner(), index)
+  let t = BasicTypeEnum::init(t).as_basic_type_class()
   Some(t)
 }
 
@@ -54,8 +57,8 @@ pub fn StructType::const_named_struct(
   self : StructType,
   values : Array[&BasicValue]
 ) -> StructValue {
-  let args = values.map(fn(v) { v.as_value_ref() })
-  let vref = @unsafe.llvm_const_named_struct(self.as_type_ref(), args)
+  let args = values.map(v => v.inner())
+  let vref = @unsafe.llvm_const_named_struct(self.inner(), args)
   StructValue::new(vref)
 }
 
@@ -139,7 +142,7 @@ pub fn StructType::get_context(self : StructType) -> Context {
 
 ///| Gets this `StructType`'s name.
 pub fn StructType::get_name(self : StructType) -> String {
-  @unsafe.llvm_get_struct_name(self.as_type_ref())
+  @unsafe.llvm_get_struct_name(self.inner())
 }
 
 ///| Creates a `FunctionType` with this `StructType` for its return type.
@@ -195,7 +198,7 @@ pub fn StructType::ptr_type(
   address_space : AddressSpace
 ) -> PointerType {
   PointerType::new(
-    @unsafe.llvm_pointer_type(self.as_type_ref(), address_space.into()),
+    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
   )
 }
 
@@ -211,7 +214,7 @@ pub fn StructType::ptr_type(
 /// assert_true(struct_type.is_packed())
 /// ```
 pub fn StructType::is_packed(self : StructType) -> Bool {
-  @unsafe.llvm_is_packed_struct(self.as_type_ref())
+  @unsafe.llvm_is_packed_struct(self.inner())
 }
 
 ///| Determines whether or not a `StructType` is opaque.
@@ -224,7 +227,7 @@ pub fn StructType::is_packed(self : StructType) -> Bool {
 /// assert_true(struct_ty.is_opaque())
 /// ```
 pub fn StructType::is_opaque(self : StructType) -> Bool {
-  @unsafe.llvm_is_opaque_struct(self.as_type_ref())
+  @unsafe.llvm_is_opaque_struct(self.inner())
 }
 
 ///| Counts the number of field types.
@@ -240,7 +243,7 @@ pub fn StructType::is_opaque(self : StructType) -> Bool {
 /// assert_eq(field_count, 2)
 /// ```
 pub fn StructType::count_fields(self : StructType) -> UInt {
-  @unsafe.llvm_count_struct_element_types(self.as_type_ref())
+  @unsafe.llvm_count_struct_element_types(self.inner())
 }
 
 ///| Gets this `StructType`'s field types.
@@ -255,9 +258,9 @@ pub fn StructType::count_fields(self : StructType) -> UInt {
 /// let field_types = struct_type.get_field_types();
 /// inspect(field_types, content="[i32, i64]")
 /// ```
-pub fn StructType::get_field_types(self : StructType) -> Array[BasicTypeEnum] {
-  let ele_tys = @unsafe.llvm_get_struct_element_types(self.as_type_ref())
-  let ele_tys = ele_tys.map(fn(t) { BasicTypeEnum::new(t) })
+pub fn StructType::get_field_types(self : StructType) -> Array[&BasicType] {
+  let ele_tys = @unsafe.llvm_get_struct_element_types(self.inner())
+  let ele_tys = ele_tys.map(t => BasicTypeEnum::init(t).as_basic_type_class())
   ele_tys
 }
 
@@ -290,7 +293,7 @@ pub fn StructType::get_undef(self : StructType) -> StructValue {
 /// inspect(struct_poison, content="{ i32, i64 } poison")
 /// ```
 pub fn StructType::get_poison(self : StructType) -> StructValue {
-  StructValue::new(@unsafe.llvm_get_poison(self.as_type_ref()))
+  StructValue::new(@unsafe.llvm_get_poison(self.inner()))
 }
 
 ///| Defines the body of a `StructType`.
@@ -318,8 +321,8 @@ pub fn StructType::set_body(
   is_packed~ : Bool = false
 ) -> Unit raise MoonllvmError {
   guard self.is_opaque() else { raise SetBodyForNonOpaqueStruct }
-  let field_types = field_types.map(fn(t) { t.as_type_ref() })
-  @unsafe.llvm_struct_set_body(self.as_type_ref(), field_types, is_packed)
+  let field_types = field_types.map(fn(t) { t.inner() })
+  @unsafe.llvm_struct_set_body(self.inner(), field_types, is_packed)
 }
 
 ///| Creates a constant `ArrayValue`.
@@ -338,43 +341,11 @@ pub fn StructType::const_array(
   self : StructType,
   values : Array[StructValue]
 ) -> ArrayValue {
+  let values = values.map(v => v as &Value)
   ArrayValue::new_const_array(self, values)
-}
-
-///| Dumps the `StructType` to stderr.
-///
-/// It's equivalent to `StructType::dump()`.
-pub fn StructType::print_to_stderr(self : StructType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Dumps the `StructType` to a string.
-///
-/// It's equivalent to `StructType::to_string()`.
-pub fn StructType::print_to_string(self : StructType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dumps the `StructType` to a string.
-///
-/// It's equivalent to `StructType::print_to_string()`.
-pub fn StructType::to_string(self : StructType) -> String {
-  self.ty.to_string()
-}
-
-///| Dumps the `StructType` to stderr.
-///
-/// It's equivalent to `StructType::print_to_stderr()`.
-pub fn StructType::dump(self : StructType) -> Unit {
-  self.ty.dump()
 }
 
 ///|
 pub impl Show for StructType with output(self : StructType, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for StructType with to_string(self : StructType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

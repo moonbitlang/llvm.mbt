@@ -11,14 +11,12 @@ pub fn FunctionType::new(type_ref : @unsafe.LLVMTypeRef) -> FunctionType {
   FunctionType::{ ty: TypeRef::new(type_ref) }
 }
 
-///| Returns the `TypeRef` of this `FunctionType`.
-pub fn FunctionType::as_type(self : FunctionType) -> TypeRef {
+pub impl Type for FunctionType with base(self) {
   self.ty
 }
 
-///| Return `@unsafe.LLVMTypeRef` of `FunctionType`
-pub fn FunctionType::as_type_ref(self : FunctionType) -> @unsafe.LLVMTypeRef {
-  self.ty.as_type_ref()
+pub impl Type for FunctionType with as_type_enum(self) {
+  FunctionType(self)
 }
 
 ///| Creates a `PointerType` with this `FunctionType` for its element type.
@@ -50,7 +48,7 @@ pub fn FunctionType::ptr_type(
 /// assert_true(fn_type.is_var_arg())
 /// ```
 pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
-  @unsafe.llvm_is_function_var_arg(self.as_type_ref())
+  @unsafe.llvm_is_function_var_arg(self.inner())
 }
 
 ///| Gets param types this `FunctionType` has.
@@ -67,9 +65,9 @@ pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
 /// ```
 pub fn FunctionType::get_param_types(
   self : FunctionType
-) -> Array[BasicTypeEnum] {
-  let param_types = @unsafe.llvm_get_param_types(self.as_type_ref())
-  param_types.map(fn(t) { BasicTypeEnum::new(t) })
+) -> Array[&BasicType] {
+  let param_types = @unsafe.llvm_get_param_types(self.inner())
+  param_types.map(t => BasicTypeEnum::init(t).as_basic_type_class())
 }
 
 ///| Counts the number of param types this `FunctionType` has.
@@ -85,7 +83,7 @@ pub fn FunctionType::get_param_types(
 /// assert_eq(param_count, 2)
 /// ```
 pub fn FunctionType::count_param_types(self : FunctionType) -> UInt {
-  @unsafe.llvm_count_param_types(self.as_type_ref())
+  @unsafe.llvm_count_param_types(self.inner())
 }
 
 // REVIEW: Seems it always return false
@@ -131,41 +129,13 @@ pub fn FunctionType::get_context(self : FunctionType) -> Context {
 /// let ret_type = fn_type.get_return_type();
 /// inspect(ret_type.unwrap(), content="i32")
 /// ```
-pub fn FunctionType::get_return_type(self : FunctionType) -> BasicTypeEnum? {
-  let ty = @unsafe.llvm_get_return_type(self.as_type_ref())
+pub fn FunctionType::get_return_type(self : FunctionType) -> &BasicType? {
+  let ty = @unsafe.llvm_get_return_type(self.inner())
   let kind = @unsafe.llvm_get_type_kind(ty)
   match kind {
     @unsafe.LLVMVoidTypeKind => None
-    _ => Some(BasicTypeEnum::new(ty))
+    _ => Some(BasicTypeEnum::init(ty).as_basic_type_class())
   }
-}
-
-///| Dumps the `FunctionType` to stderr.
-///
-/// It's equivalent to `FunctionType::dump()`.
-pub fn FunctionType::print_to_stderr(self : FunctionType) -> Unit {
-  self.ty.print_to_stderr()
-}
-
-///| Dumps the `FunctionType` to a string.
-///
-/// It's equivalent to `FunctionType::to_string()`.
-pub fn FunctionType::print_to_string(self : FunctionType) -> String {
-  self.ty.print_to_string()
-}
-
-///| Dumps the `FunctionType` to a string.
-///
-/// It's equivalent to `FunctionType::print_to_string()`.
-pub fn FunctionType::to_string(self : FunctionType) -> String {
-  self.ty.to_string()
-}
-
-///| Dumps the `FunctionType` to stderr.
-///
-/// It's equivalent to `FunctionType::print_to_stderr()`.
-pub fn FunctionType::dump(self : FunctionType) -> Unit {
-  self.ty.dump()
 }
 
 ///| Dumps the `FunctionType` to stderr.
@@ -175,12 +145,5 @@ pub impl Show for FunctionType with output(
   self : FunctionType,
   logger : &Logger
 ) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///| Dumps the `FunctionType` to a string.
-///
-/// It's equivalent to `FunctionType::to_string()`.
-pub impl Show for FunctionType with to_string(self : FunctionType) -> String {
-  self.to_string()
+  logger.write_string(self.ty.to_string())
 }

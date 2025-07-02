@@ -23,17 +23,12 @@ pub impl Value for ScalableVectorValue with as_value_enum(self) {
   ScalableVectorValue(self)
 }
 
-#deprecated("deprecated")
-pub fn ScalableVectorValue::as_value(self : ScalableVectorValue) -> ValueRef {
-  self.value
+pub impl BasicValue for ScalableVectorValue with as_basic_value_enum(self) {
+  ScalableVectorValue(self)
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `ScalableVectorValue` wraps.
-#deprecated("deprecated")
-pub fn ScalableVectorValue::as_value_ref(
-  self : ScalableVectorValue
-) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl AggregateValue for ScalableVectorValue with as_aggregate_value_enum(self) {
+  ScalableVectorValue(self)
 }
 
 ///| Determines whether or not a `ScalableVectorValue` is a constant.
@@ -70,7 +65,7 @@ pub fn ScalableVectorValue::set_name(
 pub fn ScalableVectorValue::get_type(
   self : ScalableVectorValue
 ) -> ScalableVectorType {
-  ScalableVectorType::new(self.value.get_type().as_type_ref())
+  ScalableVectorType::new(self.value.get_type().inner())
 }
 
 ///| Determines whether or not this `ScalableVectorValue` is null.
@@ -95,10 +90,10 @@ pub fn ScalableVectorValue::const_extract_element(
   self : ScalableVectorValue,
   index : IntValue
 ) -> BasicValueEnum {
-  BasicValueEnum::new(
+  BasicValueEnum::init(
     @unsafe.llvm_const_extract_element(
-      self.as_value_ref(),
-      index.as_value_ref(),
+      self.inner(),
+      index.inner(),
     ),
   )
 }
@@ -109,11 +104,11 @@ pub fn ScalableVectorValue::const_insert_element(
   element : &BasicValue,
   index : IntValue
 ) -> BasicValueEnum {
-  BasicValueEnum::new(
+  BasicValueEnum::init(
     @unsafe.llvm_const_insert_element(
-      self.as_value_ref(),
-      element.as_value_ref(),
-      index.as_value_ref(),
+      self.inner(),
+      element.inner(),
+      index.inner(),
     ),
   )
 }
@@ -134,9 +129,9 @@ pub fn ScalableVectorValue::const_shuffle_vector(
 ) -> ScalableVectorValue {
   ScalableVectorValue::new(
     @unsafe.llvm_const_shuffle_vector(
-      self.as_value_ref(),
-      right.as_value_ref(),
-      mask.as_value_ref(),
+      self.inner(),
+      right.inner(),
+      mask.inner(),
     ),
   )
 }

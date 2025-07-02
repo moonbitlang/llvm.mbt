@@ -32,9 +32,9 @@ pub fn OperandBundle::as_bundle_ref(
 /// ```
 pub fn OperandBundle::create(
   tag : String,
-  args : Array[&AnyValue]
+  args : Array[&Value]
 ) -> OperandBundle {
-  let args_ref = args.map(fn(arg) { arg.as_value_ref() })
+  let args_ref = args.map(arg => arg.inner())
   let bundle = @unsafe.llvm_create_operand_bundle(tag, args_ref)
   OperandBundle::new(bundle)
 }
@@ -58,7 +58,7 @@ pub fn OperandBundle::get_tag(self : OperandBundle) -> String {
 ///
 /// ## Example
 ///
-/// ```
+/// ```moonbit skip
 /// let context = Context::create();
 /// let i32_type = context.i32_type();
 /// let f32_type = context.f32_type();
@@ -70,15 +70,15 @@ pub fn OperandBundle::get_tag(self : OperandBundle) -> String {
 /// );
 /// assert_eq(op_bundle.get_args().length(), 2);
 /// ```
-pub fn OperandBundle::get_args(self : OperandBundle) -> Array[BasicValueEnum] {
+pub fn OperandBundle::get_args(self : OperandBundle) -> Array[&BasicValue] {
   let cnt = @unsafe.llvm_get_num_operand_bundle_args(self.as_bundle_ref()).reinterpret_as_int()
-  let args : Array[BasicValueEnum] = Array::default()
+  let args : Array[&BasicValue] = Array::new()
   for i in 0..<cnt {
     let arg = @unsafe.llvm_get_operand_bundle_arg_at_index(
       self.as_bundle_ref(),
       i.reinterpret_as_uint(),
     )
-    args.push(BasicValueEnum::new(arg))
+    args.push(BasicValueEnum::init(arg).as_basic_value_class())
   }
   args
 }

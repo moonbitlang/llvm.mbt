@@ -21,29 +21,16 @@ pub impl Value for PhiValue with as_value_enum(self) {
   PhiValue(self)
 }
 
-
-///| Returns the `ValueRef` that this `PhiValue` wraps.
-#deprecated("deprecated")
-pub fn PhiValue::as_value(self : PhiValue) -> ValueRef {
-  self.value
-}
-
-///| Returns the `@unsafe.LLVMValueRef` that this `PhiValue` wraps.
-#deprecated("deprecated")
-pub fn PhiValue::as_value_ref(self : PhiValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
-
 ///|
 pub fn PhiValue::get_type(self : PhiValue) -> BasicTypeEnum {
-  self.value.get_type().as_type_ref() |> BasicTypeEnum::new
+  self.value.get_type().inner() |> BasicTypeEnum::init
 }
 
 // TODO: need check, in inkwell, BasicValueEnum is not implemented for PhiValue
 
-///|
+///| REVIEW: Check if it is correct.
 pub fn PhiValue::as_basic_value(self : PhiValue) -> BasicValueEnum {
-  BasicValueEnum::new(self.as_value_ref())
+  BasicValueEnum::init(self.inner())
 }
 
 ///| Add incoming values to the phi node.
@@ -53,9 +40,9 @@ pub fn PhiValue::add_incomings(
   incoming : Array[(&BasicValue, BasicBlock)]
 ) -> Unit {
   let (values, bbs) = incoming.unzip()
-  let values = values.map(v => v.as_value_ref())
+  let values = values.map(v => v.inner())
   let bbs = bbs.map(bb => bb.as_bb_ref())
-  @unsafe.llvm_add_incoming(self.as_value_ref(), values, bbs)
+  @unsafe.llvm_add_incoming(self.inner(), values, bbs)
 }
 
 ///|
@@ -64,14 +51,14 @@ pub fn PhiValue::add_incoming(
   value : &BasicValue,
   bb : BasicBlock
 ) -> Unit {
-  @unsafe.llvm_add_incoming(self.as_value_ref(), [value.as_value_ref()], [
+  @unsafe.llvm_add_incoming(self.inner(), [value.inner()], [
     bb.as_bb_ref(),
   ])
 }
 
 ///| Get the number of incoming values of the phi node.
 pub fn PhiValue::count_incoming(self : PhiValue) -> UInt {
-  @unsafe.llvm_count_incoming(self.as_value_ref())
+  @unsafe.llvm_count_incoming(self.inner())
 }
 
 ///| Get the incoming value and basic block of the phi node at the given index.
@@ -83,10 +70,10 @@ pub fn PhiValue::get_incoming(
     return None
   }
   let bb = BasicBlock::new(
-    @unsafe.llvm_get_incoming_block(self.as_value_ref(), index),
+    @unsafe.llvm_get_incoming_block(self.inner(), index),
   )
-  let value = BasicValueEnum::new(
-    @unsafe.llvm_get_incoming_value(self.as_value_ref(), index),
+  let value = BasicValueEnum::init(
+    @unsafe.llvm_get_incoming_value(self.inner(), index),
   )
   Some((value, bb))
 }
@@ -99,10 +86,10 @@ pub fn PhiValue::get_incoming_unchecked(
   index : UInt
 ) -> (BasicValueEnum, BasicBlock) {
   let bb = BasicBlock::new(
-    @unsafe.llvm_get_incoming_block(self.as_value_ref(), index),
+    @unsafe.llvm_get_incoming_block(self.inner(), index),
   )
-  let value = BasicValueEnum::new(
-    @unsafe.llvm_get_incoming_value(self.as_value_ref(), index),
+  let value = BasicValueEnum::init(
+    @unsafe.llvm_get_incoming_value(self.inner(), index),
   )
   (value, bb)
 }
@@ -145,27 +132,6 @@ pub fn PhiValue::replace_all_uses_with(
 
 ///| Dumps the `PhiValue` to stderr.
 ///
-/// It's equivalent to `PhiValue::dump`.
-pub fn PhiValue::print_to_stderr(self : PhiValue) -> Unit {
-  self.value.print_to_stderr()
-}
-
-///| Dumps the `PhiValue` to a string.
-///
-/// It's equivalent to `PhiValue::to_string`.
-pub fn PhiValue::print_to_string(self : PhiValue) -> String {
-  self.value.print_to_string()
-}
-
-///| Dumps the `PhiValue` to a string.
-///
-/// It's equivalent to `PhiValue::print_to_string`.
-pub fn PhiValue::to_string(self : PhiValue) -> String {
-  self.value.to_string()
-}
-
-///| Dumps the `PhiValue` to stderr.
-///
 /// It's equivalent to `PhiValue::print_to_stderr`.
 pub fn PhiValue::dump(self : PhiValue) -> Unit {
   self.value.dump()
@@ -173,10 +139,5 @@ pub fn PhiValue::dump(self : PhiValue) -> Unit {
 
 ///|
 pub impl Show for PhiValue with output(self : PhiValue, logger : &Logger) -> Unit {
-  logger.write_string(self.to_string())
-}
-
-///|
-pub impl Show for PhiValue with to_string(self : PhiValue) -> String {
-  self.to_string()
+  logger.write_string(self.value.to_string())
 }

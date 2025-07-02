@@ -22,20 +22,6 @@ pub impl Value for FunctionValue with as_value_enum(self) {
   FunctionValue(self)
 }
 
-///| Returns the `ValueRef` that this `FunctionValue` wraps.
-#deprecated("deprecated")
-pub fn FunctionValue::as_value(self : FunctionValue) -> ValueRef {
-  self.value
-}
-
-///| Returns the `@unsafe.LLVMValueRef` that this `FunctionValue` wraps.
-#deprecated("deprecated")
-pub fn FunctionValue::as_value_ref(
-  self : FunctionValue
-) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
-}
-
 ///| Get the linkage of the function.
 ///
 /// ## Example
@@ -51,7 +37,7 @@ pub fn FunctionValue::as_value_ref(
 /// inspect(fn_value.get_linkage(), content="External")
 /// ```
 pub fn FunctionValue::get_linkage(self : FunctionValue) -> Linkage {
-  let link = @unsafe.llvm_get_linkage(self.as_value_ref())
+  let link = @unsafe.llvm_get_linkage(self.inner())
   Linkage::from(link)
 }
 
@@ -78,7 +64,7 @@ pub fn FunctionValue::set_linkage(
   self : FunctionValue,
   linkage : Linkage
 ) -> Unit {
-  @unsafe.llvm_set_linkage(self.as_value_ref(), linkage.into())
+  @unsafe.llvm_set_linkage(self.inner(), linkage.into())
 }
 
 ///| Determines whether or not this `FunctionValue` is null.
@@ -124,21 +110,21 @@ pub fn FunctionValue::is_undef(self : FunctionValue) -> Bool {
 //       @unsafe.LLVMVerifierFailureAction::@unsafe.LLVMReturnStatusAction
 //   }
 //
-//   let code = @unsafe.llvm_verify_function(self.as_value_ref(), action)
+//   let code = @unsafe.llvm_verify_function(self.inner(), action)
 //
 //   code != 1
 // }
 
 ///| Get the next function in the llvm_module.
 pub fn FunctionValue::get_next_function(self : FunctionValue) -> FunctionValue? {
-  FunctionValue::new(@unsafe.llvm_get_next_function(self.as_value_ref()))
+  FunctionValue::new(@unsafe.llvm_get_next_function(self.inner()))
 }
 
 ///| Get the previous function in the llvm_module.
 pub fn FunctionValue::get_previous_function(
   self : FunctionValue
 ) -> FunctionValue? {
-  FunctionValue::new(@unsafe.llvm_get_previous_function(self.as_value_ref()))
+  FunctionValue::new(@unsafe.llvm_get_previous_function(self.inner()))
 }
 
 ///| Get the first parameter of the function.
@@ -156,12 +142,12 @@ pub fn FunctionValue::get_previous_function(
 ///
 /// inspect(fn_value.get_first_param(), content="Some(i32 %0)")
 /// ```
-pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
-  let param = @unsafe.llvm_get_first_param(self.as_value_ref())
+pub fn FunctionValue::get_first_param(self : FunctionValue) -> &BasicValue? {
+  let param = @unsafe.llvm_get_first_param(self.inner())
   if param.is_null() {
     None
   } else {
-    Some(BasicValueEnum::new(param))
+    Some(BasicValueEnum::init(param).as_basic_value_class())
   }
 }
 
@@ -180,12 +166,12 @@ pub fn FunctionValue::get_first_param(self : FunctionValue) -> BasicValueEnum? {
 ///
 /// inspect(fn_value.get_last_param(), content="Some(double %1)")
 /// ```
-pub fn FunctionValue::get_last_param(self : FunctionValue) -> BasicValueEnum? {
-  let param = @unsafe.llvm_get_last_param(self.as_value_ref())
+pub fn FunctionValue::get_last_param(self : FunctionValue) -> &BasicValue? {
+  let param = @unsafe.llvm_get_last_param(self.inner())
   if param.is_null() {
     None
   } else {
-    Some(BasicValueEnum::new(param))
+    Some(BasicValueEnum::init(param).as_basic_value_class())
   }
 }
 
@@ -193,13 +179,13 @@ pub fn FunctionValue::get_last_param(self : FunctionValue) -> BasicValueEnum? {
 pub fn FunctionValue::get_first_basic_block(
   self : FunctionValue
 ) -> BasicBlock? {
-  let bb = @unsafe.llvm_get_first_basic_block(self.as_value_ref())
+  let bb = @unsafe.llvm_get_first_basic_block(self.inner())
   @option.when(bb.is_not_null(), fn() { BasicBlock::new(bb) })
 }
 
 ///| Get the last basic block of the function.
 pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? {
-  let bb = @unsafe.llvm_get_last_basic_block(self.as_value_ref())
+  let bb = @unsafe.llvm_get_last_basic_block(self.inner())
   @option.when(bb.is_not_null(), fn() { BasicBlock::new(bb) })
 }
 
@@ -222,9 +208,9 @@ pub fn FunctionValue::get_last_basic_block(self : FunctionValue) -> BasicBlock? 
 pub fn FunctionValue::get_nth_param(
   self : FunctionValue,
   nth : UInt
-) -> BasicValueEnum? {
+) -> &BasicValue? {
   @option.when(nth < self.count_params(), fn() {
-    BasicValueEnum::new(@unsafe.llvm_get_param(self.as_value_ref(), nth))
+    BasicValueEnum::init(@unsafe.llvm_get_param(self.inner(), nth)).as_basic_value_class()
   })
 }
 
@@ -244,12 +230,12 @@ pub fn FunctionValue::get_nth_param(
 /// assert_eq(fn_value.count_params(), 2)
 /// ```
 pub fn FunctionValue::count_params(self : FunctionValue) -> UInt {
-  @unsafe.llvm_count_params(self.as_value_ref())
+  @unsafe.llvm_count_params(self.inner())
 }
 
 ///|
 pub fn FunctionValue::count_basic_blocks(self : FunctionValue) -> UInt {
-  @unsafe.llvm_count_basic_blocks(self.as_value_ref())
+  @unsafe.llvm_count_basic_blocks(self.inner())
 }
 
 ///| Get basic blocks of the function.
@@ -257,7 +243,7 @@ pub fn FunctionValue::get_basic_blocks(
   self : FunctionValue
 ) -> Array[BasicBlock] {
   let bb_refs : Array[@unsafe.LLVMBasicBlockRef] = @unsafe.llvm_get_basic_blocks(
-    self.as_value_ref(),
+    self.inner(),
   )
   bb_refs.map(fn(bb_ref) { BasicBlock::new(bb_ref) })
 }
@@ -277,11 +263,11 @@ pub fn FunctionValue::get_basic_blocks(
 ///
 /// inspect(fn_value.get_params(), content="[double %0, i32 %1]")
 /// ```
-pub fn FunctionValue::get_params(self : FunctionValue) -> Array[BasicValueEnum] {
+pub fn FunctionValue::get_params(self : FunctionValue) -> Array[&BasicValue] {
   let param_refs : Array[@unsafe.LLVMValueRef] = @unsafe.llvm_get_params(
-    self.as_value_ref(),
+    self.inner(),
   )
-  param_refs.map(fn(param_ref) { BasicValueEnum::new(param_ref) })
+  param_refs.map(fn(param_ref) { BasicValueEnum::init(param_ref).as_basic_value_class() })
 }
 
 ///| Get the name of the function.
@@ -304,25 +290,25 @@ pub fn FunctionValue::get_name(self : FunctionValue) -> String {
 }
 
 // pub fn FunctionValue::view_function_cfg(self: FunctionValue) -> Unit {
-//   @unsafe.llvm_view_function_cfg(self.as_value_ref())
+//   @unsafe.llvm_view_function_cfg(self.inner())
 // }
 //
 // pub fn FunctionValue::view_function_cfg_only(self: FunctionValue) -> Unit {
-//   @unsafe.llvm_view_function_cfg_only(self.as_value_ref())
+//   @unsafe.llvm_view_function_cfg_only(self.inner())
 // }
 
 ///| Free the function.
 ///
 /// It's equivalent to `FunctionValue::drop`.
 pub fn FunctionValue::delete(self : FunctionValue) -> Unit {
-  @unsafe.llvm_delete_function(self.as_value_ref())
+  @unsafe.llvm_delete_function(self.inner())
 }
 
 ///| Free the function.
 ///
 /// It's equivalent to `FunctionValue::delete`.
 pub fn FunctionValue::drop(self : FunctionValue) -> Unit {
-  @unsafe.llvm_delete_function(self.as_value_ref())
+  @unsafe.llvm_delete_function(self.inner())
 }
 
 // NOTE: `inkwell` does not provide this function
@@ -333,15 +319,15 @@ pub fn FunctionValue::drop(self : FunctionValue) -> Unit {
 ///| Get the type of the function.
 pub fn FunctionValue::get_type(self : FunctionValue) -> FunctionType {
   //FunctionType::new(self.value.get_type().as_type_ref())
-  //FunctionType::new(self.value.as_value_ref())
-  self.value.as_value_ref()
+  //FunctionType::new(self.value.inner())
+  self.value.inner()
   |> @unsafe.llvm_global_get_value_type
   |> FunctionType::new
 }
 
 ///|
 pub fn FunctionValue::has_personality_function(self : FunctionValue) -> Bool {
-  @unsafe.llvm_has_personality_fn(self.as_value_ref())
+  @unsafe.llvm_has_personality_fn(self.inner())
 }
 
 ///|
@@ -351,7 +337,7 @@ pub fn FunctionValue::get_personality_function(
   if not(self.has_personality_function()) {
     return None
   }
-  FunctionValue::new(@unsafe.llvm_get_personality_fn(self.as_value_ref()))
+  FunctionValue::new(@unsafe.llvm_get_personality_fn(self.inner()))
 }
 
 ///|
@@ -360,21 +346,21 @@ pub fn FunctionValue::set_personality_function(
   personality_fn : FunctionValue
 ) -> Unit {
   @unsafe.llvm_set_personality_fn(
-    self.as_value_ref(),
-    personality_fn.as_value_ref(),
+    self.inner(),
+    personality_fn.inner(),
   )
 }
 
 ///|
 pub fn FunctionValue::get_intrinsic_id(self : FunctionValue) -> UInt {
-  @unsafe.llvm_get_intrinsic_id(self.as_value_ref())
+  @unsafe.llvm_get_intrinsic_id(self.inner())
 }
 
 // REVIEW: Possibly we need to use `CallConv` enum, rather than `UInt`
 
 ///|
 pub fn FunctionValue::get_call_convention(self : FunctionValue) -> UInt {
-  @unsafe.llvm_get_function_call_conv(self.as_value_ref())
+  @unsafe.llvm_get_function_call_conv(self.inner())
 }
 
 // REVIEW: Possibly we need to use `CallConv` enum, rather than `UInt`
@@ -384,17 +370,17 @@ pub fn FunctionValue::set_call_convention(
   self : FunctionValue,
   call_conv : UInt
 ) -> Unit {
-  @unsafe.llvm_set_function_call_conv(self.as_value_ref(), call_conv)
+  @unsafe.llvm_set_function_call_conv(self.inner(), call_conv)
 }
 
 ///|
 pub fn FunctionValue::get_gc(self : FunctionValue) -> String {
-  @unsafe.llvm_get_gc(self.as_value_ref())
+  @unsafe.llvm_get_gc(self.inner())
 }
 
 ///|
 pub fn FunctionValue::set_gc(self : FunctionValue, gc : String) -> Unit {
-  @unsafe.llvm_set_gc(self.as_value_ref(), gc)
+  @unsafe.llvm_set_gc(self.inner(), gc)
 }
 
 ///| Replace all uses of a `FunctionValue` with another `FunctionValue`.
@@ -427,7 +413,7 @@ pub fn FunctionValue::add_attribute(
   attribute : Attribute
 ) -> Unit {
   @unsafe.llvm_add_attribute_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     attribute.attribute,
   )
@@ -456,7 +442,7 @@ pub fn FunctionValue::count_attributes(
   loc : AttributeLoc
 ) -> UInt {
   @unsafe.llvm_get_attribute_count_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
   )
 }
@@ -486,7 +472,7 @@ pub fn FunctionValue::attributes(
   loc : AttributeLoc
 ) -> Array[Attribute] {
   let attr_refs = @unsafe.llvm_get_attributes_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
   )
   attr_refs.map(fn(attr_ref) { Attribute::new(attr_ref) })
@@ -513,7 +499,7 @@ pub fn FunctionValue::remove_string_attribute(
   key : String
 ) -> Unit {
   @unsafe.llvm_remove_string_attribute_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     key,
   )
@@ -540,7 +526,7 @@ pub fn FunctionValue::remove_enum_attribute(
   kind_id : UInt
 ) -> Unit {
   @unsafe.llvm_remove_enum_attribute_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     kind_id,
   )
@@ -568,7 +554,7 @@ pub fn FunctionValue::get_enum_attribute(
   kind_id : UInt
 ) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_enum_attribute_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     kind_id,
   )
@@ -597,7 +583,7 @@ pub fn FunctionValue::get_string_attribute(
   key : String
 ) -> Attribute? {
   let attr_ref = @unsafe.llvm_get_string_attribute_at_index(
-    self.as_value_ref(),
+    self.inner(),
     loc.get_index(),
     key,
   )
@@ -611,7 +597,7 @@ pub fn FunctionValue::set_param_alignment(
   alignment : UInt
 ) -> Unit {
   if self.get_nth_param(param_index) is Some(param) {
-    @unsafe.llvm_set_param_alignment(param.as_value_ref(), alignment)
+    @unsafe.llvm_set_param_alignment(param.inner(), alignment)
   }
 }
 
@@ -619,15 +605,15 @@ pub fn FunctionValue::set_param_alignment(
 /// This allows you to further inspect its global properties or even
 /// convert it to a `PointerValue`.
 pub fn FunctionValue::as_global_value(self : FunctionValue) -> GlobalValue {
-  GlobalValue::new(self.as_value_ref())
+  GlobalValue::new(self.inner())
 }
 
 // pub fn FunctionValue::set_subprogram(self: FunctionValue, subprogram: DISubprogram) -> Unit {
-//   @unsafe.llvm_set_subprogram(self.as_value_ref(), subprogram.as_metadata_ref())
+//   @unsafe.llvm_set_subprogram(self.inner(), subprogram.as_metadata_ref())
 // }
 
 // pub fn FunctionValue::get_subprogram(self: FunctionValue) -> DISubprogram? {
-//   let subprogram = @unsafe.llvm_get_subprogram(self.as_value_ref())
+//   let subprogram = @unsafe.llvm_get_subprogram(self.inner())
 //
 //   if subprogram.is_null() {
 //     None
@@ -659,5 +645,5 @@ pub impl Eq for FunctionValue with op_equal(
   self : FunctionValue,
   other : FunctionValue
 ) -> Bool {
-  self.as_value() == other.as_value()
+  self.inner() == other.inner()
 }

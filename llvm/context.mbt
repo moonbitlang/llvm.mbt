@@ -306,7 +306,7 @@ pub fn Context::struct_type(
   field_types : Array[&BasicType],
   is_packed~ : Bool = false
 ) -> StructType {
-  let field_types = field_types.map(fn(v) { v.as_type_ref() })
+  let field_types = field_types.map(fn(v) { v.inner() })
   let val_ref = @unsafe.llvm_struct_type_in_context(
     self.as_ctx_ref(),
     field_types,
@@ -354,7 +354,7 @@ pub fn Context::const_struct(
   values : Array[&BasicValue],
   packed~ : Bool = false
 ) -> StructValue {
-  let args = values.map(fn(v) { v.as_value_ref() })
+  let args = values.map(v => v.inner())
   let val_ref = @unsafe.llvm_const_struct_in_context(
     self.as_ctx_ref(),
     args,
@@ -404,7 +404,7 @@ pub fn Context::append_basic_block(
   name~ : String = ""
 ) -> BasicBlock {
   let ctx_ref = self.as_ctx_ref()
-  let fn_val_ref = function.as_value_ref()
+  let fn_val_ref = function.inner()
   let bb_ref = @unsafe.llvm_append_basic_block_in_context(
     ctx_ref, fn_val_ref, name,
   )
@@ -507,9 +507,9 @@ pub fn Context::prepend_basic_block(
 /// ```
 pub fn Context::metadata_node(
   self : Context,
-  values : Array[&BasicMetadataValue]
+  values : Array[&BasicValue]
 ) -> MetadataValue {
-  let values = values.map(fn(v) { v.as_value_ref() })
+  let values = values.map(v => v.inner())
   let val_ref = @unsafe.llvm_md_node_in_context(self.as_ctx_ref(), values)
   MetadataValue::new(val_ref)
 }
@@ -624,15 +624,15 @@ pub fn Context::create_string_attribute(
 /// assert_eq(type_attribute.get_type_value(), any_type);
 /// assert_ne(type_attribute.get_type_value(), context.i64_type().as_any_type_enum());
 /// ```
-pub fn[T : AnyType] Context::create_type_attribute(
+pub fn Context::create_type_attribute(
   self : Context,
   kind_id : UInt,
-  ty : T
+  ty : &Type
 ) -> Attribute {
   let attr = @unsafe.llvm_create_type_attribute(
     self.as_ctx_ref(),
     kind_id,
-    ty.as_type_ref(),
+    ty.inner(),
   )
   Attribute::new(attr)
 }

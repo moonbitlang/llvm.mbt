@@ -23,16 +23,12 @@ pub impl Value for StructValue with as_value_enum(self) {
   StructValue(self)
 }
 
-///| Returns the `ValueRef` that this `StructValue` wraps.
-#deprecated("deprecated")
-pub fn StructValue::as_value(self : StructValue) -> ValueRef {
-  self.value
+pub impl BasicValue for StructValue with as_basic_value_enum(self) {
+  StructValue(self)
 }
 
-///| Returns the `@unsafe.LLVMValueRef` that this `StructValue` wraps.
-#deprecated("deprecated")
-pub fn StructValue::as_value_ref(self : StructValue) -> @unsafe.LLVMValueRef {
-  self.value.as_value_ref()
+pub impl AggregateValue for StructValue with as_aggregate_value_enum(self) {
+  StructValue(self)
 }
 
 ///| Gets the value of a field belonging to this `StructValue`.
@@ -66,8 +62,8 @@ fn StructValue::get_field_at_index_unchecked(
   self : StructValue,
   index : UInt
 ) -> BasicValueEnum {
-  let v = @unsafe.llvm_get_operand(self.as_value_ref(), index)
-  BasicValueEnum::new(v)
+  let v = @unsafe.llvm_get_operand(self.inner(), index)
+  BasicValueEnum::init(v)
 }
 
 // pub fn StructValue::get_fields
@@ -85,11 +81,11 @@ pub fn StructValue::set_field_at_index(
   if self
     .get_type()
     .get_field_type_at_index(index)
-    .map(fn(t) { t == val.as_basic_value_enum().get_type() }) !=
+    .map(fn(t) { (t as &Type) == val.get_type() }) !=
     Some(true) {
     return false
   }
-  @unsafe.llvm_set_operand(self.as_value_ref(), index, val.as_value_ref())
+  @unsafe.llvm_set_operand(self.inner(), index, val.inner())
   true
 }
 
@@ -108,7 +104,7 @@ pub fn StructValue::set_field_at_index(
 /// assert_eq(struct_val.count_fields(), struct_type.count_fields());
 /// ```
 pub fn StructValue::count_fields(self : StructValue) -> UInt {
-  @unsafe.llvm_get_num_operands(self.as_value_ref()).reinterpret_as_uint()
+  @unsafe.llvm_get_num_operands(self.inner()).reinterpret_as_uint()
 }
 
 ///| Gets the name of a `StructValue`.
@@ -124,7 +120,7 @@ pub fn set_name(self : StructValue, name : String) -> Unit {
 
 ///| Get the type of the `StructValue`.
 pub fn get_type(self : StructValue) -> StructType {
-  StructType::new(self.value.get_type().as_type_ref())
+  StructType::new(self.value.get_type().inner())
 }
 
 ///| Determines whether or not this `StructValue` is null.

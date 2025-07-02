@@ -72,7 +72,7 @@ test "Floating-Point Value Test" {
   let entry_bb = context.append_basic_block(fval, name="entry")
   let builder = context.create_builder()
   builder.position_at_end(entry_bb)
-  let x = fval.get_nth_param(0).unwrap().into_float_value()
+  guard fval.get_nth_param(0).unwrap().as_basic_value_enum() is FloatValue(x)
   let one = f64_ty.const_float(1.0)
   let xplusone = builder.build_float_add(x, one, name="xp1")
   let undef = f64_ty.get_undef()

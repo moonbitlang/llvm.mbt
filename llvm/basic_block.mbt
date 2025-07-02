@@ -468,7 +468,7 @@ pub fn BasicBlock::get_address(self : BasicBlock) -> PointerValue? {
   guard self.get_parent() is Some(parent) else { return None }
   guard self.get_previous_basic_block() is Some(_) else { return None }
   let value = PointerValue::new(
-    @unsafe.llvm_block_address(parent.as_value_ref(), self.as_bb_ref()),
+    @unsafe.llvm_block_address(parent.inner(), self.as_bb_ref()),
   )
   @option.unless(value.is_null(), fn() { value })
 }

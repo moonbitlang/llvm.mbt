@@ -35,7 +35,7 @@ pub fn Module::add_function(
   function_ty : FunctionType,
   linkage~ : Linkage? = None
 ) -> FunctionValue {
-  let val_ref = self.module_ref.add_function(name, function_ty.as_type_ref())
+  let val_ref = self.module_ref.add_function(name, function_ty.inner())
   guard FunctionValue::new(val_ref) is Some(fn_val) else {
     abort(
       "Failed to create FunctionValue, Something went wrong, loc: llvm_module.mbt: add_function",
@@ -240,11 +240,11 @@ pub fn[T : BasicType] Module::add_global(
     Some(addr_space) =>
       @unsafe.llvm_add_global_in_address_space(
         self.as_mod_ref(),
-        ty.as_type_ref(),
+        ty.inner(),
         name,
         addr_space.into(),
       )
-    None => @unsafe.llvm_add_global(self.as_mod_ref(), ty.as_type_ref(), name)
+    None => @unsafe.llvm_add_global(self.as_mod_ref(), ty.inner(), name)
   }
   GlobalValue::new(val)
 }
@@ -324,7 +324,7 @@ pub fn Module::add_global_metadata(
   @unsafe.llvm_add_named_metadata_operand(
     self.as_mod_ref(),
     name,
-    metadata.as_value_ref(),
+    metadata.inner(),
   )
   Ok(())
 }
