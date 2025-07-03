@@ -23,21 +23,7 @@ pub impl BasicType for VectorType with as_basic_type_enum(self) {
   VectorType(self)
 }
 
-///| Gets the size of this `VectorType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vec_type(8);
-/// let vector_sz = vector_type.size_of().unwrap();
-/// let expect = "i64 ptrtoint (ptr getelementptr (<8 x i32>, ptr null, i32 1) to i64)"
-/// inspect(vector_sz, content=expect)
-/// ```
-pub fn VectorType::size_of(self : VectorType) -> IntValue? {
-  self.ty.size_of()
-}
+
 
 ///| Returns whether this `VectorType` is sized. **Always returns `true`.**
 ///
@@ -155,20 +141,7 @@ pub fn VectorType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `VectorType` for its element type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vec_type(4);
-/// let array_type = vector_type.array_type(8);
-/// inspect(array_type, content="[8 x <4 x i32>]")
-/// ```
-pub fn VectorType::array_type(self : VectorType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 ///| Creates a constant `ArrayValue`.
 ///

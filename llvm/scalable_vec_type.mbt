@@ -26,21 +26,7 @@ pub impl BasicType for ScalableVectorType with as_basic_type_enum(self) {
   ScalableVectorType(self)
 }
 
-///| Gets the size of this `ScalableVectorType`. Value may vary depending on the target architecture.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit skip skip (scalable_vector_type not implemented)
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let scalable_vector_type = i32_type.scalable_vector_type(8);
-/// let scalable_vector_sz = scalable_vector_type.size_of().unwrap();
-/// let expect = ""
-/// inspect(scalable_vector_sz, content=expect)
-/// ```
-pub fn ScalableVectorType::size_of(self : ScalableVectorType) -> IntValue? {
-  self.ty.size_of()
-}
+
 
 ///| Returns whether this `ScalableVectorType` is sized. **Always returns `true`.**
 ///
@@ -174,23 +160,7 @@ pub fn ScalableVectorType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `ScalableVectorType` for its element type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit skip skip
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let scalable_vector_type = i32_type.scalable_vector_type(8);
-/// let array_type = scalable_vector_type.array_type(8);
-/// inspect(array_type, content="[8 x <8 x i32>]")
-/// ```
-pub fn ScalableVectorType::array_type(
-  self : ScalableVectorType,
-  size : UInt
-) -> ArrayType {
-  self.array_type(size)
-}
+
 
 ///| Creates a constant `ArrayValue`.
 pub fn ScalableVectorType::const_array(

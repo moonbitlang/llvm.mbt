@@ -73,27 +73,27 @@ test "Integer Type Test" {
 
   // size_of
   inspect(
-    bool_ty.size_of(),
+    bool_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i1, ptr null, i32 1) to i64)",
   )
   inspect(
-    i8_ty.size_of(),
+    i8_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i8, ptr null, i32 1) to i64)",
   )
   inspect(
-    i16_ty.size_of(),
+    i16_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i16, ptr null, i32 1) to i64)",
   )
   inspect(
-    i32_ty.size_of(),
+    i32_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)",
   )
   inspect(
-    i64_ty.size_of(),
+    i64_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i64, ptr null, i32 1) to i64)",
   )
   inspect(
-    i128_ty.size_of(),
+    i128_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (i128, ptr null, i32 1) to i64)",
   )
 
@@ -238,27 +238,27 @@ test "Floating-point Type Test" {
 
   // size of
   inspect(
-    half_ty.size_of(),
+    half_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (half, ptr null, i32 1) to i64)",
   )
   inspect(
-    float_ty.size_of(),
+    float_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (float, ptr null, i32 1) to i64)",
   )
   inspect(
-    double_ty.size_of(),
+    double_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)",
   )
   inspect(
-    x86_f80_ty.size_of(),
+    x86_f80_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (x86_fp80, ptr null, i32 1) to i64)",
   )
   inspect(
-    f128_ty.size_of(),
+    f128_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (fp128, ptr null, i32 1) to i64)",
   )
   inspect(
-    ppc_f128_ty.size_of(),
+    ppc_f128_ty.size_of().unwrap(),
     content="i64 ptrtoint (ptr getelementptr (ppc_fp128, ptr null, i32 1) to i64)",
   )
 
@@ -582,7 +582,7 @@ test "Pointer Type Test" {
   let ptr_ty = i32_ty.ptr_type(@llvm.AddressSpace::default())
 
   // size_of
-  let ptr_sz = ptr_ty.size_of()
+  let ptr_sz = ptr_ty.size_of().unwrap()
   inspect(
     ptr_sz,
     content="i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)",

@@ -24,21 +24,7 @@ pub impl BasicType for PointerType with as_basic_type_enum(self) {
 }
 
 
-///| Gets the size of this `PointerType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let ptr_sz = ptr_type.size_of();
-/// let expect = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)";
-/// inspect(ptr_sz, content=expect)
-/// ```
-pub fn PointerType::size_of(self : PointerType) -> IntValue {
-  self.ty.size_of().unwrap()
-}
+
 
 ///| Returns whether this `PointerType` is sized. **Always returns `true`.**
 pub fn PointerType::is_sized(self : PointerType) -> Bool {
@@ -95,20 +81,7 @@ pub fn PointerType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `PointerType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let array_type = ptr_type.array_type(16);
-/// inspect(array_type, content="[16 x ptr]")
-/// ```
-pub fn PointerType::array_type(self : PointerType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 ///| Gets the `AddressSpace` a `PointerType` was created with.
 ///

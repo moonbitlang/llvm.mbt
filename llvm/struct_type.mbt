@@ -67,22 +67,7 @@ pub fn StructType::const_zero(self : StructType) -> StructValue {
   StructValue::new(self.ty.const_zero())
 }
 
-///| Gets the size of this `StructType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let i64_type = context.i64_type();
-/// let struct_type = context.struct_type([i32_type, i64_type]);
-/// let struct_sz = struct_type.size_of().unwrap();
-/// let expect = "i64 ptrtoint (ptr getelementptr ({ i32, i64 }, ptr null, i32 1) to i64)"
-/// inspect(struct_sz, content=expect)
-/// ```
-pub fn StructType::size_of(self : StructType) -> IntValue? {
-  self.ty.size_of()
-}
+
 
 ///| Returns whether this `StructType` is sized. **Always returns `true`.**
 ///
@@ -165,21 +150,7 @@ pub fn StructType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `StructType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let i64_type = context.i64_type();
-/// let struct_type = context.struct_type([i32_type, i64_type]);
-/// let array_type = struct_type.array_type(8);
-/// inspect(array_type, content="[8 x { i32, i64 }]")
-/// ```
-pub fn StructType::array_type(self : StructType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 ///| Determines whether or not a `StructType` is packed.
 ///

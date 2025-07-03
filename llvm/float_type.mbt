@@ -50,19 +50,7 @@ pub fn FloatType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `FloatType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let f32_type = context.f32_type();
-/// let array_type = f32_type.array_type(16);
-/// inspect(array_type, content="[16 x float]")
-/// ```
-pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 
 
@@ -114,20 +102,7 @@ pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
 
-///| Gets the size of this `FloatType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let f64_type = context.f64_type();
-/// let f64_sz = f64_type.size_of();
-/// let expect = "i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)";
-/// inspect(f64_sz, content=expect)
-/// ```
-pub fn FloatType::size_of(self : FloatType) -> IntValue {
-  self.ty.size_of().unwrap()
-}
+
 
 ///| Returns whether this `FloatType` is sized. **Always returns `true`.**
 pub fn FloatType::is_sized(self : FloatType) -> Bool {

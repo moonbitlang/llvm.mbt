@@ -23,21 +23,7 @@ pub impl BasicType for ArrayType with as_basic_type_enum(self) {
   ArrayType(self)
 }
 
-///| Gets the size of this `ArrayType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let array_type = i32_type.array_type(8);
-/// let array_sz = array_type.size_of().unwrap();
-/// let expect = "i64 ptrtoint (ptr getelementptr ([8 x i32], ptr null, i32 1) to i64)"
-/// inspect(array_sz, content=expect)
-/// ```
-pub fn ArrayType::size_of(self : ArrayType) -> IntValue? {
-  self.ty.size_of()
-}
+
 
 ///| Gets the alignment of this `ArrayType`. Value may vary depending on the target architecture.
 ///
@@ -103,21 +89,7 @@ pub fn ArrayType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates a `StructType` with this `ArrayType` for its return type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit skip (test failed)
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let array_type = i32_type.array_type(8);
-/// let array_array_type = array_type.array_type(8);
-/// inspect(array_array_type, content="[8 x i32]")
-/// inspect(array_array_type, content="[8 x [8 x i32]]")
-/// ```
-pub fn ArrayType::array_type(self : ArrayType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 ///| Creates a constant `ArrayValue` of `ArrayValue`s.
 pub fn ArrayType::const_array(

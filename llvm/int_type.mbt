@@ -108,19 +108,7 @@ pub fn IntType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-///| Creates an `ArrayType` with this `IntType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let array_type = i32_type.array_type(16);
-/// inspect(array_type, content="[16 x i32]")
-/// ```
-pub fn IntType::array_type(self : IntType, size : UInt) -> ArrayType {
-  self.ty.array_type(size)
-}
+
 
 
 
@@ -140,20 +128,7 @@ pub fn IntType::get_context(self : IntType) -> Context {
   self.ty.get_context()
 }
 
-///| Gets the size of this `IntType`. Value may vary depending on the target architecture.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let i32_sz = i32_type.size_of();
-/// let expect = "i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)";
-/// inspect(i32_sz, content=expect)
-/// ```
-pub fn IntType::size_of(self : IntType) -> IntValue {
-  self.ty.size_of().unwrap()
-}
+
 
 ///| Returns whether this `IntType` is sized. **Always returns `true`.**
 pub fn IntType::is_sized(self : IntType) -> Bool {

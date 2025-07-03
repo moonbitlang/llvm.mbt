@@ -14,6 +14,8 @@ pub trait Type {
   ptr_type(Self, AddressSpace) -> PointerType = _;
   vec_type(Self, UInt) -> VectorType = _;
   scalable_vec_type(Self, UInt) -> ScalableVectorType = _;
+  array_type(Self, UInt) -> ArrayType = _;
+  size_of(Self) -> IntValue? = _;
   into_void_type(Self) -> VoidType raise MoonllvmError = _;
   into_int_type(Self) -> IntType raise MoonllvmError = _;
   into_float_type(Self) -> FloatType raise MoonllvmError = _;
@@ -136,6 +138,46 @@ impl Type with vec_type(self, num_elements) {
 /// ```
 impl Type with scalable_vec_type(self, num_elements) {
   self.base().scalable_vec_type(num_elements)
+}
+
+///| Creates an `ArrayType` with this `Type` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let f32_type = context.f32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// inspect(i32_type.array_type(16), content="[16 x i32]")
+/// inspect(f32_type.array_type(16), content="[16 x float]")
+/// inspect(ptr_type.array_type(16), content="[16 x ptr]")
+/// ```
+impl Type with array_type(self, num_elements) {
+  self.base().array_type(num_elements)
+}
+
+///| Gets the size of this `Type`. Value may vary depending on the target architecture.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let f64_type = context.f64_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// let i32_sz = i32_type.size_of().unwrap();
+/// let f64_sz = f64_type.size_of().unwrap();
+/// let ptr_sz = ptr_type.size_of().unwrap();
+/// let expect_i32 = "i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)";
+/// let expect_f64 = "i64 ptrtoint (ptr getelementptr (double, ptr null, i32 1) to i64)";
+/// let expect_ptr = "i64 ptrtoint (ptr getelementptr (ptr, ptr null, i32 1) to i64)";
+/// inspect(i32_sz, content=expect_i32)
+/// inspect(f64_sz, content=expect_f64)
+/// inspect(ptr_sz, content=expect_ptr)
+/// ```
+impl Type with size_of(self) {
+  self.base().size_of()
 }
 
 impl Type with into_void_type(self) {
