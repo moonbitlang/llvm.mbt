@@ -188,20 +188,7 @@ pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_poison(self.inner()))
 }
 
-///| Creates a `VectorType` with this `PointerType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let vector_type = ptr_type.vec_type(16);
-/// inspect(vector_type, content="<16 x ptr>")
-/// ```
-pub fn PointerType::vec_type(self : PointerType, size : UInt) -> VectorType {
-  self.ty.vec_type(size)
-}
+
 
 ///| Creates a `ScalableVectorType` with this `PointerType` as its element type.
 ///

@@ -12,6 +12,7 @@ pub trait Type {
   type_name(Self) -> String = _;
   get_context(Self) -> Context = _;
   ptr_type(Self, AddressSpace) -> PointerType = _;
+  vec_type(Self, UInt) -> VectorType raise MoonllvmError = _;
   into_void_type(Self) -> VoidType raise MoonllvmError = _;
   into_int_type(Self) -> IntType raise MoonllvmError = _;
   into_float_type(Self) -> FloatType raise MoonllvmError = _;
@@ -100,6 +101,23 @@ impl Type with get_context(self) {
 /// ```
 impl Type with ptr_type(self, address_space) {
   self.base().ptr_type(address_space)
+}
+
+///| Creates a `VectorType` with this `Type` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let f32_type = context.f32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// inspect(i32_type.vec_type(16), content="<16 x i32>")
+/// inspect(f32_type.vec_type(16), content="<16 x float>")
+/// inspect(ptr_type.vec_type(16), content="<16 x ptr>")
+/// ```
+impl Type with vec_type(self, num_elements) {
+  self.base().vec_type(num_elements)
 }
 
 impl Type with into_void_type(self) {

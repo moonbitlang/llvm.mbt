@@ -64,19 +64,7 @@ pub fn FloatType::array_type(self : FloatType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
-///| Creates a `VectorType` with this `FloatType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let f32_type = context.f32_type();
-/// let vector_type = f32_type.vec_type(16);
-/// inspect(vector_type, content="<16 x float>")
-/// ```
-pub fn FloatType::vec_type(self : FloatType, size : UInt) -> VectorType {
-  self.ty.vec_type(size)
-}
+
 
 ///| Creates a `ScalableVectorType` with this `FloatType` as its element type.
 ///
