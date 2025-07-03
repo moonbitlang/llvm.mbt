@@ -12,7 +12,8 @@ pub trait Type {
   type_name(Self) -> String = _;
   get_context(Self) -> Context = _;
   ptr_type(Self, AddressSpace) -> PointerType = _;
-  vec_type(Self, UInt) -> VectorType raise MoonllvmError = _;
+  vec_type(Self, UInt) -> VectorType = _;
+  scalable_vec_type(Self, UInt) -> ScalableVectorType = _;
   into_void_type(Self) -> VoidType raise MoonllvmError = _;
   into_int_type(Self) -> IntType raise MoonllvmError = _;
   into_float_type(Self) -> FloatType raise MoonllvmError = _;
@@ -118,6 +119,23 @@ impl Type with ptr_type(self, address_space) {
 /// ```
 impl Type with vec_type(self, num_elements) {
   self.base().vec_type(num_elements)
+}
+
+///| Creates a `ScalableVectorType` with this `Type` as its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let i32_type = context.i32_type();
+/// let f32_type = context.f32_type();
+/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
+/// inspect(i32_type.scalable_vec_type(16), content="<vscale x 16 x i32>")
+/// inspect(f32_type.scalable_vec_type(16), content="<vscale x 16 x float>")
+/// inspect(ptr_type.scalable_vec_type(16), content="<vscale x 16 x ptr>")
+/// ```
+impl Type with scalable_vec_type(self, num_elements) {
+  self.base().scalable_vec_type(num_elements)
 }
 
 impl Type with into_void_type(self) {

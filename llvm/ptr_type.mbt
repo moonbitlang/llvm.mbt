@@ -190,23 +190,7 @@ pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
 
 
 
-///| Creates a `ScalableVectorType` with this `PointerType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let vscale_type = ptr_type.scalable_vec_type(16);
-/// inspect(vscale_type, content="<vscale x 16 x ptr>")
-/// ```
-pub fn PointerType::scalable_vec_type(
-  self : PointerType,
-  size : UInt
-) -> ScalableVectorType {
-  self.ty.scalable_vec_type(size)
-}
+
 
 // Note: `@unsafe.llvm_get_element_type` is unavailable in llvm-19
 

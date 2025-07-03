@@ -124,22 +124,7 @@ pub fn IntType::array_type(self : IntType, size : UInt) -> ArrayType {
 
 
 
-///| Creates a `ScalableVectorType` with this `IntType` as its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let vscale_type = i32_type.scalable_vec_type(16);
-/// inspect(vscale_type, content="<vscale x 16 x i32>")
-/// ```
-pub fn IntType::scalable_vec_type(
-  self : IntType,
-  size : UInt
-) -> ScalableVectorType {
-  self.ty.scalable_vec_type(size)
-}
+
 
 ///| Gets a reference to the `Context` this `IntType` was created in.
 ///
