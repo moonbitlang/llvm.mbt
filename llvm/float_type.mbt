@@ -190,25 +190,6 @@ pub fn FloatType::get_context(self : FloatType) -> Context {
   self.ty.get_context()
 }
 
-///| Creates a `PointerType` with this `FloatType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let f64_type = context.f64_type();
-/// let ptr_type = f64_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn FloatType::ptr_type(
-  self : FloatType,
-  address_space : AddressSpace
-) -> PointerType {
-  PointerType::new(
-    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
-  )
-}
-
 ///| Creates an undefined instance of a `FloatType`.
 ///
 /// ## Example

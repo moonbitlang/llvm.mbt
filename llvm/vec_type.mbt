@@ -136,26 +136,6 @@ pub fn VectorType::get_element_type(self : VectorType) -> &BasicType {
   BasicTypeEnum::init(ty_ref).as_basic_type_class()
 }
 
-///| Creates a `PointerType` with this `VectorType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let vector_type = i32_type.vec_type(8);
-/// let ptr_type = vector_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn VectorType::ptr_type(
-  self : VectorType,
-  address_space : AddressSpace
-) -> PointerType {
-  PointerType::new(
-    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
-  )
-}
-
 ///| Creates a `FunctionType` with this `VectorType` for its return type.
 ///
 /// ## Example

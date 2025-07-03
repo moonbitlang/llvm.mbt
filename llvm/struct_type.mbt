@@ -181,27 +181,6 @@ pub fn StructType::array_type(self : StructType, size : UInt) -> ArrayType {
   self.ty.array_type(size)
 }
 
-///| Creates a `PointerType` with this `StructType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let i64_type = context.i64_type();
-/// let struct_type = context.struct_type([i32_type, i64_type]);
-/// let ptr_ty = struct_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_ty, content="ptr")
-/// ```
-pub fn StructType::ptr_type(
-  self : StructType,
-  address_space : AddressSpace
-) -> PointerType {
-  PointerType::new(
-    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
-  )
-}
-
 ///| Determines whether or not a `StructType` is packed.
 ///
 /// ## Example

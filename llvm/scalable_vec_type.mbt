@@ -155,24 +155,6 @@ pub fn ScalableVectorType::get_element_type(
   BasicTypeEnum::init(ty_ref)
 }
 
-///| Creates a `PointerType` with this `ScalableVectorType` for its element type.
-///
-/// ## Example (Not Tested)
-///
-/// ```moonbit skip skip (scalable_vector_type not implemented)
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let scalable_vector_type = i32_type.scalable_vector_type(8);
-/// let ptr_type = scalable_vector_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn ScalableVectorType::ptr_type(
-  self : ScalableVectorType,
-  address_space : AddressSpace
-) -> PointerType {
-  self.ty.ptr_type(address_space)
-}
-
 ///| Creates a `FunctionType` with this `ScalableVectorType` for its return type.
 ///
 /// ## Example (Not Tested)

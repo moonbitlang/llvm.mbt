@@ -10,6 +10,8 @@ pub trait Type {
   dump(Self) -> Unit = _;
   is_sized(Self) -> Bool = _;
   type_name(Self) -> String = _;
+  get_context(Self) -> Context = _;
+  ptr_type(Self, AddressSpace) -> PointerType = _;
   into_void_type(Self) -> VoidType raise MoonllvmError = _;
   into_int_type(Self) -> IntType raise MoonllvmError = _;
   into_float_type(Self) -> FloatType raise MoonllvmError = _;
@@ -62,6 +64,42 @@ impl Type with type_name(self) {
     ScalableVectorType(v) => v.type_name()
     MetadataType(v) => v.type_name()
   }
+}
+
+impl Type with get_context(self) {
+  self.base().get_context()
+}
+
+///| Creates a `PointerType` with this `Type` for its element type.
+///
+/// ## Example
+///
+/// ```moonbit
+/// let context = Context::create();
+/// let address_space = AddressSpace::default();
+/// let i32_type = context.i32_type();
+/// let f64_type = context.f64_type();
+/// let void_type = context.void_type();
+/// let struct_type = context.struct_type([i32_type, f64_type]);
+/// let ptr_type = i32_type.ptr_type(address_space);
+/// let fn_type = i32_type.fn_type([i32_type]);
+/// let array_type = i32_type.array_type(8);
+/// let vector_type = i32_type.vec_type(8);
+/// let scalable_vector_type = i32_type.scalable_vec_type(8);
+/// let md_type = context.metadata_type();
+/// inspect(i32_type.ptr_type(address_space), content="ptr")
+/// inspect(f64_type.ptr_type(address_space), content="ptr")
+/// inspect(void_type.ptr_type(address_space), content="ptr")
+/// inspect(struct_type.ptr_type(address_space), content="ptr")
+/// inspect(ptr_type.ptr_type(address_space), content="ptr")
+/// inspect(fn_type.ptr_type(address_space), content="ptr")
+/// inspect(array_type.ptr_type(address_space), content="ptr")
+/// inspect(vector_type.ptr_type(address_space), content="ptr")
+/// inspect(scalable_vector_type.ptr_type(address_space), content="ptr")
+/// inspect(md_type.ptr_type(address_space), content="ptr")
+/// ```
+impl Type with ptr_type(self, address_space) {
+  self.base().ptr_type(address_space)
 }
 
 impl Type with into_void_type(self) {

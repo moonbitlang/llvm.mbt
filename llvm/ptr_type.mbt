@@ -61,26 +61,6 @@ pub fn PointerType::get_alignment(self : PointerType) -> IntValue {
   self.ty.get_alignment()
 }
 
-///| Creates a `PointerType` with this `PointerType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// let ptr_ptr_type = ptr_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_ptr_type, content="ptr")
-/// ```
-pub fn PointerType::ptr_type(
-  self : PointerType,
-  address_space : AddressSpace
-) -> PointerType {
-  PointerType::new(
-    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
-  )
-}
-
 ///| Gets a reference to the `Context` this `PointerType` was created in.
 ///
 /// ## Example

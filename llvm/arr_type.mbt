@@ -69,24 +69,6 @@ pub fn ArrayType::is_sized(self : ArrayType) -> Bool {
   self.ty.is_sized()
 }
 
-///| Creates a `PointerType` with this `ArrayType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let array_type = i32_type.array_type(8);
-/// let ptr_type = array_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn ArrayType::ptr_type(
-  self : ArrayType,
-  address_space : AddressSpace
-) -> PointerType {
-  self.ty.ptr_type(address_space)
-}
-
 ///| Gets a reference to the `Context` this `ArrayType` was created in.
 ///
 /// ## Example

@@ -42,7 +42,6 @@ fn ArrayType::is_sized(Self) -> Bool
 fn ArrayType::len(Self) -> UInt
 fn ArrayType::length(Self) -> UInt
 fn ArrayType::new(@unsafe.LLVMTypeRef) -> Self
-fn ArrayType::ptr_type(Self, AddressSpace) -> PointerType
 fn ArrayType::size_of(Self) -> IntValue?
 impl BasicType for ArrayType
 impl Type for ArrayType
@@ -466,7 +465,6 @@ fn FloatType::get_poison(Self) -> FloatValue
 fn FloatType::get_undef(Self) -> FloatValue
 fn FloatType::is_sized(Self) -> Bool
 fn FloatType::new(@unsafe.LLVMTypeRef) -> Self
-fn FloatType::ptr_type(Self, AddressSpace) -> PointerType
 fn FloatType::scalable_vec_type(Self, UInt) -> ScalableVectorType
 fn FloatType::size_of(Self) -> IntValue
 fn FloatType::vec_type(Self, UInt) -> VectorType
@@ -502,7 +500,6 @@ fn FunctionType::get_return_type(Self) -> &BasicType?
 fn FunctionType::is_sized(Self) -> Bool
 fn FunctionType::is_var_arg(Self) -> Bool
 fn FunctionType::new(@unsafe.LLVMTypeRef) -> Self
-fn FunctionType::ptr_type(Self, AddressSpace) -> PointerType
 impl Type for FunctionType
 impl Show for FunctionType
 
@@ -776,7 +773,6 @@ fn IntType::get_poison(Self) -> IntValue
 fn IntType::get_undef(Self) -> IntValue
 fn IntType::is_sized(Self) -> Bool
 fn IntType::new(@unsafe.LLVMTypeRef) -> Self
-fn IntType::ptr_type(Self, AddressSpace) -> PointerType
 fn IntType::scalable_vec_type(Self, UInt) -> ScalableVectorType
 fn IntType::size_of(Self) -> IntValue
 fn IntType::vec_type(Self, UInt) -> VectorType
@@ -999,7 +995,6 @@ fn PointerType::get_undef(Self) -> PointerValue
 fn PointerType::is_opaque(Self) -> Bool
 fn PointerType::is_sized(Self) -> Bool
 fn PointerType::new(@unsafe.LLVMTypeRef) -> Self
-fn PointerType::ptr_type(Self, AddressSpace) -> Self
 fn PointerType::scalable_vec_type(Self, UInt) -> ScalableVectorType
 fn PointerType::size_of(Self) -> IntValue
 fn PointerType::vec_type(Self, UInt) -> VectorType
@@ -1048,7 +1043,6 @@ fn ScalableVectorType::get_size(Self) -> UInt
 fn ScalableVectorType::get_undef(Self) -> ScalableVectorValue
 fn ScalableVectorType::is_sized(Self) -> Bool
 fn ScalableVectorType::new(@unsafe.LLVMTypeRef) -> Self
-fn ScalableVectorType::ptr_type(Self, AddressSpace) -> PointerType
 fn ScalableVectorType::size_of(Self) -> IntValue?
 impl BasicType for ScalableVectorType
 impl Type for ScalableVectorType
@@ -1098,7 +1092,6 @@ fn StructType::is_opaque(Self) -> Bool
 fn StructType::is_packed(Self) -> Bool
 fn StructType::is_sized(Self) -> Bool
 fn StructType::new(@unsafe.LLVMTypeRef) -> Self
-fn StructType::ptr_type(Self, AddressSpace) -> PointerType
 fn StructType::set_body(Self, Array[&BasicType], is_packed~ : Bool = ..) -> Unit raise MoonllvmError
 fn StructType::size_of(Self) -> IntValue?
 impl BasicType for StructType
@@ -1202,7 +1195,6 @@ fn VectorType::get_size(Self) -> UInt
 fn VectorType::get_undef(Self) -> VectorValue
 fn VectorType::is_sized(Self) -> Bool
 fn VectorType::new(@unsafe.LLVMTypeRef) -> Self
-fn VectorType::ptr_type(Self, AddressSpace) -> PointerType
 fn VectorType::size_of(Self) -> IntValue?
 impl BasicType for VectorType
 impl Type for VectorType
@@ -1290,6 +1282,8 @@ pub trait Type {
   dump(Self) -> Unit
   is_sized(Self) -> Bool
   type_name(Self) -> String
+  get_context(Self) -> Context
+  ptr_type(Self, AddressSpace) -> PointerType
   into_void_type(Self) -> VoidType raise MoonllvmError
   into_int_type(Self) -> IntType raise MoonllvmError
   into_float_type(Self) -> FloatType raise MoonllvmError

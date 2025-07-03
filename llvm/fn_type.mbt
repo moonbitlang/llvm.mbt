@@ -19,24 +19,6 @@ pub impl Type for FunctionType with as_type_enum(self) {
   FunctionType(self)
 }
 
-///| Creates a `PointerType` with this `FunctionType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let fn_type = i32_type.fn_type([i32_type]);
-/// let ptr_type = fn_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn FunctionType::ptr_type(
-  self : FunctionType,
-  address_space : AddressSpace
-) -> PointerType {
-  self.ty.ptr_type(address_space)
-}
-
 ///| Determines whether or not a `FunctionType` is a variadic function.
 ///
 /// ## Example

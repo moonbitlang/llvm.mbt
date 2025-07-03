@@ -202,25 +202,6 @@ pub fn IntType::get_alignment(self : IntType) -> IntValue {
   self.ty.get_alignment()
 }
 
-///| Creates a `PointerType` with this `IntType` for its element type.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::create();
-/// let i32_type = context.i32_type();
-/// let ptr_type = i32_type.ptr_type(AddressSpace::default());
-/// inspect(ptr_type, content="ptr")
-/// ```
-pub fn IntType::ptr_type(
-  self : IntType,
-  address_space : AddressSpace
-) -> PointerType {
-  PointerType::new(
-    @unsafe.llvm_pointer_type(self.inner(), address_space.into()),
-  )
-}
-
 ///| Gets the bit width of an `IntType`.
 ///
 /// ## Example
