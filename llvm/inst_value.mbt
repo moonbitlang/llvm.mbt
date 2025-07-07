@@ -526,7 +526,7 @@ pub fn InstructionValue::get_num_operands(self : InstructionValue) -> UInt {
 pub fn InstructionValue::get_operand(
   self : InstructionValue,
   index : UInt
-) -> Either[BasicValueEnum, BasicBlock]? {
+) -> Either[&BasicValue, BasicBlock]? {
   let num_operands = self.get_num_operands()
   if index >= num_operands {
     return None
@@ -538,7 +538,7 @@ pub fn InstructionValue::get_operand(
 fn InstructionValue::get_operand_unchecked(
   self : InstructionValue,
   index : UInt
-) -> Either[BasicValueEnum, BasicBlock]? {
+) -> Either[&BasicValue, BasicBlock]? {
   let operand = @unsafe.llvm_get_operand(self.inner(), index)
   if operand.is_null() {
     return None
@@ -549,7 +549,7 @@ fn InstructionValue::get_operand_unchecked(
     let bb = BasicBlock::new(bb_ref)
     Some(Right(bb))
   } else {
-    let value = BasicValueEnum::init(operand)
+    let value = BasicValueEnum::init(operand).as_basic_value_class()
     Some(Left(value))
   }
 }

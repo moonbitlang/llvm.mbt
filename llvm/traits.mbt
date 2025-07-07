@@ -68,18 +68,7 @@ impl Type with is_sized(self) {
 
 ///|
 impl Type with type_name(self) {
-  match self.as_type_enum() {
-    VoidType(v) => v.type_name()
-    IntType(v) => v.type_name()
-    FloatType(v) => v.type_name()
-    PointerType(v) => v.type_name()
-    StructType(v) => v.type_name()
-    FunctionType(v) => v.type_name()
-    ArrayType(v) => v.type_name()
-    VectorType(v) => v.type_name()
-    ScalableVectorType(v) => v.type_name()
-    MetadataType(v) => v.type_name()
-  }
+  self.base().to_string()
 }
 
 ///|
@@ -551,30 +540,24 @@ impl Value with is_undef(self) {
 
 ///|
 impl Value with into_int_value(self) {
-  guard self.as_value_enum() is IntValue(v) else {
-    raise IntoValueError(
-      "Expected an `int`, got `\{self.get_type().type_name()}`",
-    )
+  guard self.try_as_basic_value_enum() is Some(IntValue(v)) else {
+    raise IntoValueError("Expected an `int`, got `\{self.get_type()}`")
   }
   v
 }
 
 ///|
 impl Value with into_float_value(self) {
-  guard self.as_value_enum() is FloatValue(v) else {
-    raise IntoValueError(
-      "Expected a `float`, got `\{self.get_type().type_name()}`",
-    )
+  guard self.try_as_basic_value_enum() is Some(FloatValue(v)) else {
+    raise IntoValueError("Expected a `float`, got `\{self.get_type()}`")
   }
   v
 }
 
 ///|
 impl Value with into_pointer_value(self) {
-  guard self.as_value_enum() is PointerValue(v) else {
-    raise IntoValueError(
-      "Expected a `pointer`, got `\{self.get_type().type_name()}`",
-    )
+  guard self.try_as_basic_value_enum() is Some(PointerValue(v)) else {
+    raise IntoValueError("Expected a `pointer`, got `\{self.get_type()}`")
   }
   v
 }
@@ -582,9 +565,7 @@ impl Value with into_pointer_value(self) {
 ///|
 impl Value with into_struct_value(self) {
   guard self.as_value_enum() is StructValue(v) else {
-    raise IntoValueError(
-      "Expected a `struct`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `struct`, got `\{self.get_type()}`")
   }
   v
 }
@@ -592,9 +573,7 @@ impl Value with into_struct_value(self) {
 ///|
 impl Value with into_function_value(self) {
   guard self.as_value_enum() is FunctionValue(v) else {
-    raise IntoValueError(
-      "Expected a `function`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `function`, got `\{self.get_type()}`")
   }
   v
 }
@@ -602,9 +581,7 @@ impl Value with into_function_value(self) {
 ///|
 impl Value with into_array_value(self) {
   guard self.as_value_enum() is ArrayValue(v) else {
-    raise IntoValueError(
-      "Expected an `array`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected an `array`, got `\{self.get_type()}`")
   }
   v
 }
@@ -612,9 +589,7 @@ impl Value with into_array_value(self) {
 ///|
 impl Value with into_vector_value(self) {
   guard self.as_value_enum() is VectorValue(v) else {
-    raise IntoValueError(
-      "Expected a `vector`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `vector`, got `\{self.get_type()}`")
   }
   v
 }
@@ -622,9 +597,7 @@ impl Value with into_vector_value(self) {
 ///|
 impl Value with into_phi_value(self) {
   guard self.as_value_enum() is PhiValue(v) else {
-    raise IntoValueError(
-      "Expected a `phi`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `phi`, got `\{self.get_type()}`")
   }
   v
 }
@@ -633,7 +606,7 @@ impl Value with into_phi_value(self) {
 impl Value with into_scalable_vector_value(self) {
   guard self.as_value_enum() is ScalableVectorValue(v) else {
     raise IntoValueError(
-      "Expected a `scalable vector`, got `\{self.get_type().type_name()}`",
+      "Expected a `scalable vector`, got `\{self.get_type()}`",
     )
   }
   v
@@ -642,9 +615,7 @@ impl Value with into_scalable_vector_value(self) {
 ///|
 impl Value with into_metadata_value(self) {
   guard self.as_value_enum() is MetadataValue(v) else {
-    raise IntoValueError(
-      "Expected `metadata`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected `metadata`, got `\{self.get_type()}`")
   }
   v
 }
@@ -652,9 +623,7 @@ impl Value with into_metadata_value(self) {
 ///|
 impl Value with into_call_site_value(self) {
   guard self.as_value_enum() is CallSiteValue(v) else {
-    raise IntoValueError(
-      "Expected a `call site`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `call site`, got `\{self.get_type()}`")
   }
   v
 }
@@ -662,9 +631,7 @@ impl Value with into_call_site_value(self) {
 ///|
 impl Value with into_global_value(self) {
   guard self.as_value_enum() is GlobalValue(v) else {
-    raise IntoValueError(
-      "Expected a `global`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected a `global`, got `\{self.get_type()}`")
   }
   v
 }
@@ -672,49 +639,48 @@ impl Value with into_global_value(self) {
 ///|
 impl Value with into_instruction_value(self) {
   guard self.as_value_enum() is InstructionValue(v) else {
-    raise IntoValueError(
-      "Expected an `instruction`, got `\{self.get_type().type_name()}`",
-    )
+    raise IntoValueError("Expected an `instruction`, got `\{self.get_type()}`")
   }
   v
 }
 
 ///|
 impl Value with try_as_basic_value_enum(self) {
+  match self.try_as_basic_value() {
+    Some(basic_value) => Some(basic_value.as_basic_value_enum())
+    None => None
+  }
+}
+
+///|
+impl Value with try_as_basic_value(self) {
   match self.as_value_enum() {
-    IntValue(v) => Some(IntValue(v))
-    FloatValue(v) => Some(FloatValue(v))
-    PointerValue(v) => Some(PointerValue(v))
-    StructValue(v) => Some(StructValue(v))
-    ArrayValue(v) => Some(ArrayValue(v))
-    VectorValue(v) => Some(VectorValue(v))
+    IntValue(v) => Some((v : &BasicValue))
+    FloatValue(v) => Some(v)
+    PointerValue(v) => Some(v)
+    StructValue(v) => Some(v)
+    ArrayValue(v) => Some(v)
+    VectorValue(v) => Some(v)
+    CallSiteValue(v) =>
+      match v.try_as_basic_value() {
+        Left(basic_value) => Some(basic_value)
+        Right(_) => None
+      }
+    PhiValue(phi) => Some(phi.as_basic_value())
     FunctionValue(_) => None // Function values are not basic values
-    PhiValue(_) => None // Phi values are not basic values
     ScalableVectorValue(_) => None
     MetadataValue(_) => None // Metadata values are not basic values
-    CallSiteValue(_) => None // Call site values are not basic values
     GlobalValue(_) => None // Global values are not basic values
     InstructionValue(_) => None // Instruction values are not basic values
   }
 }
 
 ///|
-impl Value with try_as_basic_value(self) {
-  if self.try_as_basic_value_enum() is Some(basic_value) {
-    Some(basic_value.as_basic_value_class())
-  } else {
-    None
-  }
-}
-
-///|
 impl Value with into_basic_value(self) {
-  guard self.try_as_basic_value_enum() is Some(basic_value) else {
-    raise IntoValueError(
-      "Expected a basic value, got `\{self.get_type().type_name()}`",
-    )
+  guard self.try_as_basic_value() is Some(basic_value) else {
+    raise IntoValueError("Expected a basic value, got `\{self.get_type()}`")
   }
-  basic_value.as_basic_value_class()
+  basic_value
 }
 
 ///|
@@ -757,7 +723,7 @@ pub enum ValueEnum {
   CallSiteValue(CallSiteValue)
   GlobalValue(GlobalValue)
   InstructionValue(InstructionValue)
-}
+} derive(Show)
 
 ///|
 pub fn ValueEnum::as_value_class(self : Self) -> &Value {
@@ -832,7 +798,7 @@ pub(all) enum BasicValueEnum {
   StructValue(StructValue)
   VectorValue(VectorValue)
   ScalableVectorValue(ScalableVectorValue)
-}
+} derive(Show)
 
 ///|
 pub fn BasicValueEnum::as_basic_value_class(self : Self) -> &BasicValue {

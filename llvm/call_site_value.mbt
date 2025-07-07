@@ -148,12 +148,12 @@ pub fn CallSiteValue::set_tail_call_kind(
 /// ```
 pub fn CallSiteValue::try_as_basic_value(
   self : CallSiteValue
-) -> Either[BasicValueEnum, InstructionValue] {
+) -> Either[&BasicValue, InstructionValue] {
   let kind = @unsafe.llvm_get_type_kind(@unsafe.llvm_type_of(self.inner()))
   match kind {
     @unsafe.LLVMTypeKind::LLVMVoidTypeKind =>
       Right(InstructionValue::new(self.inner()))
-    _ => Left(BasicValueEnum::init(self.inner()))
+    _ => Left(BasicValueEnum::init(self.inner()).as_basic_value_class())
   }
 }
 

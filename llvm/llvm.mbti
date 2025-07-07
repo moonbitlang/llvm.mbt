@@ -179,6 +179,7 @@ pub(all) enum BasicValueEnum {
 }
 fn BasicValueEnum::as_basic_value_class(Self) -> &BasicValue
 fn BasicValueEnum::init(@unsafe.LLVMValueRef) -> Self
+impl Show for BasicValueEnum
 
 pub struct BasicValueUse {
   use_ref : @unsafe.LLVMUseRef
@@ -313,7 +314,7 @@ fn CallSiteValue::set_alignment_attribute(Self, AttributeLoc, UInt) -> Unit
 fn CallSiteValue::set_call_convention(Self, UInt) -> Unit
 fn CallSiteValue::set_tail_call(Self, Bool) -> Unit
 fn CallSiteValue::set_tail_call_kind(Self, @unsafe.LLVMTailCallKind) -> Unit
-fn CallSiteValue::try_as_basic_value(Self) -> Either[BasicValueEnum, InstructionValue]
+fn CallSiteValue::try_as_basic_value(Self) -> Either[&BasicValue, InstructionValue]
 impl Value for CallSiteValue
 impl Show for CallSiteValue
 
@@ -700,7 +701,7 @@ fn InstructionValue::get_next_instruction(Self) -> Self?
 fn InstructionValue::get_non_negative_flag(Self) -> Bool?
 fn InstructionValue::get_num_operands(Self) -> UInt
 fn InstructionValue::get_opcode(Self) -> InstructionOpcode
-fn InstructionValue::get_operand(Self, UInt) -> Either[BasicValueEnum, BasicBlock]?
+fn InstructionValue::get_operand(Self, UInt) -> Either[&BasicValue, BasicBlock]?
 fn InstructionValue::get_operand_use(Self, UInt) -> BasicValueUse?
 fn InstructionValue::get_parent(Self) -> BasicBlock?
 fn InstructionValue::get_previous_instruction(Self) -> Self?
@@ -952,7 +953,7 @@ pub struct PhiValue {
 }
 fn PhiValue::add_incoming(Self, &BasicValue, BasicBlock) -> Unit
 fn PhiValue::add_incomings(Self, Array[(&BasicValue, BasicBlock)]) -> Unit
-fn PhiValue::as_basic_value(Self) -> BasicValueEnum
+fn PhiValue::as_basic_value(Self) -> &BasicValue
 fn PhiValue::as_instruction(Self) -> InstructionValue?
 fn PhiValue::count_incoming(Self) -> UInt
 fn PhiValue::dump(Self) -> Unit
@@ -1158,6 +1159,7 @@ pub enum ValueEnum {
 }
 fn ValueEnum::as_value_class(Self) -> &Value
 fn ValueEnum::init(@unsafe.LLVMValueRef) -> Self
+impl Show for ValueEnum
 
 type ValueRef
 impl Eq for ValueRef

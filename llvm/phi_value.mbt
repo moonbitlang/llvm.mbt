@@ -31,8 +31,8 @@ pub fn PhiValue::get_type(self : PhiValue) -> BasicTypeEnum {
 // TODO: need check, in inkwell, BasicValueEnum is not implemented for PhiValue
 
 ///| REVIEW: Check if it is correct.
-pub fn PhiValue::as_basic_value(self : PhiValue) -> BasicValueEnum {
-  BasicValueEnum::init(self.inner())
+pub fn PhiValue::as_basic_value(self : PhiValue) -> &BasicValue {
+  BasicValueEnum::init(self.inner()).as_basic_value_class()
 }
 
 ///| Add incoming values to the phi node.
