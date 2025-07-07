@@ -9,10 +9,12 @@ pub fn MetadataType::new(type_ref : @unsafe.LLVMTypeRef) -> MetadataType {
   MetadataType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for MetadataType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for MetadataType with as_type_enum(self) {
   MetadataType(self)
 }

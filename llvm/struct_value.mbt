@@ -15,18 +15,22 @@ pub fn StructValue::new(value_ref : @unsafe.LLVMValueRef) -> StructValue {
   StructValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for StructValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for StructValue with as_value_enum(self) {
   StructValue(self)
 }
 
+///|
 pub impl BasicValue for StructValue with as_basic_value_enum(self) {
   StructValue(self)
 }
 
+///|
 pub impl AggregateValue for StructValue with as_aggregate_value_enum(self) {
   StructValue(self)
 }

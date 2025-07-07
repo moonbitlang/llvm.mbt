@@ -275,12 +275,12 @@ pub fn Context::ppc_f128_type(self : Context) -> FloatType {
 ///
 /// ```moonbit
 /// let context = Context::create()
-/// let ptr_ty = context.ptr_type(AddressSpace::default())
+/// let ptr_ty = context.ptr_type()
 /// inspect(ptr_ty, content="ptr")
 /// ```
 pub fn Context::ptr_type(
   self : Context,
-  addr_space : AddressSpace
+  addr_space~ : AddressSpace = AddressSpace::default()
 ) -> PointerType {
   let ctx_ref = self.as_ctx_ref()
   let ptr_ty_ref = @unsafe.llvm_pointer_type_in_context(

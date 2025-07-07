@@ -15,18 +15,20 @@ pub fn PointerValue::new(value_ref : @unsafe.LLVMValueRef) -> PointerValue {
   PointerValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for PointerValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for PointerValue with as_value_enum(self) {
   PointerValue(self)
 }
 
+///|
 pub impl BasicValue for PointerValue with as_basic_value_enum(self) {
   PointerValue(self)
 }
-
 
 ///| Gets the name of a `PointerValue`.
 /// If the value is a constant, this will return an empty string.
@@ -71,11 +73,7 @@ pub fn PointerValue::const_gep(
   ordered_indices : Array[IntValue]
 ) -> PointerValue {
   let indices = ordered_indices.map(fn(index) { index.inner() })
-  let value_ref = @unsafe.llvm_const_gep2(
-    ty.inner(),
-    self.inner(),
-    indices,
-  )
+  let value_ref = @unsafe.llvm_const_gep2(ty.inner(), self.inner(), indices)
   PointerValue::new(value_ref)
 }
 
@@ -99,9 +97,7 @@ pub fn PointerValue::const_to_int(
   self : PointerValue,
   int_type : IntType
 ) -> IntValue {
-  IntValue::new(
-    @unsafe.llvm_const_ptr_to_int(self.inner(), int_type.inner()),
-  )
+  IntValue::new(@unsafe.llvm_const_ptr_to_int(self.inner(), int_type.inner()))
 }
 
 ///| Casts the `PointerValue` to a new `PointerType` with different data type.
@@ -120,10 +116,7 @@ pub fn const_address_space_cast(
   ptr_type : PointerType
 ) -> PointerValue {
   PointerValue::new(
-    @unsafe.llvm_const_addr_space_cast(
-      self.inner(),
-      ptr_type.inner(),
-    ),
+    @unsafe.llvm_const_addr_space_cast(self.inner(), ptr_type.inner()),
   )
 }
 

@@ -15,10 +15,12 @@ pub fn InstructionValue::new(
   InstructionValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for InstructionValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for InstructionValue with as_value_enum(self) {
   InstructionValue(self)
 }
@@ -65,7 +67,9 @@ pub fn InstructionValue::explicit_clone(
 
 ///| Gets the name of an `InstructionValue`.
 pub fn InstructionValue::get_name(self : InstructionValue) -> String? {
-  @option.unless(self.get_type().as_type_enum() is VoidType(_), fn() { self.value.get_name() })
+  @option.unless(self.get_type().as_type_enum() is VoidType(_), fn() {
+    self.value.get_name()
+  })
 }
 
 ///| Set name of the `InstructionValue`.
@@ -282,7 +286,9 @@ pub fn InstructionValue::get_volatile(
     not(self.is_a_store_inst()) &&
     not(self.is_a_atomicrmw_inst()) &&
     not(self.is_a_cmpxchg_inst()) {
-    return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
+    return Err(
+      "ValueRef is not a load, store, atomicrmw or cmpxchg instruction",
+    )
   }
   Ok(@unsafe.llvm_get_volatile(self.inner()))
 }
@@ -297,7 +303,9 @@ pub fn InstructionValue::set_volatile(
     not(self.is_a_store_inst()) &&
     not(self.is_a_atomicrmw_inst()) &&
     not(self.is_a_cmpxchg_inst()) {
-    return Err("ValueRef is not a load, store, atomicrmw or cmpxchg instruction")
+    return Err(
+      "ValueRef is not a load, store, atomicrmw or cmpxchg instruction",
+    )
   }
   self.inner().set_volatile(flag)
   Ok(())
@@ -311,7 +319,9 @@ pub fn InstructionValue::get_allocated_type(
   if not(self.is_a_alloca_inst()) {
     return Err("ValueRef is not an alloca instruction")
   }
-  Ok(BasicTypeEnum::init(@unsafe.llvm_get_allocated_type(self.inner())).as_basic_type_class())
+  Ok(
+    BasicTypeEnum::init(@unsafe.llvm_get_allocated_type(self.inner())).as_basic_type_class(),
+  )
 }
 
 ///| Returns the source element type of the given GEP.
@@ -323,9 +333,7 @@ pub fn InstructionValue::get_gep_source_element_type(
     return Err("ValueRef is not a getelementptr instruction")
   }
   Ok(
-    BasicTypeEnum::init(
-      @unsafe.llvm_get_gep_source_element_type(self.inner()),
-    ).as_basic_type_class(),
+    BasicTypeEnum::init(@unsafe.llvm_get_gep_source_element_type(self.inner())).as_basic_type_class(),
   )
 }
 
@@ -761,11 +769,7 @@ pub fn InstructionValue::set_metadata(
   if not(metadata.is_node()) {
     raise MetadataNotNode
   }
-  @unsafe.llvm_set_metadata(
-    self.inner(),
-    kind_id,
-    metadata.inner(),
-  )
+  @unsafe.llvm_set_metadata(self.inner(), kind_id, metadata.inner())
 }
 
 ///|

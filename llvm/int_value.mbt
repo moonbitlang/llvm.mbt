@@ -15,14 +15,17 @@ pub fn IntValue::new(value_ref : @unsafe.LLVMValueRef) -> IntValue {
   IntValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for IntValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for IntValue with as_value_enum(self) {
   IntValue(self)
 }
 
+///|
 pub impl BasicValue for IntValue with as_basic_value_enum(self) {
   IntValue(self)
 }
@@ -194,8 +197,7 @@ pub fn IntValue::const_nsw_neg(self : IntValue) -> IntValue {
 /// inspect(forty_two.const_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_add(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_add(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_add(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the addition of two constant `IntValue`s with NSW flag.
@@ -210,8 +212,7 @@ pub fn IntValue::const_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nsw_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_nsw_add(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nsw_add(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nsw_add(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the addition of two constant `IntValue`s with NUW flag.
@@ -226,8 +227,7 @@ pub fn IntValue::const_nsw_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nuw_add(thirty_tri), content="i32 75");
 /// ```
 pub fn IntValue::const_nuw_add(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nuw_add(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nuw_add(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the subtraction of two constant `IntValue`s.
@@ -242,8 +242,7 @@ pub fn IntValue::const_nuw_add(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_sub(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_sub(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_sub(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the subtraction of two constant `IntValue`s with NSW flag.
@@ -258,8 +257,7 @@ pub fn IntValue::const_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nsw_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_nsw_sub(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nsw_sub(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nsw_sub(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the subtraction of two constant `IntValue`s with NUW flag.
@@ -274,8 +272,7 @@ pub fn IntValue::const_nsw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nuw_sub(thirty_tri), content="i32 9");
 /// ```
 pub fn IntValue::const_nuw_sub(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nuw_sub(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nuw_sub(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the multiplication of two constant `IntValue`s.
@@ -290,8 +287,7 @@ pub fn IntValue::const_nuw_sub(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_mul(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_mul(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_mul(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the multiplication of two constant `IntValue`s with NSW flag.
@@ -306,8 +302,7 @@ pub fn IntValue::const_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nsw_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_nsw_mul(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nsw_mul(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nsw_mul(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 ///| Returns the multiplication of two constant `IntValue`s with NUW flag.
@@ -322,8 +317,7 @@ pub fn IntValue::const_nsw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_nuw_mul(thirty_tri), content="i32 1386");
 /// ```
 pub fn IntValue::const_nuw_mul(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_nuw_mul(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_nuw_mul(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 // LLVM-19 didn't provide the following
@@ -349,8 +343,7 @@ pub fn IntValue::const_nuw_mul(self : IntValue, rhs : IntValue) -> IntValue {
 /// inspect(forty_two.const_xor(thirty_tri), content="i32 11");
 /// ```
 pub fn IntValue::const_xor(self : IntValue, rhs : IntValue) -> IntValue {
-  @unsafe.llvm_const_xor(self.inner(), rhs.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_xor(self.inner(), rhs.inner()) |> IntValue::new
 }
 
 // const_cast
@@ -384,8 +377,7 @@ pub fn IntValue::const_truncate(
   self : IntValue,
   int_type : IntType
 ) -> IntValue {
-  @unsafe.llvm_const_trunc(self.inner(), int_type.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_trunc(self.inner(), int_type.inner()) |> IntValue::new
 }
 
 ///|
@@ -393,10 +385,7 @@ pub fn IntValue::const_truncate_or_bit_cast(
   self : IntValue,
   int_type : IntType
 ) -> IntValue {
-  @unsafe.llvm_const_trunc_or_bit_cast(
-    self.inner(),
-    int_type.inner(),
-  )
+  @unsafe.llvm_const_trunc_or_bit_cast(self.inner(), int_type.inner())
   |> IntValue::new
 }
 
@@ -405,8 +394,7 @@ pub fn IntValue::const_bit_cast(
   self : IntValue,
   int_type : IntType
 ) -> IntValue {
-  @unsafe.llvm_const_bit_cast(self.inner(), int_type.inner())
-  |> IntValue::new
+  @unsafe.llvm_const_bit_cast(self.inner(), int_type.inner()) |> IntValue::new
 }
 
 // llvm-19 didn't provide LLVMConstICmp

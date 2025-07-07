@@ -826,9 +826,7 @@ pub fn Builder::build_struct_gep(
 ) -> PointerValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let pointee_ty = pointee_ty.as_type_enum()
-  guard pointee_ty is StructType(struct_ty) else {
-    raise GEPPointee
-  }
+  guard pointee_ty is StructType(struct_ty) else { raise GEPPointee }
   //let struct_ty = pointee_ty.into_struct_type()
   if index >= struct_ty.count_fields() {
     raise GEPIndex
@@ -892,11 +890,7 @@ pub fn[T : BasicType] Builder::build_phi(
   name~ : String = ""
 ) -> PhiValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
-  let value = @unsafe.llvm_build_phi(
-    self.as_builder_ref(),
-    ty.inner(),
-    name,
-  )
+  let value = @unsafe.llvm_build_phi(self.as_builder_ref(), ty.inner(), name)
   PhiValue::new(value)
 }
 
@@ -1013,11 +1007,7 @@ pub fn Builder::build_alloca(
   name~ : String = ""
 ) -> PointerValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
-  let value = @unsafe.llvm_build_alloca(
-    self.as_builder_ref(),
-    ty.inner(),
-    name,
-  )
+  let value = @unsafe.llvm_build_alloca(self.as_builder_ref(), ty.inner(), name)
   PointerValue::new(value)
 }
 
@@ -1158,11 +1148,7 @@ pub fn[T : BasicType] Builder::build_malloc(
   if not(ty.is_sized()) {
     raise AlignmentError("Cannot build malloc call for an unsized type")
   }
-  let value = @unsafe.llvm_build_malloc(
-    self.as_builder_ref(),
-    ty.inner(),
-    name,
-  )
+  let value = @unsafe.llvm_build_malloc(self.as_builder_ref(), ty.inner(), name)
   PointerValue::new(value)
 }
 
@@ -1210,10 +1196,7 @@ pub fn Builder::insert_instruction(
         name,
       )
     None =>
-      @unsafe.llvm_insert_into_builder(
-        self.as_builder_ref(),
-        inst.inner(),
-      )
+      @unsafe.llvm_insert_into_builder(self.as_builder_ref(), inst.inner())
   }
 }
 
@@ -2220,7 +2203,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
   from_value : V,
   to_type : T,
   name~ : String = ""
-) -> BasicValueEnum raise BuilderError {
+) -> &BasicValue raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
   let val = @unsafe.llvm_build_cast(
     self.as_builder_ref(),
@@ -2229,7 +2212,7 @@ pub fn[T : BasicType, V : BasicValue] Builder::build_cast(
     to_type.inner(),
     name,
   )
-  BasicValueEnum::init(val)
+  BasicValueEnum::init(val).as_basic_value_class()
 }
 
 // pub fn Builder::build_pointer_cast[T: PointerMathValue](
@@ -2414,11 +2397,7 @@ pub fn[T : IntMathValue] Builder::build_int_neg(
   name~ : String = ""
 ) -> T raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
-  let value = @unsafe.llvm_build_neg(
-    self.as_builder_ref(),
-    value.inner(),
-    name,
-  )
+  let value = @unsafe.llvm_build_neg(self.as_builder_ref(), value.inner(), name)
   T::new(value)
 }
 
@@ -2529,11 +2508,7 @@ pub fn[T : IntMathValue] Builder::build_not(
   name~ : String = ""
 ) -> T raise BuilderError {
   guard self.get_positioned() is Set else { raise UnsetPosition }
-  let value = @unsafe.llvm_build_not(
-    self.as_builder_ref(),
-    value.inner(),
-    name,
-  )
+  let value = @unsafe.llvm_build_not(self.as_builder_ref(), value.inner(), name)
   T::new(value)
 }
 
@@ -2883,11 +2858,7 @@ pub fn Builder::build_switch(
   )
   cases.each(fn(pair) {
     let (case_value, case_block) = pair
-    @unsafe.llvm_add_case(
-      value,
-      case_value.inner(),
-      case_block.as_bb_ref(),
-    )
+    @unsafe.llvm_add_case(value, case_value.inner(), case_block.as_bb_ref())
   })
   InstructionValue::new(value)
 }

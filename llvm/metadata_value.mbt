@@ -15,10 +15,12 @@ pub fn MetadataValue::new(value_ref : @unsafe.LLVMValueRef) -> MetadataValue {
   MetadataValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for MetadataValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for MetadataValue with as_value_enum(self) {
   MetadataValue(self)
 }

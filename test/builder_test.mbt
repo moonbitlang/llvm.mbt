@@ -68,8 +68,10 @@ test "Builder Test - 1" {
   let not = builder.build_not(iarg0)
   inspect(not, content="  %18 = xor i32 %0, -1")
   let f32_ty = context.f32_type()
-  guard builder.build_bit_cast(iarg0, f32_ty, name="f0").as_basic_value_enum() is FloatValue(farg0)
-  guard builder.build_bit_cast(iarg1, f32_ty, name="f1").as_basic_value_enum() is FloatValue(farg1)
+  guard builder.build_bit_cast(iarg0, f32_ty, name="f0").as_basic_value_enum()
+    is FloatValue(farg0)
+  guard builder.build_bit_cast(iarg1, f32_ty, name="f1").as_basic_value_enum()
+    is FloatValue(farg1)
   inspect(farg0, content="  %f0 = bitcast i32 %0 to float")
   inspect(farg1, content="  %f1 = bitcast i32 %1 to float")
   let fadd = builder.build_float_add(farg0, farg1)
@@ -299,11 +301,10 @@ test "Builder Test - 2" {
   let store42 = builder.build_store(alloca, forty_two)
   inspect(store42, content="  store i32 42, ptr %alloca, align 4")
   assert_true(store42.is_a_store_inst())
-  guard builder.build_load(i32_ty, alloca, name="load42").as_basic_value_enum() is IntValue(load42)
+  guard builder.build_load(i32_ty, alloca, name="load42").as_basic_value_enum()
+    is IntValue(load42)
   inspect(load42, content="  %load42 = load i32, ptr %alloca, align 4")
-  assert_true(
-    load42.as_instruction().unwrap().is_a_load_inst(),
-  )
+  assert_true(load42.as_instruction().unwrap().is_a_load_inst())
 
   // build_array_alloca
   let array_alloca = builder.build_array_alloca(

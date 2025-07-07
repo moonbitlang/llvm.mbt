@@ -11,19 +11,20 @@ pub fn VectorType::new(type_ref : @unsafe.LLVMTypeRef) -> VectorType {
   VectorType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for VectorType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for VectorType with as_type_enum(self) {
   VectorType(self)
 }
 
+///|
 pub impl BasicType for VectorType with as_basic_type_enum(self) {
   VectorType(self)
 }
-
-
 
 ///| Returns whether this `VectorType` is sized. **Always returns `true`.**
 ///
@@ -140,8 +141,6 @@ pub fn VectorType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
 
 ///| Creates a constant `ArrayValue`.
 ///

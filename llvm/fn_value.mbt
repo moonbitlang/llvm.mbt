@@ -14,10 +14,12 @@ pub fn FunctionValue::new(value_ref : @unsafe.LLVMValueRef) -> FunctionValue? {
   })
 }
 
+///|
 pub impl Value for FunctionValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for FunctionValue with as_value_enum(self) {
   FunctionValue(self)
 }
@@ -267,7 +269,9 @@ pub fn FunctionValue::get_params(self : FunctionValue) -> Array[&BasicValue] {
   let param_refs : Array[@unsafe.LLVMValueRef] = @unsafe.llvm_get_params(
     self.inner(),
   )
-  param_refs.map(fn(param_ref) { BasicValueEnum::init(param_ref).as_basic_value_class() })
+  param_refs.map(fn(param_ref) {
+    BasicValueEnum::init(param_ref).as_basic_value_class()
+  })
 }
 
 ///| Get the name of the function.
@@ -320,9 +324,7 @@ pub fn FunctionValue::drop(self : FunctionValue) -> Unit {
 pub fn FunctionValue::get_type(self : FunctionValue) -> FunctionType {
   //FunctionType::new(self.value.get_type().as_type_ref())
   //FunctionType::new(self.value.inner())
-  self.value.inner()
-  |> @unsafe.llvm_global_get_value_type
-  |> FunctionType::new
+  self.value.inner() |> @unsafe.llvm_global_get_value_type |> FunctionType::new
 }
 
 ///|
@@ -345,10 +347,7 @@ pub fn FunctionValue::set_personality_function(
   self : FunctionValue,
   personality_fn : FunctionValue
 ) -> Unit {
-  @unsafe.llvm_set_personality_fn(
-    self.inner(),
-    personality_fn.inner(),
-  )
+  @unsafe.llvm_set_personality_fn(self.inner(), personality_fn.inner())
 }
 
 ///|
@@ -441,10 +440,7 @@ pub fn FunctionValue::count_attributes(
   self : FunctionValue,
   loc : AttributeLoc
 ) -> UInt {
-  @unsafe.llvm_get_attribute_count_at_index(
-    self.inner(),
-    loc.get_index(),
-  )
+  @unsafe.llvm_get_attribute_count_at_index(self.inner(), loc.get_index())
 }
 
 ///| Get all `Attribute`s belonging to the specified location in this `FunctionValue`.

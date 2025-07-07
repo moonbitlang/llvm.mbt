@@ -15,19 +15,25 @@ pub fn ScalableVectorValue::new(
   ScalableVectorValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for ScalableVectorValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for ScalableVectorValue with as_value_enum(self) {
   ScalableVectorValue(self)
 }
 
+///|
 pub impl BasicValue for ScalableVectorValue with as_basic_value_enum(self) {
   ScalableVectorValue(self)
 }
 
-pub impl AggregateValue for ScalableVectorValue with as_aggregate_value_enum(self) {
+///|
+pub impl AggregateValue for ScalableVectorValue with as_aggregate_value_enum(
+  self
+) {
   ScalableVectorValue(self)
 }
 
@@ -91,10 +97,7 @@ pub fn ScalableVectorValue::const_extract_element(
   index : IntValue
 ) -> BasicValueEnum {
   BasicValueEnum::init(
-    @unsafe.llvm_const_extract_element(
-      self.inner(),
-      index.inner(),
-    ),
+    @unsafe.llvm_const_extract_element(self.inner(), index.inner()),
   )
 }
 
@@ -128,11 +131,7 @@ pub fn ScalableVectorValue::const_shuffle_vector(
   mask : ScalableVectorValue
 ) -> ScalableVectorValue {
   ScalableVectorValue::new(
-    @unsafe.llvm_const_shuffle_vector(
-      self.inner(),
-      right.inner(),
-      mask.inner(),
-    ),
+    @unsafe.llvm_const_shuffle_vector(self.inner(), right.inner(), mask.inner()),
   )
 }
 

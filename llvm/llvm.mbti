@@ -28,7 +28,6 @@ fn AggregateValueEnum::init(@unsafe.LLVMValueRef) -> Self
 pub struct ArrayType {
   ty : TypeRef
 }
-fn ArrayType::array_type(Self, UInt) -> Self
 fn ArrayType::const_array(Self, Array[&BasicValue]) -> ArrayValue
 fn ArrayType::const_zero(Self) -> ArrayValue
 fn ArrayType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
@@ -42,7 +41,6 @@ fn ArrayType::is_sized(Self) -> Bool
 fn ArrayType::len(Self) -> UInt
 fn ArrayType::length(Self) -> UInt
 fn ArrayType::new(@unsafe.LLVMTypeRef) -> Self
-fn ArrayType::size_of(Self) -> IntValue?
 impl BasicType for ArrayType
 impl Type for ArrayType
 impl Show for ArrayType
@@ -204,7 +202,7 @@ fn Builder::build_array_malloc(Self, &BasicType, IntValue, name~ : String = ..) 
 fn[T : BasicValue] Builder::build_binop(Self, InstructionOpcode, T, T, name~ : String = ..) -> BasicValueEnum raise BuilderError
 fn Builder::build_bit_cast(Self, &BasicValue, &BasicType, name~ : String = ..) -> &BasicValue raise BuilderError
 fn Builder::build_call(Self, FunctionValue, Array[&BasicValue], name~ : String = ..) -> CallSiteValue raise BuilderError
-fn[T : BasicType, V : BasicValue] Builder::build_cast(Self, InstructionOpcode, V, T, name~ : String = ..) -> BasicValueEnum raise BuilderError
+fn[T : BasicType, V : BasicValue] Builder::build_cast(Self, InstructionOpcode, V, T, name~ : String = ..) -> &BasicValue raise BuilderError
 fn Builder::build_conditional_branch(Self, IntValue, BasicBlock, BasicBlock) -> InstructionValue raise BuilderError
 fn Builder::build_direct_call(Self, FunctionValue, Array[&BasicValue], name~ : String = ..) -> CallSiteValue raise BuilderError
 fn Builder::build_direct_call_with_operand_bundles(Self, FunctionValue, Array[&BasicValue], Array[OperandBundle], name~ : String = ..) -> CallSiteValue raise BuilderError
@@ -322,9 +320,9 @@ impl Show for CallSiteValue
 pub struct CallableValue {
   either_value : Either[FunctionValue, PointerValue]
 }
-fn CallableValue::as_value_ref(Self) -> @unsafe.LLVMValueRef
 fn CallableValue::fromf(FunctionValue) -> Self
 fn CallableValue::fromp(PointerValue) -> Self
+fn CallableValue::inner(Self) -> @unsafe.LLVMValueRef
 
 pub struct Comdat {
   comdat_ref : @unsafe.LLVMComdatRef
@@ -376,7 +374,7 @@ fn Context::new(@unsafe.LLVMContextRef) -> Self
 fn Context::opaque_struct_type(Self, String) -> StructType
 fn Context::ppc_f128_type(Self) -> FloatType
 fn Context::prepend_basic_block(Self, BasicBlock, String) -> BasicBlock
-fn Context::ptr_type(Self, AddressSpace) -> PointerType
+fn Context::ptr_type(Self, addr_space~ : AddressSpace = ..) -> PointerType
 fn Context::struct_type(Self, Array[&BasicType], is_packed~ : Bool = ..) -> StructType
 fn Context::void_type(Self) -> VoidType
 fn Context::x86_f80_type(Self) -> FloatType
@@ -453,7 +451,6 @@ impl Show for FloatPredicate
 pub struct FloatType {
   ty : TypeRef
 }
-fn FloatType::array_type(Self, UInt) -> ArrayType
 fn FloatType::const_array(Self, Array[FloatValue]) -> ArrayValue
 fn FloatType::const_float(Self, Double) -> FloatValue
 fn FloatType::const_float_from_string(Self, String) -> FloatValue
@@ -465,9 +462,6 @@ fn FloatType::get_poison(Self) -> FloatValue
 fn FloatType::get_undef(Self) -> FloatValue
 fn FloatType::is_sized(Self) -> Bool
 fn FloatType::new(@unsafe.LLVMTypeRef) -> Self
-fn FloatType::scalable_vec_type(Self, UInt) -> ScalableVectorType
-fn FloatType::size_of(Self) -> IntValue
-fn FloatType::vec_type(Self, UInt) -> VectorType
 impl BasicType for FloatType
 impl Type for FloatType
 impl Show for FloatType
@@ -759,7 +753,6 @@ impl Show for IntPredicate
 pub struct IntType {
   ty : TypeRef
 }
-fn IntType::array_type(Self, UInt) -> ArrayType
 fn IntType::const_all_ones(Self) -> IntValue
 fn IntType::const_array(Self, Array[IntValue]) -> ArrayValue
 fn IntType::const_int(Self, UInt64, sign_extend~ : Bool = ..) -> IntValue
@@ -773,9 +766,6 @@ fn IntType::get_poison(Self) -> IntValue
 fn IntType::get_undef(Self) -> IntValue
 fn IntType::is_sized(Self) -> Bool
 fn IntType::new(@unsafe.LLVMTypeRef) -> Self
-fn IntType::scalable_vec_type(Self, UInt) -> ScalableVectorType
-fn IntType::size_of(Self) -> IntValue
-fn IntType::vec_type(Self, UInt) -> VectorType
 impl BasicType for IntType
 impl Type for IntType
 impl Show for IntType
@@ -981,7 +971,6 @@ impl Show for PhiValue
 pub struct PointerType {
   ty : TypeRef
 }
-fn PointerType::array_type(Self, UInt) -> ArrayType
 fn PointerType::const_array(Self, Array[PointerValue]) -> ArrayValue
 fn PointerType::const_null(Self) -> PointerValue
 fn PointerType::const_zero(Self) -> PointerValue
@@ -995,9 +984,6 @@ fn PointerType::get_undef(Self) -> PointerValue
 fn PointerType::is_opaque(Self) -> Bool
 fn PointerType::is_sized(Self) -> Bool
 fn PointerType::new(@unsafe.LLVMTypeRef) -> Self
-fn PointerType::scalable_vec_type(Self, UInt) -> ScalableVectorType
-fn PointerType::size_of(Self) -> IntValue
-fn PointerType::vec_type(Self, UInt) -> VectorType
 impl BasicType for PointerType
 impl Type for PointerType
 impl Show for PointerType
@@ -1031,7 +1017,6 @@ impl Show for PositionState
 pub struct ScalableVectorType {
   ty : TypeRef
 }
-fn ScalableVectorType::array_type(Self, UInt) -> ArrayType
 fn ScalableVectorType::const_array(Self, Array[ScalableVectorValue]) -> ArrayValue
 fn ScalableVectorType::const_zero(Self) -> ScalableVectorValue
 fn ScalableVectorType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
@@ -1043,7 +1028,6 @@ fn ScalableVectorType::get_size(Self) -> UInt
 fn ScalableVectorType::get_undef(Self) -> ScalableVectorValue
 fn ScalableVectorType::is_sized(Self) -> Bool
 fn ScalableVectorType::new(@unsafe.LLVMTypeRef) -> Self
-fn ScalableVectorType::size_of(Self) -> IntValue?
 impl BasicType for ScalableVectorType
 impl Type for ScalableVectorType
 impl Show for ScalableVectorType
@@ -1075,7 +1059,6 @@ impl Show for ScalableVectorValue
 pub struct StructType {
   ty : TypeRef
 }
-fn StructType::array_type(Self, UInt) -> ArrayType
 fn StructType::const_array(Self, Array[StructValue]) -> ArrayValue
 fn StructType::const_named_struct(Self, Array[&BasicValue]) -> StructValue
 fn StructType::const_zero(Self) -> StructValue
@@ -1093,7 +1076,6 @@ fn StructType::is_packed(Self) -> Bool
 fn StructType::is_sized(Self) -> Bool
 fn StructType::new(@unsafe.LLVMTypeRef) -> Self
 fn StructType::set_body(Self, Array[&BasicType], is_packed~ : Bool = ..) -> Unit raise MoonllvmError
-fn StructType::size_of(Self) -> IntValue?
 impl BasicType for StructType
 impl Type for StructType
 impl Show for StructType
@@ -1184,7 +1166,6 @@ impl Show for ValueRef
 pub struct VectorType {
   ty : TypeRef
 }
-fn VectorType::array_type(Self, UInt) -> ArrayType
 fn VectorType::const_array(Self, Array[VectorValue]) -> ArrayValue
 fn VectorType::fn_type(Self, Array[&BasicType], is_var_arg~ : Bool = ..) -> FunctionType
 fn VectorType::get_alignment(Self) -> IntValue
@@ -1195,7 +1176,6 @@ fn VectorType::get_size(Self) -> UInt
 fn VectorType::get_undef(Self) -> VectorValue
 fn VectorType::is_sized(Self) -> Bool
 fn VectorType::new(@unsafe.LLVMTypeRef) -> Self
-fn VectorType::size_of(Self) -> IntValue?
 impl BasicType for VectorType
 impl Type for VectorType
 impl Show for VectorType
@@ -1284,6 +1264,14 @@ pub trait Type {
   type_name(Self) -> String
   get_context(Self) -> Context
   ptr_type(Self, AddressSpace) -> PointerType
+  vec_type(Self, UInt) -> VectorType
+  scalable_vec_type(Self, UInt) -> ScalableVectorType
+  array_type(Self, UInt) -> ArrayType
+  fn_type(Self, Array[&BasicType]) -> FunctionType
+  size_of(Self) -> IntValue?
+  get_undef(Self) -> &Value
+  get_poison(Self) -> &Value
+  get_alignment(Self) -> IntValue
   into_void_type(Self) -> VoidType raise MoonllvmError
   into_int_type(Self) -> IntType raise MoonllvmError
   into_float_type(Self) -> FloatType raise MoonllvmError
@@ -1294,6 +1282,8 @@ pub trait Type {
   into_vector_type(Self) -> VectorType raise MoonllvmError
   into_scalable_vector_type(Self) -> ScalableVectorType raise MoonllvmError
   into_metadata_type(Self) -> MetadataType raise MoonllvmError
+  try_as_basic_type(Self) -> &BasicType?
+  into_basic_type(Self) -> &BasicType raise MoonllvmError
 }
 
 pub trait Value {
@@ -1302,6 +1292,12 @@ pub trait Value {
   inner(Self) -> @unsafe.LLVMValueRef
   dump(Self) -> Unit
   get_type(Self) -> &Type
+  is_instruction(Self) -> Bool
+  as_instruction(Self) -> InstructionValue?
+  is_const(Self) -> Bool
+  get_name(Self) -> String
+  set_name(Self, String) -> Unit
+  is_undef(Self) -> Bool
   into_int_value(Self) -> IntValue raise MoonllvmError
   into_float_value(Self) -> FloatValue raise MoonllvmError
   into_pointer_value(Self) -> PointerValue raise MoonllvmError
@@ -1315,6 +1311,9 @@ pub trait Value {
   into_call_site_value(Self) -> CallSiteValue raise MoonllvmError
   into_global_value(Self) -> GlobalValue raise MoonllvmError
   into_instruction_value(Self) -> InstructionValue raise MoonllvmError
+  try_as_basic_value_enum(Self) -> BasicValueEnum?
+  try_as_basic_value(Self) -> &BasicValue?
+  into_basic_value(Self) -> &BasicValue raise MoonllvmError
 }
 
 pub trait VectorBaseValue : BasicValue {

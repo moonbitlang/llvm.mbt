@@ -12,10 +12,12 @@ pub fn VoidType::new(type_ref : @unsafe.LLVMTypeRef) -> VoidType {
   VoidType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for VoidType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for VoidType with as_type_enum(self) {
   VoidType(self)
 }

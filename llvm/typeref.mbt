@@ -120,6 +120,11 @@ fn TypeRef::dump(self : TypeRef) -> Unit {
 }
 
 ///|
+impl Eq for TypeRef with op_equal(self, other) {
+  self.inner() == other.inner()
+}
+
+///|
 impl Show for TypeRef with output(self : TypeRef, logger : &Logger) -> Unit {
   let s = @unsafe.llvm_print_type_to_string(self.inner())
   logger.write_string(s)

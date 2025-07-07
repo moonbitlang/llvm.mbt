@@ -14,11 +14,12 @@ pub fn CallSiteValue::new(value_ref : @unsafe.LLVMValueRef) -> CallSiteValue {
   CallSiteValue::{ value: ValueRef::new(value_ref) }
 }
 
-
+///|
 pub impl Value for CallSiteValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for CallSiteValue with as_value_enum(self) {
   CallSiteValue(self)
 }
@@ -148,9 +149,7 @@ pub fn CallSiteValue::set_tail_call_kind(
 pub fn CallSiteValue::try_as_basic_value(
   self : CallSiteValue
 ) -> Either[BasicValueEnum, InstructionValue] {
-  let kind = @unsafe.llvm_get_type_kind(
-    @unsafe.llvm_type_of(self.inner()),
-  )
+  let kind = @unsafe.llvm_get_type_kind(@unsafe.llvm_type_of(self.inner()))
   match kind {
     @unsafe.LLVMTypeKind::LLVMVoidTypeKind =>
       Right(InstructionValue::new(self.inner()))
@@ -247,10 +246,7 @@ pub fn CallSiteValue::count_attributes(
   self : CallSiteValue,
   loc : AttributeLoc
 ) -> UInt {
-  @unsafe.llvm_get_call_site_attribute_count(
-    self.inner(),
-    loc.get_index(),
-  )
+  @unsafe.llvm_get_call_site_attribute_count(self.inner(), loc.get_index())
 }
 
 ///| Get all `Attribute`s on this `CallSiteValue` at an index.

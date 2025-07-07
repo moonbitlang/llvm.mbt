@@ -13,10 +13,12 @@ pub fn PhiValue::new(value_ref : @unsafe.LLVMValueRef) -> PhiValue {
   PhiValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for PhiValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for PhiValue with as_value_enum(self) {
   PhiValue(self)
 }
@@ -51,9 +53,7 @@ pub fn PhiValue::add_incoming(
   value : &BasicValue,
   bb : BasicBlock
 ) -> Unit {
-  @unsafe.llvm_add_incoming(self.inner(), [value.inner()], [
-    bb.as_bb_ref(),
-  ])
+  @unsafe.llvm_add_incoming(self.inner(), [value.inner()], [bb.as_bb_ref()])
 }
 
 ///| Get the number of incoming values of the phi node.
@@ -69,9 +69,7 @@ pub fn PhiValue::get_incoming(
   if index >= self.count_incoming() {
     return None
   }
-  let bb = BasicBlock::new(
-    @unsafe.llvm_get_incoming_block(self.inner(), index),
-  )
+  let bb = BasicBlock::new(@unsafe.llvm_get_incoming_block(self.inner(), index))
   let value = BasicValueEnum::init(
     @unsafe.llvm_get_incoming_value(self.inner(), index),
   )
@@ -85,9 +83,7 @@ pub fn PhiValue::get_incoming_unchecked(
   self : PhiValue,
   index : UInt
 ) -> (BasicValueEnum, BasicBlock) {
-  let bb = BasicBlock::new(
-    @unsafe.llvm_get_incoming_block(self.inner(), index),
-  )
+  let bb = BasicBlock::new(@unsafe.llvm_get_incoming_block(self.inner(), index))
   let value = BasicValueEnum::init(
     @unsafe.llvm_get_incoming_value(self.inner(), index),
   )

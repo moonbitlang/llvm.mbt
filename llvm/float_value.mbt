@@ -15,14 +15,17 @@ pub fn FloatValue::new(value_ref : @unsafe.LLVMValueRef) -> FloatValue {
   FloatValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for FloatValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for FloatValue with as_value_enum(self) {
   FloatValue(self)
 }
 
+///|
 pub impl BasicValue for FloatValue with as_basic_value_enum(self) {
   FloatValue(self)
 }

@@ -2,32 +2,40 @@
 // Types
 // ====------------------------------------=====
 
+///|
 pub trait Type {
-  base(Self) -> TypeRef;
-  as_type_enum(Self) -> TypeEnum;
-  try_as_basic_type_enum(Self) -> BasicTypeEnum? = _;
+  base(Self) -> TypeRef
+  as_type_enum(Self) -> TypeEnum
+  try_as_basic_type_enum(Self) -> BasicTypeEnum? = _
   inner(Self) -> @unsafe.LLVMTypeRef = _
-  dump(Self) -> Unit = _;
-  is_sized(Self) -> Bool = _;
-  type_name(Self) -> String = _;
-  get_context(Self) -> Context = _;
-  ptr_type(Self, AddressSpace) -> PointerType = _;
-  vec_type(Self, UInt) -> VectorType = _;
-  scalable_vec_type(Self, UInt) -> ScalableVectorType = _;
-  array_type(Self, UInt) -> ArrayType = _;
-  size_of(Self) -> IntValue? = _;
-  into_void_type(Self) -> VoidType raise MoonllvmError = _;
-  into_int_type(Self) -> IntType raise MoonllvmError = _;
-  into_float_type(Self) -> FloatType raise MoonllvmError = _;
-  into_pointer_type(Self) -> PointerType raise MoonllvmError = _;
-  into_struct_type(Self) -> StructType raise MoonllvmError = _;
-  into_function_type(Self) -> FunctionType raise MoonllvmError = _;
-  into_array_type(Self) -> ArrayType raise MoonllvmError = _;
-  into_vector_type(Self) -> VectorType raise MoonllvmError = _;
-  into_scalable_vector_type(Self) -> ScalableVectorType raise MoonllvmError = _;
-  into_metadata_type(Self) -> MetadataType raise MoonllvmError = _;
+  dump(Self) -> Unit = _
+  is_sized(Self) -> Bool = _
+  type_name(Self) -> String = _
+  get_context(Self) -> Context = _
+  ptr_type(Self, AddressSpace) -> PointerType = _
+  vec_type(Self, UInt) -> VectorType = _
+  scalable_vec_type(Self, UInt) -> ScalableVectorType = _
+  array_type(Self, UInt) -> ArrayType = _
+  fn_type(Self, Array[&BasicType]) -> FunctionType = _
+  size_of(Self) -> IntValue? = _
+  get_undef(Self) -> &Value = _
+  get_poison(Self) -> &Value = _
+  get_alignment(Self) -> IntValue = _
+  into_void_type(Self) -> VoidType raise MoonllvmError = _
+  into_int_type(Self) -> IntType raise MoonllvmError = _
+  into_float_type(Self) -> FloatType raise MoonllvmError = _
+  into_pointer_type(Self) -> PointerType raise MoonllvmError = _
+  into_struct_type(Self) -> StructType raise MoonllvmError = _
+  into_function_type(Self) -> FunctionType raise MoonllvmError = _
+  into_array_type(Self) -> ArrayType raise MoonllvmError = _
+  into_vector_type(Self) -> VectorType raise MoonllvmError = _
+  into_scalable_vector_type(Self) -> ScalableVectorType raise MoonllvmError = _
+  into_metadata_type(Self) -> MetadataType raise MoonllvmError = _
+  try_as_basic_type(Self) -> &BasicType? = _
+  into_basic_type(Self) -> &BasicType raise MoonllvmError = _
 }
 
+///|
 impl Type with try_as_basic_type_enum(self) {
   match self.as_type_enum() {
     VoidType(_) => None
@@ -43,18 +51,22 @@ impl Type with try_as_basic_type_enum(self) {
   }
 }
 
+///|
 impl Type with inner(self) {
   self.base().inner()
 }
 
+///|
 impl Type with dump(self) {
   self.base().dump()
 }
 
+///|
 impl Type with is_sized(self) {
   self.base().is_sized()
 }
 
+///|
 impl Type with type_name(self) {
   match self.as_type_enum() {
     VoidType(v) => v.type_name()
@@ -70,6 +82,7 @@ impl Type with type_name(self) {
   }
 }
 
+///|
 impl Type with get_context(self) {
   self.base().get_context()
 }
@@ -157,6 +170,11 @@ impl Type with array_type(self, num_elements) {
   self.base().array_type(num_elements)
 }
 
+///|
+impl Type with fn_type(self, param_types) {
+  self.base().fn_type(param_types)
+}
+
 ///| Gets the size of this `Type`. Value may vary depending on the target architecture.
 ///
 /// ## Example
@@ -180,6 +198,24 @@ impl Type with size_of(self) {
   self.base().size_of()
 }
 
+///|
+impl Type with get_undef(self) {
+  let e = self.base().get_undef() |> ValueEnum::init
+  e.as_value_class()
+}
+
+///|
+impl Type with get_poison(self) {
+  let e = self.base().get_poison() |> ValueEnum::init
+  e.as_value_class()
+}
+
+///|
+impl Type with get_alignment(self) {
+  self.base().get_alignment()
+}
+
+///|
 impl Type with into_void_type(self) {
   guard self.as_type_enum() is VoidType(v) else {
     raise IntoTypeError("Expected `void`, got `\{self.type_name()}`")
@@ -187,6 +223,7 @@ impl Type with into_void_type(self) {
   v
 }
 
+///|
 impl Type with into_int_type(self) {
   guard self.as_type_enum() is IntType(v) else {
     raise IntoTypeError("Expected `int`, got `\{self.type_name()}`")
@@ -194,6 +231,7 @@ impl Type with into_int_type(self) {
   v
 }
 
+///|
 impl Type with into_float_type(self) {
   guard self.as_type_enum() is FloatType(v) else {
     raise IntoTypeError("Expected `float`, got `\{self.type_name()}`")
@@ -201,6 +239,7 @@ impl Type with into_float_type(self) {
   v
 }
 
+///|
 impl Type with into_pointer_type(self) {
   guard self.as_type_enum() is PointerType(v) else {
     raise IntoTypeError("Expected `pointer`, got `\{self.type_name()}`")
@@ -208,6 +247,7 @@ impl Type with into_pointer_type(self) {
   v
 }
 
+///|
 impl Type with into_struct_type(self) {
   guard self.as_type_enum() is StructType(v) else {
     raise IntoTypeError("Expected `struct`, got `\{self.type_name()}`")
@@ -215,6 +255,7 @@ impl Type with into_struct_type(self) {
   v
 }
 
+///|
 impl Type with into_function_type(self) {
   guard self.as_type_enum() is FunctionType(v) else {
     raise IntoTypeError("Expected `function`, got `\{self.type_name()}`")
@@ -222,6 +263,7 @@ impl Type with into_function_type(self) {
   v
 }
 
+///|
 impl Type with into_array_type(self) {
   guard self.as_type_enum() is ArrayType(v) else {
     raise IntoTypeError("Expected `array`, got `\{self.type_name()}`")
@@ -229,6 +271,7 @@ impl Type with into_array_type(self) {
   v
 }
 
+///|
 impl Type with into_vector_type(self) {
   guard self.as_type_enum() is VectorType(v) else {
     raise IntoTypeError("Expected `vector`, got `\{self.type_name()}`")
@@ -236,6 +279,7 @@ impl Type with into_vector_type(self) {
   v
 }
 
+///|
 impl Type with into_scalable_vector_type(self) {
   guard self.as_type_enum() is ScalableVectorType(v) else {
     raise IntoTypeError("Expected `scalable vector`, got `\{self.type_name()}`")
@@ -243,6 +287,7 @@ impl Type with into_scalable_vector_type(self) {
   v
 }
 
+///|
 impl Type with into_metadata_type(self) {
   guard self.as_type_enum() is MetadataType(v) else {
     raise IntoTypeError("Expected `metadata`, got `\{self.type_name()}`")
@@ -250,6 +295,24 @@ impl Type with into_metadata_type(self) {
   v
 }
 
+///|
+impl Type with try_as_basic_type(self) {
+  if self.try_as_basic_type_enum() is Some(basic_type) {
+    Some(basic_type.as_basic_type_class())
+  } else {
+    None
+  }
+}
+
+///|
+impl Type with into_basic_type(self) {
+  guard self.try_as_basic_type_enum() is Some(basic_type) else {
+    raise IntoTypeError("Expected a basic type, got `\{self.type_name()}`")
+  }
+  basic_type.as_basic_type_class()
+}
+
+///|
 pub impl Show for &Type with output(self, logger) {
   let s = match self.as_type_enum() {
     VoidType(v) => v.to_string()
@@ -266,10 +329,12 @@ pub impl Show for &Type with output(self, logger) {
   logger.write_string(s)
 }
 
+///|
 pub impl Eq for &Type with op_equal(self, other) {
-  self.inner() == other.inner()
+  self.base() == other.base()
 }
 
+///|
 pub enum TypeEnum {
   VoidType(VoidType)
   IntType(IntType)
@@ -283,9 +348,12 @@ pub enum TypeEnum {
   MetadataType(MetadataType)
 }
 
-pub fn TypeEnum::as_type_class(self: Self) -> &Type {
+///|
+pub fn TypeEnum::as_type_class(self : Self) -> &Type {
   match self {
-    VoidType(v) => v as &Type
+    VoidType(v) => {
+      v as &Type
+    }
     IntType(v) => v
     FloatType(v) => v
     PointerType(v) => v
@@ -298,6 +366,7 @@ pub fn TypeEnum::as_type_class(self: Self) -> &Type {
   }
 }
 
+///|
 pub fn TypeEnum::init(type_ref : @unsafe.LLVMTypeRef) -> TypeEnum {
   let kind : @unsafe.LLVMTypeKind = @unsafe.llvm_get_type_kind(type_ref)
   match kind {
@@ -324,8 +393,9 @@ pub fn TypeEnum::init(type_ref : @unsafe.LLVMTypeRef) -> TypeEnum {
 // Basic Types
 // ====------------------------------------=====
 
+///|
 pub trait BasicType: Type {
-  as_basic_type_enum(Self) -> BasicTypeEnum;
+  as_basic_type_enum(Self) -> BasicTypeEnum
 }
 
 ///|
@@ -339,9 +409,12 @@ pub(all) enum BasicTypeEnum {
   ScalableVectorType(ScalableVectorType)
 }
 
-pub fn BasicTypeEnum::as_basic_type_class(self: Self) -> &BasicType {
+///|
+pub fn BasicTypeEnum::as_basic_type_class(self : Self) -> &BasicType {
   match self {
-    ArrayType(v) => v as &BasicType
+    ArrayType(v) => {
+      v as &BasicType
+    }
     FloatType(v) => v
     IntType(v) => v
     PointerType(v) => v
@@ -376,6 +449,7 @@ pub fn BasicTypeEnum::init(type_ref : @unsafe.LLVMTypeRef) -> BasicTypeEnum {
   }
 }
 
+///|
 pub impl Show for &BasicType with output(self, logger) {
   let s = match self.as_basic_type_enum() {
     IntType(v) => v.to_string()
@@ -389,6 +463,7 @@ pub impl Show for &BasicType with output(self, logger) {
   logger.write_string(s)
 }
 
+///|
 pub impl Eq for &BasicType with op_equal(self, other) {
   self.inner() == other.inner()
 }
@@ -397,131 +472,252 @@ pub impl Eq for &BasicType with op_equal(self, other) {
 // Values
 // ====------------------------------------=====
 
+///|
 pub trait Value {
-  base(Self) -> ValueRef;
-  as_value_enum(Self) -> ValueEnum;
+  base(Self) -> ValueRef
+  as_value_enum(Self) -> ValueEnum
   inner(Self) -> @unsafe.LLVMValueRef = _
-  dump(Self) -> Unit = _;
-  get_type(Self) -> &Type = _;
-  into_int_value(Self) -> IntValue raise MoonllvmError = _;
-  into_float_value(Self) -> FloatValue raise MoonllvmError = _;
-  into_pointer_value(Self) -> PointerValue raise MoonllvmError = _;
-  into_struct_value(Self) -> StructValue raise MoonllvmError = _;
-  into_function_value(Self) -> FunctionValue raise MoonllvmError = _;
-  into_array_value(Self) -> ArrayValue raise MoonllvmError = _;
-  into_vector_value(Self) -> VectorValue raise MoonllvmError = _;
-  into_phi_value(Self) -> PhiValue raise MoonllvmError = _;
-  into_scalable_vector_value(Self) -> ScalableVectorValue raise MoonllvmError = _;
-  into_metadata_value(Self) -> MetadataValue raise MoonllvmError = _;
-  into_call_site_value(Self) -> CallSiteValue raise MoonllvmError = _;
-  into_global_value(Self) -> GlobalValue raise MoonllvmError = _;
-  into_instruction_value(Self) -> InstructionValue raise MoonllvmError = _;
+  dump(Self) -> Unit = _
+  get_type(Self) -> &Type = _
+  is_instruction(Self) -> Bool = _
+  as_instruction(Self) -> InstructionValue? = _
+  is_const(Self) -> Bool = _
+  get_name(Self) -> String = _
+  set_name(Self, String) -> Unit = _
+  is_undef(Self) -> Bool = _
+  into_int_value(Self) -> IntValue raise MoonllvmError = _
+  into_float_value(Self) -> FloatValue raise MoonllvmError = _
+  into_pointer_value(Self) -> PointerValue raise MoonllvmError = _
+  into_struct_value(Self) -> StructValue raise MoonllvmError = _
+  into_function_value(Self) -> FunctionValue raise MoonllvmError = _
+  into_array_value(Self) -> ArrayValue raise MoonllvmError = _
+  into_vector_value(Self) -> VectorValue raise MoonllvmError = _
+  into_phi_value(Self) -> PhiValue raise MoonllvmError = _
+  into_scalable_vector_value(Self) -> ScalableVectorValue raise MoonllvmError = _
+  into_metadata_value(Self) -> MetadataValue raise MoonllvmError = _
+  into_call_site_value(Self) -> CallSiteValue raise MoonllvmError = _
+  into_global_value(Self) -> GlobalValue raise MoonllvmError = _
+  into_instruction_value(Self) -> InstructionValue raise MoonllvmError = _
+  try_as_basic_value_enum(Self) -> BasicValueEnum? = _
+  try_as_basic_value(Self) -> &BasicValue? = _
+  into_basic_value(Self) -> &BasicValue raise MoonllvmError = _
 }
 
+///|
 impl Value with inner(self) {
   self.base().inner()
 }
 
+///|
 impl Value with dump(self) {
   self.base().dump()
 }
 
+///|
 impl Value with get_type(self) {
   let type_ref = self.base().get_type()
   TypeEnum::init(type_ref.inner()).as_type_class()
 }
 
+///|
+impl Value with is_instruction(self) {
+  self.base().is_instruction()
+}
+
+///|
+impl Value with as_instruction(self) {
+  self.base().as_instruction()
+}
+
+///|
+impl Value with is_const(self) {
+  self.base().is_const()
+}
+
+///|
+impl Value with get_name(self) {
+  self.base().get_name()
+}
+
+///|
+impl Value with set_name(self, name) {
+  self.base().set_name(name)
+}
+
+///|
+impl Value with is_undef(self) {
+  self.base().is_undef()
+}
+
+///|
 impl Value with into_int_value(self) {
   guard self.as_value_enum() is IntValue(v) else {
-    raise IntoValueError("Expected an `int`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected an `int`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_float_value(self) {
   guard self.as_value_enum() is FloatValue(v) else {
-    raise IntoValueError("Expected a `float`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `float`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_pointer_value(self) {
   guard self.as_value_enum() is PointerValue(v) else {
-    raise IntoValueError("Expected a `pointer`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `pointer`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_struct_value(self) {
   guard self.as_value_enum() is StructValue(v) else {
-    raise IntoValueError("Expected a `struct`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `struct`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_function_value(self) {
   guard self.as_value_enum() is FunctionValue(v) else {
-    raise IntoValueError("Expected a `function`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `function`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_array_value(self) {
   guard self.as_value_enum() is ArrayValue(v) else {
-    raise IntoValueError("Expected an `array`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected an `array`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_vector_value(self) {
   guard self.as_value_enum() is VectorValue(v) else {
-    raise IntoValueError("Expected a `vector`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `vector`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_phi_value(self) {
   guard self.as_value_enum() is PhiValue(v) else {
-    raise IntoValueError("Expected a `phi`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `phi`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_scalable_vector_value(self) {
   guard self.as_value_enum() is ScalableVectorValue(v) else {
-    raise IntoValueError("Expected a `scalable vector`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `scalable vector`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_metadata_value(self) {
   guard self.as_value_enum() is MetadataValue(v) else {
-    raise IntoValueError("Expected `metadata`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected `metadata`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_call_site_value(self) {
   guard self.as_value_enum() is CallSiteValue(v) else {
-    raise IntoValueError("Expected a `call site`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `call site`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_global_value(self) {
   guard self.as_value_enum() is GlobalValue(v) else {
-    raise IntoValueError("Expected a `global`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected a `global`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
 impl Value with into_instruction_value(self) {
   guard self.as_value_enum() is InstructionValue(v) else {
-    raise IntoValueError("Expected an `instruction`, got `\{self.get_type().type_name()}`")
+    raise IntoValueError(
+      "Expected an `instruction`, got `\{self.get_type().type_name()}`",
+    )
   }
   v
 }
 
+///|
+impl Value with try_as_basic_value_enum(self) {
+  match self.as_value_enum() {
+    IntValue(v) => Some(IntValue(v))
+    FloatValue(v) => Some(FloatValue(v))
+    PointerValue(v) => Some(PointerValue(v))
+    StructValue(v) => Some(StructValue(v))
+    ArrayValue(v) => Some(ArrayValue(v))
+    VectorValue(v) => Some(VectorValue(v))
+    FunctionValue(_) => None // Function values are not basic values
+    PhiValue(_) => None // Phi values are not basic values
+    ScalableVectorValue(_) => None
+    MetadataValue(_) => None // Metadata values are not basic values
+    CallSiteValue(_) => None // Call site values are not basic values
+    GlobalValue(_) => None // Global values are not basic values
+    InstructionValue(_) => None // Instruction values are not basic values
+  }
+}
+
+///|
+impl Value with try_as_basic_value(self) {
+  if self.try_as_basic_value_enum() is Some(basic_value) {
+    Some(basic_value.as_basic_value_class())
+  } else {
+    None
+  }
+}
+
+///|
+impl Value with into_basic_value(self) {
+  guard self.try_as_basic_value_enum() is Some(basic_value) else {
+    raise IntoValueError(
+      "Expected a basic value, got `\{self.get_type().type_name()}`",
+    )
+  }
+  basic_value.as_basic_value_class()
+}
+
+///|
 pub impl Show for &Value with output(self, logger) {
   let s = match self.as_value_enum() {
     IntValue(v) => v.to_string()
@@ -541,10 +737,12 @@ pub impl Show for &Value with output(self, logger) {
   logger.write_string(s)
 }
 
+///|
 pub impl Eq for &Value with op_equal(self, other) {
   self.inner() == other.inner()
 }
 
+///|
 pub enum ValueEnum {
   IntValue(IntValue)
   FloatValue(FloatValue)
@@ -561,9 +759,12 @@ pub enum ValueEnum {
   InstructionValue(InstructionValue)
 }
 
-pub fn ValueEnum::as_value_class(self: Self) -> &Value {
+///|
+pub fn ValueEnum::as_value_class(self : Self) -> &Value {
   match self {
-    IntValue(v) => v as &Value
+    IntValue(v) => {
+      v as &Value
+    }
     FloatValue(v) => v
     PointerValue(v) => v
     StructValue(v) => v
@@ -579,7 +780,8 @@ pub fn ValueEnum::as_value_class(self: Self) -> &Value {
   }
 }
 
-pub fn ValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> ValueEnum {
+///|
+pub fn ValueEnum::init(val_ref : @unsafe.LLVMValueRef) -> ValueEnum {
   let ty = val_ref.get_type()
   let kind = @unsafe.llvm_get_type_kind(ty)
   match kind {
@@ -599,7 +801,8 @@ pub fn ValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> ValueEnum {
       }
     @unsafe.LLVMArrayTypeKind => ArrayValue(ArrayValue::new(val_ref))
     @unsafe.LLVMVectorTypeKind => VectorValue(VectorValue::new(val_ref))
-    @unsafe.LLVMFunctionTypeKind => FunctionValue(FunctionValue::new(val_ref).unwrap())
+    @unsafe.LLVMFunctionTypeKind =>
+      FunctionValue(FunctionValue::new(val_ref).unwrap())
     @unsafe.LLVMVoidTypeKind => {
       if val_ref.isa_instruction().is_null() {
         abort("Void value must be an instruction")
@@ -614,8 +817,10 @@ pub fn ValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> ValueEnum {
 // ====------------------------------------=====
 // Basic Values
 // ====------------------------------------=====
+
+///|
 pub trait BasicValue: Value {
-  as_basic_value_enum(Self) -> BasicValueEnum;
+  as_basic_value_enum(Self) -> BasicValueEnum
 }
 
 ///|
@@ -629,9 +834,12 @@ pub(all) enum BasicValueEnum {
   ScalableVectorValue(ScalableVectorValue)
 }
 
-pub fn BasicValueEnum::as_basic_value_class(self: Self) -> &BasicValue {
+///|
+pub fn BasicValueEnum::as_basic_value_class(self : Self) -> &BasicValue {
   match self {
-    ArrayValue(v) => v as &BasicValue
+    ArrayValue(v) => {
+      v as &BasicValue
+    }
     IntValue(v) => v
     FloatValue(v) => v
     PointerValue(v) => v
@@ -641,7 +849,8 @@ pub fn BasicValueEnum::as_basic_value_class(self: Self) -> &BasicValue {
   }
 }
 
-pub fn BasicValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> BasicValueEnum {
+///|
+pub fn BasicValueEnum::init(val_ref : @unsafe.LLVMValueRef) -> BasicValueEnum {
   let ty = val_ref.get_type()
   let kind = @unsafe.llvm_get_type_kind(ty)
   match kind {
@@ -660,6 +869,7 @@ pub fn BasicValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> BasicValueEnum {
   }
 }
 
+///|
 pub impl Show for &BasicValue with output(self, logger) {
   let s = match self.as_basic_value_enum() {
     IntValue(v) => v.to_string()
@@ -673,6 +883,7 @@ pub impl Show for &BasicValue with output(self, logger) {
   logger.write_string(s)
 }
 
+///|
 pub impl Eq for &BasicValue with op_equal(self, other) {
   self.inner() == other.inner()
 }
@@ -681,10 +892,12 @@ pub impl Eq for &BasicValue with op_equal(self, other) {
 // Aggregate Values
 // ====------------------------------------=====
 
+///|
 pub trait AggregateValue: Value {
-  as_aggregate_value_enum(Self) -> AggregateValueEnum;
+  as_aggregate_value_enum(Self) -> AggregateValueEnum
 }
 
+///|
 pub enum AggregateValueEnum {
   StructValue(StructValue)
   ArrayValue(ArrayValue)
@@ -692,23 +905,32 @@ pub enum AggregateValueEnum {
   ScalableVectorValue(ScalableVectorValue)
 }
 
-pub fn AggregateValueEnum::as_aggregate_value_class(self: Self) -> &AggregateValue {
+///|
+pub fn AggregateValueEnum::as_aggregate_value_class(
+  self : Self
+) -> &AggregateValue {
   match self {
-    StructValue(v) => v as &AggregateValue
+    StructValue(v) => {
+      v as &AggregateValue
+    }
     ArrayValue(v) => v
     VectorValue(v) => v
     ScalableVectorValue(v) => v
   }
 }
 
-pub fn AggregateValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> AggregateValueEnum {
+///|
+pub fn AggregateValueEnum::init(
+  val_ref : @unsafe.LLVMValueRef
+) -> AggregateValueEnum {
   let ty = val_ref.get_type()
   let kind = @unsafe.llvm_get_type_kind(ty)
   match kind {
     @unsafe.LLVMStructTypeKind => StructValue(StructValue::new(val_ref))
     @unsafe.LLVMArrayTypeKind => ArrayValue(ArrayValue::new(val_ref))
     @unsafe.LLVMVectorTypeKind => VectorValue(VectorValue::new(val_ref))
-    @unsafe.LLVMPointerTypeKind => ScalableVectorValue(ScalableVectorValue::new(val_ref))
+    @unsafe.LLVMPointerTypeKind =>
+      ScalableVectorValue(ScalableVectorValue::new(val_ref))
     _ => abort("Unsupported aggregate value kind")
   }
 }
@@ -716,8 +938,6 @@ pub fn AggregateValueEnum::init(val_ref: @unsafe.LLVMValueRef) -> AggregateValue
 // ====------------------------------------=====
 // Basic Metadata Values
 // ====------------------------------------=====
-
-
 
 //=========================================================
 // IntMathValue

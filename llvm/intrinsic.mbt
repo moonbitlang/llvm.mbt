@@ -72,7 +72,7 @@ pub fn Intrinsic::get_declaration(
   mod : Module,
   param_types : Array[&BasicType]
 ) -> FunctionValue? {
-  let param_types = param_types.map( t=> t.inner())
+  let param_types = param_types.map(t => t.inner())
   if self.is_overloaded() && param_types.is_empty() {
     return None
   }

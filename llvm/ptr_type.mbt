@@ -11,20 +11,20 @@ pub fn PointerType::new(type_ref : @unsafe.LLVMTypeRef) -> PointerType {
   PointerType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for PointerType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for PointerType with as_type_enum(self) {
   PointerType(self)
 }
 
+///|
 pub impl BasicType for PointerType with as_basic_type_enum(self) {
   PointerType(self)
 }
-
-
-
 
 ///| Returns whether this `PointerType` is sized. **Always returns `true`.**
 pub fn PointerType::is_sized(self : PointerType) -> Bool {
@@ -80,8 +80,6 @@ pub fn PointerType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
 
 ///| Gets the `AddressSpace` a `PointerType` was created with.
 ///
@@ -160,10 +158,6 @@ pub fn PointerType::get_undef(self : PointerType) -> PointerValue {
 pub fn PointerType::get_poison(self : PointerType) -> PointerValue {
   PointerValue::new(@unsafe.llvm_get_poison(self.inner()))
 }
-
-
-
-
 
 // Note: `@unsafe.llvm_get_element_type` is unavailable in llvm-19
 

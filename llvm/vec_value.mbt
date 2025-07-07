@@ -13,18 +13,22 @@ pub fn VectorValue::new(value_ref : @unsafe.LLVMValueRef) -> VectorValue {
   VectorValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for VectorValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for VectorValue with as_value_enum(self) {
   VectorValue(self)
 }
 
+///|
 pub impl BasicValue for VectorValue with as_basic_value_enum(self) {
   VectorValue(self)
 }
 
+///|
 pub impl AggregateValue for VectorValue with as_aggregate_value_enum(self) {
   VectorValue(self)
 }
@@ -101,11 +105,7 @@ pub fn VectorValue::const_shuffle_vector(
   mask : VectorValue
 ) -> VectorValue {
   VectorValue::new(
-    @unsafe.llvm_const_shuffle_vector(
-      self.inner(),
-      right.inner(),
-      mask.inner(),
-    ),
+    @unsafe.llvm_const_shuffle_vector(self.inner(), right.inner(), mask.inner()),
   )
 }
 

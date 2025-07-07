@@ -13,18 +13,22 @@ pub fn ArrayValue::new(value_ref : @unsafe.LLVMValueRef) -> ArrayValue {
   ArrayValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for ArrayValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for ArrayValue with as_value_enum(self) {
   ArrayValue(self)
 }
 
+///|
 pub impl BasicValue for ArrayValue with as_basic_value_enum(self) {
   ArrayValue(self)
 }
 
+///|
 pub impl AggregateValue for ArrayValue with as_aggregate_value_enum(self) {
   ArrayValue(self)
 }
@@ -34,7 +38,7 @@ pub fn ArrayValue::new_const_array(
   ty : &Type,
   values : Array[&Value]
 ) -> ArrayValue {
-  let value_refs = values.map(v => v.inner() )
+  let value_refs = values.map(v => v.inner())
   let value_ref = @unsafe.llvm_const_array(ty.inner(), value_refs)
   ArrayValue::new(value_ref)
 }

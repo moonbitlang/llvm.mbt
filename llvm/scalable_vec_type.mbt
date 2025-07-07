@@ -13,20 +13,20 @@ pub fn ScalableVectorType::new(
   ScalableVectorType::{ ty: TypeRef::new(type_ref) }
 }
 
-
+///|
 pub impl Type for ScalableVectorType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for ScalableVectorType with as_type_enum(self) {
   ScalableVectorType(self)
 }
 
+///|
 pub impl BasicType for ScalableVectorType with as_basic_type_enum(self) {
   ScalableVectorType(self)
 }
-
-
 
 ///| Returns whether this `ScalableVectorType` is sized. **Always returns `true`.**
 ///
@@ -159,8 +159,6 @@ pub fn ScalableVectorType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
 
 ///| Creates a constant `ArrayValue`.
 pub fn ScalableVectorType::const_array(

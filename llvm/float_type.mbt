@@ -15,21 +15,23 @@ pub fn FloatType::new(type_ref : @unsafe.LLVMTypeRef) -> FloatType {
   FloatType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for FloatType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for FloatType with as_type_enum(self) {
   FloatType(self)
 }
 
+///|
 pub impl BasicType for FloatType with as_basic_type_enum(self) {
   FloatType(self)
 }
 
 // use get_kind to check if it is float type
 // pub fn FloatType::safe_new(type_ref: @unsafe.LLVMTypeRef) -> Option[FloatType];
-
 
 ///| Creates a constant `FloatValue` of this `FloatType`.
 ///
@@ -49,12 +51,6 @@ pub fn FloatType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
-
-
-
-
 
 ///| Creates a `FloatValue` representing a constant value of this `FloatType`.
 /// It will be automatically assigned this `FloatType`'s `Context`.
@@ -101,8 +97,6 @@ pub fn FloatType::const_float_from_string(
 pub fn FloatType::const_zero(self : FloatType) -> FloatValue {
   FloatValue::new(self.ty.const_zero())
 }
-
-
 
 ///| Returns whether this `FloatType` is sized. **Always returns `true`.**
 pub fn FloatType::is_sized(self : FloatType) -> Bool {

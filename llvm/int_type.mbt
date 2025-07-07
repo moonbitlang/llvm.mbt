@@ -11,14 +11,17 @@ pub fn IntType::new(type_ref : @unsafe.LLVMTypeRef) -> IntType {
   IntType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for IntType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for IntType with as_type_enum(self) {
   IntType(self)
 }
 
+///|
 pub impl BasicType for IntType with as_basic_type_enum(self) {
   IntType(self)
 }
@@ -108,12 +111,6 @@ pub fn IntType::fn_type(
   self.ty.fn_type(param_types, is_var_arg~)
 }
 
-
-
-
-
-
-
 ///| Gets a reference to the `Context` this `IntType` was created in.
 ///
 /// ## Example
@@ -127,8 +124,6 @@ pub fn IntType::fn_type(
 pub fn IntType::get_context(self : IntType) -> Context {
   self.ty.get_context()
 }
-
-
 
 ///| Returns whether this `IntType` is sized. **Always returns `true`.**
 pub fn IntType::is_sized(self : IntType) -> Bool {

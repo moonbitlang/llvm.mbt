@@ -11,15 +11,17 @@ pub fn StructType::new(type_ref : @unsafe.LLVMTypeRef) -> StructType {
   StructType::{ ty: TypeRef::new(type_ref) }
 }
 
-
+///|
 pub impl Type for StructType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for StructType with as_type_enum(self) {
   StructType(self)
 }
 
+///|
 pub impl BasicType for StructType with as_basic_type_enum(self) {
   StructType(self)
 }
@@ -66,8 +68,6 @@ pub fn StructType::const_named_struct(
 pub fn StructType::const_zero(self : StructType) -> StructValue {
   StructValue::new(self.ty.const_zero())
 }
-
-
 
 ///| Returns whether this `StructType` is sized. **Always returns `true`.**
 ///
@@ -149,8 +149,6 @@ pub fn StructType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
 
 ///| Determines whether or not a `StructType` is packed.
 ///

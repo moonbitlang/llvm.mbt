@@ -11,19 +11,20 @@ pub fn ArrayType::new(type_ref : @unsafe.LLVMTypeRef) -> ArrayType {
   ArrayType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for ArrayType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for ArrayType with as_type_enum(self) {
   ArrayType(self)
 }
 
+///|
 pub impl BasicType for ArrayType with as_basic_type_enum(self) {
   ArrayType(self)
 }
-
-
 
 ///| Gets the alignment of this `ArrayType`. Value may vary depending on the target architecture.
 ///
@@ -88,8 +89,6 @@ pub fn ArrayType::fn_type(
 ) -> FunctionType {
   self.ty.fn_type(param_types, is_var_arg~)
 }
-
-
 
 ///| Creates a constant `ArrayValue` of `ArrayValue`s.
 pub fn ArrayType::const_array(

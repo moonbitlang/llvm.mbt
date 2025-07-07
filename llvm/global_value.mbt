@@ -13,10 +13,12 @@ pub fn GlobalValue::new(value_ref : @unsafe.LLVMValueRef) -> GlobalValue {
   GlobalValue::{ value: ValueRef::new(value_ref) }
 }
 
+///|
 pub impl Value for GlobalValue with base(self) {
   self.value
 }
 
+///|
 pub impl Value for GlobalValue with as_value_enum(self) {
   GlobalValue(self)
 }
@@ -108,10 +110,7 @@ pub fn GlobalValue::set_thread_local_mode(
   self : GlobalValue,
   thread_local_mode : ThreadLocalMode
 ) -> Unit {
-  @unsafe.llvm_set_thread_local_mode(
-    self.inner(),
-    thread_local_mode.into(),
-  )
+  @unsafe.llvm_set_thread_local_mode(self.inner(), thread_local_mode.into())
 }
 
 ///| Determines whether or not a `GlobalValue` is a declaration or a definition.

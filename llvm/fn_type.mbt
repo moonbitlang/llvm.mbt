@@ -11,10 +11,12 @@ pub fn FunctionType::new(type_ref : @unsafe.LLVMTypeRef) -> FunctionType {
   FunctionType::{ ty: TypeRef::new(type_ref) }
 }
 
+///|
 pub impl Type for FunctionType with base(self) {
   self.ty
 }
 
+///|
 pub impl Type for FunctionType with as_type_enum(self) {
   FunctionType(self)
 }
@@ -45,9 +47,7 @@ pub fn FunctionType::is_var_arg(self : FunctionType) -> Bool {
 /// let param_types = fn_type.get_param_types();
 /// inspect(param_types, content="[i32, double]")
 /// ```
-pub fn FunctionType::get_param_types(
-  self : FunctionType
-) -> Array[&BasicType] {
+pub fn FunctionType::get_param_types(self : FunctionType) -> Array[&BasicType] {
   let param_types = @unsafe.llvm_get_param_types(self.inner())
   param_types.map(t => BasicTypeEnum::init(t).as_basic_type_class())
 }
