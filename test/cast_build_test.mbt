@@ -20,7 +20,7 @@ test "Cast Test" {
   // 创建测试函数
   let fty = ctx.getFunctionType(ctx.getVoidTy(), [i64_ty, f64_ty, ptr_ty])
   let fval = mod.addFunction(fty, "cast_test")
-  let bb = fval.appendBasicBlock(name="entry")
+  let bb = fval.addBasicBlock(name="entry")
   let i64_arg = fval.getArg(0).unwrap()
   let f64_arg = fval.getArg(1).unwrap()
   let ptr_arg = fval.getArg(2).unwrap()

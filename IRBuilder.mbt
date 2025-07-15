@@ -97,7 +97,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "direct_ret")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -125,7 +125,7 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 /// let fty = ctx.getFunctionType(void_ty, [])
 ///
 /// let fval = mod.addFunction(fty, "direct_ret")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 ///
 /// builder.setInsertPoint(bb)
 /// let ret = builder.createRetVoid()
@@ -152,7 +152,7 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
 /// let fty = ctx.getFunctionType(ctx.getVoidTy(), [])
 ///
 /// let fval = mod.addFunction(fty, "alloca_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 ///
 /// builder.setInsertPoint(bb)
 /// let alloca = builder.createAlloca(i32_ty, name="temp")
@@ -185,7 +185,7 @@ pub fn IRBuilder::createAlloca(
 /// let fty = ctx.getFunctionType(ctx.getVoidTy(), [])
 ///
 /// let fval = mod.addFunction(fty, "load_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 ///
 /// builder.setInsertPoint(bb)
 /// let alloca = builder.createAlloca(i32_ty, name="temp")
@@ -225,7 +225,7 @@ pub fn IRBuilder::createLoad(
 /// let fty = ctx.getFunctionType(ctx.getVoidTy(), [])
 ///
 /// let fval = mod.addFunction(fty, "store_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 ///
 /// builder.setInsertPoint(bb)
 /// let alloca = builder.createAlloca(i32_ty, name="temp")
@@ -339,7 +339,7 @@ fn type_check_during_create_float_binary(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -397,7 +397,7 @@ pub fn IRBuilder::createAdd(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nsw_add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -450,7 +450,7 @@ pub fn IRBuilder::createNSWAdd(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nuw_add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -503,7 +503,7 @@ pub fn IRBuilder::createNUWAdd(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "sub_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -556,7 +556,7 @@ pub fn IRBuilder::createSub(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nsw_sub_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -609,7 +609,7 @@ pub fn IRBuilder::createNSWSub(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nuw_sub_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -662,7 +662,7 @@ pub fn IRBuilder::createNUWSub(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "mul_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -715,7 +715,7 @@ pub fn IRBuilder::createMul(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nsw_mul_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -768,7 +768,7 @@ pub fn IRBuilder::createNSWMul(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "nuw_mul_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -822,7 +822,7 @@ pub fn IRBuilder::createNUWMul(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "udiv_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -876,7 +876,7 @@ pub fn IRBuilder::createUDiv(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "sdiv_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -931,7 +931,7 @@ pub fn IRBuilder::createSDiv(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "exact_udiv_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -985,7 +985,7 @@ pub fn IRBuilder::createExactUDiv(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "exact_sdiv_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1038,7 +1038,7 @@ pub fn IRBuilder::createExactSDiv(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "urem_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1091,7 +1091,7 @@ pub fn IRBuilder::createURem(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "srem_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1156,7 +1156,7 @@ pub fn IRBuilder::createSRem(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fadd_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1232,7 +1232,7 @@ pub fn IRBuilder::createFAdd(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fsub_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1285,7 +1285,7 @@ pub fn IRBuilder::createFSub(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fmul_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1338,7 +1338,7 @@ pub fn IRBuilder::createFMul(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fdiv_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1391,7 +1391,7 @@ pub fn IRBuilder::createFDiv(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "frem_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1445,7 +1445,7 @@ pub fn IRBuilder::createFRem(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fneg_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -1495,7 +1495,7 @@ pub fn IRBuilder::createFNeg(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "and_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1548,7 +1548,7 @@ pub fn IRBuilder::createAnd(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "or_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1601,7 +1601,7 @@ pub fn IRBuilder::createOr(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "xor_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1655,7 +1655,7 @@ pub fn IRBuilder::createXor(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "not_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -1710,7 +1710,7 @@ pub fn IRBuilder::createNot(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "shl_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1763,7 +1763,7 @@ pub fn IRBuilder::createShl(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "lshr_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1816,7 +1816,7 @@ pub fn IRBuilder::createLShr(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "ashr_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 ///
@@ -1872,7 +1872,7 @@ pub fn IRBuilder::createAShr(
 /// let fty = ctx.getFunctionType(i32_ty, [ptr_ty, ptr_ty])
 ///
 /// let fval = mod.addFunction(fty, "ptrdiff_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let ptr1 = fval.getArg(0).unwrap()
 /// let ptr2 = fval.getArg(1).unwrap()
 ///
@@ -1935,7 +1935,7 @@ pub fn IRBuilder::createPtrDiff(
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// let fval = mod.addFunction(fty, "icmp_demo")
 ///
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg0 = fval.getArg(0).unwrap()
 /// let arg1 = fval.getArg(1).unwrap()
 /// builder.setInsertPoint(bb)
@@ -2019,7 +2019,7 @@ pub fn IRBuilder::createICmp(
 /// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 /// let fval = mod.addFunction(fty, "fcmp_demo")
 ///
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg0 = fval.getArg(0).unwrap()
 /// let arg1 = fval.getArg(1).unwrap()
 /// builder.setInsertPoint(bb)
@@ -2115,7 +2115,7 @@ pub fn IRBuilder::createFCmp(
 /// let fty = ctx.getFunctionType(i32_ty, [i64_ty])
 ///
 /// let fval = mod.addFunction(fty, "trunc_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2175,7 +2175,7 @@ pub fn IRBuilder::createTrunc(
 /// let fty = ctx.getFunctionType(i64_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "zext_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2235,7 +2235,7 @@ pub fn IRBuilder::createZExt(
 /// let fty = ctx.getFunctionType(i64_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "sext_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2295,7 +2295,7 @@ pub fn IRBuilder::createSExt(
 /// let fty = ctx.getFunctionType(f32_ty, [f64_ty])
 ///
 /// let fval = mod.addFunction(fty, "fptrunc_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2354,7 +2354,7 @@ pub fn IRBuilder::createFPTrunc(
 /// let fty = ctx.getFunctionType(f64_ty, [f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fpext_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2409,7 +2409,7 @@ pub fn IRBuilder::createFPExt(
 /// let fty = ctx.getFunctionType(i32_ty, [f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fptosi_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2464,7 +2464,7 @@ pub fn IRBuilder::createFPToSI(
 /// let fty = ctx.getFunctionType(i32_ty, [f32_ty])
 ///
 /// let fval = mod.addFunction(fty, "fptoui_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2524,7 +2524,7 @@ pub fn IRBuilder::createFPToUI(
 /// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "sitofp_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2579,7 +2579,7 @@ pub fn IRBuilder::createSIToFP(
 /// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "uitofp_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2638,7 +2638,7 @@ pub fn IRBuilder::createUIToFP(
 /// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "bitcast_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2699,7 +2699,7 @@ pub fn IRBuilder::createBitCast(
 /// let fty = ctx.getFunctionType(ptr_ty, [i64_ty])
 ///
 /// let fval = mod.addFunction(fty, "inttoptr_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2747,7 +2747,7 @@ pub fn IRBuilder::createIntToPtr(
 /// let fty = ctx.getFunctionType(i64_ty, [ptr_ty])
 ///
 /// let fval = mod.addFunction(fty, "ptrtoint_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -2801,7 +2801,7 @@ pub fn IRBuilder::createPtrToInt(
 /// let fty = ctx.getFunctionType(ctx.getPtrTy(), [ptr_ty])
 ///
 /// let fval = mod.addFunction(fty, "gep_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg = fval.getArg(0).unwrap()
 /// let zero = ctx.getConstInt32(0)
 /// let two = ctx.getConstInt32(2)
@@ -2875,8 +2875,8 @@ pub fn IRBuilder::createGEP(
 /// let fty = ctx.getFunctionType(void_ty, [])
 ///
 /// let fval = mod.addFunction(fty, "br_demo")
-/// let entry_bb = fval.appendBasicBlock(name="entry")
-/// let target_bb = fval.appendBasicBlock(name="target")
+/// let entry_bb = fval.addBasicBlock(name="entry")
+/// let target_bb = fval.addBasicBlock(name="target")
 ///
 /// builder.setInsertPoint(entry_bb)
 /// let br = builder.createBr(target_bb)
@@ -2907,9 +2907,9 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 /// let fty = ctx.getFunctionType(void_ty, [i1_ty])
 ///
 /// let fval = mod.addFunction(fty, "cond_br_demo")
-/// let entry_bb = fval.appendBasicBlock(name="entry")
-/// let true_bb = fval.appendBasicBlock(name="true_branch")
-/// let false_bb = fval.appendBasicBlock(name="false_branch")
+/// let entry_bb = fval.addBasicBlock(name="entry")
+/// let true_bb = fval.addBasicBlock(name="true_branch")
+/// let false_bb = fval.addBasicBlock(name="false_branch")
 /// let cond = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(entry_bb)
@@ -2962,7 +2962,7 @@ pub fn IRBuilder::createCondBr(
 /// let fty = ctx.getFunctionType(i32_ty, [i1_ty, i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "select_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let cond = fval.getArg(0).unwrap()
 /// let true_val = fval.getArg(1).unwrap()
 /// let false_val = fval.getArg(2).unwrap()
@@ -3035,9 +3035,9 @@ pub fn IRBuilder::createSelect(
 /// let fty = ctx.getFunctionType(void_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "switch_demo")
-/// let entry_bb = fval.appendBasicBlock(name="entry")
-/// let case1_bb = fval.appendBasicBlock(name="case1")
-/// let default_bb = fval.appendBasicBlock(name="default")
+/// let entry_bb = fval.addBasicBlock(name="entry")
+/// let case1_bb = fval.addBasicBlock(name="case1")
+/// let default_bb = fval.addBasicBlock(name="default")
 /// let value = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(entry_bb)
@@ -3096,9 +3096,9 @@ pub fn IRBuilder::createSwitch(
 /// let fty = ctx.getFunctionType(i32_ty, [])
 ///
 /// let fval = mod.addFunction(fty, "phi_demo")
-/// let entry_bb = fval.appendBasicBlock(name="entry")
-/// let block_bb = fval.appendBasicBlock(name="block")
-/// let merge_bb = fval.appendBasicBlock(name="merge")
+/// let entry_bb = fval.addBasicBlock(name="entry")
+/// let block_bb = fval.addBasicBlock(name="block")
+/// let merge_bb = fval.addBasicBlock(name="merge")
 /// let val1 = ctx.getConstInt32(10)
 /// let val2 = ctx.getConstInt32(20)
 ///
@@ -3139,7 +3139,7 @@ pub fn IRBuilder::createPHI(
 ///
 /// let add_func = mod.addFunction(add_fty, "add")
 /// let main_func = mod.addFunction(main_fty, "main")
-/// let bb = main_func.appendBasicBlock(name="entry")
+/// let bb = main_func.addBasicBlock(name="entry")
 /// let arg1 = ctx.getConstInt32(10)
 /// let arg2 = ctx.getConstInt32(20)
 ///
@@ -3201,7 +3201,7 @@ pub fn IRBuilder::createCall(
 /// let main_fty = ctx.getFunctionType(i32_ty, [func_ptr_ty])
 ///
 /// let main_func = mod.addFunction(main_fty, "main")
-/// let bb = main_func.appendBasicBlock(name="entry")
+/// let bb = main_func.addBasicBlock(name="entry")
 /// let func_ptr = main_func.getArg(0).unwrap()
 /// let arg1 = ctx.getConstInt32(10)
 /// let arg2 = ctx.getConstInt32(20)
@@ -3259,7 +3259,7 @@ pub fn IRBuilder::createCallPtr(
 /// let fty = ctx.getFunctionType(struct_ty, [struct_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "insertvalue_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let aggregate = fval.getArg(0).unwrap()
 /// let new_value = fval.getArg(1).unwrap()
 ///
@@ -3342,7 +3342,7 @@ pub fn IRBuilder::createInsertValue(
 /// let fty = ctx.getFunctionType(i32_ty, [struct_ty])
 ///
 /// let fval = mod.addFunction(fty, "extractvalue_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let aggregate = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -3445,7 +3445,7 @@ pub fn IRBuilder::createExtractValue(
 /// let fty = ctx.getFunctionType(ptr_ty, [])
 ///
 /// let fval = mod.addFunction(fty, "malloc_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 ///
 /// builder.setInsertPoint(bb)
 /// let malloc = builder.createMalloc(i32_ty, name="ptr")
@@ -3489,7 +3489,7 @@ pub fn IRBuilder::createMalloc(
 /// let fty = ctx.getFunctionType(void_ty, [ptr_ty])
 ///
 /// let fval = mod.addFunction(fty, "free_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let ptr_arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
@@ -3535,7 +3535,7 @@ pub fn IRBuilder::createFree(
 /// let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
 ///
 /// let fval = mod.addFunction(fty, "memcpy_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let dst = fval.getArg(0).unwrap()
 /// let src = fval.getArg(1).unwrap()
 /// let size = fval.getArg(2).unwrap()
@@ -3615,7 +3615,7 @@ pub fn IRBuilder::createMemCpy(
 /// let fty = ctx.getFunctionType(void_ty, [ptr_ty, i8_ty, i64_ty])
 ///
 /// let fval = mod.addFunction(fty, "memset_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let dst = fval.getArg(0).unwrap()
 /// let value = fval.getArg(1).unwrap()
 /// let size = fval.getArg(2).unwrap()
@@ -3692,7 +3692,7 @@ pub fn IRBuilder::createMemSet(
 /// let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
 ///
 /// let fval = mod.addFunction(fty, "memmove_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let dst = fval.getArg(0).unwrap()
 /// let src = fval.getArg(1).unwrap()
 /// let size = fval.getArg(2).unwrap()

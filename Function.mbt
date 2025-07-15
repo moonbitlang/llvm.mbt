@@ -136,13 +136,13 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 ///
 /// let fval = mod.addFunction(fty, "foo")
 ///
-/// let _ = fval.appendBasicBlock(name="entry")
-/// let _ = fval.appendBasicBlock()
-/// let _ = fval.appendBasicBlock()
+/// let _ = fval.addBasicBlock(name="entry")
+/// let _ = fval.addBasicBlock()
+/// let _ = fval.addBasicBlock()
 ///
 /// assert_eq(fval.getNumBasicBlocks(), 3)
 /// ```
-pub fn Function::appendBasicBlock(
+pub fn Function::addBasicBlock(
   self : Self,
   name~ : String = ""
 ) -> BasicBlock {
@@ -161,9 +161,9 @@ pub fn Function::appendBasicBlock(
 ///
 /// let fval = mod.addFunction(fty, "foo")
 ///
-/// let entry = fval.appendBasicBlock(name="entry")
-/// let block1 = fval.appendBasicBlock()
-/// let block2 = fval.appendBasicBlock()
+/// let entry = fval.addBasicBlock(name="entry")
+/// let block1 = fval.addBasicBlock()
+/// let block2 = fval.addBasicBlock()
 ///
 /// assert_eq(fval.getNumBasicBlocks(), 3)
 /// ```
@@ -182,9 +182,9 @@ pub fn Function::getNumBasicBlocks(self : Self) -> Int {
 ///
 /// let fval = mod.addFunction(fty, "foo")
 ///
-/// let _ = fval.appendBasicBlock(name="entry")
-/// let _ = fval.appendBasicBlock()
-/// let _ = fval.appendBasicBlock()
+/// let _ = fval.addBasicBlock(name="entry")
+/// let _ = fval.addBasicBlock()
+/// let _ = fval.addBasicBlock()
 ///
 /// assert_eq(fval.getBasicBlocks().length(), 3)
 /// ```
@@ -203,7 +203,7 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// 
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 /// 
@@ -244,7 +244,7 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// 
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 /// 
@@ -298,7 +298,7 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// 
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 /// 
@@ -330,7 +330,7 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// 
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 /// 
@@ -367,7 +367,7 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 /// 
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 /// 
@@ -499,7 +499,7 @@ pub fn Argument::getFunction(self : Self) -> Function {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.appendBasicBlock(name="entry")
+/// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 //
@@ -529,7 +529,51 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
   )
 }
 
-///|
+///| Remove the Attribute of the Argument.
+///
+/// ```moonbit
+/// let ctx = Context::new()
+/// let mod = ctx.addModule("demo")
+/// let builder = ctx.createBuilder()
+///
+/// let i32_ty = ctx.getInt32Ty()
+/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///
+/// let fval = mod.addFunction(fty, "add_demo")
+/// let bb = fval.addBasicBlock(name="entry")
+/// let arg1 = fval.getArg(0).unwrap()
+/// let arg2 = fval.getArg(1).unwrap()
+//
+///| builder.setInsertPoint(bb)
+/// let add = builder.createAdd(arg1, arg2, name="sum")
+/// let _ = builder.createRet(add)
+///
+/// arg1.addAttr(NonNull)
+/// arg1.addAttr(InReg)
+/// arg2.addAttr(InReg)
+///
+/// let expect =
+///   #|define i32 @add_demo(i32 nonnull inreg %0, i32 inreg %1) {
+///   #|entry:
+///   #|  %sum = add i32 %0, %1
+///   #|  ret i32 %sum
+///   #|}
+///   #|
+///
+/// inspect(fval, content=expect)
+///
+/// arg1.removeAttr(NonNull)
+///
+/// let expect =
+///   #|define i32 @add_demo(i32 inreg %0, i32 inreg %1) {
+///   #|entry:
+///   #|  %sum = add i32 %0, %1
+///   #|  ret i32 %sum
+///   #|}
+///   #|
+///
+/// inspect(fval, content=expect)
+/// ```
 pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(attr.attr_name())
   @unsafe.llvm_remove_enum_attribute_at_index(

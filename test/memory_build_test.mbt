@@ -6,7 +6,7 @@ test "Simple Stack Memory Test" {
   let i32_ty = ctx.getInt32Ty()
   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
   let fval = mod.addFunction(fty, "stack_test")
-  let bb = fval.appendBasicBlock(name="entry")
+  let bb = fval.addBasicBlock(name="entry")
   let arg0 = fval.getArg(0).unwrap()
   builder.setInsertPoint(bb)
 
@@ -49,7 +49,7 @@ test "Aggregate Stack Memory Test" {
   let struct_ty = ctx.getStructType([i32_ty, i32_ty])
   let fty = ctx.getFunctionType(i32_ty, [])
   let fval = mod.addFunction(fty, "aggregate_stack_test")
-  let bb = fval.appendBasicBlock(name="entry")
+  let bb = fval.addBasicBlock(name="entry")
   builder.setInsertPoint(bb)
 
   // Test alloca with array type
@@ -156,7 +156,7 @@ test "Simple Heap Memory Test" {
   let void_ty = ctx.getVoidTy()
   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
   let fval = mod.addFunction(fty, "heap_test")
-  let bb = fval.appendBasicBlock(name="entry")
+  let bb = fval.addBasicBlock(name="entry")
   let arg0 = fval.getArg(0).unwrap()
   builder.setInsertPoint(bb)
 
@@ -208,7 +208,7 @@ test "Aggregate Heap Memory Test" {
   let struct_ty = ctx.getStructType([i32_ty, i32_ty, i32_ty])
   let fty = ctx.getFunctionType(i32_ty, [])
   let fval = mod.addFunction(fty, "aggregate_heap_test")
-  let bb = fval.appendBasicBlock(name="entry")
+  let bb = fval.addBasicBlock(name="entry")
   builder.setInsertPoint(bb)
 
   // Test malloc with array type
