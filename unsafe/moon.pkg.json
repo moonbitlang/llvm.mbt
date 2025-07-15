@@ -1,5 +1,12 @@
 {
   "is-main": false,
   "supported-targets" : ["native"],
-  "native-stub" : ["wrap.c"]
+  "native-stub" : ["wrap.c"],
+  "link" : {
+    "native" : {
+      "cc" : "$CC",
+      "cc-flags": "$CC_FLAGS",
+      "cc-link-flags" : "$CC_LINK_FLAGS"
+    }
+  }
 }
