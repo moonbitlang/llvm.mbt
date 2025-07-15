@@ -1,7 +1,7 @@
 {
   "is-main": true,
   "import": [
-    "Kaida-Amethyst/llvm/llvm"
+    "Kaida-Amethyst/llvm"
   ],
   "link" : {
     "native" : {

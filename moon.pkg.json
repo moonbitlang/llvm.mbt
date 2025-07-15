@@ -1,15 +1,12 @@
 {
-  "is-main" : false,
   "import" : [
-    "Kaida-Amethyst/llvm/unsafe"
+    "Kaida-Amethyst/llvm/unsafe",
   ],
-  "supported-targes" : ["native"],
   "link" : {
     "native" : {
       "cc" : "$CC",
-      "cc-flags": "$CC_FLAGS",
+      "cc-flags": "$CC_FLAGS -w",
       "cc-link-flags" : "$CC_LINK_FLAGS"
     }
   }
 }
-

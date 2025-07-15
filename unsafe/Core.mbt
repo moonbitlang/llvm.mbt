@@ -335,7 +335,7 @@ pub fn LLVMAttributeRef::is_type_attribute(self : LLVMAttributeRef) -> Bool {
 extern "C" fn __llvm_get_type_by_name(
   context : LLVMContextRef,
   name : CStr
-) -> LLVMTypeRef = "LLVMGetTypeByName"
+) -> LLVMTypeRef = "LLVMGetTypeByName2"
 
 ///| Obtain a Type from a context by its registered name.
 pub fn llvm_get_type_by_name(
@@ -2882,16 +2882,11 @@ pub fn LLVMValueRef::replace_all_uses_with(
 }
 
 ///| Determine whether the specified value instance is constant.
-extern "C" fn __llvm_is_constant(val : LLVMValueRef) -> LLVMBool = "LLVMIsConstant"
-
-///|
-pub fn llvm_is_constant(val : LLVMValueRef) -> Bool {
-  __llvm_is_constant(val).to_moonbit_bool()
-}
+pub extern "C" fn llvm_is_constant(val : LLVMValueRef) -> Bool = "LLVMIsConstant"
 
 ///| Determine whether the specified value instance is constant.
 pub fn LLVMValueRef::is_constant(self : LLVMValueRef) -> Bool {
-  __llvm_is_constant(self).to_moonbit_bool()
+  llvm_is_constant(self)
 }
 
 ///| Determine whether a value instance is undefined.

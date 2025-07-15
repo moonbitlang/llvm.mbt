@@ -6,8 +6,20 @@ type LLVMBool Int derive(Eq)
 ///|
 pub(all) type LLVMAttributeIndex UInt derive(Eq)
 
+
 ///|
-pub(all) type LLVMFastMathFlags UInt derive(Eq)
+//pub(all) type LLVMFastMathFlags UInt derive(Eq)
+pub(all) enum LLVMFastMathFlags {
+  AllowReassoc = 1
+  NoNaNs = 2
+  NoInfs = 4
+  NoSignedZeros = 8
+  AllowReciprocal = 16
+  AllowContract  = 32
+  ApproxFunc = 64
+  None = 0
+  All = 127
+}
 
 ///|
 pub(all) type LLVMDWARFTypeEncoding UInt derive(Eq)
@@ -22,11 +34,6 @@ pub fn LLVMAttributeIndex::new(idx : UInt) -> LLVMAttributeIndex {
   LLVMAttributeIndex(idx)
 }
 // Dummy function just for eliminating the warning
-
-///|
-pub fn LLVMFastMathFlags::new(idx : UInt) -> LLVMFastMathFlags {
-  LLVMFastMathFlags(idx)
-}
 
 // Dummy function just for eliminating the warning
 

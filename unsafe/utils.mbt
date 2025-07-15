@@ -144,16 +144,16 @@ pub fn LLVMTypeRef::is_not_null(self : LLVMTypeRef) -> Bool {
 pub extern "C" fn llvm_value_is_null(ty : LLVMValueRef) -> LLVMBool = "LLVMIsNull"
 
 ///|
-pub extern "C" fn llvm_value_ref_is_null(ty : LLVMValueRef) -> LLVMBool = "__llvm_value_ref_is_null"
+pub extern "C" fn llvm_value_ref_is_null(ty : LLVMValueRef) -> Bool = "__llvm_value_ref_is_null"
 
 ///|
 pub fn LLVMValueRef::is_null(self : LLVMValueRef) -> Bool {
-  llvm_value_ref_is_null(self).to_moonbit_bool()
+  llvm_value_ref_is_null(self)
 }
 
 ///|
 pub fn LLVMValueRef::is_not_null(self : LLVMValueRef) -> Bool {
-  llvm_value_ref_is_null(self).to_moonbit_bool() |> not
+  llvm_value_ref_is_null(self) |> not
 }
 
 ///|
@@ -170,16 +170,16 @@ pub fn LLVMUseRef::is_not_null(self : LLVMUseRef) -> Bool {
 }
 
 ///|
-pub extern "C" fn llvm_bb_is_null(bb : LLVMBasicBlockRef) -> LLVMBool = "__llvm_bb_is_null"
+pub extern "C" fn llvm_bb_is_null(bb : LLVMBasicBlockRef) -> Bool = "__llvm_bb_is_null"
 
 ///|
 pub fn LLVMBasicBlockRef::is_null(self : LLVMBasicBlockRef) -> Bool {
-  llvm_bb_is_null(self).to_moonbit_bool()
+  llvm_bb_is_null(self)
 }
 
 ///|
 pub fn LLVMBasicBlockRef::is_not_null(self : LLVMBasicBlockRef) -> Bool {
-  llvm_bb_is_null(self).to_moonbit_bool() |> not
+  llvm_bb_is_null(self) |> not
 }
 
 ///|
@@ -221,4 +221,14 @@ fn to_moonbit_bool(self : LLVMBool) -> Bool {
 ///|
 fn to_llvm_bool(b : Bool) -> LLVMBool {
   b.to_int()
+}
+
+pub impl Show for LLVMTypeRef with output(self, logger) {
+  let s = llvm_print_type_to_string(self)
+  logger.write_string(s)
+}
+
+pub impl Show for LLVMValueRef with output(self, logger) {
+  let s = llvm_print_value_to_string(self)
+  logger.write_string(s)
 }
