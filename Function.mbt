@@ -78,7 +78,7 @@ pub fn Function::getNumArgs(self : Self) -> Int {
   @unsafe.llvm_count_params(self.getValueRef()).reinterpret_as_int()
 }
 
-///| Get Function Paramter.
+///| Get Function Parameter.
 ///
 /// ```moonbit
 /// let ctx = Context::new()

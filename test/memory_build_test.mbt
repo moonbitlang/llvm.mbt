@@ -40,7 +40,7 @@ test "Simple Stack Memory Test" {
 }
 
 ///|
-test "Aggreate Stack Memory Test" {
+test "Aggregate Stack Memory Test" {
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
@@ -199,7 +199,7 @@ test "Simple Heap Memory Test" {
 }
 
 ///|
-test "Aggreate Heap Memory Test" {
+test "Aggreagate Heap Memory Test" {
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()

@@ -2096,7 +2096,7 @@ pub fn IRBuilder::createFCmp(
   }
 }
 
-// REVIEW: What will happend if `from` type is equal to `to` type?
+// REVIEW: What will happened if `from` type is equal to `to` type?
 
 ///| Create a Trunc Instruction
 ///

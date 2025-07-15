@@ -36,7 +36,7 @@ pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
 ///|
 pub suberror BasicBlockHasNoParentError String derive(Show)
 
-// REVIEW: Shoule we check basic block must have parent?
+// REVIEW: Should we check basic block must have parent?
 
 ///|
 pub fn BasicBlock::moveBefore(self : Self, other : BasicBlock) -> Unit raise {
@@ -130,7 +130,7 @@ pub fn BasicBlock::setName(self : Self, name : String) -> Unit {
 //  )
 //}
 
-//pub fn BaiscBlock::getAddress(self: Self) -> &Value {
+//pub fn BasicBlock::getAddress(self: Self) -> &Value {
 //
 //}
 
