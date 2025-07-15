@@ -41,6 +41,26 @@ pub fn Function::getName(self : Self) -> String {
   @unsafe.llvm_get_value_name(self.getValueRef())
 }
 
+///| Set Function Name.
+///
+///
+/// ```moonbit
+/// let ctx = Context::new()
+/// let mod = ctx.addModule("demo")
+/// 
+/// let i32_ty = ctx.getInt32Ty()
+/// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
+///
+/// let fval = mod.addFunction(fty, "plus1")
+/// assert_eq(fval.getName(), "plus1")
+///
+/// fval.setName("increment")
+/// assert_eq(fval.getName(), "increment")
+/// ```
+pub fn Function::setName(self : Self, name : String) -> Unit {
+  @unsafe.llvm_set_value_name(self.getValueRef(), name)
+}
+
 ///| Get Function Type.
 ///
 /// ```moonbit
@@ -142,8 +162,15 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 ///
 /// assert_eq(fval.getNumBasicBlocks(), 3)
 /// ```
-pub fn Function::addBasicBlock(self : Self, name~ : String = "") -> BasicBlock {
-  let blockref = @unsafe.llvm_append_basic_block(self.getValueRef(), name)
+pub fn Function::addBasicBlock(
+  self : Self,
+  name~ : String = "",
+  before~ : BasicBlock? = None
+) -> BasicBlock {
+  let blockref = match before {
+    None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)
+    Some(bb) => @unsafe.llvm_insert_basic_block(bb.inner(), name)
+  }
   BasicBlock(blockref)
 }
 

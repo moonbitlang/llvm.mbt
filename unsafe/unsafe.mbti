@@ -1529,7 +1529,7 @@ fn llvm_set_instruction_call_conv(LLVMValueRef, UInt) -> Unit
 
 fn llvm_set_is_disjoint(LLVMValueRef, Bool) -> Unit
 
-fn llvm_set_is_in_bounds(LLVMValueRef, LLVMBool) -> Unit
+fn llvm_set_is_in_bounds(LLVMValueRef, Bool) -> Unit
 
 fn llvm_set_is_new_dbg_info_format(LLVMModuleRef, Bool) -> Unit
 

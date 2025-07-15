@@ -6851,7 +6851,7 @@ pub fn LLVMBasicBlockRef::move_after(
 ///| Get the first instruction in a basic block.
 pub extern "C" fn llvm_get_first_instruction(
   bb : LLVMBasicBlockRef
-) -> LLVMValueRef = "LLVMGetLastInstruction"
+) -> LLVMValueRef = "LLVMGetFirstInstruction"
 
 ///| Get the first instruction in a basic block.
 pub fn LLVMBasicBlockRef::get_first_instruction(
@@ -7781,17 +7781,14 @@ pub fn llvm_is_in_bounds(gep : LLVMValueRef) -> Bool {
 }
 
 ///| Set the given GEP instruction to be inbounds or not.
-pub extern "C" fn llvm_set_is_in_bounds(
-  gep : LLVMValueRef,
-  in_bounds : LLVMBool
-) = "LLVMSetIsInBounds"
+pub extern "C" fn llvm_set_is_in_bounds(gep : LLVMValueRef, in_bounds : Bool) = "LLVMSetIsInBounds"
 
 ///| Set the given GEP instruction to be inbounds or not.
 pub fn LLVMValueRef::set_is_in_bounds(
   self : LLVMValueRef,
   in_bounds : Bool
 ) -> Unit {
-  llvm_set_is_in_bounds(self, to_llvm_bool(in_bounds))
+  llvm_set_is_in_bounds(self, in_bounds)
 }
 
 ///| Get the source element type of the given GEP operator.

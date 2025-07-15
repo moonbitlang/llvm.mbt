@@ -6,6 +6,12 @@
 pub type AllocaInst ValueRef
 
 ///|
+pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
+  let typeref = @unsafe.llvm_get_allocated_type(self.inner())
+  initAbstractType(typeref)
+}
+
+///|
 pub impl Value for AllocaInst with getValueRef(self) -> ValueRef {
   self.inner()
 }
@@ -18,6 +24,11 @@ pub impl Value for AllocaInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for AllocaInst with asInstEnum(self) -> InstructionEnum {
   AllocaInst(self)
+}
+
+///|
+pub impl InsertPoint for AllocaInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -48,6 +59,11 @@ pub impl Instruction for LoadInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for LoadInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for LoadInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -72,6 +88,11 @@ pub impl Value for StoreInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for StoreInst with asInstEnum(self) -> InstructionEnum {
   StoreInst(self)
+}
+
+///|
+pub impl InsertPoint for StoreInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -102,6 +123,11 @@ pub impl Instruction for CastInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for CastInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for CastInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -129,6 +155,11 @@ pub impl Instruction for UnaryInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for UnaryInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for UnaryInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -153,6 +184,11 @@ pub impl Value for BinaryInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for BinaryInst with asInstEnum(self) -> InstructionEnum {
   BinaryInst(self)
+}
+
+///|
+pub impl InsertPoint for BinaryInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -263,6 +299,11 @@ pub impl Instruction for ICmpInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for ICmpInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for ICmpInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -364,6 +405,11 @@ pub impl Instruction for FCmpInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for FCmpInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for FCmpInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -374,6 +420,29 @@ pub impl Show for FCmpInst with output(self, logger) {
 
 ///|
 pub type GetElementPtrInst ValueRef
+
+///|
+pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
+  @unsafe.llvm_is_in_bounds(self.inner())
+}
+
+///|
+pub fn GetElementPtrInst::setInBounds(self : GetElementPtrInst) -> Unit {
+  @unsafe.llvm_set_is_in_bounds(self.inner(), true)
+}
+
+///|
+pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
+  @unsafe.llvm_set_is_in_bounds(self.inner(), false)
+}
+
+///|
+pub fn GetElementPtrInst::getSourceElementType(
+  self : GetElementPtrInst
+) -> &Type {
+  let typeref = @unsafe.llvm_get_gep_source_element_type(self.inner())
+  initAbstractType(typeref)
+}
 
 ///|
 pub impl Value for GetElementPtrInst with getValueRef(self) -> ValueRef {
@@ -388,6 +457,11 @@ pub impl Value for GetElementPtrInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for GetElementPtrInst with asInstEnum(self) -> InstructionEnum {
   GetElementPtrInst(self)
+}
+
+///|
+pub impl InsertPoint for GetElementPtrInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -445,6 +519,16 @@ pub impl Instruction for ExtractValueInst with asInstEnum(self) -> InstructionEn
 }
 
 ///|
+pub impl InsertPoint for SelectInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
+pub impl InsertPoint for ExtractValueInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for ExtractValueInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -472,6 +556,11 @@ pub impl Instruction for InsertValueInst with asInstEnum(self) -> InstructionEnu
 }
 
 ///|
+pub impl InsertPoint for InsertValueInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for InsertValueInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -493,6 +582,29 @@ pub fn PHINode::addIncoming(
 }
 
 ///|
+pub fn PHINode::countIncoming(self : PHINode) -> Int {
+  @unsafe.llvm_count_incoming(self.inner()).reinterpret_as_int()
+}
+
+// TODO:
+//pub fn PHINOde::getIncomingValue(
+//  self : PHINode,
+//  idx : Int
+//) -> &Value? {
+//  when(
+//    idx >= 0 && idx < self.countIncoming(),
+//    () => { @unsafe.llvm_get_incoming_value(self.inner(), idx.reinterpret_as_uint())) }
+//  )
+//}
+
+///|
+pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
+  when(idx >= 0 && idx < self.countIncoming(), () => BasicBlock(
+    @unsafe.llvm_get_incoming_block(self.inner(), idx.reinterpret_as_uint()),
+  ))
+}
+
+///|
 pub impl Value for PHINode with getValueRef(self) -> ValueRef {
   self.inner()
 }
@@ -505,6 +617,11 @@ pub impl Value for PHINode with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for PHINode with asInstEnum(self) -> InstructionEnum {
   PHINode(self)
+}
+
+///|
+pub impl InsertPoint for PHINode with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -535,6 +652,11 @@ pub impl Instruction for ReturnInst with asInstEnum(self) -> InstructionEnum {
 }
 
 ///|
+pub impl InsertPoint for ReturnInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
 pub impl Show for ReturnInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -552,8 +674,53 @@ pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
 }
 
 ///|
+pub suberror InValidOperation String derive(Show)
+
+///|
+pub fn BranchInst::setCondition(
+  self : BranchInst,
+  cond : &Value,
+  loc~ : SourceLoc = _
+) -> Unit raise {
+  guard self.isConditional() else {
+    let msg =
+      $| loc: \{loc}:
+      #| Misuse `BranchInst::setCondition`, Instruction is not conditional.
+    raise InValidOperation(msg)
+  }
+  @unsafe.llvm_set_condition(self.inner(), cond.getValueRef())
+}
+
+///|
 pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
   @unsafe.llvm_get_num_successors(self.inner()).reinterpret_as_int()
+}
+
+///|
+pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
+  when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
+    @unsafe.llvm_get_successor(self.inner(), idx.reinterpret_as_uint()),
+  ))
+}
+
+///|
+pub fn BranchInst::setSuccessor(
+  self : BranchInst,
+  idx : Int,
+  block : BasicBlock,
+  loc~ : SourceLoc = _
+) -> Unit raise {
+  guard idx >= 0 && idx < self.getNumSuccessors() else {
+    let msg =
+      $| loc: \{loc}:
+      #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
+    raise IndexOutOfBounds(msg)
+  }
+  @unsafe.llvm_set_successor(
+    self.inner(),
+    idx.reinterpret_as_uint(),
+    block.inner(),
+  )
 }
 
 ///|
@@ -569,6 +736,11 @@ pub impl Value for BranchInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for BranchInst with asInstEnum(self) -> InstructionEnum {
   BranchInst(self)
+}
+
+///|
+pub impl InsertPoint for BranchInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -590,7 +762,7 @@ pub type SwitchInst ValueRef
 
 ///|
 pub fn SwitchInst::addCase(
-  self : SwitchInst,
+  self : Self,
   on_val : &Value,
   dest : BasicBlock
 ) -> Unit raise {
@@ -600,6 +772,38 @@ pub fn SwitchInst::addCase(
     )
   }
   @unsafe.llvm_add_case(self.inner(), on_val.getValueRef(), dest.inner())
+}
+
+///|
+pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
+  @unsafe.llvm_get_num_successors(self.inner()).reinterpret_as_int()
+}
+
+///|
+pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
+  when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
+    @unsafe.llvm_get_successor(self.inner(), idx.reinterpret_as_uint()),
+  ))
+}
+
+///|
+pub fn SwitchInst::setSuccessor(
+  self : Self,
+  idx : Int,
+  block : BasicBlock,
+  loc~ : SourceLoc = _
+) -> Unit raise {
+  guard idx >= 0 && idx < self.getNumSuccessors() else {
+    let msg =
+      $| loc: \{loc}:
+      #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
+    raise IndexOutOfBounds(msg)
+  }
+  @unsafe.llvm_set_successor(
+    self.inner(),
+    idx.reinterpret_as_uint(),
+    block.inner(),
+  )
 }
 
 ///|
@@ -615,6 +819,11 @@ pub impl Value for SwitchInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for SwitchInst with asInstEnum(self) -> InstructionEnum {
   SwitchInst(self)
+}
+
+///|
+pub impl InsertPoint for SwitchInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|
@@ -658,6 +867,11 @@ fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
 pub type CallInst ValueRef
 
 ///|
+pub fn CallInst::isTailCall(self : CallInst) -> Bool {
+  @unsafe.llvm_is_tail_call(self.inner())
+}
+
+///|
 pub fn CallInst::setTailCall(self : CallInst) -> Unit {
   @unsafe.llvm_set_tail_call(self.inner(), true)
 }
@@ -690,6 +904,11 @@ pub impl Value for CallInst with asValueEnum(self) -> ValueEnum {
 ///|
 pub impl Instruction for CallInst with asInstEnum(self) -> InstructionEnum {
   CallInst(self)
+}
+
+///|
+pub impl InsertPoint for CallInst with asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
 }
 
 ///|

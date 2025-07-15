@@ -34,11 +34,6 @@ pub impl InsertPoint for BasicBlock with asInsertPtEnum(self) {
   BasicBlock(self)
 }
 
-///|
-pub impl InsertPoint for &Instruction with asInsertPtEnum(self) {
-  Instruction(self)
-}
-
 ///| IRBuilder
 pub struct IRBuilder {
   builder_ref : @unsafe.LLVMBuilderRef
