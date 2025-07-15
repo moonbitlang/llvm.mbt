@@ -332,7 +332,7 @@ pub(all) enum LLVMOpcode {
   LLVMCatchPad
   LLVMCleanupPad
   LLVMCatchSwitch
-}
+} derive(Show)
 
 ///|
 pub fn LLVMOpcode::to_int(self : LLVMOpcode) -> Int {

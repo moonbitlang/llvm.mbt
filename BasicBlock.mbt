@@ -58,37 +58,32 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
   @unsafe.llvm_move_basic_block_after(self.inner(), other.inner())
 }
 
-//pub fn BasicBlock::getFirstInst(self: Self) -> &Instruction? {
-//  let valueref = @unsafe.llvm_get_first_instruction(self.inner())
-//  unless(
-//    @unsafe.llvm_value_ref_is_null(valueref),
-//    () => initInstruction(valueref)
-//  )
-//}
-//
-//pub fn BasicBlock::getLastInst(self: Self) -> &Instruction? {
-//  let valueref = @unsafe.llvm_get_last_instruction(self.inner())
-//  unless(
-//    @unsafe.llvm_value_ref_is_null(valueref),
-//    () => initInstruction(valueref)
-//  )
-//}
-//
-//pub fn BasicBlock::getInstWithName(self: Self, name: String) -> &Instruction? {
-//  let inst = self.get_first_instruction()
-//  match inst {
-//    Some(inst) => inst.get_instruction_with_name(name)
-//    None => None
-//  }
-//}
-//
-//pub fn BasicBlock::getTerminator(self: Self) -> &Instruction? {
-//  let valueref = @unsafe.llvm_get_terminator(self.inner())
-//  unless(
-//    @unsafe.llvm_value_ref_is_null(valueref),
-//    () => initInstruction(valueref)
-//  )
-//}
+///|
+pub fn BasicBlock::getFirstInst(self: Self) -> &Instruction? {
+  let valueref = @unsafe.llvm_get_first_instruction(self.inner())
+  unless(
+    @unsafe.llvm_value_ref_is_null(valueref),
+    () => initInstruction(valueref)
+  )
+}
+
+///|
+pub fn BasicBlock::getLastInst(self: Self) -> &Instruction? {
+  let valueref = @unsafe.llvm_get_last_instruction(self.inner())
+  unless(
+    @unsafe.llvm_value_ref_is_null(valueref),
+    () => initInstruction(valueref)
+  )
+}
+
+///|
+pub fn BasicBlock::getTerminator(self: Self) -> &Instruction? {
+  let valueref = @unsafe.llvm_get_basic_block_terminator(self.inner())
+  unless(
+    @unsafe.llvm_value_ref_is_null(valueref),
+    () => initInstruction(valueref)
+  )
+}
 
 ///|
 pub fn BasicBlock::removeFromParent(self : Self) -> Unit raise {
