@@ -6,7 +6,7 @@
   "link" : {
     "native" : {
       "cc" : "$CC",
-      "cc-flags": "$CC_FLAGS",
+      "cc-flags": "$CC_FLAGS -w",
       "cc-link-flags" : "$CC_LINK_FLAGS"
     }
   }
