@@ -125,6 +125,12 @@ pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
 }
 
 ///|
+pub fn Module::getDataLayout(self: Module) -> DataLayout {
+  let target_data_ref = @unsafe.llvm_get_module_data_layout(self.inner())
+  DataLayout(target_data_ref)
+}
+
+///|
 pub fn Module::dump(self : Module) -> Unit {
   @unsafe.llvm_dump_module(self.inner())
 }
