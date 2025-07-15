@@ -223,11 +223,13 @@ fn to_llvm_bool(b : Bool) -> LLVMBool {
   b.to_int()
 }
 
+///|
 pub impl Show for LLVMTypeRef with output(self, logger) {
   let s = llvm_print_type_to_string(self)
   logger.write_string(s)
 }
 
+///|
 pub impl Show for LLVMValueRef with output(self, logger) {
   let s = llvm_print_value_to_string(self)
   logger.write_string(s)

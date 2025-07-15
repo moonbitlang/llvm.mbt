@@ -1,5 +1,5 @@
-
-fn[T] unless(cond: Bool, value: () -> T) -> T? {
+///|
+fn[T] unless(cond : Bool, value : () -> T) -> T? {
   if !cond {
     Some(value())
   } else {
@@ -7,7 +7,8 @@ fn[T] unless(cond: Bool, value: () -> T) -> T? {
   }
 }
 
-fn[T] when(cond: Bool, value: () -> T) -> T? {
+///|
+fn[T] when(cond : Bool, value : () -> T) -> T? {
   if cond {
     Some(value())
   } else {

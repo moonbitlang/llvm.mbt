@@ -137,9 +137,7 @@ fn initAbstractType_err(
 ) -> &Type raise InValidTypeError {
   let kind = @unsafe.llvm_get_type_kind(typeref)
   match kind {
-    LLVMVoidTypeKind => {
-      VoidType::VoidType(typeref) as &Type
-    }
+    LLVMVoidTypeKind => VoidType::VoidType(typeref) as &Type
     LLVMHalfTypeKind => HalfType::HalfType(typeref)
     LLVMBFloatTypeKind => BFloatType::BFloatType(typeref)
     LLVMFloatTypeKind => FloatType::FloatType(typeref)

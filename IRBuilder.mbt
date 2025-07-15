@@ -238,14 +238,16 @@ pub fn IRBuilder::createStore(
   self : Self,
   value : &Value,
   ptr : &Value,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> StoreInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createStore`, pointer value's type is not a pointer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createStore`, pointer value's type is not a pointer type
+      ),
+    )
   }
   StoreInst(
     @unsafe.llvm_build_store(
@@ -261,25 +263,31 @@ fn type_check_during_create_int_binary(
   lhs : &Value,
   rhs : &Value,
   fname : String,
-  loc: SourceLoc
+  loc : SourceLoc
 ) -> Unit raise {
   guard lhs.getType().asTypeEnum() is IntType(lhs_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, left hand side value's type is not an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, left hand side value's type is not an integer type
+      ),
+    )
   }
   guard rhs.getType().asTypeEnum() is IntType(rhs_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, right hand side value's type is not an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, right hand side value's type is not an integer type
+      ),
+    )
   }
   guard lhs_ty.getBitWidth() == rhs_ty.getBitWidth() else {
-    raise BitwidthError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, left hand side and right hand side values' bitwidths do not match
-    ))
+    raise BitwidthError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, left hand side and right hand side values' bitwidths do not match
+      ),
+    )
   }
 }
 
@@ -288,25 +296,31 @@ fn type_check_during_create_float_binary(
   lhs : &Value,
   rhs : &Value,
   fname : String,
-  loc: SourceLoc
+  loc : SourceLoc
 ) -> Unit raise {
   guard lhs.getType().tryAsFPType() is Some(lhs_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, left hand side value's type is not an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, left hand side value's type is not an integer type",
+      ),
+    )
   }
   guard rhs.getType().tryAsFPType() is Some(rhs_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, right hand side value's type is not an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, right hand side value's type is not an integer type",
+      ),
+    )
   }
   guard lhs_ty.getBitWidth() == rhs_ty.getBitWidth() else {
-    raise BitwidthError((
-      $| loc: \{loc}:
-      $| Misuse IRBuilder::\{fname}, left hand side and right hand side values' bitwidths do not match",
-    ))
+    raise BitwidthError(
+      (
+        $| loc: \{loc}:
+        $| Misuse IRBuilder::\{fname}, left hand side and right hand side values' bitwidths do not match",
+      ),
+    )
   }
 }
 
@@ -345,7 +359,7 @@ pub fn IRBuilder::createAdd(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAdd", loc)
@@ -403,7 +417,7 @@ pub fn IRBuilder::createNSWAdd(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWAdd", loc)
@@ -456,7 +470,7 @@ pub fn IRBuilder::createNUWAdd(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWAdd", loc)
@@ -509,7 +523,7 @@ pub fn IRBuilder::createSub(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSub", loc)
@@ -562,7 +576,7 @@ pub fn IRBuilder::createNSWSub(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWSub", loc)
@@ -615,7 +629,7 @@ pub fn IRBuilder::createNUWSub(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWSub", loc)
@@ -668,7 +682,7 @@ pub fn IRBuilder::createMul(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createMul", loc)
@@ -721,7 +735,7 @@ pub fn IRBuilder::createNSWMul(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWMul", loc)
@@ -774,7 +788,7 @@ pub fn IRBuilder::createNUWMul(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWMul", loc)
@@ -828,7 +842,7 @@ pub fn IRBuilder::createUDiv(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createUDiv", loc)
@@ -882,7 +896,7 @@ pub fn IRBuilder::createSDiv(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSDiv", loc)
@@ -937,7 +951,7 @@ pub fn IRBuilder::createExactUDiv(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactUDiv", loc)
@@ -991,7 +1005,7 @@ pub fn IRBuilder::createExactSDiv(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactSDiv", loc)
@@ -1044,7 +1058,7 @@ pub fn IRBuilder::createURem(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createURem", loc)
@@ -1097,7 +1111,7 @@ pub fn IRBuilder::createSRem(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSRem", loc)
@@ -1174,7 +1188,7 @@ pub fn IRBuilder::createFAdd(
   rhs : &Value,
   name~ : String = "",
   fast_math~ : Array[FastMathFlags] = [],
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFAdd", loc)
@@ -1192,7 +1206,11 @@ pub fn IRBuilder::createFAdd(
       let inst = BinaryInst::BinaryInst(res_valueref)
       match fast_math {
         [] => ()
-        flags => flags.each(f=>@unsafe.llvm_set_fast_math_flags(inst.inner(), f.to_llvm()))
+        flags =>
+          flags.each(f => @unsafe.llvm_set_fast_math_flags(
+            inst.inner(),
+            f.to_llvm(),
+          ))
       }
       inst
     }
@@ -1234,7 +1252,7 @@ pub fn IRBuilder::createFSub(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFSub", loc)
@@ -1287,7 +1305,7 @@ pub fn IRBuilder::createFMul(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFMul", loc)
@@ -1340,7 +1358,7 @@ pub fn IRBuilder::createFDiv(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFDiv", loc)
@@ -1393,7 +1411,7 @@ pub fn IRBuilder::createFRem(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFRem", loc)
@@ -1443,21 +1461,19 @@ pub fn IRBuilder::createFNeg(
   self : Self,
   value : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard value.getType().tryAsFPType() is Some(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}
-      #| Misuse `IRBuilder::createFNeg`, value is not a floating-point type, it is \{value.getType()}"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}
+        #| Misuse `IRBuilder::createFNeg`, value is not a floating-point type, it is \{value.getType()}"
+      ),
+    )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_f_neg(
-    self.builder_ref,
-    value_ref,
-    name,
-  )
+  let res_valueref = @unsafe.llvm_build_f_neg(self.builder_ref, value_ref, name)
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => UnaryInst::UnaryInst(res_valueref)
@@ -1499,7 +1515,7 @@ pub fn IRBuilder::createAnd(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAnd", loc)
@@ -1552,7 +1568,7 @@ pub fn IRBuilder::createOr(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createOr", loc)
@@ -1605,7 +1621,7 @@ pub fn IRBuilder::createXor(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createXor", loc)
@@ -1652,20 +1668,23 @@ pub fn IRBuilder::createXor(
 /// inspect(result, content = "i32 -13")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
-pub fn IRBuilder::createNot(self: Self, value: &Value, name~: String = "", loc~: SourceLoc = _) -> &Value raise {
+pub fn IRBuilder::createNot(
+  self : Self,
+  value : &Value,
+  name~ : String = "",
+  loc~ : SourceLoc = _
+) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard value.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createNot`, value is not an integer type, it is \{value.getType()}
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createNot`, value is not an integer type, it is \{value.getType()}
+      ),
+    )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_not(
-    self.builder_ref,
-    value_ref,
-    name,
-  )
+  let res_valueref = @unsafe.llvm_build_not(self.builder_ref, value_ref, name)
   // Note: It is correct, llvm has no `not` instruction,
   // it will actually generate a `xor`, use `xor val, -1`
   // to represent a bitwise NOT operation.
@@ -1711,7 +1730,7 @@ pub fn IRBuilder::createShl(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createShl", loc)
@@ -1764,7 +1783,7 @@ pub fn IRBuilder::createLShr(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createLShr", loc)
@@ -1817,7 +1836,7 @@ pub fn IRBuilder::createAShr(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAShr", loc)
@@ -1864,24 +1883,28 @@ pub fn IRBuilder::createAShr(
 /// ```
 pub fn IRBuilder::createPtrDiff(
   self : Self,
-  elemTy: &Type,
+  elemTy : &Type,
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard lhs.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createPtrDiff`, lhs is not a pointer type, it is \{lhs.getType()}
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createPtrDiff`, lhs is not a pointer type, it is \{lhs.getType()}
+      ),
+    )
   }
   guard rhs.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createPtrDiff`, rhs is not a pointer type, it is \{rhs.getType()}
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createPtrDiff`, rhs is not a pointer type, it is \{rhs.getType()}
+      ),
+    )
   }
   let elem_ty_ref = elemTy.getTypeRef()
   let lhs_ref = lhs.getValueRef()
@@ -1960,7 +1983,7 @@ pub fn IRBuilder::createICmp(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
@@ -2053,7 +2076,7 @@ pub fn IRBuilder::createFCmp(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFCmp", loc)
@@ -2110,14 +2133,16 @@ pub fn IRBuilder::createTrunc(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createTrunc`, from must be an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createTrunc`, from must be an integer type
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2168,14 +2193,16 @@ pub fn IRBuilder::createZExt(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createZExt`, from must be an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createZExt`, from must be an integer type
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2226,14 +2253,16 @@ pub fn IRBuilder::createSExt(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createSExt`, from must be an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createSExt`, from must be an integer type
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2283,14 +2312,16 @@ pub fn IRBuilder::createFPTrunc(
   from : &Value,
   to : &FPType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createFPTrunc`: 'from' must be a floating-point type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createFPTrunc`: 'from' must be a floating-point type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2336,14 +2367,16 @@ pub fn IRBuilder::createFPExt(
   from : &Value,
   to : &FPType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createFPExt`: 'from' must be a floating-point type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createFPExt`: 'from' must be a floating-point type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2389,14 +2422,16 @@ pub fn IRBuilder::createFPToSI(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createFPToSI`: 'from' must be a floating-point type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createFPToSI`: 'from' must be a floating-point type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2447,14 +2482,16 @@ pub fn IRBuilder::createFPToUI(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createFPToUI`: 'from' must be a floating-point type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createFPToUI`: 'from' must be a floating-point type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2500,14 +2537,16 @@ pub fn IRBuilder::createSIToFP(
   from : &Value,
   to : &FPType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createSIToFP`: 'from' must be a integer type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createSIToFP`: 'from' must be a integer type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2557,14 +2596,16 @@ pub fn IRBuilder::createUIToFP(
   from : &Value,
   to : &FPType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createUIToFP`: 'from' must be a integer type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createUIToFP`: 'from' must be a integer type"
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2610,7 +2651,7 @@ pub fn IRBuilder::createBitCast(
   from : &Value,
   to : &Type,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   let from_ref = from.getValueRef()
@@ -2623,18 +2664,20 @@ pub fn IRBuilder::createBitCast(
   )
   //CastInst::CastInst(res_valueref)
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => match to.asTypeEnum() {
-      IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
-      HalfType(_)
-      | BFloatType(_)
-      | FloatType(_)
-      | DoubleType(_)   => ConstantFP::ConstantFP(res_valueref)
-      StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
-      _ => raise ValueTypeError((
-        $| loc: \{loc}:
-        $| Unanticipated cosntant type in `createBitCast`, the to type is \{to}
-      ))
-    }
+    true =>
+      match to.asTypeEnum() {
+        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
+          ConstantFP::ConstantFP(res_valueref)
+        StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
+        _ =>
+          raise ValueTypeError(
+            (
+              $| loc: \{loc}:
+              $| Unanticipated cosntant type in `createBitCast`, the to type is \{to}
+            ),
+          )
+      }
     false => CastInst::CastInst(res_valueref)
   }
 }
@@ -2717,14 +2760,16 @@ pub fn IRBuilder::createPtrToInt(
   from : &Value,
   to : IntType,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createPtrToInt`, from must be a pointer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createPtrToInt`, from must be a pointer type",
+      ),
+    )
   }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
@@ -2773,14 +2818,16 @@ pub fn IRBuilder::createGEP(
   indices : Array[&Value],
   name~ : String = "",
   inbounds~ : Bool = false,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> GetElementPtrInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createGEP`, ptr must be a pointer type"
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createGEP`, ptr must be a pointer type"
+      ),
+    )
   }
   let ptr_ref = ptr.getValueRef()
   let pointee_ref = pointeeType.getTypeRef()
@@ -2875,14 +2922,16 @@ pub fn IRBuilder::createCondBr(
   cond : &Value,
   trueDest : BasicBlock,
   falseDest : BasicBlock,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> BranchInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard cond.getType().asTypeEnum() is IntType(ity) && ity.getBitWidth() == 1 else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createCondBr`, cond must be i1 type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createCondBr`, cond must be i1 type
+      ),
+    )
   }
   let cond_ref = cond.getValueRef()
   let true_dest_ref = trueDest.inner()
@@ -2929,14 +2978,16 @@ pub fn IRBuilder::createSelect(
   trueVal : &Value,
   falseVal : &Value,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard cond.getType().asTypeEnum() is IntType(ity) && ity.getBitWidth() == 1 else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createSelect`, cond must be i1 type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createSelect`, cond must be i1 type",
+      ),
+    )
   }
   let cond_ref = cond.getValueRef()
   let true_val_ref = trueVal.getValueRef()
@@ -2949,17 +3000,19 @@ pub fn IRBuilder::createSelect(
     name,
   )
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => match trueVal.getType().asTypeEnum() {
-      IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
-      HalfType(_)
-      | BFloatType(_)
-      | FloatType(_)
-      | DoubleType(_)   => ConstantFP::ConstantFP(res_valueref)
-      StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
-      ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-      VectorType(_) => ConstantVector::ConstantVector(res_valueref)
-      _ => raise ValueTypeError("Unanticipated constant type in `createSelect`, the trueVal type is \{trueVal.getType()}")
-    }
+    true =>
+      match trueVal.getType().asTypeEnum() {
+        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
+          ConstantFP::ConstantFP(res_valueref)
+        StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
+        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
+        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+        _ =>
+          raise ValueTypeError(
+            "Unanticipated constant type in `createSelect`, the trueVal type is \{trueVal.getType()}",
+          )
+      }
     false => SelectInst::SelectInst(res_valueref)
   }
 }
@@ -3003,15 +3056,17 @@ pub fn IRBuilder::createSwitch(
   self : Self,
   value : &Value,
   defaultDest : BasicBlock,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> SwitchInst raise {
   // use `SwitchInst::addCase` to add cases.
   guard self.positioned is Set else { raise UnsetPosition }
   guard value.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createSwitch`, value must be an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createSwitch`, value must be an integer type",
+      ),
+    )
   }
   let value_ref = value.getValueRef()
   let default_dest_ref = defaultDest.inner()
@@ -3098,19 +3153,21 @@ pub fn IRBuilder::createCall(
   func : Function,
   args : Array[&Value],
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   let func_ty = func.getType()
   let param_tys = func_ty.getParamTypes()
   let arg_tys = args.map(v => v.getType())
   guard param_tys == arg_tys else {
-    raise InValidArgument((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
-      $|    param_tys: \{param_tys}
-      $|    arg_tys: \{arg_tys}
-    ))
+    raise InValidArgument(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
+        $|    param_tys: \{param_tys}
+        $|    arg_tys: \{arg_tys}
+      ),
+    )
   }
   let func_type_ref = func_ty.getTypeRef()
   let func_ref = func.getValueRef()
@@ -3160,15 +3217,17 @@ pub fn IRBuilder::createCallPtr(
   funcType : FunctionType,
   args : Array[&Value],
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> CallInst raise {
   // REVIEW: Check if it is correct.
   guard self.positioned is Set else { raise UnsetPosition }
   guard funcPtr.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createCallPtr`, funcPtr must be a pointer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createCallPtr`, funcPtr must be a pointer type
+      ),
+    )
   }
   let func_type_ref = funcType.getTypeRef()
   let func_ptr_ref = funcPtr.getValueRef()
@@ -3215,26 +3274,32 @@ pub fn IRBuilder::createInsertValue(
   value : &Value,
   index : Int,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createInsertValue`, aggregate must be an aggregate type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createInsertValue`, aggregate must be an aggregate type
+      ),
+    )
   }
   guard aggre_ty.getElementType(index) is Some(aggre_elem_ty) else {
-    raise InValidArgument((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createInsertValue`, index out of bounds for aggregate type
-    ))
+    raise InValidArgument(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createInsertValue`, index out of bounds for aggregate type
+      ),
+    )
   }
   guard aggre_elem_ty == value.getType() else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createInsertValue`, value type must match the aggregate element type at index
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createInsertValue`, value type must match the aggregate element type at index
+      ),
+    )
   }
   let aggregate_ref = aggregate.getValueRef()
   let value_ref = value.getValueRef()
@@ -3246,12 +3311,16 @@ pub fn IRBuilder::createInsertValue(
     name,
   )
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => match aggregate.getType().asTypeEnum() {
-      StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
-      ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-      VectorType(_) => ConstantVector::ConstantVector(res_valueref)
-      _ => raise ValueTypeError("Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}")
-    }
+    true =>
+      match aggregate.getType().asTypeEnum() {
+        StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
+        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
+        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+        _ =>
+          raise ValueTypeError(
+            "Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}",
+          )
+      }
     false => InsertValueInst::InsertValueInst(res_valueref)
   }
 }
@@ -3286,38 +3355,46 @@ pub fn IRBuilder::createExtractValue(
   aggregate : &Value,
   index : Int,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createExtractValue`, aggregate must be an aggregate type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createExtractValue`, aggregate must be an aggregate type",
+      ),
+    )
   }
   match aggre_ty.asAggregateTypeEnum() {
     StructType(sty) => {
       guard index >= 0 && index < sty.numOfElements() else {
-        raise InValidArgument((
-          $| loc: \{loc}:
-          #| Misuse `IRBuilder::createExtractValue`, index out of bounds for struct type",
-        ))
+        raise InValidArgument(
+          (
+            $| loc: \{loc}:
+            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for struct type",
+          ),
+        )
       }
     }
     ArrayType(aty) => {
       guard index >= 0 && index < aty.getElementCount() else {
-        raise InValidArgument((
-          $| loc: \{loc}:
-          #| Misuse `IRBuilder::createExtractValue`, index out of bounds for array type",
-        ))
+        raise InValidArgument(
+          (
+            $| loc: \{loc}:
+            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for array type",
+          ),
+        )
       }
     }
     VectorType(vty) => {
       guard index >= 0 && index < vty.getElementCount() else {
-        raise InValidArgument((
-          $| loc: \{loc}:
-          #| Misuse `IRBuilder::createExtractValue`, index out of bounds for vector type",
-        ))
+        raise InValidArgument(
+          (
+            $| loc: \{loc}:
+            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for vector type",
+          ),
+        )
       }
     }
     ScalableVectorType(_) =>
@@ -3334,17 +3411,19 @@ pub fn IRBuilder::createExtractValue(
   )
   //ExtractValueInst::ExtractValueInst(res_valueref)
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => match aggregate.getType().asTypeEnum() {
-      IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
-      HalfType(_)
-      | BFloatType(_)
-      | FloatType(_)
-      | DoubleType(_)   => ConstantFP::ConstantFP(res_valueref)
-      StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
-      ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-      VectorType(_) => ConstantVector::ConstantVector(res_valueref)
-      _ => raise ValueTypeError("Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}")
-    }
+    true =>
+      match aggregate.getType().asTypeEnum() {
+        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
+          ConstantFP::ConstantFP(res_valueref)
+        StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
+        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
+        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+        _ =>
+          raise ValueTypeError(
+            "Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}",
+          )
+      }
     false => ExtractValueInst::ExtractValueInst(res_valueref)
   }
 }
@@ -3377,14 +3456,16 @@ pub fn IRBuilder::createMalloc(
   self : Self,
   ty : &Type,
   name~ : String = "",
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard not(ty.tryAsAbstractType() is Some(_)) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      $| Misuse `IRBuilder::createMalloc`, ty must not be an abstract type, type is \{ty}
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        $| Misuse `IRBuilder::createMalloc`, ty must not be an abstract type, type is \{ty}
+      ),
+    )
   }
   let typeref = ty.getTypeRef()
   let res_valueref = @unsafe.llvm_build_malloc(self.builder_ref, typeref, name)
@@ -3416,13 +3497,19 @@ pub fn IRBuilder::createMalloc(
 ///
 /// inspect(free, content = "  tail call void @free(ptr %0)")
 /// ```
-pub fn IRBuilder::createFree(self : Self, ptr : &Value, loc~: SourceLoc = _) -> CallInst raise {
+pub fn IRBuilder::createFree(
+  self : Self,
+  ptr : &Value,
+  loc~ : SourceLoc = _
+) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}
-      #| Misuse `IRBuilder::createFree`, ptr must be a pointer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}
+        #| Misuse `IRBuilder::createFree`, ptr must be a pointer type",
+      ),
+    )
   }
   let ptr_ref = ptr.getValueRef()
   let res_valueref = @unsafe.llvm_build_free(self.builder_ref, ptr_ref)
@@ -3465,26 +3552,32 @@ pub fn IRBuilder::createMemCpy(
   src : &Value,
   src_align : Int,
   size : &Value,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemcpy`, dst must be a pointer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemcpy`, dst must be a pointer type",
+      ),
+    )
   }
   guard src.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemcpy`, src must be a pointer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemcpy`, src must be a pointer type",
+      ),
+    )
   }
   guard size.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemcpy`, size must be an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemcpy`, size must be an integer type",
+      ),
+    )
   }
   let dst_ref = dst.getValueRef()
   let dst_align = dst_align.reinterpret_as_uint()
@@ -3538,26 +3631,32 @@ pub fn IRBuilder::createMemSet(
   value : &Value,
   size : &Value,
   align : Int,
-  loc~: SourceLoc = _
+  loc~ : SourceLoc = _
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemSet`, dst must be a pointer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemSet`, dst must be a pointer type",
+      ),
+    )
   }
   guard value.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemSet`, value must be an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemSet`, value must be an integer type",
+      ),
+    )
   }
   guard size.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc: \{loc}:
-      #| Misuse `IRBuilder::createMemSet`, size must be an integer type",
-    ))
+    raise ValueTypeError(
+      (
+        $| loc: \{loc}:
+        #| Misuse `IRBuilder::createMemSet`, size must be an integer type",
+      ),
+    )
   }
   let dst_ref = dst.getValueRef()
   let value_ref = value.getValueRef()
@@ -3614,22 +3713,28 @@ pub fn IRBuilder::createMemMove(
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc \{loc}:
-      #| Misuse `IRBuilder::createMemMove`, dst must be a pointer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc \{loc}:
+        #| Misuse `IRBuilder::createMemMove`, dst must be a pointer type
+      ),
+    )
   }
   guard src.getType().asTypeEnum() is PointerType(_) else {
-    raise ValueTypeError((
-      $| loc \{loc}:
-      #| Misuse `IRBuilder::createMemMove`, src must be a pointer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc \{loc}:
+        #| Misuse `IRBuilder::createMemMove`, src must be a pointer type
+      ),
+    )
   }
   guard size.getType().asTypeEnum() is IntType(_) else {
-    raise ValueTypeError((
-      $| loc \{loc}:
-      #| Misuse `IRBuilder::createMemMove`, size must be an integer type
-    ))
+    raise ValueTypeError(
+      (
+        $| loc \{loc}:
+        #| Misuse `IRBuilder::createMemMove`, size must be an integer type
+      ),
+    )
   }
   let dst_ref = dst.getValueRef()
   let dst_align = dst_align.reinterpret_as_uint()

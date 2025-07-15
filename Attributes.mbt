@@ -1,8 +1,10 @@
+///|
+typealias @unsafe.LLVMAttributeRef as AttributeRef
 
-typealias @unsafe.LLVMAttributeRef as AttributeRef 
-
+///|
 pub type Attribute AttributeRef
 
+///|
 pub(all) enum FnAttr {
   AllocAlign
   AllocaPtr
@@ -37,7 +39,8 @@ pub(all) enum FnAttr {
   //InlineHint
 } derive(Eq)
 
-fn FnAttr::attr_name(self: FnAttr) -> String {
+///|
+fn FnAttr::attr_name(self : FnAttr) -> String {
   match self {
     AllocAlign => "allocalign"
     AllocaPtr => "allocaptr"
@@ -52,19 +55,22 @@ fn FnAttr::attr_name(self: FnAttr) -> String {
   }
 }
 
-fn FnAttr::attr_value(self: FnAttr) -> UInt64 {
+///|
+fn FnAttr::attr_value(self : FnAttr) -> UInt64 {
   match self {
     AllocSize(size) => size.to_uint64()
     _ => 0
   }
 }
 
-fn FnAttr::to_llvm_attr(self: FnAttr, ctx: Context) -> Attribute {
+///|
+fn FnAttr::to_llvm_attr(self : FnAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
   @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)
 }
 
+///|
 pub(all) enum ParamAttr {
   Alignment(Int)
   //AllocAlign
@@ -75,7 +81,8 @@ pub(all) enum ParamAttr {
   InReg
 } derive(Eq)
 
-fn ParamAttr::attr_name(self: ParamAttr) -> String {
+///|
+fn ParamAttr::attr_name(self : ParamAttr) -> String {
   match self {
     Alignment(_) => "alignment"
     NoAlias => "noalias"
@@ -84,26 +91,30 @@ fn ParamAttr::attr_name(self: ParamAttr) -> String {
   }
 }
 
-fn ParamAttr::attr_value(self: ParamAttr) -> UInt64 {
+///|
+fn ParamAttr::attr_value(self : ParamAttr) -> UInt64 {
   match self {
     Alignment(size) => size.to_uint64()
     _ => 0
   }
 }
 
-fn ParamAttr::to_llvm_attr(self: ParamAttr, ctx: Context) -> Attribute {
+///|
+fn ParamAttr::to_llvm_attr(self : ParamAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
   @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)
 }
 
+///|
 pub(all) enum RetAttr {
   NoAlias
   NonNull
   InReg
 } derive(Eq)
 
-fn RetAttr::attr_name(self: RetAttr) -> String {
+///|
+fn RetAttr::attr_name(self : RetAttr) -> String {
   match self {
     NoAlias => "noalias"
     NonNull => "nonnull"
@@ -111,13 +122,15 @@ fn RetAttr::attr_name(self: RetAttr) -> String {
   }
 }
 
-fn RetAttr::attr_value(self: RetAttr) -> UInt64 {
+///|
+fn RetAttr::attr_value(self : RetAttr) -> UInt64 {
   match self {
     _ => 0
   }
 }
 
-fn RetAttr::to_llvm_attr(self: RetAttr, ctx: Context) -> Attribute {
+///|
+fn RetAttr::to_llvm_attr(self : RetAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
   @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)

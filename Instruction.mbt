@@ -110,20 +110,25 @@ pub impl Show for CastInst with output(self, logger) {
 // UnaryInst
 // =======================================================
 
+///|
 pub type UnaryInst ValueRef
 
+///|
 pub impl Value for UnaryInst with getValueRef(self) -> ValueRef {
   self.inner()
 }
 
+///|
 pub impl Value for UnaryInst with asValueEnum(self) -> ValueEnum {
   UnaryInst(self)
 }
 
+///|
 pub impl Instruction for UnaryInst with asInstEnum(self) -> InstructionEnum {
   UnaryInst(self)
 }
 
+///|
 pub impl Show for UnaryInst with output(self, logger) {
   self.inner().output(logger)
 }
@@ -155,6 +160,7 @@ pub impl Show for BinaryInst with output(self, logger) {
   self.inner().output(logger)
 }
 
+///|
 pub(all) enum FastMathFlags {
   AllowReassoc
   NoNaNs
@@ -165,7 +171,10 @@ pub(all) enum FastMathFlags {
   ApproxFunc
 }
 
-pub fn FastMathFlags::to_llvm(self: FastMathFlags) -> @unsafe.LLVMFastMathFlags {
+///|
+pub fn FastMathFlags::to_llvm(
+  self : FastMathFlags
+) -> @unsafe.LLVMFastMathFlags {
   match self {
     AllowReassoc => @unsafe.LLVMFastMathFlags::AllowReassoc
     NoNaNs => @unsafe.LLVMFastMathFlags::NoNaNs

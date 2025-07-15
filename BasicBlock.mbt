@@ -18,9 +18,7 @@ pub impl Value for BasicBlock with asValueEnum(self) -> ValueEnum {
 ///|
 pub fn BasicBlock::getParent(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_basic_block_parent(self.inner())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|

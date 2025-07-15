@@ -23,25 +23,19 @@ pub fn Module::getContext(self : Self) -> Context {
 ///|
 pub fn Module::getFirstFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_first_function(self.inner())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getLastFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_last_function(self.inner())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
   let valueref = @unsafe.llvm_get_named_function(self.inner(), name)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|

@@ -6,7 +6,6 @@ type LLVMBool Int derive(Eq)
 ///|
 pub(all) type LLVMAttributeIndex UInt derive(Eq)
 
-
 ///|
 //pub(all) type LLVMFastMathFlags UInt derive(Eq)
 pub(all) enum LLVMFastMathFlags {
@@ -15,7 +14,7 @@ pub(all) enum LLVMFastMathFlags {
   NoInfs = 4
   NoSignedZeros = 8
   AllowReciprocal = 16
-  AllowContract  = 32
+  AllowContract = 32
   ApproxFunc = 64
   None = 0
   All = 127
