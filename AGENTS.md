@@ -1,20 +1,25 @@
-## 运行工具与LLVM
+# 本项目的用途
 
-需要C编译器，需要`gcc`命令可用。需要`llvm-config`命令可用，初始化环境时，已经使用`sudo apt install llvm-19-dev -y`命令安装了llvm。运行项目之前，需要使用`source agent_env.sh`命令来启动环境变量。否则会出现头文件找不到的问题。
+llvm的moonbit语言binding，使用llvm-19。
 
+# moonbit语言命令
 
-## Moonbit提供的工具
+- `moon check --target native` 运行静态分析。
 
-- `moon check`: 对代码进行静态分析，注意这是一个编译到原生代码的项目，因此必须使用`moon check --target native`，否则将会出现大量无关的错误。
+- `moon test --target native` 运行所有测试，包括文档内的测试。
 
-- `moon test`: 运行代码中的测试，务必注意使用`moon test --target native`。否则将会出现大量无关错误。注意这一命令也会运行注释文档内的测试，只要这个注释内的文档的代码标记是`moonbit`或者`mbt`，注意只能是这两种，如果代码标记有其它说明，例如`moonbit skip`，`moon test`将不会运行这段代码。
+- `moon test --target native -p test` 仅运行test目录下的测试。
 
-## Moonbit提供的其它工具
+注意，首次运行，需要使用`source env.sh`来配置环境变量。
 
-- `moon help` 可以列出所有`moon`所支持的工具。
+# 特殊文件
 
-## 常见问题
+- `env.sh` 环境变量配置文件，终端里首次运行项目需要使用`source env.sh`
 
-1. `#include <llvm-c/Analysis.h>` no such file or directory.
+- `.mbti` 以mbti为结尾的文件存放了所有可用的函数签名信息。
 
-这个是llvm头文件没有找到，尝试运行命令`source agent_env.sh`。
+# 关于测试
+
+- `doc test`: 是指函数实现前面的，以`///` 开头的，用`moobit`代码块包裹的测试，doc test只测基本功能，展示用法，不做复杂的强度测试，Bug测试等。
+
+- `test` 目录下的测试目的是保证代码强度，有正向测试，反向测试（故意使用错误的代码），以及其他的强度测试等。

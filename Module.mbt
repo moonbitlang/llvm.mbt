@@ -4,8 +4,8 @@ pub type Module @unsafe.LLVMModuleRef
 ///|
 pub fn Module::addFunction(
   self : Self,
-  name : String,
   fty : FunctionType,
+  name : String,
   //linkage~: Linkage
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
