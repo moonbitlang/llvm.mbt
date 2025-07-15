@@ -8,5 +8,6 @@
   "description": "llvm-c binding for Moonbit with friendly API, inspired by Rust-inkwell",
   "scripts": {
     "postadd": "curl -O https://raw.githubusercontent.com/Kaida-Amethyst/llvm.mbt/blob/master/env.sh"
-  }
+  },
+  "--moonbit-unstable-prebuild": "build.js",
 }
