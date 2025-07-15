@@ -1,6 +1,6 @@
 {
   "import" : [
-    "Kaida-Amethyst/llvm/unsafe",
+    "Kaida-Amethyst/llvm/unsafe"
   ],
   "link" : {
     "native" : {

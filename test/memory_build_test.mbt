@@ -199,7 +199,7 @@ test "Simple Heap Memory Test" {
 }
 
 ///|
-test "Aggreagate Heap Memory Test" {
+test "Aggregate Heap Memory Test" {
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
