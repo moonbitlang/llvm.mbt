@@ -27,7 +27,10 @@
 //  */
 //
 // enum LLVMByteOrdering { LLVMBigEndian, LLVMLittleEndian };
-//
+
+#external
+pub type LLVMTargetDataRef
+
 // typedef struct LLVMOpaqueTargetData *LLVMTargetDataRef;
 // typedef struct LLVMOpaqueTargetLibraryInfotData *LLVMTargetLibraryInfoRef;
 //
@@ -200,6 +203,13 @@
 // /** Creates target data from a target layout string.
 //     See the constructor llvm::DataLayout::DataLayout. */
 // LLVMTargetDataRef LLVMCreateTargetData(const char *StringRep);
+
+pub fn llvm_create_target_data(string_rep: String) -> LLVMTargetDataRef {
+  let string_rep = moonbit_str_to_c_str(string_rep);
+  __llvm_create_target_data(string_rep)
+}
+extern "C" fn __llvm_create_target_data(string_rep: CStr) -> LLVMTargetDataRef = "LLVMCreateTargetData";
+
 //
 // /** Deallocates a TargetData.
 //     See the destructor llvm::DataLayout::~DataLayout. */

@@ -4,8 +4,8 @@ pub type Module @unsafe.LLVMModuleRef
 ///|
 pub fn Module::addFunction(
   self : Self,
+  name : String,
   fty : FunctionType,
-  name : String
   //linkage~: Linkage
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
@@ -117,6 +117,11 @@ pub fn Module::getSourceFileName(self : Self) -> String {
 /// ```
 pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
   @unsafe.llvm_set_source_file_name(self.inner(), name)
+}
+
+///|
+pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
+  @unsafe.llvm_set_data_layout(self.inner(), layout)
 }
 
 ///|
