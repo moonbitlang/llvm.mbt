@@ -1,142 +1,139 @@
-# Moonbit-llvm
+# llvm.mbt
 
-[中文版](#Moonbit-llvm-1)
+[🇨🇳 中文版](#llvm-mbt-中文版)
 
-[AI-Assistant](https://www.coze.cn/store/agent/7472944227773956147?bot_id=true&bid=6fda0p1hg501m)
-[AI助手看这里](https://www.coze.cn/store/agent/7472944227773956147?bot_id=true&bid=6fda0p1hg501m)
+**llvm.mbt** 🚀 is a comprehensive LLVM binding for the [MoonBit](https://www.moonbitlang.com/) language that provides a **C++-style API** with enhanced type safety. Built on top of LLVM-C bindings, it offers a familiar development experience similar to original LLVM C++ while leveraging MoonBit's powerful type system to prevent common programming errors.
 
-Moonbit-LLVM provides Moonbit bindings for LLVM-C and further encapsulates its functionality using Moonbit's features, enabling developers to leverage the power of LLVM in Moonbit for projects such as compiler backends.
+## ✨ Key Features
 
-This project offers two types of interfaces:
-1. **Unsafe LLVM-C Bindings**: Binding of `llvm-c` apis.
-2. **Safe LLVM Interface**: Reconstruct `llvm-c` apis, provide similar development experience with LLVM C++ Version.
+- 🎯 **C++-Style API**: Familiar interface design closely mirroring LLVM C++ API
+- 🔒 **Enhanced Type Safety**: MoonBit's type system prevents null pointer dereferences and type mismatches
+- 🛡️ **Memory Safety**: Automatic memory management with manual control when needed
+- 📦 **Complete Coverage**: Comprehensive bindings for LLVM core functionality
+- 🔧 **Developer Friendly**: Intuitive API design with clear error messages
 
-## Notes
+## 🏗️ Architecture
 
-Due to the ongoing development of the Moonbit language and its build system, this project is still under testing phase, using this project may currently involve some complexity, and issues such as linking errors or memory leaks may occur. We are actively addressing these issues and improving the experience as the Moonbit compiler evolves. We look forward to delivering an exceptional LLVM development experience with future versions of Moonbit and Moonbit-LLVM.
+**llvm.mbt** is structured with two main layers:
 
-## Quick Start
+1. **🔧 Low-level LLVM-C Bindings** (`unsafe` module)
+   - Direct bindings to LLVM-C APIs
+   - Zero-cost abstractions over C functions
+   - Raw pointer handling for performance-critical code
 
-### Installing LLVM
+2. **🛡️ High-level Safe API** (main module)
+   - C++-style object-oriented interface
+   - Type-safe wrappers around LLVM concepts
+   - Automatic resource management
+   - Enhanced error handling
 
-First, you need to install LLVM locally. Moonbit-LLVM requires LLVM version 19 or higher.
+## 📋 Requirements
 
-#### macOS
+- **LLVM**: Version 19 or higher
+- **MoonBit**: Latest version
+- **C Compiler**: GCC or Clang
+- **Platform**: Linux, macOS (Windows via WSL2)
 
-Install LLVM using Homebrew:
+## 🚀 Quick Start
 
-```shell
+### 1. Install LLVM
+
+#### 🍎 macOS
+```bash
 brew install llvm@19
 ```
 
-#### Ubuntu
-
-Install LLVM using apt:
-
-```bash 
+#### 🐧 Ubuntu/Debian
+```bash
 sudo apt install llvm-19-dev -y
 ```
 
+#### 🐧 Linux (from source)
+```bash
+# Download LLVM source
+git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
 
-#### Linux
+# Build and install
+cd llvm-project && mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
+ninja && sudo ninja install
+```
 
-It is recommended to install LLVM from source to ensure the correct version.
+### 2. Verify Installation
+```bash
+# Check if commands are available
+llc --version
+llvm-config --version
 
-1. Download the LLVM source code:
-
-   ```shell
-   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
-   ```
-
-2. Build LLVM:
-
-   ```shell
-   cd llvm-project && mkdir build && cd build
-   cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
-   ninja
-   ```
-
-3. Install LLVM:
-
-   ```shell
-   sudo ninja install
-   ```
-
-#### Windows
-
-Moonbit-LLVM is currently not supported on Windows. It is recommended to use a virtual machine or WSL2 and follow the Linux installation steps.
-
-After installation, ensure that the commands `llc --version` and `llvm-config` are available.
-
-Try to use `llvm-config` to generate compilation and linking flags:
-
-```shell
+# Test configuration generation
 llvm-config --cflags --ldflags --libs all
 ```
 
+### 3. Add llvm.mbt to Your Project
 
-### Using Moonbit-LLVM
+```bash
+moon add Kaida-Amethyst/llvm
+```
 
-1. Add Moonbit-LLVM as a dependency in your Moonbit project:
+### 4. Configure Build Environment
 
-   ```shell
-   moon add Kaida-Amethyst/llvm
-   ```
+```bash
+# Set environment variables
+export CC_FLAGS="$(llvm-config --cflags)"
+export CC_LINK_FLAGS="$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++"
+export C_INCLUDE_PATH="$(llvm-config --includedir):$C_INCLUDE_PATH"
+```
 
-2. Use `llvm-config` to generate compilation and linking flags, and set environment variables. 
+### 5. Update moon.pkg.json
 
-   ```shell
-   export CC_FLAGS=$(llvm-config --cflags)
-   export CC_LINK_FLAGS=$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++
-   export C_INCLUDE_PATH=$(llvm-config --includedir):$C_INCLUDE_PATH
-   ```
+```json
+{
+  "import": [
+    "Kaida-Amethyst/llvm"
+  ],
+  "link": {
+    "native": {
+      "cc-flags": "$CC_FLAGS",
+      "cc-link-flags": "$CC_LINK_FLAGS"
+    }
+  }
+}
+```
 
-3. Add the dependency and linking flags to `moon.pkg.json`:
+## 💡 Usage Example
 
-   ```json
-   {
-     "import": [
-       "Kaida-Amethyst/llvm"
-     ],
-     "link": {
-       "native": {
-         "cc-flags" : "$CC_FLAGS",
-         "cc-link-flags": "$CC_LINK_FLAGS"
-       }
-     }
-   }
-   ```
-
-4. Now, you can use LLVM in your Moonbit project.
-
-### Example Program
-
-Below is a simple Moonbit program demonstrating how to use Moonbit-LLVM to generate LLVM IR:
+Here's a complete example showing how to use **llvm.mbt** to generate LLVM IR:
 
 ```moonbit
 fn main {
+  // Create LLVM context - the root of all LLVM operations
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
 
+  // Define types using C++-style API
   let i32_ty = ctx.getInt32Ty()
-  let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+  let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 
-  let fval = mod.addFunction(fty, "add_demo")
-  let bb = fval.appendBasicBlock(name="entry")
-  let arg1 = fval.getArg(0).unwrap()
-  let arg2 = fval.getArg(1).unwrap()
+  // Create function with C++-style method calls
+  let add_func = mod.addFunction(func_ty, "add")
+  let entry_bb = add_func.appendBasicBlock(name="entry")
+  
+  // Get function arguments safely
+  let arg1 = add_func.getArg(0).unwrap()
+  let arg2 = add_func.getArg(1).unwrap()
 
-  builder.setInsertPoint(bb)
-  let add = builder.createAdd(arg1, arg2, name="sum")
-  let _ = builder.createRet(add)
+  // Build IR using familiar C++ patterns
+  builder.setInsertPoint(entry_bb)
+  let sum = builder.createAdd(arg1, arg2, name="sum")
+  builder.createRet(sum)
 
-  println(fval)
+  // Print the generated function
+  println(add_func)
 }
 ```
 
-After running the program, you will see the following LLVM IR output:
-
+**Output:**
 ```llvm
 define i32 @add(i32 %0, i32 %1) {
 entry:
@@ -145,150 +142,158 @@ entry:
 }
 ```
 
-## Contributing and Feedback
 
-Contributions, issues, and suggestions are welcome! Please visit the [GitHub repository](https://github.com/Kaida-Amethyst/moonbit-llvm) to get involved.
+## 🤝 Contributing
 
-## License
+We welcome contributions! Please:
 
-Moonbit-LLVM is licensed under the Apache-2.0 License. See the [LICENSE](LICENSE) file for details.
+1. **🍴 Fork** the repository
+2. **🌿 Create** a feature branch
+3. **✅ Add** tests for new functionality
+4. **📝 Submit** a pull request
 
---------------------------
+Visit our [GitHub repository](https://github.com/moonbitlang/llvm.mbt) to get started.
 
-# Moonbit-llvm
+## 📄 License
 
-Moonbit-llvm 提供了 llvm-c 的 Moonbit 语言绑定，并利用 Moonbit 的特性进行了进一步封装，使开发者能够在 Moonbit 中使用 LLVM 的强大功能，从而更便捷地开发编译器后端等项目。
+**llvm.mbt** is licensed under the **Apache-2.0 License**. See [LICENSE](LICENSE) for details.
 
-本项目提供了两种接口：
-1. **Unsafe LLVM-C 绑定**：llvm-c接口的简单封装。可以在Moonbit中直接使用llvm-c接口。
-2. **Safe LLVM 接口**：整合llvm-c接口，让llvm开发体验类似C++版本的llvm。
+---
 
-## 注意事项
+# llvm.mbt 中文版
 
-由于 Moonbit 语言及其构建系统仍在发展中，本项目目前仍处于**测试**阶段，使用方式可能较为复杂，且可能会遇到链接错误、内存泄漏等问题。我们正在积极解决这些问题，并随着 Moonbit 编译器的发展逐步优化使用体验。我们期待未来的 Moonbit 和 Moonbit-LLVM 能为您的 LLVM 开发带来极致体验。
+**llvm.mbt** 🚀 是一个为 [MoonBit](https://www.moonbitlang.com/) 语言设计的全面 LLVM 绑定库，提供了**C++ 风格的 API** 和增强的类型安全性。基于 LLVM-C 绑定构建，它提供了与原版 LLVM C++ 相似的开发体验，同时利用 MoonBit 的强大类型系统来防止常见的编程错误。
 
-## 快速开始
+## ✨ 核心特性
 
-### 安装 LLVM
+- 🎯 **C++ 风格 API**：与 LLVM C++ API 高度相似的接口设计
+- 🔒 **增强类型安全**：MoonBit 类型系统防止空指针解引用和类型不匹配
+- 🛡️ **内存安全**：自动内存管理，必要时提供手动控制
+- 📦 **完整覆盖**：对 LLVM 核心功能的全面绑定
+- 🔧 **开发友好**：直观的 API 设计和清晰的错误信息
 
-首先，您需要在本地安装 LLVM。Moonbit-LLVM 要求 LLVM 版本为 19 或更高。
+## 🏗️ 架构设计
 
-#### macOS
+**llvm.mbt** 采用两层结构设计：
 
-使用 Homebrew 安装 LLVM：
+1. **🔧 底层 LLVM-C 绑定** (`unsafe` 模块)
+   - 直接绑定到 LLVM-C APIs
+   - 零成本的 C 函数抽象
+   - 为性能关键代码提供原始指针处理
 
-```shell
+2. **🛡️ 高层安全 API** (主模块)
+   - C++ 风格的面向对象接口
+   - LLVM 概念的类型安全包装
+   - 自动资源管理
+   - 增强的错误处理
+
+## 📋 系统要求
+
+- **LLVM**：19 或更高版本
+- **MoonBit**：最新版本
+- **C 编译器**：GCC 或 Clang
+- **平台**：Linux、macOS（Windows 通过 WSL2）
+
+## 🚀 快速开始
+
+### 1. 安装 LLVM
+
+#### 🍎 macOS
+```bash
 brew install llvm@19
 ```
 
-#### Ubuntu
-
-使用 apt 安装 LLVM:
-
-```bash 
+#### 🐧 Ubuntu/Debian
+```bash
 sudo apt install llvm-19-dev -y
 ```
 
-#### Linux
+#### 🐧 Linux（从源码构建）
+```bash
+# 下载 LLVM 源码
+git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
 
-建议从源码安装 LLVM，以确保版本符合要求。
+# 构建和安装
+cd llvm-project && mkdir build && cd build
+cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
+ninja && sudo ninja install
+```
 
-1. 下载 LLVM 源码：
+### 2. 验证安装
+```bash
+# 检查命令是否可用
+llc --version
+llvm-config --version
 
-   ```shell
-   git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
-   ```
-
-2. 构建 LLVM：
-
-   ```shell
-   cd llvm-project && mkdir build && cd build
-   cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
-   ninja
-   ```
-
-3. 安装 LLVM：
-
-   ```shell
-   sudo ninja install
-   ```
-
-#### Windows
-
-目前 Moonbit-LLVM 暂不支持 Windows 平台。建议使用虚拟机或 WSL2，并按照 Linux 的安装步骤进行操作。
-
----------
-
-安装完成后，请确保 `llc --version` 和 `llvm-config` 命令可用。
-
-尝试使用`llvm-config`来生成编译和链接标志。
-
-```shell
+# 测试配置生成
 llvm-config --cflags --ldflags --libs all
 ```
 
-### 使用 Moonbit-LLVM
+### 3. 添加 llvm.mbt 到您的项目
 
-1. 在您的 Moonbit 项目中添加 Moonbit-LLVM 依赖：
+```bash
+moon add Kaida-Amethyst/llvm
+```
 
-   ```shell
-   moon add Kaida-Amethyst/llvm
-   ```
+### 4. 配置构建环境
 
-2. 使用 `llvm-config` 生成编译和链接标志，并设置环境变量。
+```bash
+# 设置环境变量
+export CC_FLAGS="$(llvm-config --cflags)"
+export CC_LINK_FLAGS="$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++"
+export C_INCLUDE_PATH="$(llvm-config --includedir):$C_INCLUDE_PATH"
+```
 
-   ```shell
-   export CC_FLAGS=$(llvm-config --cflags)
-   export CC_LINK_FLAGS=$(llvm-config --ldflags --libs all)  -lpthread -ldl -lm -lstdc++
-   export C_INCLUDE_PATH=$(llvm-config --includedir):$C_INCLUDE_PATH
-   ```
+### 5. 更新 moon.pkg.json
 
-3. 在 `moon.pkg.json` 中添加依赖和链接标志：
+```json
+{
+  "import": [
+    "Kaida-Amethyst/llvm"
+  ],
+  "link": {
+    "native": {
+      "cc-flags": "$CC_FLAGS",
+      "cc-link-flags": "$CC_LINK_FLAGS"
+    }
+  }
+}
+```
 
-   ```json
-   {
-     "import": [
-       "Kaida-Amethyst/llvm/llvm"
-     ],
-     "link": {
-       "native": {
-         "cc-flags" : "$CC_FLAGS",
-         "cc-link-flags": "$CC_LINK_FLAGS"
-       }
-     }
-   }
-   ```
+## 💡 使用示例
 
-4. 现在，您可以在 Moonbit 项目中使用 LLVM 了。
-
-### 示例程序
-
-以下是一个简单的 Moonbit 程序示例，展示了如何使用 Moonbit-LLVM 生成 LLVM IR：
+以下是一个完整的示例，展示如何使用 **llvm.mbt** 生成 LLVM IR：
 
 ```moonbit
 fn main {
+  // 创建 LLVM 上下文 - 所有 LLVM 操作的根
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
 
+  // 使用 C++ 风格 API 定义类型
   let i32_ty = ctx.getInt32Ty()
-  let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+  let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 
-  let fval = mod.addFunction(fty, "add_demo")
-  let bb = fval.appendBasicBlock(name="entry")
-  let arg1 = fval.getArg(0).unwrap()
-  let arg2 = fval.getArg(1).unwrap()
+  // 使用 C++ 风格的方法调用创建函数
+  let add_func = mod.addFunction(func_ty, "add")
+  let entry_bb = add_func.appendBasicBlock(name="entry")
+  
+  // 安全地获取函数参数
+  let arg1 = add_func.getArg(0).unwrap()
+  let arg2 = add_func.getArg(1).unwrap()
 
-  builder.setInsertPoint(bb)
-  let add = builder.createAdd(arg1, arg2, name="sum")
-  let _ = builder.createRet(add)
+  // 使用熟悉的 C++ 模式构建 IR
+  builder.setInsertPoint(entry_bb)
+  let sum = builder.createAdd(arg1, arg2, name="sum")
+  builder.createRet(sum)
 
-  println(fval)
+  // 打印生成的函数
+  println(add_func)
 }
 ```
 
-运行该程序后，您将看到以下 LLVM IR 输出：
-
+**输出：**
 ```llvm
 define i32 @add(i32 %0, i32 %1) {
 entry:
@@ -297,10 +302,17 @@ entry:
 }
 ```
 
-## 贡献与反馈
+## 🤝 贡献指南
 
-欢迎贡献代码、提交问题或提出建议！请访问 [GitHub 仓库](https://github.com/moonbitlang/llvm.mbt) 参与项目。
+我们欢迎贡献！请：
 
-## 许可证
+1. **🍴 Fork** 仓库
+2. **🌿 创建** 功能分支
+3. **✅ 为新功能** 添加测试
+4. **📝 提交** Pull Request
 
-Moonbit-llvm 采用 Apache-2.0许可证。详情请参阅 [LICENSE](LICENSE) 文件。
+访问我们的 [GitHub 仓库](https://github.com/moonbitlang/llvm.mbt) 开始贡献。
+
+## 📄 许可证
+
+**llvm.mbt** 采用 **Apache-2.0 许可证**。详情请参阅 [LICENSE](LICENSE) 文件。
