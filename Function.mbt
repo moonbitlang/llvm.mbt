@@ -348,14 +348,57 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 ///   #|}
 ///   #|
 ///
-///   inspect(fval, content=expect)
+/// inspect(fval, content=expect)
 /// ```
 pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
   @unsafe.llvm_add_attribute_at_index(self.getValueRef(), 0, fn_attr.inner())
 }
 
-///|
+///| Remove the Attribute for the Return Value of the Function.
+///
+///
+/// ```moonbit
+/// let ctx = Context::new()
+/// let mod = ctx.addModule("demo")
+/// let builder = ctx.createBuilder()
+/// 
+/// let i32_ty = ctx.getInt32Ty()
+/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+/// 
+/// let fval = mod.addFunction(fty, "add_demo")
+/// let bb = fval.appendBasicBlock(name="entry")
+/// let arg1 = fval.getArg(0).unwrap()
+/// let arg2 = fval.getArg(1).unwrap()
+/// 
+/// builder.setInsertPoint(bb)
+/// let add = builder.createAdd(arg1, arg2, name="sum")
+/// let _ = builder.createRet(add)
+/// 
+/// fval.addRetAttr(InReg)
+///
+/// let expect = 
+///   #|define inreg i32 @add_demo(i32 %0, i32 %1) {
+///   #|entry:
+///   #|  %sum = add i32 %0, %1
+///   #|  ret i32 %sum
+///   #|}
+///   #|
+///
+/// inspect(fval, content=expect)
+///
+/// fval.removeRetAttr(InReg)
+///
+/// let expect =
+///   #|define i32 @add_demo(i32 %0, i32 %1) {
+///   #|entry:
+///   #|  %sum = add i32 %0, %1
+///   #|  ret i32 %sum
+///   #|}
+///   #|
+///
+/// inspect(fval, content=expect)
+/// ```
 pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(
     ret_attr.attr_name(),

@@ -8,8 +8,8 @@
 Moonbit-LLVM provides Moonbit bindings for LLVM-C and further encapsulates its functionality using Moonbit's features, enabling developers to leverage the power of LLVM in Moonbit for projects such as compiler backends.
 
 This project offers two types of interfaces:
-1. **Unsafe LLVM-C Bindings**: Similar to Rust's `llvm-sys`, directly interacting with the LLVM-C API.
-2. **Safe LLVM Interface**: Similar to Rust's `inkwell`, providing a safer and more user-friendly API, inspired by the design of `inkwell`.
+1. **Unsafe LLVM-C Bindings**: Binding of `llvm-c` apis.
+2. **Safe LLVM Interface**: Reconstruct `llvm-c` apis, provide similar development experience with LLVM C++ Version.
 
 ## Notes
 
@@ -96,7 +96,7 @@ llvm-config --cflags --ldflags --libs all
    ```json
    {
      "import": [
-       "Kaida-Amethyst/llvm/llvm"
+       "Kaida-Amethyst/llvm"
      ],
      "link": {
        "native": {
@@ -115,25 +115,23 @@ Below is a simple Moonbit program demonstrating how to use Moonbit-LLVM to gener
 
 ```moonbit
 fn main {
-  let context = @llvm.Context::create()
-  let llvm_module = context.create_module("add_demo")
+  let ctx = Context::new()
+  let mod = ctx.addModule("demo")
+  let builder = ctx.createBuilder()
 
-  let builder = context.create_builder()
+  let i32_ty = ctx.getInt32Ty()
+  let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 
-  let i32_ty = context.i32_type()
-  let fn_ty = i32_ty.fn_type([i32_ty, i32_ty])
-  let f = llvm_module.add_function("add", fn_ty)
+  let fval = mod.addFunction(fty, "add_demo")
+  let bb = fval.appendBasicBlock(name="entry")
+  let arg1 = fval.getArg(0).unwrap()
+  let arg2 = fval.getArg(1).unwrap()
 
-  let param_a = f.get_nth_param(0).unwrap()
-  let param_b = f.get_nth_param(1).unwrap()
+  builder.setInsertPoint(bb)
+  let add = builder.createAdd(arg1, arg2, name="sum")
+  let _ = builder.createRet(add)
 
-  let bb = context.append_basic_block(f, name="entry")
-  builder.position_at_end(bb)
-
-  let sum = builder.build_add(param_a, param_b, name="sum")
-  let _ = builder.build_return(sum)
-
-  println(llvm_module)
+  println(fval)
 }
 ```
 
@@ -162,8 +160,8 @@ Moonbit-LLVM is licensed under the Apache-2.0 License. See the [LICENSE](LICENSE
 Moonbit-llvm 提供了 llvm-c 的 Moonbit 语言绑定，并利用 Moonbit 的特性进行了进一步封装，使开发者能够在 Moonbit 中使用 LLVM 的强大功能，从而更便捷地开发编译器后端等项目。
 
 本项目提供了两种接口：
-1. **Unsafe LLVM-C 绑定**：类似于 Rust 的 `llvm-sys`，直接与 LLVM-C API 交互。
-2. **Safe LLVM 接口**：类似于 Rust 的 `inkwell`，提供了更安全、易用的 API，参考了 `inkwell` 的设计。
+1. **Unsafe LLVM-C 绑定**：llvm-c接口的简单封装。可以在Moonbit中直接使用llvm-c接口。
+2. **Safe LLVM 接口**：整合llvm-c接口，让llvm开发体验类似C++版本的llvm。
 
 ## 注意事项
 
@@ -269,25 +267,23 @@ llvm-config --cflags --ldflags --libs all
 
 ```moonbit
 fn main {
-  let context = @llvm.Context::create()
-  let llvm_module = context.create_module("add_demo")
+  let ctx = Context::new()
+  let mod = ctx.addModule("demo")
+  let builder = ctx.createBuilder()
 
-  let builder = context.create_builder()
+  let i32_ty = ctx.getInt32Ty()
+  let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 
-  let i32_ty = context.i32_type()
-  let fn_ty = i32_ty.fn_type([i32_ty, i32_ty])
-  let f = llvm_module.add_function("add", fn_ty)
+  let fval = mod.addFunction(fty, "add_demo")
+  let bb = fval.appendBasicBlock(name="entry")
+  let arg1 = fval.getArg(0).unwrap()
+  let arg2 = fval.getArg(1).unwrap()
 
-  let param_a = f.get_nth_param(0).unwrap()
-  let param_b = f.get_nth_param(1).unwrap()
+  builder.setInsertPoint(bb)
+  let add = builder.createAdd(arg1, arg2, name="sum")
+  let _ = builder.createRet(add)
 
-  let bb = context.append_basic_block(f, name="entry")
-  builder.position_at_end(bb)
-
-  let sum = builder.build_add(param_a, param_b, name="sum")
-  let _ = builder.build_return(sum)
-
-  println(llvm_module)
+  println(fval)
 }
 ```
 
@@ -303,7 +299,7 @@ entry:
 
 ## 贡献与反馈
 
-欢迎贡献代码、提交问题或提出建议！请访问 [GitHub 仓库](https://github.com/Kaida-Amethyst/llvm.mbt) 参与项目。
+欢迎贡献代码、提交问题或提出建议！请访问 [GitHub 仓库](https://github.com/moonbitlang/llvm.mbt) 参与项目。
 
 ## 许可证
 
