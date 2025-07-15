@@ -75,10 +75,13 @@ impl Show for BFloatType
 
 pub type BasicBlock @unsafe.LLVMBasicBlockRef
 fn BasicBlock::getContext(Self) -> Context
+fn BasicBlock::getFirstInst(Self) -> &Instruction?
+fn BasicBlock::getLastInst(Self) -> &Instruction?
 fn BasicBlock::getName(Self) -> String
 fn BasicBlock::getNextBasicBlock(Self) -> Self?
 fn BasicBlock::getParent(Self) -> Function?
 fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
+fn BasicBlock::getTerminator(Self) -> &Instruction?
 fn BasicBlock::inner(Self) -> @unsafe.LLVMBasicBlockRef
 fn BasicBlock::moveAfter(Self, Self) -> Unit raise
 fn BasicBlock::moveBefore(Self, Self) -> Unit raise
@@ -98,7 +101,9 @@ impl Value for BinaryInst
 impl Show for BinaryInst
 
 pub type BranchInst @unsafe.LLVMValueRef
+fn BranchInst::getNumSuccessors(Self) -> Int
 fn BranchInst::inner(Self) -> @unsafe.LLVMValueRef
+fn BranchInst::isConditional(Self) -> Bool
 impl Instruction for BranchInst
 impl Value for BranchInst
 impl Show for BranchInst
@@ -113,7 +118,11 @@ pub suberror BuilderError {
 }
 
 pub type CallInst @unsafe.LLVMValueRef
+fn CallInst::getTailCallKind(Self) -> TailCallKind
 fn CallInst::inner(Self) -> @unsafe.LLVMValueRef
+fn CallInst::removeTailCall(Self) -> Unit
+fn CallInst::setTailCall(Self) -> Unit
+fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
 impl Instruction for CallInst
 impl Value for CallInst
 impl Show for CallInst
@@ -123,12 +132,6 @@ fn CastInst::inner(Self) -> @unsafe.LLVMValueRef
 impl Instruction for CastInst
 impl Value for CastInst
 impl Show for CastInst
-
-pub type CmpInst @unsafe.LLVMValueRef
-fn CmpInst::inner(Self) -> @unsafe.LLVMValueRef
-impl Instruction for CmpInst
-impl Value for CmpInst
-impl Show for CmpInst
 
 pub type ConstantArray @unsafe.LLVMValueRef
 fn ConstantArray::inner(Self) -> @unsafe.LLVMValueRef
@@ -225,6 +228,13 @@ fn Context::inner(Self) -> @unsafe.LLVMContextRef
 fn Context::new() -> Self
 impl Eq for Context
 
+pub type DataLayout @unsafe.LLVMTargetDataRef
+fn DataLayout::getTypeAlignment(Self, &Type) -> Int
+fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
+fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
+fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
+fn DataLayout::inner(Self) -> @unsafe.LLVMTargetDataRef
+
 pub type DoubleType @unsafe.LLVMTypeRef
 fn DoubleType::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for DoubleType
@@ -238,6 +248,13 @@ fn ExtractValueInst::inner(Self) -> @unsafe.LLVMValueRef
 impl Instruction for ExtractValueInst
 impl Value for ExtractValueInst
 impl Show for ExtractValueInst
+
+pub type FCmpInst @unsafe.LLVMValueRef
+fn FCmpInst::getPredicate(Self) -> FloatPredicate
+fn FCmpInst::inner(Self) -> @unsafe.LLVMValueRef
+impl Instruction for FCmpInst
+impl Value for FCmpInst
+impl Show for FCmpInst
 
 pub type FP128Type @unsafe.LLVMTypeRef
 fn FP128Type::inner(Self) -> @unsafe.LLVMTypeRef
@@ -285,6 +302,9 @@ pub(all) enum FloatPredicate {
   ULT
   ULE
   UNE
+  UNO
+  True
+  False
 }
 
 pub type FloatType @unsafe.LLVMTypeRef
@@ -310,9 +330,9 @@ pub(all) enum FnAttr {
 impl Eq for FnAttr
 
 pub type Function @unsafe.LLVMValueRef
+fn Function::addBasicBlock(Self, name~ : String = ..) -> BasicBlock
 fn Function::addFnAttr(Self, FnAttr) -> Unit
 fn Function::addRetAttr(Self, RetAttr) -> Unit
-fn Function::appendBasicBlock(Self, name~ : String = ..) -> BasicBlock
 fn Function::countFnAttrs(Self) -> Int
 fn Function::getArg(Self, Int) -> Argument?
 fn Function::getArgs(Self) -> Array[Argument]
@@ -354,6 +374,13 @@ impl PrimitiveType for HalfType
 impl Type for HalfType
 impl Eq for HalfType
 impl Show for HalfType
+
+pub type ICmpInst @unsafe.LLVMValueRef
+fn ICmpInst::getPredicate(Self) -> IntPredicate
+fn ICmpInst::inner(Self) -> @unsafe.LLVMValueRef
+impl Instruction for ICmpInst
+impl Value for ICmpInst
+impl Show for ICmpInst
 
 pub struct IRBuilder {
   builder_ref : @unsafe.LLVMBuilderRef
@@ -442,7 +469,8 @@ pub enum InstructionEnum {
   CastInst(CastInst)
   UnaryInst(UnaryInst)
   BinaryInst(BinaryInst)
-  CmpInst(CmpInst)
+  ICmpInst(ICmpInst)
+  FCmpInst(FCmpInst)
   GetElementPtrInst(GetElementPtrInst)
   SelectInst(SelectInst)
   ExtractValueInst(ExtractValueInst)
@@ -499,6 +527,7 @@ pub type Module @unsafe.LLVMModuleRef
 fn Module::addFunction(Self, FunctionType, String) -> Function
 fn Module::dump(Self) -> Unit
 fn Module::getContext(Self) -> Context
+fn Module::getDataLayout(Self) -> DataLayout
 fn Module::getFirstFunction(Self) -> Function?
 fn Module::getFunction(Self, String) -> Function?
 fn Module::getFunctions(Self) -> Array[Function]
@@ -506,6 +535,7 @@ fn Module::getLastFunction(Self) -> Function?
 fn Module::getName(Self) -> String
 fn Module::getSourceFileName(Self) -> String
 fn Module::inner(Self) -> @unsafe.LLVMModuleRef
+fn Module::setDataLayout(Self, String) -> Unit
 fn Module::setName(Self, String) -> Unit
 fn Module::setSourceFileName(Self, String) -> Unit
 impl Show for Module
@@ -618,6 +648,14 @@ pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
 }
 
+pub(all) enum TailCallKind {
+  None
+  Tail
+  MustTail
+  NoTail
+}
+impl Show for TailCallKind
+
 pub type TokenType @unsafe.LLVMTypeRef
 fn TokenType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for TokenType
@@ -677,7 +715,8 @@ pub enum ValueEnum {
   CastInst(CastInst)
   UnaryInst(UnaryInst)
   BinaryInst(BinaryInst)
-  CmpInst(CmpInst)
+  ICmpInst(ICmpInst)
+  FCmpInst(FCmpInst)
   GetElementPtrInst(GetElementPtrInst)
   SelectInst(SelectInst)
   ExtractValueInst(ExtractValueInst)
@@ -734,6 +773,11 @@ impl InsertPoint for &Instruction
 pub trait Instruction : Value {
   asInstEnum(Self) -> InstructionEnum
   getParentBasicBlock(Self) -> BasicBlock?
+  getNextInst(Self) -> &Instruction?
+  getPrevInst(Self) -> &Instruction?
+  removeFromParent(Self) -> Unit
+  eraseFromParent(Self) -> Unit
+  getNumArgOperands(Self) -> Int
 }
 
 pub trait PrimitiveType : Type {

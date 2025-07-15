@@ -187,7 +187,7 @@ pub fn FastMathFlags::to_llvm(
 }
 
 // =======================================================
-// CmpInst
+// ICmpInst
 // =======================================================
 
 ///|
@@ -221,6 +221,57 @@ fn IntPredicate::to_llvm_int_predicate(self : Self) -> @unsafe.LLVMIntPredicate 
 }
 
 ///|
+fn IntPredicate::from_llvm_int_predicate(
+  pred : @unsafe.LLVMIntPredicate
+) -> IntPredicate {
+  match pred {
+    LLVMIntEQ => EQ
+    LLVMIntNE => NE
+    LLVMIntSGT => SGT
+    LLVMIntSGE => SGE
+    LLVMIntSLT => SLT
+    LLVMIntSLE => SLE
+    LLVMIntUGT => UGT
+    LLVMIntUGE => UGE
+    LLVMIntULT => ULT
+    LLVMIntULE => ULE
+  }
+}
+
+///|
+pub type ICmpInst ValueRef
+
+///|
+pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
+  @unsafe.llvm_get_icmp_predicate(self.inner())
+  |> IntPredicate::from_llvm_int_predicate
+}
+
+///|
+pub impl Value for ICmpInst with getValueRef(self) -> ValueRef {
+  self.inner()
+}
+
+///|
+pub impl Value for ICmpInst with asValueEnum(self) -> ValueEnum {
+  ICmpInst(self)
+}
+
+///|
+pub impl Instruction for ICmpInst with asInstEnum(self) -> InstructionEnum {
+  ICmpInst(self)
+}
+
+///|
+pub impl Show for ICmpInst with output(self, logger) {
+  self.inner().output(logger)
+}
+
+// =======================================================
+// FCmpInst
+// =======================================================
+
+///|
 pub(all) enum FloatPredicate {
   OEQ
   OGT
@@ -235,6 +286,9 @@ pub(all) enum FloatPredicate {
   ULT
   ULE
   UNE
+  UNO
+  True
+  False
 }
 
 ///|
@@ -255,29 +309,62 @@ fn FloatPredicate::to_llvm_float_predicate(
     ULT => LLVMRealULT
     ULE => LLVMRealULE
     UNE => LLVMRealUNE
+    UNO => LLVMRealUNO
+    True => LLVMRealPredicateTrue
+    False => LLVMRealPredicateFalse
   }
 }
 
 ///|
-pub type CmpInst ValueRef
+fn FloatPredicate::from_llvm_float_predicate(
+  pred : @unsafe.LLVMRealPredicate
+) -> FloatPredicate {
+  match pred {
+    LLVMRealOEQ => OEQ
+    LLVMRealOGT => OGT
+    LLVMRealOGE => OGE
+    LLVMRealOLT => OLT
+    LLVMRealOLE => OLE
+    LLVMRealONE => ONE
+    LLVMRealORD => ORD
+    LLVMRealUEQ => UEQ
+    LLVMRealUGT => UGT
+    LLVMRealUGE => UGE
+    LLVMRealULT => ULT
+    LLVMRealULE => ULE
+    LLVMRealUNE => UNE
+    LLVMRealUNO => UNO
+    LLVMRealPredicateTrue => True
+    LLVMRealPredicateFalse => False
+  }
+}
 
 ///|
-pub impl Value for CmpInst with getValueRef(self) -> ValueRef {
+pub type FCmpInst ValueRef
+
+///|
+pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
+  @unsafe.llvm_get_fcmp_predicate(self.inner())
+  |> FloatPredicate::from_llvm_float_predicate
+}
+
+///|
+pub impl Value for FCmpInst with getValueRef(self) -> ValueRef {
   self.inner()
 }
 
 ///|
-pub impl Value for CmpInst with asValueEnum(self) -> ValueEnum {
-  CmpInst(self)
+pub impl Value for FCmpInst with asValueEnum(self) -> ValueEnum {
+  FCmpInst(self)
 }
 
 ///|
-pub impl Instruction for CmpInst with asInstEnum(self) -> InstructionEnum {
-  CmpInst(self)
+pub impl Instruction for FCmpInst with asInstEnum(self) -> InstructionEnum {
+  FCmpInst(self)
 }
 
 ///|
-pub impl Show for CmpInst with output(self, logger) {
+pub impl Show for FCmpInst with output(self, logger) {
   self.inner().output(logger)
 }
 
@@ -460,6 +547,16 @@ pub impl Show for ReturnInst with output(self, logger) {
 pub type BranchInst ValueRef
 
 ///|
+pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
+  @unsafe.llvm_is_conditional(self.inner())
+}
+
+///|
+pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
+  @unsafe.llvm_get_num_successors(self.inner()).reinterpret_as_int()
+}
+
+///|
 pub impl Value for BranchInst with getValueRef(self) -> ValueRef {
   self.inner()
 }
@@ -530,7 +627,55 @@ pub impl Show for SwitchInst with output(self, logger) {
 // =======================================================
 
 ///|
+pub(all) enum TailCallKind {
+  None
+  Tail
+  MustTail
+  NoTail
+} derive(Show)
+
+///|
+fn TailCallKind::to_llvm(self : TailCallKind) -> @unsafe.LLVMTailCallKind {
+  match self {
+    None => LLVMTailCallKindNone
+    Tail => LLVMTailCallKindTail
+    MustTail => LLVMTailCallKindMustTail
+    NoTail => LLVMTailCallKindNoTail
+  }
+}
+
+///|
+fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
+  match kind {
+    LLVMTailCallKindNone => None
+    LLVMTailCallKindTail => Tail
+    LLVMTailCallKindMustTail => MustTail
+    LLVMTailCallKindNoTail => NoTail
+  }
+}
+
+///|
 pub type CallInst ValueRef
+
+///|
+pub fn CallInst::setTailCall(self : CallInst) -> Unit {
+  @unsafe.llvm_set_tail_call(self.inner(), true)
+}
+
+///|
+pub fn CallInst::removeTailCall(self : CallInst) -> Unit {
+  @unsafe.llvm_set_tail_call(self.inner(), false)
+}
+
+///|
+pub fn CallInst::getTailCallKind(self : CallInst) -> TailCallKind {
+  @unsafe.llvm_get_tail_call_kind(self.inner()) |> TailCallKind::from_llvm
+}
+
+///|
+pub fn CallInst::setTailCallKind(self : CallInst, kind : TailCallKind) -> Unit {
+  @unsafe.llvm_set_tail_call_kind(self.inner(), kind.to_llvm())
+}
 
 ///|
 pub impl Value for CallInst with getValueRef(self) -> ValueRef {

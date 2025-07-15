@@ -5,7 +5,7 @@ pub type Module @unsafe.LLVMModuleRef
 pub fn Module::addFunction(
   self : Self,
   fty : FunctionType,
-  name : String,
+  name : String
   //linkage~: Linkage
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
@@ -125,7 +125,7 @@ pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
 }
 
 ///|
-pub fn Module::getDataLayout(self: Module) -> DataLayout {
+pub fn Module::getDataLayout(self : Module) -> DataLayout {
   let target_data_ref = @unsafe.llvm_get_module_data_layout(self.inner())
   DataLayout(target_data_ref)
 }

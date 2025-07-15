@@ -1942,7 +1942,7 @@ pub fn IRBuilder::createPtrDiff(
 ///
 /// let eq_cmp = builder.createICmp(IntPredicate::EQ, arg0, arg1, name="eq_cmp")
 /// inspect(eq_cmp, content = "  %eq_cmp = icmp eq i32 %0, %1")
-/// assert_true(eq_cmp.asValueEnum() is CmpInst(_))
+/// assert_true(eq_cmp.asValueEnum() is ICmpInst(_))
 ///
 /// let val1 = ctx.getConstInt32(5)
 /// let val2 = ctx.getConstInt32(5)
@@ -1999,7 +1999,7 @@ pub fn IRBuilder::createICmp(
   )
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CmpInst::CmpInst(res_valueref)
+    false => ICmpInst::ICmpInst(res_valueref)
   }
 }
 
@@ -2026,7 +2026,7 @@ pub fn IRBuilder::createICmp(
 ///
 /// let oeq_cmp = builder.createFCmp(FloatPredicate::OEQ, arg0, arg1, name="oeq_cmp")
 /// inspect(oeq_cmp, content = "  %oeq_cmp = fcmp oeq float %0, %1")
-/// assert_true(oeq_cmp.asValueEnum() is CmpInst(_))
+/// assert_true(oeq_cmp.asValueEnum() is FCmpInst(_))
 ///
 /// let val1 = ctx.getConstFloat(3.14)
 /// let val2 = ctx.getConstFloat(3.14)
@@ -2092,7 +2092,7 @@ pub fn IRBuilder::createFCmp(
   )
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CmpInst::CmpInst(res_valueref)
+    false => FCmpInst::FCmpInst(res_valueref)
   }
 }
 

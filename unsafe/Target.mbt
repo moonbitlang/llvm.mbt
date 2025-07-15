@@ -28,6 +28,7 @@
 //
 // enum LLVMByteOrdering { LLVMBigEndian, LLVMLittleEndian };
 
+///|
 #external
 pub type LLVMTargetDataRef
 
@@ -193,7 +194,10 @@ pub type LLVMTargetDataRef
 //  */
 // LLVMTargetDataRef LLVMGetModuleDataLayout(LLVMModuleRef M);
 
-pub extern "C" fn llvm_get_module_data_layout(m: LLVMModuleRef) -> LLVMTargetDataRef = "LLVMGetModuleDataLayout";
+///|
+pub extern "C" fn llvm_get_module_data_layout(
+  m : LLVMModuleRef
+) -> LLVMTargetDataRef = "LLVMGetModuleDataLayout"
 
 //
 // /**
@@ -207,11 +211,14 @@ pub extern "C" fn llvm_get_module_data_layout(m: LLVMModuleRef) -> LLVMTargetDat
 //     See the constructor llvm::DataLayout::DataLayout. */
 // LLVMTargetDataRef LLVMCreateTargetData(const char *StringRep);
 
-pub fn llvm_create_target_data(string_rep: String) -> LLVMTargetDataRef {
-  let string_rep = moonbit_str_to_c_str(string_rep);
+///|
+pub fn llvm_create_target_data(string_rep : String) -> LLVMTargetDataRef {
+  let string_rep = moonbit_str_to_c_str(string_rep)
   __llvm_create_target_data(string_rep)
 }
-extern "C" fn __llvm_create_target_data(string_rep: CStr) -> LLVMTargetDataRef = "LLVMCreateTargetData";
+
+///|
+extern "C" fn __llvm_create_target_data(string_rep : CStr) -> LLVMTargetDataRef = "LLVMCreateTargetData"
 
 //
 // /** Deallocates a TargetData.
@@ -269,28 +276,44 @@ extern "C" fn __llvm_create_target_data(string_rep: CStr) -> LLVMTargetDataRef =
 // unsigned long long LLVMSizeOfTypeInBits(LLVMTargetDataRef TD, LLVMTypeRef
 // Ty);
 
-pub extern "C" fn llvm_size_of_type_in_bits(td: LLVMTargetDataRef, ty: LLVMTypeRef) -> UInt64 = "LLVMSizeOfTypeInBits";
+///|
+pub extern "C" fn llvm_size_of_type_in_bits(
+  td : LLVMTargetDataRef,
+  ty : LLVMTypeRef
+) -> UInt64 = "LLVMSizeOfTypeInBits"
 
 //
 // /** Computes the storage size of a type in bytes for a target.
 //     See the method llvm::DataLayout::getTypeStoreSize. */
 // unsigned long long LLVMStoreSizeOfType(LLVMTargetDataRef TD, LLVMTypeRef Ty);
 
-pub extern "C" fn llvm_store_size_of_type(td: LLVMTargetDataRef, ty: LLVMTypeRef) -> UInt64 = "LLVMStoreSizeOfType";
+///|
+pub extern "C" fn llvm_store_size_of_type(
+  td : LLVMTargetDataRef,
+  ty : LLVMTypeRef
+) -> UInt64 = "LLVMStoreSizeOfType"
 
 //
 // /** Computes the ABI size of a type in bytes for a target.
 //     See the method llvm::DataLayout::getTypeAllocSize. */
 // unsigned long long LLVMABISizeOfType(LLVMTargetDataRef TD, LLVMTypeRef Ty);
 
-pub extern "C" fn llvm_abi_size_of_type(td: LLVMTargetDataRef, ty: LLVMTypeRef) -> UInt64 = "LLVMABISizeOfType";
+///|
+pub extern "C" fn llvm_abi_size_of_type(
+  td : LLVMTargetDataRef,
+  ty : LLVMTypeRef
+) -> UInt64 = "LLVMABISizeOfType"
 
 //
 // /** Computes the ABI alignment of a type in bytes for a target.
 //     See the method llvm::DataLayout::getTypeABISize. */
 // unsigned LLVMABIAlignmentOfType(LLVMTargetDataRef TD, LLVMTypeRef Ty);
 
-pub extern "C" fn llvm_abi_alignment_of_type(td: LLVMTargetDataRef, ty: LLVMTypeRef) -> UInt = "LLVMABIAlignmentOfType";
+///|
+pub extern "C" fn llvm_abi_alignment_of_type(
+  td : LLVMTargetDataRef,
+  ty : LLVMTypeRef
+) -> UInt = "LLVMABIAlignmentOfType"
 
 //
 // /** Computes the call frame alignment of a type in bytes for a target.

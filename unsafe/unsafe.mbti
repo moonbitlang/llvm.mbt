@@ -1,6 +1,10 @@
 package "Kaida-Amethyst/llvm/unsafe"
 
 // Values
+fn llvm_abi_alignment_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt
+
+fn llvm_abi_size_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
+
 fn llvm_add_alias2(LLVMModuleRef, LLVMTypeRef, UInt, LLVMValueRef, String) -> LLVMValueRef
 
 fn llvm_add_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, LLVMAttributeRef) -> Unit
@@ -433,6 +437,8 @@ fn llvm_create_string_attribute(LLVMContextRef, String, String) -> LLVMAttribute
 
 fn llvm_create_string_error(CStr) -> LLVMErrorRef
 
+fn llvm_create_target_data(String) -> LLVMTargetDataRef
+
 fn llvm_create_target_machine(LLVMTargetRef, String, String, String, LLVMCodeGenOptLevel, LLVMRelocMode, LLVMCodeModel) -> LLVMTargetMachineRef
 
 fn llvm_create_target_machine_options() -> LLVMTargetMachineOptionsRef
@@ -802,6 +808,8 @@ fn llvm_get_metadata(LLVMValueRef, UInt) -> LLVMValueRef
 fn llvm_get_metadata_kind(LLVMMetadataRef) -> LLVMMetadataKind
 
 fn llvm_get_module_context(LLVMModuleRef) -> LLVMContextRef
+
+fn llvm_get_module_data_layout(LLVMModuleRef) -> LLVMTargetDataRef
 
 fn llvm_get_module_debug_metadata_version(LLVMModuleRef) -> UInt
 
@@ -1593,9 +1601,13 @@ fn llvm_shutdown() -> Unit
 
 fn llvm_size_of(LLVMTypeRef) -> LLVMValueRef
 
+fn llvm_size_of_type_in_bits(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
+
 fn llvm_start_multithreaded() -> Bool
 
 fn llvm_stop_multithreaded() -> Unit
+
+fn llvm_store_size_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
 
 fn llvm_strip_module_debug_info(LLVMModuleRef) -> LLVMBool
 
@@ -2442,6 +2454,7 @@ pub(all) enum LLVMOpcode {
 }
 fn LLVMOpcode::from_int(Int) -> Self
 fn LLVMOpcode::to_int(Self) -> Int
+impl Show for LLVMOpcode
 
 #external
 pub type LLVMOperandBundleRef
@@ -2543,6 +2556,9 @@ pub(all) enum LLVMTailCallKind {
 fn LLVMTailCallKind::from_int(Int) -> Self
 fn LLVMTailCallKind::to_int(Self) -> Int
 impl Eq for LLVMTailCallKind
+
+#external
+pub type LLVMTargetDataRef
 
 #external
 pub type LLVMTargetMachineOptionsRef

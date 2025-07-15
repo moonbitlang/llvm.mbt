@@ -40,7 +40,8 @@ pub enum ValueEnum {
   CastInst(CastInst)
   UnaryInst(UnaryInst)
   BinaryInst(BinaryInst)
-  CmpInst(CmpInst)
+  ICmpInst(ICmpInst)
+  FCmpInst(FCmpInst)
   GetElementPtrInst(GetElementPtrInst)
   SelectInst(SelectInst)
   ExtractValueInst(ExtractValueInst)
@@ -129,6 +130,7 @@ pub trait Instruction: Value {
   getPrevInst(Self) -> &Instruction? = _
   removeFromParent(Self) -> Unit = _
   eraseFromParent(Self) -> Unit = _
+  getNumArgOperands(Self) -> Int = _
 }
 
 ///|
@@ -141,70 +143,106 @@ impl Instruction with getParentBasicBlock(self) {
   }
 }
 
-fn initInstruction(valueref: ValueRef) -> &Instruction {
-  fn is_binary_opcode(opcode: @unsafe.LLVMOpcode) -> Bool {
+///|
+fn initInstruction(valueref : ValueRef) -> &Instruction {
+  fn is_binary_opcode(opcode : @unsafe.LLVMOpcode) -> Bool {
     match opcode {
-      LLVMAdd | LLVMSub | LLVMMul | LLVMSDiv | LLVMSRem | LLVMUDiv | LLVMURem |
-      LLVMShl | LLVMLShr | LLVMAShr | LLVMAnd | LLVMOr | LLVMXor => true
+      LLVMAdd
+      | LLVMSub
+      | LLVMMul
+      | LLVMSDiv
+      | LLVMSRem
+      | LLVMUDiv
+      | LLVMURem
+      | LLVMShl
+      | LLVMLShr
+      | LLVMAShr
+      | LLVMAnd
+      | LLVMOr
+      | LLVMXor => true
       _ => false
     }
   }
-  fn is_cast_opcode(opcode: @unsafe.LLVMOpcode) -> Bool {
+
+  fn is_cast_opcode(opcode : @unsafe.LLVMOpcode) -> Bool {
     match opcode {
-      LLVMBitCast | LLVMAddrSpaceCast | LLVMTrunc | LLVMZExt | LLVMSExt |
-      LLVMFPToUI | LLVMFPToSI | LLVMUIToFP | LLVMSIToFP | LLVMPtrToInt |
-      LLVMIntToPtr => true
+      LLVMBitCast
+      | LLVMAddrSpaceCast
+      | LLVMTrunc
+      | LLVMZExt
+      | LLVMSExt
+      | LLVMFPToUI
+      | LLVMFPToSI
+      | LLVMUIToFP
+      | LLVMSIToFP
+      | LLVMPtrToInt
+      | LLVMIntToPtr => true
       _ => false
     }
   }
+
   let opcode = @unsafe.llvm_get_instruction_opcode(valueref)
   match opcode {
-    LLVMAlloca =>  AllocaInst::AllocaInst(valueref) as &Instruction
-    LLVMLoad =>  LoadInst::LoadInst(valueref)
-    LLVMStore =>  StoreInst::StoreInst(valueref)
-    LLVMGetElementPtr =>  GetElementPtrInst::GetElementPtrInst(valueref)
-    LLVMFNeg =>  UnaryInst::UnaryInst(valueref)
-    LLVMICmp =>  CmpInst::CmpInst(valueref)
-    LLVMFCmp =>  CmpInst::CmpInst(valueref)
-    LLVMSelect =>  SelectInst::SelectInst(valueref)
-    LLVMExtractValue =>  ExtractValueInst::ExtractValueInst(valueref)
-    LLVMInsertValue =>  InsertValueInst::InsertValueInst(valueref)
-    LLVMPHI =>  PHINode::PHINode(valueref)
-    LLVMRet =>  ReturnInst::ReturnInst(valueref)
-    LLVMBr =>  BranchInst::BranchInst(valueref)
-    LLVMSwitch =>  SwitchInst::SwitchInst(valueref)
-    LLVMCall =>  CallInst::CallInst(valueref)
-    opcode if is_binary_opcode(opcode) => {
-      BinaryInst::BinaryInst(valueref)
-    }
-    opcode if is_cast_opcode(opcode) => {
-      CastInst::CastInst(valueref)
-    }
+    LLVMAlloca => AllocaInst::AllocaInst(valueref) as &Instruction
+    LLVMLoad => LoadInst::LoadInst(valueref)
+    LLVMStore => StoreInst::StoreInst(valueref)
+    LLVMGetElementPtr => GetElementPtrInst::GetElementPtrInst(valueref)
+    LLVMFNeg => UnaryInst::UnaryInst(valueref)
+    LLVMICmp => ICmpInst::ICmpInst(valueref)
+    LLVMFCmp => FCmpInst::FCmpInst(valueref)
+    LLVMSelect => SelectInst::SelectInst(valueref)
+    LLVMExtractValue => ExtractValueInst::ExtractValueInst(valueref)
+    LLVMInsertValue => InsertValueInst::InsertValueInst(valueref)
+    LLVMPHI => PHINode::PHINode(valueref)
+    LLVMRet => ReturnInst::ReturnInst(valueref)
+    LLVMBr => BranchInst::BranchInst(valueref)
+    LLVMSwitch => SwitchInst::SwitchInst(valueref)
+    LLVMCall => CallInst::CallInst(valueref)
+    opcode if is_binary_opcode(opcode) => BinaryInst::BinaryInst(valueref)
+    opcode if is_cast_opcode(opcode) => CastInst::CastInst(valueref)
     _ => {
-      println("ICE: `initInstruction` get unknown instruction opcode: \{opcode}")
+      println(
+        "ICE: `initInstruction` get unknown instruction opcode: \{opcode}",
+      )
       panic()
     }
   }
 }
 
+///|
 impl Instruction with getNextInst(self) {
   let valueref = self.getValueRef()
   let next_ref = @unsafe.llvm_get_next_instruction(valueref)
-  unless(@unsafe.llvm_value_ref_is_null(next_ref), () => initInstruction(next_ref))
+  unless(@unsafe.llvm_value_ref_is_null(next_ref), () => initInstruction(
+    next_ref,
+  ))
 }
 
+///|
 impl Instruction with getPrevInst(self) {
   let valueref = self.getValueRef()
   let prev_ref = @unsafe.llvm_get_previous_instruction(valueref)
-  unless(@unsafe.llvm_value_ref_is_null(prev_ref), () => initInstruction(prev_ref))
+  unless(@unsafe.llvm_value_ref_is_null(prev_ref), () => initInstruction(
+    prev_ref,
+  ))
 }
 
+///|
+///
+/// After `remove` the instruction is no longer in the parent basic block.
+/// But it is still in the module, so it can be reused.
 impl Instruction with removeFromParent(self) {
   @unsafe.llvm_instruction_remove_from_parent(self.getValueRef())
 }
 
+///|
 impl Instruction with eraseFromParent(self) {
   @unsafe.llvm_instruction_erase_from_parent(self.getValueRef())
+}
+
+///|
+impl Instruction with getNumArgOperands(self) {
+  @unsafe.llvm_get_num_arg_operands(self.getValueRef()).reinterpret_as_int()
 }
 
 ///|
@@ -215,7 +253,8 @@ pub enum InstructionEnum {
   CastInst(CastInst)
   UnaryInst(UnaryInst)
   BinaryInst(BinaryInst)
-  CmpInst(CmpInst)
+  ICmpInst(ICmpInst)
+  FCmpInst(FCmpInst)
   GetElementPtrInst(GetElementPtrInst)
   SelectInst(SelectInst)
   ExtractValueInst(ExtractValueInst)

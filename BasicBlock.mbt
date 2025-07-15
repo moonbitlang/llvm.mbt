@@ -59,30 +59,27 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
 }
 
 ///|
-pub fn BasicBlock::getFirstInst(self: Self) -> &Instruction? {
+pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_first_instruction(self.inner())
-  unless(
-    @unsafe.llvm_value_ref_is_null(valueref),
-    () => initInstruction(valueref)
-  )
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
+    valueref,
+  ))
 }
 
 ///|
-pub fn BasicBlock::getLastInst(self: Self) -> &Instruction? {
+pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_last_instruction(self.inner())
-  unless(
-    @unsafe.llvm_value_ref_is_null(valueref),
-    () => initInstruction(valueref)
-  )
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
+    valueref,
+  ))
 }
 
 ///|
-pub fn BasicBlock::getTerminator(self: Self) -> &Instruction? {
+pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_basic_block_terminator(self.inner())
-  unless(
-    @unsafe.llvm_value_ref_is_null(valueref),
-    () => initInstruction(valueref)
-  )
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
+    valueref,
+  ))
 }
 
 ///|

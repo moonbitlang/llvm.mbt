@@ -1,4 +1,3 @@
-
 ///|
 pub type DataLayout @unsafe.LLVMTargetDataRef
 
@@ -17,7 +16,7 @@ pub type DataLayout @unsafe.LLVMTargetDataRef
 ///
 /// assert_eq(i32_ty_size, 32)
 /// ```
-pub fn DataLayout::getTypeSizeInBits(self: DataLayout, ty: &Type) -> Int {
+pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
   let size = @unsafe.llvm_size_of_type_in_bits(self.inner(), ty.getTypeRef())
   size.to_int()
 }
@@ -44,19 +43,19 @@ pub fn DataLayout::getTypeSizeInBits(self: DataLayout, ty: &Type) -> Int {
 /// assert_eq(f32_ty_size, 4)
 /// assert_eq(struct_ty_size, 8)
 /// ```
-pub fn DataLayout::getTypeStoreSize(self: DataLayout, ty: &Type) -> Int {
+pub fn DataLayout::getTypeStoreSize(self : DataLayout, ty : &Type) -> Int {
   let size = @unsafe.llvm_store_size_of_type(self.inner(), ty.getTypeRef())
   size.to_int()
 }
 
 ///|
-pub fn DataLayout::getTypeAllocSize(self: DataLayout, ty: &Type) -> Int {
+pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
   let size = @unsafe.llvm_abi_size_of_type(self.inner(), ty.getTypeRef())
   size.to_int()
 }
 
 ///|
-pub fn DataLayout::getTypeAlignment(self: DataLayout, ty: &Type) -> Int {
+pub fn DataLayout::getTypeAlignment(self : DataLayout, ty : &Type) -> Int {
   let align = @unsafe.llvm_abi_alignment_of_type(self.inner(), ty.getTypeRef())
   align.reinterpret_as_int()
 }

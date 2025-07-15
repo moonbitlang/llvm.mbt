@@ -142,10 +142,7 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 ///
 /// assert_eq(fval.getNumBasicBlocks(), 3)
 /// ```
-pub fn Function::addBasicBlock(
-  self : Self,
-  name~ : String = ""
-) -> BasicBlock {
+pub fn Function::addBasicBlock(self : Self, name~ : String = "") -> BasicBlock {
   let blockref = @unsafe.llvm_append_basic_block(self.getValueRef(), name)
   BasicBlock(blockref)
 }
@@ -503,6 +500,7 @@ pub fn Argument::getFunction(self : Self) -> Function {
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 //
+
 ///| builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
@@ -544,6 +542,7 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
 //
+
 ///| builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
