@@ -400,10 +400,7 @@ fn TypeCheck::check_left_value(
 }
 
 ///|
-fn TypeCheck::check_apply(
-  self : Self,
-  apply_expr : ApplyExpr
-) -> Type raise {
+fn TypeCheck::check_apply(self : Self, apply_expr : ApplyExpr) -> Type raise {
   match apply_expr {
     Atom(atom_expr, ..) as a => {
       let ty = self.check_atom_expr(atom_expr)
@@ -465,10 +462,7 @@ fn TypeCheck::check_apply(
 }
 
 ///|
-fn TypeCheck::check_atom_expr(
-  self : Self,
-  atom_expr : AtomExpr
-) -> Type raise {
+fn TypeCheck::check_atom_expr(self : Self, atom_expr : AtomExpr) -> Type raise {
   match atom_expr {
     Bool(_) => Bool
     Int(_) => Int

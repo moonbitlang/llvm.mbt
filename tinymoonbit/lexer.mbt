@@ -44,13 +44,12 @@ fn lex(code : String) -> Array[Token] raise {
       tokens.push(EOF)
       break tokens
     }
-    [.."//", .. rest] => {
+    [.. "//", .. rest] =>
       continue loop rest {
-        ['\n' | '\r', .. rest_str] => break rest_str
-        [_, .. rest_str] => continue rest_str
-        [] as rest_str => break rest_str
-      }
-    }
+          ['\n' | '\r', .. rest_str] => break rest_str
+          [_, .. rest_str] => continue rest_str
+          [] as rest_str => break rest_str
+        }
     [';', .. rest] => {
       tokens.push(Token::Terminator)
       continue rest

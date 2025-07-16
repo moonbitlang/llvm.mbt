@@ -466,9 +466,7 @@ fn Stmt::parse(tokens : ArrayView[Token]) -> (Stmt, ArrayView[Token]) raise {
 }
 
 ///|
-fn Stmt::parse_let(
-  tokens : ArrayView[Token]
-) -> (Stmt, ArrayView[Token]) raise {
+fn Stmt::parse_let(tokens : ArrayView[Token]) -> (Stmt, ArrayView[Token]) raise {
   match tokens {
     // let x: Array[Int];
     [
@@ -613,9 +611,7 @@ test "Stmt::parse_assign" {
 }
 
 ///|
-fn Stmt::parse_if(
-  tokens : ArrayView[Token]
-) -> (Stmt, ArrayView[Token]) raise {
+fn Stmt::parse_if(tokens : ArrayView[Token]) -> (Stmt, ArrayView[Token]) raise {
   match tokens {
     [Keyword(If), .. rest_toks] => {
       let (condition, rest_toks) = Expr::parse(rest_toks)
@@ -663,34 +659,30 @@ fn Stmt::parse_if(
 
 ///|
 test "Stmt::parse if" {
-  let code = 
+  let code =
     #| if x > 0 {
     #|   b = true;
     #| }
-  let (s, _) = code
-    |> lex
-    |> Stmt::parse_if
+  let (s, _) = code |> lex |> Stmt::parse_if
   inspect(
     s,
     content="If(Gt(Apply(Atom(Var(\"x\", ty=None), ty=None), ty=None), Apply(Atom(Int(0), ty=None), ty=None)), " +
       "[Assign(Var(\"b\", ty=None), Apply(Atom(Bool(true), ty=None), ty=None))], [])",
   )
-  let code = 
+  let code =
     #| if x > 0 {
     #|   b = true;
     #| } else {
     #|   b = false;
     #| }
-  let (s, _) = code
-    |> lex
-    |> Stmt::parse_if
+  let (s, _) = code |> lex |> Stmt::parse_if
   inspect(
     s,
     content="If(Gt(Apply(Atom(Var(\"x\", ty=None), ty=None), ty=None), Apply(Atom(Int(0), ty=None), ty=None)), " +
       "[Assign(Var(\"b\", ty=None), Apply(Atom(Bool(true), ty=None), ty=None))], " +
       "[Assign(Var(\"b\", ty=None), Apply(Atom(Bool(false), ty=None), ty=None))])",
   )
-  let code = 
+  let code =
     #| if x > 0 {
     #|   b = 1;
     #| } else if x < 0 {
@@ -698,9 +690,7 @@ test "Stmt::parse if" {
     #| } else {
     #|   b = 0;
     #| }
-  let (s, _) = code
-    |> lex
-    |> Stmt::parse_if
+  let (s, _) = code |> lex |> Stmt::parse_if
   inspect(
     s,
     content="If(Gt(Apply(Atom(Var(\"x\", ty=None), ty=None), ty=None), Apply(Atom(Int(0), ty=None), ty=None)), " +
@@ -744,13 +734,11 @@ fn Stmt::parse_while(
 
 ///|
 test "Stmt::parse while" {
-  let code = 
+  let code =
     #| while x < 10 {
     #|   x = x + 1;
     #| }
-  let (s, _) = code 
-    |> lex
-    |> Stmt::parse_while
+  let (s, _) = code |> lex |> Stmt::parse_while
   inspect(
     s,
     content="While(Lt(Apply(Atom(Var(\"x\", ty=None), ty=None), ty=None), Apply(Atom(Int(10), ty=None), ty=None)), " +

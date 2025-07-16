@@ -13,7 +13,9 @@ pub fn Context::new() -> Context {
 
 ///|
 pub fn Context::addModule(self : Self, name : String) -> Module {
-  let mod = Module(@unsafe.llvm_module_create_with_name_in_context(name, self.inner()))
+  let mod = Module(
+    @unsafe.llvm_module_create_with_name_in_context(name, self.inner()),
+  )
   mod.setDefaultDataLayout()
   mod
 }

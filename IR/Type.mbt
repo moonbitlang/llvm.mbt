@@ -167,9 +167,10 @@ fn initAbstractType_err(
         16 => Int16Type::Int16Type(typeref)
         32 => Int32Type::Int32Type(typeref)
         64 => Int64Type::Int64Type(typeref)
-        _ => raise InValidTypeError(
-          "Invalid integer type with bitwidth: \{bitwidth}"
-        )
+        _ =>
+          raise InValidTypeError(
+            "Invalid integer type with bitwidth: \{bitwidth}",
+          )
       }
     }
     LLVMLabelTypeKind => LabelType::LabelType(typeref)
@@ -326,6 +327,7 @@ impl Type with getScalarType(self) {
   }
 }
 
+///|
 impl Type with tryAsIntType(self) -> &IntegerType? {
   match self.asTypeEnum() {
     Int1Type(i) => Some(i)
@@ -337,6 +339,7 @@ impl Type with tryAsIntType(self) -> &IntegerType? {
   }
 }
 
+///|
 impl Type with tryAsIntTypeEnum(self) -> IntegerTypeEnum? {
   match self.asTypeEnum() {
     Int1Type(i) => Some(Int1Type(i))
@@ -518,7 +521,6 @@ pub fn IntegerTypeEnum::getBitWidth(self : IntegerTypeEnum) -> UInt {
   }
 }
 
-
 // ====================================================================
 // FPType && FPTypeEnum
 // ====================================================================
@@ -585,11 +587,16 @@ impl PrimitiveType with getBitWidth(self) -> Int {
     FloatType(_) => 32
     DoubleType(_) => 64
     FP128Type(_) => 128
-    Int1Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
-    Int8Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
-    Int16Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
-    Int32Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
-    Int64Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int1Type(_) =>
+      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int8Type(_) =>
+      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int16Type(_) =>
+      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int32Type(_) =>
+      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int64Type(_) =>
+      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
   }
 }
 
@@ -868,6 +875,7 @@ pub impl Type for Int1Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
+///|
 pub impl IntegerType for Int1Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int1Type(self)
 }
@@ -899,6 +907,7 @@ pub impl Type for Int8Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
+///|
 pub impl IntegerType for Int8Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int8Type(self)
 }
@@ -930,10 +939,10 @@ pub impl Type for Int16Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
+///|
 pub impl IntegerType for Int16Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int16Type(self)
 }
-
 
 ///|
 pub impl PrimitiveType for Int16Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
@@ -962,11 +971,10 @@ pub impl Type for Int32Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
-
+///|
 pub impl IntegerType for Int32Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int32Type(self)
 }
-
 
 ///|
 pub impl PrimitiveType for Int32Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
@@ -995,11 +1003,10 @@ pub impl Type for Int64Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
-
+///|
 pub impl IntegerType for Int64Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int64Type(self)
 }
-
 
 ///|
 pub impl PrimitiveType for Int64Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {

@@ -24,9 +24,7 @@ fn CodeGen::convert_parser_type_to_llvm_type(
 ) -> &@IR.Type raise {
   let ctx = self.llvm_ctx
   match ty {
-    Unit => {
-      ctx.getVoidTy() as &@IR.Type
-    }
+    Unit => ctx.getVoidTy() as &@IR.Type
     Bool => ctx.getInt1Ty()
     Int | UInt => ctx.getInt32Ty()
     Int64 | UInt64 => ctx.getInt64Ty()
@@ -637,9 +635,7 @@ fn Env::emitApplyExpr(self : Self, apply_expr : ApplyExpr) -> &@IR.Value raise {
 fn Env::emitAtomExpr(self : Self, atomExpr : AtomExpr) -> &@IR.Value raise {
   let ctx = self.gen.llvm_ctx
   match atomExpr {
-    Bool(true) => {
-      ctx.getConstTrue() as &@IR.Value
-    }
+    Bool(true) => ctx.getConstTrue() as &@IR.Value
     Bool(false) => ctx.getConstFalse()
     Int(v) => ctx.getConstInt32(v)
     UInt(v) => ctx.getConstInt32(v.reinterpret_as_int())

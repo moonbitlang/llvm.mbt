@@ -2960,8 +2960,11 @@ pub fn IRBuilder::createBitCast(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match to.asTypeEnum() {
-        Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) => 
-          ConstantInt::ConstantInt(res_valueref) as &Value
+        Int1Type(_)
+        | Int8Type(_)
+        | Int16Type(_)
+        | Int32Type(_)
+        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
@@ -3297,8 +3300,11 @@ pub fn IRBuilder::createSelect(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match trueVal.getType().asTypeEnum() {
-        Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) => 
-          ConstantInt::ConstantInt(res_valueref) as &Value
+        Int1Type(_)
+        | Int8Type(_)
+        | Int16Type(_)
+        | Int32Type(_)
+        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
@@ -3713,8 +3719,7 @@ pub fn IRBuilder::createExtractValue(
         | Int8Type(_)
         | Int16Type(_)
         | Int32Type(_)
-        | Int64Type(_) =>
-          ConstantInt::ConstantInt(res_valueref) as &Value
+        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
