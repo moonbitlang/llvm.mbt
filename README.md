@@ -1,6 +1,6 @@
 # llvm.mbt
 
-[🇨🇳 中文版](#llvm-mbt-中文版)
+[🇨🇳 中文版](#llvmmbt-1)
 
 **llvm.mbt** 🚀 is a comprehensive LLVM binding for the [MoonBit](https://www.moonbitlang.com/) language that provides a **C++-style API** with enhanced type safety. Built on top of LLVM-C bindings, it offers a familiar development experience similar to original LLVM C++ while leveraging MoonBit's powerful type system to prevent common programming errors.
 
@@ -160,7 +160,7 @@ Visit our [GitHub repository](https://github.com/moonbitlang/llvm.mbt) to get st
 
 ---
 
-# llvm.mbt 中文版
+# llvm.mbt
 
 **llvm.mbt** 🚀 是一个为 [MoonBit](https://www.moonbitlang.com/) 语言设计的全面 LLVM 绑定库，提供了**C++ 风格的 API** 和增强的类型安全性。基于 LLVM-C 绑定构建，它提供了与原版 LLVM C++ 相似的开发体验，同时利用 MoonBit 的强大类型系统来防止常见的编程错误。
 
