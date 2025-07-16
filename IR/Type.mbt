@@ -5,7 +5,11 @@ pub enum TypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-  IntType(IntType)
+  Int1Type(Int1Type)
+  Int8Type(Int8Type)
+  Int16Type(Int16Type)
+  Int32Type(Int32Type)
+  Int64Type(Int64Type)
   VoidType(VoidType)
   LabelType(LabelType)
   MetadataType(MetadataType)
@@ -26,7 +30,11 @@ pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
     FloatType(t) => t
     DoubleType(t) => t
     FP128Type(t) => t
-    IntType(t) => t
+    Int1Type(t) => t
+    Int8Type(t) => t
+    Int16Type(t) => t
+    Int32Type(t) => t
+    Int64Type(t) => t
     VoidType(t) => t
     LabelType(t) => t
     MetadataType(t) => t
@@ -118,6 +126,8 @@ pub trait Type: Show {
   /// element type. Otherwise return the getPrimitiveSizeInBits value for this
   /// type.
   getScalarType(Self) -> &Type = _
+  tryAsIntType(Self) -> &IntegerType? = _
+  tryAsIntTypeEnum(Self) -> IntegerTypeEnum? = _
   tryAsFPType(Self) -> &FPType? = _
   tryAsFPTypeEnum(Self) -> FPTypeEnum? = _
   tryAsPrimitiveType(Self) -> &PrimitiveType? = _
@@ -149,7 +159,19 @@ fn initAbstractType_err(
     LLVMVectorTypeKind => VectorType::VectorType(typeref)
     LLVMScalableVectorTypeKind =>
       ScalableVectorType::ScalableVectorType(typeref)
-    LLVMIntegerTypeKind => IntType::IntType(typeref)
+    LLVMIntegerTypeKind => {
+      let bitwidth = @unsafe.llvm_get_int_type_width(typeref)
+      match bitwidth {
+        1 => Int1Type::Int1Type(typeref) as &Type
+        8 => Int8Type::Int8Type(typeref)
+        16 => Int16Type::Int16Type(typeref)
+        32 => Int32Type::Int32Type(typeref)
+        64 => Int64Type::Int64Type(typeref)
+        _ => raise InValidTypeError(
+          "Invalid integer type with bitwidth: \{bitwidth}"
+        )
+      }
+    }
     LLVMLabelTypeKind => LabelType::LabelType(typeref)
     LLVMMetadataTypeKind => MetadataType::MetadataType(typeref)
     LLVMTokenTypeKind => TokenType::TokenType(typeref)
@@ -212,7 +234,8 @@ impl Type with isScalableTy(_) -> Bool {
 
 ///|
 impl Type with isIntOrIntVectorTy(self) -> Bool {
-  self.getScalarType().asTypeEnum() is IntType(_)
+  self.getScalarType().asTypeEnum()
+  is (Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_))
 }
 
 ///|
@@ -224,7 +247,13 @@ impl Type with isFPOrFPVectorTy(self) -> Bool {
 
 ///|
 impl Type with isIntOrPtrTy(self) -> Bool {
-  self.asTypeEnum() is (IntType(_) | PointerType(_))
+  self.asTypeEnum()
+  is (Int1Type(_)
+  | Int8Type(_)
+  | Int16Type(_)
+  | Int32Type(_)
+  | Int64Type(_)
+  | PointerType(_))
 }
 
 ///|
@@ -261,7 +290,8 @@ impl Type with isSingleValueType(self) -> Bool {
   match self.asTypeEnum() {
     HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) | FP128Type(_) =>
       true
-    IntType(_) => true
+    Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) =>
+      true
     PointerType(_) => true
     VectorType(_) => true
     _ => false
@@ -293,6 +323,28 @@ impl Type with getScalarType(self) {
     vec.getElementType()
   } else {
     self
+  }
+}
+
+impl Type with tryAsIntType(self) -> &IntegerType? {
+  match self.asTypeEnum() {
+    Int1Type(i) => Some(i)
+    Int8Type(i) => Some(i)
+    Int16Type(i) => Some(i)
+    Int32Type(i) => Some(i)
+    Int64Type(i) => Some(i)
+    _ => None
+  }
+}
+
+impl Type with tryAsIntTypeEnum(self) -> IntegerTypeEnum? {
+  match self.asTypeEnum() {
+    Int1Type(i) => Some(Int1Type(i))
+    Int8Type(i) => Some(Int8Type(i))
+    Int16Type(i) => Some(Int16Type(i))
+    Int32Type(i) => Some(Int32Type(i))
+    Int64Type(i) => Some(Int64Type(i))
+    _ => None
   }
 }
 
@@ -328,7 +380,6 @@ impl Type with tryAsPrimitiveType(self) -> &PrimitiveType? {
     FloatType(float) => Some(float)
     DoubleType(double) => Some(double)
     FP128Type(fp128) => Some(fp128)
-    IntType(int1) => Some(int1)
     _ => None
   }
 }
@@ -341,7 +392,6 @@ impl Type with tryAsPrimitiveTypeEnum(self) -> PrimitiveTypeEnum? {
     FloatType(float) => Some(FloatType(float))
     DoubleType(double) => Some(DoubleType(double))
     FP128Type(fp128) => Some(FP128Type(fp128))
-    IntType(int1) => Some(IntType(int1))
     _ => None
   }
 }
@@ -396,16 +446,89 @@ impl Type with tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 // pub Type with dump(self)
 
 // ====================================================================
+// IntegerType & IntegerTypeEnum
+// ====================================================================
+
+///| Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
+///
+/// ```moonbit
+/// let ctx = Context::new()
+///
+/// let i8ty :&IntegerType = ctx.getInt8Ty()
+/// assert_eq(i8ty.getBitWidth(), 8)
+/// inspect(i8ty.getExtendedType().unwrap(), content="i16")
+///
+/// let i32ty = i8ty.getExtendedType().unwrap()
+///                 .getExtendedType().unwrap()
+///
+/// inspect(i32ty, content="i32")
+/// guard i32ty.asIntegerTypeEnum() is Int32Type(i32ty)
+/// inspect(i32ty, content="i32")
+/// ```
+pub trait IntegerType: PrimitiveType {
+  asIntegerTypeEnum(Self) -> IntegerTypeEnum
+  getExtendedType(Self) -> &IntegerType? = _
+}
+
+/////|
+//impl IntegerType with getBitWidth(self) -> UInt {
+//  @unsafe.llvm_get_int_type_width(self.getTypeRef())
+//}
+
+///|
+impl IntegerType with getExtendedType(self) -> &IntegerType? {
+  let ctx = self.getContext()
+  match self.asIntegerTypeEnum() {
+    Int8Type(_) => ctx.getInt16Ty() |> Some
+    Int16Type(_) => ctx.getInt32Ty() |> Some
+    Int32Type(_) => ctx.getInt64Ty() |> Some
+    Int64Type(_) => None
+    Int1Type(_) => None
+  }
+}
+
+///|
+pub enum IntegerTypeEnum {
+  Int1Type(Int1Type)
+  Int8Type(Int8Type)
+  Int16Type(Int16Type)
+  Int32Type(Int32Type)
+  Int64Type(Int64Type)
+} derive(Eq, Show)
+
+///|
+pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
+  match self {
+    Int1Type(t) => (t : &Type)
+    Int8Type(t) => t
+    Int16Type(t) => t
+    Int32Type(t) => t
+    Int64Type(t) => t
+  }
+}
+
+///|
+pub fn IntegerTypeEnum::getBitWidth(self : IntegerTypeEnum) -> UInt {
+  match self {
+    Int1Type(_) => 1
+    Int8Type(_) => 8
+    Int16Type(_) => 16
+    Int32Type(_) => 32
+    Int64Type(_) => 64
+  }
+}
+
+
+// ====================================================================
 // FPType && FPTypeEnum
 // ====================================================================
 
 ///|
-pub trait FPType: Type {
+pub trait FPType: PrimitiveType {
   asFPTypeEnum(Self) -> FPTypeEnum
 
   /// Return the width of the mantissa of this type. 
   getFPMantissaWidth(Self) -> UInt = _
-  getBitWidth(Self) -> UInt = _
 }
 
 ///|
@@ -429,17 +552,6 @@ pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
 }
 
 ///|
-pub fn FPTypeEnum::getBitWidth(self : FPTypeEnum) -> UInt {
-  match self {
-    HalfType(_) => 16
-    BFloatType(_) => 16
-    FloatType(_) => 32
-    DoubleType(_) => 64
-    FP128Type(_) => 128
-  }
-}
-
-///|
 pub fn FPTypeEnum::getFPMantissaWidth(self : FPTypeEnum) -> UInt {
   match self {
     HalfType(_) => 11
@@ -455,11 +567,6 @@ impl FPType with getFPMantissaWidth(self) {
   self.asFPTypeEnum().getFPMantissaWidth()
 }
 
-///|
-impl FPType with getBitWidth(self) -> UInt {
-  self.asFPTypeEnum().getBitWidth()
-}
-
 // ====================================================================
 // Primitive Types, PrimitiveType && PrimitiveTypeEnum
 // ====================================================================
@@ -467,12 +574,23 @@ impl FPType with getBitWidth(self) -> UInt {
 ///|
 pub trait PrimitiveType: Type {
   asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
-  getBitWidth(Self) -> UInt = _
+  getBitWidth(Self) -> Int = _
 }
 
 ///|
-impl PrimitiveType with getBitWidth(self) -> UInt {
-  self.asPrimitiveTypeEnum().getBitWidth()
+impl PrimitiveType with getBitWidth(self) -> Int {
+  match self.asPrimitiveTypeEnum() {
+    HalfType(_) => 16
+    BFloatType(_) => 16
+    FloatType(_) => 32
+    DoubleType(_) => 64
+    FP128Type(_) => 128
+    Int1Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int8Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int16Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int32Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+    Int64Type(_) => @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+  }
 }
 
 ///|
@@ -482,20 +600,12 @@ pub enum PrimitiveTypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-  IntType(IntType)
+  Int1Type(Int1Type)
+  Int8Type(Int8Type)
+  Int16Type(Int16Type)
+  Int32Type(Int32Type)
+  Int64Type(Int64Type)
 } derive(Eq, Show)
-
-///|
-pub fn PrimitiveTypeEnum::getBitWidth(self : PrimitiveTypeEnum) -> UInt {
-  match self {
-    HalfType(_) => 16
-    BFloatType(_) => 16
-    FloatType(_) => 32
-    DoubleType(_) => 64
-    FP128Type(_) => 128
-    IntType(i) => i.getBitWidth()
-  }
-}
 
 // ====================================================================
 // Aggregate Types, AggregateType && AggregateTypeEnum
@@ -737,49 +847,163 @@ pub impl PrimitiveType for FP128Type with asPrimitiveTypeEnum(self) -> Primitive
 }
 
 // ====================================================================
-// IntType
+// Int1Type
 // ====================================================================
 
 ///|
-pub type IntType @unsafe.LLVMTypeRef derive(Eq)
+pub type Int1Type @unsafe.LLVMTypeRef derive(Eq)
 
 ///|
-//fn IntType::new(typeref : @unsafe.LLVMTypeRef) -> IntType {
-//  IntType::{ typeref, }
-//}
-
-///| Gets the bit width of an `IntType`.
-///
-/// ## Example
-///
-/// ```moonbit
-/// let context = Context::new();
-/// let i32_type = context.getInt32Ty();
-/// let i32_width = i32_type.getBitWidth();
-/// inspect(i32_width, content="32")
-/// ```
-pub fn IntType::getBitWidth(self : IntType) -> UInt {
-  @unsafe.llvm_get_int_type_width(self.getTypeRef())
-}
-
-///|
-pub impl Show for IntType with output(self, logger : &Logger) {
+pub impl Show for Int1Type with output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for IntType with asTypeEnum(self) -> TypeEnum {
-  TypeEnum::IntType(self)
+pub impl Type for Int1Type with asTypeEnum(self) -> TypeEnum {
+  TypeEnum::Int1Type(self)
 }
 
 ///|
-pub impl Type for IntType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int1Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.inner()
 }
 
+pub impl IntegerType for Int1Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+  Int1Type(self)
+}
+
 ///|
-pub impl PrimitiveType for IntType with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
-  IntType(self)
+pub impl PrimitiveType for Int1Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+  Int1Type(self)
+}
+
+// ====================================================================
+// Int8Type
+// ====================================================================
+
+///|
+pub type Int8Type @unsafe.LLVMTypeRef derive(Eq)
+
+///|
+pub impl Show for Int8Type with output(self, logger : &Logger) {
+  self.getTypeRef().output(logger)
+}
+
+///|
+pub impl Type for Int8Type with asTypeEnum(self) -> TypeEnum {
+  TypeEnum::Int8Type(self)
+}
+
+///|
+pub impl Type for Int8Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+  self.inner()
+}
+
+pub impl IntegerType for Int8Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+  Int8Type(self)
+}
+
+///|
+pub impl PrimitiveType for Int8Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+  Int8Type(self)
+}
+
+// ====================================================================
+// Int16Type
+// ====================================================================
+
+///|
+pub type Int16Type @unsafe.LLVMTypeRef derive(Eq)
+
+///|
+pub impl Show for Int16Type with output(self, logger : &Logger) {
+  self.getTypeRef().output(logger)
+}
+
+///|
+pub impl Type for Int16Type with asTypeEnum(self) -> TypeEnum {
+  TypeEnum::Int16Type(self)
+}
+
+///|
+pub impl Type for Int16Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+  self.inner()
+}
+
+pub impl IntegerType for Int16Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+  Int16Type(self)
+}
+
+
+///|
+pub impl PrimitiveType for Int16Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+  Int16Type(self)
+}
+
+// ====================================================================
+// Int32Type
+// ====================================================================
+
+///|
+pub type Int32Type @unsafe.LLVMTypeRef derive(Eq)
+
+///|
+pub impl Show for Int32Type with output(self, logger : &Logger) {
+  self.getTypeRef().output(logger)
+}
+
+///|
+pub impl Type for Int32Type with asTypeEnum(self) -> TypeEnum {
+  TypeEnum::Int32Type(self)
+}
+
+///|
+pub impl Type for Int32Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+  self.inner()
+}
+
+
+pub impl IntegerType for Int32Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+  Int32Type(self)
+}
+
+
+///|
+pub impl PrimitiveType for Int32Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+  Int32Type(self)
+}
+
+// ====================================================================
+// Int64Type
+// ====================================================================
+
+///|
+pub type Int64Type @unsafe.LLVMTypeRef derive(Eq)
+
+///|
+pub impl Show for Int64Type with output(self, logger : &Logger) {
+  self.getTypeRef().output(logger)
+}
+
+///|
+pub impl Type for Int64Type with asTypeEnum(self) -> TypeEnum {
+  TypeEnum::Int64Type(self)
+}
+
+///|
+pub impl Type for Int64Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+  self.inner()
+}
+
+
+pub impl IntegerType for Int64Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+  Int64Type(self)
+}
+
+
+///|
+pub impl PrimitiveType for Int64Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+  Int64Type(self)
 }
 
 // ====================================================================

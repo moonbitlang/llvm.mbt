@@ -260,7 +260,7 @@ fn type_check_during_create_int_binary(
   fname : String,
   loc : SourceLoc
 ) -> Unit raise {
-  guard lhs.getType().asTypeEnum() is IntType(lhs_ty) else {
+  guard lhs.getType().tryAsIntType() is Some(lhs_ty) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -268,7 +268,7 @@ fn type_check_during_create_int_binary(
       ),
     )
   }
-  guard rhs.getType().asTypeEnum() is IntType(rhs_ty) else {
+  guard rhs.getType().tryAsIntType() is Some(rhs_ty) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -1670,7 +1670,7 @@ pub fn IRBuilder::createNot(
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard value.getType().asTypeEnum() is IntType(_) else {
+  guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2126,12 +2126,12 @@ pub fn IRBuilder::createFCmp(
 pub fn IRBuilder::createTrunc(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2186,12 +2186,12 @@ pub fn IRBuilder::createTrunc(
 pub fn IRBuilder::createZExt(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2246,12 +2246,12 @@ pub fn IRBuilder::createZExt(
 pub fn IRBuilder::createSExt(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2415,7 +2415,7 @@ pub fn IRBuilder::createFPExt(
 pub fn IRBuilder::createFPToSI(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
@@ -2475,7 +2475,7 @@ pub fn IRBuilder::createFPToSI(
 pub fn IRBuilder::createFPToUI(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
@@ -2535,7 +2535,7 @@ pub fn IRBuilder::createSIToFP(
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2594,7 +2594,7 @@ pub fn IRBuilder::createUIToFP(
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2661,7 +2661,8 @@ pub fn IRBuilder::createBitCast(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match to.asTypeEnum() {
-        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) => 
+          ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
@@ -2709,7 +2710,7 @@ pub fn IRBuilder::createIntToPtr(
   name~ : String = ""
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard from.getType().asTypeEnum() is IntType(_) else {
+  guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       "Misuse `IRBuilder::createIntToPtr`, from must be an integer type",
     )
@@ -2753,7 +2754,7 @@ pub fn IRBuilder::createIntToPtr(
 pub fn IRBuilder::createPtrToInt(
   self : Self,
   from : &Value,
-  to : IntType,
+  to : &IntegerType,
   name~ : String = "",
   loc~ : SourceLoc = _
 ) -> &Value raise {
@@ -2827,7 +2828,7 @@ pub fn IRBuilder::createGEP(
   let ptr_ref = ptr.getValueRef()
   let pointee_ref = pointeeType.getTypeRef()
   indices.each(v => {
-    guard v.getType().asTypeEnum() is IntType(_) else {
+    guard v.getType().tryAsIntType() is Some(_) else {
       raise ValueTypeError(
         "Misuse `IRBuilder::createGEP`, All indices must be integer types",
       )
@@ -2920,7 +2921,7 @@ pub fn IRBuilder::createCondBr(
   loc~ : SourceLoc = _
 ) -> BranchInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard cond.getType().asTypeEnum() is IntType(ity) && ity.getBitWidth() == 1 else {
+  guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2976,7 +2977,7 @@ pub fn IRBuilder::createSelect(
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard cond.getType().asTypeEnum() is IntType(ity) && ity.getBitWidth() == 1 else {
+  guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -2997,7 +2998,8 @@ pub fn IRBuilder::createSelect(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match trueVal.getType().asTypeEnum() {
-        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) => 
+          ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
@@ -3055,7 +3057,7 @@ pub fn IRBuilder::createSwitch(
 ) -> SwitchInst raise {
   // use `SwitchInst::addCase` to add cases.
   guard self.positioned is Set else { raise UnsetPosition }
-  guard value.getType().asTypeEnum() is IntType(_) else {
+  guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -3408,7 +3410,12 @@ pub fn IRBuilder::createExtractValue(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match aggregate.getType().asTypeEnum() {
-        IntType(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        Int1Type(_)
+        | Int8Type(_)
+        | Int16Type(_)
+        | Int32Type(_)
+        | Int64Type(_) =>
+          ConstantInt::ConstantInt(res_valueref) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
           ConstantFP::ConstantFP(res_valueref)
         StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
@@ -3566,7 +3573,7 @@ pub fn IRBuilder::createMemCpy(
       ),
     )
   }
-  guard size.getType().asTypeEnum() is IntType(_) else {
+  guard size.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -3637,7 +3644,7 @@ pub fn IRBuilder::createMemSet(
       ),
     )
   }
-  guard value.getType().asTypeEnum() is IntType(_) else {
+  guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -3645,7 +3652,7 @@ pub fn IRBuilder::createMemSet(
       ),
     )
   }
-  guard size.getType().asTypeEnum() is IntType(_) else {
+  guard size.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:
@@ -3723,7 +3730,7 @@ pub fn IRBuilder::createMemMove(
       ),
     )
   }
-  guard size.getType().asTypeEnum() is IntType(_) else {
+  guard size.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
         $| loc \{loc}:

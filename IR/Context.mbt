@@ -143,39 +143,33 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
 }
 
 ///| Get the integer type with 1 bit from context.
-pub fn Context::getInt1Ty(self : Context) -> IntType {
+pub fn Context::getInt1Ty(self : Context) -> Int1Type {
   let typeref = @unsafe.llvm_int1_type_in_context(self.inner())
-  IntType(typeref)
+  Int1Type(typeref)
 }
 
 ///| Get the integer type with 8 bits from context.
-pub fn Context::getInt8Ty(self : Context) -> IntType {
+pub fn Context::getInt8Ty(self : Context) -> Int8Type {
   let typeref = @unsafe.llvm_int8_type_in_context(self.inner())
-  IntType(typeref)
+  Int8Type(typeref)
 }
 
 ///| Get the integer type with 16 bits from context.
-pub fn Context::getInt16Ty(self : Context) -> IntType {
+pub fn Context::getInt16Ty(self : Context) -> Int16Type {
   let typeref = @unsafe.llvm_int16_type_in_context(self.inner())
-  IntType(typeref)
+  Int16Type(typeref)
 }
 
 ///| Get the integer type with 32 bits from context.
-pub fn Context::getInt32Ty(self : Context) -> IntType {
+pub fn Context::getInt32Ty(self : Context) -> Int32Type {
   let typeref = @unsafe.llvm_int32_type_in_context(self.inner())
-  IntType(typeref)
+  Int32Type(typeref)
 }
 
 ///| Get the integer type with 64 bits from context.
-pub fn Context::getInt64Ty(self : Context) -> IntType {
+pub fn Context::getInt64Ty(self : Context) -> Int64Type {
   let typeref = @unsafe.llvm_int64_type_in_context(self.inner())
-  IntType(typeref)
-}
-
-///|
-pub fn Context::getInt128Ty(self : Context) -> IntType {
-  let typeref = @unsafe.llvm_int128_type_in_context(self.inner())
-  IntType(typeref)
+  Int64Type(typeref)
 }
 
 ///| Get the Pointer type from context.

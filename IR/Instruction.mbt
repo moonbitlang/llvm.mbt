@@ -766,7 +766,7 @@ pub fn SwitchInst::addCase(
   on_val : &Value,
   dest : BasicBlock
 ) -> Unit raise {
-  guard on_val.getType().asTypeEnum() is IntType(_) else {
+  guard on_val.getType().tryAsIntType() is Some(_) else {
     raise InValidSwitchCaseValue(
       "Misuse `SwitchInst::addCase`: Expected an integer type for case value, got: \{on_val.getType()}",
     )
