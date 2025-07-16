@@ -26,14 +26,6 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
   }
 }
 
-//pub fn Context::createBuilder(self: Self) -> IRBuilder {
-//  IRBuilder(@unsafe.llvm_create_builder_in_context(self.inner()))
-//}
-
-//pub fn Context::createModule(self: Self, name: String) -> Module {
-//  Module(@unsafe.llvm_module_create_with_name(name))
-//}
-
 ///| Get the half type from context.
 ///
 /// - See LLVM: `Type::getHalfTy`.
@@ -379,7 +371,28 @@ pub fn Context::getScalableVectorType(
   ScalableVectorType(typeref)
 }
 
-///|
+///| Create a constant integer `true`, the type is `i1`.
+///
+/// ```moonbit
+/// let ctx = Context::new()
+/// let mod = ctx.addModule("const_true")
+/// let builder = ctx.createBuilder()
+///
+/// let i1ty = ctx.getInt1Ty()
+/// let fty = ctx.getFunctionType(i1ty, [])
+/// let fval = mod.addFunction(fty, "const_true")
+/// let entry = fval.addBasicBlock(name="entry")
+/// builder.setInsertPoint(entry)
+///
+/// let const_true1 = ctx.getConstTrue()
+/// let const_true2 = ctx.getConstTrue()
+///
+/// let const_xor = builder.createXor(const_true1, const_true2)
+///
+/// inspect(const_true1, content="i1 true")
+/// inspect(const_true2, content="i1 true")
+/// inspect(const_xor, content="i1 false")
+/// ```
 pub fn Context::getConstTrue(self : Self) -> ConstantInt {
   let valueref = @unsafe.llvm_const_int(self.getInt1Ty().getTypeRef(), 1, true)
   ConstantInt(valueref)

@@ -72,6 +72,7 @@ llvm-config --cflags --ldflags --libs all
 ### 3. Add llvm.mbt to Your Project
 
 ```bash
+moon update
 moon add Kaida-Amethyst/llvm
 ```
 
@@ -232,6 +233,7 @@ llvm-config --cflags --ldflags --libs all
 ### 3. 添加 llvm.mbt 到您的项目
 
 ```bash
+moon update
 moon add Kaida-Amethyst/llvm
 ```
 
