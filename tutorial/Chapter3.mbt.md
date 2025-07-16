@@ -325,6 +325,7 @@ test {
     #|  %result = phi i32 [ 1, %case1 ], [ 4, %case2 ], [ 9, %case3 ], [ 16, %case4 ], [ 0, %default ]
     #|  ret i32 %result
     #|}
+    #|
 
   inspect(func, content=expect)
 }
@@ -395,7 +396,7 @@ test {
   n2_phi.addIncoming(const_1, entry_bb)
   
   // 检查循环条件：n2 < n
-  let loop_cond = builder.createICmpSLT(n2_phi, arg_n, name="loop_cond")
+  let loop_cond = builder.createICmpSLT(n2_phi, arg_n, name="cond")
   let _ = builder.createCondBr(loop_cond, loop_body_bb, loop_merge_bb)
 
   // 循环体：更新变量
@@ -421,8 +422,8 @@ test {
     #|loop_cond:                                        ; preds = %loop_body, %entry
     #|  %exp = phi i32 [ 0, %entry ], [ %exp_inc, %loop_body ]
     #|  %n2 = phi i32 [ 1, %entry ], [ %n2_mul, %loop_body ]
-    #|  %loop_cond = icmp slt i32 %n2, %0
-    #|  br i1 %loop_cond, label %loop_body, label %loop_merge
+    #|  %cond = icmp slt i32 %n2, %0
+    #|  br i1 %cond, label %loop_body, label %loop_merge
     #|
     #|loop_body:                                        ; preds = %loop_cond
     #|  %exp_inc = add i32 %exp, 1
@@ -432,6 +433,7 @@ test {
     #|loop_merge:                                       ; preds = %loop_cond
     #|  ret i32 %exp
     #|}
+    #|
 
   inspect(func, content=expect)
 }

@@ -136,6 +136,10 @@ test {
   let _ = builder.createRet(ctx.getConstInt32(0))
 
   let expect = 
+    #|; ModuleID = 'heap_memory_demo'
+    #|source_filename = "heap_memory_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|declare void @print_int(i32)
     #|
     #|define void @add(ptr %0, ptr %1, ptr %2) {
@@ -159,6 +163,9 @@ test {
     #|  call void @print_int(i32 %result)
     #|  ret i32 0
     #|}
+    #|
+    #|declare noalias ptr @malloc(i32)
+    #|
 
   inspect(mod, content=expect)
 }

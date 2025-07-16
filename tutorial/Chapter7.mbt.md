@@ -75,6 +75,10 @@ test {
   let _ = builder.createRetVoid()
 
   let expect = 
+    #|; ModuleID = 'stack_struct_demo'
+    #|source_filename = "stack_struct_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|%Rational = type { i32, i32 }
     #|
     #|define void @demo_stack_struct() {
@@ -82,6 +86,7 @@ test {
     #|  %r1 = alloca %Rational, align 8
     #|  ret void
     #|}
+    #|
 
   inspect(mod, content=expect)
 }
@@ -116,13 +121,12 @@ test {
   let _ = builder.createRet(rational_ptr)
 
   let expect = 
-    #|%Rational = type { i32, i32 }
-    #|
     #|define ptr @new_rational(i32 %0, i32 %1) {
     #|entry:
     #|  %r = tail call ptr @malloc(i32 ptrtoint (ptr getelementptr (%Rational, ptr null, i32 1) to i32))
     #|  ret ptr %r
     #|}
+    #|
 
   inspect(new_rational_func, content=expect)
 }
@@ -165,8 +169,6 @@ test {
   let _ = builder.createRetVoid()
 
   let expect = 
-    #|%Rational = type { i32, i32 }
-    #|
     #|define void @set_rational(ptr %0, i32 %1, i32 %2) {
     #|entry:
     #|  %p_ptr = getelementptr %Rational, ptr %0, i32 0, i32 0
@@ -175,6 +177,7 @@ test {
     #|  store i32 %2, ptr %q_ptr, align 4
     #|  ret void
     #|}
+    #|
 
   inspect(set_rational_func, content=expect)
 }
@@ -283,6 +286,10 @@ test {
   let _ = builder.createRet(ctx.getConstInt32(0))
 
   let expect = 
+    #|; ModuleID = 'rational_demo'
+    #|source_filename = "rational_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|%Rational = type { i32, i32 }
     #|
     #|declare void @print_double(double)
@@ -296,6 +303,8 @@ test {
     #|  store i32 %1, ptr %q_ptr, align 4
     #|  ret ptr %r
     #|}
+    #|
+    #|declare noalias ptr @malloc(i32)
     #|
     #|define double @rational_to_double(ptr %0) {
     #|entry:
@@ -323,6 +332,7 @@ test {
     #|  call void @print_double(double %d2)
     #|  ret i32 0
     #|}
+    #|
 
   inspect(mod, content=expect)
 }

@@ -73,6 +73,10 @@ test {
   let _ = builder.createRet(const_0)
 
   let expect = 
+    #|; ModuleID = 'function_call_demo'
+    #|source_filename = "function_call_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|declare i32 @print_int(i32)
     #|
     #|define i32 @add(i32 %0, i32 %1) {
@@ -84,9 +88,10 @@ test {
     #|define i32 @main() {
     #|entry:
     #|  %res = call i32 @add(i32 42, i32 33)
-    #|  %1 = call i32 @print_int(i32 %res)
+    #|  %0 = call i32 @print_int(i32 %res)
     #|  ret i32 0
     #|}
+    #|
 
   inspect(mod, content=expect)
 }
@@ -187,6 +192,10 @@ test {
   let _ = builder.createRet(result)
 
   let expect = 
+    #|; ModuleID = 'function_pointer_demo'
+    #|source_filename = "function_pointer_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|define i32 @double_value(i32 %0) {
     #|entry:
     #|  %doubled = mul i32 %0, 2
@@ -198,6 +207,7 @@ test {
     #|  %result = call i32 %0(i32 %1)
     #|  ret i32 %result
     #|}
+    #|
 
   inspect(mod, content=expect)
 }

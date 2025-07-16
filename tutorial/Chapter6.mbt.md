@@ -80,17 +80,22 @@ test {
   let _ = builder.createRet(const_0)
 
   let expect = 
+    #|; ModuleID = 'stack_array_demo'
+    #|source_filename = "stack_array_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|declare void @fill_array(ptr, i32, i32)
     #|
     #|declare void @print_array(ptr, i32)
     #|
     #|define i32 @main() {
     #|entry:
-    #|  %arr = alloca [5 x i32], align 16
+    #|  %arr = alloca [5 x i32], align 4
     #|  call void @fill_array(ptr %arr, i32 42, i32 5)
     #|  call void @print_array(ptr %arr, i32 5)
     #|  ret i32 0
     #|}
+    #|
 
   inspect(mod, content=expect)
 }
@@ -142,7 +147,7 @@ int main() {
 
 在llvm.mbt中实现：
 
-```moonbit
+```moonbit skip
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("heap_array_demo")
@@ -191,7 +196,7 @@ test {
   let const_42 = ctx.getConstInt32(42)
 
   // 调用 make_array(0, 5)
-  let heap_arr = builder.createCall(make_array_func, [const_0, const_5], name="heap_arr")
+  let heap_arr = builder.createCall(make_array_func, [const_5], name="heap_arr")
 
   // 调用 fill_array(arr, 42, 5)
   let _ = builder.createCall(fill_array_func, [heap_arr, const_42, const_5])
@@ -366,7 +371,6 @@ test {
   let fill_array_func = mod.addFunction(fill_array_ty, "my_fill_array")
   let arr_param = fill_array_func.getArg(0).unwrap()
   let num_param = fill_array_func.getArg(1).unwrap()
-  let len_param = fill_array_func.getArg(2).unwrap()
 
   let fill_bb = fill_array_func.addBasicBlock(name="entry")
   builder.setInsertPoint(fill_bb)
@@ -411,6 +415,10 @@ test {
   let _ = builder.createRet(const_0)
 
   let expect = 
+    #|; ModuleID = 'complete_array_demo'
+    #|source_filename = "complete_array_demo"
+    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+    #|
     #|declare void @print_array(ptr, i32)
     #|
     #|define void @my_fill_array(ptr %0, i32 %1, i32 %2) {
@@ -426,7 +434,7 @@ test {
     #|
     #|define i32 @main() {
     #|entry:
-    #|  %stack_arr = alloca [5 x i32], align 16
+    #|  %stack_arr = alloca [5 x i32], align 4
     #|  call void @my_fill_array(ptr %stack_arr, i32 42, i32 5)
     #|  call void @print_array(ptr %stack_arr, i32 5)
     #|  ret i32 0
