@@ -120,6 +120,12 @@ pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
 }
 
 ///|
+pub fn Module::setDefaultDataLayout(self: Module) -> Unit {
+  let layout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
+  @unsafe.llvm_set_data_layout(self.inner(), layout)
+}
+
+///|
 pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
   @unsafe.llvm_set_data_layout(self.inner(), layout)
 }

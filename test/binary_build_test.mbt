@@ -341,16 +341,16 @@ test "Integer Compare Test" {
   let arg1 = fval.getArg(1).unwrap()
   builder.setInsertPoint(bb)
   // 测试各种整数比较谓词
-  let eq_cmp = builder.createICmp(EQ, arg0, arg1, name="eq")
-  let _ = builder.createICmp(NE, arg0, arg1, name="ne")
-  let _ = builder.createICmp(SGT, arg0, arg1, name="sgt")
-  let _ = builder.createICmp(SGE, arg0, arg1, name="sge")
-  let _ = builder.createICmp(SLT, arg0, arg1, name="slt")
-  let _ = builder.createICmp(SLE, arg0, arg1, name="sle")
-  let _ = builder.createICmp(UGT, arg0, arg1, name="ugt")
-  let _ = builder.createICmp(UGE, arg0, arg1, name="uge")
-  let _ = builder.createICmp(ULT, arg0, arg1, name="ult")
-  let _ = builder.createICmp(ULE, arg0, arg1, name="ule")
+  let eq_cmp = builder.createICmpEQ( arg0, arg1, name="eq")
+  let _ = builder.createICmpNE( arg0, arg1, name="ne")
+  let _ = builder.createICmpSGT( arg0, arg1, name="sgt")
+  let _ = builder.createICmpSGE( arg0, arg1, name="sge")
+  let _ = builder.createICmpSLT( arg0, arg1, name="slt")
+  let _ = builder.createICmpSLE( arg0, arg1, name="sle")
+  let _ = builder.createICmpUGT( arg0, arg1, name="ugt")
+  let _ = builder.createICmpUGE( arg0, arg1, name="uge")
+  let _ = builder.createICmpULT( arg0, arg1, name="ult")
+  let _ = builder.createICmpULE( arg0, arg1, name="ule")
   // 用一个结果来结束函数
   let _ = builder.createRet(eq_cmp)
   let expect =
@@ -408,19 +408,19 @@ test "Float Compare Test" {
   let arg1 = fval.getArg(1).unwrap()
   builder.setInsertPoint(bb)
   // 测试各种浮点比较谓词
-  let oeq_cmp = builder.createFCmp(OEQ, arg0, arg1, name="oeq")
-  let _ = builder.createFCmp(OGT, arg0, arg1, name="ogt")
-  let _ = builder.createFCmp(OGE, arg0, arg1, name="oge")
-  let _ = builder.createFCmp(OLT, arg0, arg1, name="olt")
-  let _ = builder.createFCmp(OLE, arg0, arg1, name="ole")
-  let _ = builder.createFCmp(ONE, arg0, arg1, name="one")
-  let _ = builder.createFCmp(ORD, arg0, arg1, name="ord")
-  let _ = builder.createFCmp(UEQ, arg0, arg1, name="ueq")
-  let _ = builder.createFCmp(UGT, arg0, arg1, name="ugt")
-  let _ = builder.createFCmp(UGE, arg0, arg1, name="uge")
-  let _ = builder.createFCmp(ULT, arg0, arg1, name="ult")
-  let _ = builder.createFCmp(ULE, arg0, arg1, name="ule")
-  let _ = builder.createFCmp(UNE, arg0, arg1, name="une")
+  let oeq_cmp = builder.createFCmpOEQ( arg0, arg1, name="oeq")
+  let _ = builder.createFCmpOGT( arg0, arg1, name="ogt")
+  let _ = builder.createFCmpOGE( arg0, arg1, name="oge")
+  let _ = builder.createFCmpOLT( arg0, arg1, name="olt")
+  let _ = builder.createFCmpOLE( arg0, arg1, name="ole")
+  let _ = builder.createFCmpONE( arg0, arg1, name="one")
+  let _ = builder.createFCmpORD( arg0, arg1, name="ord")
+  let _ = builder.createFCmpUEQ( arg0, arg1, name="ueq")
+  let _ = builder.createFCmpUGT( arg0, arg1, name="ugt")
+  let _ = builder.createFCmpUGE( arg0, arg1, name="uge")
+  let _ = builder.createFCmpULT( arg0, arg1, name="ult")
+  let _ = builder.createFCmpULE( arg0, arg1, name="ule")
+  let _ = builder.createFCmpUNE( arg0, arg1, name="une")
   // 用一个结果来结束函数
   let _ = builder.createRet(oeq_cmp)
   let expect =
@@ -446,28 +446,28 @@ test "Float Compare Test" {
   // 错误测试：类型不匹配
   let i32_one = ctx.getConstInt32(1)
   assert_true(
-    (try? builder.createFCmp(OEQ, arg0, i32_one))
+    (try? builder.createFCmpOEQ(arg0, i32_one))
     is Err(BuilderError::ValueTypeError(_)),
   )
   // 错误测试：位宽不匹配
   let f64_one = ctx.getConstDouble(1.0)
   assert_true(
-    (try? builder.createFCmp(OGT, arg0, f64_one))
+    (try? builder.createFCmpOGT(arg0, f64_one))
     is Err(BuilderError::BitwidthError(_)),
   )
   // 错误测试：左操作数类型不匹配
   assert_true(
-    (try? builder.createFCmp(OGE, i32_one, arg0))
+    (try? builder.createFCmpOGE(i32_one, arg0))
     is Err(BuilderError::ValueTypeError(_)),
   )
   // 错误测试：右操作数类型不匹配
   assert_true(
-    (try? builder.createFCmp(OLT, arg0, i32_one))
+    (try? builder.createFCmpOLT(arg0, i32_one))
     is Err(BuilderError::ValueTypeError(_)),
   )
   // 错误测试：位宽不匹配（更多情况）
   assert_true(
-    (try? builder.createFCmp(ONE, arg0, f64_one))
+    (try? builder.createFCmpONE(arg0, f64_one))
     is Err(BuilderError::BitwidthError(_)),
   )
 }
