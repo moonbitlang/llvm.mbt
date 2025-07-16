@@ -1,5 +1,5 @@
 ///|
-typealias @llvm.SwitchInstError
+typealias @IR.SwitchInstError
 
 ///|
 test "Simple Branch Test" {

@@ -1,8 +1,8 @@
 ///|
-typealias @llvm.Context
+typealias @IR.Context
 
 ///|
-typealias @llvm.BuilderError
+typealias @IR.BuilderError
 
 ///|
 test "Binary Int Add Test" {

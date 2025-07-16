@@ -1,6 +1,6 @@
 {
   "test-import" : [
-    "Kaida-Amethyst/llvm"
+    "Kaida-Amethyst/llvm/IR"
   ],
   "link" : {
     "native" : {
