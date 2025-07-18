@@ -190,7 +190,7 @@ pub type LLVMErrorRef
 pub(all) type LLVMOrcJITTargetAddress UInt64 derive(Show, Eq)
 
 ///| Represents an address in the executor process.
-pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq)
+pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq, Default)
 
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
 

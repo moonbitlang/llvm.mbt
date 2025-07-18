@@ -146,6 +146,8 @@ pub extern "C" fn llvm_value_is_null(ty : LLVMValueRef) -> LLVMBool = "LLVMIsNul
 ///|
 pub extern "C" fn llvm_value_ref_is_null(ty : LLVMValueRef) -> Bool = "__llvm_value_ref_is_null"
 
+extern "C" fn llvm_error_is_null(ty : LLVMErrorRef) -> Bool = "ref_is_null";
+
 ///|
 pub fn LLVMValueRef::is_null(self : LLVMValueRef) -> Bool {
   llvm_value_ref_is_null(self)

@@ -339,12 +339,19 @@
 //  * A reference to an orc::ThreadSafeContext instance.
 //  */
 // typedef struct LLVMOrcOpaqueThreadSafeContext *LLVMOrcThreadSafeContextRef;
+
+#external
+pub type LLVMOrcThreadSafeContextRef
+
 //
 // /**
 //  * A reference to an orc::ThreadSafeModule instance.
 //  */
 // typedef struct LLVMOrcOpaqueThreadSafeModule *LLVMOrcThreadSafeModuleRef;
-//
+
+#external
+pub type LLVMOrcThreadSafeModuleRef
+
 // /**
 //  * A function for inspecting/mutating IR modules, suitable for use with
 //  * LLVMOrcThreadSafeModuleWithModuleDo.
@@ -1025,6 +1032,9 @@
 //  * will keep the data alive as long as it is needed.
 //  */
 // LLVMOrcThreadSafeContextRef LLVMOrcCreateNewThreadSafeContext(void);
+
+pub extern "C" fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef = "LLVMOrcCreateNewThreadSafeContext";
+
 //
 // /**
 //  * Get a reference to the wrapped LLVMContext.
@@ -1036,6 +1046,9 @@
 //  * Dispose of a ThreadSafeContext.
 //  */
 // void LLVMOrcDisposeThreadSafeContext(LLVMOrcThreadSafeContextRef TSCtx);
+
+pub extern "C" fn llvm_orc_dispose_thread_safe_context(ts_ctx: LLVMOrcThreadSafeContextRef) = "LLMVOrcDisposeThreadSafeContext";
+
 //
 // /**
 //  * Create a ThreadSafeModule wrapper around the given LLVM module. This takes
@@ -1051,6 +1064,12 @@
 // LLVMOrcCreateNewThreadSafeModule(LLVMModuleRef M,
 //                                  LLVMOrcThreadSafeContextRef TSCtx);
 //
+
+pub extern "C" fn llvm_orc_create_new_thread_safe_module(
+  m: LLVMModuleRef,
+  ts_ctx: LLVMOrcThreadSafeContextRef,
+) -> LLVMOrcThreadSafeModuleRef = "LLVMOrcCreateNewThreadSafeModule";
+
 // /**
 //  * Dispose of a ThreadSafeModule. This should only be called if ownership has
 //  * not been passed to LLJIT (e.g. because some error prevented the client from

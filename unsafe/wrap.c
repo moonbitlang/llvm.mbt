@@ -1589,3 +1589,16 @@ void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst, int o) {
 //   return LLVMCreateMemoryBufferWithSTDIN((LLVMMemoryBufferRef *)out_mem_buf,
 //                                          (char **)out_message);
 // }
+
+// ================================================
+// ExecutionEngine
+// ================================================
+
+LLVMExecutionEngineRef llvm_new_execution_engine() {
+  return (LLVMExecutionEngineRef)NULL;
+}
+
+// ================================================
+// LLJIT
+// ================================================
+
