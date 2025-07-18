@@ -5,6 +5,7 @@
 // void LLVMLinkInMCJIT(void);
 // void LLVMLinkInInterpreter(void);
 
+///|
 #external
 pub type LLVMExecutionEngineRef
 
@@ -24,33 +25,53 @@ pub type LLVMExecutionEngineRef
 //                                                 LLVMBool IsSigned);
 //
 
-pub extern "C" fn llvm_create_generic_value_of_int(ty: LLVMTypeRef, n: UInt64, is_signed: Bool) -> LLVMGenericValueRef = "LLVMCreateGenericValueOfInt";
+///|
+pub extern "C" fn llvm_create_generic_value_of_int(
+  ty : LLVMTypeRef,
+  n : UInt64,
+  is_signed : Bool
+) -> LLVMGenericValueRef = "LLVMCreateGenericValueOfInt"
 
 //
 // LLVMGenericValueRef LLVMCreateGenericValueOfPointer(void *P);
 //
 // LLVMGenericValueRef LLVMCreateGenericValueOfFloat(LLVMTypeRef Ty, double N);
 
-pub extern "C" fn llvm_create_generic_value_of_float(ty: LLVMTypeRef, n: Double) -> LLVMGenericValueRef = "LLVMCreateGenericValueOfFloat";
+///|
+pub extern "C" fn llvm_create_generic_value_of_float(
+  ty : LLVMTypeRef,
+  n : Double
+) -> LLVMGenericValueRef = "LLVMCreateGenericValueOfFloat"
 
 //
 // unsigned LLVMGenericValueIntWidth(LLVMGenericValueRef GenValRef);
 
-pub extern "C" fn llvm_generic_value_int_width(gen_val_ref: LLVMGenericValueRef) -> UInt = "LLVMGenericValueIntWidth";
+///|
+pub extern "C" fn llvm_generic_value_int_width(
+  gen_val_ref : LLVMGenericValueRef
+) -> UInt = "LLVMGenericValueIntWidth"
 
 //
 // unsigned long long LLVMGenericValueToInt(LLVMGenericValueRef GenVal,
 //                                          LLVMBool IsSigned);
 //
 
-pub extern "C" fn llvm_generic_value_to_int(gen_val: LLVMGenericValueRef, is_signed: Bool) -> UInt64 = "LLVMGenericValueToInt";
+///|
+pub extern "C" fn llvm_generic_value_to_int(
+  gen_val : LLVMGenericValueRef,
+  is_signed : Bool
+) -> UInt64 = "LLVMGenericValueToInt"
 
 //
 // void *LLVMGenericValueToPointer(LLVMGenericValueRef GenVal);
 //
 // double LLVMGenericValueToFloat(LLVMTypeRef TyRef, LLVMGenericValueRef GenVal);
 
-pub extern "C" fn llvm_generic_value_to_float(ty_ref: LLVMTypeRef, gen_val: LLVMGenericValueRef) -> Double = "LLVMGenericValueToFloat";
+///|
+pub extern "C" fn llvm_generic_value_to_float(
+  ty_ref : LLVMTypeRef,
+  gen_val : LLVMGenericValueRef
+) -> Double = "LLVMGenericValueToFloat"
 
 // void LLVMDisposeGenericValue(LLVMGenericValueRef GenVal);
 //
@@ -60,14 +81,25 @@ pub extern "C" fn llvm_generic_value_to_float(ty_ref: LLVMTypeRef, gen_val: LLVM
 //                                             LLVMModuleRef M,
 //                                             char **OutError);
 
-extern "C" fn __llvm_new_execution_engine() -> LLVMExecutionEngineRef = "llvm_new_execution_engine";
+///|
+extern "C" fn __llvm_new_execution_engine() -> LLVMExecutionEngineRef = "llvm_new_execution_engine"
 
-extern "C" fn __llvm_create_execution_engine_for_module(out_ee: Ref[LLVMExecutionEngineRef], m: LLVMModuleRef, out_error: Ref[CStr]) -> Bool = "LLVMCreateExecutionEngineForModule";
+///|
+extern "C" fn __llvm_create_execution_engine_for_module(
+  out_ee : Ref[LLVMExecutionEngineRef],
+  m : LLVMModuleRef,
+  out_error : Ref[CStr]
+) -> Bool = "LLVMCreateExecutionEngineForModule"
 
-pub fn llvm_create_execution_engine_for_module(m: LLVMModuleRef) -> (LLVMExecutionEngineRef?, String) {
-  let execution_engine = Ref::new(__llvm_new_execution_engine());
-  let err_msg = Ref::new(CStr::new());
-  let res = __llvm_create_execution_engine_for_module(execution_engine, m, err_msg);
+///|
+pub fn llvm_create_execution_engine_for_module(
+  m : LLVMModuleRef
+) -> (LLVMExecutionEngineRef?, String) {
+  let execution_engine = Ref::new(__llvm_new_execution_engine())
+  let err_msg = Ref::new(CStr::new())
+  let res = __llvm_create_execution_engine_for_module(
+    execution_engine, m, err_msg,
+  )
   match res {
     true => (None, c_str_to_moonbit_str(err_msg.val))
     false => (Some(execution_engine.val), "")
@@ -78,17 +110,26 @@ pub fn llvm_create_execution_engine_for_module(m: LLVMModuleRef) -> (LLVMExecuti
 //                                         LLVMModuleRef M,
 //                                         char **OutError);
 //
-extern "C" fn __llvm_create_interpreter_for_module(out_interp: Ref[LLVMExecutionEngineRef], m: LLVMModuleRef, out_error: Ref[CStr]) -> Bool = "LLVMCreateInterpreterForModule";
-pub fn llvm_create_interpreter_for_module(m: LLVMModuleRef) -> (LLVMExecutionEngineRef?, String) {
-  let interpreter = Ref::new(__llvm_new_execution_engine());
-  let err_msg = Ref::new(CStr::new());
-  let res = __llvm_create_interpreter_for_module(interpreter, m, err_msg);
+
+///|
+extern "C" fn __llvm_create_interpreter_for_module(
+  out_interp : Ref[LLVMExecutionEngineRef],
+  m : LLVMModuleRef,
+  out_error : Ref[CStr]
+) -> Bool = "LLVMCreateInterpreterForModule"
+
+///|
+pub fn llvm_create_interpreter_for_module(
+  m : LLVMModuleRef
+) -> (LLVMExecutionEngineRef?, String) {
+  let interpreter = Ref::new(__llvm_new_execution_engine())
+  let err_msg = Ref::new(CStr::new())
+  let res = __llvm_create_interpreter_for_module(interpreter, m, err_msg)
   match res {
     true => (None, c_str_to_moonbit_str(err_msg.val))
     false => (Some(interpreter.val), "")
   }
 }
-
 
 // LLVMBool LLVMCreateJITCompilerForModule(LLVMExecutionEngineRef *OutJIT,
 //                                         LLVMModuleRef M,
@@ -134,12 +175,23 @@ pub fn llvm_create_interpreter_for_module(m: LLVMModuleRef) -> (LLVMExecutionEng
 //                                     unsigned NumArgs,
 //                                     LLVMGenericValueRef *Args);
 
-extern "C" fn __llvm_run_function(ee: LLVMExecutionEngineRef, f: LLVMValueRef, num_args: UInt, args: FixedArray[LLVMGenericValueRef]) -> LLVMGenericValueRef = "LLVMRunFunction";
+///|
+extern "C" fn __llvm_run_function(
+  ee : LLVMExecutionEngineRef,
+  f : LLVMValueRef,
+  num_args : UInt,
+  args : FixedArray[LLVMGenericValueRef]
+) -> LLVMGenericValueRef = "LLVMRunFunction"
 
-pub fn llvm_run_function(ee: LLVMExecutionEngineRef, f: LLVMValueRef, args: Array[LLVMGenericValueRef]) -> LLVMGenericValueRef {
-  let num_args = args.length().reinterpret_as_uint();
-  let args_fixed = FixedArray::from_array(args);
-  __llvm_run_function(ee, f, num_args, args_fixed);
+///|
+pub fn llvm_run_function(
+  ee : LLVMExecutionEngineRef,
+  f : LLVMValueRef,
+  args : Array[LLVMGenericValueRef]
+) -> LLVMGenericValueRef {
+  let num_args = args.length().reinterpret_as_uint()
+  let args_fixed = FixedArray::from_array(args)
+  __llvm_run_function(ee, f, num_args, args_fixed)
 }
 
 //
@@ -169,11 +221,20 @@ pub fn llvm_run_function(ee: LLVMExecutionEngineRef, f: LLVMValueRef, args: Arra
 //
 // uint64_t LLVMGetFunctionAddress(LLVMExecutionEngineRef EE, const char *Name);
 
-pub fn llvm_get_function_address(ee: LLVMExecutionEngineRef, name: String) -> UInt64 {
-  let name = moonbit_str_to_c_str(name);
+///|
+pub fn llvm_get_function_address(
+  ee : LLVMExecutionEngineRef,
+  name : String
+) -> UInt64 {
+  let name = moonbit_str_to_c_str(name)
   __llvm_get_function_address(ee, name)
 }
-extern "C" fn __llvm_get_function_address(ee: LLVMExecutionEngineRef, name: CStr) -> UInt64 = "LLVMGetFunctionAddress";
+
+///|
+extern "C" fn __llvm_get_function_address(
+  ee : LLVMExecutionEngineRef,
+  name : CStr
+) -> UInt64 = "LLVMGetFunctionAddress"
 
 //
 // /// Returns true on error, false on success. If true is returned then the error

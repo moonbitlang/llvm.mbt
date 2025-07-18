@@ -61,7 +61,7 @@ test "Cast Test" {
     i64_ty,
     name="ptrtoint_i64",
   )
-  let _ = builder.createIntToPtr(ptrtoint_i64, ptr_ty, name="inttoptr_ptr")
+  let _ = builder.createIntToPtr(ptrtoint_i64, name="inttoptr_ptr")
 
   // 创建返回指令
   let _ = builder.createRetVoid()
@@ -152,7 +152,7 @@ test "Cast Test" {
 
   // 错误测试 - createIntToPtr 类型不匹配
   assert_true(
-    (try? builder.createIntToPtr(f64_arg, ptr_ty))
+    (try? builder.createIntToPtr(f64_arg))
     is Err(BuilderError::ValueTypeError(_)),
   )
 

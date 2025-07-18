@@ -52,9 +52,11 @@
 //  */
 // typedef struct LLVMOrcOpaqueLLJITBuilder *LLVMOrcLLJITBuilderRef;
 
+///|
 #external
-pub type LLVMOrcJITDylibRef 
+pub type LLVMOrcJITDylibRef
 
+///|
 #external
 pub type LLVMOrcLLJITBuilderRef
 
@@ -64,10 +66,12 @@ pub type LLVMOrcLLJITBuilderRef
 //  */
 // typedef struct LLVMOrcOpaqueLLJIT *LLVMOrcLLJITRef;
 
+///|
 #external
 pub type LLVMOrcLLJITRef
 
-extern "C" fn llvm_new_null_orc_lljit() -> LLVMOrcLLJITRef = "__llvm_new_null";
+///|
+extern "C" fn llvm_new_null_orc_lljit() -> LLVMOrcLLJITRef = "__llvm_new_null"
 
 //
 // /**
@@ -78,7 +82,8 @@ extern "C" fn llvm_new_null_orc_lljit() -> LLVMOrcLLJITRef = "__llvm_new_null";
 //  */
 // LLVMOrcLLJITBuilderRef LLVMOrcCreateLLJITBuilder(void);
 
-pub extern "C" fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef = "LLVMOrcCreateLLJITBuilder";
+///|
+pub extern "C" fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef = "LLVMOrcCreateLLJITBuilder"
 
 //
 // /**
@@ -90,7 +95,10 @@ pub extern "C" fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef = "L
 //  */
 // void LLVMOrcDisposeLLJITBuilder(LLVMOrcLLJITBuilderRef Builder);
 
-pub extern "C" fn llvm_orc_dispose_lljit_builder(builder: LLVMOrcLLJITBuilderRef) = "LLVMOrcDisposeLLJITBuilder";
+///|
+pub extern "C" fn llvm_orc_dispose_lljit_builder(
+  builder : LLVMOrcLLJITBuilderRef
+) = "LLVMOrcDisposeLLJITBuilder"
 
 //
 // /**
@@ -132,11 +140,14 @@ pub extern "C" fn llvm_orc_dispose_lljit_builder(builder: LLVMOrcLLJITBuilderRef
 // LLVMErrorRef LLVMOrcCreateLLJIT(LLVMOrcLLJITRef *Result,
 //                                 LLVMOrcLLJITBuilderRef Builder);
 
-extern "C" fn llvm_new_null_orc_lljit_builder() -> LLVMOrcLLJITBuilderRef = "__llvm_new_null";
+///|
+extern "C" fn llvm_new_null_orc_lljit_builder() -> LLVMOrcLLJITBuilderRef = "__llvm_new_null"
+
+///|
 pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef {
-  let builder = llvm_new_null_orc_lljit_builder();
-  let result: Ref[LLVMOrcLLJITRef] = Ref::new(llvm_new_null_orc_lljit());
-  let err = __llvm_orc_create_lljit(result, builder);
+  let builder = llvm_new_null_orc_lljit_builder()
+  let result : Ref[LLVMOrcLLJITRef] = Ref::new(llvm_new_null_orc_lljit())
+  let err = __llvm_orc_create_lljit(result, builder)
   if llvm_error_is_null(err) {
     result.val
   } else {
@@ -144,14 +155,20 @@ pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef {
     panic()
   }
 }
-extern "C" fn __llvm_orc_create_lljit(result: Ref[LLVMOrcLLJITRef], builder: LLVMOrcLLJITBuilderRef) -> LLVMErrorRef = "LLVMOrcCreateLLJIT";
+
+///|
+extern "C" fn __llvm_orc_create_lljit(
+  result : Ref[LLVMOrcLLJITRef],
+  builder : LLVMOrcLLJITBuilderRef
+) -> LLVMErrorRef = "LLVMOrcCreateLLJIT"
 //
 // /**
 //  * Dispose of an LLJIT instance.
 //  */
 // LLVMErrorRef LLVMOrcDisposeLLJIT(LLVMOrcLLJITRef J);
 
-pub extern "C" fn llvm_orc_dispose_lljit(j: LLVMOrcLLJITRef) -> LLVMErrorRef = "LLVMOrcDisposeLLJIT";
+///|
+pub extern "C" fn llvm_orc_dispose_lljit(j : LLVMOrcLLJITRef) -> LLVMErrorRef = "LLVMOrcDisposeLLJIT"
 
 //
 // /**
@@ -171,7 +188,10 @@ pub extern "C" fn llvm_orc_dispose_lljit(j: LLVMOrcLLJITRef) -> LLVMErrorRef = "
 //  */
 // LLVMOrcJITDylibRef LLVMOrcLLJITGetMainJITDylib(LLVMOrcLLJITRef J);
 
-pub extern "C" fn llvm_orc_lljit_get_main_jit_dylib(j: LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef = "LLVMOrcLLJITGetMainJITDylib";
+///|
+pub extern "C" fn llvm_orc_lljit_get_main_jit_dylib(
+  j : LLVMOrcLLJITRef
+) -> LLVMOrcJITDylibRef = "LLVMOrcLLJITGetMainJITDylib"
 
 //
 // /**
@@ -240,7 +260,12 @@ pub extern "C" fn llvm_orc_lljit_get_main_jit_dylib(j: LLVMOrcLLJITRef) -> LLVMO
 //                                          LLVMOrcThreadSafeModuleRef TSM);
 //
 
-pub extern "C" fn llvm_orc_lljit_add_llvm_ir_module(j: LLVMOrcLLJITRef, jd: LLVMOrcJITDylibRef, tsm: LLVMOrcThreadSafeModuleRef) -> LLVMErrorRef = "LLVMOrcLLJITAddLLVMIRModule";
+///|
+pub extern "C" fn llvm_orc_lljit_add_llvm_ir_module(
+  j : LLVMOrcLLJITRef,
+  jd : LLVMOrcJITDylibRef,
+  tsm : LLVMOrcThreadSafeModuleRef
+) -> LLVMErrorRef = "LLVMOrcLLJITAddLLVMIRModule"
 
 // /**
 //  * Add an IR module to the given ResourceTracker's JITDylib in the given
@@ -270,8 +295,14 @@ pub extern "C" fn llvm_orc_lljit_add_llvm_ir_module(j: LLVMOrcLLJITRef, jd: LLVM
 //                                 const char *Name);
 //
 
-pub fn llvm_orc_lljit_lookup(j: LLVMOrcLLJITRef, name: String) -> LLVMOrcExecutorAddress? {
-  let addr : Ref[LLVMOrcExecutorAddress] = Ref::new(LLVMOrcExecutorAddress::default())
+///|
+pub fn llvm_orc_lljit_lookup(
+  j : LLVMOrcLLJITRef,
+  name : String
+) -> LLVMOrcExecutorAddress? {
+  let addr : Ref[LLVMOrcExecutorAddress] = Ref::new(
+    LLVMOrcExecutorAddress::default(),
+  )
   let err = __llvm_orc_lljit_lookup(j, addr, moonbit_str_to_c_str(name))
   if llvm_error_is_null(err) {
     Some(addr.val)
@@ -279,7 +310,13 @@ pub fn llvm_orc_lljit_lookup(j: LLVMOrcLLJITRef, name: String) -> LLVMOrcExecuto
     None
   }
 }
-extern "C" fn __llvm_orc_lljit_lookup(j: LLVMOrcLLJITRef, result: Ref[LLVMOrcExecutorAddress], name: CStr) -> LLVMErrorRef = "LLVMOrcLLJITLookup";
+
+///|
+extern "C" fn __llvm_orc_lljit_lookup(
+  j : LLVMOrcLLJITRef,
+  result : Ref[LLVMOrcExecutorAddress],
+  name : CStr
+) -> LLVMErrorRef = "LLVMOrcLLJITLookup"
 
 // /**
 //  * Returns a non-owning reference to the LLJIT instance's object linking

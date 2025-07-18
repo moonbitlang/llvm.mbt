@@ -169,6 +169,8 @@ impl Show for ConstantFP
 
 pub type ConstantInt @unsafe.LLVMValueRef
 fn ConstantInt::inner(Self) -> @unsafe.LLVMValueRef
+fn ConstantInt::to_int(Self) -> Int
+fn ConstantInt::to_uint(Self) -> UInt
 impl Constant for ConstantInt
 impl Value for ConstantInt
 impl Show for ConstantInt
@@ -373,6 +375,13 @@ impl Type for FunctionType
 impl Eq for FunctionType
 impl Show for FunctionType
 
+pub type GenericValue @unsafe.LLVMGenericValueRef
+fn GenericValue::inner(Self) -> @unsafe.LLVMGenericValueRef
+fn GenericValue::toInt(Self) -> Int
+fn GenericValue::toInt64(Self) -> Int64
+fn GenericValue::toUInt(Self) -> UInt
+fn GenericValue::toUInt64(Self) -> UInt64
+
 pub type GetElementPtrInst @unsafe.LLVMValueRef
 fn GetElementPtrInst::getSourceElementType(Self) -> &Type
 fn GetElementPtrInst::inner(Self) -> @unsafe.LLVMValueRef
@@ -439,7 +448,7 @@ fn IRBuilder::createFPToSI(Self, &Value, &IntegerType, name~ : String = .., loc~
 fn IRBuilder::createFPToUI(Self, &Value, &IntegerType, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createFPTrunc(Self, &Value, &FPType, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createFRem(Self, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
-fn IRBuilder::createFSub(Self, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
+fn IRBuilder::createFSub(Self, &Value, &Value, name~ : String = .., fast_math~ : Array[FastMathFlags] = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createFree(Self, &Value, loc~ : SourceLoc = _) -> CallInst raise
 fn IRBuilder::createGEP(Self, &Value, &Type, Array[&Value], name~ : String = .., inbounds~ : Bool = .., loc~ : SourceLoc = _) -> GetElementPtrInst raise
 fn IRBuilder::createICmp(Self, IntPredicate, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
@@ -454,7 +463,7 @@ fn IRBuilder::createICmpUGT(Self, &Value, &Value, name~ : String = .., loc~ : So
 fn IRBuilder::createICmpULE(Self, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createICmpULT(Self, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createInsertValue(Self, &Value, &Value, Int, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
-fn IRBuilder::createIntToPtr(Self, &Value, PointerType, name~ : String = ..) -> &Value raise
+fn IRBuilder::createIntToPtr(Self, &Value, name~ : String = ..) -> &Value raise
 fn IRBuilder::createLShr(Self, &Value, &Value, name~ : String = .., loc~ : SourceLoc = _) -> &Value raise
 fn IRBuilder::createLoad(Self, &Type, &Value, name~ : String = ..) -> LoadInst raise
 fn IRBuilder::createMalloc(Self, &Type, name~ : String = .., loc~ : SourceLoc = _) -> CallInst raise
@@ -595,6 +604,25 @@ fn IntegerTypeEnum::getBitWidth(Self) -> UInt
 impl Eq for IntegerTypeEnum
 impl Show for IntegerTypeEnum
 
+pub struct Interpreter {
+  engine : @unsafe.LLVMExecutionEngineRef
+  mod : Module
+  ctx : Context
+}
+fn Interpreter::createGenericValueDouble(Self, Double) -> GenericValue
+fn Interpreter::createGenericValueFloat(Self, Float) -> GenericValue
+fn Interpreter::createGenericValueInt(Self, Int) -> GenericValue
+fn Interpreter::createGenericValueInt64(Self, Int64) -> GenericValue
+fn Interpreter::createGenericValueUInt(Self, UInt) -> GenericValue
+fn Interpreter::createGenericValueUInt64(Self, UInt64) -> GenericValue
+fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
+fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
+
+pub suberror InterpreterError {
+  CreateInterpreterFailed(String)
+}
+impl Show for InterpreterError
+
 pub type LabelType @unsafe.LLVMTypeRef
 fn LabelType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for LabelType
@@ -618,6 +646,7 @@ impl Show for MetadataType
 
 pub type Module @unsafe.LLVMModuleRef
 fn Module::addFunction(Self, FunctionType, String) -> Function
+fn Module::createInterpreter(Self) -> Interpreter raise
 fn Module::dump(Self) -> Unit
 fn Module::getContext(Self) -> Context
 fn Module::getDataLayout(Self) -> DataLayout

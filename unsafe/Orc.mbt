@@ -340,6 +340,7 @@
 //  */
 // typedef struct LLVMOrcOpaqueThreadSafeContext *LLVMOrcThreadSafeContextRef;
 
+///|
 #external
 pub type LLVMOrcThreadSafeContextRef
 
@@ -349,6 +350,7 @@ pub type LLVMOrcThreadSafeContextRef
 //  */
 // typedef struct LLVMOrcOpaqueThreadSafeModule *LLVMOrcThreadSafeModuleRef;
 
+///|
 #external
 pub type LLVMOrcThreadSafeModuleRef
 
@@ -1033,7 +1035,8 @@ pub type LLVMOrcThreadSafeModuleRef
 //  */
 // LLVMOrcThreadSafeContextRef LLVMOrcCreateNewThreadSafeContext(void);
 
-pub extern "C" fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef = "LLVMOrcCreateNewThreadSafeContext";
+///|
+pub extern "C" fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef = "LLVMOrcCreateNewThreadSafeContext"
 
 //
 // /**
@@ -1047,7 +1050,10 @@ pub extern "C" fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafe
 //  */
 // void LLVMOrcDisposeThreadSafeContext(LLVMOrcThreadSafeContextRef TSCtx);
 
-pub extern "C" fn llvm_orc_dispose_thread_safe_context(ts_ctx: LLVMOrcThreadSafeContextRef) = "LLMVOrcDisposeThreadSafeContext";
+///|
+pub extern "C" fn llvm_orc_dispose_thread_safe_context(
+  ts_ctx : LLVMOrcThreadSafeContextRef
+) = "LLMVOrcDisposeThreadSafeContext"
 
 //
 // /**
@@ -1065,10 +1071,11 @@ pub extern "C" fn llvm_orc_dispose_thread_safe_context(ts_ctx: LLVMOrcThreadSafe
 //                                  LLVMOrcThreadSafeContextRef TSCtx);
 //
 
+///|
 pub extern "C" fn llvm_orc_create_new_thread_safe_module(
-  m: LLVMModuleRef,
-  ts_ctx: LLVMOrcThreadSafeContextRef,
-) -> LLVMOrcThreadSafeModuleRef = "LLVMOrcCreateNewThreadSafeModule";
+  m : LLVMModuleRef,
+  ts_ctx : LLVMOrcThreadSafeContextRef
+) -> LLVMOrcThreadSafeModuleRef = "LLVMOrcCreateNewThreadSafeModule"
 
 // /**
 //  * Dispose of a ThreadSafeModule. This should only be called if ownership has

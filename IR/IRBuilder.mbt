@@ -1218,6 +1218,17 @@ pub fn IRBuilder::createFAdd(
 /// 
 /// This creates a floating-point subtraction instruction. Both operands must be floating-point types with the same bitwidth.
 ///
+/// **Fast Math Flags:**
+///
+/// Allowed Fast Math Flags:
+/// 1. `AllowReassoc`
+/// 2. `AllowContract`
+/// 3. `NoNaNs`
+/// 4. `NoInfs`
+/// 5. `NoSignedZeros`
+/// 6. `AllowReciprocal`
+/// 7. `ApproxFunc`
+///
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
@@ -1247,6 +1258,7 @@ pub fn IRBuilder::createFSub(
   lhs : &Value,
   rhs : &Value,
   name~ : String = "",
+  fast_math~ : Array[FastMathFlags] = [],
   loc~ : SourceLoc = _
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
@@ -1261,7 +1273,18 @@ pub fn IRBuilder::createFSub(
   )
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => {
+      let inst = BinaryInst::BinaryInst(res_valueref)
+      match fast_math {
+        [] => ()
+        flags =>
+          flags.each(f => @unsafe.llvm_set_fast_math_flags(
+            inst.inner(),
+            f.to_llvm(),
+          ))
+      }
+      inst
+    }
   }
 }
 
@@ -3001,14 +3024,13 @@ pub fn IRBuilder::createBitCast(
 /// let arg = fval.getArg(0).unwrap()
 ///
 /// builder.setInsertPoint(bb)
-/// let inttoptr = builder.createIntToPtr(arg, ptr_ty, name="ptr")
+/// let inttoptr = builder.createIntToPtr(arg, name="ptr")
 ///
 /// inspect(inttoptr, content = "  %ptr = inttoptr i64 %0 to ptr")
 /// ```
 pub fn IRBuilder::createIntToPtr(
   self : Self,
   from : &Value,
-  to : PointerType,
   name~ : String = ""
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
@@ -3017,8 +3039,10 @@ pub fn IRBuilder::createIntToPtr(
       "Misuse `IRBuilder::createIntToPtr`, from must be an integer type",
     )
   }
+  let ctx = from.getContext()
+  let ptr_ty = ctx.getPtrTy()
+  let to_ref = ptr_ty.getTypeRef()
   let from_ref = from.getValueRef()
-  let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_int_to_ptr(
     self.builder_ref,
     from_ref,

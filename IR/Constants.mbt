@@ -5,12 +5,14 @@
 ///|
 pub type ConstantInt ValueRef
 
-pub fn ConstantInt::to_int(self: Self) -> Int {
+///|
+pub fn ConstantInt::to_int(self : Self) -> Int {
   let val = @unsafe.llvm_const_int_get_s_ext_value(self.getValueRef())
   val.to_int()
 }
 
-pub fn ConstantInt::to_uint(self: Self) -> UInt {
+///|
+pub fn ConstantInt::to_uint(self : Self) -> UInt {
   let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
   val.to_uint()
 }

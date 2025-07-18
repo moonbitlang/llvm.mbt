@@ -136,7 +136,8 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
   DataLayout(target_data_ref)
 }
 
-pub fn Module::createInterpreter(self: Module) -> Interpreter raise {
+///|
+pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
   let (engref, err) = @unsafe.llvm_create_interpreter_for_module(self.inner())
   let engref = match engref {
     Some(e) => e

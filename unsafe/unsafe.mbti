@@ -417,7 +417,15 @@ fn llvm_create_di_builder_disallow_unresolved(LLVMModuleRef) -> LLVMDIBuilderRef
 
 fn llvm_create_enum_attribute(LLVMContextRef, UInt, UInt64) -> LLVMAttributeRef
 
+fn llvm_create_execution_engine_for_module(LLVMModuleRef) -> (LLVMExecutionEngineRef?, String)
+
 fn llvm_create_function_pass_manager_for_module(LLVMModuleRef) -> LLVMPassManagerRef
+
+fn llvm_create_generic_value_of_float(LLVMTypeRef, Double) -> LLVMGenericValueRef
+
+fn llvm_create_generic_value_of_int(LLVMTypeRef, UInt64, Bool) -> LLVMGenericValueRef
+
+fn llvm_create_interpreter_for_module(LLVMModuleRef) -> (LLVMExecutionEngineRef?, String)
 
 fn llvm_create_memory_buffer_with_memory_range(String, Int, String, Bool) -> LLVMMemoryBufferRef
 
@@ -575,6 +583,12 @@ fn llvm_fp128_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
 fn llvm_function_type(LLVMTypeRef, Array[LLVMTypeRef], Bool) -> LLVMTypeRef
 
+fn llvm_generic_value_int_width(LLVMGenericValueRef) -> UInt
+
+fn llvm_generic_value_to_float(LLVMTypeRef, LLVMGenericValueRef) -> Double
+
+fn llvm_generic_value_to_int(LLVMGenericValueRef, Bool) -> UInt64
+
 fn llvm_get_aggregate_element(LLVMValueRef, UInt) -> LLVMValueRef
 
 fn llvm_get_alignment(LLVMValueRef) -> UInt
@@ -685,7 +699,7 @@ fn llvm_get_enum_attribute_kind_for_name(String) -> UInt
 
 fn llvm_get_enum_attribute_value(LLVMAttributeRef) -> UInt64
 
-fn llvm_get_error_message(LLVMErrorRef) -> CStr
+fn llvm_get_error_message(LLVMErrorRef) -> String
 
 fn llvm_get_exact(LLVMValueRef) -> Bool
 
@@ -714,6 +728,8 @@ fn llvm_get_first_param(LLVMValueRef) -> LLVMValueRef
 fn llvm_get_first_target() -> LLVMTargetRef
 
 fn llvm_get_first_use(LLVMValueRef) -> LLVMUseRef
+
+fn llvm_get_function_address(LLVMExecutionEngineRef, String) -> UInt64
 
 fn llvm_get_function_call_conv(LLVMValueRef) -> UInt
 
@@ -1391,6 +1407,26 @@ fn llvm_move_basic_block_after(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
 fn llvm_move_basic_block_before(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
+fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef
+
+fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef
+
+fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef
+
+fn llvm_orc_create_new_thread_safe_module(LLVMModuleRef, LLVMOrcThreadSafeContextRef) -> LLVMOrcThreadSafeModuleRef
+
+fn llvm_orc_dispose_lljit(LLVMOrcLLJITRef) -> LLVMErrorRef
+
+fn llvm_orc_dispose_lljit_builder(LLVMOrcLLJITBuilderRef) -> Unit
+
+fn llvm_orc_dispose_thread_safe_context(LLVMOrcThreadSafeContextRef) -> Unit
+
+fn llvm_orc_lljit_add_llvm_ir_module(LLVMOrcLLJITRef, LLVMOrcJITDylibRef, LLVMOrcThreadSafeModuleRef) -> LLVMErrorRef
+
+fn llvm_orc_lljit_get_main_jit_dylib(LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef
+
+fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> LLVMOrcExecutorAddress?
+
 fn llvm_parse_bitcode(LLVMMemoryBufferRef) -> (LLVMModuleRef, String, LLVMBool)
 
 fn llvm_parse_bitcode2(LLVMMemoryBufferRef) -> (LLVMModuleRef, LLVMBool)
@@ -1472,6 +1508,8 @@ fn llvm_remove_string_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, Strin
 fn llvm_replace_all_uses_with(LLVMValueRef, LLVMValueRef) -> Unit
 
 fn llvm_replace_md_node_operand_with(LLVMValueRef, UInt, LLVMMetadataRef) -> Unit
+
+fn llvm_run_function(LLVMExecutionEngineRef, LLVMValueRef, Array[LLVMGenericValueRef]) -> LLVMGenericValueRef
 
 fn llvm_run_function_pass_manager(LLVMPassManagerRef, LLVMValueRef) -> LLVMBool
 
@@ -2177,6 +2215,9 @@ fn LLVMDiagnosticSeverity::to_int(Self) -> Int
 #external
 pub type LLVMErrorRef
 
+#external
+pub type LLVMExecutionEngineRef
+
 pub(all) enum LLVMFastMathFlags {
   AllowReassoc
   NoNaNs
@@ -2467,8 +2508,12 @@ pub type LLVMOrcExecutionSessionRef
 
 pub(all) type LLVMOrcExecutorAddress UInt64
 fn LLVMOrcExecutorAddress::inner(Self) -> UInt64
+impl Default for LLVMOrcExecutorAddress
 impl Eq for LLVMOrcExecutorAddress
 impl Show for LLVMOrcExecutorAddress
+
+#external
+pub type LLVMOrcJITDylibRef
 
 pub(all) type LLVMOrcJITTargetAddress UInt64
 fn LLVMOrcJITTargetAddress::inner(Self) -> UInt64
@@ -2476,10 +2521,22 @@ impl Eq for LLVMOrcJITTargetAddress
 impl Show for LLVMOrcJITTargetAddress
 
 #external
+pub type LLVMOrcLLJITBuilderRef
+
+#external
+pub type LLVMOrcLLJITRef
+
+#external
 pub type LLVMOrcSymbolStringPoolEntryRef
 
 #external
 pub type LLVMOrcSymbolStringPoolRef
+
+#external
+pub type LLVMOrcThreadSafeContextRef
+
+#external
+pub type LLVMOrcThreadSafeModuleRef
 
 #external
 pub type LLVMPassBuilderOptionsRef

@@ -55,9 +55,11 @@ pub extern "C" fn llvm_consume_error(err : LLVMErrorRef) = "LLVMConsumeError"
 //  */
 
 ///|
-pub fn llvm_get_error_message(err: LLVMErrorRef) -> String {
+pub fn llvm_get_error_message(err : LLVMErrorRef) -> String {
   __llvm_get_error_message(err) |> c_str_to_moonbit_str
 }
+
+///|
 extern "C" fn __llvm_get_error_message(err : LLVMErrorRef) -> CStr = "LLVMGetErrorMessage"
 
 ///| Disposes of the given error message.
