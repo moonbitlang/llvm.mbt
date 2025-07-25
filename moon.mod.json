@@ -5,7 +5,7 @@
   "repository": "https://github.com/moonbitlang/llvm.mbt",
   "license": "Apache-2.0",
   "keywords": ["Compiler", "llvm", "Native-Only"],
-  "description": "llvm-c binding for Moonbit with friendly API, inspired by Rust-inkwell",
+  "description": "llvm-c binding for Moonbit with friendly API, keeps the Cpp Style.",
   "scripts": {
     "postadd": "curl -O https://raw.githubusercontent.com/moonbitlang/llvm.mbt/blob/master/env.sh"
   }
