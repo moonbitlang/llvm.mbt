@@ -119,6 +119,8 @@ pub trait Type: Show {
   /// DataLayout subsystem to do this.
   isSized(Self) -> Bool = _
 
+  sizeOf(Self) -> &Value? = _
+
   /// Return true if this type is a valid type for a GEP instruction.
   isValidGEPType(Self) -> Bool = _
 
@@ -311,6 +313,17 @@ impl Type with isAggregateType(self) -> Bool {
 ///|
 impl Type with isSized(self) -> Bool {
   @unsafe.llvm_type_is_sized(self.getTypeRef())
+}
+
+///|
+impl Type with sizeOf(self) -> &Value? {
+  let valueref = @unsafe.llvm_size_of(self.getTypeRef())
+  if @unsafe.llvm_value_ref_is_null(valueref) {
+    None
+  } else {
+    let value = CastInst::CastInst(valueref)
+    Some(value)
+  }
 }
 
 ///|
