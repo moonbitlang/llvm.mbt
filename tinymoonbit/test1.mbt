@@ -1,3 +1,4 @@
+
 ///|
 fn test_code(code : String) -> Unit raise {
   let prog = Program::parse(lex(code))
@@ -7,7 +8,7 @@ fn test_code(code : String) -> Unit raise {
 }
 
 ///|
-test {
+test "tinymoonbit : fib" {
   let code =
     #|extern fn print_int(x : Int) -> Unit;
     #|
@@ -22,5 +23,25 @@ test {
     #|fn main {
     #|  print_int(fib(10));
     #|}
+  test_code(code)
+}
+
+test "tinymoonbit : valarray" {
+  let code = 
+    #|extern fn malloc(sz : Int) -> Ptr[Void];
+    #|
+    #|struct ValArray {
+    #|  ptr: Ptr[Int],
+    #|  sz: Int
+    #|}
+    #|
+    #|fn new_valarray(sz : Int) -> ValArray {
+    #|  let v : ValArray;
+    #|  v.ptr = malloc(sz * sizeof(Int)) as Ptr[Int];
+    #|  v.sz = sz;
+    #|  return v;
+    #|}
+    #|
+
   test_code(code)
 }
