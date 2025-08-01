@@ -22,14 +22,15 @@
 //                            LLVMModuleRef *OutModule);
 // TODO: Implement C function
 
-extern "C" fn __llvm_parse_bitcode2(membuf: LLVMMemoryBufferRef, out_mod : Ref[LLVMModuleRef]) -> Bool = "LLVMParseBitcode2";
+extern "C" fn __llvm_parse_bitcode2(
+  membuf : LLVMMemoryBufferRef,
+  out_mod : Ref[LLVMModuleRef],
+) -> Bool = "LLVMParseBitcode2"
 
 ///|
-pub fn llvm_parse_bitcode2(
-  mem_buf : LLVMMemoryBufferRef
-) -> LLVMModuleRef?  {
-  let out_mod : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null());
-  let result = __llvm_parse_bitcode2(mem_buf, out_mod);
+pub fn llvm_parse_bitcode2(mem_buf : LLVMMemoryBufferRef) -> LLVMModuleRef? {
+  let out_mod : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null())
+  let result = __llvm_parse_bitcode2(mem_buf, out_mod)
   match result {
     true => Some(out_mod.val)
     false => None
@@ -46,7 +47,7 @@ pub fn llvm_parse_bitcode2(
 // TODO: Implement C function
 pub extern "C" fn llvm_parse_bitcode_in_context(
   context_ref : LLVMContextRef,
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_parse_bitcode_in_context"
 //
 // LLVMBool LLVMParseBitcodeInContext2(LLVMContextRef ContextRef,
@@ -57,7 +58,7 @@ pub extern "C" fn llvm_parse_bitcode_in_context(
 ///|
 pub extern "C" fn llvm_parse_bitcode_in_context2(
   context_ref : LLVMContextRef,
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, LLVMBool) = "__llvm_parse_bitcode_in_context2"
 //
 // /** Reads a module from the specified path, returning via the OutMP parameter
@@ -71,7 +72,7 @@ pub extern "C" fn llvm_parse_bitcode_in_context2(
 ///|
 pub extern "C" fn llvm_get_bitcode_module_in_context(
   context_ref : LLVMContextRef,
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_get_bitcode_module_in_context"
 //
 // /** Reads a module from the given memory buffer, returning via the OutMP
@@ -89,7 +90,7 @@ pub extern "C" fn llvm_get_bitcode_module_in_context(
 ///|
 pub extern "C" fn llvm_get_bitcode_module_in_context2(
   context_ref : LLVMContextRef,
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, LLVMBool) = "__llvm_get_bitcode_module_in_context2"
 //
 // /* This is deprecated. Use LLVMGetBitcodeModule2. */
@@ -99,7 +100,7 @@ pub extern "C" fn llvm_get_bitcode_module_in_context2(
 
 ///|
 pub extern "C" fn llvm_get_bitcode_module(
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_get_bitcode_module"
 //
 // LLVMBool LLVMGetBitcodeModule2(LLVMMemoryBufferRef MemBuf, LLVMModuleRef *OutM);
@@ -107,5 +108,5 @@ pub extern "C" fn llvm_get_bitcode_module(
 
 ///|
 pub extern "C" fn llvm_get_bitcode_module2(
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_get_bitcode_module"

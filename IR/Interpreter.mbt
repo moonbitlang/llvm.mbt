@@ -25,7 +25,7 @@ pub fn Interpreter::inner(self : Self) -> ExecutionEngineRef {
 fn Interpreter::construct(
   engine : ExecutionEngineRef,
   mod : Module,
-  ctx : Context
+  ctx : Context,
 ) -> Interpreter {
   Interpreter::{ engine, mod, ctx }
 }
@@ -33,7 +33,7 @@ fn Interpreter::construct(
 ///|
 pub fn Interpreter::createGenericValueInt(
   self : Self,
-  value : Int
+  value : Int,
 ) -> GenericValue {
   let typeref = self.ctx.getInt32Ty().getTypeRef()
   @unsafe.llvm_create_generic_value_of_int(typeref, value.to_uint64(), true)
@@ -42,7 +42,7 @@ pub fn Interpreter::createGenericValueInt(
 ///|
 pub fn Interpreter::createGenericValueUInt(
   self : Self,
-  value : UInt
+  value : UInt,
 ) -> GenericValue {
   let typeref = self.ctx.getInt32Ty().getTypeRef()
   @unsafe.llvm_create_generic_value_of_int(typeref, value.to_uint64(), false)
@@ -51,7 +51,7 @@ pub fn Interpreter::createGenericValueUInt(
 ///|
 pub fn Interpreter::createGenericValueInt64(
   self : Self,
-  value : Int64
+  value : Int64,
 ) -> GenericValue {
   let typeref = self.ctx.getInt64Ty().getTypeRef()
   @unsafe.llvm_create_generic_value_of_int(
@@ -64,7 +64,7 @@ pub fn Interpreter::createGenericValueInt64(
 ///|
 pub fn Interpreter::createGenericValueUInt64(
   self : Self,
-  value : UInt64
+  value : UInt64,
 ) -> GenericValue {
   let typeref = self.ctx.getInt64Ty().getTypeRef()
   @unsafe.llvm_create_generic_value_of_int(typeref, value, true)
@@ -73,7 +73,7 @@ pub fn Interpreter::createGenericValueUInt64(
 ///|
 pub fn Interpreter::createGenericValueFloat(
   self : Self,
-  value : Float
+  value : Float,
 ) -> GenericValue {
   let typeref = self.ctx.getFloatTy().getTypeRef()
   @unsafe.llvm_create_generic_value_of_float(typeref, value.to_double())
@@ -82,7 +82,7 @@ pub fn Interpreter::createGenericValueFloat(
 ///|
 pub fn Interpreter::createGenericValueDouble(
   self : Self,
-  value : Double
+  value : Double,
 ) -> GenericValue {
   let typeref = self.ctx.getDoubleTy().getTypeRef()
   @unsafe.llvm_create_generic_value_of_float(typeref, value)
@@ -92,7 +92,7 @@ pub fn Interpreter::createGenericValueDouble(
 pub fn Interpreter::runFunction(
   self : Self,
   func : Function,
-  args : Array[GenericValue]
+  args : Array[GenericValue],
 ) -> GenericValue {
   let args_ref = args.map(arg => arg.inner())
   @unsafe.llvm_run_function(self.inner(), func.inner(), args_ref)

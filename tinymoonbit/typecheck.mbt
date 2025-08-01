@@ -27,7 +27,7 @@ fn[K : Eq + Hash, V] TypeEnv::get(self : Self[K, V], key : K) -> V? {
 ///|
 fn[K : Eq + Hash + Show, V] TypeEnv::get_or_err(
   self : Self[K, V],
-  key : K
+  key : K,
 ) -> V raise {
   match self.data.get(key) {
     Some(value) => value
@@ -43,7 +43,7 @@ fn[K : Eq + Hash + Show, V] TypeEnv::get_or_err(
 fn[K : Eq + Hash + Show, V] TypeEnv::set(
   self : Self[K, V],
   key : K,
-  value : V
+  value : V,
 ) -> Unit raise {
   if self.data.contains(key) {
     raise TypeCheckError("Error: Duplicate key: \{key}")
@@ -341,7 +341,7 @@ fn TypeCheck::check_expr(self : Self, expr : Expr) -> Type raise {
 ///|
 fn TypeCheck::check_left_value(
   self : Self,
-  left_value : LeftValue
+  left_value : LeftValue,
 ) -> Type raise {
   match left_value {
     Var(name, ..) as var_left => {

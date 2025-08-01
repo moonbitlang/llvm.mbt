@@ -209,7 +209,7 @@ pub(all) enum FastMathFlags {
 
 ///|
 pub fn FastMathFlags::to_llvm(
-  self : FastMathFlags
+  self : FastMathFlags,
 ) -> @unsafe.LLVMFastMathFlags {
   match self {
     AllowReassoc => @unsafe.LLVMFastMathFlags::AllowReassoc
@@ -258,7 +258,7 @@ fn IntPredicate::to_llvm_int_predicate(self : Self) -> @unsafe.LLVMIntPredicate 
 
 ///|
 fn IntPredicate::from_llvm_int_predicate(
-  pred : @unsafe.LLVMIntPredicate
+  pred : @unsafe.LLVMIntPredicate,
 ) -> IntPredicate {
   match pred {
     LLVMIntEQ => EQ
@@ -334,7 +334,7 @@ pub(all) enum FloatPredicate {
 
 ///|
 fn FloatPredicate::to_llvm_float_predicate(
-  self : Self
+  self : Self,
 ) -> @unsafe.LLVMRealPredicate {
   match self {
     OEQ => LLVMRealOEQ
@@ -358,7 +358,7 @@ fn FloatPredicate::to_llvm_float_predicate(
 
 ///|
 fn FloatPredicate::from_llvm_float_predicate(
-  pred : @unsafe.LLVMRealPredicate
+  pred : @unsafe.LLVMRealPredicate,
 ) -> FloatPredicate {
   match pred {
     LLVMRealOEQ => OEQ
@@ -438,7 +438,7 @@ pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
 
 ///|
 pub fn GetElementPtrInst::getSourceElementType(
-  self : GetElementPtrInst
+  self : GetElementPtrInst,
 ) -> &Type {
   let typeref = @unsafe.llvm_get_gep_source_element_type(self.inner())
   initAbstractType(typeref)
@@ -576,7 +576,7 @@ pub type PHINode ValueRef
 pub fn PHINode::addIncoming(
   self : PHINode,
   value : &Value,
-  block : BasicBlock
+  block : BasicBlock,
 ) -> Unit {
   @unsafe.llvm_add_incoming(self.inner(), [value.getValueRef()], [block.inner()])
 }
@@ -680,7 +680,7 @@ pub suberror InValidOperation String derive(Show)
 pub fn BranchInst::setCondition(
   self : BranchInst,
   cond : &Value,
-  loc~ : SourceLoc = _
+  loc~ : SourceLoc = _,
 ) -> Unit raise {
   guard self.isConditional() else {
     let msg =
@@ -708,7 +708,7 @@ pub fn BranchInst::setSuccessor(
   self : BranchInst,
   idx : Int,
   block : BasicBlock,
-  loc~ : SourceLoc = _
+  loc~ : SourceLoc = _,
 ) -> Unit raise {
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =
@@ -764,7 +764,7 @@ pub type SwitchInst ValueRef
 pub fn SwitchInst::addCase(
   self : Self,
   on_val : &Value,
-  dest : BasicBlock
+  dest : BasicBlock,
 ) -> Unit raise {
   guard on_val.getType().tryAsIntType() is Some(_) else {
     raise InValidSwitchCaseValue(
@@ -791,7 +791,7 @@ pub fn SwitchInst::setSuccessor(
   self : Self,
   idx : Int,
   block : BasicBlock,
-  loc~ : SourceLoc = _
+  loc~ : SourceLoc = _,
 ) -> Unit raise {
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =

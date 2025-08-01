@@ -9,13 +9,13 @@
 ///|
 extern "C" fn __llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,
-  path : CStr
-) -> Int = "LLVMWriteBitcodeToFile";
+  path : CStr,
+) -> Int = "LLVMWriteBitcodeToFile"
 
 ///|
 pub fn llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,
-  path : String
+  path : String,
 ) -> Int {
   let path = moonbit_str_to_c_str(path)
   __llvm_write_bitcode_to_file(mod_ref, path)
@@ -31,7 +31,7 @@ pub extern "C" fn llvm_write_bitcode_to_fd(
   mod_ref : LLVMModuleRef,
   fd : Int,
   should_close : Int,
-  unbuffered : Int
+  unbuffered : Int,
 ) -> Int = "__llvm_write_bitcode_to_fd"
 //
 // /** Deprecated for LLVMWriteBitcodeToFD. Writes a module to an open file
@@ -42,7 +42,7 @@ pub extern "C" fn llvm_write_bitcode_to_fd(
 ///|
 pub extern "C" fn llvm_write_bitcode_to_file_handle(
   mod_ref : LLVMModuleRef,
-  handle : Int
+  handle : Int,
 ) -> Int = "__llvm_write_bitcode_to_file_handle"
 //
 // /** Writes a module to a new memory buffer and returns it. */
@@ -51,5 +51,5 @@ pub extern "C" fn llvm_write_bitcode_to_file_handle(
 
 ///|
 pub extern "C" fn llvm_write_bitcode_to_memory_buffer(
-  mod_ref : LLVMModuleRef
+  mod_ref : LLVMModuleRef,
 ) -> LLVMMemoryBufferRef = "__llvm_write_bitcode_to_memory_buffer"

@@ -20,7 +20,7 @@ fn CodeGen::init(parser_prog : Program) -> CodeGen {
 ///|
 fn CodeGen::convert_parser_type_to_llvm_type(
   self : Self,
-  ty : Type
+  ty : Type,
 ) -> &@IR.Type raise {
   let ctx = self.llvm_ctx
   match ty {
@@ -61,7 +61,7 @@ priv struct Env {
 fn Env::new(
   gen : CodeGen,
   parser_func : Function,
-  llvm_func : @IR.Function
+  llvm_func : @IR.Function,
 ) -> Env {
   Env::{ gen, parser_func, llvm_func, parent: None, symbols: Map::new() }
 }
@@ -121,7 +121,7 @@ fn CodeGen::emitProg(self : Self) -> Unit raise Error {
 ///|
 fn CodeGen::emitStructDef(
   self : Self,
-  struct_def : StructDef
+  struct_def : StructDef,
 ) -> Unit raise Error {
   // 将结构体字段类型转换为LLVM类型
   let field_types = struct_def.fields.map(field => {
@@ -137,7 +137,7 @@ fn CodeGen::emitStructDef(
 ///|
 fn CodeGen::genFuncVal(
   self : Self,
-  func : Function
+  func : Function,
 ) -> @IR.Function raise Error {
   let param_tys = func.params.map(param_ty => {
     let (_, ty) = param_ty

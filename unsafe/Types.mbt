@@ -212,7 +212,7 @@ pub type LLVMOrcSymbolStringPoolEntryRef
 ///|
 pub impl Eq for LLVMTypeRef with op_equal(
   self : LLVMTypeRef,
-  other : LLVMTypeRef
+  other : LLVMTypeRef,
 ) -> Bool {
   self.is_equal(other)
 }
@@ -220,7 +220,7 @@ pub impl Eq for LLVMTypeRef with op_equal(
 ///|
 pub impl Eq for LLVMValueRef with op_equal(
   self : LLVMValueRef,
-  other : LLVMValueRef
+  other : LLVMValueRef,
 ) -> Bool {
   self.is_equal(other)
 }
@@ -228,7 +228,7 @@ pub impl Eq for LLVMValueRef with op_equal(
 ///|
 pub impl Eq for LLVMContextRef with op_equal(
   self : LLVMContextRef,
-  other : LLVMContextRef
+  other : LLVMContextRef,
 ) -> Bool {
   self.is_equal(other)
 }
@@ -236,7 +236,7 @@ pub impl Eq for LLVMContextRef with op_equal(
 ///|
 pub impl Eq for LLVMAttributeRef with op_equal(
   self : LLVMAttributeRef,
-  other : LLVMAttributeRef
+  other : LLVMAttributeRef,
 ) -> Bool {
   self.is_equal(other)
 }
@@ -244,7 +244,7 @@ pub impl Eq for LLVMAttributeRef with op_equal(
 ///|
 pub impl Eq for LLVMBasicBlockRef with op_equal(
   self : LLVMBasicBlockRef,
-  other : LLVMBasicBlockRef
+  other : LLVMBasicBlockRef,
 ) -> Bool {
   self.is_equal(other)
 }
@@ -2235,7 +2235,7 @@ pub(all) enum LLVMVerifierFailureAction {
 
 ///|
 pub fn LLVMVerifierFailureAction::to_int(
-  self : LLVMVerifierFailureAction
+  self : LLVMVerifierFailureAction,
 ) -> Int {
   match self {
     LLVMAbortProcessAction => 0
@@ -2246,7 +2246,7 @@ pub fn LLVMVerifierFailureAction::to_int(
 
 ///|
 pub fn LLVMVerifierFailureAction::from_int(
-  idx : Int
+  idx : Int,
 ) -> LLVMVerifierFailureAction {
   match idx {
     0 => LLVMAbortProcessAction
@@ -2308,7 +2308,7 @@ pub(all) enum LLVMJITSymbolGenericFlags {
 
 ///|
 pub fn LLVMJITSymbolGenericFlags::to_int(
-  self : LLVMJITSymbolGenericFlags
+  self : LLVMJITSymbolGenericFlags,
 ) -> Int {
   match self {
     LLVMJITSymbolGenericFlagsNone => 0
@@ -2321,7 +2321,7 @@ pub fn LLVMJITSymbolGenericFlags::to_int(
 
 ///|
 pub fn LLVMJITSymbolGenericFlags::from_int(
-  idx : Int
+  idx : Int,
 ) -> LLVMJITSymbolGenericFlags {
   match idx {
     0 => LLVMJITSymbolGenericFlagsNone

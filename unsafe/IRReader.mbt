@@ -23,7 +23,7 @@ extern "C" fn __llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
   mem_buf : LLVMMemoryBufferRef,
   out_m : Ref[LLVMModuleRef],
-  out_message : Ref[CStr]
+  out_message : Ref[CStr],
 ) -> LLVMBool = "__llvm_parse_ir_in_context"
 
 ///| Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
@@ -38,7 +38,7 @@ extern "C" fn __llvm_parse_ir_in_context(
 /// 
 pub fn llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
-  mem_buf : LLVMMemoryBufferRef
+  mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) {
   let cstr_ref : Ref[CStr] = Ref::new(CStr::create_null())
   let out_m_ref : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null())
@@ -59,7 +59,7 @@ pub fn llvm_parse_ir_in_context(
 /// 
 pub fn LLVMContextRef::parse_ir(
   self : LLVMContextRef,
-  membuf : LLVMMemoryBufferRef
+  membuf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, Bool) {
   let (mod, err, failed) = llvm_parse_ir_in_context(self, membuf)
   (mod, err, failed.into())

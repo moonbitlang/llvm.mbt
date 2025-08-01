@@ -118,7 +118,6 @@ pub trait Type: Show {
   /// actual size for a particular target, it is reasonable to use the
   /// DataLayout subsystem to do this.
   isSized(Self) -> Bool = _
-
   sizeOf(Self) -> &Value? = _
 
   /// Return true if this type is a valid type for a GEP instruction.
@@ -145,7 +144,7 @@ pub suberror InValidTypeError String derive(Show)
 
 ///|
 fn initAbstractType_err(
-  typeref : @unsafe.LLVMTypeRef
+  typeref : @unsafe.LLVMTypeRef,
 ) -> &Type raise InValidTypeError {
   let kind = @unsafe.llvm_get_type_kind(typeref)
   match kind {
@@ -1319,7 +1318,7 @@ pub suberror SetBodyForNonOpaqueStruct String derive(Show)
 pub fn StructType::setBody(
   self : StructType,
   elements : Array[&Type],
-  isPacked~ : Bool = false
+  isPacked~ : Bool = false,
 ) -> Unit raise {
   // only opaque struct can be set body.
   guard self.isOpaque() else {

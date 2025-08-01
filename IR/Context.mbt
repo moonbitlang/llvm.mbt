@@ -227,7 +227,7 @@ pub fn Context::getInt64Ty(self : Context) -> Int64Type {
 /// ```
 pub fn Context::getPtrTy(
   self : Context,
-  addressSpace~ : AddressSpace = AddressSpace::default()
+  addressSpace~ : AddressSpace = AddressSpace::default(),
 ) -> PointerType {
   let typeref = @unsafe.llvm_pointer_type_in_context(
     self.inner(),
@@ -258,7 +258,7 @@ pub fn Context::getFunctionType(
   self : Context,
   returnType : &Type,
   paramTypes : Array[&Type],
-  isVarArg~ : Bool = false
+  isVarArg~ : Bool = false,
 ) -> FunctionType {
   ignore(self)
   let ret_ty = returnType.getTypeRef()
@@ -289,7 +289,7 @@ pub fn Context::getStructType(
   self : Context,
   elements : Array[&Type],
   isPacked~ : Bool = false,
-  name~ : String = ""
+  name~ : String = "",
 ) -> StructType {
   guard not(name.is_empty() && elements.is_empty()) else {
     println(
@@ -352,7 +352,7 @@ pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
 pub fn Context::getArrayType(
   self : Context,
   elementType : &Type,
-  numElements : Int
+  numElements : Int,
 ) -> ArrayType {
   ignore(self)
   let typeref = @unsafe.llvm_array_type(
@@ -377,7 +377,7 @@ pub fn Context::getArrayType(
 pub fn[T : Type] Context::getFixedVectorType(
   self : Context,
   elementType : T,
-  elementQuantity : Int
+  elementQuantity : Int,
 ) -> VectorType {
   //if elementQuantity <= 1 {}
   ignore(self)
@@ -403,7 +403,7 @@ pub fn[T : Type] Context::getFixedVectorType(
 pub fn Context::getScalableVectorType(
   self : Context,
   elementType : &Type,
-  elementQuantity : UInt
+  elementQuantity : UInt,
 ) -> ScalableVectorType {
   ignore(self)
   let typeref = @unsafe.llvm_scalable_vector_type(
@@ -787,7 +787,7 @@ pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
 pub fn Context::getConstArray(
   self : Self,
   elementType : &Type,
-  elements : Array[&Constant]
+  elements : Array[&Constant],
 ) -> ConstantArray {
   ignore(self)
   let element_refs = elements.map(v => v.getValueRef())
@@ -827,7 +827,7 @@ pub fn Context::getConstArray(
 /// ```
 pub fn Context::getConstVector(
   self : Self,
-  scalar_constant_vals : Array[&Constant]
+  scalar_constant_vals : Array[&Constant],
 ) -> ConstantVector {
   ignore(self)
   let scalar_refs = scalar_constant_vals.map(v => v.getValueRef())
@@ -865,7 +865,7 @@ pub fn Context::getConstVector(
 pub fn Context::getConstStruct(
   self : Self,
   elements : Array[&Constant],
-  isPacked~ : Bool = false
+  isPacked~ : Bool = false,
 ) -> ConstantStruct {
   ignore(self)
   let element_refs = elements.map(v => v.getValueRef())
@@ -966,7 +966,7 @@ pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
 /// ```
 pub fn Context::getConstPointerNull(
   self : Self,
-  ty : &Type
+  ty : &Type,
 ) -> ConstantPointerNull {
   ignore(self)
   let valueref = @unsafe.llvm_const_pointer_null(ty.getTypeRef())

@@ -1,3 +1,4 @@
+// Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/IR"
 
 import(
@@ -661,6 +662,7 @@ fn Module::setDataLayout(Self, String) -> Unit
 fn Module::setDefaultDataLayout(Self) -> Unit
 fn Module::setName(Self, String) -> Unit
 fn Module::setSourceFileName(Self, String) -> Unit
+fn Module::writeBitCodeToFile(Self, String) -> Unit raise
 impl Show for Module
 
 pub type PHINode @unsafe.LLVMValueRef
@@ -885,6 +887,9 @@ impl Type for VoidType
 impl Eq for VoidType
 impl Show for VoidType
 
+pub suberror WriteBitCodeToFileFailed String
+impl Show for WriteBitCodeToFileFailed
+
 // Type aliases
 pub typealias @unsafe.LLVMValueRef as ValueRef
 
@@ -947,6 +952,7 @@ pub trait Type : Show {
   isSingleValueType(Self) -> Bool
   isAggregateType(Self) -> Bool
   isSized(Self) -> Bool
+  sizeOf(Self) -> &Value?
   isValidGEPType(Self) -> Bool
   getScalarType(Self) -> &Type
   tryAsIntType(Self) -> &IntegerType?

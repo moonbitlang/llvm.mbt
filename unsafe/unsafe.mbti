@@ -1,3 +1,4 @@
+// Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/unsafe"
 
 // Values
@@ -1427,9 +1428,7 @@ fn llvm_orc_lljit_get_main_jit_dylib(LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef
 
 fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> LLVMOrcExecutorAddress?
 
-fn llvm_parse_bitcode(LLVMMemoryBufferRef) -> (LLVMModuleRef, String, LLVMBool)
-
-fn llvm_parse_bitcode2(LLVMMemoryBufferRef) -> (LLVMModuleRef, LLVMBool)
+fn llvm_parse_bitcode2(LLVMMemoryBufferRef) -> LLVMModuleRef?
 
 fn llvm_parse_bitcode_in_context(LLVMContextRef, LLVMMemoryBufferRef) -> (LLVMModuleRef, String, LLVMBool)
 

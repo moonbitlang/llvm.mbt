@@ -5,7 +5,7 @@ pub type Module @unsafe.LLVMModuleRef
 pub fn Module::addFunction(
   self : Self,
   fty : FunctionType,
-  name : String
+  name : String,
   //linkage~: Linkage
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
@@ -136,13 +136,18 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
   DataLayout(target_data_ref)
 }
 
+///|
 pub suberror WriteBitCodeToFileFailed String derive(Show)
 
-pub fn Module::writeBitCodeToFile(self: Module, filename: String) -> Unit raise { 
-  if  0 != @unsafe.llvm_write_bitcode_to_file(self.inner(), filename) {
+///|
+pub fn Module::writeBitCodeToFile(
+  self : Module,
+  filename : String,
+) -> Unit raise {
+  if 0 != @unsafe.llvm_write_bitcode_to_file(self.inner(), filename) {
     raise WriteBitCodeToFileFailed(filename)
   }
-} 
+}
 
 ///|
 pub fn Module::createInterpreter(self : Module) -> Interpreter raise {

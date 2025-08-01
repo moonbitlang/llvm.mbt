@@ -1,4 +1,3 @@
-
 ///|
 fn test_code(code : String) -> Unit raise {
   let prog = Program::parse(lex(code))
@@ -26,8 +25,9 @@ test "tinymoonbit : fib" {
   test_code(code)
 }
 
+///|
 test "tinymoonbit : valarray" {
-  let code = 
+  let code =
     #|extern fn malloc(sz : Int) -> Ptr[Void];
     #|
     #|struct ValArray {
@@ -42,6 +42,5 @@ test "tinymoonbit : valarray" {
     #|  return v;
     #|}
     #|
-
   test_code(code)
 }

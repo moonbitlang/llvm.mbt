@@ -196,7 +196,7 @@ pub type LLVMTargetDataRef
 
 ///|
 pub extern "C" fn llvm_get_module_data_layout(
-  m : LLVMModuleRef
+  m : LLVMModuleRef,
 ) -> LLVMTargetDataRef = "LLVMGetModuleDataLayout"
 
 //
@@ -279,7 +279,7 @@ extern "C" fn __llvm_create_target_data(string_rep : CStr) -> LLVMTargetDataRef 
 ///|
 pub extern "C" fn llvm_size_of_type_in_bits(
   td : LLVMTargetDataRef,
-  ty : LLVMTypeRef
+  ty : LLVMTypeRef,
 ) -> UInt64 = "LLVMSizeOfTypeInBits"
 
 //
@@ -290,7 +290,7 @@ pub extern "C" fn llvm_size_of_type_in_bits(
 ///|
 pub extern "C" fn llvm_store_size_of_type(
   td : LLVMTargetDataRef,
-  ty : LLVMTypeRef
+  ty : LLVMTypeRef,
 ) -> UInt64 = "LLVMStoreSizeOfType"
 
 //
@@ -301,7 +301,7 @@ pub extern "C" fn llvm_store_size_of_type(
 ///|
 pub extern "C" fn llvm_abi_size_of_type(
   td : LLVMTargetDataRef,
-  ty : LLVMTypeRef
+  ty : LLVMTypeRef,
 ) -> UInt64 = "LLVMABISizeOfType"
 
 //
@@ -312,7 +312,7 @@ pub extern "C" fn llvm_abi_size_of_type(
 ///|
 pub extern "C" fn llvm_abi_alignment_of_type(
   td : LLVMTargetDataRef,
-  ty : LLVMTypeRef
+  ty : LLVMTypeRef,
 ) -> UInt = "LLVMABIAlignmentOfType"
 
 //

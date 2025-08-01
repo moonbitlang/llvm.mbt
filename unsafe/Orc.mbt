@@ -1052,7 +1052,7 @@ pub extern "C" fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafe
 
 ///|
 pub extern "C" fn llvm_orc_dispose_thread_safe_context(
-  ts_ctx : LLVMOrcThreadSafeContextRef
+  ts_ctx : LLVMOrcThreadSafeContextRef,
 ) = "LLMVOrcDisposeThreadSafeContext"
 
 //
@@ -1074,7 +1074,7 @@ pub extern "C" fn llvm_orc_dispose_thread_safe_context(
 ///|
 pub extern "C" fn llvm_orc_create_new_thread_safe_module(
   m : LLVMModuleRef,
-  ts_ctx : LLVMOrcThreadSafeContextRef
+  ts_ctx : LLVMOrcThreadSafeContextRef,
 ) -> LLVMOrcThreadSafeModuleRef = "LLVMOrcCreateNewThreadSafeModule"
 
 // /**

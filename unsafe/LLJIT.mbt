@@ -97,7 +97,7 @@ pub extern "C" fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef = "L
 
 ///|
 pub extern "C" fn llvm_orc_dispose_lljit_builder(
-  builder : LLVMOrcLLJITBuilderRef
+  builder : LLVMOrcLLJITBuilderRef,
 ) = "LLVMOrcDisposeLLJITBuilder"
 
 //
@@ -159,7 +159,7 @@ pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef {
 ///|
 extern "C" fn __llvm_orc_create_lljit(
   result : Ref[LLVMOrcLLJITRef],
-  builder : LLVMOrcLLJITBuilderRef
+  builder : LLVMOrcLLJITBuilderRef,
 ) -> LLVMErrorRef = "LLVMOrcCreateLLJIT"
 //
 // /**
@@ -190,7 +190,7 @@ pub extern "C" fn llvm_orc_dispose_lljit(j : LLVMOrcLLJITRef) -> LLVMErrorRef = 
 
 ///|
 pub extern "C" fn llvm_orc_lljit_get_main_jit_dylib(
-  j : LLVMOrcLLJITRef
+  j : LLVMOrcLLJITRef,
 ) -> LLVMOrcJITDylibRef = "LLVMOrcLLJITGetMainJITDylib"
 
 //
@@ -264,7 +264,7 @@ pub extern "C" fn llvm_orc_lljit_get_main_jit_dylib(
 pub extern "C" fn llvm_orc_lljit_add_llvm_ir_module(
   j : LLVMOrcLLJITRef,
   jd : LLVMOrcJITDylibRef,
-  tsm : LLVMOrcThreadSafeModuleRef
+  tsm : LLVMOrcThreadSafeModuleRef,
 ) -> LLVMErrorRef = "LLVMOrcLLJITAddLLVMIRModule"
 
 // /**
@@ -298,7 +298,7 @@ pub extern "C" fn llvm_orc_lljit_add_llvm_ir_module(
 ///|
 pub fn llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
-  name : String
+  name : String,
 ) -> LLVMOrcExecutorAddress? {
   let addr : Ref[LLVMOrcExecutorAddress] = Ref::new(
     LLVMOrcExecutorAddress::default(),
@@ -315,7 +315,7 @@ pub fn llvm_orc_lljit_lookup(
 extern "C" fn __llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
   result : Ref[LLVMOrcExecutorAddress],
-  name : CStr
+  name : CStr,
 ) -> LLVMErrorRef = "LLVMOrcLLJITLookup"
 
 // /**

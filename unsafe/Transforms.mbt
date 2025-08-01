@@ -13,7 +13,7 @@ pub fn llvm_run_passes(
   m : LLVMModuleRef,
   passes : String,
   tm : LLVMTargetMachineRef,
-  options : LLVMPassBuilderOptionsRef
+  options : LLVMPassBuilderOptionsRef,
 ) -> LLVMErrorRef {
   let passes = CStr::from(passes)
   __llvm_run_passes(m, passes, tm, options)
@@ -24,7 +24,7 @@ extern "C" fn __llvm_run_passes(
   m : LLVMModuleRef,
   passes : CStr,
   tm : LLVMTargetMachineRef,
-  options : LLVMPassBuilderOptionsRef
+  options : LLVMPassBuilderOptionsRef,
 ) -> LLVMErrorRef = "LLVMRunPasses"
 
 ///| Create a new set of options for a PassBuilder
@@ -38,7 +38,7 @@ pub extern "C" fn llvm_create_pass_builder_options() -> LLVMPassBuilderOptionsRe
 /// inside the module is valid.
 pub fn llvm_pass_builder_options_set_verify_each(
   options : LLVMPassBuilderOptionsRef,
-  verify_each : Bool
+  verify_each : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_verify_each(
     options,
@@ -49,13 +49,13 @@ pub fn llvm_pass_builder_options_set_verify_each(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_verify_each(
   options : LLVMPassBuilderOptionsRef,
-  verify_each : LLVMBool
+  verify_each : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetVerifyEach"
 
 ///| Toggle debug logging when running the PassBuilder
 pub fn llvm_pass_builder_options_set_debug_logging(
   options : LLVMPassBuilderOptionsRef,
-  debug_logging : Bool
+  debug_logging : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_debug_logging(
     options,
@@ -66,13 +66,13 @@ pub fn llvm_pass_builder_options_set_debug_logging(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_debug_logging(
   options : LLVMPassBuilderOptionsRef,
-  debug_logging : LLVMBool
+  debug_logging : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetDebugLogging"
 
 ///|
 pub fn llvm_pass_builder_options_set_loop_interleaving(
   options : LLVMPassBuilderOptionsRef,
-  loop_interleaving : Bool
+  loop_interleaving : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_loop_interleaving(
     options,
@@ -83,13 +83,13 @@ pub fn llvm_pass_builder_options_set_loop_interleaving(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_loop_interleaving(
   options : LLVMPassBuilderOptionsRef,
-  loop_interleaving : LLVMBool
+  loop_interleaving : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetLoopInterleaving"
 
 ///|
 pub fn llvm_pass_builder_options_set_loop_vectorization(
   options : LLVMPassBuilderOptionsRef,
-  loop_vectorization : Bool
+  loop_vectorization : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_loop_vectorization(
     options,
@@ -100,13 +100,13 @@ pub fn llvm_pass_builder_options_set_loop_vectorization(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_loop_vectorization(
   options : LLVMPassBuilderOptionsRef,
-  loop_vectorization : LLVMBool
+  loop_vectorization : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetLoopVectorization"
 
 ///|
 pub fn llvm_pass_builder_options_set_slp_vectorization(
   options : LLVMPassBuilderOptionsRef,
-  slp_vectorization : Bool
+  slp_vectorization : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_slp_vectorization(
     options,
@@ -117,7 +117,7 @@ pub fn llvm_pass_builder_options_set_slp_vectorization(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_slp_vectorization(
   options : LLVMPassBuilderOptionsRef,
-  slp_vectorization : LLVMBool
+  slp_vectorization : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetSLPVectorization"
 
 // void LLVMPassBuilderOptionsSetLoopUnrolling(LLVMPassBuilderOptionsRef Options,
@@ -126,7 +126,7 @@ extern "C" fn __llvm_pass_builder_options_set_slp_vectorization(
 ///|
 pub fn llvm_pass_builder_options_set_loop_unrolling(
   options : LLVMPassBuilderOptionsRef,
-  loop_unrolling : Bool
+  loop_unrolling : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_loop_unrolling(
     options,
@@ -137,13 +137,13 @@ pub fn llvm_pass_builder_options_set_loop_unrolling(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_loop_unrolling(
   options : LLVMPassBuilderOptionsRef,
-  loop_unrolling : LLVMBool
+  loop_unrolling : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetLoopUnrolling"
 
 ///|
 pub fn llvm_pass_builder_options_set_forget_all_scev_in_loop_unroll(
   options : LLVMPassBuilderOptionsRef,
-  forget_all_scev_in_loop_unroll : Bool
+  forget_all_scev_in_loop_unroll : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_forget_all_scev_in_loop_unroll(
     options,
@@ -154,25 +154,25 @@ pub fn llvm_pass_builder_options_set_forget_all_scev_in_loop_unroll(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_forget_all_scev_in_loop_unroll(
   options : LLVMPassBuilderOptionsRef,
-  forget_all_scev_in_loop_unroll : LLVMBool
+  forget_all_scev_in_loop_unroll : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetForgetAllSCEVInLoopUnroll"
 
 ///|
 pub extern "C" fn llvm_pass_builder_options_set_licm_mssa_opt_cap(
   options : LLVMPassBuilderOptionsRef,
-  licm_mssa_opt_cap : UInt
+  licm_mssa_opt_cap : UInt,
 ) = "LLVMPassBuilderOptionsSetLicmMssaOptCap"
 
 ///|
 pub extern "C" fn llvm_pass_builder_options_set_licm_mssa_no_acc_for_promotion_cap(
   options : LLVMPassBuilderOptionsRef,
-  licm_mssa_no_acc_for_promotion_cap : UInt
+  licm_mssa_no_acc_for_promotion_cap : UInt,
 ) = "LLVMPassBuilderOptionsSetLicmMssaNoAccForPromotionCap"
 
 ///|
 pub fn llvm_pass_builder_options_set_call_graph_profile(
   options : LLVMPassBuilderOptionsRef,
-  call_graph_profile : Bool
+  call_graph_profile : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_call_graph_profile(
     options,
@@ -183,7 +183,7 @@ pub fn llvm_pass_builder_options_set_call_graph_profile(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_call_graph_profile(
   options : LLVMPassBuilderOptionsRef,
-  call_graph_profile : LLVMBool
+  call_graph_profile : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetCallGraphProfile"
 
 // void LLVMPassBuilderOptionsSetMergeFunctions(LLVMPassBuilderOptionsRef Options,
@@ -192,7 +192,7 @@ extern "C" fn __llvm_pass_builder_options_set_call_graph_profile(
 ///|
 pub fn llvm_pass_builder_options_set_merge_functions(
   options : LLVMPassBuilderOptionsRef,
-  merge_functions : Bool
+  merge_functions : Bool,
 ) -> Unit {
   __llvm_pass_builder_options_set_merge_functions(
     options,
@@ -203,18 +203,18 @@ pub fn llvm_pass_builder_options_set_merge_functions(
 ///|
 extern "C" fn __llvm_pass_builder_options_set_merge_functions(
   options : LLVMPassBuilderOptionsRef,
-  merge_functions : LLVMBool
+  merge_functions : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetMergeFunctions"
 
 ///|
 pub extern "C" fn llvm_pass_builder_options_set_inliner_threshold(
   options : LLVMPassBuilderOptionsRef,
-  threshold : Int
+  threshold : Int,
 ) = "LLVMPassBuilderOptionsSetInlinerThreshold"
 
 ///| Dispose of a heap-allocated PassBuilderOptions instance
 pub extern "C" fn llvm_dispose_pass_builder_options(
-  options : LLVMPassBuilderOptionsRef
+  options : LLVMPassBuilderOptionsRef,
 ) -> Unit = "LLVMDisposePassBuilderOptions"
 
 // ===================================

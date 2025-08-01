@@ -165,7 +165,7 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 pub fn Function::addBasicBlock(
   self : Self,
   name~ : String = "",
-  before~ : BasicBlock? = None
+  before~ : BasicBlock? = None,
 ) -> BasicBlock {
   let blockref = match before {
     None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)

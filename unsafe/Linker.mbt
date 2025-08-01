@@ -15,5 +15,5 @@ pub fn llvm_link_modules(dest : LLVMModuleRef, src : LLVMModuleRef) -> Bool {
 ///|
 extern "C" fn __llvm_link_modules2(
   dest : LLVMModuleRef,
-  src : LLVMModuleRef
+  src : LLVMModuleRef,
 ) -> LLVMBool = "LLVMLinkModules2"

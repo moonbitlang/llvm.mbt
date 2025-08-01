@@ -10,13 +10,13 @@
 /// - see llvm::Module::getOrInsertComdat()
 extern "C" fn __llvm_get_or_insert_comdat(
   m : LLVMModuleRef,
-  name : CStr
+  name : CStr,
 ) -> LLVMComdatRef = "__llvm_get_or_insert_comdat"
 
 ///|
 pub fn llvm_get_or_insert_comdat(
   m : LLVMModuleRef,
-  name : String
+  name : String,
 ) -> LLVMComdatRef {
   let name = moonbit_str_to_c_str(name)
   __llvm_get_or_insert_comdat(m, name)
@@ -25,7 +25,7 @@ pub fn llvm_get_or_insert_comdat(
 ///|
 pub fn LLVMModuleRef::get_or_insert_comdat(
   self : LLVMModuleRef,
-  name : String
+  name : String,
 ) -> LLVMComdatRef {
   let name = moonbit_str_to_c_str(name)
   __llvm_get_or_insert_comdat(self, name)
@@ -48,7 +48,7 @@ extern "C" fn __llvm_get_comdat_selection_kind(c : LLVMComdatRef) -> Int = "__ll
 
 ///|
 pub fn llvm_get_comdat_selection_kind(
-  c : LLVMComdatRef
+  c : LLVMComdatRef,
 ) -> LLVMComdatSelectionKind {
   let kind = __llvm_get_comdat_selection_kind(c)
   let kind = LLVMComdatSelectionKind::from_int(kind)
@@ -63,7 +63,7 @@ extern "C" fn __llvm_set_comdat_selection_kind(c : LLVMComdatRef, kind : Int) = 
 ///|
 pub fn llvm_set_comdat_selection_kind(
   c : LLVMComdatRef,
-  kind : LLVMComdatSelectionKind
+  kind : LLVMComdatSelectionKind,
 ) -> Unit {
   let i = kind.to_int()
   __llvm_set_comdat_selection_kind(c, i)

@@ -54,7 +54,7 @@ priv enum AtomExpr {
 
 ///|
 fn AtomExpr::parse(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (AtomExpr, ArrayView[Token]) raise {
   match tokens {
     [Bool(b), .. rest_toks] => (AtomExpr::Bool(b), rest_toks)
@@ -178,7 +178,7 @@ priv enum ApplyExpr {
 
 ///|
 fn ApplyExpr::parse(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (ApplyExpr, ArrayView[Token]) raise {
   let (atom_expr, rest_toks) = AtomExpr::parse(tokens)
   let mut apply_expr = ApplyExpr::Atom(atom_expr, ty=None)
@@ -266,7 +266,7 @@ fn Expr::parse(tokens : ArrayView[Token]) -> (Expr, ArrayView[Token]) raise {
   fn construct_bin_expr(
     left : Expr,
     right : Expr,
-    oper : String
+    oper : String,
   ) -> Expr raise {
     match oper {
       "+" => Expr::Add(left, right, ty=None)
@@ -391,7 +391,7 @@ priv enum LeftValue {
 
 ///|
 fn LeftValue::parse(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (LeftValue, ArrayView[Token]) raise {
   guard tokens is [Lower(var_name), .. rest_toks] else {
     raise ParserError("Parse LeftValue Error: Not a valid left value")
@@ -568,7 +568,7 @@ test "Stmt::parse_let" {
 
 ///|
 fn Stmt::parse_assign(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Stmt, ArrayView[Token]) raise {
   let (left_value, rest_toks) = LeftValue::parse(tokens)
   guard rest_toks is [Operator("="), .. rest_toks] else {
@@ -703,7 +703,7 @@ test "Stmt::parse if" {
 
 ///|
 fn Stmt::parse_while(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Stmt, ArrayView[Token]) raise {
   match tokens {
     [Keyword(While), .. rest_toks] => {
@@ -748,7 +748,7 @@ test "Stmt::parse while" {
 
 ///|
 fn Stmt::parse_return(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Stmt, ArrayView[Token]) raise {
   match tokens {
     [Keyword(Return), Terminator, .. rest_toks] =>
@@ -782,7 +782,7 @@ test "Stmt::parse return" {
 
 ///|
 fn Stmt::parse_expr(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Stmt, ArrayView[Token]) raise {
   let (expr, rest_toks) = Expr::parse(tokens)
   guard rest_toks is [Terminator, .. rest_toks] else {
@@ -803,7 +803,7 @@ priv struct Function {
 
 ///|
 fn Function::parse_extern(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Function, ArrayView[Token]) raise {
   guard tokens
     is [Keyword(Extern), Keyword(Fn), Lower(fname), Bracket('('), .. tokens] else {
@@ -869,7 +869,7 @@ fn Function::parse_extern(
 
 ///|
 fn Function::parse(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (Function, ArrayView[Token]) raise {
   let (fname, params, ret_ty, tokens) = if tokens
     is [Keyword(Fn), Lower(fname), Bracket('('), .. tokens] {
@@ -976,7 +976,7 @@ priv struct StructDef {
 
 ///|
 fn StructDef::parse(
-  tokens : ArrayView[Token]
+  tokens : ArrayView[Token],
 ) -> (StructDef, ArrayView[Token]) raise {
   guard tokens is [Keyword(Struct), Upper(name), Bracket('{'), .. tokens] else {
     raise ParserError("Parse Struct Error, Not a struct definition")

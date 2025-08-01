@@ -11,7 +11,7 @@
 // TODO: Inplement C function
 pub extern "C" fn llvm_verify_module(
   mod_ref : LLVMModuleRef,
-  action : LLVMVerifierFailureAction
+  action : LLVMVerifierFailureAction,
 ) -> (LLVMBool, String) = "__llvm_verify_module"
 
 //
@@ -26,7 +26,7 @@ pub extern "C" fn llvm_verify_module(
 ///|
 pub extern "C" fn llvm_verify_function(
   fn_ref : LLVMValueRef,
-  action : LLVMVerifierFailureAction
+  action : LLVMVerifierFailureAction,
 ) -> LLVMBool = "__llvm_verify_function"
 
 // /* Open up a ghostview window that displays the CFG of the current function.

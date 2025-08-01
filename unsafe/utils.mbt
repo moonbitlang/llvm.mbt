@@ -66,7 +66,7 @@ extern "C" fn LLVMBasicBlockRef::null() -> LLVMBasicBlockRef = "__llvm_new_null"
 ///|
 extern "C" fn llvm_same_type_ref(
   ty1 : LLVMTypeRef,
-  ty2 : LLVMTypeRef
+  ty2 : LLVMTypeRef,
 ) -> LLVMBool = "__llvm_same_type_ref"
 
 ///|
@@ -77,7 +77,7 @@ fn LLVMTypeRef::is_equal(self : LLVMTypeRef, other : LLVMTypeRef) -> Bool {
 ///|
 extern "C" fn llvm_same_value_ref(
   val1 : LLVMValueRef,
-  val2 : LLVMValueRef
+  val2 : LLVMValueRef,
 ) -> LLVMBool = "__llvm_same_value_ref"
 
 ///|
@@ -88,13 +88,13 @@ fn LLVMValueRef::is_equal(self : LLVMValueRef, other : LLVMValueRef) -> Bool {
 ///|
 extern "C" fn llvm_same_ctx_ref(
   ctx1 : LLVMContextRef,
-  ctx2 : LLVMContextRef
+  ctx2 : LLVMContextRef,
 ) -> LLVMBool = "__llvm_same_ctx_ref"
 
 ///|
 fn LLVMContextRef::is_equal(
   self : LLVMContextRef,
-  other : LLVMContextRef
+  other : LLVMContextRef,
 ) -> Bool {
   llvm_same_ctx_ref(self, other).to_moonbit_bool()
 }
@@ -102,13 +102,13 @@ fn LLVMContextRef::is_equal(
 ///|
 extern "C" fn llvm_same_attr_ref(
   attr1 : LLVMAttributeRef,
-  attr2 : LLVMAttributeRef
+  attr2 : LLVMAttributeRef,
 ) -> LLVMBool = "__llvm_same_attr_ref"
 
 ///|
 fn LLVMAttributeRef::is_equal(
   self : LLVMAttributeRef,
-  other : LLVMAttributeRef
+  other : LLVMAttributeRef,
 ) -> Bool {
   llvm_same_attr_ref(self, other).to_moonbit_bool()
 }
@@ -116,13 +116,13 @@ fn LLVMAttributeRef::is_equal(
 ///|
 extern "C" fn llvm_same_bb_ref(
   bb1 : LLVMBasicBlockRef,
-  bb2 : LLVMBasicBlockRef
+  bb2 : LLVMBasicBlockRef,
 ) -> LLVMBool = "__llvm_same_bb_ref"
 
 ///|
 fn LLVMBasicBlockRef::is_equal(
   self : LLVMBasicBlockRef,
-  other : LLVMBasicBlockRef
+  other : LLVMBasicBlockRef,
 ) -> Bool {
   llvm_same_bb_ref(self, other).to_moonbit_bool()
 }
