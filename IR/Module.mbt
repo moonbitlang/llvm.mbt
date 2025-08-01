@@ -136,6 +136,14 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
   DataLayout(target_data_ref)
 }
 
+pub suberror WriteBitCodeToFileFailed String derive(Show)
+
+pub fn Module::writeBitCodeToFile(self: Module, filename: String) -> Unit raise { 
+  if  0 != @unsafe.llvm_write_bitcode_to_file(self.inner(), filename) {
+    raise WriteBitCodeToFileFailed(filename)
+  }
+} 
+
 ///|
 pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
   let (engref, err) = @unsafe.llvm_create_interpreter_for_module(self.inner())

@@ -10,7 +10,7 @@
 extern "C" fn __llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,
   path : CStr
-) -> Int = "__llvm_write_bitcode_to_file"
+) -> Int = "LLVMWriteBitcodeToFile";
 
 ///|
 pub fn llvm_write_bitcode_to_file(

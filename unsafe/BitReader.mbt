@@ -12,9 +12,9 @@
 // TODO: Implement C function
 
 ///|
-pub extern "C" fn llvm_parse_bitcode(
-  mem_buf : LLVMMemoryBufferRef
-) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_parse_bitcode"
+//pub extern "C" fn llvm_parse_bitcode(
+//  mem_buf : LLVMMemoryBufferRef
+//) -> (LLVMModuleRef, String, LLVMBool) = "__llvm_parse_bitcode"
 //
 // /* Builds a module from the bitcode in the specified memory buffer, returning a
 //    reference to the module via the OutModule parameter. Returns 0 on success. */
@@ -22,10 +22,19 @@ pub extern "C" fn llvm_parse_bitcode(
 //                            LLVMModuleRef *OutModule);
 // TODO: Implement C function
 
+extern "C" fn __llvm_parse_bitcode2(membuf: LLVMMemoryBufferRef, out_mod : Ref[LLVMModuleRef]) -> Bool = "LLVMParseBitcode2";
+
 ///|
-pub extern "C" fn llvm_parse_bitcode2(
+pub fn llvm_parse_bitcode2(
   mem_buf : LLVMMemoryBufferRef
-) -> (LLVMModuleRef, LLVMBool) = "__llvm_parse_bitcode2"
+) -> LLVMModuleRef?  {
+  let out_mod : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null());
+  let result = __llvm_parse_bitcode2(mem_buf, out_mod);
+  match result {
+    true => Some(out_mod.val)
+    false => None
+  }
+}
 //
 // /* This is deprecated. Use LLVMParseBitcodeInContext2. */
 // LLVMBool LLVMParseBitcodeInContext(LLVMContextRef ContextRef,

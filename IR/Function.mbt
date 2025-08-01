@@ -526,9 +526,8 @@ pub fn Argument::getFunction(self : Self) -> Function {
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-//
-
-///| builder.setInsertPoint(bb)
+///
+/// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
 ///
@@ -568,9 +567,8 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-//
-
-///| builder.setInsertPoint(bb)
+///
+/// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
 ///
@@ -579,7 +577,7 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 /// arg2.addAttr(InReg)
 ///
 /// let expect =
-///   #|define i32 @add_demo(i32 nonnull inreg %0, i32 inreg %1) {
+///   #|define i32 @add_demo(i32 inreg nonnull %0, i32 inreg %1) {
 ///   #|entry:
 ///   #|  %sum = add i32 %0, %1
 ///   #|  ret i32 %sum
