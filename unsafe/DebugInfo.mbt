@@ -412,6 +412,7 @@ pub fn llvm_di_file_get_directory(file_ref : LLVMMetadataRef) -> String {
 }
 
 ///|
+#borrow(len)
 extern "C" fn __llvm_di_file_get_directory(
   file_ref : LLVMMetadataRef,
   len : Ref[UInt],
@@ -437,6 +438,7 @@ pub fn llvm_di_file_get_filename(file_ref : LLVMMetadataRef) -> String {
 }
 
 ///|
+#borrow(len)
 extern "C" fn __llvm_di_file_get_filename(
   file_ref : LLVMMetadataRef,
   len : Ref[UInt],
@@ -463,6 +465,7 @@ pub fn llvm_di_file_get_source(file_ref : LLVMMetadataRef) -> String {
 }
 
 ///|
+#borrow(len)
 extern "C" fn __llvm_di_file_get_source(
   file_ref : LLVMMetadataRef,
   len : Ref[UInt],
@@ -1028,6 +1031,7 @@ pub fn llvm_di_type_get_name(type_ref : LLVMMetadataRef) -> String {
 }
 
 ///|
+#borrow(len)
 extern "C" fn __llvm_di_type_get_name(
   type_ref : LLVMMetadataRef,
   len : Ref[UInt],

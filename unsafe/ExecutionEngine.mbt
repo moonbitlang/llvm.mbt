@@ -85,6 +85,7 @@ pub extern "C" fn llvm_generic_value_to_float(
 extern "C" fn __llvm_new_execution_engine() -> LLVMExecutionEngineRef = "llvm_new_execution_engine"
 
 ///|
+#borrow(out_ee, out_error)
 extern "C" fn __llvm_create_execution_engine_for_module(
   out_ee : Ref[LLVMExecutionEngineRef],
   m : LLVMModuleRef,
@@ -112,6 +113,7 @@ pub fn llvm_create_execution_engine_for_module(
 //
 
 ///|
+#borrow(out_interp, out_error)
 extern "C" fn __llvm_create_interpreter_for_module(
   out_interp : Ref[LLVMExecutionEngineRef],
   m : LLVMModuleRef,
@@ -176,6 +178,7 @@ pub fn llvm_create_interpreter_for_module(
 //                                     LLVMGenericValueRef *Args);
 
 ///|
+#borrow(args)
 extern "C" fn __llvm_run_function(
   ee : LLVMExecutionEngineRef,
   f : LLVMValueRef,

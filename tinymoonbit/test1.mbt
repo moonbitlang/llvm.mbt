@@ -1,6 +1,6 @@
 ///|
 fn test_code(code : String) -> Unit raise {
-  let prog = Program::parse(lex(code))
+  let prog = Program::parse(tokenize(code))
   let _ = TypeCheck::check_prog(prog)
   let codegen = CodeGen::init(prog)
   codegen.emitProg()

@@ -20,6 +20,7 @@ pub fn llvm_get_version() -> (UInt, UInt, UInt) {
 }
 
 ///|
+#borrow(major, minor, patch)
 extern "C" fn __llvm_get_version(
   major : Ref[UInt],
   minor : Ref[UInt],
@@ -287,6 +288,7 @@ pub fn llvm_create_string_attribute(
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_string_attribute_kind(
   a : LLVMAttributeRef,
   size : Ref[UInt],
@@ -300,6 +302,7 @@ pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String {
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_string_attribute_value(
   a : LLVMAttributeRef,
   size : Ref[UInt],
@@ -518,6 +521,7 @@ pub fn llvm_set_is_new_dbg_info_format(
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_module_identifier(
   m : LLVMModuleRef,
   size : Ref[UInt64],
@@ -552,6 +556,7 @@ pub fn llvm_set_module_identifier(m : LLVMModuleRef, ident : String) -> Unit {
 /// @return The original source file name of M
 ///
 /// - see Module::getSourceFileName()
+#borrow(size)
 extern "C" fn __llvm_get_source_file_name(
   m : LLVMModuleRef,
   size : Ref[UInt64],
@@ -866,6 +871,7 @@ pub fn LLVMModuleRef::to_string(self : LLVMModuleRef) -> String {
 /// Get inline assembly for a module.
 /// 
 /// - see Module::getModuleInlineAsm()
+#borrow(sz)
 extern "C" fn __llvm_get_module_inline_asm(
   m : LLVMModuleRef,
   sz : Ref[UInt64],
@@ -953,6 +959,7 @@ pub fn llvm_get_inline_asm_string(inline_asm_val : LLVMValueRef) -> String {
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_inline_asm_asm_string(
   inline_asm_val : LLVMValueRef,
   size : Ref[UInt64],
@@ -970,6 +977,7 @@ pub fn llvm_get_inline_asm_constraint_string(
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_inline_asm_constraint_string(
   inline_asm_val : LLVMValueRef,
   size : Ref[UInt64],
@@ -1180,6 +1188,7 @@ pub extern "C" fn llvm_get_or_insert_named_metadata(
 ) -> LLVMNamedMDNodeRef = "LLVMGetOrInsertNamedMetadata"
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_named_metadata_name(
   named_md : LLVMNamedMDNodeRef,
   size : Ref[UInt64],
@@ -1307,6 +1316,7 @@ pub fn LLVMModuleRef::add_named_metadata_operand(
 /// - see llvm::GlobalVariable::getDebugInfo()
 /// - see llvm::Function::getSubprogram()
 /// 
+#borrow(size)
 extern "C" fn __llvm_get_debug_loc_directory(
   val : LLVMValueRef,
   size : Ref[UInt],
@@ -1345,6 +1355,7 @@ pub fn llvm_get_debug_loc_filename(val : LLVMValueRef) -> String {
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_debug_loc_filename(
   val : LLVMValueRef,
   size : Ref[UInt],
@@ -1989,6 +2000,7 @@ pub fn LLVMTypeRef::ppc_fp128_type() -> LLVMTypeRef {
 /// The function is defined as a tuple of a return Type, a list of
 /// parameter types, and whether the function is variadic.
 /// 
+#borrow(param_types)
 extern "C" fn __llvm_function_type(
   return_type : LLVMTypeRef,
   param_types : FixedArray[LLVMTypeRef],
@@ -2083,6 +2095,7 @@ pub fn llvm_get_param_types(function_ty : LLVMTypeRef) -> Array[LLVMTypeRef] {
 }
 
 ///|
+#borrow(dest)
 extern "C" fn __llvm_get_param_types(
   function_ty : LLVMTypeRef,
   dest : FixedArray[LLVMTypeRef],
@@ -2096,6 +2109,7 @@ extern "C" fn __llvm_get_param_types(
 /// 
 /// - see llvm::StructType::create()
 /// 
+#borrow(element_types)
 extern "C" fn __llvm_struct_type_in_context(
   context : LLVMContextRef,
   element_types : FixedArray[LLVMTypeRef],
@@ -2146,6 +2160,7 @@ pub fn LLVMContextRef::struct_type(
 /// Create a new structure type in the global context.
 /// 
 /// - see llvm::StructType::create()
+#borrow(element_types)
 extern "C" fn __llvm_struct_type(
   element_types : FixedArray[LLVMTypeRef],
   element_count : UInt,
@@ -2235,6 +2250,7 @@ pub fn LLVMTypeRef::get_struct_name(self : LLVMTypeRef) -> String {
 }
 
 ///|
+#borrow(element_types)
 extern "C" fn __llvm_struct_set_body(
   struct_ty : LLVMTypeRef,
   element_types : FixedArray[LLVMTypeRef],
@@ -2289,6 +2305,7 @@ pub fn LLVMTypeRef::count_struct_element_types(self : LLVMTypeRef) -> UInt {
 /// elements. The objects in the destination array will have a lifetime
 /// of the structure type itself, which is the lifetime of the context it
 /// is contained in.
+#borrow(fields)
 extern "C" fn __llvm_get_struct_element_types(
   struct_ty : LLVMTypeRef,
   fields : FixedArray[LLVMTypeRef],
@@ -2452,6 +2469,7 @@ pub fn llvm_get_subtypes(tp : LLVMTypeRef) -> Array[LLVMTypeRef] {
 }
 
 ///|
+#borrow(arr)
 extern "C" fn __llvm_get_subtypes(
   tp : LLVMTypeRef,
   arr : FixedArray[LLVMTypeRef],
@@ -3036,6 +3054,7 @@ pub fn llvm_get_value_name(val : LLVMValueRef) -> String {
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_value_name2(
   val : LLVMValueRef,
   size : Ref[UInt64],
@@ -4534,6 +4553,7 @@ pub fn llvm_const_int_of_arbitrary_precision(
 }
 
 ///|
+#borrow(words)
 extern "C" fn __llvm_const_int_of_arbitrary_precision(
   int_ty : LLVMTypeRef,
   num_words : UInt,
@@ -4708,6 +4728,7 @@ pub fn LLVMValueRef::const_int_get_s_ext_value(self : LLVMValueRef) -> Int64 {
 /// losesInfo indicates if some precision was lost in the conversion.
 /// 
 /// - see llvm::ConstantFP::getDoubleValue
+#borrow(loses_info)
 extern "C" fn __llvm_const_real_get_double(
   constant_val : LLVMValueRef,
   loses_info : Ref[LLVMBool],
@@ -4844,6 +4865,7 @@ pub fn LLVMValueRef::is_constant_string(self : LLVMValueRef) -> Bool {
 /// Get the given constant data sequential as a string.
 /// 
 /// - see ConstantDataSequential::getAsString()
+#borrow(size)
 extern "C" fn __llvm_get_as_string(
   c : LLVMValueRef,
   size : Ref[UInt64],
@@ -4863,6 +4885,7 @@ pub fn llvm_get_as_string(c : LLVMValueRef) -> String {
 /// Create an anonymous ConstantStruct with the specified values.
 /// 
 /// - see llvm::ConstantStruct::getAnon()
+#borrow(constant_vals)
 extern "C" fn __llvm_const_struct_in_context(
   context : LLVMContextRef,
   constant_vals : FixedArray[LLVMValueRef],
@@ -4908,6 +4931,7 @@ pub fn LLVMContextRef::const_struct(
 /// global Context.
 /// 
 /// - see LLVMConstStructInContext()
+#borrow(constant_vals)
 extern "C" fn __llvm_const_struct(
   constant_vals : FixedArray[LLVMValueRef],
   count : UInt,
@@ -4961,6 +4985,7 @@ pub fn llvm_const_array(
 }
 
 ///|
+#borrow(constant_vals)
 extern "C" fn __llvm_const_array(
   element_ty : LLVMTypeRef,
   constant_vals : FixedArray[LLVMValueRef],
@@ -4995,6 +5020,7 @@ pub fn llvm_const_array2(
 }
 
 ///|
+#borrow(constant_vals)
 extern "C" fn __llvm_const_array2(
   element_ty : LLVMTypeRef,
   constant_vals : FixedArray[LLVMValueRef],
@@ -5026,6 +5052,7 @@ pub fn llvm_const_named_struct(
 }
 
 ///|
+#borrow(constant_vals)
 extern "C" fn __llvm_const_named_struct(
   struct_ty : LLVMTypeRef,
   constant_vals : FixedArray[LLVMValueRef],
@@ -5086,6 +5113,7 @@ pub fn llvm_const_vector(
 }
 
 ///|
+#borrow(scalar_constant_vals)
 extern "C" fn __llvm_const_vector(
   scalar_constant_vals : FixedArray[LLVMValueRef],
   size : UInt,
@@ -5335,6 +5363,7 @@ pub fn llvm_const_gep2(
 }
 
 ///|
+#borrow(constant_indices)
 extern "C" fn __llvm_const_gep2(
   ty : LLVMTypeRef,
   constant_val : LLVMValueRef,
@@ -5365,6 +5394,7 @@ pub fn llvm_const_in_bounds_gep2(
 }
 
 ///|
+#borrow(constant_indices)
 extern "C" fn __llvm_const_in_bounds_gep2(
   ty : LLVMTypeRef,
   constant_val : LLVMValueRef,
@@ -6349,6 +6379,7 @@ pub fn llvm_get_intrinsic_declaration(
 }
 
 ///|
+#borrow(param_types)
 extern "C" fn __llvm_get_intrinsic_declaration(
   mod : LLVMModuleRef,
   id : UInt,
@@ -6374,6 +6405,7 @@ pub fn llvm_intrinsic_get_type(
 }
 
 ///|
+#borrow(param_types)
 extern "C" fn __llvm_intrinsic_get_type(
   ctx : LLVMContextRef,
   id : UInt,
@@ -6400,6 +6432,7 @@ pub fn LLVMContextRef::intrinsic_get_type(
 /// Retrieves the name of an intrinsic.
 /// 
 /// - see llvm::Intrinsic::getName()
+#borrow(size)
 extern "C" fn __llvm_intrinsic_get_name(id : UInt, size : Ref[UInt64]) -> CStr = "LLVMIntrinsicGetName"
 
 ///|
@@ -6415,6 +6448,7 @@ pub fn llvm_intrinsic_get_name(id : UInt) -> String {
 // Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead.
 
 ///|
+#borrow(param_types)
 extern "C" fn __llvm_intrinsic_copy_overloaded_name(
   id : UInt,
   param_types : FixedArray[LLVMTypeRef],
@@ -6441,6 +6475,7 @@ pub fn llvm_intrinsic_copy_overloaded_name(
 /// This version also supports unnamed types.
 /// 
 /// - see llvm::Intrinsic::getName()
+#borrow(param_types)
 extern "C" fn __llvm_intrinsic_copy_overloaded_name2(
   mod : LLVMModuleRef,
   id : UInt,
@@ -6701,6 +6736,7 @@ pub extern "C" fn llvm_count_params(func : LLVMValueRef) -> UInt = "LLVMCountPar
 /// 
 /// - see llvm::Function::arg_begin()
 /// 
+#borrow(params)
 extern "C" fn __llvm_get_params(
   func : LLVMValueRef,
   params : FixedArray[LLVMValueRef],
@@ -7057,6 +7093,7 @@ pub fn LLVMContextRef::md_string_in_context2(
 }
 
 ///|
+#borrow(mds)
 extern "C" fn __llvm_md_node_in_context2(
   context : LLVMContextRef,
   mds : FixedArray[LLVMMetadataRef],
@@ -7096,6 +7133,7 @@ pub fn LLVMValueRef::as_metadata(self : LLVMValueRef) -> LLVMMetadataRef {
 }
 
 ///|
+#borrow(size)
 extern "C" fn __llvm_get_md_string(v : LLVMValueRef, size : Ref[UInt]) -> CStr = "LLVMGetMDString"
 
 ///|
@@ -7135,6 +7173,7 @@ pub fn LLVMValueRef::get_md_node_operands(
 }
 
 ///|
+#borrow(dest)
 extern "C" fn __llvm_get_md_node_operands(
   v : LLVMValueRef,
   dest : FixedArray[LLVMValueRef],
@@ -7205,6 +7244,7 @@ pub fn llvm_md_node_in_context(
 }
 
 ///|
+#borrow(vals)
 extern "C" fn __llvm_md_node_in_context(
   context : LLVMContextRef,
   vals : FixedArray[LLVMValueRef],
@@ -7227,6 +7267,7 @@ pub fn llvm_md_node(vals : Array[LLVMValueRef]) -> LLVMValueRef {
 }
 
 ///|
+#borrow(vals)
 extern "C" fn __llvm_md_node(
   vals : FixedArray[LLVMValueRef],
   count : UInt,
@@ -7234,6 +7275,7 @@ extern "C" fn __llvm_md_node(
 
 ///|
 /// Create operand bundle.
+#borrow(args)
 extern "C" fn __llvm_create_operand_bundle(
   tag : CStr,
   tag_len : UInt64,
@@ -7265,6 +7307,7 @@ pub fn LLVMOperandBundleRef::dispose(self : LLVMOperandBundleRef) -> Unit {
 
 ///|
 /// Get the tag of an operand bundle.
+#borrow(size)
 extern "C" fn __llvm_get_operand_bundle_tag(
   bundle : LLVMOperandBundleRef,
   size : Ref[UInt64],
@@ -7412,6 +7455,7 @@ pub fn llvm_get_basic_blocks(func : LLVMValueRef) -> Array[LLVMBasicBlockRef] {
 }
 
 ///|
+#borrow(basic_blocks)
 extern "C" fn __llvm_get_basic_blocks(
   func : LLVMValueRef,
   basic_blocks : FixedArray[LLVMBasicBlockRef],
@@ -8760,6 +8804,7 @@ pub fn llvm_add_incoming(
 }
 
 ///|
+#borrow(incoming_values, incoming_blocks)
 extern "C" fn __llvm_add_incoming(
   phi_node : LLVMValueRef,
   incoming_values : FixedArray[LLVMValueRef],
@@ -9209,6 +9254,7 @@ pub fn llvm_build_aggregate_ret(
 }
 
 ///|
+#borrow(ret_vals)
 extern "C" fn __llvm_build_aggregate_ret(
   builder : LLVMBuilderRef,
   ret_vals : FixedArray[LLVMValueRef],
@@ -9300,6 +9346,7 @@ pub fn LLVMBuilderRef::build_indirect_br(
 
 ///|
 /// Build a call branch instruction.
+#borrow(indirect_dests, args, bundles)
 extern "C" fn __llvm_build_call_br(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9366,6 +9413,7 @@ pub fn LLVMBuilderRef::build_call_br(
 
 ///|
 /// Build an invoke instruction.
+#borrow(args)
 extern "C" fn __llvm_build_invoke2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9418,6 +9466,7 @@ pub fn LLVMBuilderRef::build_invoke2(
 
 ///|
 /// Build an invoke instruction with operand bundles.
+#borrow(args, bundles)
 extern "C" fn __llvm_build_invoke_with_operand_bundles(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9584,6 +9633,7 @@ pub fn LLVMBuilderRef::build_catch_ret(
 
 ///|
 /// Build a catch pad instruction.
+#borrow(args)
 extern "C" fn __llvm_build_catch_pad(
   builder : LLVMBuilderRef,
   parent_pad : LLVMValueRef,
@@ -9624,6 +9674,7 @@ pub fn LLVMBuilderRef::build_catch_pad(
 
 ///|
 /// Build a cleanup pad instruction.
+#borrow(args)
 extern "C" fn __llvm_build_cleanup_pad(
   builder : LLVMBuilderRef,
   parent_pad : LLVMValueRef,
@@ -11060,6 +11111,7 @@ pub fn LLVMBuilderRef::build_store(
 
 ///|
 /// Build a getelementptr instruction.
+#borrow(indices)
 extern "C" fn __llvm_build_gep2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -11103,6 +11155,7 @@ pub fn LLVMBuilderRef::build_gep2(
 
 ///|
 /// Build a getelementptr instruction with inbounds flag.
+#borrow(indices)
 extern "C" fn __llvm_build_in_bounds_gep2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -12235,6 +12288,7 @@ pub fn LLVMBuilderRef::build_phi(
 
 ///|
 /// Build a call instruction.
+#borrow(args)
 extern "C" fn __llvm_build_call2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -12279,6 +12333,7 @@ pub fn LLVMBuilderRef::build_call2(
 
 ///|
 /// Build a call instruction with operand bundles.
+#borrow(args, bundles)
 extern "C" fn __llvm_build_call_with_operand_bundles(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,

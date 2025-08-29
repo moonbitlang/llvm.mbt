@@ -3,6 +3,7 @@
 type CStr
 
 ///|
+#borrow(s)
 extern "C" fn moonbit_str_to_c_str(s : String) -> CStr = "moonbit_str_to_c_str"
 
 ///|

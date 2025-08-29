@@ -19,6 +19,7 @@
 //                               *OutM, char **OutMessage);
 
 ///|
+#borrow(out_m, out_message)
 extern "C" fn __llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
   mem_buf : LLVMMemoryBufferRef,

@@ -37,7 +37,7 @@ priv enum Token {
 } derive(Show)
 
 ///|
-fn lex(code : String) -> Array[Token] raise {
+fn tokenize(code : String) -> Array[Token] raise {
   let tokens = Array::new()
   loop code[:] {
     [] => {
@@ -289,12 +289,12 @@ fn lex_number(rest : @string.View) -> (Token, @string.View) raise {
 }
 
 ///|
-test "lex" {
+test "tokenize" {
   let code =
     #|fn add(x: Int, y: Int) -> Int {
     #|  return x + y - 342UL
     #|}
-  let toks = lex(code)
+  let toks = tokenize(code)
   inspect(
     toks,
     content="[Keyword(Fn), Lower(\"add\"), Bracket('('), " +

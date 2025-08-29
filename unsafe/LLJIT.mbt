@@ -157,6 +157,7 @@ pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef {
 }
 
 ///|
+#borrow(result)
 extern "C" fn __llvm_orc_create_lljit(
   result : Ref[LLVMOrcLLJITRef],
   builder : LLVMOrcLLJITBuilderRef,
@@ -312,6 +313,7 @@ pub fn llvm_orc_lljit_lookup(
 }
 
 ///|
+#borrow(result)
 extern "C" fn __llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
   result : Ref[LLVMOrcExecutorAddress],

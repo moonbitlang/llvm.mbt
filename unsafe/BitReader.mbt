@@ -21,7 +21,7 @@
 // LLVMBool LLVMParseBitcode2(LLVMMemoryBufferRef MemBuf,
 //                            LLVMModuleRef *OutModule);
 // TODO: Implement C function
-
+#borrow(out_mod)
 extern "C" fn __llvm_parse_bitcode2(
   membuf : LLVMMemoryBufferRef,
   out_mod : Ref[LLVMModuleRef],
