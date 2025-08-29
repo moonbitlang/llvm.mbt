@@ -11,6 +11,10 @@ pub impl Value for Function with asValueEnum(self) {
   Function(self)
 }
 
+pub impl GlobalValue for Function with asGlobalEnum(self) {
+  Function(self)
+}
+
 ///|
 fn Function::getNextFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_next_function(self.getValueRef())

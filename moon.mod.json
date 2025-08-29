@@ -8,5 +8,6 @@
   "description": "llvm-c binding for Moonbit with friendly API, keeps the Cpp Style.",
   "scripts": {
     "postadd": "curl -O https://raw.githubusercontent.com/moonbitlang/llvm.mbt/blob/master/env.sh"
-  }
+  },
+  "preferred-target" : "native"
 }

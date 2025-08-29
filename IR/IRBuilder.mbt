@@ -4081,3 +4081,19 @@ pub fn IRBuilder::createMemMove(
   )
   CallInst(res_valueref)
 }
+
+
+///|
+pub fn IRBuilder::createGlobalString(
+  self : Self,
+  string : String,
+  name~ : String = "",
+) -> GlobalConstant raise {
+  guard self.positioned is Set else { raise UnsetPosition }
+  let res_valueref = @unsafe.llvm_build_global_string(
+    self.builder_ref,
+    string,
+    name,
+  )
+  GlobalConstant(res_valueref)
+}

@@ -6,11 +6,14 @@ pub fn Module::addFunction(
   self : Self,
   fty : FunctionType,
   name : String,
-  //linkage~: Linkage
+  linkage?: Linkage
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
   let fval = Function::Function(valueref)
-  //fval.setLinkage(linkage)
+  match linkage {
+    Some(l) => @unsafe.llvm_set_linkage(valueref, l.to_llvm_linkage())
+    None => ()
+  }
   fval
 }
 
@@ -134,6 +137,29 @@ pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
   let target_data_ref = @unsafe.llvm_get_module_data_layout(self.inner())
   DataLayout(target_data_ref)
+}
+
+pub fn Module::addGlobalVariable(self: Self, ty: &Type, initializer?: &Constant, name?: String = "", linkage?: Linkage) -> GlobalVariable {
+  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
+  if initializer is Some(init) {
+    @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
+  }
+  if linkage is Some(link) {
+    @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
+  }
+  GlobalVariable(gv_ref)
+}
+
+pub fn Module::addGlobalConstant(self: Self, ty: &Type, initializer?: &Constant, name?: String = "", linkage?: Linkage) -> GlobalConstant {
+  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
+  @unsafe.llvm_set_global_constant(gv_ref, true)
+  if initializer is Some(init) {
+    @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
+  }
+  if linkage is Some(link) {
+    @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
+  }
+  GlobalConstant(gv_ref)
 }
 
 ///|
