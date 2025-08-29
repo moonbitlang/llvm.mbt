@@ -8,7 +8,7 @@ priv struct TypeEnv[K, V] {
 }
 
 ///|
-fn[K, V] TypeEnv::new(parent~ : TypeEnv[K, V]? = None) -> TypeEnv[K, V] {
+fn[K, V] TypeEnv::new(parent? : TypeEnv[K, V]? = None) -> TypeEnv[K, V] {
   TypeEnv::{ parent, data: Map::new() }
 }
 

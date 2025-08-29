@@ -26,7 +26,7 @@ fn CStr::from(s : String) -> CStr {
 }
 
 ///|
-fn CStr::to_string(self : CStr, length~ : UInt? = None) -> String {
+fn CStr::to_string(self : CStr, length? : UInt? = None) -> String {
   match length {
     Some(l) => c_str_to_moonbit_str_with_length(self, l)
     None => c_str_to_moonbit_str(self)

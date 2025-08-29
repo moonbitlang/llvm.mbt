@@ -26,7 +26,8 @@ extern "C" fn __llvm_parse_ir_in_context(
   out_message : Ref[CStr],
 ) -> LLVMBool = "__llvm_parse_ir_in_context"
 
-///| Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
+///|
+/// Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
 ///
 /// Read LLVM IR from a memory buffer and convert it into an in-memory Module
 /// object. Returns 0 on success.
@@ -47,7 +48,8 @@ pub fn llvm_parse_ir_in_context(
   (out_m_ref.val, str, result)
 }
 
-///| Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
+///|
+/// Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
 ///
 /// Read LLVM IR from a memory buffer and convert it into an in-memory Module
 /// object. Returns 0 on success.

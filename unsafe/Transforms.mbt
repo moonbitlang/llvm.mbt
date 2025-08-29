@@ -2,7 +2,8 @@
 // PassBuilder
 // ===================================
 
-///| Construct and run a set of passes over a module
+///|
+/// Construct and run a set of passes over a module
 /// 
 /// This function takes a string with the passes that should be used. The format
 /// of this string is the same as opt's -passes argument for the new pass
@@ -27,14 +28,16 @@ extern "C" fn __llvm_run_passes(
   options : LLVMPassBuilderOptionsRef,
 ) -> LLVMErrorRef = "LLVMRunPasses"
 
-///| Create a new set of options for a PassBuilder
+///|
+/// Create a new set of options for a PassBuilder
 /// 
 /// Ownership of the returned instance is given to the client, and they are
 /// responsible for it. The client should call LLVMDisposePassBuilderOptions
 /// to free the pass builder options.
 pub extern "C" fn llvm_create_pass_builder_options() -> LLVMPassBuilderOptionsRef = "LLVMCreatePassBuilderOptions"
 
-///| Toggle adding the VerifierPass for the PassBuilder, ensuring all functions
+///|
+/// Toggle adding the VerifierPass for the PassBuilder, ensuring all functions
 /// inside the module is valid.
 pub fn llvm_pass_builder_options_set_verify_each(
   options : LLVMPassBuilderOptionsRef,
@@ -52,7 +55,8 @@ extern "C" fn __llvm_pass_builder_options_set_verify_each(
   verify_each : LLVMBool,
 ) = "LLVMPassBuilderOptionsSetVerifyEach"
 
-///| Toggle debug logging when running the PassBuilder
+///|
+/// Toggle debug logging when running the PassBuilder
 pub fn llvm_pass_builder_options_set_debug_logging(
   options : LLVMPassBuilderOptionsRef,
   debug_logging : Bool,
@@ -212,7 +216,8 @@ pub extern "C" fn llvm_pass_builder_options_set_inliner_threshold(
   threshold : Int,
 ) = "LLVMPassBuilderOptionsSetInlinerThreshold"
 
-///| Dispose of a heap-allocated PassBuilderOptions instance
+///|
+/// Dispose of a heap-allocated PassBuilderOptions instance
 pub extern "C" fn llvm_dispose_pass_builder_options(
   options : LLVMPassBuilderOptionsRef,
 ) -> Unit = "LLVMDisposePassBuilderOptions"

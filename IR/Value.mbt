@@ -272,6 +272,7 @@ pub enum InstructionEnum {
 // GlobalValue
 // =======================================================
 
+///|
 pub trait GlobalValue: Value {
   asGlobalEnum(Self) -> GlobalEnum
   getLinkage(Self) -> Linkage = _
@@ -281,32 +282,38 @@ pub trait GlobalValue: Value {
   removeUnnamedAddr(Self) -> Unit = _
 }
 
+///|
 pub enum GlobalEnum {
   Function(Function)
   GlobalVariable(GlobalVariable)
   GlobalConstant(GlobalConstant)
 }
 
+///|
 impl GlobalValue with getLinkage(self) {
   let linkage = @unsafe.llvm_get_linkage(self.getValueRef())
   Linkage::from_llvm_linkage(linkage)
 }
 
+///|
 impl GlobalValue with setLinkage(self, linkage : Linkage) {
   let llvm_linkage = linkage.to_llvm_linkage()
   @unsafe.llvm_set_linkage(self.getValueRef(), llvm_linkage)
 }
 
+///|
 impl GlobalValue with getUnnamedAddr(self) {
   let ua = @unsafe.llvm_get_unnamed_address(self.getValueRef())
   UnnamedAddr::from_llvm_unnamed_addr(ua)
 }
 
+///|
 impl GlobalValue with setUnnamedAddr(self, ua : UnnamedAddr) {
   let llvm_ua = ua.to_llvm_unnamed_addr()
   @unsafe.llvm_set_unnamed_address(self.getValueRef(), llvm_ua)
 }
 
+///|
 impl GlobalValue with removeUnnamedAddr(self) {
   @unsafe.llvm_set_unnamed_address(
     self.getValueRef(),

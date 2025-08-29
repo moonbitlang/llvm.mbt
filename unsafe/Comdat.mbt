@@ -2,7 +2,8 @@
 // Comdat.h
 // =======================================================
 
-///| Return the Comdat in the module with the specified name.
+///|
+/// Return the Comdat in the module with the specified name.
 ///
 /// Return the Comdat in the module with the specified name. It is created
 /// if it didn't already exist.
@@ -31,17 +32,20 @@ pub fn LLVMModuleRef::get_or_insert_comdat(
   __llvm_get_or_insert_comdat(self, name)
 }
 
-///| Get the Comdat assigned to the given global object.
+///|
+/// Get the Comdat assigned to the given global object.
 /// 
 /// - see llvm::GlobalObject::getComdat()
 pub extern "C" fn llvm_get_comdat(v : LLVMValueRef) -> LLVMComdatRef = "__llvm_get_comdat"
 
-///| Assign the Comdat to the given global object.
+///|
+/// Assign the Comdat to the given global object.
 /// 
 /// - see llvm::GlobalObject::setComdat()
 pub extern "C" fn llvm_set_comdat(v : LLVMValueRef, c : LLVMComdatRef) = "__llvm_set_comdat"
 
-///| Get the conflict resolution selection kind for the Comdat.
+///|
+/// Get the conflict resolution selection kind for the Comdat.
 /// 
 /// - see llvm::Comdat::getSelectionKind()
 extern "C" fn __llvm_get_comdat_selection_kind(c : LLVMComdatRef) -> Int = "__llvm_get_comdat_selection_kind"
@@ -55,7 +59,8 @@ pub fn llvm_get_comdat_selection_kind(
   kind
 }
 
-///| Set the conflict resolution selection kind for the Comdat.
+///|
+/// Set the conflict resolution selection kind for the Comdat.
 /// 
 /// - see llvm::Comdat::setSelectionKind()
 extern "C" fn __llvm_set_comdat_selection_kind(c : LLVMComdatRef, kind : Int) = "__llvm_set_comdat_selection_kind"

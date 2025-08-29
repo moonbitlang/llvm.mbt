@@ -1,12 +1,12 @@
 ///|
-pub type Module @unsafe.LLVMModuleRef
+pub struct Module(@unsafe.LLVMModuleRef)
 
 ///|
 pub fn Module::addFunction(
   self : Self,
   fty : FunctionType,
   name : String,
-  linkage?: Linkage
+  linkage? : Linkage,
 ) -> Function {
   let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
   let fval = Function::Function(valueref)
@@ -54,7 +54,8 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
   }
 }
 
-///| Gets the name of this `llvm_module`.
+///|
+/// Gets the name of this `llvm_module`.
 ///
 /// ## Example
 ///
@@ -68,7 +69,8 @@ pub fn Module::getName(self : Self) -> String {
   @unsafe.llvm_get_module_identifier(self.inner())
 }
 
-///| Assigns the name of this `llvm_module`.
+///|
+/// Assigns the name of this `llvm_module`.
 ///
 /// ## Example (Not Tested)
 ///
@@ -84,7 +86,8 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_module_identifier(self.inner(), name)
 }
 
-///| Gets the source file name. It defaults to the llvm_module identifier but is separate from it.
+///|
+/// Gets the source file name. It defaults to the llvm_module identifier but is separate from it.
 ///
 /// ## Example
 ///
@@ -103,7 +106,8 @@ pub fn Module::getSourceFileName(self : Self) -> String {
   @unsafe.llvm_get_source_file_name(self.inner())
 }
 
-///| Sets the source file name. It defaults to the llvm_module identifier but is separate from it.
+///|
+/// Sets the source file name. It defaults to the llvm_module identifier but is separate from it.
 ///
 /// ## Example
 ///
@@ -139,7 +143,14 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
   DataLayout(target_data_ref)
 }
 
-pub fn Module::addGlobalVariable(self: Self, ty: &Type, initializer?: &Constant, name?: String = "", linkage?: Linkage) -> GlobalVariable {
+///|
+pub fn Module::addGlobalVariable(
+  self : Self,
+  ty : &Type,
+  initializer? : &Constant,
+  name? : String = "",
+  linkage? : Linkage,
+) -> GlobalVariable {
   let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
   if initializer is Some(init) {
     @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
@@ -150,7 +161,14 @@ pub fn Module::addGlobalVariable(self: Self, ty: &Type, initializer?: &Constant,
   GlobalVariable(gv_ref)
 }
 
-pub fn Module::addGlobalConstant(self: Self, ty: &Type, initializer?: &Constant, name?: String = "", linkage?: Linkage) -> GlobalConstant {
+///|
+pub fn Module::addGlobalConstant(
+  self : Self,
+  ty : &Type,
+  initializer? : &Constant,
+  name? : String = "",
+  linkage? : Linkage,
+) -> GlobalConstant {
   let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
   @unsafe.llvm_set_global_constant(gv_ref, true)
   if initializer is Some(init) {

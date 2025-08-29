@@ -1,42 +1,52 @@
+///|
+pub struct GlobalVariable(ValueRef)
 
-pub type GlobalVariable ValueRef
-
+///|
 pub impl Value for GlobalVariable with getValueRef(self) -> ValueRef {
   self.inner()
 }
 
+///|
 pub impl Value for GlobalVariable with asValueEnum(self) -> ValueEnum {
   GlobalVariable(self)
 }
 
+///|
 pub impl GlobalValue for GlobalVariable with asGlobalEnum(self) -> GlobalEnum {
   GlobalVariable(self)
 }
 
+///|
 pub impl Show for GlobalVariable with output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }
 
-pub type GlobalConstant ValueRef
+///|
+pub struct GlobalConstant(ValueRef)
 
+///|
 pub impl Value for GlobalConstant with getValueRef(self) -> ValueRef {
   self.inner()
 }
 
+///|
 pub impl Value for GlobalConstant with asValueEnum(self) -> ValueEnum {
   GlobalConstant(self)
 }
 
+///|
 pub impl GlobalValue for GlobalConstant with asGlobalEnum(self) -> GlobalEnum {
   GlobalConstant(self)
 }
 
+///|
 pub impl Show for GlobalConstant with output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }
 
+///|
 pub(all) enum Linkage {
   ExternalLinkage
   AvailableExternallyLinkage
@@ -57,7 +67,8 @@ pub(all) enum Linkage {
   LinkerPrivateWeakLinkage
 }
 
-fn Linkage::from_llvm_linkage(linkage: @unsafe.LLVMLinkage) -> Linkage {
+///|
+fn Linkage::from_llvm_linkage(linkage : @unsafe.LLVMLinkage) -> Linkage {
   match linkage {
     LLVMExternalLinkage => ExternalLinkage
     LLVMAvailableExternallyLinkage => AvailableExternallyLinkage
@@ -79,7 +90,8 @@ fn Linkage::from_llvm_linkage(linkage: @unsafe.LLVMLinkage) -> Linkage {
   }
 }
 
-fn Linkage::to_llvm_linkage(self: Self) -> @unsafe.LLVMLinkage {
+///|
+fn Linkage::to_llvm_linkage(self : Self) -> @unsafe.LLVMLinkage {
   match self {
     ExternalLinkage => LLVMExternalLinkage
     AvailableExternallyLinkage => LLVMAvailableExternallyLinkage
@@ -101,13 +113,17 @@ fn Linkage::to_llvm_linkage(self: Self) -> @unsafe.LLVMLinkage {
   }
 }
 
+///|
 pub(all) enum UnnamedAddr {
   NoUnnamedAddr
   Local
   Global
 }
 
-fn UnnamedAddr::from_llvm_unnamed_addr(ua: @unsafe.LLVMUnnamedAddr) -> UnnamedAddr {
+///|
+fn UnnamedAddr::from_llvm_unnamed_addr(
+  ua : @unsafe.LLVMUnnamedAddr,
+) -> UnnamedAddr {
   match ua {
     LLVMNoUnnamedAddr => NoUnnamedAddr
     LLVMLocalUnnamedAddr => Local
@@ -115,7 +131,8 @@ fn UnnamedAddr::from_llvm_unnamed_addr(ua: @unsafe.LLVMUnnamedAddr) -> UnnamedAd
   }
 }
 
-fn UnnamedAddr::to_llvm_unnamed_addr(self: Self) -> @unsafe.LLVMUnnamedAddr {
+///|
+fn UnnamedAddr::to_llvm_unnamed_addr(self : Self) -> @unsafe.LLVMUnnamedAddr {
   match self {
     NoUnnamedAddr => LLVMNoUnnamedAddr
     Local => LLVMLocalUnnamedAddr

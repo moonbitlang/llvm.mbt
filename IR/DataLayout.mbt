@@ -1,7 +1,8 @@
 ///|
-pub type DataLayout @unsafe.LLVMTargetDataRef
+pub struct DataLayout(@unsafe.LLVMTargetDataRef)
 
-///| Get Type Size in Bits.
+///|
+/// Get Type Size in Bits.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -21,7 +22,8 @@ pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
   size.to_int()
 }
 
-///| Get Type Store Size.
+///|
+/// Get Type Store Size.
 ///
 /// ```moonbit
 /// let ctx = Context::new()

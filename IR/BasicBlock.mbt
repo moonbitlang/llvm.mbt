@@ -3,7 +3,7 @@
 // ==================================================
 
 ///|
-pub type BasicBlock @unsafe.LLVMBasicBlockRef
+pub struct BasicBlock(@unsafe.LLVMBasicBlockRef)
 
 ///|
 pub impl Value for BasicBlock with getValueRef(self) -> ValueRef {
@@ -15,7 +15,8 @@ pub impl Value for BasicBlock with asValueEnum(self) -> ValueEnum {
   BasicBlock(self)
 }
 
-///| Get the Function that this BasicBlock belongs to.
+///|
+/// Get the Function that this BasicBlock belongs to.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -37,7 +38,8 @@ pub fn BasicBlock::getParent(self : Self) -> Function? {
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
-///| Get the previous BasicBlock in the Function.
+///|
+/// Get the previous BasicBlock in the Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -60,7 +62,8 @@ pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
   unless(@unsafe.llvm_bb_is_null(valueref), () => BasicBlock(valueref))
 }
 
-///| Get the next BasicBlock in the Function.
+///|
+/// Get the next BasicBlock in the Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -88,7 +91,8 @@ pub suberror BasicBlockHasNoParentError String derive(Show)
 
 // REVIEW: Should we check basic block must have parent?
 
-///| Move the BasicBlock before another BasicBlock.
+///|
+/// Move the BasicBlock before another BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -162,7 +166,8 @@ pub fn BasicBlock::moveBefore(self : Self, other : BasicBlock) -> Unit raise {
   @unsafe.llvm_move_basic_block_before(self.inner(), other.inner())
 }
 
-///| Move the BasicBlock after another BasicBlock.
+///|
+/// Move the BasicBlock after another BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -236,7 +241,8 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
   @unsafe.llvm_move_basic_block_after(self.inner(), other.inner())
 }
 
-///| Get the first Instruction in this BasicBlock.
+///|
+/// Get the first Instruction in this BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -265,7 +271,8 @@ pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
   ))
 }
 
-///| Get the last Instruction in this BasicBlock.
+///|
+/// Get the last Instruction in this BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -294,7 +301,8 @@ pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
   ))
 }
 
-///| Get the terminator Instruction of this BasicBlock.
+///|
+/// Get the terminator Instruction of this BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -323,7 +331,8 @@ pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
   ))
 }
 
-///| Remove this BasicBlock from its parent Function.
+///|
+/// Remove this BasicBlock from its parent Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -375,7 +384,8 @@ pub fn BasicBlock::removeFromParent(self : Self) -> Unit raise {
   @unsafe.llvm_remove_basic_block_from_parent(self.inner())
 }
 
-///| Erase this BasicBlock from its parent Function.
+///|
+/// Erase this BasicBlock from its parent Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -440,7 +450,8 @@ pub fn BasicBlock::getContext(self : Self) -> Context {
   )
 }
 
-///| Get the name of this BasicBlock.
+///|
+/// Get the name of this BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -459,7 +470,8 @@ pub fn BasicBlock::getName(self : Self) -> String {
   @unsafe.llvm_get_basic_block_name(self.inner())
 }
 
-///| Set the name of this BasicBlock.
+///|
+/// Set the name of this BasicBlock.
 ///
 /// ```moonbit
 /// let ctx = Context::new()

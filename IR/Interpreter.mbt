@@ -2,7 +2,7 @@
 typealias @unsafe.LLVMExecutionEngineRef as ExecutionEngineRef
 
 ///|
-pub type GenericValue @unsafe.LLVMGenericValueRef
+pub struct GenericValue(@unsafe.LLVMGenericValueRef)
 
 ///|
 pub suberror InterpreterError {

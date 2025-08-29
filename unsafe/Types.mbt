@@ -1,10 +1,10 @@
 // LLVMTypes
 
 ///|
-type LLVMBool Int derive(Eq)
+struct LLVMBool(Int) derive(Eq)
 
 ///|
-pub(all) type LLVMAttributeIndex UInt derive(Eq)
+pub(all) struct LLVMAttributeIndex(UInt) derive(Eq)
 
 ///|
 //pub(all) type LLVMFastMathFlags UInt derive(Eq)
@@ -21,10 +21,10 @@ pub(all) enum LLVMFastMathFlags {
 }
 
 ///|
-pub(all) type LLVMDWARFTypeEncoding UInt derive(Eq)
+pub(all) struct LLVMDWARFTypeEncoding(UInt) derive(Eq)
 
 ///|
-pub(all) type LLVMMetadataKind UInt derive(Eq)
+pub(all) struct LLVMMetadataKind(UInt) derive(Eq)
 
 // Dummy function just for eliminating the warning
 
@@ -48,27 +48,33 @@ pub fn LLVMMetadataKind::new(idx : UInt) -> LLVMMetadataKind {
   LLVMMetadataKind(idx)
 }
 
-///| llvm memory buffer
+///|
+/// llvm memory buffer
 #external
 pub type LLVMMemoryBufferRef
 
-///| llvm context
+///|
+/// llvm context
 #external
 pub type LLVMContextRef
 
-///| llvm module
+///|
+/// llvm module
 #external
 pub type LLVMModuleRef
 
-///| llvm BasicBlock
+///|
+/// llvm BasicBlock
 #external
 pub type LLVMBasicBlockRef
 
-///| llvm metadata
+///|
+/// llvm metadata
 #external
 pub type LLVMMetadataRef
 
-///| llvm md node
+///|
+/// llvm md node
 #external
 pub type LLVMNamedMDNodeRef
 
@@ -76,7 +82,8 @@ pub type LLVMNamedMDNodeRef
 #external
 pub type LLVMValueMetadataEntry
 
-///| llvm builder
+///|
+/// llvm builder
 #external
 pub type LLVMBuilderRef
 
@@ -84,11 +91,13 @@ pub type LLVMBuilderRef
 #external
 pub type LLVMDIBuilderRef
 
-///| llvm module provider
+///|
+/// llvm module provider
 #external
 pub type LLVMModuleProviderRef
 
-///| llvm pass manager
+///|
+/// llvm pass manager
 #external
 pub type LLVMPassManagerRef
 
@@ -96,7 +105,8 @@ pub type LLVMPassManagerRef
 #external
 pub type LLVMPassRegistryRef
 
-///| A set of options passed which are attached to the Pass Manager upon run.
+///|
+/// A set of options passed which are attached to the Pass Manager upon run.
 /// 
 /// This corresponds to an llvm::LLVMPassBuilderOptions instance
 /// 
@@ -110,27 +120,33 @@ pub type LLVMPassBuilderOptionsRef
 #external
 pub type LLVMPassManagerBuilderRef
 
-///| llvm use
+///|
+/// llvm use
 #external
 pub type LLVMUseRef
 
-///| llvm values
+///|
+/// llvm values
 #external
 pub type LLVMValueRef
 
-///| llvm types
+///|
+/// llvm types
 #external
 pub type LLVMTypeRef
 
-///| llvm operand bundles
+///|
+/// llvm operand bundles
 #external
 pub type LLVMOperandBundleRef
 
-///| llvm attributes
+///|
+/// llvm attributes
 #external
 pub type LLVMAttributeRef
 
-///| llvm diagnostic info
+///|
+/// llvm diagnostic info
 #external
 pub type LLVMDiagnosticInfoRef
 
@@ -162,7 +178,8 @@ pub type LLVMTargetMachineOptionsRef
 #external
 pub type LLVMTargetMachineRef
 
-///| llvm debug record refs
+///|
+/// llvm debug record refs
 #external
 pub type LLVMDbgRecordRef
 
@@ -182,30 +199,36 @@ pub type LVMMCJITMemoryManagerRef
 #external
 pub type LLVMRemarkStringRef
 
-///| Opaque reference to an error instance. Null serves as the 'success' value.
+///|
+/// Opaque reference to an error instance. Null serves as the 'success' value.
 #external
 pub type LLVMErrorRef
 
-///| Represents an address in the executor process.
-pub(all) type LLVMOrcJITTargetAddress UInt64 derive(Show, Eq)
+///|
+/// Represents an address in the executor process.
+pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Show, Eq)
 
-///| Represents an address in the executor process.
-pub(all) type LLVMOrcExecutorAddress UInt64 derive(Show, Eq, Default)
+///|
+/// Represents an address in the executor process.
+pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Show, Eq, Default)
 
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
 
 ///|
-pub(all) type LLVMJITSymbolTargetFlags UInt derive(Show, Eq)
+pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Show, Eq)
 
-///| A reference to an orc::ExecutionSession instance.
+///|
+/// A reference to an orc::ExecutionSession instance.
 #external
 pub type LLVMOrcExecutionSessionRef
 
-///| A reference to an orc::SymbolStringPool.
+///|
+/// A reference to an orc::SymbolStringPool.
 #external
 pub type LLVMOrcSymbolStringPoolRef
 
-///| A reference to an orc::SymbolStringPool table entry.
+///|
+/// A reference to an orc::SymbolStringPool table entry.
 #external
 pub type LLVMOrcSymbolStringPoolEntryRef
 
@@ -263,7 +286,8 @@ pub fn LLVMMetadataKind::into(self : LLVMMetadataKind) -> UInt {
 
 // enums
 
-///| Instruction opcodes
+///|
+/// Instruction opcodes
 pub(all) enum LLVMOpcode {
   LLVMRet
   LLVMBr
@@ -1853,7 +1877,8 @@ pub fn LLVMDIFlags::from_int(idx : Int) -> LLVMDIFlags {
   }
 }
 
-///| Source languages known by DWARF.
+///|
+/// Source languages known by DWARF.
 pub(all) enum LLVMDWARFSourceLanguage {
   LLVMDWARFSourceLanguageC89
   LLVMDWARFSourceLanguageC
@@ -2072,7 +2097,8 @@ pub fn LLVMDWARFSourceLanguage::from_int(i : Int) -> LLVMDWARFSourceLanguage {
   }
 }
 
-///| The amount of debug information to emit.
+///|
+/// The amount of debug information to emit.
 pub(all) enum LLVMDWARFEmissionKind {
   LLVMDWARFEmissionNone
   LLVMDWARFEmissionFull
@@ -2101,7 +2127,8 @@ pub fn LLVMDWARFEmissionKind::from_int(idx : Int) -> LLVMDWARFEmissionKind {
   }
 }
 
-///| The kind of metadata nodes.
+///|
+/// The kind of metadata nodes.
 pub(all) enum LLVMMDNodeKind {
   LLVMMDStringMetadataKind
   LLVMConstantAsMetadataMetadataKind

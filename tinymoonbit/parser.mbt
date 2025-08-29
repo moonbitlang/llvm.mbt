@@ -17,7 +17,7 @@ priv enum Type {
 } derive(Show, Eq, ToJson)
 
 ///|
-fn Type::parse(master : String, sub~ : String? = None) -> Type raise {
+fn Type::parse(master : String, sub? : String? = None) -> Type raise {
   match (master, sub) {
     ("Unit", None) => Unit
     ("Bool", None) => Bool

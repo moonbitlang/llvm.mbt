@@ -2,7 +2,8 @@
 // Linker.h
 // =======================================================
 
-///| Links the source module into the destination module.
+///|
+/// Links the source module into the destination module.
 /// 
 /// Links the source module into the destination module. The source 
 /// module is destroyed.

@@ -3,7 +3,7 @@
 // ==================================================
 
 ///|
-pub type ConstantInt ValueRef
+pub struct ConstantInt(ValueRef)
 
 ///|
 pub fn ConstantInt::to_int(self : Self) -> Int {
@@ -42,7 +42,7 @@ pub impl Show for ConstantInt with output(self, logger) {
 // ==================================================
 
 ///|
-pub type ConstantFP ValueRef
+pub struct ConstantFP(ValueRef)
 
 ///|
 pub impl Value for ConstantFP with getValueRef(self) -> ValueRef {
@@ -69,7 +69,7 @@ pub impl Show for ConstantFP with output(self, logger) {
 // ==================================================
 
 ///|
-pub type ConstantPointerNull ValueRef
+pub struct ConstantPointerNull(ValueRef)
 
 ///|
 pub impl Value for ConstantPointerNull with getValueRef(self) -> ValueRef {
@@ -96,7 +96,7 @@ pub impl Show for ConstantPointerNull with output(self, logger) {
 // ==================================================
 
 ///|
-pub type ConstantArray ValueRef
+pub struct ConstantArray(ValueRef)
 
 ///|
 pub impl Value for ConstantArray with getValueRef(self) -> ValueRef {
@@ -123,7 +123,7 @@ pub impl Show for ConstantArray with output(self, logger) {
 // ==================================================
 
 ///|
-pub type ConstantStruct ValueRef
+pub struct ConstantStruct(ValueRef)
 
 ///|
 pub impl Value for ConstantStruct with getValueRef(self) -> ValueRef {
@@ -150,7 +150,7 @@ pub impl Show for ConstantStruct with output(self, logger) {
 // ==================================================
 
 ///|
-pub type ConstantVector ValueRef
+pub struct ConstantVector(ValueRef)
 
 ///|
 pub impl Value for ConstantVector with getValueRef(self) -> ValueRef {
@@ -177,7 +177,7 @@ pub impl Show for ConstantVector with output(self, logger) {
 // ==================================================
 
 ///|
-pub type UndefValue ValueRef
+pub struct UndefValue(ValueRef)
 
 ///|
 pub impl Value for UndefValue with getValueRef(self) -> ValueRef {
@@ -204,7 +204,7 @@ pub impl Show for UndefValue with output(self, logger) {
 // ==================================================
 
 ///|
-pub type PoisonValue ValueRef
+pub struct PoisonValue(ValueRef)
 
 ///|
 pub impl Constant for PoisonValue with asConstEnum(self) {

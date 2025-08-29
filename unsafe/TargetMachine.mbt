@@ -2,14 +2,17 @@
 // TargetMachine.h
 // =======================================================
 
-///| Returns the first llvm::Target in the registered targets list.
+///|
+/// Returns the first llvm::Target in the registered targets list.
 // pub extern "C" fn llvm_get_first_target() -> LLVMTargetRef = "__llvm_get_first_target"
 pub extern "C" fn llvm_get_first_target() -> LLVMTargetRef = "LLVMGetFirstTarget"
 
-///| Returns the next llvm::Target given a previous one (or null if there's none)
+///|
+/// Returns the next llvm::Target given a previous one (or null if there's none)
 pub extern "C" fn llvm_get_next_target(t : LLVMTargetRef) -> LLVMTargetRef = "LLVMGetNextTarget"
 
-///|  Finds the target corresponding to the given name.
+///|
+///  Finds the target corresponding to the given name.
 extern "C" fn __llvm_get_target_from_name(name : CStr) -> LLVMTargetRef = "LLVMGetTargetFromName"
 
 ///|
@@ -18,7 +21,8 @@ pub fn llvm_get_target_from_name(name : String) -> LLVMTargetRef {
   __llvm_get_target_from_name(name)
 }
 
-///| Finds the target corresponding to the given triple and stores it in `T`.
+///|
+/// Finds the target corresponding to the given triple and stores it in `T`.
 /// Returns 0 on success. Optionally returns any error in ErrorMessage.
 /// Use LLVMDisposeMessage to dispose the message.
 // TODO: check if this is correct
@@ -26,7 +30,8 @@ extern "C" fn __llvm_get_target_from_triple(
   triple : CStr,
 ) -> (LLVMTargetRef, CStr, LLVMBool) = "__llvm_get_target_from_triple"
 
-///| Finds the target corresponding to the given triple and stores it in `T`.
+///|
+/// Finds the target corresponding to the given triple and stores it in `T`.
 /// Returns 0 on success. Optionally returns any error in ErrorMessage.
 /// Use LLVMDisposeMessage to dispose the message.
 pub fn llvm_get_target_from_triple(
@@ -42,7 +47,8 @@ pub fn llvm_get_target_from_triple(
   }
 }
 
-///| Returns the name of a target. See llvm::Target::getName
+///|
+/// Returns the name of a target. See llvm::Target::getName
 extern "C" fn __llvm_get_target_name(t : LLVMTargetRef) -> CStr = "LLVMGetTargetName"
 
 ///|
@@ -50,7 +56,8 @@ pub fn llvm_get_target_name(t : LLVMTargetRef) -> String {
   c_str_to_moonbit_str(__llvm_get_target_name(t))
 }
 
-///| Returns the description  of a target. See llvm::Target::getDescription.
+///|
+/// Returns the description  of a target. See llvm::Target::getDescription.
 extern "C" fn __llvm_get_target_description(t : LLVMTargetRef) -> CStr = "LLVMGetTargetDescription"
 
 ///|
@@ -58,10 +65,12 @@ pub fn llvm_get_target_description(t : LLVMTargetRef) -> String {
   c_str_to_moonbit_str(__llvm_get_target_description(t))
 }
 
-///| Returns if the target has a JIT.
+///|
+/// Returns if the target has a JIT.
 pub extern "C" fn llvm_target_has_jit(t : LLVMTargetRef) -> LLVMBool = "LLVMTargetHasJIT"
 
-///| Returns if the target has a TargetMachine associated.
+///|
+/// Returns if the target has a TargetMachine associated.
 extern "C" fn __llvm_target_has_target_machine(t : LLVMTargetRef) -> LLVMBool = "LLVMTargetHasTargetMachine"
 
 ///|
@@ -69,7 +78,8 @@ pub fn llvm_target_has_target_machine(t : LLVMTargetRef) -> Bool {
   __llvm_target_has_target_machine(t).to_moonbit_bool()
 }
 
-///| Returns if the target as an ASM backend (required for emitting output).
+///|
+/// Returns if the target as an ASM backend (required for emitting output).
 extern "C" fn __llvm_target_has_asm_backend(t : LLVMTargetRef) -> LLVMBool = "LLVMTargetHasAsmBackend"
 
 ///|
@@ -77,14 +87,16 @@ pub fn llvm_target_has_asm_backend(t : LLVMTargetRef) -> Bool {
   __llvm_target_has_asm_backend(t).to_moonbit_bool()
 }
 
-///| Create a new set of options for an llvm::TargetMachine.
+///|
+/// Create a new set of options for an llvm::TargetMachine.
 /// 
 /// The returned option structure must be released with
 /// LLVMDisposeTargetMachineOptions() after the call to
 /// LLVMCreateTargetMachineWithOptions().
 pub extern "C" fn llvm_create_target_machine_options() -> LLVMTargetMachineOptionsRef = "LLVMCreateTargetMachineOptions"
 
-///| Dispose of an LLVMTargetMachineOptionsRef instance.
+///|
+/// Dispose of an LLVMTargetMachineOptionsRef instance.
 pub extern "C" fn llvm_dispose_target_machine_options(
   options : LLVMTargetMachineOptionsRef,
 ) = "LLVMDisposeTargetMachineOptions"
@@ -104,7 +116,8 @@ pub fn llvm_target_machine_options_set_cpu(
   __llvm_target_machine_options_set_cpu(options, cpu)
 }
 
-///| Set the list of features for the target machine.
+///|
+/// Set the list of features for the target machine.
 /// 
 /// - param Features a comma-separated list of features.
 extern "C" fn __llvm_target_machine_options_set_features(
@@ -184,7 +197,8 @@ pub fn llvm_create_target_machine_with_options(
   __llvm_create_target_machine_with_options(t, triple, options)
 }
 
-///| Creates a new llvm::TargetMachine. See llvm::Target::createTargetMachine.
+///|
+/// Creates a new llvm::TargetMachine. See llvm::Target::createTargetMachine.
 pub fn llvm_create_target_machine(
   t : LLVMTargetRef,
   triple : String,

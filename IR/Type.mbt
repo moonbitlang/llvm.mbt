@@ -464,7 +464,8 @@ impl Type with tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 // IntegerType & IntegerTypeEnum
 // ====================================================================
 
-///| Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
+///|
+/// Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -697,7 +698,7 @@ pub enum AbstractTypeEnum {
 // ====================================================================
 
 ///|
-pub type HalfType @unsafe.LLVMTypeRef derive(Eq)
+pub struct HalfType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for HalfType with output(self, logger) {
@@ -728,8 +729,9 @@ pub impl PrimitiveType for HalfType with asPrimitiveTypeEnum(self) -> PrimitiveT
 // BFloatType
 // ====================================================================
 
-///| BFloatType
-pub type BFloatType @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// BFloatType
+pub struct BFloatType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for BFloatType with output(self, logger : &Logger) {
@@ -760,8 +762,9 @@ pub impl PrimitiveType for BFloatType with asPrimitiveTypeEnum(self) -> Primitiv
 // FloatType
 // ====================================================================
 
-///| FloatType
-pub type FloatType @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// FloatType
+pub struct FloatType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for FloatType with output(self, logger : &Logger) {
@@ -792,8 +795,9 @@ pub impl PrimitiveType for FloatType with asPrimitiveTypeEnum(self) -> Primitive
 // DoubleType
 // ====================================================================
 
-///| DoubleType
-pub type DoubleType @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// DoubleType
+pub struct DoubleType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///| Create a DoubleType
 //fn DoubleType::new(typeref : @unsafe.LLVMTypeRef) -> DoubleType {
@@ -829,8 +833,9 @@ pub impl PrimitiveType for DoubleType with asPrimitiveTypeEnum(self) -> Primitiv
 // FP128Type
 // ====================================================================
 
-///| FP128Ty
-pub type FP128Type @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// FP128Ty
+pub struct FP128Type(@unsafe.LLVMTypeRef) derive(Eq)
 //pub struct FP128Type {
 //  priv typeref : @unsafe.LLVMTypeRef
 //} derive(Eq)
@@ -870,7 +875,7 @@ pub impl PrimitiveType for FP128Type with asPrimitiveTypeEnum(self) -> Primitive
 // ====================================================================
 
 ///|
-pub type Int1Type @unsafe.LLVMTypeRef derive(Eq)
+pub struct Int1Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for Int1Type with output(self, logger : &Logger) {
@@ -902,7 +907,7 @@ pub impl PrimitiveType for Int1Type with asPrimitiveTypeEnum(self) -> PrimitiveT
 // ====================================================================
 
 ///|
-pub type Int8Type @unsafe.LLVMTypeRef derive(Eq)
+pub struct Int8Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for Int8Type with output(self, logger : &Logger) {
@@ -934,7 +939,7 @@ pub impl PrimitiveType for Int8Type with asPrimitiveTypeEnum(self) -> PrimitiveT
 // ====================================================================
 
 ///|
-pub type Int16Type @unsafe.LLVMTypeRef derive(Eq)
+pub struct Int16Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for Int16Type with output(self, logger : &Logger) {
@@ -966,7 +971,7 @@ pub impl PrimitiveType for Int16Type with asPrimitiveTypeEnum(self) -> Primitive
 // ====================================================================
 
 ///|
-pub type Int32Type @unsafe.LLVMTypeRef derive(Eq)
+pub struct Int32Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for Int32Type with output(self, logger : &Logger) {
@@ -998,7 +1003,7 @@ pub impl PrimitiveType for Int32Type with asPrimitiveTypeEnum(self) -> Primitive
 // ====================================================================
 
 ///|
-pub type Int64Type @unsafe.LLVMTypeRef derive(Eq)
+pub struct Int64Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for Int64Type with output(self, logger : &Logger) {
@@ -1030,7 +1035,7 @@ pub impl PrimitiveType for Int64Type with asPrimitiveTypeEnum(self) -> Primitive
 // ====================================================================
 
 ///|
-pub type VoidType @unsafe.LLVMTypeRef derive(Eq)
+pub struct VoidType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for VoidType with output(self, logger : &Logger) {
@@ -1056,8 +1061,9 @@ pub impl AbstractType for VoidType with asAbstractTypeEnum(self) -> AbstractType
 // LabelType
 // ====================================================================
 
-///| LabelTy
-pub type LabelType @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// LabelTy
+pub struct LabelType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for LabelType with output(self, logger : &Logger) {
@@ -1084,7 +1090,7 @@ pub impl AbstractType for LabelType with asAbstractTypeEnum(self) -> AbstractTyp
 // ====================================================================
 
 ///|
-pub type MetadataType @unsafe.LLVMTypeRef derive(Eq)
+pub struct MetadataType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for MetadataType with output(self, logger : &Logger) {
@@ -1110,8 +1116,9 @@ pub impl AbstractType for MetadataType with asAbstractTypeEnum(self) -> Abstract
 // TokenTy
 // ====================================================================
 
-///| TokenTy
-pub type TokenType @unsafe.LLVMTypeRef derive(Eq)
+///|
+/// TokenTy
+pub struct TokenType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub impl Show for TokenType with output(self, logger : &Logger) {
@@ -1138,14 +1145,15 @@ pub impl AbstractType for TokenType with asAbstractTypeEnum(self) -> AbstractTyp
 // ====================================================================
 
 ///|
-pub type FunctionType @unsafe.LLVMTypeRef derive(Eq)
+pub struct FunctionType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
   @unsafe.llvm_is_function_var_arg(self.getTypeRef())
 }
 
-///| Get the return type of the function.
+///|
+/// Get the return type of the function.
 pub fn FunctionType::getReturnType(self : FunctionType) -> &Type {
   let typeref = @unsafe.llvm_get_return_type(self.getTypeRef())
   initAbstractType(typeref)
@@ -1156,7 +1164,8 @@ pub fn FunctionType::numOfParams(self : FunctionType) -> Int {
   @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
 }
 
-///| Get the params of the function.
+///|
+/// Get the params of the function.
 ///
 /// - See LLVM: `FunctionType::params`.
 pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
@@ -1164,7 +1173,8 @@ pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
   param_types.map(typeref => initAbstractType(typeref))
 }
 
-///| Get the params of the function.
+///|
+/// Get the params of the function.
 ///
 /// - See LLVM: `FunctionType::params`.
 pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
@@ -1172,7 +1182,8 @@ pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
   param_types.map(typeref => initAbstractType(typeref))
 }
 
-///| Return the number of fixed parameters this function type requires.
+///|
+/// Return the number of fixed parameters this function type requires.
 /// This does not consider varargs.
 ///
 /// - See LLVM: `FunctionType::getNumParams`.
@@ -1180,7 +1191,8 @@ pub fn FunctionType::getNumParams(self : FunctionType) -> Int {
   @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
 }
 
-///| Get the param type by given index.
+///|
+/// Get the param type by given index.
 pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   guard idx >= 0 && idx < param_types.length() else { return None }
@@ -1216,9 +1228,10 @@ pub impl AbstractType for FunctionType with asAbstractTypeEnum(self) -> Abstract
 // ====================================================================
 
 ///|
-pub type StructType @unsafe.LLVMTypeRef derive(Eq)
+pub struct StructType(@unsafe.LLVMTypeRef) derive(Eq)
 
-///| Check struct is a literal type.
+///|
+/// Check struct is a literal type.
 ///
 /// literal type means the struct only has body but has no name.
 ///
@@ -1239,7 +1252,8 @@ pub fn StructType::isLiteral(self : StructType) -> Bool {
   @unsafe.llvm_is_literal_struct(self.getTypeRef())
 }
 
-///| Check struct is a opaque type.
+///|
+/// Check struct is a opaque type.
 /// Return true if this is a type with an identity that has no body specified
 /// yet. These prints as 'opaque' in .ll files.
 ///
@@ -1257,7 +1271,8 @@ pub fn StructType::isOpaque(self : StructType) -> Bool {
   @unsafe.llvm_is_opaque_struct(self.getTypeRef())
 }
 
-///| Check if this is a packed struct type.
+///|
+/// Check if this is a packed struct type.
 ///
 /// - See LLVM: `StructType::isPacked`.
 ///
@@ -1289,7 +1304,8 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
   }
 }
 
-///| Get the elements of the struct.
+///|
+/// Get the elements of the struct.
 ///
 /// - See LLVM: `StructType::elements`.
 pub fn StructType::elements(self : StructType) -> Array[&Type] {
@@ -1310,7 +1326,8 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 ///|
 pub suberror SetBodyForNonOpaqueStruct String derive(Show)
 
-///| Set the body of the struct.
+///|
+/// Set the body of the struct.
 ///
 /// Only Opaque struct can be set body.
 ///
@@ -1318,7 +1335,7 @@ pub suberror SetBodyForNonOpaqueStruct String derive(Show)
 pub fn StructType::setBody(
   self : StructType,
   elements : Array[&Type],
-  isPacked~ : Bool = false,
+  isPacked? : Bool = false,
 ) -> Unit raise {
   // only opaque struct can be set body.
   guard self.isOpaque() else {
@@ -1353,7 +1370,7 @@ pub impl AggregateType for StructType with asAggregateTypeEnum(self) -> Aggregat
 // ====================================================================
 
 ///|
-pub type ArrayType @unsafe.LLVMTypeRef derive(Eq)
+pub struct ArrayType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
@@ -1391,15 +1408,17 @@ pub impl AggregateType for ArrayType with asAggregateTypeEnum(self) -> Aggregate
 // ====================================================================
 
 ///|
-pub type VectorType @unsafe.LLVMTypeRef derive(Eq)
+pub struct VectorType(@unsafe.LLVMTypeRef) derive(Eq)
 
-///| Get the element type of the vector.
+///|
+/// Get the element type of the vector.
 pub fn VectorType::getElementType(self : VectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
   initAbstractType(typeref)
 }
 
-///| Get the number of elements in the vector.
+///|
+/// Get the number of elements in the vector.
 pub fn VectorType::getElementCount(self : VectorType) -> Int {
   @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
 }
@@ -1429,15 +1448,17 @@ pub impl AggregateType for VectorType with asAggregateTypeEnum(self) -> Aggregat
 // ====================================================================
 
 ///|
-pub type ScalableVectorType @unsafe.LLVMTypeRef derive(Eq)
+pub struct ScalableVectorType(@unsafe.LLVMTypeRef) derive(Eq)
 
-///| Get the element type of the vector.
+///|
+/// Get the element type of the vector.
 pub fn ScalableVectorType::getElementType(self : ScalableVectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
   initAbstractType(typeref)
 }
 
-///| Get the number of elements in the vector.
+///|
+/// Get the number of elements in the vector.
 pub fn ScalableVectorType::getElementCount(self : ScalableVectorType) -> Int {
   @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
 }
@@ -1466,8 +1487,9 @@ pub impl AggregateType for ScalableVectorType with asAggregateTypeEnum(self) -> 
 // PointerType
 // ====================================================================
 
-///| Memory address space of a pointer type.
-pub type AddressSpace UInt derive(Hash, Show, Eq, Default)
+///|
+/// Memory address space of a pointer type.
+pub struct AddressSpace(UInt) derive(Hash, Show, Eq, Default)
 
 ///|
 pub fn AddressSpace::new(v : UInt) -> AddressSpace {
@@ -1475,7 +1497,7 @@ pub fn AddressSpace::new(v : UInt) -> AddressSpace {
 }
 
 ///|
-pub type PointerType @unsafe.LLVMTypeRef derive(Eq)
+pub struct PointerType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
 pub fn PointerType::getAddressSpace(self : PointerType) -> AddressSpace {

@@ -1,5 +1,5 @@
 ///|
-pub type Function ValueRef
+pub struct Function(ValueRef)
 
 ///|
 pub impl Value for Function with getValueRef(self) -> ValueRef {
@@ -11,6 +11,7 @@ pub impl Value for Function with asValueEnum(self) {
   Function(self)
 }
 
+///|
 pub impl GlobalValue for Function with asGlobalEnum(self) {
   Function(self)
 }
@@ -29,7 +30,8 @@ fn Function::getNextFunction(self : Self) -> Function? {
 //  )
 //}
 
-///| Get Function Name.
+///|
+/// Get Function Name.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -45,7 +47,8 @@ pub fn Function::getName(self : Self) -> String {
   @unsafe.llvm_get_value_name(self.getValueRef())
 }
 
-///| Set Function Name.
+///|
+/// Set Function Name.
 ///
 ///
 /// ```moonbit
@@ -65,7 +68,8 @@ pub fn Function::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_value_name(self.getValueRef(), name)
 }
 
-///| Get Function Type.
+///|
+/// Get Function Type.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -82,7 +86,8 @@ pub fn Function::getType(self : Self) -> FunctionType {
   FunctionType(typeref)
 }
 
-///| Get Number of Function Arguments.
+///|
+/// Get Number of Function Arguments.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -102,7 +107,8 @@ pub fn Function::getNumArgs(self : Self) -> Int {
   @unsafe.llvm_count_params(self.getValueRef()).reinterpret_as_int()
 }
 
-///| Get Function Parameter.
+///|
+/// Get Function Parameter.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -127,7 +133,8 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
   })
 }
 
-///| Get Function Parameters.
+///|
+/// Get Function Parameters.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -149,7 +156,8 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
   ))
 }
 
-///| Add a Basic Block to the Function.
+///|
+/// Add a Basic Block to the Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -168,8 +176,8 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 /// ```
 pub fn Function::addBasicBlock(
   self : Self,
-  name~ : String = "",
-  before~ : BasicBlock? = None,
+  name? : String = "",
+  before? : BasicBlock? = None,
 ) -> BasicBlock {
   let blockref = match before {
     None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)
@@ -178,7 +186,8 @@ pub fn Function::addBasicBlock(
   BasicBlock(blockref)
 }
 
-///| Get number of Basic Blocks in the Function.
+///|
+/// Get number of Basic Blocks in the Function.
 ///
 /// ```moonbit skip for duplicate test.
 /// let ctx = Context::new()
@@ -199,7 +208,8 @@ pub fn Function::getNumBasicBlocks(self : Self) -> Int {
   @unsafe.llvm_count_basic_blocks(self.getValueRef()).reinterpret_as_int()
 }
 
-///| Collect all Basic Blocks in the Function.
+///|
+/// Collect all Basic Blocks in the Function.
 ///
 /// ```moonbit skip for duplicate test.
 /// let ctx = Context::new()
@@ -220,7 +230,8 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
   @unsafe.llvm_get_basic_blocks(self.getValueRef()).map(r => BasicBlock(r))
 }
 
-///| Add Function Attribute.
+///|
+/// Add Function Attribute.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -261,7 +272,8 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
   )
 }
 
-///| Remove Function Attribute.
+///|
+/// Remove Function Attribute.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -315,7 +327,8 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
   )
 }
 
-///| Count Function Attributes.
+///|
+/// Count Function Attributes.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -347,7 +360,8 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
   @unsafe.llvm_get_attribute_count_at_index(self.getValueRef(), @uint.max_value).reinterpret_as_int()
 }
 
-///| Add an Attribute for the Return Value of the Function.
+///|
+/// Add an Attribute for the Return Value of the Function.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -383,7 +397,8 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
   @unsafe.llvm_add_attribute_at_index(self.getValueRef(), 0, fn_attr.inner())
 }
 
-///| Remove the Attribute for the Return Value of the Function.
+///|
+/// Remove the Attribute for the Return Value of the Function.
 ///
 ///
 /// ```moonbit
@@ -470,7 +485,8 @@ pub impl Value for Argument with asValueEnum(self) {
   Argument(self)
 }
 
-///| Get Argument Name.
+///|
+/// Get Argument Name.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -490,7 +506,8 @@ pub fn Argument::getName(self : Self) -> String {
   @unsafe.llvm_get_value_name(self.getValueRef())
 }
 
-///| Set Argument Name.
+///|
+/// Set Argument Name.
 ///
 /// ```moonbit skip due to duplicate test.
 /// let ctx = Context::new()
@@ -516,7 +533,8 @@ pub fn Argument::getFunction(self : Self) -> Function {
   Function(func_ref)
 }
 
-///| Add an Attribute to the Argument.
+///|
+/// Add an Attribute to the Argument.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -557,7 +575,8 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
   )
 }
 
-///| Remove the Attribute of the Argument.
+///|
+/// Remove the Attribute of the Argument.
 ///
 /// ```moonbit
 /// let ctx = Context::new()

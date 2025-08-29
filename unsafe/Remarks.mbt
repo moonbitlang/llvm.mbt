@@ -46,7 +46,8 @@
 //  */
 // extern const char *LLVMRemarkStringGetData(LLVMRemarkStringRef String);
 
-///| Returns the buffer holding the string.
+///|
+/// Returns the buffer holding the string.
 pub fn llvm_remark_string_get_data(s : LLVMRemarkStringRef) -> String {
   __llvm_remark_string_get_data(s).to_string()
 }
@@ -62,7 +63,8 @@ extern "C" fn __llvm_remark_string_get_data(s : LLVMRemarkStringRef) -> CStr = "
 //  */
 // extern uint32_t LLVMRemarkStringGetLen(LLVMRemarkStringRef String);
 
-///| Returns the size of the string.
+///|
+/// Returns the size of the string.
 pub extern "C" fn llvm_remark_string_get_len(s : LLVMRemarkStringRef) -> UInt = "LLVMRemarkStringGetLen"
 //
 // /**

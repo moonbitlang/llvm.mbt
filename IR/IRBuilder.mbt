@@ -34,7 +34,8 @@ pub impl InsertPoint for BasicBlock with asInsertPtEnum(self) {
   BasicBlock(self)
 }
 
-///| IRBuilder
+///|
+/// IRBuilder
 pub struct IRBuilder {
   builder_ref : @unsafe.LLVMBuilderRef
   priv mut positioned : PositionState
@@ -77,7 +78,8 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   }
 }
 
-///| Create a Return Instruction
+///|
+/// Create a Return Instruction
 ///
 /// **Note:**
 /// 
@@ -105,7 +107,8 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
   ReturnInst(@unsafe.llvm_build_ret(self.builder_ref, value.getValueRef()))
 }
 
-///| Create a Return Instruction with no return value (void)
+///|
+/// Create a Return Instruction with no return value (void)
 ///
 /// **Note:**
 ///
@@ -132,7 +135,8 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
   ReturnInst(@unsafe.llvm_build_ret_void(self.builder_ref))
 }
 
-///| Create an Alloca Instruction
+///|
+/// Create an Alloca Instruction
 ///
 /// **Note:**
 /// 
@@ -157,7 +161,7 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
 pub fn IRBuilder::createAlloca(
   self : Self,
   data_ty : &Type,
-  name~ : String = "",
+  name? : String = "",
 ) -> AllocaInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   AllocaInst(
@@ -165,7 +169,8 @@ pub fn IRBuilder::createAlloca(
   )
 }
 
-///| Create a Load Instruction
+///|
+/// Create a Load Instruction
 ///
 /// **Note:**
 /// 
@@ -192,7 +197,7 @@ pub fn IRBuilder::createLoad(
   self : Self,
   load_ty : &Type,
   ptr : &Value,
-  name~ : String = "",
+  name? : String = "",
 ) -> LoadInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   LoadInst(
@@ -205,7 +210,8 @@ pub fn IRBuilder::createLoad(
   )
 }
 
-///| Create a Store Instruction
+///|
+/// Create a Store Instruction
 ///
 /// **Note:**
 /// 
@@ -229,11 +235,12 @@ pub fn IRBuilder::createLoad(
 ///
 /// inspect(store, content = "  store i32 42, ptr %temp, align 4")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createStore(
   self : Self,
   value : &Value,
   ptr : &Value,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> StoreInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
@@ -319,7 +326,8 @@ fn type_check_during_create_float_binary(
   }
 }
 
-///| Create an Add Instruction
+///|
+/// Create an Add Instruction
 ///
 /// **Note:**
 /// 
@@ -349,12 +357,13 @@ fn type_check_during_create_float_binary(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createAdd(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAdd", loc)
@@ -377,7 +386,8 @@ pub fn IRBuilder::createAdd(
   }
 }
 
-///| Create an NSW Add Instruction
+///|
+/// Create an NSW Add Instruction
 ///
 /// **Note:**
 /// 
@@ -407,12 +417,13 @@ pub fn IRBuilder::createAdd(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNSWAdd(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWAdd", loc)
@@ -430,7 +441,8 @@ pub fn IRBuilder::createNSWAdd(
   }
 }
 
-///| Create an NUW Add Instruction
+///|
+/// Create an NUW Add Instruction
 ///
 /// **Note:**
 /// 
@@ -460,12 +472,13 @@ pub fn IRBuilder::createNSWAdd(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNUWAdd(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWAdd", loc)
@@ -483,7 +496,8 @@ pub fn IRBuilder::createNUWAdd(
   }
 }
 
-///| Create a Sub Instruction
+///|
+/// Create a Sub Instruction
 ///
 /// **Note:**
 /// 
@@ -513,12 +527,13 @@ pub fn IRBuilder::createNUWAdd(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSub(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSub", loc)
@@ -536,7 +551,8 @@ pub fn IRBuilder::createSub(
   }
 }
 
-///| Create an NSW Sub Instruction
+///|
+/// Create an NSW Sub Instruction
 ///
 /// **Note:**
 /// 
@@ -566,12 +582,13 @@ pub fn IRBuilder::createSub(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNSWSub(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWSub", loc)
@@ -589,7 +606,8 @@ pub fn IRBuilder::createNSWSub(
   }
 }
 
-///| Create an NUW Sub Instruction
+///|
+/// Create an NUW Sub Instruction
 ///
 /// **Note:**
 /// 
@@ -619,12 +637,13 @@ pub fn IRBuilder::createNSWSub(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNUWSub(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWSub", loc)
@@ -642,7 +661,8 @@ pub fn IRBuilder::createNUWSub(
   }
 }
 
-///| Create a Mul Instruction
+///|
+/// Create a Mul Instruction
 ///
 /// **Note:**
 /// 
@@ -672,12 +692,13 @@ pub fn IRBuilder::createNUWSub(
 /// inspect(twelve, content = "i32 12")
 /// assert_true(twelve.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createMul(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createMul", loc)
@@ -695,7 +716,8 @@ pub fn IRBuilder::createMul(
   }
 }
 
-///| Create an NSW Mul Instruction
+///|
+/// Create an NSW Mul Instruction
 ///
 /// **Note:**
 /// 
@@ -725,12 +747,13 @@ pub fn IRBuilder::createMul(
 /// inspect(twelve, content = "i32 12")
 /// assert_true(twelve.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNSWMul(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWMul", loc)
@@ -748,7 +771,8 @@ pub fn IRBuilder::createNSWMul(
   }
 }
 
-///| Create an NUW Mul Instruction
+///|
+/// Create an NUW Mul Instruction
 ///
 /// **Note:**
 /// 
@@ -778,12 +802,13 @@ pub fn IRBuilder::createNSWMul(
 /// inspect(twelve, content = "i32 12")
 /// assert_true(twelve.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNUWMul(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWMul", loc)
@@ -801,7 +826,8 @@ pub fn IRBuilder::createNUWMul(
   }
 }
 
-///| Create a UDiv Instruction
+///|
+/// Create a UDiv Instruction
 ///
 /// **Note:**
 /// 
@@ -832,12 +858,13 @@ pub fn IRBuilder::createNUWMul(
 /// inspect(four, content = "i32 4")
 /// assert_true(four.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createUDiv(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createUDiv", loc)
@@ -855,7 +882,8 @@ pub fn IRBuilder::createUDiv(
   }
 }
 
-///| Create an SDiv Instruction
+///|
+/// Create an SDiv Instruction
 ///
 /// **Note:**
 /// 
@@ -886,12 +914,13 @@ pub fn IRBuilder::createUDiv(
 /// inspect(four, content = "i32 4")
 /// assert_true(four.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSDiv(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSDiv", loc)
@@ -909,7 +938,8 @@ pub fn IRBuilder::createSDiv(
   }
 }
 
-///| Create an Exact UDiv Instruction
+///|
+/// Create an Exact UDiv Instruction
 ///
 /// **Note:**
 /// 
@@ -941,12 +971,13 @@ pub fn IRBuilder::createSDiv(
 /// inspect(four, content = "i32 4")
 /// assert_true(four.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createExactUDiv(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactUDiv", loc)
@@ -964,7 +995,8 @@ pub fn IRBuilder::createExactUDiv(
   }
 }
 
-///| Create an Exact SDiv Instruction
+///|
+/// Create an Exact SDiv Instruction
 ///
 /// **Note:**
 /// 
@@ -995,12 +1027,13 @@ pub fn IRBuilder::createExactUDiv(
 /// inspect(four, content = "i32 4")
 /// assert_true(four.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createExactSDiv(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactSDiv", loc)
@@ -1018,7 +1051,8 @@ pub fn IRBuilder::createExactSDiv(
   }
 }
 
-///| Create a URem Instruction
+///|
+/// Create a URem Instruction
 ///
 /// **Note:**
 /// 
@@ -1048,12 +1082,13 @@ pub fn IRBuilder::createExactSDiv(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createURem(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createURem", loc)
@@ -1071,7 +1106,8 @@ pub fn IRBuilder::createURem(
   }
 }
 
-///| Create an SRem Instruction
+///|
+/// Create an SRem Instruction
 ///
 /// **Note:**
 /// 
@@ -1101,12 +1137,13 @@ pub fn IRBuilder::createURem(
 /// inspect(three, content = "i32 3")
 /// assert_true(three.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSRem(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSRem", loc)
@@ -1124,7 +1161,8 @@ pub fn IRBuilder::createSRem(
   }
 }
 
-///| Create an FAdd Instruction
+///|
+/// Create an FAdd Instruction
 ///
 /// **Note:**
 /// 
@@ -1177,13 +1215,14 @@ pub fn IRBuilder::createSRem(
 /// )
 /// inspect(nnan_ninf_fadd, content = "  %sum_nnan_ninf = fadd nnan ninf float %0, %1")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFAdd(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  fast_math~ : Array[FastMathFlags] = [],
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  fast_math? : Array[FastMathFlags] = [],
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFAdd", loc)
@@ -1212,7 +1251,8 @@ pub fn IRBuilder::createFAdd(
   }
 }
 
-///| Create an FSub Instruction
+///|
+/// Create an FSub Instruction
 ///
 /// **Note:**
 /// 
@@ -1253,13 +1293,14 @@ pub fn IRBuilder::createFAdd(
 /// inspect(three, content = "float 3.000000e+00")
 /// assert_true(three.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFSub(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  fast_math~ : Array[FastMathFlags] = [],
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  fast_math? : Array[FastMathFlags] = [],
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFSub", loc)
@@ -1288,7 +1329,8 @@ pub fn IRBuilder::createFSub(
   }
 }
 
-///| Create an FMul Instruction
+///|
+/// Create an FMul Instruction
 ///
 /// **Note:**
 /// 
@@ -1318,12 +1360,13 @@ pub fn IRBuilder::createFSub(
 /// inspect(twelve, content = "float 1.200000e+01")
 /// assert_true(twelve.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFMul(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFMul", loc)
@@ -1341,7 +1384,8 @@ pub fn IRBuilder::createFMul(
   }
 }
 
-///| Create an FDiv Instruction
+///|
+/// Create an FDiv Instruction
 ///
 /// **Note:**
 /// 
@@ -1371,12 +1415,13 @@ pub fn IRBuilder::createFMul(
 /// inspect(four, content = "float 4.000000e+00")
 /// assert_true(four.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFDiv(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFDiv", loc)
@@ -1394,7 +1439,8 @@ pub fn IRBuilder::createFDiv(
   }
 }
 
-///| Create an FRem Instruction
+///|
+/// Create an FRem Instruction
 ///
 /// **Note:**
 /// 
@@ -1424,12 +1470,13 @@ pub fn IRBuilder::createFDiv(
 /// inspect(one_and_half, content = "float 1.500000e+00")
 /// assert_true(one_and_half.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFRem(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFRem", loc)
@@ -1447,7 +1494,8 @@ pub fn IRBuilder::createFRem(
   }
 }
 
-///| Create an FNeg Instruction
+///|
+/// Create an FNeg Instruction
 ///
 /// **Note:**
 /// 
@@ -1475,11 +1523,12 @@ pub fn IRBuilder::createFRem(
 /// let neg_val = builder.createFNeg(pos_val)
 /// assert_true(neg_val.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFNeg(
   self : Self,
   value : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard value.getType().tryAsFPType() is Some(_) else {
@@ -1498,7 +1547,8 @@ pub fn IRBuilder::createFNeg(
   }
 }
 
-///| Create an And Instruction
+///|
+/// Create an And Instruction
 ///
 /// **Note:**
 /// 
@@ -1528,12 +1578,13 @@ pub fn IRBuilder::createFNeg(
 /// inspect(result, content = "i32 8")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createAnd(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAnd", loc)
@@ -1551,7 +1602,8 @@ pub fn IRBuilder::createAnd(
   }
 }
 
-///| Create an Or Instruction
+///|
+/// Create an Or Instruction
 ///
 /// **Note:**
 /// 
@@ -1581,12 +1633,13 @@ pub fn IRBuilder::createAnd(
 /// inspect(result, content = "i32 14")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createOr(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createOr", loc)
@@ -1604,7 +1657,8 @@ pub fn IRBuilder::createOr(
   }
 }
 
-///| Create an Xor Instruction
+///|
+/// Create an Xor Instruction
 ///
 /// **Note:**
 /// 
@@ -1634,12 +1688,13 @@ pub fn IRBuilder::createOr(
 /// inspect(result, content = "i32 6")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createXor(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createXor", loc)
@@ -1657,7 +1712,8 @@ pub fn IRBuilder::createXor(
   }
 }
 
-///| Create a Not Instruction
+///|
+/// Create a Not Instruction
 ///
 /// **Note:**
 /// 
@@ -1686,11 +1742,12 @@ pub fn IRBuilder::createXor(
 /// inspect(result, content = "i32 -13")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createNot(
   self : Self,
   value : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard value.getType().tryAsIntType() is Some(_) else {
@@ -1713,7 +1770,8 @@ pub fn IRBuilder::createNot(
   }
 }
 
-///| Create a Shl Instruction
+///|
+/// Create a Shl Instruction
 ///
 /// **Note:**
 /// 
@@ -1743,12 +1801,13 @@ pub fn IRBuilder::createNot(
 /// inspect(result, content = "i32 20")
 /// assert_true(result.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createShl(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createShl", loc)
@@ -1766,7 +1825,8 @@ pub fn IRBuilder::createShl(
   }
 }
 
-///| Create an LShr Instruction
+///|
+/// Create an LShr Instruction
 ///
 /// **Note:**
 /// 
@@ -1796,12 +1856,13 @@ pub fn IRBuilder::createShl(
 /// inspect(five, content = "i32 5")
 /// assert_true(five.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createLShr(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createLShr", loc)
@@ -1819,7 +1880,8 @@ pub fn IRBuilder::createLShr(
   }
 }
 
-///| Create an AShr Instruction
+///|
+/// Create an AShr Instruction
 ///
 /// **Note:**
 /// 
@@ -1849,12 +1911,13 @@ pub fn IRBuilder::createLShr(
 /// inspect(five, content = "i32 5")
 /// assert_true(five.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createAShr(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAShr", loc)
@@ -1872,7 +1935,8 @@ pub fn IRBuilder::createAShr(
   }
 }
 
-///| Create a PtrDiff Instruction
+///|
+/// Create a PtrDiff Instruction
 ///
 /// **Note:**
 /// 
@@ -1899,13 +1963,14 @@ pub fn IRBuilder::createAShr(
 ///
 /// inspect(diff, content = "  %diff = sdiv exact i64 %4, ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createPtrDiff(
   self : Self,
   elemTy : &Type,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard lhs.getType().asTypeEnum() is PointerType(_) else {
@@ -1937,7 +2002,8 @@ pub fn IRBuilder::createPtrDiff(
   BinaryInst::BinaryInst(res_valueref)
 }
 
-///| Create an Integer Compare Instruction.
+///|
+/// Create an Integer Compare Instruction.
 ///
 /// **Note:**
 ///
@@ -1995,13 +2061,14 @@ pub fn IRBuilder::createPtrDiff(
 /// let ule_cmp = builder.createICmpULE(arg0, arg1, name="ule_cmp")
 /// inspect(ule_cmp, content = "  %ule_cmp = icmp ule i32 %0, %1")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmp(
   self : Self,
   pred : IntPredicate,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
@@ -2021,137 +2088,158 @@ pub fn IRBuilder::createICmp(
   }
 }
 
-///| Create an Integer Compare for Equality Instruction.
+///|
+/// Create an Integer Compare for Equality Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(EQ, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpEQ(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(EQ, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Non-Equality Instruction.
+///|
+/// Create an Integer Compare for Non-Equality Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(NE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpNE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(NE, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Signed Greater Than Instruction.
+///|
+/// Create an Integer Compare for Signed Greater Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(SGT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpSGT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(SGT, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Signed Greater Than or Equal Instruction.
+///|
+/// Create an Integer Compare for Signed Greater Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(SGE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpSGE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(SGE, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Signed Less Than Instruction.
+///|
+/// Create an Integer Compare for Signed Less Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(SLT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpSLT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(SLT, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Signed Less Than or Equal Instruction.
+///|
+/// Create an Integer Compare for Signed Less Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(SLE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpSLE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(SLE, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Unsigned Greater Than Instruction.
+///|
+/// Create an Integer Compare for Unsigned Greater Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(UGT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpUGT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(UGT, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Unsigned Greater Than or Equal Instruction.
+///|
+/// Create an Integer Compare for Unsigned Greater Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(UGE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpUGE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(UGE, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Unsigned Less Than Instruction.
+///|
+/// Create an Integer Compare for Unsigned Less Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(ULT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpULT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(ULT, lhs, rhs, name~, loc~)
 }
 
-///| Create an Integer Compare for Unsigned Less Than or Equal Instruction.
+///|
+/// Create an Integer Compare for Unsigned Less Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createICmp(ULE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createICmpULE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createICmp(ULE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare Instruction.
+///|
+/// Create a Float Compare Instruction.
 ///
 /// **Note:**
 ///
@@ -2218,13 +2306,14 @@ pub fn IRBuilder::createICmpULE(
 /// let une_cmp = builder.createFCmpUNE(arg0, arg1, name="une_cmp")
 /// inspect(une_cmp, content = "  %une_cmp = fcmp une float %0, %1")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmp(
   self : Self,
   pred : FloatPredicate,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFCmp", loc)
@@ -2244,178 +2333,205 @@ pub fn IRBuilder::createFCmp(
   }
 }
 
-///| Create a Float Compare for Equality Instruction.
+///|
+/// Create a Float Compare for Equality Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OEQ, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpOEQ(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(OEQ, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Greater Than Instruction.
+///|
+/// Create a Float Compare for Greater Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OGT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpOGT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(OGT, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Greater Than or Equal Instruction.
+///|
+/// Create a Float Compare for Greater Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OGE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpOGE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(OGE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Less Than Instruction.
+///|
+/// Create a Float Compare for Less Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OLT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpOLT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(OLT, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Less Than or Equal Instruction.
+///|
+/// Create a Float Compare for Less Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OLE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpOLE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(OLE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Non-Equality Instruction.
+///|
+/// Create a Float Compare for Non-Equality Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ONE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpONE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(ONE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Ordered Instruction.
+///|
+/// Create a Float Compare for Ordered Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ORD, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpORD(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(ORD, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unordered Equals Instruction.
+///|
+/// Create a Float Compare for Unordered Equals Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UEQ, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpUEQ(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(UEQ, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unsigned Greater Than Instruction.
+///|
+/// Create a Float Compare for Unsigned Greater Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UGT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpUGT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(UGT, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unsigned Greater Than or Equal Instruction.
+///|
+/// Create a Float Compare for Unsigned Greater Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UGE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpUGE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(UGE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unsigned Less Than Instruction.
+///|
+/// Create a Float Compare for Unsigned Less Than Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ULT, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpULT(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(ULT, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unsigned Less Than or Equal Instruction.
+///|
+/// Create a Float Compare for Unsigned Less Than or Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ULE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpULE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(ULE, lhs, rhs, name~, loc~)
 }
 
-///| Create a Float Compare for Unordered Not Equal Instruction.
+///|
+/// Create a Float Compare for Unordered Not Equal Instruction.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UNE, lhs, rhs)`
+#callsite(autofill(loc))
 pub fn IRBuilder::createFCmpUNE(
   self : Self,
   lhs : &Value,
   rhs : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   self.createFCmp(UNE, lhs, rhs, name~, loc~)
 }
 
 // REVIEW: What will happened if `from` type is equal to `to` type?
 
-///| Create a Trunc Instruction
+///|
+/// Create a Trunc Instruction
 ///
 /// **Note:**
 /// 
@@ -2445,12 +2561,13 @@ pub fn IRBuilder::createFCmpUNE(
 /// inspect(small_val, content = "i32 591751049")
 /// assert_true(small_val.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createTrunc(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -2475,7 +2592,8 @@ pub fn IRBuilder::createTrunc(
   }
 }
 
-///| Create a ZExt Instruction
+///|
+/// Create a ZExt Instruction
 ///
 /// **Note:**
 /// 
@@ -2505,12 +2623,13 @@ pub fn IRBuilder::createTrunc(
 /// inspect(big_val, content = "i64 42")
 /// assert_true(big_val.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createZExt(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -2535,7 +2654,8 @@ pub fn IRBuilder::createZExt(
   }
 }
 
-///| Create a SExt Instruction
+///|
+/// Create a SExt Instruction
 ///
 /// **Note:**
 /// 
@@ -2565,12 +2685,13 @@ pub fn IRBuilder::createZExt(
 /// inspect(big_val, content = "i64 -42")
 /// assert_true(big_val.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSExt(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -2595,7 +2716,8 @@ pub fn IRBuilder::createSExt(
   }
 }
 
-///| Create a FPTrunc Instruction
+///|
+/// Create a FPTrunc Instruction
 ///
 /// **Note:**
 /// 
@@ -2624,12 +2746,13 @@ pub fn IRBuilder::createSExt(
 /// let small_val = builder.createFPTrunc(big_val, f32_ty)
 /// assert_true(small_val.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFPTrunc(
   self : Self,
   from : &Value,
   to : &FPType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
@@ -2654,7 +2777,8 @@ pub fn IRBuilder::createFPTrunc(
   }
 }
 
-///| Create a FPExt Instruction
+///|
+/// Create a FPExt Instruction
 ///
 /// **Note:**
 /// 
@@ -2679,12 +2803,13 @@ pub fn IRBuilder::createFPTrunc(
 ///
 /// inspect(fpext, content = "  %extended = fpext float %0 to double")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFPExt(
   self : Self,
   from : &Value,
   to : &FPType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
@@ -2709,7 +2834,8 @@ pub fn IRBuilder::createFPExt(
   }
 }
 
-///| Create a FPToSI Instruction
+///|
+/// Create a FPToSI Instruction
 ///
 /// **Note:**
 /// 
@@ -2734,12 +2860,13 @@ pub fn IRBuilder::createFPExt(
 ///
 /// inspect(fptosi, content = "  %converted = fptosi float %0 to i32")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFPToSI(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
@@ -2764,7 +2891,8 @@ pub fn IRBuilder::createFPToSI(
   }
 }
 
-///| Create a FPToUI Instruction
+///|
+/// Create a FPToUI Instruction
 ///
 /// **Note:**
 /// 
@@ -2794,12 +2922,13 @@ pub fn IRBuilder::createFPToSI(
 /// inspect(int_val, content = "i32 3")
 /// assert_true(int_val.asValueEnum() is ConstantInt(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFPToUI(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
@@ -2824,7 +2953,8 @@ pub fn IRBuilder::createFPToUI(
   }
 }
 
-///| Create a SIToFP Instruction
+///|
+/// Create a SIToFP Instruction
 ///
 /// **Note:**
 /// 
@@ -2849,12 +2979,13 @@ pub fn IRBuilder::createFPToUI(
 ///
 /// inspect(sitofp, content = "  %converted = sitofp i32 %0 to float")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSIToFP(
   self : Self,
   from : &Value,
   to : &FPType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -2879,7 +3010,8 @@ pub fn IRBuilder::createSIToFP(
   }
 }
 
-///| Create a UIToFP Instruction
+///|
+/// Create a UIToFP Instruction
 ///
 /// **Note:**
 /// 
@@ -2908,12 +3040,13 @@ pub fn IRBuilder::createSIToFP(
 /// let float_val = builder.createUIToFP(int_val, f32_ty)
 /// assert_true(float_val.asValueEnum() is ConstantFP(_))
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createUIToFP(
   self : Self,
   from : &Value,
   to : &FPType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -2938,7 +3071,8 @@ pub fn IRBuilder::createUIToFP(
   }
 }
 
-///| Create a BitCast Instruction
+///|
+/// Create a BitCast Instruction
 ///
 /// **Note:**
 /// 
@@ -2963,12 +3097,13 @@ pub fn IRBuilder::createUIToFP(
 ///
 /// inspect(bitcast, content = "  %bits = bitcast i32 %0 to float")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createBitCast(
   self : Self,
   from : &Value,
   to : &Type,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   let from_ref = from.getValueRef()
@@ -3003,7 +3138,8 @@ pub fn IRBuilder::createBitCast(
   }
 }
 
-///| Create an IntToPtr Instruction
+///|
+/// Create an IntToPtr Instruction
 ///
 /// **Note:**
 /// 
@@ -3031,7 +3167,7 @@ pub fn IRBuilder::createBitCast(
 pub fn IRBuilder::createIntToPtr(
   self : Self,
   from : &Value,
-  name~ : String = "",
+  name? : String = "",
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
@@ -3052,7 +3188,8 @@ pub fn IRBuilder::createIntToPtr(
   CastInst::CastInst(res_valueref)
 }
 
-///| Create a PtrToInt Instruction
+///|
+/// Create a PtrToInt Instruction
 ///
 /// **Note:**
 /// 
@@ -3077,12 +3214,13 @@ pub fn IRBuilder::createIntToPtr(
 ///
 /// inspect(ptrtoint, content = "  %int_val = ptrtoint ptr %0 to i64")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createPtrToInt(
   self : Self,
   from : &Value,
   to : &IntegerType,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is PointerType(_) else {
@@ -3104,7 +3242,8 @@ pub fn IRBuilder::createPtrToInt(
   CastInst::CastInst(res_valueref)
 }
 
-///| Create a GetElementPtr Instruction
+///|
+/// Create a GetElementPtr Instruction
 ///
 /// **Note:**
 /// 
@@ -3133,14 +3272,15 @@ pub fn IRBuilder::createPtrToInt(
 ///
 /// inspect(gep, content = "  %elem_ptr = getelementptr inbounds [10 x i32], ptr %0, i32 0, i32 2")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createGEP(
   self : Self,
   ptr : &Value,
   pointeeType : &Type,
   indices : Array[&Value],
-  name~ : String = "",
-  inbounds~ : Bool = false,
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  inbounds? : Bool = false,
+  loc~ : SourceLoc,
 ) -> GetElementPtrInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
@@ -3181,7 +3321,8 @@ pub fn IRBuilder::createGEP(
   GetElementPtrInst(res_valueref)
 }
 
-///| Create an Unconditional Branch Instruction
+///|
+/// Create an Unconditional Branch Instruction
 ///
 /// **Note:**
 /// 
@@ -3212,7 +3353,8 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
   BranchInst(res_valueref)
 }
 
-///| Create a Conditional Branch Instruction
+///|
+/// Create a Conditional Branch Instruction
 ///
 /// **Note:**
 /// 
@@ -3239,12 +3381,13 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 ///
 /// inspect(cond_br, content = "  br i1 %0, label %true_branch, label %false_branch")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createCondBr(
   self : Self,
   cond : &Value,
   trueDest : BasicBlock,
   falseDest : BasicBlock,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> BranchInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
@@ -3267,7 +3410,8 @@ pub fn IRBuilder::createCondBr(
   BranchInst(res_valueref)
 }
 
-///| Create a Select Instruction
+///|
+/// Create a Select Instruction
 ///
 /// **Note:**
 /// 
@@ -3294,13 +3438,14 @@ pub fn IRBuilder::createCondBr(
 ///
 /// inspect(select, content = "  %result = select i1 %0, i32 %1, i32 %2")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSelect(
   self : Self,
   cond : &Value,
   trueVal : &Value,
   falseVal : &Value,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
@@ -3343,7 +3488,8 @@ pub fn IRBuilder::createSelect(
   }
 }
 
-///| Create a Switch Instruction
+///|
+/// Create a Switch Instruction
 ///
 /// **Note:**
 /// 
@@ -3378,11 +3524,12 @@ pub fn IRBuilder::createSelect(
 ///
 /// inspect(switch, content = expect)
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createSwitch(
   self : Self,
   value : &Value,
   defaultDest : BasicBlock,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> SwitchInst raise {
   // use `SwitchInst::addCase` to add cases.
   guard self.positioned is Set else { raise UnsetPosition }
@@ -3405,7 +3552,8 @@ pub fn IRBuilder::createSwitch(
   SwitchInst(res_valueref)
 }
 
-///| Create a PHI Instruction
+///|
+/// Create a PHI Instruction
 ///
 /// **Note:**
 /// 
@@ -3438,7 +3586,7 @@ pub fn IRBuilder::createSwitch(
 pub fn IRBuilder::createPHI(
   self : Self,
   type_ : &Type,
-  name~ : String = "",
+  name? : String = "",
 ) -> PHINode raise {
   // use `PHINode::addIncoming` to add incoming values.
   guard self.positioned is Set else { raise UnsetPosition }
@@ -3447,7 +3595,8 @@ pub fn IRBuilder::createPHI(
   PHINode(res_valueref)
 }
 
-///| Create a Call Instruction
+///|
+/// Create a Call Instruction
 ///
 /// **Note:**
 /// 
@@ -3474,12 +3623,13 @@ pub fn IRBuilder::createPHI(
 ///
 /// inspect(call, content = "  %sum = call i32 @add(i32 10, i32 20)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createCall(
   self : Self,
   func : Function,
   args : Array[&Value],
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   let func_ty = func.getType()
@@ -3508,7 +3658,8 @@ pub fn IRBuilder::createCall(
   CallInst(res_valueref)
 }
 
-///| Create a Call Instruction via Function Pointer
+///|
+/// Create a Call Instruction via Function Pointer
 ///
 /// **Note:**
 /// 
@@ -3537,13 +3688,14 @@ pub fn IRBuilder::createCall(
 ///
 /// inspect(call, content = "  %result = call i32 %0(i32 10, i32 20)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createCallPtr(
   self : Self,
   funcPtr : &Value,
   funcType : FunctionType,
   args : Array[&Value],
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   // REVIEW: Check if it is correct.
   guard self.positioned is Set else { raise UnsetPosition }
@@ -3568,7 +3720,8 @@ pub fn IRBuilder::createCallPtr(
   CallInst(res_valueref)
 }
 
-///| Create an InsertValue Instruction
+///|
+/// Create an InsertValue Instruction
 ///
 /// **Note:**
 /// 
@@ -3594,13 +3747,14 @@ pub fn IRBuilder::createCallPtr(
 ///
 /// inspect(insert, content = "  %updated = insertvalue { i32, i32 } %0, i32 %1, 1")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createInsertValue(
   self : Self,
   aggregate : &Value,
   value : &Value,
   index : Int,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
@@ -3651,7 +3805,8 @@ pub fn IRBuilder::createInsertValue(
   }
 }
 
-///| Create an ExtractValue Instruction
+///|
+/// Create an ExtractValue Instruction
 ///
 /// **Note:**
 /// 
@@ -3676,12 +3831,13 @@ pub fn IRBuilder::createInsertValue(
 ///
 /// inspect(extract, content = "  %field = extractvalue { i32, i32 } %0, 0")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createExtractValue(
   self : Self,
   aggregate : &Value,
   index : Int,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
@@ -3758,7 +3914,8 @@ pub fn IRBuilder::createExtractValue(
   }
 }
 
-///| Create a Malloc Instruction
+///|
+/// Create a Malloc Instruction
 ///
 /// **Note:**
 /// 
@@ -3782,11 +3939,12 @@ pub fn IRBuilder::createExtractValue(
 ///
 /// inspect(malloc, content = "  %ptr = tail call ptr @malloc(i32 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i32))")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createMalloc(
   self : Self,
   ty : &Type,
-  name~ : String = "",
-  loc~ : SourceLoc = _,
+  name? : String = "",
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard not(ty.tryAsAbstractType() is Some(_)) else {
@@ -3802,7 +3960,8 @@ pub fn IRBuilder::createMalloc(
   CallInst(res_valueref)
 }
 
-///| Create a Free Instruction
+///|
+/// Create a Free Instruction
 ///
 /// **Note:**
 /// 
@@ -3827,10 +3986,11 @@ pub fn IRBuilder::createMalloc(
 ///
 /// inspect(free, content = "  tail call void @free(ptr %0)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createFree(
   self : Self,
   ptr : &Value,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
@@ -3846,7 +4006,8 @@ pub fn IRBuilder::createFree(
   CallInst(res_valueref)
 }
 
-///| Create a Memory Copy Instruction
+///|
+/// Create a Memory Copy Instruction
 ///
 /// **Note:**
 /// 
@@ -3875,6 +4036,7 @@ pub fn IRBuilder::createFree(
 ///
 /// inspect(memcpy, content = "  call void @llvm.memcpy.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createMemCpy(
   self : Self,
   dst : &Value,
@@ -3882,7 +4044,7 @@ pub fn IRBuilder::createMemCpy(
   src : &Value,
   src_align : Int,
   size : &Value,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
@@ -3925,7 +4087,8 @@ pub fn IRBuilder::createMemCpy(
   CallInst(res_valueref)
 }
 
-///| Create a Memory Set Instruction
+///|
+/// Create a Memory Set Instruction
 ///
 /// **Note:**
 /// 
@@ -3955,13 +4118,14 @@ pub fn IRBuilder::createMemCpy(
 ///
 /// inspect(memset, content = "  call void @llvm.memset.p0.i64(ptr align 4 %0, i8 %1, i64 %2, i1 false)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createMemSet(
   self : Self,
   dst : &Value,
   value : &Value,
   size : &Value,
   align : Int,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
@@ -4002,7 +4166,8 @@ pub fn IRBuilder::createMemSet(
   CallInst(res_valueref)
 }
 
-///| Create a Memory Move Instruction
+///|
+/// Create a Memory Move Instruction
 ///
 /// **Note:**
 /// 
@@ -4032,6 +4197,7 @@ pub fn IRBuilder::createMemSet(
 ///
 /// inspect(memmove, content = "  call void @llvm.memmove.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)")
 /// ```
+#callsite(autofill(loc))
 pub fn IRBuilder::createMemMove(
   self : Self,
   dst : &Value,
@@ -4039,7 +4205,7 @@ pub fn IRBuilder::createMemMove(
   src : &Value,
   src_align : Int,
   size : &Value,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
@@ -4082,12 +4248,11 @@ pub fn IRBuilder::createMemMove(
   CallInst(res_valueref)
 }
 
-
 ///|
 pub fn IRBuilder::createGlobalString(
   self : Self,
   string : String,
-  name~ : String = "",
+  name? : String = "",
 ) -> GlobalConstant raise {
   guard self.positioned is Set else { raise UnsetPosition }
   let res_valueref = @unsafe.llvm_build_global_string(

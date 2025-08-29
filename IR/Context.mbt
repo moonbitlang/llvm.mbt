@@ -1,5 +1,5 @@
 ///|
-pub type Context @unsafe.LLVMContextRef derive(Eq)
+pub struct Context(@unsafe.LLVMContextRef) derive(Eq)
 
 ///|
 pub fn Context::drop(self : Context) -> Unit {
@@ -28,7 +28,8 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
   }
 }
 
-///| Get the half type from context.
+///|
+/// Get the half type from context.
 ///
 /// - See LLVM: `Type::getHalfTy`.
 ///
@@ -42,7 +43,8 @@ pub fn Context::getHalfTy(self : Context) -> HalfType {
   HalfType(typeref)
 }
 
-///| Get the bfloat type from context.
+///|
+/// Get the bfloat type from context.
 ///
 /// - See LLVM: `Type::getBFloatTy`.
 ///
@@ -56,7 +58,8 @@ pub fn Context::getBFloatTy(self : Context) -> BFloatType {
   BFloatType(typeref)
 }
 
-///| Get the float type from context.
+///|
+/// Get the float type from context.
 ///
 /// - See LLVM: `Type::getFloatTy`.
 ///
@@ -70,7 +73,8 @@ pub fn Context::getFloatTy(self : Context) -> FloatType {
   FloatType(typeref)
 }
 
-///| Get the double type from context.
+///|
+/// Get the double type from context.
 ///
 /// - See LLVM: `Type::getDoubleTy`.
 ///
@@ -84,7 +88,8 @@ pub fn Context::getDoubleTy(self : Context) -> DoubleType {
   DoubleType(typeref)
 }
 
-///| Get the fp128 type from context.
+///|
+/// Get the fp128 type from context.
 ///
 /// - See LLVM: `Type::getFP128Ty`.
 ///
@@ -98,7 +103,8 @@ pub fn Context::getFP128Ty(self : Context) -> FP128Type {
   FP128Type(typeref)
 }
 
-///| Get the void type from context.
+///|
+/// Get the void type from context.
 ///
 /// - See LLVM: `Type::getVoidTy`.
 ///
@@ -112,19 +118,22 @@ pub fn Context::getVoidTy(self : Context) -> VoidType {
   VoidType(typeref)
 }
 
-///| Get the label type from context.
+///|
+/// Get the label type from context.
 pub fn Context::getLabelTy(self : Context) -> LabelType {
   let typeref = @unsafe.llvm_label_type_in_context(self.inner())
   LabelType(typeref)
 }
 
-///| Get the metadata type from context.
+///|
+/// Get the metadata type from context.
 pub fn Context::getMetadataTy(self : Context) -> MetadataType {
   let typeref = @unsafe.llvm_metadata_type_in_context(self.inner())
   MetadataType(typeref)
 }
 
-///| Get the token type from context.
+///|
+/// Get the token type from context.
 ///
 /// - See LLVM: `Type::getTokenTy`.
 ///
@@ -138,7 +147,8 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
   TokenType(typeref)
 }
 
-///| Get the integer type with 1 bit from context.
+///|
+/// Get the integer type with 1 bit from context.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -152,7 +162,8 @@ pub fn Context::getInt1Ty(self : Context) -> Int1Type {
   Int1Type(typeref)
 }
 
-///| Get the integer type with 8 bits from context.
+///|
+/// Get the integer type with 8 bits from context.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -166,7 +177,8 @@ pub fn Context::getInt8Ty(self : Context) -> Int8Type {
   Int8Type(typeref)
 }
 
-///| Get the integer type with 16 bits from context.
+///|
+/// Get the integer type with 16 bits from context.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -180,7 +192,8 @@ pub fn Context::getInt16Ty(self : Context) -> Int16Type {
   Int16Type(typeref)
 }
 
-///| Get the integer type with 32 bits from context.
+///|
+/// Get the integer type with 32 bits from context.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -194,7 +207,8 @@ pub fn Context::getInt32Ty(self : Context) -> Int32Type {
   Int32Type(typeref)
 }
 
-///| Get the integer type with 64 bits from context.
+///|
+/// Get the integer type with 64 bits from context.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -208,7 +222,8 @@ pub fn Context::getInt64Ty(self : Context) -> Int64Type {
   Int64Type(typeref)
 }
 
-///| Get the Pointer type from context.
+///|
+/// Get the Pointer type from context.
 ///
 /// - See LLVM: `PointerType::get`.
 ///
@@ -227,7 +242,7 @@ pub fn Context::getInt64Ty(self : Context) -> Int64Type {
 /// ```
 pub fn Context::getPtrTy(
   self : Context,
-  addressSpace~ : AddressSpace = AddressSpace::default(),
+  addressSpace? : AddressSpace = AddressSpace::default(),
 ) -> PointerType {
   let typeref = @unsafe.llvm_pointer_type_in_context(
     self.inner(),
@@ -236,7 +251,8 @@ pub fn Context::getPtrTy(
   PointerType(typeref)
 }
 
-///| Create a function type.
+///|
+/// Create a function type.
 ///
 /// This is different with the method of creating function type in LLVM.
 /// In LLVM, usually use `FunctionType::get` to create a function type.
@@ -258,7 +274,7 @@ pub fn Context::getFunctionType(
   self : Context,
   returnType : &Type,
   paramTypes : Array[&Type],
-  isVarArg~ : Bool = false,
+  isVarArg? : Bool = false,
 ) -> FunctionType {
   ignore(self)
   let ret_ty = returnType.getTypeRef()
@@ -267,7 +283,8 @@ pub fn Context::getFunctionType(
   FunctionType(fty_ref)
 }
 
-///| Create a struct type in the context.
+///|
+/// Create a struct type in the context.
 ///
 /// This is different with the method of creating struct type in LLVM.
 /// In LLVM, usually use `StructType::create` to create a struct type.
@@ -288,8 +305,8 @@ pub fn Context::getFunctionType(
 pub fn Context::getStructType(
   self : Context,
   elements : Array[&Type],
-  isPacked~ : Bool = false,
-  name~ : String = "",
+  isPacked? : Bool = false,
+  name? : String = "",
 ) -> StructType {
   guard not(name.is_empty() && elements.is_empty()) else {
     println(
@@ -310,7 +327,8 @@ pub fn Context::getStructType(
   StructType(typeref)
 }
 
-///| Search a named struct type in the context.
+///|
+/// Search a named struct type in the context.
 ///
 /// LLVM Cpp version has no this method, since llvm-cpp allow duplicated struct type names.
 ///
@@ -330,7 +348,8 @@ pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
   unless(typeref.is_null(), () => StructType(typeref))
 }
 
-///| Create an array type in the context.
+///|
+/// Create an array type in the context.
 ///
 /// This is different with the method of creating array type in LLVM.
 /// In LLVM, usually use `ArrayType::get` to create an array type.
@@ -362,7 +381,8 @@ pub fn Context::getArrayType(
   ArrayType(typeref)
 }
 
-///| Create a fixed length vector type in the context.
+///|
+/// Create a fixed length vector type in the context.
 ///
 /// - See LLVM: `FixedVectorType::get`.
 ///
@@ -388,7 +408,8 @@ pub fn[T : Type] Context::getFixedVectorType(
   VectorType(typeref)
 }
 
-///| Create a scalable vector type in the context.
+///|
+/// Create a scalable vector type in the context.
 ///
 /// - See LLVM: `ScalableVectorType::get`.
 ///
@@ -413,7 +434,8 @@ pub fn Context::getScalableVectorType(
   ScalableVectorType(typeref)
 }
 
-///| Create a constant integer `true`, the type is `i1`.
+///|
+/// Create a constant integer `true`, the type is `i1`.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -440,7 +462,8 @@ pub fn Context::getConstTrue(self : Self) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant integer `false`, the type is `i1`.
+///|
+/// Create a constant integer `false`, the type is `i1`.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -465,7 +488,8 @@ pub fn Context::getConstFalse(self : Self) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant signed 8-bit integer value.
+///|
+/// Create a constant signed 8-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -495,7 +519,8 @@ pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant unsigned 8-bit integer value.
+///|
+/// Create a constant unsigned 8-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -525,7 +550,8 @@ pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant signed 16-bit integer value.
+///|
+/// Create a constant signed 16-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -555,7 +581,8 @@ pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant unsigned 16-bit integer value.
+///|
+/// Create a constant unsigned 16-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -585,7 +612,8 @@ pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant signed 32-bit integer value.
+///|
+/// Create a constant signed 32-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -615,7 +643,8 @@ pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant unsigned 32-bit integer value.
+///|
+/// Create a constant unsigned 32-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -645,7 +674,8 @@ pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant signed 64-bit integer value.
+///|
+/// Create a constant signed 64-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -675,7 +705,8 @@ pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant unsigned 64-bit integer value.
+///|
+/// Create a constant unsigned 64-bit integer value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -705,7 +736,8 @@ pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
   ConstantInt(valueref)
 }
 
-///| Create a constant 32-bit floating-point value.
+///|
+/// Create a constant 32-bit floating-point value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -734,7 +766,8 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
   ConstantFP(valueref)
 }
 
-///| Create a constant 64-bit floating-point value.
+///|
+/// Create a constant 64-bit floating-point value.
 ///
 /// ```moonbit
 /// let ctx = Context::new()
@@ -760,7 +793,8 @@ pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
   ConstantFP(valueref)
 }
 
-///| Create a constant array from an array of constant elements.
+///|
+/// Create a constant array from an array of constant elements.
 ///
 /// **Note:** 
 /// All elements must be of the same type and must be constant values.
@@ -800,7 +834,8 @@ pub fn Context::getConstArray(
 
 // REVIEW: Check if this is correct.
 
-///| Create a constant vector from an array of scalar constant values.
+///|
+/// Create a constant vector from an array of scalar constant values.
 ///
 /// **Note:** 
 /// All scalar values must be of the same type and must be constant values.
@@ -835,7 +870,8 @@ pub fn Context::getConstVector(
   ConstantVector(valueref)
 }
 
-///| Create a constant struct from an array of constant element values.
+///|
+/// Create a constant struct from an array of constant element values.
 ///
 /// **Note:** 
 /// Element types and count must match the struct type being created.
@@ -865,7 +901,7 @@ pub fn Context::getConstVector(
 pub fn Context::getConstStruct(
   self : Self,
   elements : Array[&Constant],
-  isPacked~ : Bool = false,
+  isPacked? : Bool = false,
 ) -> ConstantStruct {
   ignore(self)
   let element_refs = elements.map(v => v.getValueRef())
@@ -877,7 +913,8 @@ pub fn Context::getConstStruct(
   ConstantStruct(valueref)
 }
 
-///| Create an undefined value of the specified type.
+///|
+/// Create an undefined value of the specified type.
 ///
 /// **Note:**
 /// Undefined values represent values that are not defined. They can be used
@@ -909,7 +946,8 @@ pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
   UndefValue(valueref)
 }
 
-///| Create a poison value of the specified type.
+///|
+/// Create a poison value of the specified type.
 ///
 /// **Note:**
 /// Poison values represent undefined behavior. Any operation on a poison value
@@ -942,7 +980,8 @@ pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
   PoisonValue(valueref)
 }
 
-///| Create a constant null pointer of the specified pointer type.
+///|
+/// Create a constant null pointer of the specified pointer type.
 ///
 /// **Note:**
 /// The type must be a pointer type. The null pointer represents an invalid

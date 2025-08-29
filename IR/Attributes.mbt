@@ -2,7 +2,7 @@
 typealias @unsafe.LLVMAttributeRef as AttributeRef
 
 ///|
-pub type Attribute AttributeRef
+pub struct Attribute(AttributeRef)
 
 ///|
 pub(all) enum FnAttr {

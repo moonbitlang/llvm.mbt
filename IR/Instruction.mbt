@@ -3,7 +3,7 @@
 // =======================================================
 
 ///|
-pub type AllocaInst ValueRef
+pub struct AllocaInst(ValueRef)
 
 ///|
 pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
@@ -41,7 +41,7 @@ pub impl Show for AllocaInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type LoadInst ValueRef
+pub struct LoadInst(ValueRef)
 
 ///|
 pub impl Value for LoadInst with getValueRef(self) -> ValueRef {
@@ -73,7 +73,7 @@ pub impl Show for LoadInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type StoreInst ValueRef
+pub struct StoreInst(ValueRef)
 
 ///|
 pub impl Value for StoreInst with getValueRef(self) -> ValueRef {
@@ -105,7 +105,7 @@ pub impl Show for StoreInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type CastInst ValueRef
+pub struct CastInst(ValueRef)
 
 ///|
 pub impl Value for CastInst with getValueRef(self) -> ValueRef {
@@ -137,7 +137,7 @@ pub impl Show for CastInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type UnaryInst ValueRef
+pub struct UnaryInst(ValueRef)
 
 ///|
 pub impl Value for UnaryInst with getValueRef(self) -> ValueRef {
@@ -169,7 +169,7 @@ pub impl Show for UnaryInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type BinaryInst ValueRef
+pub struct BinaryInst(ValueRef)
 
 ///|
 pub impl Value for BinaryInst with getValueRef(self) -> ValueRef {
@@ -275,7 +275,7 @@ fn IntPredicate::from_llvm_int_predicate(
 }
 
 ///|
-pub type ICmpInst ValueRef
+pub struct ICmpInst(ValueRef)
 
 ///|
 pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
@@ -381,7 +381,7 @@ fn FloatPredicate::from_llvm_float_predicate(
 }
 
 ///|
-pub type FCmpInst ValueRef
+pub struct FCmpInst(ValueRef)
 
 ///|
 pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
@@ -419,7 +419,7 @@ pub impl Show for FCmpInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type GetElementPtrInst ValueRef
+pub struct GetElementPtrInst(ValueRef)
 
 ///|
 pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
@@ -474,7 +474,7 @@ pub impl Show for GetElementPtrInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type SelectInst ValueRef
+pub struct SelectInst(ValueRef)
 
 ///|
 pub impl Value for SelectInst with getValueRef(self) -> ValueRef {
@@ -501,7 +501,7 @@ pub impl Show for SelectInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type ExtractValueInst ValueRef
+pub struct ExtractValueInst(ValueRef)
 
 ///|
 pub impl Value for ExtractValueInst with getValueRef(self) -> ValueRef {
@@ -538,7 +538,7 @@ pub impl Show for ExtractValueInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type InsertValueInst ValueRef
+pub struct InsertValueInst(ValueRef)
 
 ///|
 pub impl Value for InsertValueInst with getValueRef(self) -> ValueRef {
@@ -570,7 +570,7 @@ pub impl Show for InsertValueInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type PHINode ValueRef
+pub struct PHINode(ValueRef)
 
 ///|
 pub fn PHINode::addIncoming(
@@ -634,7 +634,7 @@ pub impl Show for PHINode with output(self, logger) {
 // =======================================================
 
 ///|
-pub type ReturnInst ValueRef
+pub struct ReturnInst(ValueRef)
 
 ///|
 pub impl Value for ReturnInst with getValueRef(self) -> ValueRef {
@@ -666,7 +666,7 @@ pub impl Show for ReturnInst with output(self, logger) {
 // =======================================================
 
 ///|
-pub type BranchInst ValueRef
+pub struct BranchInst(ValueRef)
 
 ///|
 pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
@@ -677,10 +677,11 @@ pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
 pub suberror InValidOperation String derive(Show)
 
 ///|
+#callsite(autofill(loc))
 pub fn BranchInst::setCondition(
   self : BranchInst,
   cond : &Value,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> Unit raise {
   guard self.isConditional() else {
     let msg =
@@ -704,11 +705,12 @@ pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
 }
 
 ///|
+#callsite(autofill(loc))
 pub fn BranchInst::setSuccessor(
   self : BranchInst,
   idx : Int,
   block : BasicBlock,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> Unit raise {
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =
@@ -758,7 +760,7 @@ pub suberror SwitchInstError {
 }
 
 ///|
-pub type SwitchInst ValueRef
+pub struct SwitchInst(ValueRef)
 
 ///|
 pub fn SwitchInst::addCase(
@@ -787,11 +789,12 @@ pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
 }
 
 ///|
+#callsite(autofill(loc))
 pub fn SwitchInst::setSuccessor(
   self : Self,
   idx : Int,
   block : BasicBlock,
-  loc~ : SourceLoc = _,
+  loc~ : SourceLoc,
 ) -> Unit raise {
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =
@@ -864,7 +867,7 @@ fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
 }
 
 ///|
-pub type CallInst ValueRef
+pub struct CallInst(ValueRef)
 
 ///|
 pub fn CallInst::isTailCall(self : CallInst) -> Bool {
