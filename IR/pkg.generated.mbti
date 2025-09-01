@@ -243,6 +243,8 @@ fn Context::getConstUInt32(Self, UInt) -> ConstantInt
 fn Context::getConstUInt64(Self, UInt64) -> ConstantInt
 fn Context::getConstUInt8(Self, Int) -> ConstantInt
 fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector
+fn Context::getConstZeroDouble(Self, isNegative~ : Bool) -> ConstantFP
+fn Context::getConstZeroFloat(Self, isNegative~ : Bool) -> ConstantFP
 fn Context::getDoubleTy(Self) -> DoubleType
 fn Context::getFP128Ty(Self) -> FP128Type
 fn[T : Type] Context::getFixedVectorType(Self, T, Int) -> VectorType

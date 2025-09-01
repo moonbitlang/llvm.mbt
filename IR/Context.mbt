@@ -767,6 +767,38 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 }
 
 ///|
+/// Create a constant zero with float type.
+///
+/// - See LLVM: `ConstantFP::getZero`.
+///
+/// **Parameter**:
+///
+///  - `isNegative`: If true, create a negative zero constant.
+///
+/// ```moonbit
+/// let ctx = Context::new()
+///
+/// let zero = ctx.getConstZeroFloat(isNegative=false)
+/// let neg_zero = ctx.getConstZeroFloat(isNegative=true)
+///
+/// inspect(zero, content="float 0.000000e+00")
+/// inspect(neg_zero, content="float -0.000000e+00")
+/// ```
+pub fn Context::getConstZeroFloat(self: Self, isNegative~: Bool) -> ConstantFP {
+  let val = if isNegative {
+    0x8000_0000U
+  } else {
+    0x0000_0000U
+  }
+  let val = val.reinterpret_as_float();
+  let valueref = @unsafe.llvm_const_real(
+    self.getFloatTy().getTypeRef(),
+    val.to_double(),
+  )
+  ConstantFP(valueref)
+}
+
+///|
 /// Create a constant 64-bit floating-point value.
 ///
 /// ```moonbit
@@ -789,6 +821,35 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 /// inspect(const_div, content="double 0x400D6E2BC3CD8399")
 /// ```
 pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
+  let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
+  ConstantFP(valueref)
+}
+
+///|
+/// Create a constant zero with double type.
+///
+/// - See LLVM: `ConstantFP::getZero`.
+///
+/// **Parameter**:
+///
+/// - `isNegative`: If true, create a negative zero constant.
+///
+/// ```moonbit
+/// let ctx = Context::new()
+///
+/// let zero = ctx.getConstZeroDouble(isNegative=false)
+/// let neg_zero = ctx.getConstZeroDouble(isNegative=true)
+///
+/// inspect(zero, content="double 0.000000e+00")
+/// inspect(neg_zero, content="double -0.000000e+00")
+/// ```
+pub fn Context::getConstZeroDouble(self: Self, isNegative~: Bool) -> ConstantFP {
+  let val = if isNegative {
+    0x8000_0000_0000_0000UL
+  } else {
+    0x0000_0000_0000_0000UL;
+  }
+  let val = val.reinterpret_as_double();
   let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
   ConstantFP(valueref)
 }
