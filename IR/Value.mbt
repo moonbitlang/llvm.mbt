@@ -70,7 +70,6 @@ pub trait Value: Show {
 
   //
   replaceAllUsesWith(Self, other : &Value) -> Unit = _
-
   tryAsConst(Self) -> &Constant? = _
   tryAsConstEnum(Self) -> ConstantEnum? = _
 }
@@ -102,6 +101,7 @@ impl Value with replaceAllUsesWith(self, other : &Value) {
   @unsafe.llvm_replace_all_uses_with(self.getValueRef(), other.getValueRef())
 }
 
+///|
 impl Value with tryAsConst(self) {
   match self.asValueEnum() {
     ConstantInt(c) => Some(c as &Constant)
@@ -116,6 +116,7 @@ impl Value with tryAsConst(self) {
   }
 }
 
+///|
 impl Value with tryAsConstEnum(self) {
   match self.asValueEnum() {
     ConstantInt(c) => Some(ConstantEnum::ConstantInt(c))

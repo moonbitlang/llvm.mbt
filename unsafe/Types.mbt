@@ -233,7 +233,7 @@ pub type LLVMOrcSymbolStringPoolRef
 pub type LLVMOrcSymbolStringPoolEntryRef
 
 ///|
-pub impl Eq for LLVMTypeRef with op_equal(
+pub impl Eq for LLVMTypeRef with equal(
   self : LLVMTypeRef,
   other : LLVMTypeRef,
 ) -> Bool {
@@ -241,7 +241,7 @@ pub impl Eq for LLVMTypeRef with op_equal(
 }
 
 ///|
-pub impl Eq for LLVMValueRef with op_equal(
+pub impl Eq for LLVMValueRef with equal(
   self : LLVMValueRef,
   other : LLVMValueRef,
 ) -> Bool {
@@ -249,7 +249,7 @@ pub impl Eq for LLVMValueRef with op_equal(
 }
 
 ///|
-pub impl Eq for LLVMContextRef with op_equal(
+pub impl Eq for LLVMContextRef with equal(
   self : LLVMContextRef,
   other : LLVMContextRef,
 ) -> Bool {
@@ -257,7 +257,7 @@ pub impl Eq for LLVMContextRef with op_equal(
 }
 
 ///|
-pub impl Eq for LLVMAttributeRef with op_equal(
+pub impl Eq for LLVMAttributeRef with equal(
   self : LLVMAttributeRef,
   other : LLVMAttributeRef,
 ) -> Bool {
@@ -265,7 +265,7 @@ pub impl Eq for LLVMAttributeRef with op_equal(
 }
 
 ///|
-pub impl Eq for LLVMBasicBlockRef with op_equal(
+pub impl Eq for LLVMBasicBlockRef with equal(
   self : LLVMBasicBlockRef,
   other : LLVMBasicBlockRef,
 ) -> Bool {

@@ -198,7 +198,7 @@ fn initAbstractType(typeref : @unsafe.LLVMTypeRef) -> &Type {
 }
 
 ///|
-impl Eq for &Type with op_equal(self, other) {
+impl Eq for &Type with equal(self, other) {
   self.asTypeEnum() == other.asTypeEnum()
 }
 

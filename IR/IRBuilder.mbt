@@ -3649,7 +3649,7 @@ pub fn IRBuilder::createCall(
   } else {
     let param_len = param_tys.length()
     let mut type_mismatch = false
-    for i in 0 ..< param_len {
+    for i in 0..<param_len {
       if param_tys[i] != arg_tys[i] {
         type_mismatch = true
         break

@@ -784,13 +784,12 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 /// inspect(zero, content="float 0.000000e+00")
 /// inspect(neg_zero, content="float -0.000000e+00")
 /// ```
-pub fn Context::getConstZeroFloat(self: Self, isNegative~: Bool) -> ConstantFP {
-  let val = if isNegative {
-    0x8000_0000U
-  } else {
-    0x0000_0000U
-  }
-  let val = val.reinterpret_as_float();
+pub fn Context::getConstZeroFloat(
+  self : Self,
+  isNegative~ : Bool,
+) -> ConstantFP {
+  let val = if isNegative { 0x8000_0000U } else { 0x0000_0000U }
+  let val = val.reinterpret_as_float()
   let valueref = @unsafe.llvm_const_real(
     self.getFloatTy().getTypeRef(),
     val.to_double(),
@@ -843,13 +842,16 @@ pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
 /// inspect(zero, content="double 0.000000e+00")
 /// inspect(neg_zero, content="double -0.000000e+00")
 /// ```
-pub fn Context::getConstZeroDouble(self: Self, isNegative~: Bool) -> ConstantFP {
+pub fn Context::getConstZeroDouble(
+  self : Self,
+  isNegative~ : Bool,
+) -> ConstantFP {
   let val = if isNegative {
     0x8000_0000_0000_0000UL
   } else {
-    0x0000_0000_0000_0000UL;
+    0x0000_0000_0000_0000UL
   }
-  let val = val.reinterpret_as_double();
+  let val = val.reinterpret_as_double()
   let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
   ConstantFP(valueref)
 }
