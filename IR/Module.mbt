@@ -147,8 +147,8 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
 pub fn Module::addGlobalVariable(
   self : Self,
   ty : &Type,
+  name : String,
   initializer? : &Constant,
-  name? : String = "",
   linkage? : Linkage,
 ) -> GlobalVariable {
   let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
@@ -165,15 +165,13 @@ pub fn Module::addGlobalVariable(
 pub fn Module::addGlobalConstant(
   self : Self,
   ty : &Type,
-  initializer? : &Constant,
-  name? : String = "",
+  name : String,
+  value : &Constant,
   linkage? : Linkage,
 ) -> GlobalConstant {
   let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
   @unsafe.llvm_set_global_constant(gv_ref, true)
-  if initializer is Some(init) {
-    @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
-  }
+  @unsafe.llvm_set_initializer(gv_ref, value.getValueRef())
   if linkage is Some(link) {
     @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
   }

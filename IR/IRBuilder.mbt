@@ -16,7 +16,7 @@ pub suberror BuilderError {
   BitwidthError(String)
   InValidArgument(String)
   UnImplemented(String)
-}
+} derive(Show)
 
 ///|
 trait InsertPoint {
@@ -3635,15 +3635,36 @@ pub fn IRBuilder::createCall(
   let func_ty = func.getType()
   let param_tys = func_ty.getParamTypes()
   let arg_tys = args.map(v => v.getType())
-  guard param_tys == arg_tys else {
-    raise InValidArgument(
-      (
-        $| loc: \{loc}:
-        #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
-        $|    param_tys: \{param_tys}
-        $|    arg_tys: \{arg_tys}
-      ),
-    )
+  if !func_ty.isVarArg() {
+    guard param_tys == arg_tys else {
+      raise InValidArgument(
+        (
+          $| loc: \{loc}:
+          #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
+          $|    param_tys: \{param_tys}
+          $|    arg_tys: \{arg_tys}
+        ),
+      )
+    }
+  } else {
+    let param_len = param_tys.length()
+    let mut type_mismatch = false
+    for i in 0 ..< param_len {
+      if param_tys[i] != arg_tys[i] {
+        type_mismatch = true
+        break
+      }
+    }
+    guard not(type_mismatch) else {
+      raise InValidArgument(
+        (
+          $| loc: \{loc}:
+          #| Misuse `IRBuilder::createCall`, fixed arguments must match function parameter types
+          $|    param_tys: \{param_tys}
+          $|    arg_tys: \{arg_tys}
+        ),
+      )
+    }
   }
   let func_type_ref = func_ty.getTypeRef()
   let func_ref = func.getValueRef()

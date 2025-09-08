@@ -70,6 +70,9 @@ pub trait Value: Show {
 
   //
   replaceAllUsesWith(Self, other : &Value) -> Unit = _
+
+  tryAsConst(Self) -> &Constant? = _
+  tryAsConstEnum(Self) -> ConstantEnum? = _
 }
 
 ///|
@@ -97,6 +100,34 @@ impl Value with setValueName(self, name : String) {
 ///|
 impl Value with replaceAllUsesWith(self, other : &Value) {
   @unsafe.llvm_replace_all_uses_with(self.getValueRef(), other.getValueRef())
+}
+
+impl Value with tryAsConst(self) {
+  match self.asValueEnum() {
+    ConstantInt(c) => Some(c as &Constant)
+    ConstantFP(c) => Some(c)
+    ConstantPointerNull(c) => Some(c)
+    ConstantArray(c) => Some(c)
+    ConstantStruct(c) => Some(c)
+    ConstantVector(c) => Some(c)
+    UndefValue(c) => Some(c)
+    PoisonValue(c) => Some(c)
+    _ => None
+  }
+}
+
+impl Value with tryAsConstEnum(self) {
+  match self.asValueEnum() {
+    ConstantInt(c) => Some(ConstantEnum::ConstantInt(c))
+    ConstantFP(c) => Some(ConstantEnum::ConstantFP(c))
+    ConstantPointerNull(c) => Some(ConstantEnum::ConstantPointerNull(c))
+    ConstantArray(c) => Some(ConstantEnum::ConstantArray(c))
+    ConstantStruct(c) => Some(ConstantEnum::ConstantStruct(c))
+    ConstantVector(c) => Some(ConstantEnum::ConstantVector(c))
+    UndefValue(c) => Some(ConstantEnum::UndefValue(c))
+    PoisonValue(c) => Some(ConstantEnum::PoisonValue(c))
+    _ => None
+  }
 }
 
 // ==================================================
