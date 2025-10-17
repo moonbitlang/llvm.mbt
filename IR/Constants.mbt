@@ -12,6 +12,17 @@ pub fn ConstantInt::to_int(self : Self) -> Int {
 }
 
 ///|
+pub fn ConstantInt::getValueAsInt64(self : Self) -> Int64 {
+  let val = @unsafe.llvm_const_int_get_s_ext_value(self.getValueRef())
+  val
+}
+
+pub fn ConstantInt::getValueAsUInt64(self : Self) -> UInt64 {
+  let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
+  val
+}
+
+///|
 pub fn ConstantInt::to_uint(self : Self) -> UInt {
   let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
   val.to_uint()
@@ -28,7 +39,7 @@ pub impl Value for ConstantInt with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantInt with asConstEnum(self) {
+pub impl Constant for ConstantInt with asConstantEnum(self) {
   ConstantInt(self)
 }
 
@@ -55,7 +66,7 @@ pub impl Value for ConstantFP with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantFP with asConstEnum(self) {
+pub impl Constant for ConstantFP with asConstantEnum(self) {
   ConstantFP(self)
 }
 
@@ -82,7 +93,7 @@ pub impl Value for ConstantPointerNull with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantPointerNull with asConstEnum(self) {
+pub impl Constant for ConstantPointerNull with asConstantEnum(self) {
   ConstantPointerNull(self)
 }
 
@@ -109,7 +120,7 @@ pub impl Value for ConstantArray with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantArray with asConstEnum(self) {
+pub impl Constant for ConstantArray with asConstantEnum(self) {
   ConstantArray(self)
 }
 
@@ -136,7 +147,7 @@ pub impl Value for ConstantStruct with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantStruct with asConstEnum(self) {
+pub impl Constant for ConstantStruct with asConstantEnum(self) {
   ConstantStruct(self)
 }
 
@@ -163,7 +174,7 @@ pub impl Value for ConstantVector with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for ConstantVector with asConstEnum(self) {
+pub impl Constant for ConstantVector with asConstantEnum(self) {
   ConstantVector(self)
 }
 
@@ -190,7 +201,7 @@ pub impl Value for UndefValue with asValueEnum(self) {
 }
 
 ///|
-pub impl Constant for UndefValue with asConstEnum(self) {
+pub impl Constant for UndefValue with asConstantEnum(self) {
   UndefValue(self)
 }
 
@@ -207,7 +218,7 @@ pub impl Show for UndefValue with output(self, logger) {
 pub struct PoisonValue(ValueRef)
 
 ///|
-pub impl Constant for PoisonValue with asConstEnum(self) {
+pub impl Constant for PoisonValue with asConstantEnum(self) {
   PoisonValue(self)
 }
 

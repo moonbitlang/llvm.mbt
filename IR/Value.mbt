@@ -70,8 +70,8 @@ pub trait Value: Show {
 
   //
   replaceAllUsesWith(Self, other : &Value) -> Unit = _
-  tryAsConst(Self) -> &Constant? = _
-  tryAsConstEnum(Self) -> ConstantEnum? = _
+  tryAsConstant(Self) -> &Constant? = _
+  tryAsConstantEnum(Self) -> ConstantEnum? = _
 }
 
 ///|
@@ -102,7 +102,7 @@ impl Value with replaceAllUsesWith(self, other : &Value) {
 }
 
 ///|
-impl Value with tryAsConst(self) {
+impl Value with tryAsConstant(self) {
   match self.asValueEnum() {
     ConstantInt(c) => Some(c as &Constant)
     ConstantFP(c) => Some(c)
@@ -117,7 +117,7 @@ impl Value with tryAsConst(self) {
 }
 
 ///|
-impl Value with tryAsConstEnum(self) {
+impl Value with tryAsConstantEnum(self) {
   match self.asValueEnum() {
     ConstantInt(c) => Some(ConstantEnum::ConstantInt(c))
     ConstantFP(c) => Some(ConstantEnum::ConstantFP(c))
@@ -137,7 +137,7 @@ impl Value with tryAsConstEnum(self) {
 
 ///|
 pub trait Constant: Value {
-  asConstEnum(Self) -> ConstantEnum
+  asConstantEnum(Self) -> ConstantEnum
 }
 
 ///|
