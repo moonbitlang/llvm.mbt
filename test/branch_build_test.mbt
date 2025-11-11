@@ -1,5 +1,5 @@
 ///|
-typealias @IR.SwitchInstError
+using @IR {type SwitchInstError}
 
 ///|
 test "Simple Branch Test" {

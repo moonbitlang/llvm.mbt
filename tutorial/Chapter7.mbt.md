@@ -29,13 +29,13 @@ typedef struct {
 ```
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let i32_ty = ctx.getInt32Ty()
 
   // 定义 Rational 结构体：包含两个 i32 成员 p 和 q
   let rational_ty = ctx.getStructType([i32_ty, i32_ty], name="Rational")
-
   inspect(rational_ty, content="%Rational = type { i32, i32 }")
 }
 ```
@@ -54,11 +54,11 @@ test {
 栈上结构体使用`createAlloca`分配：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("stack_struct_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let rational_ty = ctx.getStructType([i32_ty, i32_ty], name="Rational")
 
@@ -66,15 +66,12 @@ test {
   let demo_ty = ctx.getFunctionType(ctx.getVoidTy(), [])
   let demo_func = mod.addFunction(demo_ty, "demo_stack_struct")
   let bb = demo_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(bb)
 
   // 在栈上分配 Rational 结构体
   let _ = builder.createAlloca(rational_ty, name="r1")
-
   let _ = builder.createRetVoid()
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'stack_struct_demo'
     #|source_filename = "stack_struct_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -87,7 +84,6 @@ test {
     #|  ret void
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```
@@ -97,11 +93,11 @@ test {
 堆上结构体使用`createMalloc`分配：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("heap_struct_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let rational_ty = ctx.getStructType([i32_ty, i32_ty], name="Rational")
@@ -111,23 +107,19 @@ test {
   let new_rational_func = mod.addFunction(new_rational_ty, "new_rational")
   let _ = new_rational_func.getArg(0).unwrap()
   let _ = new_rational_func.getArg(1).unwrap()
-
   let bb = new_rational_func.addBasicBlock(name="entry")
   builder.setInsertPoint(bb)
 
   // 在堆上分配 Rational 结构体
   let rational_ptr = builder.createMalloc(rational_ty, name="r")
-
   let _ = builder.createRet(rational_ptr)
-
-  let expect = 
+  let expect =
     #|define ptr @new_rational(i32 %0, i32 %1) {
     #|entry:
     #|  %r = tail call ptr @malloc(i32 ptrtoint (ptr getelementptr (%Rational, ptr null, i32 1) to i32))
     #|  ret ptr %r
     #|}
     #|
-
   inspect(new_rational_func, content=expect)
 }
 ```
@@ -139,36 +131,45 @@ test {
 ### 基本成员访问
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("struct_access_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let rational_ty = ctx.getStructType([i32_ty, i32_ty], name="Rational")
 
   // 定义函数来演示成员访问
-  let set_rational_ty = ctx.getFunctionType(ctx.getVoidTy(), [ptr_ty, i32_ty, i32_ty])
+  let set_rational_ty = ctx.getFunctionType(ctx.getVoidTy(), [
+    ptr_ty, i32_ty, i32_ty,
+  ])
   let set_rational_func = mod.addFunction(set_rational_ty, "set_rational")
   let r_param = set_rational_func.getArg(0).unwrap()
   let p_param = set_rational_func.getArg(1).unwrap()
   let q_param = set_rational_func.getArg(2).unwrap()
-
   let bb = set_rational_func.addBasicBlock(name="entry")
   builder.setInsertPoint(bb)
 
   // 访问第一个成员 (p)：r->p = p_param
-  let p_ptr = builder.createGEP(r_param, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(0)], name="p_ptr")
+  let p_ptr = builder.createGEP(
+    r_param,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(0)],
+    name="p_ptr",
+  )
   let _ = builder.createStore(p_param, p_ptr)
 
   // 访问第二个成员 (q)：r->q = q_param
-  let q_ptr = builder.createGEP(r_param, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(1)], name="q_ptr")
+  let q_ptr = builder.createGEP(
+    r_param,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(1)],
+    name="q_ptr",
+  )
   let _ = builder.createStore(q_param, q_ptr)
-
   let _ = builder.createRetVoid()
-
-  let expect = 
+  let expect =
     #|define void @set_rational(ptr %0, i32 %1, i32 %2) {
     #|entry:
     #|  %p_ptr = getelementptr %Rational, ptr %0, i32 0, i32 0
@@ -178,7 +179,6 @@ test {
     #|  ret void
     #|}
     #|
-
   inspect(set_rational_func, content=expect)
 }
 ```
@@ -201,11 +201,11 @@ let member_ptr = builder.createGEP(struct_ptr, struct_type, [0, member_index], n
 现在让我们实现一个完整的有理数处理程序，包括构造函数、成员设置和类型转换：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("rational_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let f64_ty = ctx.getDoubleTy()
   let ptr_ty = ctx.getPtrTy()
@@ -221,56 +221,80 @@ test {
   let new_rational_func = mod.addFunction(new_rational_ty, "new_rational")
   let new_p = new_rational_func.getArg(0).unwrap()
   let new_q = new_rational_func.getArg(1).unwrap()
-
   let new_bb = new_rational_func.addBasicBlock(name="entry")
   builder.setInsertPoint(new_bb)
 
   // 分配内存并初始化
   let r_ptr = builder.createMalloc(rational_ty, name="r")
-  
-  // 设置 r->p = p
-  let p_ptr = builder.createGEP(r_ptr, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(0)], name="p_ptr")
-  let _ = builder.createStore(new_p, p_ptr)
-  
-  // 设置 r->q = q  
-  let q_ptr = builder.createGEP(r_ptr, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(1)], name="q_ptr")
-  let _ = builder.createStore(new_q, q_ptr)
 
+  // 设置 r->p = p
+  let p_ptr = builder.createGEP(
+    r_ptr,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(0)],
+    name="p_ptr",
+  )
+  let _ = builder.createStore(new_p, p_ptr)
+
+  // 设置 r->q = q  
+  let q_ptr = builder.createGEP(
+    r_ptr,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(1)],
+    name="q_ptr",
+  )
+  let _ = builder.createStore(new_q, q_ptr)
   let _ = builder.createRet(r_ptr)
 
   // 定义 rational_to_double 函数
   let to_double_ty = ctx.getFunctionType(f64_ty, [ptr_ty])
   let to_double_func = mod.addFunction(to_double_ty, "rational_to_double")
   let r_param = to_double_func.getArg(0).unwrap()
-
   let to_double_bb = to_double_func.addBasicBlock(name="entry")
   builder.setInsertPoint(to_double_bb)
 
   // 加载 r->p 和 r->q
-  let p_addr = builder.createGEP(r_param, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(0)], name="p_addr")
+  let p_addr = builder.createGEP(
+    r_param,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(0)],
+    name="p_addr",
+  )
   let p_val = builder.createLoad(i32_ty, p_addr, name="p_val")
-  
-  let q_addr = builder.createGEP(r_param, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(1)], name="q_addr")
+  let q_addr = builder.createGEP(
+    r_param,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(1)],
+    name="q_addr",
+  )
   let q_val = builder.createLoad(i32_ty, q_addr, name="q_val")
 
   // 转换为double并计算除法
   let p_double = builder.createSIToFP(p_val, f64_ty, name="p_double")
   let q_double = builder.createSIToFP(q_val, f64_ty, name="q_double")
   let result = builder.createFDiv(p_double, q_double, name="result")
-
   let _ = builder.createRet(result)
 
   // 定义 main 函数
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
 
   // 创建栈上的有理数：Rational r1 = {2, 1}
   let r1 = builder.createAlloca(rational_ty, name="r1")
-  let r1_p_ptr = builder.createGEP(r1, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(0)], name="r1_p_ptr")
-  let r1_q_ptr = builder.createGEP(r1, rational_ty, [ctx.getConstInt32(0), ctx.getConstInt32(1)], name="r1_q_ptr")
+  let r1_p_ptr = builder.createGEP(
+    r1,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(0)],
+    name="r1_p_ptr",
+  )
+  let r1_q_ptr = builder.createGEP(
+    r1,
+    rational_ty,
+    [ctx.getConstInt32(0), ctx.getConstInt32(1)],
+    name="r1_q_ptr",
+  )
   let _ = builder.createStore(ctx.getConstInt32(2), r1_p_ptr)
   let _ = builder.createStore(ctx.getConstInt32(1), r1_q_ptr)
 
@@ -279,13 +303,15 @@ test {
   let _ = builder.createCall(print_double_func, [d1])
 
   // 创建堆上的有理数：Rational* r2 = new_rational(1, 2)
-  let r2 = builder.createCall(new_rational_func, [ctx.getConstInt32(1), ctx.getConstInt32(2)], name="r2")
+  let r2 = builder.createCall(
+    new_rational_func,
+    [ctx.getConstInt32(1), ctx.getConstInt32(2)],
+    name="r2",
+  )
   let d2 = builder.createCall(to_double_func, [r2], name="d2")
   let _ = builder.createCall(print_double_func, [d2])
-
   let _ = builder.createRet(ctx.getConstInt32(0))
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'rational_demo'
     #|source_filename = "rational_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -333,7 +359,6 @@ test {
     #|  ret i32 0
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```

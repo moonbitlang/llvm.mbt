@@ -3,7 +3,7 @@
 // =======================================================
 
 ///|
-pub typealias @unsafe.LLVMValueRef as ValueRef
+pub using @unsafe {type LLVMValueRef as ValueRef}
 
 // =======================================================
 // Value

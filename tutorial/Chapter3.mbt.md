@@ -25,6 +25,7 @@ int max(int a, int b) {
 这个简单的函数包含了条件分支的所有核心要素：条件判断、真分支和假分支。让我们看看如何用llvm.mbt来实现它：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("conditional_demo")
@@ -33,7 +34,6 @@ test {
   // 定义函数类型：int max(int a, int b)
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-  
   let max_func = mod.addFunction(func_ty, "max")
   let arg_a = max_func.getArg(0).unwrap()
   let arg_b = max_func.getArg(1).unwrap()
@@ -63,7 +63,6 @@ test {
   result_phi.addIncoming(arg_a, then_bb)
   result_phi.addIncoming(arg_b, else_bb)
   let _ = builder.createRet(result_phi)
-
   let expect =
     #|define i32 @max(i32 %0, i32 %1) {
     #|entry:
@@ -81,7 +80,6 @@ test {
     #|  ret i32 %result
     #|}
     #|
-  
   inspect(max_func, content=expect)
 }
 ```
@@ -126,6 +124,7 @@ PHI节点是LLVM中处理控制流汇合的核心机制。当多个基本块可�
 浮点数的比较比整数复杂得多，因为需要处理NaN（Not a Number）和无穷大等特殊值。让我们看看浮点数版本的最大值函数：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("float_conditional")
@@ -134,7 +133,6 @@ test {
   // 定义函数类型：double max(double a, double b)
   let f64_ty = ctx.getDoubleTy()
   let func_ty = ctx.getFunctionType(f64_ty, [f64_ty, f64_ty])
-  
   let max_func = mod.addFunction(func_ty, "max_double")
   let arg_a = max_func.getArg(0).unwrap()
   let arg_b = max_func.getArg(1).unwrap()
@@ -153,7 +151,6 @@ test {
   // then块和else块
   builder.setInsertPoint(then_bb)
   let _ = builder.createBr(merge_bb)
-
   builder.setInsertPoint(else_bb)
   let _ = builder.createBr(merge_bb)
 
@@ -163,8 +160,7 @@ test {
   result_phi.addIncoming(arg_a, then_bb)
   result_phi.addIncoming(arg_b, else_bb)
   let _ = builder.createRet(result_phi)
-
-  let expect = 
+  let expect =
     #|define double @max_double(double %0, double %1) {
     #|entry:
     #|  %fcmp_result = fcmp ogt double %0, %1
@@ -181,8 +177,6 @@ test {
     #|  ret double %result
     #|}
     #|
-
-
   inspect(max_func, content=expect)
 }
 ```
@@ -233,6 +227,7 @@ int fake_square(int n) {
 在llvm.mbt中实现这个函数：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("switch_demo")
@@ -241,7 +236,6 @@ test {
   // 定义函数类型：int fake_square(int n)
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty])
-  
   let func = mod.addFunction(func_ty, "fake_square")
   let arg_n = func.getArg(0).unwrap()
 
@@ -273,30 +267,25 @@ test {
   // 各个case块的实现
   builder.setInsertPoint(case1_bb)
   let _ = builder.createBr(merge_bb)
-
   builder.setInsertPoint(case2_bb)
   let _ = builder.createBr(merge_bb)
-
   builder.setInsertPoint(case3_bb)
   let _ = builder.createBr(merge_bb)
-
   builder.setInsertPoint(case4_bb)
   let _ = builder.createBr(merge_bb)
-
   builder.setInsertPoint(default_bb)
   let _ = builder.createBr(merge_bb)
 
   // merge块：使用PHI节点选择结果
   builder.setInsertPoint(merge_bb)
   let result_phi = builder.createPHI(i32_ty, name="result")
-  result_phi.addIncoming(const_1, case1_bb)    // case 1: return 1
-  result_phi.addIncoming(const_4, case2_bb)    // case 2: return 4
-  result_phi.addIncoming(ctx.getConstInt32(9), case3_bb)   // case 3: return 9
-  result_phi.addIncoming(const_16, case4_bb)   // case 4: return 16
-  result_phi.addIncoming(const_0, default_bb)  // default: return 0
+  result_phi.addIncoming(const_1, case1_bb) // case 1: return 1
+  result_phi.addIncoming(const_4, case2_bb) // case 2: return 4
+  result_phi.addIncoming(ctx.getConstInt32(9), case3_bb) // case 3: return 9
+  result_phi.addIncoming(const_16, case4_bb) // case 4: return 16
+  result_phi.addIncoming(const_0, default_bb) // default: return 0
   let _ = builder.createRet(result_phi)
-
-  let expect = 
+  let expect =
     #|define i32 @fake_square(i32 %0) {
     #|entry:
     #|  switch i32 %0, label %default [
@@ -326,7 +315,6 @@ test {
     #|  ret i32 %result
     #|}
     #|
-
   inspect(func, content=expect)
 }
 ```
@@ -359,6 +347,7 @@ int simple_log2(int n) {
 这个函数计算使得2的exp次方小于n的最大exp值。让我们用llvm.mbt实现它：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("loop_demo")
@@ -367,7 +356,6 @@ test {
   // 定义函数类型：int simple_log2(int n)
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty])
-  
   let func = mod.addFunction(func_ty, "simple_log2")
   let arg_n = func.getArg(0).unwrap()
 
@@ -390,11 +378,11 @@ test {
   builder.setInsertPoint(loop_cond_bb)
   let exp_phi = builder.createPHI(i32_ty, name="exp")
   let n2_phi = builder.createPHI(i32_ty, name="n2")
-  
+
   // 设置PHI节点的incoming值
   exp_phi.addIncoming(const_0, entry_bb)
   n2_phi.addIncoming(const_1, entry_bb)
-  
+
   // 检查循环条件：n2 < n
   let loop_cond = builder.createICmpSLT(n2_phi, arg_n, name="cond")
   let _ = builder.createCondBr(loop_cond, loop_body_bb, loop_merge_bb)
@@ -403,18 +391,16 @@ test {
   builder.setInsertPoint(loop_body_bb)
   let exp_inc = builder.createAdd(exp_phi, const_1, name="exp_inc")
   let n2_mul = builder.createMul(n2_phi, const_2, name="n2_mul")
-  
+
   // 添加循环体到PHI节点的incoming值
   exp_phi.addIncoming(exp_inc, loop_body_bb)
   n2_phi.addIncoming(n2_mul, loop_body_bb)
-  
   let _ = builder.createBr(loop_cond_bb)
 
   // 循环退出块：返回结果
   builder.setInsertPoint(loop_merge_bb)
   let _ = builder.createRet(exp_phi)
-
-  let expect = 
+  let expect =
     #|define i32 @simple_log2(i32 %0) {
     #|entry:
     #|  br label %loop_cond
@@ -434,7 +420,6 @@ test {
     #|  ret i32 %exp
     #|}
     #|
-
   inspect(func, content=expect)
 }
 ```

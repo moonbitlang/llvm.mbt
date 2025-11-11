@@ -218,7 +218,7 @@ fn LLVMBool::into(self : LLVMBool) -> Bool {
 }
 
 ///|
-fn to_moonbit_bool(self : LLVMBool) -> Bool {
+fn LLVMBool::to_moonbit_bool(self : LLVMBool) -> Bool {
   self != 0
 }
 

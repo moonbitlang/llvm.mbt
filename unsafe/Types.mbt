@@ -233,10 +233,7 @@ pub type LLVMOrcSymbolStringPoolRef
 pub type LLVMOrcSymbolStringPoolEntryRef
 
 ///|
-pub impl Eq for LLVMTypeRef with equal(
-  self : LLVMTypeRef,
-  other : LLVMTypeRef,
-) -> Bool {
+pub impl Eq for LLVMTypeRef with equal(self : LLVMTypeRef, other : LLVMTypeRef) -> Bool {
   self.is_equal(other)
 }
 

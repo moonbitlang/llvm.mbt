@@ -43,13 +43,14 @@ MoonBit的强类型系统为llvm.mbt提供了一定的编译时类型安全保�
 llvm.mbt的内部结构对原生C++ LLVM API进行了精心还原，使得有C++背景的开发者能够快速上手：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("demo")
-
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
   let _ = mod.addFunction(func_ty, "add")
+
 }
 // llvm.mbt (MoonBit风格)
 ```
@@ -179,6 +180,7 @@ int foo() {
 创建文件`main.mbt`：
 
 ```moonbit
+///|
 test {
   // 创建LLVM上下文 - 所有LLVM操作的根
   let ctx = @IR.Context::new()
@@ -192,20 +194,19 @@ test {
   // 创建函数
   let foo_func = mod.addFunction(func_ty, "foo")
   let entry_bb = foo_func.addBasicBlock(name="entry")
-  
+
   // 构建函数体
   builder.setInsertPoint(entry_bb)
   let const_42 = ctx.getConstInt32(42)
   let _ = builder.createRet(const_42)
 
   // 期望的llvm ir
-  let expect = 
+  let expect =
     #|define i32 @foo() {
     #|entry:
     #|  ret i32 42
     #|}
     #|
-
   inspect(foo_func, content=expect)
 }
 ```

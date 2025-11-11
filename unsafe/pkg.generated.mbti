@@ -1772,6 +1772,7 @@ fn LLVMAtomicRMWBinOp::from_int(Int) -> Self
 fn LLVMAtomicRMWBinOp::to_int(Self) -> Int
 
 pub(all) struct LLVMAttributeIndex(UInt)
+#deprecated
 fn LLVMAttributeIndex::inner(Self) -> UInt
 fn LLVMAttributeIndex::new(UInt) -> Self
 impl Eq for LLVMAttributeIndex
@@ -2188,6 +2189,7 @@ fn LLVMDWARFSourceLanguage::from_int(Int) -> Self
 fn LLVMDWARFSourceLanguage::to_int(Self) -> Int
 
 pub(all) struct LLVMDWARFTypeEncoding(UInt)
+#deprecated
 fn LLVMDWARFTypeEncoding::inner(Self) -> UInt
 fn LLVMDWARFTypeEncoding::into(Self) -> UInt
 fn LLVMDWARFTypeEncoding::new(UInt) -> Self
@@ -2278,6 +2280,7 @@ fn LLVMJITSymbolGenericFlags::from_int(Int) -> Self
 fn LLVMJITSymbolGenericFlags::to_int(Self) -> Int
 
 pub(all) struct LLVMJITSymbolTargetFlags(UInt)
+#deprecated
 fn LLVMJITSymbolTargetFlags::inner(Self) -> UInt
 impl Eq for LLVMJITSymbolTargetFlags
 impl Show for LLVMJITSymbolTargetFlags
@@ -2365,6 +2368,7 @@ fn LLVMMemoryBufferRef::get_buffer_size(Self) -> Int
 fn LLVMMemoryBufferRef::get_buffer_start(Self) -> String
 
 pub(all) struct LLVMMetadataKind(UInt)
+#deprecated
 fn LLVMMetadataKind::inner(Self) -> UInt
 fn LLVMMetadataKind::into(Self) -> UInt
 fn LLVMMetadataKind::new(UInt) -> Self
@@ -2508,6 +2512,7 @@ fn LLVMOperandBundleRef::get_num_args(Self) -> UInt
 pub type LLVMOrcExecutionSessionRef
 
 pub(all) struct LLVMOrcExecutorAddress(UInt64)
+#deprecated
 fn LLVMOrcExecutorAddress::inner(Self) -> UInt64
 impl Default for LLVMOrcExecutorAddress
 impl Eq for LLVMOrcExecutorAddress
@@ -2517,6 +2522,7 @@ impl Show for LLVMOrcExecutorAddress
 pub type LLVMOrcJITDylibRef
 
 pub(all) struct LLVMOrcJITTargetAddress(UInt64)
+#deprecated
 fn LLVMOrcJITTargetAddress::inner(Self) -> UInt64
 impl Eq for LLVMOrcJITTargetAddress
 impl Show for LLVMOrcJITTargetAddress
