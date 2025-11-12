@@ -3,7 +3,7 @@ pub struct Function(ValueRef)
 
 ///|
 pub impl Value for Function with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -181,7 +181,7 @@ pub fn Function::addBasicBlock(
 ) -> BasicBlock {
   let blockref = match before {
     None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)
-    Some(bb) => @unsafe.llvm_insert_basic_block(bb.inner(), name)
+    Some(bb) => @unsafe.llvm_insert_basic_block(bb.0, name)
   }
   BasicBlock(blockref)
 }
@@ -268,7 +268,7 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
   @unsafe.llvm_add_attribute_at_index(
     self.getValueRef(),
     @uint.max_value,
-    fn_attr.inner(),
+    fn_attr.0,
   )
 }
 
@@ -394,7 +394,7 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 /// ```
 pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
-  @unsafe.llvm_add_attribute_at_index(self.getValueRef(), 0, fn_attr.inner())
+  @unsafe.llvm_add_attribute_at_index(self.getValueRef(), 0, fn_attr.0)
 }
 
 ///|
@@ -571,7 +571,7 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
   @unsafe.llvm_add_attribute_at_index(
     self.getFunction().getValueRef(),
     self.idx.reinterpret_as_uint() + 1,
-    param_attr.inner(),
+    param_attr.0,
   )
 }
 

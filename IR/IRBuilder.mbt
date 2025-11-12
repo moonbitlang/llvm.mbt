@@ -60,7 +60,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   self.positioned = Set
   match insertPt.asInsertPtEnum() {
     BasicBlock(bb) =>
-      @unsafe.llvm_position_builder_at_end(self.builder_ref, bb.inner())
+      @unsafe.llvm_position_builder_at_end(self.builder_ref, bb.0)
     Instruction(inst) => {
       let bb = match inst.getParentBasicBlock() {
         Some(bb) => bb
@@ -71,7 +71,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
       }
       @unsafe.llvm_position_builder(
         self.builder_ref,
-        bb.inner(),
+        bb.0,
         inst.getValueRef(),
       )
     }
@@ -1242,7 +1242,7 @@ pub fn IRBuilder::createFAdd(
         [] => ()
         flags =>
           flags.each(f => @unsafe.llvm_set_fast_math_flags(
-            inst.inner(),
+            inst.0,
             f.to_llvm(),
           ))
       }
@@ -1320,7 +1320,7 @@ pub fn IRBuilder::createFSub(
         [] => ()
         flags =>
           flags.each(f => @unsafe.llvm_set_fast_math_flags(
-            inst.inner(),
+            inst.0,
             f.to_llvm(),
           ))
       }
@@ -3348,7 +3348,7 @@ pub fn IRBuilder::createGEP(
 /// ```
 pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  let dest_ref = dest.inner()
+  let dest_ref = dest.0
   let res_valueref = @unsafe.llvm_build_br(self.builder_ref, dest_ref)
   BranchInst(res_valueref)
 }
@@ -3399,8 +3399,8 @@ pub fn IRBuilder::createCondBr(
     )
   }
   let cond_ref = cond.getValueRef()
-  let true_dest_ref = trueDest.inner()
-  let false_dest_ref = falseDest.inner()
+  let true_dest_ref = trueDest.0
+  let false_dest_ref = falseDest.0
   let res_valueref = @unsafe.llvm_build_cond_br(
     self.builder_ref,
     cond_ref,
@@ -3542,7 +3542,7 @@ pub fn IRBuilder::createSwitch(
     )
   }
   let value_ref = value.getValueRef()
-  let default_dest_ref = defaultDest.inner()
+  let default_dest_ref = defaultDest.0
   let res_valueref = @unsafe.llvm_build_switch(
     self.builder_ref,
     value_ref,
