@@ -3,7 +3,7 @@ pub struct GlobalVariable(ValueRef)
 
 ///|
 pub impl Value for GlobalVariable with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -27,7 +27,7 @@ pub struct GlobalConstant(ValueRef)
 
 ///|
 pub impl Value for GlobalConstant with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|

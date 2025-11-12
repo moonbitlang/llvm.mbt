@@ -712,7 +712,7 @@ pub impl Type for HalfType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for HalfType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -745,7 +745,7 @@ pub impl Type for BFloatType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for BFloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -778,7 +778,7 @@ pub impl Type for FloatType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -816,7 +816,7 @@ pub impl Type for DoubleType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for DoubleType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -857,7 +857,7 @@ pub impl Type for FP128Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FP128Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -889,7 +889,7 @@ pub impl Type for Int1Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int1Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -921,7 +921,7 @@ pub impl Type for Int8Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int8Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -953,7 +953,7 @@ pub impl Type for Int16Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int16Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -985,7 +985,7 @@ pub impl Type for Int32Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int32Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1017,7 +1017,7 @@ pub impl Type for Int64Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int64Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1044,7 +1044,7 @@ pub impl Show for VoidType with output(self, logger : &Logger) {
 
 ///|
 pub impl Type for VoidType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1077,7 +1077,7 @@ pub impl Type for LabelType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for LabelType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1104,7 +1104,7 @@ pub impl Type for MetadataType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for MetadataType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1132,7 +1132,7 @@ pub impl Type for TokenType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for TokenType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1215,7 +1215,7 @@ pub impl Type for FunctionType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FunctionType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1357,7 +1357,7 @@ pub impl Type for StructType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for StructType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1395,7 +1395,7 @@ pub impl Type for ArrayType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ArrayType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1435,7 +1435,7 @@ pub impl Type for VectorType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for VectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1475,7 +1475,7 @@ pub impl Type for ScalableVectorType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ScalableVectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1533,5 +1533,5 @@ pub impl Type for PointerType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for PointerType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }

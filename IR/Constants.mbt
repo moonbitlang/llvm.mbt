@@ -19,7 +19,7 @@ pub fn ConstantInt::to_uint(self : Self) -> UInt {
 
 ///|
 pub impl Value for ConstantInt with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -34,7 +34,7 @@ pub impl Constant for ConstantInt with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantInt with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -46,7 +46,7 @@ pub struct ConstantFP(ValueRef)
 
 ///|
 pub impl Value for ConstantFP with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -61,7 +61,7 @@ pub impl Constant for ConstantFP with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantFP with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -73,7 +73,7 @@ pub struct ConstantPointerNull(ValueRef)
 
 ///|
 pub impl Value for ConstantPointerNull with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -88,7 +88,7 @@ pub impl Constant for ConstantPointerNull with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantPointerNull with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -100,7 +100,7 @@ pub struct ConstantArray(ValueRef)
 
 ///|
 pub impl Value for ConstantArray with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -115,7 +115,7 @@ pub impl Constant for ConstantArray with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantArray with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -127,7 +127,7 @@ pub struct ConstantStruct(ValueRef)
 
 ///|
 pub impl Value for ConstantStruct with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -142,7 +142,7 @@ pub impl Constant for ConstantStruct with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantStruct with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -154,7 +154,7 @@ pub struct ConstantVector(ValueRef)
 
 ///|
 pub impl Value for ConstantVector with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -169,7 +169,7 @@ pub impl Constant for ConstantVector with asConstEnum(self) {
 
 ///|
 pub impl Show for ConstantVector with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -181,7 +181,7 @@ pub struct UndefValue(ValueRef)
 
 ///|
 pub impl Value for UndefValue with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -196,7 +196,7 @@ pub impl Constant for UndefValue with asConstEnum(self) {
 
 ///|
 pub impl Show for UndefValue with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // ==================================================
@@ -213,7 +213,7 @@ pub impl Constant for PoisonValue with asConstEnum(self) {
 
 ///|
 pub impl Value for PoisonValue with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -223,5 +223,5 @@ pub impl Value for PoisonValue with asValueEnum(self) {
 
 ///|
 pub impl Show for PoisonValue with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }

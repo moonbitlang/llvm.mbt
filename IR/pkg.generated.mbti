@@ -56,6 +56,7 @@ pub enum AbstractTypeEnum {
 impl Show for AbstractTypeEnum
 
 pub struct AddressSpace(UInt)
+#deprecated
 fn AddressSpace::inner(Self) -> UInt
 fn AddressSpace::new(UInt) -> Self
 impl Default for AddressSpace
@@ -76,6 +77,7 @@ impl Show for AggregateTypeEnum
 
 pub struct AllocaInst(@unsafe.LLVMValueRef)
 fn AllocaInst::getAllocatedType(Self) -> &Type
+#deprecated
 fn AllocaInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for AllocaInst
 impl Instruction for AllocaInst
@@ -97,6 +99,7 @@ impl Show for Argument
 pub struct ArrayType(@unsafe.LLVMTypeRef)
 fn ArrayType::getElementCount(Self) -> Int
 fn ArrayType::getElementType(Self) -> &Type
+#deprecated
 fn ArrayType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AggregateType for ArrayType
 impl Type for ArrayType
@@ -104,9 +107,11 @@ impl Eq for ArrayType
 impl Show for ArrayType
 
 pub struct Attribute(@unsafe.LLVMAttributeRef)
+#deprecated
 fn Attribute::inner(Self) -> @unsafe.LLVMAttributeRef
 
 pub struct BFloatType(@unsafe.LLVMTypeRef)
+#deprecated
 fn BFloatType::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for BFloatType
 impl PrimitiveType for BFloatType
@@ -124,6 +129,7 @@ fn BasicBlock::getNextBasicBlock(Self) -> Self?
 fn BasicBlock::getParent(Self) -> Function?
 fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
 fn BasicBlock::getTerminator(Self) -> &Instruction?
+#deprecated
 fn BasicBlock::inner(Self) -> @unsafe.LLVMBasicBlockRef
 fn BasicBlock::moveAfter(Self, Self) -> Unit raise
 fn BasicBlock::moveBefore(Self, Self) -> Unit raise
@@ -134,6 +140,7 @@ impl Value for BasicBlock
 impl Show for BasicBlock
 
 pub struct BinaryInst(@unsafe.LLVMValueRef)
+#deprecated
 fn BinaryInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for BinaryInst
 impl Instruction for BinaryInst
@@ -143,6 +150,7 @@ impl Show for BinaryInst
 pub struct BranchInst(@unsafe.LLVMValueRef)
 fn BranchInst::getNumSuccessors(Self) -> Int
 fn BranchInst::getSuccessor(Self, Int) -> BasicBlock?
+#deprecated
 fn BranchInst::inner(Self) -> @unsafe.LLVMValueRef
 fn BranchInst::isConditional(Self) -> Bool
 #callsite(autofill(loc))
@@ -156,6 +164,7 @@ impl Show for BranchInst
 
 pub struct CallInst(@unsafe.LLVMValueRef)
 fn CallInst::getTailCallKind(Self) -> TailCallKind
+#deprecated
 fn CallInst::inner(Self) -> @unsafe.LLVMValueRef
 fn CallInst::isTailCall(Self) -> Bool
 fn CallInst::removeTailCall(Self) -> Unit
@@ -167,6 +176,7 @@ impl Value for CallInst
 impl Show for CallInst
 
 pub struct CastInst(@unsafe.LLVMValueRef)
+#deprecated
 fn CastInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for CastInst
 impl Instruction for CastInst
@@ -174,6 +184,7 @@ impl Value for CastInst
 impl Show for CastInst
 
 pub struct ConstantArray(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantArray::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for ConstantArray
 impl Value for ConstantArray
@@ -191,12 +202,14 @@ pub enum ConstantEnum {
 }
 
 pub struct ConstantFP(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantFP::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for ConstantFP
 impl Value for ConstantFP
 impl Show for ConstantFP
 
 pub struct ConstantInt(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantInt::inner(Self) -> @unsafe.LLVMValueRef
 fn ConstantInt::to_int(Self) -> Int
 fn ConstantInt::to_uint(Self) -> UInt
@@ -205,18 +218,21 @@ impl Value for ConstantInt
 impl Show for ConstantInt
 
 pub struct ConstantPointerNull(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantPointerNull::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for ConstantPointerNull
 impl Value for ConstantPointerNull
 impl Show for ConstantPointerNull
 
 pub struct ConstantStruct(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantStruct::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for ConstantStruct
 impl Value for ConstantStruct
 impl Show for ConstantStruct
 
 pub struct ConstantVector(@unsafe.LLVMValueRef)
+#deprecated
 fn ConstantVector::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for ConstantVector
 impl Value for ConstantVector
@@ -267,6 +283,7 @@ fn Context::getStructTypeByName(Self, String) -> StructType?
 fn Context::getTokenTy(Self) -> TokenType
 fn Context::getUndef(Self, &Type) -> UndefValue
 fn Context::getVoidTy(Self) -> VoidType
+#deprecated
 fn Context::inner(Self) -> @unsafe.LLVMContextRef
 fn Context::new() -> Self
 impl Eq for Context
@@ -276,9 +293,11 @@ fn DataLayout::getTypeAlignment(Self, &Type) -> Int
 fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
 fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
 fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
+#deprecated
 fn DataLayout::inner(Self) -> @unsafe.LLVMTargetDataRef
 
 pub struct DoubleType(@unsafe.LLVMTypeRef)
+#deprecated
 fn DoubleType::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for DoubleType
 impl PrimitiveType for DoubleType
@@ -287,6 +306,7 @@ impl Eq for DoubleType
 impl Show for DoubleType
 
 pub struct ExtractValueInst(@unsafe.LLVMValueRef)
+#deprecated
 fn ExtractValueInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for ExtractValueInst
 impl Instruction for ExtractValueInst
@@ -295,6 +315,7 @@ impl Show for ExtractValueInst
 
 pub struct FCmpInst(@unsafe.LLVMValueRef)
 fn FCmpInst::getPredicate(Self) -> FloatPredicate
+#deprecated
 fn FCmpInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for FCmpInst
 impl Instruction for FCmpInst
@@ -302,6 +323,7 @@ impl Value for FCmpInst
 impl Show for FCmpInst
 
 pub struct FP128Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn FP128Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for FP128Type
 impl PrimitiveType for FP128Type
@@ -352,6 +374,7 @@ pub(all) enum FloatPredicate {
 }
 
 pub struct FloatType(@unsafe.LLVMTypeRef)
+#deprecated
 fn FloatType::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for FloatType
 impl PrimitiveType for FloatType
@@ -385,6 +408,7 @@ fn Function::getName(Self) -> String
 fn Function::getNumArgs(Self) -> Int
 fn Function::getNumBasicBlocks(Self) -> Int
 fn Function::getType(Self) -> FunctionType
+#deprecated
 fn Function::inner(Self) -> @unsafe.LLVMValueRef
 fn Function::removeFnAttr(Self, FnAttr) -> Unit
 fn Function::removeRetAttr(Self, RetAttr) -> Unit
@@ -398,6 +422,7 @@ fn FunctionType::getNumParams(Self) -> Int
 fn FunctionType::getParamType(Self, Int) -> &Type?
 fn FunctionType::getParamTypes(Self) -> Array[&Type]
 fn FunctionType::getReturnType(Self) -> &Type
+#deprecated
 fn FunctionType::inner(Self) -> @unsafe.LLVMTypeRef
 fn FunctionType::isVarArg(Self) -> Bool
 fn FunctionType::numOfParams(Self) -> Int
@@ -408,6 +433,7 @@ impl Eq for FunctionType
 impl Show for FunctionType
 
 pub struct GenericValue(@unsafe.LLVMGenericValueRef)
+#deprecated
 fn GenericValue::inner(Self) -> @unsafe.LLVMGenericValueRef
 fn GenericValue::toInt(Self) -> Int
 fn GenericValue::toInt64(Self) -> Int64
@@ -416,6 +442,7 @@ fn GenericValue::toUInt64(Self) -> UInt64
 
 pub struct GetElementPtrInst(@unsafe.LLVMValueRef)
 fn GetElementPtrInst::getSourceElementType(Self) -> &Type
+#deprecated
 fn GetElementPtrInst::inner(Self) -> @unsafe.LLVMValueRef
 fn GetElementPtrInst::isInBounds(Self) -> Bool
 fn GetElementPtrInst::removeInBounds(Self) -> Unit
@@ -426,6 +453,7 @@ impl Value for GetElementPtrInst
 impl Show for GetElementPtrInst
 
 pub struct GlobalConstant(@unsafe.LLVMValueRef)
+#deprecated
 fn GlobalConstant::inner(Self) -> @unsafe.LLVMValueRef
 impl GlobalValue for GlobalConstant
 impl Value for GlobalConstant
@@ -438,12 +466,14 @@ pub enum GlobalEnum {
 }
 
 pub struct GlobalVariable(@unsafe.LLVMValueRef)
+#deprecated
 fn GlobalVariable::inner(Self) -> @unsafe.LLVMValueRef
 impl GlobalValue for GlobalVariable
 impl Value for GlobalVariable
 impl Show for GlobalVariable
 
 pub struct HalfType(@unsafe.LLVMTypeRef)
+#deprecated
 fn HalfType::inner(Self) -> @unsafe.LLVMTypeRef
 impl FPType for HalfType
 impl PrimitiveType for HalfType
@@ -453,6 +483,7 @@ impl Show for HalfType
 
 pub struct ICmpInst(@unsafe.LLVMValueRef)
 fn ICmpInst::getPredicate(Self) -> IntPredicate
+#deprecated
 fn ICmpInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for ICmpInst
 impl Instruction for ICmpInst
@@ -634,6 +665,7 @@ fn IRBuilder::inner(Self) -> @unsafe.LLVMBuilderRef
 fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
 
 pub struct InsertValueInst(@unsafe.LLVMValueRef)
+#deprecated
 fn InsertValueInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for InsertValueInst
 impl Instruction for InsertValueInst
@@ -661,6 +693,7 @@ pub enum InstructionEnum {
 }
 
 pub struct Int16Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn Int16Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl IntegerType for Int16Type
 impl PrimitiveType for Int16Type
@@ -669,6 +702,7 @@ impl Eq for Int16Type
 impl Show for Int16Type
 
 pub struct Int1Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn Int1Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl IntegerType for Int1Type
 impl PrimitiveType for Int1Type
@@ -677,6 +711,7 @@ impl Eq for Int1Type
 impl Show for Int1Type
 
 pub struct Int32Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn Int32Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl IntegerType for Int32Type
 impl PrimitiveType for Int32Type
@@ -685,6 +720,7 @@ impl Eq for Int32Type
 impl Show for Int32Type
 
 pub struct Int64Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn Int64Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl IntegerType for Int64Type
 impl PrimitiveType for Int64Type
@@ -693,6 +729,7 @@ impl Eq for Int64Type
 impl Show for Int64Type
 
 pub struct Int8Type(@unsafe.LLVMTypeRef)
+#deprecated
 fn Int8Type::inner(Self) -> @unsafe.LLVMTypeRef
 impl IntegerType for Int8Type
 impl PrimitiveType for Int8Type
@@ -740,6 +777,7 @@ fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
 fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
 
 pub struct LabelType(@unsafe.LLVMTypeRef)
+#deprecated
 fn LabelType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for LabelType
 impl Type for LabelType
@@ -767,6 +805,7 @@ pub(all) enum Linkage {
 }
 
 pub struct LoadInst(@unsafe.LLVMValueRef)
+#deprecated
 fn LoadInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for LoadInst
 impl Instruction for LoadInst
@@ -774,6 +813,7 @@ impl Value for LoadInst
 impl Show for LoadInst
 
 pub struct MetadataType(@unsafe.LLVMTypeRef)
+#deprecated
 fn MetadataType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for MetadataType
 impl Type for MetadataType
@@ -794,6 +834,7 @@ fn Module::getFunctions(Self) -> Array[Function]
 fn Module::getLastFunction(Self) -> Function?
 fn Module::getName(Self) -> String
 fn Module::getSourceFileName(Self) -> String
+#deprecated
 fn Module::inner(Self) -> @unsafe.LLVMModuleRef
 fn Module::setDataLayout(Self, String) -> Unit
 fn Module::setDefaultDataLayout(Self) -> Unit
@@ -806,6 +847,7 @@ pub struct PHINode(@unsafe.LLVMValueRef)
 fn PHINode::addIncoming(Self, &Value, BasicBlock) -> Unit
 fn PHINode::countIncoming(Self) -> Int
 fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
+#deprecated
 fn PHINode::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for PHINode
 impl Instruction for PHINode
@@ -822,6 +864,7 @@ impl Eq for ParamAttr
 
 pub struct PointerType(@unsafe.LLVMTypeRef)
 fn PointerType::getAddressSpace(Self) -> AddressSpace
+#deprecated
 fn PointerType::inner(Self) -> @unsafe.LLVMTypeRef
 fn PointerType::isLoadableOrStorableType(&Type) -> Bool
 impl Type for PointerType
@@ -829,6 +872,7 @@ impl Eq for PointerType
 impl Show for PointerType
 
 pub struct PoisonValue(@unsafe.LLVMValueRef)
+#deprecated
 fn PoisonValue::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for PoisonValue
 impl Value for PoisonValue
@@ -861,6 +905,7 @@ pub(all) enum RetAttr {
 impl Eq for RetAttr
 
 pub struct ReturnInst(@unsafe.LLVMValueRef)
+#deprecated
 fn ReturnInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for ReturnInst
 impl Instruction for ReturnInst
@@ -870,6 +915,7 @@ impl Show for ReturnInst
 pub struct ScalableVectorType(@unsafe.LLVMTypeRef)
 fn ScalableVectorType::getElementCount(Self) -> Int
 fn ScalableVectorType::getElementType(Self) -> &Type
+#deprecated
 fn ScalableVectorType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AggregateType for ScalableVectorType
 impl Type for ScalableVectorType
@@ -877,6 +923,7 @@ impl Eq for ScalableVectorType
 impl Show for ScalableVectorType
 
 pub struct SelectInst(@unsafe.LLVMValueRef)
+#deprecated
 fn SelectInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for SelectInst
 impl Instruction for SelectInst
@@ -884,6 +931,7 @@ impl Value for SelectInst
 impl Show for SelectInst
 
 pub struct StoreInst(@unsafe.LLVMValueRef)
+#deprecated
 fn StoreInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for StoreInst
 impl Instruction for StoreInst
@@ -893,6 +941,7 @@ impl Show for StoreInst
 pub struct StructType(@unsafe.LLVMTypeRef)
 fn StructType::elements(Self) -> Array[&Type]
 fn StructType::getElementType(Self, Int) -> &Type?
+#deprecated
 fn StructType::inner(Self) -> @unsafe.LLVMTypeRef
 fn StructType::isLiteral(Self) -> Bool
 fn StructType::isOpaque(Self) -> Bool
@@ -909,6 +958,7 @@ pub struct SwitchInst(@unsafe.LLVMValueRef)
 fn SwitchInst::addCase(Self, &Value, BasicBlock) -> Unit raise
 fn SwitchInst::getNumSuccessors(Self) -> Int
 fn SwitchInst::getSuccessor(Self, Int) -> BasicBlock?
+#deprecated
 fn SwitchInst::inner(Self) -> @unsafe.LLVMValueRef
 #callsite(autofill(loc))
 fn SwitchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
@@ -926,6 +976,7 @@ pub(all) enum TailCallKind {
 impl Show for TailCallKind
 
 pub struct TokenType(@unsafe.LLVMTypeRef)
+#deprecated
 fn TokenType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for TokenType
 impl Type for TokenType
@@ -959,6 +1010,7 @@ impl Eq for TypeEnum
 impl Show for TypeEnum
 
 pub struct UnaryInst(@unsafe.LLVMValueRef)
+#deprecated
 fn UnaryInst::inner(Self) -> @unsafe.LLVMValueRef
 impl InsertPoint for UnaryInst
 impl Instruction for UnaryInst
@@ -966,6 +1018,7 @@ impl Value for UnaryInst
 impl Show for UnaryInst
 
 pub struct UndefValue(@unsafe.LLVMValueRef)
+#deprecated
 fn UndefValue::inner(Self) -> @unsafe.LLVMValueRef
 impl Constant for UndefValue
 impl Value for UndefValue
@@ -1013,6 +1066,7 @@ pub enum ValueEnum {
 pub struct VectorType(@unsafe.LLVMTypeRef)
 fn VectorType::getElementCount(Self) -> Int
 fn VectorType::getElementType(Self) -> &Type
+#deprecated
 fn VectorType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AggregateType for VectorType
 impl Type for VectorType
@@ -1020,6 +1074,7 @@ impl Eq for VectorType
 impl Show for VectorType
 
 pub struct VoidType(@unsafe.LLVMTypeRef)
+#deprecated
 fn VoidType::inner(Self) -> @unsafe.LLVMTypeRef
 impl AbstractType for VoidType
 impl Type for VoidType
@@ -1027,7 +1082,7 @@ impl Eq for VoidType
 impl Show for VoidType
 
 // Type aliases
-pub typealias @unsafe.LLVMValueRef as ValueRef
+pub using @unsafe {type LLVMValueRef as ValueRef}
 
 // Traits
 pub trait AbstractType : Type {

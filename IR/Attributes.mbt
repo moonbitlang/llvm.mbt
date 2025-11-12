@@ -67,7 +67,7 @@ fn FnAttr::attr_value(self : FnAttr) -> UInt64 {
 fn FnAttr::to_llvm_attr(self : FnAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)
+  @unsafe.llvm_create_enum_attribute(ctx.0, kind_n, value)
 }
 
 ///|
@@ -103,7 +103,7 @@ fn ParamAttr::attr_value(self : ParamAttr) -> UInt64 {
 fn ParamAttr::to_llvm_attr(self : ParamAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)
+  @unsafe.llvm_create_enum_attribute(ctx.0, kind_n, value)
 }
 
 ///|
@@ -133,5 +133,5 @@ fn RetAttr::attr_value(self : RetAttr) -> UInt64 {
 fn RetAttr::to_llvm_attr(self : RetAttr, ctx : Context) -> Attribute {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.inner(), kind_n, value)
+  @unsafe.llvm_create_enum_attribute(ctx.0, kind_n, value)
 }

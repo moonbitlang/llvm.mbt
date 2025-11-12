@@ -8,7 +8,7 @@ pub fn Module::addFunction(
   name : String,
   linkage? : Linkage,
 ) -> Function {
-  let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.inner())
+  let valueref = @unsafe.llvm_add_function(self.0, name, fty.0)
   let fval = Function::Function(valueref)
   match linkage {
     Some(l) => @unsafe.llvm_set_linkage(valueref, l.to_llvm_linkage())
@@ -19,25 +19,25 @@ pub fn Module::addFunction(
 
 ///|
 pub fn Module::getContext(self : Self) -> Context {
-  let ctxref = @unsafe.llvm_get_module_context(self.inner())
+  let ctxref = @unsafe.llvm_get_module_context(self.0)
   Context(ctxref)
 }
 
 ///|
 pub fn Module::getFirstFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_first_function(self.inner())
+  let valueref = @unsafe.llvm_get_first_function(self.0)
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getLastFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_last_function(self.inner())
+  let valueref = @unsafe.llvm_get_last_function(self.0)
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
-  let valueref = @unsafe.llvm_get_named_function(self.inner(), name)
+  let valueref = @unsafe.llvm_get_named_function(self.0, name)
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
@@ -66,7 +66,7 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 /// inspect(program.getName(), content="my_module");
 /// ```
 pub fn Module::getName(self : Self) -> String {
-  @unsafe.llvm_get_module_identifier(self.inner())
+  @unsafe.llvm_get_module_identifier(self.0)
 }
 
 ///|
@@ -83,7 +83,7 @@ pub fn Module::getName(self : Self) -> String {
 /// inspect(program.getName(), content="demo2");
 /// ```
 pub fn Module::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_module_identifier(self.inner(), name)
+  @unsafe.llvm_set_module_identifier(self.0, name)
 }
 
 ///|
@@ -103,7 +103,7 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 /// inspect(program.getSourceFileName(), content="my_mod.mbt");
 /// ```
 pub fn Module::getSourceFileName(self : Self) -> String {
-  @unsafe.llvm_get_source_file_name(self.inner())
+  @unsafe.llvm_get_source_file_name(self.0)
 }
 
 ///|
@@ -123,23 +123,23 @@ pub fn Module::getSourceFileName(self : Self) -> String {
 /// inspect(program.getSourceFileName(), content="my_mod.mbt");
 /// ```
 pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
-  @unsafe.llvm_set_source_file_name(self.inner(), name)
+  @unsafe.llvm_set_source_file_name(self.0, name)
 }
 
 ///|
 pub fn Module::setDefaultDataLayout(self : Module) -> Unit {
   let layout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-  @unsafe.llvm_set_data_layout(self.inner(), layout)
+  @unsafe.llvm_set_data_layout(self.0, layout)
 }
 
 ///|
 pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
-  @unsafe.llvm_set_data_layout(self.inner(), layout)
+  @unsafe.llvm_set_data_layout(self.0, layout)
 }
 
 ///|
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
-  let target_data_ref = @unsafe.llvm_get_module_data_layout(self.inner())
+  let target_data_ref = @unsafe.llvm_get_module_data_layout(self.0)
   DataLayout(target_data_ref)
 }
 
@@ -151,7 +151,7 @@ pub fn Module::addGlobalVariable(
   initializer? : &Constant,
   linkage? : Linkage,
 ) -> GlobalVariable {
-  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
+  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
   if initializer is Some(init) {
     @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
   }
@@ -169,7 +169,7 @@ pub fn Module::addGlobalConstant(
   value : &Constant,
   linkage? : Linkage,
 ) -> GlobalConstant {
-  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name)
+  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
   @unsafe.llvm_set_global_constant(gv_ref, true)
   @unsafe.llvm_set_initializer(gv_ref, value.getValueRef())
   if linkage is Some(link) {
@@ -186,14 +186,14 @@ pub fn Module::writeBitCodeToFile(
   self : Module,
   filename : String,
 ) -> Unit raise {
-  if 0 != @unsafe.llvm_write_bitcode_to_file(self.inner(), filename) {
+  if 0 != @unsafe.llvm_write_bitcode_to_file(self.0, filename) {
     raise WriteBitCodeToFileFailed(filename)
   }
 }
 
 ///|
 pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
-  let (engref, err) = @unsafe.llvm_create_interpreter_for_module(self.inner())
+  let (engref, err) = @unsafe.llvm_create_interpreter_for_module(self.0)
   let engref = match engref {
     Some(e) => e
     None => raise CreateInterpreterFailed(err)
@@ -204,11 +204,11 @@ pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
 
 ///|
 pub fn Module::dump(self : Module) -> Unit {
-  @unsafe.llvm_dump_module(self.inner())
+  @unsafe.llvm_dump_module(self.0)
 }
 
 ///|
 pub impl Show for Module with output(self, logger) {
-  let s = @unsafe.llvm_print_module_to_string(self.inner())
+  let s = @unsafe.llvm_print_module_to_string(self.0)
   logger.write_string(s)
 }

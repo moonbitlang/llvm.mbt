@@ -7,13 +7,13 @@ pub struct AllocaInst(ValueRef)
 
 ///|
 pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
-  let typeref = @unsafe.llvm_get_allocated_type(self.inner())
+  let typeref = @unsafe.llvm_get_allocated_type(self.0)
   initAbstractType(typeref)
 }
 
 ///|
 pub impl Value for AllocaInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -33,7 +33,7 @@ pub impl InsertPoint for AllocaInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for AllocaInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -45,7 +45,7 @@ pub struct LoadInst(ValueRef)
 
 ///|
 pub impl Value for LoadInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -65,7 +65,7 @@ pub impl InsertPoint for LoadInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for LoadInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -77,7 +77,7 @@ pub struct StoreInst(ValueRef)
 
 ///|
 pub impl Value for StoreInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -97,7 +97,7 @@ pub impl InsertPoint for StoreInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for StoreInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -109,7 +109,7 @@ pub struct CastInst(ValueRef)
 
 ///|
 pub impl Value for CastInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -129,7 +129,7 @@ pub impl InsertPoint for CastInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for CastInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -141,7 +141,7 @@ pub struct UnaryInst(ValueRef)
 
 ///|
 pub impl Value for UnaryInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -161,7 +161,7 @@ pub impl InsertPoint for UnaryInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for UnaryInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -173,7 +173,7 @@ pub struct BinaryInst(ValueRef)
 
 ///|
 pub impl Value for BinaryInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -193,7 +193,7 @@ pub impl InsertPoint for BinaryInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for BinaryInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 ///|
@@ -279,13 +279,13 @@ pub struct ICmpInst(ValueRef)
 
 ///|
 pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
-  @unsafe.llvm_get_icmp_predicate(self.inner())
+  @unsafe.llvm_get_icmp_predicate(self.0)
   |> IntPredicate::from_llvm_int_predicate
 }
 
 ///|
 pub impl Value for ICmpInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -305,7 +305,7 @@ pub impl InsertPoint for ICmpInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for ICmpInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -385,13 +385,13 @@ pub struct FCmpInst(ValueRef)
 
 ///|
 pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
-  @unsafe.llvm_get_fcmp_predicate(self.inner())
+  @unsafe.llvm_get_fcmp_predicate(self.0)
   |> FloatPredicate::from_llvm_float_predicate
 }
 
 ///|
 pub impl Value for FCmpInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -411,7 +411,7 @@ pub impl InsertPoint for FCmpInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for FCmpInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -423,30 +423,30 @@ pub struct GetElementPtrInst(ValueRef)
 
 ///|
 pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
-  @unsafe.llvm_is_in_bounds(self.inner())
+  @unsafe.llvm_is_in_bounds(self.0)
 }
 
 ///|
 pub fn GetElementPtrInst::setInBounds(self : GetElementPtrInst) -> Unit {
-  @unsafe.llvm_set_is_in_bounds(self.inner(), true)
+  @unsafe.llvm_set_is_in_bounds(self.0, true)
 }
 
 ///|
 pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
-  @unsafe.llvm_set_is_in_bounds(self.inner(), false)
+  @unsafe.llvm_set_is_in_bounds(self.0, false)
 }
 
 ///|
 pub fn GetElementPtrInst::getSourceElementType(
   self : GetElementPtrInst,
 ) -> &Type {
-  let typeref = @unsafe.llvm_get_gep_source_element_type(self.inner())
+  let typeref = @unsafe.llvm_get_gep_source_element_type(self.0)
   initAbstractType(typeref)
 }
 
 ///|
 pub impl Value for GetElementPtrInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -466,7 +466,7 @@ pub impl InsertPoint for GetElementPtrInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for GetElementPtrInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -478,7 +478,7 @@ pub struct SelectInst(ValueRef)
 
 ///|
 pub impl Value for SelectInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -493,7 +493,7 @@ pub impl Instruction for SelectInst with asInstEnum(self) -> InstructionEnum {
 
 ///|
 pub impl Show for SelectInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -505,7 +505,7 @@ pub struct ExtractValueInst(ValueRef)
 
 ///|
 pub impl Value for ExtractValueInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -530,7 +530,7 @@ pub impl InsertPoint for ExtractValueInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for ExtractValueInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -542,7 +542,7 @@ pub struct InsertValueInst(ValueRef)
 
 ///|
 pub impl Value for InsertValueInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -562,7 +562,7 @@ pub impl InsertPoint for InsertValueInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for InsertValueInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -578,12 +578,12 @@ pub fn PHINode::addIncoming(
   value : &Value,
   block : BasicBlock,
 ) -> Unit {
-  @unsafe.llvm_add_incoming(self.inner(), [value.getValueRef()], [block.inner()])
+  @unsafe.llvm_add_incoming(self.0, [value.getValueRef()], [block.0])
 }
 
 ///|
 pub fn PHINode::countIncoming(self : PHINode) -> Int {
-  @unsafe.llvm_count_incoming(self.inner()).reinterpret_as_int()
+  @unsafe.llvm_count_incoming(self.0).reinterpret_as_int()
 }
 
 // TODO:
@@ -593,20 +593,20 @@ pub fn PHINode::countIncoming(self : PHINode) -> Int {
 //) -> &Value? {
 //  when(
 //    idx >= 0 && idx < self.countIncoming(),
-//    () => { @unsafe.llvm_get_incoming_value(self.inner(), idx.reinterpret_as_uint())) }
+//    () => { @unsafe.llvm_get_incoming_value(self.0, idx.reinterpret_as_uint())) }
 //  )
 //}
 
 ///|
 pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.countIncoming(), () => BasicBlock(
-    @unsafe.llvm_get_incoming_block(self.inner(), idx.reinterpret_as_uint()),
+    @unsafe.llvm_get_incoming_block(self.0, idx.reinterpret_as_uint()),
   ))
 }
 
 ///|
 pub impl Value for PHINode with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -626,7 +626,7 @@ pub impl InsertPoint for PHINode with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for PHINode with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -638,7 +638,7 @@ pub struct ReturnInst(ValueRef)
 
 ///|
 pub impl Value for ReturnInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -658,7 +658,7 @@ pub impl InsertPoint for ReturnInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for ReturnInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -670,7 +670,7 @@ pub struct BranchInst(ValueRef)
 
 ///|
 pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
-  @unsafe.llvm_is_conditional(self.inner())
+  @unsafe.llvm_is_conditional(self.0)
 }
 
 ///|
@@ -689,18 +689,18 @@ pub fn BranchInst::setCondition(
       #| Misuse `BranchInst::setCondition`, Instruction is not conditional.
     raise InValidOperation(msg)
   }
-  @unsafe.llvm_set_condition(self.inner(), cond.getValueRef())
+  @unsafe.llvm_set_condition(self.0, cond.getValueRef())
 }
 
 ///|
 pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
-  @unsafe.llvm_get_num_successors(self.inner()).reinterpret_as_int()
+  @unsafe.llvm_get_num_successors(self.0).reinterpret_as_int()
 }
 
 ///|
 pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
-    @unsafe.llvm_get_successor(self.inner(), idx.reinterpret_as_uint()),
+    @unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()),
   ))
 }
 
@@ -719,15 +719,15 @@ pub fn BranchInst::setSuccessor(
     raise IndexOutOfBounds(msg)
   }
   @unsafe.llvm_set_successor(
-    self.inner(),
+    self.0,
     idx.reinterpret_as_uint(),
-    block.inner(),
+    block.0,
   )
 }
 
 ///|
 pub impl Value for BranchInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -747,7 +747,7 @@ pub impl InsertPoint for BranchInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for BranchInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -773,18 +773,18 @@ pub fn SwitchInst::addCase(
       "Misuse `SwitchInst::addCase`: Expected an integer type for case value, got: \{on_val.getType()}",
     )
   }
-  @unsafe.llvm_add_case(self.inner(), on_val.getValueRef(), dest.inner())
+  @unsafe.llvm_add_case(self.0, on_val.getValueRef(), dest.0)
 }
 
 ///|
 pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
-  @unsafe.llvm_get_num_successors(self.inner()).reinterpret_as_int()
+  @unsafe.llvm_get_num_successors(self.0).reinterpret_as_int()
 }
 
 ///|
 pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
-    @unsafe.llvm_get_successor(self.inner(), idx.reinterpret_as_uint()),
+    @unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()),
   ))
 }
 
@@ -803,15 +803,15 @@ pub fn SwitchInst::setSuccessor(
     raise IndexOutOfBounds(msg)
   }
   @unsafe.llvm_set_successor(
-    self.inner(),
+    self.0,
     idx.reinterpret_as_uint(),
-    block.inner(),
+    block.0,
   )
 }
 
 ///|
 pub impl Value for SwitchInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -831,7 +831,7 @@ pub impl InsertPoint for SwitchInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for SwitchInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
 
 // =======================================================
@@ -871,32 +871,32 @@ pub struct CallInst(ValueRef)
 
 ///|
 pub fn CallInst::isTailCall(self : CallInst) -> Bool {
-  @unsafe.llvm_is_tail_call(self.inner())
+  @unsafe.llvm_is_tail_call(self.0)
 }
 
 ///|
 pub fn CallInst::setTailCall(self : CallInst) -> Unit {
-  @unsafe.llvm_set_tail_call(self.inner(), true)
+  @unsafe.llvm_set_tail_call(self.0, true)
 }
 
 ///|
 pub fn CallInst::removeTailCall(self : CallInst) -> Unit {
-  @unsafe.llvm_set_tail_call(self.inner(), false)
+  @unsafe.llvm_set_tail_call(self.0, false)
 }
 
 ///|
 pub fn CallInst::getTailCallKind(self : CallInst) -> TailCallKind {
-  @unsafe.llvm_get_tail_call_kind(self.inner()) |> TailCallKind::from_llvm
+  @unsafe.llvm_get_tail_call_kind(self.0) |> TailCallKind::from_llvm
 }
 
 ///|
 pub fn CallInst::setTailCallKind(self : CallInst, kind : TailCallKind) -> Unit {
-  @unsafe.llvm_set_tail_call_kind(self.inner(), kind.to_llvm())
+  @unsafe.llvm_set_tail_call_kind(self.0, kind.to_llvm())
 }
 
 ///|
 pub impl Value for CallInst with getValueRef(self) -> ValueRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -916,5 +916,5 @@ pub impl InsertPoint for CallInst with asInsertPtEnum(self) {
 
 ///|
 pub impl Show for CallInst with output(self, logger) {
-  self.inner().output(logger)
+  self.0.output(logger)
 }
