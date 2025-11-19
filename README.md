@@ -1,331 +1,350 @@
-# llvm.mbt
+# llvm.mbt – MoonBit Bindings to LLVM 19
 
-**llvm.mbt** 🚀 是一个为 [MoonBit](https://www.moonbitlang.com/) 语言设计的全面 LLVM 绑定库，提供了**C++ 风格的 API** 和增强的类型安全性。基于 LLVM-C 绑定构建，它提供了与原版 LLVM C++ 相似的开发体验，同时利用 MoonBit 的强大类型系统来防止常见的编程错误。
+[中文说明 / Chinese Version](#llvmbt--moonbit-到-llvm-19-的官方绑定)
 
-## MGPIC竞赛须知
+`llvm.mbt` provides MoonBit bindings to **upstream LLVM 19**, using the C API (`llvm-c`).  
+It lets you call **real LLVM** from MoonBit, giving you access to:
 
-2025年MGPIC编译赛道允许输出LLVM IR，但编译器本体使用wasm-gc后端编译，因此编译到native后端的`llvm.mbt`不能用于提交，你可以使用[MoonLLVM](https://github.com/moonbitlang/MoonLLVM.git)，这是官方提供的一个llvm IR生成器，接口与`llvm.mbt`非常接近，二者切换起来非常容易。
+- Upstream optimizations and passes
+- Full platform and target support provided by LLVM
+- The mature LLVM toolchain ecosystem
 
-1. `MoonLLVM`与`llvm.mbt`的差别，`llvm.mbt`是真llvm的moonbit语言binding，需要链接到llvm库，并保证llvm版本在llvm-19以上，只能使用native后端，可以使用llvm的一些高级功能，但缺少一些直接操控内部数据结构的手段。`MoonLLVM`是moonbit语言的llvm简单复刻，不需要链接到llvm库，可以输出到所有moonbit支持的后端，可以直接操控一些数据结构，但缺少一些高级功能。
-
-2. `MoonLLVM`与`llvm.mbt`的接口类型，尽管有一定的差别，但开发者切换二者的成本很低。
-
-3. 竞赛期间MoonLLVM仍然保持更新，但从8月10日起到比赛结束，进入暂时的稳定状态，对breaking change将保持克制，使用deprecated warning来进行提示，并且其中的warning信息将可能与比赛相关。比赛结束后，MoonLLVM将会恢复到不稳定的状态。
-
-## ✨ 核心特性
-
-- 🎯 **C++ 风格 API**：与 LLVM C++ API 高度相似的接口设计
-- 🔒 **增强类型安全**：MoonBit 类型系统防止空指针解引用和类型不匹配
-- 🛡️ **内存安全**：自动内存管理，必要时提供手动控制
-- 📦 **完整覆盖**：对 LLVM 核心功能的全面绑定
-- 🔧 **开发友好**：直观的 API 设计和清晰的错误信息
-
-## 🏗️ 架构设计
-
-**llvm.mbt** 采用两层结构设计：
-
-1. **🔧 底层 LLVM-C 绑定** (`unsafe` 模块)
-   - 直接绑定到 LLVM-C APIs
-   - 零成本的 C 函数抽象
-   - 为性能关键代码提供原始指针处理
-
-2. **🛡️ 高层安全 API** (主模块)
-   - C++ 风格的面向对象接口
-   - LLVM 概念的类型安全包装
-   - 自动资源管理
-   - 增强的错误处理
-
-## 📋 系统要求
-
-- **LLVM**：19 或更高版本
-- **MoonBit**：最新版本
-- **C 编译器**：GCC 或 Clang
-- **平台**：Linux、macOS（Windows 通过 WSL2）
-
-## 🚀 快速开始
-
-### 1. 安装 LLVM
-
-#### 🍎 macOS
-```bash
-brew install llvm@19
-```
-
-#### 🐧 Ubuntu/Debian
-```bash
-sudo apt install llvm-19-dev -y
-```
-
-#### 🐧 Linux（从源码构建）
-```bash
-# 下载 LLVM 源码
-git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
-
-# 构建和安装
-cd llvm-project && mkdir build && cd build
-cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
-ninja && sudo ninja install
-```
-
-### 2. 验证安装
-```bash
-# 检查命令是否可用
-llc --version
-llvm-config --version
-
-# 测试配置生成
-llvm-config --cflags --ldflags --libs all
-```
-
-### 3. 添加 llvm.mbt 到您的项目
-
-```bash
-moon update
-moon add Kaida-Amethyst/llvm
-```
-
-### 4. 配置构建环境
-
-```bash
-# 设置环境变量
-export CC_FLAGS="$(llvm-config --cflags)"
-export CC_LINK_FLAGS="$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++"
-export C_INCLUDE_PATH="$(llvm-config --includedir):$C_INCLUDE_PATH"
-```
-
-### 5. 更新 moon.pkg.json
-
-```json
-{
-  "import": [
-    "Kaida-Amethyst/llvm"
-  ],
-  "link": {
-    "native": {
-      "cc-flags": "$CC_FLAGS",
-      "cc-link-flags": "$CC_LINK_FLAGS"
-    }
-  }
-}
-```
-
-## 💡 使用示例
-
-以下是一个完整的示例，展示如何使用 **llvm.mbt** 生成 LLVM IR：
-
-```moonbit
-fn main {
-  // 创建 LLVM 上下文 - 所有 LLVM 操作的根
-  let ctx = Context::new()
-  let mod = ctx.addModule("demo")
-  let builder = ctx.createBuilder()
-
-  // 使用 C++ 风格 API 定义类型
-  let i32_ty = ctx.getInt32Ty()
-  let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-
-  // 使用 C++ 风格的方法调用创建函数
-  let add_func = mod.addFunction(func_ty, "add")
-  let entry_bb = add_func.appendBasicBlock(name="entry")
-  
-  // 安全地获取函数参数
-  let arg1 = add_func.getArg(0).unwrap()
-  let arg2 = add_func.getArg(1).unwrap()
-
-  // 使用熟悉的 C++ 模式构建 IR
-  builder.setInsertPoint(entry_bb)
-  let sum = builder.createAdd(arg1, arg2, name="sum")
-  builder.createRet(sum)
-
-  // 打印生成的函数
-  println(add_func)
-}
-```
-
-**输出：**
-```llvm
-define i32 @add(i32 %0, i32 %1) {
-entry:
-  %sum = add i32 %0, %1
-  ret i32 %sum
-}
-```
-
-## 🤝 贡献指南
-
-我们欢迎贡献！请：
-
-1. **🍴 Fork** 仓库
-2. **🌿 创建** 功能分支
-3. **✅ 为新功能** 添加测试
-4. **📝 提交** Pull Request
-
-访问我们的 [GitHub 仓库](https://github.com/moonbitlang/llvm.mbt) 开始贡献。
-
-## 📄 许可证
-
-**llvm.mbt** 采用 **Apache-2.0 许可证**。详情请参阅 [LICENSE](LICENSE) 文件。
-
-# llvm.mbt
-
-[🇨🇳 中文版](#llvmmbt-1)
-
-**llvm.mbt** 🚀 is a comprehensive LLVM binding for the [MoonBit](https://www.moonbitlang.com/) language that provides a **C++-style API** with enhanced type safety. Built on top of LLVM-C bindings, it offers a familiar development experience similar to original LLVM C++ while leveraging MoonBit's powerful type system to prevent common programming errors.
-
-## ✨ Key Features
-
-- 🎯 **C++-Style API**: Familiar interface design closely mirroring LLVM C++ API
-- 🔒 **Enhanced Type Safety**: MoonBit's type system prevents null pointer dereferences and type mismatches
-- 🛡️ **Memory Safety**: Automatic memory management with manual control when needed
-- 📦 **Complete Coverage**: Comprehensive bindings for LLVM core functionality
-- 🔧 **Developer Friendly**: Intuitive API design with clear error messages
-
-## 🏗️ Architecture
-
-**llvm.mbt** is structured with two main layers:
-
-1. **🔧 Low-level LLVM-C Bindings** (`unsafe` module)
-   - Direct bindings to LLVM-C APIs
-   - Zero-cost abstractions over C functions
-   - Raw pointer handling for performance-critical code
-
-2. **🛡️ High-level Safe API** (main module)
-   - C++-style object-oriented interface
-   - Type-safe wrappers around LLVM concepts
-   - Automatic resource management
-   - Enhanced error handling
-
-## 📋 Requirements
-
-- **LLVM**: Version 19 or higher
-- **MoonBit**: Latest version
-- **C Compiler**: GCC or Clang
-- **Platform**: Linux, macOS (Windows via WSL2)
-
-## 🚀 Quick Start
-
-### 1. Install LLVM
-
-#### 🍎 macOS
-```bash
-brew install llvm@19
-```
-
-#### 🐧 Ubuntu/Debian
-```bash
-sudo apt install llvm-19-dev -y
-```
-
-#### 🐧 Linux (from source)
-```bash
-# Download LLVM source
-git clone --depth 1 https://github.com/llvm/llvm-project.git -b llvmorg-19.0.0
-
-# Build and install
-cd llvm-project && mkdir build && cd build
-cmake -G Ninja -DCMAKE_BUILD_TYPE="Release" ../llvm
-ninja && sudo ninja install
-```
-
-### 2. Verify Installation
-```bash
-# Check if commands are available
-llc --version
-llvm-config --version
-
-# Test configuration generation
-llvm-config --cflags --ldflags --libs all
-```
-
-### 3. Add llvm.mbt to Your Project
-
-```bash
-moon update
-moon add Kaida-Amethyst/llvm
-```
-
-### 4. Configure Build Environment
-
-```bash
-# Set environment variables
-export CC_FLAGS="$(llvm-config --cflags)"
-export CC_LINK_FLAGS="$(llvm-config --ldflags --libs all) -lpthread -ldl -lm -lstdc++"
-export C_INCLUDE_PATH="$(llvm-config --includedir):$C_INCLUDE_PATH"
-```
-
-### 5. Update moon.pkg.json
-
-```json
-{
-  "import": [
-    "Kaida-Amethyst/llvm"
-  ],
-  "link": {
-    "native": {
-      "cc-flags": "$CC_FLAGS",
-      "cc-link-flags": "$CC_LINK_FLAGS"
-    }
-  }
-}
-```
-
-## 💡 Usage Example
-
-Here's a complete example showing how to use **llvm.mbt** to generate LLVM IR:
-
-```moonbit
-fn main {
-  // Create LLVM context - the root of all LLVM operations
-  let ctx = Context::new()
-  let mod = ctx.addModule("demo")
-  let builder = ctx.createBuilder()
-
-  // Define types using C++-style API
-  let i32_ty = ctx.getInt32Ty()
-  let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-
-  // Create function with C++-style method calls
-  let add_func = mod.addFunction(func_ty, "add")
-  let entry_bb = add_func.appendBasicBlock(name="entry")
-  
-  // Get function arguments safely
-  let arg1 = add_func.getArg(0).unwrap()
-  let arg2 = add_func.getArg(1).unwrap()
-
-  // Build IR using familiar C++ patterns
-  builder.setInsertPoint(entry_bb)
-  let sum = builder.createAdd(arg1, arg2, name="sum")
-  builder.createRet(sum)
-
-  // Print the generated function
-  println(add_func)
-}
-```
-
-**Output:**
-```llvm
-define i32 @add(i32 %0, i32 %1) {
-entry:
-  %sum = add i32 %0, %1
-  ret i32 %sum
-}
-```
-
-
-## 🤝 Contributing
-
-We welcome contributions! Please:
-
-1. **🍴 Fork** the repository
-2. **🌿 Create** a feature branch
-3. **✅ Add** tests for new functionality
-4. **📝 Submit** a pull request
-
-Visit our [GitHub repository](https://github.com/moonbitlang/llvm.mbt) to get started.
-
-## 📄 License
-
-**llvm.mbt** is licensed under the **Apache-2.0 License**. See [LICENSE](LICENSE) for details.
+If you need a **tiny, fast, highly‑readable “mini LLVM” in pure MoonBit**, check out [MoonLLVM](https://github.com/moonbitlang/MoonLLVM).  
+The two projects are designed to be **complementary** and to interoperate smoothly.
 
 ---
 
+## Project Goals
+
+- Provide idiomatic MoonBit bindings to LLVM 19 via `llvm-c`.
+- Stay as close as reasonable to the original LLVM C++ API design.
+- Serve as the “official bridge” between MoonBit code and the LLVM ecosystem.
+- Interoperate with [MoonLLVM](https://github.com/moonbitlang/MoonLLVM), a pure‑MoonBit “Tiny LLVM” implementation.
+
+With `llvm.mbt`, you are using the **real LLVM implementation**:
+
+- Same optimization passes
+- Same codegen
+- Same bitcode format
+- Same platform coverage
+
+---
+
+## Relationship to MoonLLVM
+
+[MoonLLVM](https://github.com/moonbitlang/MoonLLVM) is a separate project that:
+
+- Re‑implements a subset of LLVM’s data structures and IR‑building APIs in pure MoonBit.
+- Can be compiled to Native, Wasm, and JavaScript.
+- Is intentionally **smaller, faster to start, and easier to read** than full LLVM.
+- Is designed as a **lightweight companion**, not a competitor, to upstream LLVM.
+
+The key relationships between `llvm.mbt` and MoonLLVM:
+
+1. **API Alignment & Easy Switching**
+
+   MoonLLVM’s API is intentionally designed to **mirror `llvm.mbt`** as much as possible.  
+   In many projects, you can:
+
+   - Start with MoonLLVM for fast iteration and easier debugging.
+   - Later switch to real LLVM (via `llvm.mbt`) by changing imports in `moon.pkg.json`.
+
+   We maintain a large set of tests in MoonLLVM to keep behavior aligned with `llvm.mbt` and upstream LLVM’s expectations.
+
+2. **Interoperable IR & Bitcode**
+
+   - MoonLLVM can emit `.ll` text that the LLVM toolchain understands.
+   - Work is ongoing to:
+     - Emit `.bc` bitcode compatible with LLVM;
+     - Parse and decode IR/bitcode generated by both MoonLLVM and upstream LLVM.
+
+   This means you can:
+   - Prototype IR and transformations in pure MoonBit (MoonLLVM),
+   - Then feed the results into real LLVM via `llvm.mbt` and the official toolchain.
+
+3. **Shared C++‑inspired Design**
+
+   Both `llvm.mbt` and MoonLLVM follow the structure and naming of the original C++ LLVM API.  
+   This makes it easier to:
+
+   - Port examples from C++ to MoonBit;
+   - Read LLVM documentation and map it to `llvm.mbt` and MoonLLVM APIs;
+   - Migrate MoonBit prototypes back to C++ when needed.
+
+---
+
+## When to Use Which?
+
+- **Use `llvm.mbt` when:**
+  - You need full upstream LLVM power (all targets, all optimizations).
+  - You want to integrate with existing LLVM‑based toolchains and environments.
+  - You care about matching upstream LLVM behavior as closely as possible for production use.
+
+- **Use [MoonLLVM](https://github.com/moonbitlang/MoonLLVM) when:**
+  - You want a lightweight, pure‑MoonBit implementation for IR experiments.
+  - You need to run in environments where full LLVM is too heavy (e.g., browser / Wasm / tiny embedded systems).
+  - You prioritize readability, teaching, and research of LLVM’s concepts.
+
+In practice, many advanced users will **use both**:
+
+- MoonLLVM for rapid iteration, teaching, and prototyping;
+- `llvm.mbt` for final, production‑grade compilation via the real LLVM backend.
+
+---
+
+## Features
+
+- **LLVM 19 support via `llvm-c`**
+- **MoonBit‑style APIs** that still closely resemble LLVM C++/C APIs
+- **Native backend only:**  
+  Because `llvm.mbt` calls directly into the native LLVM library, it currently works with MoonBit’s native backend (not Wasm/JS).
+
+---
+
+## Setup and Usage
+
+> Note: The project assumes you have LLVM 19 (with `llvm-c`) available in your environment.
+
+### Environment
+
+First, configure your environment variables:
+
+```bash
+source env.sh
+```
+
+This script sets up the paths and variables needed to locate LLVM and related libraries.
+
+### Static Analysis
+
+```bash
+moon check --target native
+```
+
+### Run Tests
+
+Run all tests (including doc tests):
+
+```bash
+moon test --target native
+```
+
+Run only the tests under the `test` directory:
+
+```bash
+moon test --target native -p test
+```
+
+### About Tests
+
+- **Doc tests**  
+  These are examples in documentation comments before a function, starting with `///` and using `moobit` code fences.  
+  Doc tests focus on basic functionality and usage examples, not stress or bug‑hunting.
+
+- **`test` directory**  
+  Contains stronger test cases:
+  - Positive tests
+  - Negative tests (intentionally invalid code)
+  - Stress tests for robustness
+
+---
+
+## Special Files
+
+- `env.sh`  
+  Environment configuration script.  
+  You must run `source env.sh` in your shell before building/running the project for the first time.
+
+- `*.mbti`  
+  Files ending with `.mbti` contain function signature information available to the project.
+
+---
+
+## Learning & Ecosystem
+
+If you want to learn more about LLVM in MoonBit:
+
+- Start with [MoonLLVM](https://github.com/moonbitlang/MoonLLVM) to explore a pure‑MoonBit, highly‑readable Tiny LLVM.
+- Use `llvm.mbt` when you are ready to tap into full upstream LLVM power from MoonBit code.
+
+Together, these projects aim to make LLVM development in MoonBit both **practical** and **pleasant** (●'◡'●)
+
+---
+
+# llvm.mbt – MoonBit 到 LLVM 19 的官方绑定
+
+> [Back to English](#llvmbt--moonbit-bindings-to-llvm-19)
+
+`llvm.mbt` 为 **LLVM 19** 提供了 MoonBit 语言的 binding，底层通过 `llvm-c` 接口调用真 LLVM。  
+这意味着：
+
+- 你在 MoonBit 中使用的是**官方 LLVM 本体**；
+- 可以直接享受 LLVM 提供的各种优化、Pass、目标平台支持；
+- 与现有 LLVM 工具链（`opt`, `llc`, `clang` 等）天然兼容。
+
+如果你需要一个**纯 MoonBit 实现、轻量级、易读易改的「迷你 LLVM」**，可以看看 [MoonLLVM](https://github.com/moonbitlang/MoonLLVM)。  
+这两个项目是**互补**、不是彼此替代。
+
+---
+
+## 项目目标
+
+- 通过 `llvm-c` 提供对 LLVM 19 的 MoonBit 绑定；
+- 在保持 MoonBit 习惯用法的同时，尽量贴近原版 LLVM C++ API 的设计；
+- 成为 MoonBit 与 LLVM 生态之间的「官方桥梁」；
+- 与 [MoonLLVM](https://github.com/moonbitlang/MoonLLVM)（纯 MoonBit Tiny LLVM）保持互操作和接口风格上的一致。
+
+使用 `llvm.mbt`，本质上就是在使用 **真·LLVM**：
+
+- 同样的优化 Pass；
+- 同样的后端代码生成；
+- 同样的 bitcode 格式和平台支持。
+
+---
+
+## 与 MoonLLVM 的关系
+
+[MoonLLVM](https://github.com/moonbitlang/MoonLLVM) 是一个独立项目，它：
+
+- 用 MoonBit 重写了 LLVM 的部分数据结构和 IR 构造流程；
+- 可以被编译到 Native / Wasm / JavaScript；
+- 刻意做得**更小、更快、更易读**，适合教学与实验；
+- 定位为 **LLVM 的补充，而非替代品**。
+
+`llvm.mbt` 与 MoonLLVM 的关系主要体现在：
+
+1. **接口对齐 & 轻松切换**
+
+   MoonLLVM 的接口设计刻意与 `llvm.mbt` 对齐。  
+   这意味着很多项目可以：
+
+   - 先用 MoonLLVM 进行快速开发和调试；
+   - 后期只需要修改 `moon.pkg.json` 里的 imports，即可切换到 `llvm.mbt` 使用真 LLVM 作为后端。
+
+   在 MoonLLVM 侧，我们会通过大量测试来保证行为尽可能与 `llvm.mbt` 和真 LLVM 保持一致。
+
+2. **IR / 字节码互操作**
+
+   - MoonLLVM 生成的 `.ll` IR 可以被官方 LLVM 工具链直接识别；
+   - 正在推进：
+     - 生成与 LLVM 兼容的 `.bc` 字节码；
+     - 解析并 decode 由 MoonLLVM 或真 LLVM 生成的 IR / bitcode。
+
+   这样一来，你可以：
+
+   - 用 MoonLLVM 在纯 MoonBit 环境中做 IR 原型和变换；
+   - 再通过 `llvm.mbt` 和官方工具链，把这些 IR 投递到真 LLVM 做进一步优化和代码生成。
+
+3. **共同的 C++ 风格设计**
+
+   `llvm.mbt` 和 MoonLLVM 都参考了原版 C++ LLVM API 的结构和命名。  
+   好处是：
+
+   - 你可以比较容易地把 C++ 示例翻译到 MoonBit；
+   - 阅读 LLVM 官方文档时，更容易在 `llvm.mbt` / MoonLLVM 中找到对应 API；
+   - 需要时也能把 MoonBit 中的原型直接迁回 C++ 生态。
+
+---
+
+## 什么时候用哪个？
+
+- **推荐使用 `llvm.mbt` 的场景：**
+  - 需要 LLVM 提供的完整优化能力；
+  - 需要广泛的平台/目标支持；
+  - 需要和已有的 LLVM 工具链深度集成；
+  - 面向生产环境，希望最大程度贴近 upstream LLVM 行为。
+
+- **推荐使用 [MoonLLVM](https://github.com/moonbitlang/MoonLLVM) 的场景：**
+  - 需要一个体积小、启动快、可读性高的 IR 实验平台；
+  - 需要在浏览器 / Wasm / 小型嵌入式环境中运行；
+  - 用于教学、研究或快速原型开发，希望更容易读懂源代码。
+
+在很多实际项目中，两者是一起用的：
+
+- 用 MoonLLVM 打样、做实验、写教程；
+- 用 `llvm.mbt` 在最终阶段接入真 LLVM，得到完整的工业级优化与代码生成。
+
+---
+
+## 特性概览
+
+- **基于 `llvm-c` 的 LLVM 19 支持**
+- **MoonBit 风格 API**，但整体结构尽量贴近 LLVM C/C++ API
+- **仅支持 MoonBit 的 Native 后端：**  
+  因为 `llvm.mbt` 依赖本地 LLVM 库，所以目前使用场景聚焦在 native 环境。
+
+---
+
+## 环境配置与命令
+
+> 提示：请确保你的系统已经安装好了 LLVM 19，并可通过 `llvm-c` 头文件和库访问。
+
+### 环境配置
+
+首次使用时，请先执行：
+
+```bash
+source env.sh
+```
+
+该脚本会设置必要的环境变量，确保编译和运行时可以找到 LLVM 及相关库。
+
+### 静态分析
+
+```bash
+moon check --target native
+```
+
+### 测试
+
+运行所有测试（包括 doc test）：
+
+```bash
+moon test --target native
+```
+
+仅运行 `test` 目录下的测试：
+
+```bash
+moon test --target native -p test
+```
+
+---
+
+## 关于测试
+
+- **Doc Test（文档测试）**  
+  - 出现在函数实现前，以 `///` 开头，并使用 `moobit` 代码块包裹。
+  - 目标是演示基本功能和用法，不进行特别复杂的压力/BUG 测试。
+
+- **`test` 目录**  
+  - 用于保证代码强度和鲁棒性，包括：
+    - 正向测试；
+    - 反向测试（故意写错的代码）；
+    - 各种强度 / 边界情况测试等。
+
+---
+
+## 特殊文件说明
+
+- `env.sh`  
+  环境变量配置脚本。终端中首次运行项目前，请务必执行：
+
+  ```bash
+  source env.sh
+  ```
+
+- `*.mbti`  
+  所有以 `.mbti` 结尾的文件存放了可用的函数签名信息。
+
+---
+
+## 学习与生态
+
+如果你希望在 MoonBit 中更轻松地学习和探索 LLVM：
+
+- 可以从 [MoonLLVM](https://github.com/moonbitlang/MoonLLVM) 入手，阅读它的源码和文档，快速理解 IR 和编译流程；
+- 然后在项目趋于稳定、对性能和平台需求提升时，引入 `llvm.mbt`，直接接入真 LLVM。
+
+希望 `llvm.mbt` 和 MoonLLVM 能一起，让「写 LLVM」这件事情不再那么头疼 (●'◡'●)  
+也欢迎你在 issue / PR 里分享你的使用体验和建议。
