@@ -1,5 +1,5 @@
 ///|
-typealias @unsafe.LLVMExecutionEngineRef as ExecutionEngineRef
+type ExecutionEngineRef = @unsafe.LLVMExecutionEngineRef
 
 ///|
 pub struct GenericValue(@unsafe.LLVMGenericValueRef)

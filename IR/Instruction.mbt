@@ -718,11 +718,7 @@ pub fn BranchInst::setSuccessor(
       #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
-  @unsafe.llvm_set_successor(
-    self.0,
-    idx.reinterpret_as_uint(),
-    block.0,
-  )
+  @unsafe.llvm_set_successor(self.0, idx.reinterpret_as_uint(), block.0)
 }
 
 ///|
@@ -802,11 +798,7 @@ pub fn SwitchInst::setSuccessor(
       #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
-  @unsafe.llvm_set_successor(
-    self.0,
-    idx.reinterpret_as_uint(),
-    block.0,
-  )
+  @unsafe.llvm_set_successor(self.0, idx.reinterpret_as_uint(), block.0)
 }
 
 ///|

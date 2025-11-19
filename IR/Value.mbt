@@ -3,7 +3,7 @@
 // =======================================================
 
 ///|
-pub typealias @unsafe.LLVMValueRef as ValueRef
+pub type ValueRef = @unsafe.LLVMValueRef
 
 // =======================================================
 // Value

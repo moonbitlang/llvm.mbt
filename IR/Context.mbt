@@ -244,10 +244,7 @@ pub fn Context::getPtrTy(
   self : Context,
   addressSpace? : AddressSpace = AddressSpace::default(),
 ) -> PointerType {
-  let typeref = @unsafe.llvm_pointer_type_in_context(
-    self.0,
-    addressSpace.0,
-  )
+  let typeref = @unsafe.llvm_pointer_type_in_context(self.0, addressSpace.0)
   PointerType(typeref)
 }
 
@@ -316,8 +313,7 @@ pub fn Context::getStructType(
   }
   let field_types = elements.map(v => v.getTypeRef())
   let typeref = match name {
-    "" =>
-      @unsafe.llvm_struct_type_in_context(self.0, field_types, isPacked)
+    "" => @unsafe.llvm_struct_type_in_context(self.0, field_types, isPacked)
     _ as name => {
       let typeref = @unsafe.llvm_struct_create_named(self.0, name)
       @unsafe.llvm_struct_set_body(typeref, field_types, isPacked)
@@ -789,7 +785,7 @@ pub fn Context::getConstZeroFloat(
   isNegative~ : Bool,
 ) -> ConstantFP {
   let val = if isNegative { 0x8000_0000U } else { 0x0000_0000U }
-  let val = val.reinterpret_as_float()
+  let val = Float::reinterpret_from_uint(val)
   let valueref = @unsafe.llvm_const_real(
     self.getFloatTy().getTypeRef(),
     val.to_double(),

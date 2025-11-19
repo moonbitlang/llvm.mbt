@@ -188,9 +188,8 @@ fn initAbstractType_err(
 
 ///|
 fn initAbstractType(typeref : @unsafe.LLVMTypeRef) -> &Type {
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => ty
-    Err(_) => {
+  initAbstractType_err(typeref) catch {
+    _ => {
       println("ICE: Invalid Type kind")
       panic()
     }
@@ -1197,9 +1196,10 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   guard idx >= 0 && idx < param_types.length() else { return None }
   let typeref = param_types[idx]
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => Some(ty)
-    Err(_) => None
+  try initAbstractType_err(typeref) catch {
+    _ => None
+  } noraise {
+    ty => Some(ty)
   }
 }
 
@@ -1298,9 +1298,10 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
     self.getTypeRef(),
     idx.reinterpret_as_uint(),
   )
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => Some(ty)
-    Err(_) => None
+  try initAbstractType_err(typeref) catch {
+    _ => None
+  } noraise {
+    ty => Some(ty)
   }
 }
 

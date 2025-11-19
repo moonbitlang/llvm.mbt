@@ -69,11 +69,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
             "Instruction as Insert Point, does not have a parent basic block",
           )
       }
-      @unsafe.llvm_position_builder(
-        self.builder_ref,
-        bb.0,
-        inst.getValueRef(),
-      )
+      @unsafe.llvm_position_builder(self.builder_ref, bb.0, inst.getValueRef())
     }
   }
 }
@@ -1241,10 +1237,7 @@ pub fn IRBuilder::createFAdd(
       match fast_math {
         [] => ()
         flags =>
-          flags.each(f => @unsafe.llvm_set_fast_math_flags(
-            inst.0,
-            f.to_llvm(),
-          ))
+          flags.each(f => @unsafe.llvm_set_fast_math_flags(inst.0, f.to_llvm()))
       }
       inst
     }
@@ -1319,10 +1312,7 @@ pub fn IRBuilder::createFSub(
       match fast_math {
         [] => ()
         flags =>
-          flags.each(f => @unsafe.llvm_set_fast_math_flags(
-            inst.0,
-            f.to_llvm(),
-          ))
+          flags.each(f => @unsafe.llvm_set_fast_math_flags(inst.0, f.to_llvm()))
       }
       inst
     }

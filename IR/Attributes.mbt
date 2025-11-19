@@ -1,5 +1,5 @@
 ///|
-typealias @unsafe.LLVMAttributeRef as AttributeRef
+type AttributeRef = @unsafe.LLVMAttributeRef
 
 ///|
 pub struct Attribute(AttributeRef)
