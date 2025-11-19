@@ -785,7 +785,7 @@ pub fn Context::getConstZeroFloat(
   isNegative~ : Bool,
 ) -> ConstantFP {
   let val = if isNegative { 0x8000_0000U } else { 0x0000_0000U }
-  let val = Float::reinterpret_from_uint(val)
+  let val = val.reinterpret_as_int()
   let valueref = @unsafe.llvm_const_real(
     self.getFloatTy().getTypeRef(),
     val.to_double(),
