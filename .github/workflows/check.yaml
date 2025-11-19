@@ -16,22 +16,15 @@ jobs:
             version: stable
           - name: macos-latest
             version: stable
-          - name: macos-13
-            version: stable
           # - name: windows-latest
           #   version: stable
 
-          # bleeding check 
-          # 1. install latest toolchain 
-          # 2. install latest core library from github.com
           - name: ubuntu-latest
-            version: bleeding
+            version: nightly
           - name: macos-latest
-            version: bleeding
-          - name: macos-13
-            version: bleeding
+            version: nightly
           # - name: windows-latest
-          #   version: bleeding
+          #   version: nightly
 
       fail-fast: false
     runs-on: ${{ matrix.os.name }}
