@@ -32,11 +32,11 @@ int main() {  // 函数定义
 在这个例子中，`print_int`只有声明而没有定义，这意味着它的实现将在链接时提供。让我们用llvm.mbt来实现这个程序：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("function_call_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
 
   // 声明外部函数 print_int
@@ -49,7 +49,6 @@ test {
   let add_bb = add_func.addBasicBlock(name="entry")
   let add_a = add_func.getArg(0).unwrap()
   let add_b = add_func.getArg(1).unwrap()
-
   builder.setInsertPoint(add_bb)
   let sum = builder.createAdd(add_a, add_b, name="sum")
   let _ = builder.createRet(sum)
@@ -58,7 +57,6 @@ test {
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
   let const_42 = ctx.getConstInt32(42)
   let const_33 = ctx.getConstInt32(33)
@@ -66,13 +64,11 @@ test {
 
   // 调用 add 函数
   let res = builder.createCall(add_func, [const_42, const_33], name="res")
-  
+
   // 调用 print_int 函数
   let _ = builder.createCall(print_int_func, [res])
-  
   let _ = builder.createRet(const_0)
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'function_call_demo'
     #|source_filename = "function_call_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -92,7 +88,6 @@ test {
     #|  ret i32 0
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```
@@ -161,11 +156,11 @@ gcc output.o print_helper.o -o final_program
 除了直接调用函数外，LLVM还支持通过函数指针进行间接调用。这在实现回调函数、虚函数表等高级特性时非常有用。
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("function_pointer_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
 
@@ -174,9 +169,12 @@ test {
   let double_func = mod.addFunction(double_ty, "double_value")
   let double_bb = double_func.addBasicBlock(name="entry")
   let double_arg = double_func.getArg(0).unwrap()
-
   builder.setInsertPoint(double_bb)
-  let doubled = builder.createMul(double_arg, ctx.getConstInt32(2), name="doubled")
+  let doubled = builder.createMul(
+    double_arg,
+    ctx.getConstInt32(2),
+    name="doubled",
+  )
   let _ = builder.createRet(doubled)
 
   // 定义一个接受函数指针的函数
@@ -185,13 +183,16 @@ test {
   let caller_bb = caller_func.addBasicBlock(name="entry")
   let func_ptr = caller_func.getArg(0).unwrap()
   let value = caller_func.getArg(1).unwrap()
-
   builder.setInsertPoint(caller_bb)
   // 通过函数指针调用函数
-  let result = builder.createCallPtr(func_ptr, double_ty, [value], name="result")
+  let result = builder.createCallPtr(
+    func_ptr,
+    double_ty,
+    [value],
+    name="result",
+  )
   let _ = builder.createRet(result)
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'function_pointer_demo'
     #|source_filename = "function_pointer_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -208,7 +209,6 @@ test {
     #|  ret i32 %result
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```

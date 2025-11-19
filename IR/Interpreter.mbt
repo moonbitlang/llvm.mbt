@@ -1,5 +1,5 @@
 ///|
-typealias @unsafe.LLVMExecutionEngineRef as ExecutionEngineRef
+type ExecutionEngineRef = @unsafe.LLVMExecutionEngineRef
 
 ///|
 pub struct GenericValue(@unsafe.LLVMGenericValueRef)
@@ -94,8 +94,8 @@ pub fn Interpreter::runFunction(
   func : Function,
   args : Array[GenericValue],
 ) -> GenericValue {
-  let args_ref = args.map(arg => arg.inner())
-  @unsafe.llvm_run_function(self.inner(), func.inner(), args_ref)
+  let args_ref = args.map(arg => arg.0)
+  @unsafe.llvm_run_function(self.engine, func.0, args_ref)
 }
 
 // ====================================================
@@ -104,20 +104,20 @@ pub fn Interpreter::runFunction(
 
 ///|
 pub fn GenericValue::toInt(self : GenericValue) -> Int {
-  @unsafe.llvm_generic_value_to_int(self.inner(), true).to_int()
+  @unsafe.llvm_generic_value_to_int(self.0, true).to_int()
 }
 
 ///|
 pub fn GenericValue::toUInt(self : GenericValue) -> UInt {
-  @unsafe.llvm_generic_value_to_int(self.inner(), false).to_uint()
+  @unsafe.llvm_generic_value_to_int(self.0, false).to_uint()
 }
 
 ///|
 pub fn GenericValue::toInt64(self : GenericValue) -> Int64 {
-  @unsafe.llvm_generic_value_to_int(self.inner(), true).reinterpret_as_int64()
+  @unsafe.llvm_generic_value_to_int(self.0, true).reinterpret_as_int64()
 }
 
 ///|
 pub fn GenericValue::toUInt64(self : GenericValue) -> UInt64 {
-  @unsafe.llvm_generic_value_to_int(self.inner(), false)
+  @unsafe.llvm_generic_value_to_int(self.0, false)
 }

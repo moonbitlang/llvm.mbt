@@ -74,11 +74,11 @@ int main() {
 让我们用llvm.mbt来实现这个程序：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("heap_memory_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let void_ty = ctx.getVoidTy()
@@ -94,16 +94,15 @@ test {
   let ptr_a = add_func.getArg(0).unwrap()
   let ptr_b = add_func.getArg(1).unwrap()
   let ptr_c = add_func.getArg(2).unwrap()
-
   builder.setInsertPoint(add_bb)
-  
+
   // 从指针加载值：*a 和 *b
   let val_a = builder.createLoad(i32_ty, ptr_a, name="val_a")
   let val_b = builder.createLoad(i32_ty, ptr_b, name="val_b")
-  
+
   // 计算加法：*a + *b
   let sum = builder.createAdd(val_a, val_b, name="sum")
-  
+
   // 存储结果到 *c
   let _ = builder.createStore(sum, ptr_c)
   let _ = builder.createRetVoid()
@@ -112,30 +111,27 @@ test {
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
-  
+
   // 在堆上分配三个整数
   let heap_a = builder.createMalloc(i32_ty, name="heap_a")
   let heap_b = builder.createMalloc(i32_ty, name="heap_b")
   let heap_c = builder.createMalloc(i32_ty, name="heap_c")
-  
+
   // 初始化堆上的值
   let const_10 = ctx.getConstInt32(10)
   let const_20 = ctx.getConstInt32(20)
   let _ = builder.createStore(const_10, heap_a)
   let _ = builder.createStore(const_20, heap_b)
-  
+
   // 调用 add 函数
   let _ = builder.createCall(add_func, [heap_a, heap_b, heap_c])
-  
+
   // 加载结果并打印
   let result = builder.createLoad(i32_ty, heap_c, name="result")
   let _ = builder.createCall(print_int_func, [result])
-  
   let _ = builder.createRet(ctx.getConstInt32(0))
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'heap_memory_demo'
     #|source_filename = "heap_memory_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -166,7 +162,6 @@ test {
     #|
     #|declare noalias ptr @malloc(i32)
     #|
-
   inspect(mod, content=expect)
 }
 ```

@@ -17,26 +17,23 @@ SSA形式是一种中间表示的设计原则，它要求**每个变量在整个
 让我们通过一个简单的例子来理解这个概念：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("ssa_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty])
-  
   let func = mod.addFunction(func_ty, "ssa_example")
   let entry_bb = func.addBasicBlock(name="entry")
-  
   builder.setInsertPoint(entry_bb)
-  
   let arg = func.getArg(0).unwrap()
   let val1 = builder.createAdd(arg, ctx.getConstInt32(10), name="val1")
   let val2 = builder.createMul(val1, ctx.getConstInt32(2), name="val2")
   let _ = builder.createRet(val2)
 
   // 注意：val1和val2都只被赋值一次，符合SSA形式
-  let expect = 
+  let expect =
     #|define i32 @ssa_example(i32 %0) {
     #|entry:
     #|  %val1 = add i32 %0, 10
@@ -44,7 +41,6 @@ test {
     #|  ret i32 %val2
     #|}
     #|
-
   inspect(func, content=expect)
 }
 ```
@@ -81,22 +77,20 @@ LLVM通过一个巧妙的方案解决了这个矛盾：**将变量概念转换�
 让我们通过一个简单的例子来理解：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("alloca_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [])
-  
   let func = mod.addFunction(func_ty, "alloca_example")
   let entry_bb = func.addBasicBlock(name="entry")
-  
   builder.setInsertPoint(entry_bb)
-  
+
   // 分配一个i32大小的内存空间
   let var_ptr = builder.createAlloca(i32_ty, name="var")
-  
+
   // var_ptr的类型是ptr（指针类型），不是i32
   inspect(var_ptr, content="  %var = alloca i32, align 4")
 }
@@ -124,6 +118,7 @@ int square_sum(int a, int b) {
 这个函数使用了三个局部变量，是演示变量操作的理想例子：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("variable_demo")
@@ -140,12 +135,11 @@ test {
   // 获取函数参数
   let arg_a = square_sum_func.getArg(0).unwrap()
   let arg_b = square_sum_func.getArg(1).unwrap()
-
   builder.setInsertPoint(entry_bb)
-  
+
   // 第一步：为三个局部变量分配内存
   let a_square_ptr = builder.createAlloca(i32_ty, name="a_square")
-  let b_square_ptr = builder.createAlloca(i32_ty, name="b_square") 
+  let b_square_ptr = builder.createAlloca(i32_ty, name="b_square")
   let sum_ptr = builder.createAlloca(i32_ty, name="sum")
 
   // 第二步：计算 a * a 并存储到 a_square
@@ -157,10 +151,22 @@ test {
   let _ = builder.createStore(b_squared_val, b_square_ptr)
 
   // 第四步：从内存中读取两个平方值并计算和
-  let a_square_loaded = builder.createLoad(i32_ty, a_square_ptr, name="a_square_loaded")
-  let b_square_loaded = builder.createLoad(i32_ty, b_square_ptr, name="b_square_loaded")
-  let sum_val = builder.createAdd(a_square_loaded, b_square_loaded, name="sum_val")
-  
+  let a_square_loaded = builder.createLoad(
+    i32_ty,
+    a_square_ptr,
+    name="a_square_loaded",
+  )
+  let b_square_loaded = builder.createLoad(
+    i32_ty,
+    b_square_ptr,
+    name="b_square_loaded",
+  )
+  let sum_val = builder.createAdd(
+    a_square_loaded,
+    b_square_loaded,
+    name="sum_val",
+  )
+
   // 第五步：将和存储到 sum 变量
   let _ = builder.createStore(sum_val, sum_ptr)
 
@@ -169,7 +175,7 @@ test {
   let _ = builder.createRet(final_result)
 
   // 验证生成的LLVM IR
-  let expect = 
+  let expect =
     #|define i32 @square_sum(i32 %0, i32 %1) {
     #|entry:
     #|  %a_square = alloca i32, align 4
@@ -187,7 +193,6 @@ test {
     #|  ret i32 %final_result
     #|}
     #|
-
   inspect(square_sum_func, content=expect)
 }
 ```
@@ -231,35 +236,32 @@ let a_square_loaded = builder.createLoad(i32_ty, a_square_ptr, name="a_square_lo
 让我们通过一个对比例子来加深理解：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("pointer_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [])
-  
   let func = mod.addFunction(func_ty, "pointer_example")
   let entry_bb = func.addBasicBlock(name="entry")
-  
   builder.setInsertPoint(entry_bb)
-  
+
   // alloca返回指针类型
   let var_ptr = builder.createAlloca(i32_ty, name="var")
-  
+
   // 常量是值类型
   let const_42 = ctx.getConstInt32(42)
-  
+
   // store操作：将值类型存储到指针指向的内存
   let _ = builder.createStore(const_42, var_ptr)
-  
+
   // load操作：从指针指向的内存读取值类型
   let loaded_val = builder.createLoad(i32_ty, var_ptr, name="loaded")
-  
   let _ = builder.createRet(loaded_val)
 
   // 观察生成的IR，注意类型标注
-  let expect = 
+  let expect =
     #|define i32 @pointer_example() {
     #|entry:
     #|  %var = alloca i32, align 4
@@ -268,7 +270,6 @@ test {
     #|  ret i32 %loaded
     #|}
     #|
-
   inspect(func, content=expect)
 }
 ```

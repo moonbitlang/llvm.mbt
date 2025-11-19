@@ -21,7 +21,7 @@
 //  //mod.dump()
 //  let jit = @unsafe.llvm_orc_create_lljit()
 //  let tsctx = @unsafe.llvm_orc_create_new_thread_safe_context()
-//  let tsm = @unsafe.llvm_orc_create_new_thread_safe_module(mod.inner(), tsctx)
+//  let tsm = @unsafe.llvm_orc_create_new_thread_safe_module(mod.0, tsctx)
 //
 //  let main_jd = @unsafe.llvm_orc_lljit_get_main_jit_dylib(jit)
 //

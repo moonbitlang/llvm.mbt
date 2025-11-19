@@ -39,11 +39,11 @@ int main() {
 在llvm.mbt中实现这个程序：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("stack_array_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let void_ty = ctx.getVoidTy()
@@ -51,7 +51,6 @@ test {
   // 声明外部函数
   let fill_array_ty = ctx.getFunctionType(void_ty, [ptr_ty, i32_ty, i32_ty])
   let fill_array_func = mod.addFunction(fill_array_ty, "fill_array")
-
   let print_array_ty = ctx.getFunctionType(void_ty, [ptr_ty, i32_ty])
   let print_array_func = mod.addFunction(print_array_ty, "print_array")
 
@@ -59,7 +58,6 @@ test {
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
 
   // 在栈上分配数组：int arr[5]
@@ -76,10 +74,8 @@ test {
 
   // 调用 print_array(arr, 5)
   let _ = builder.createCall(print_array_func, [arr, const_5])
-
   let _ = builder.createRet(const_0)
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'stack_array_demo'
     #|source_filename = "stack_array_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -96,7 +92,6 @@ test {
     #|  ret i32 0
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```
@@ -250,11 +245,11 @@ void fill_array(int* arr, int num, int len) {
 在llvm.mbt中实现：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("fill_array_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let void_ty = ctx.getVoidTy()
@@ -297,14 +292,12 @@ test {
   // 增加索引：i = i + 1
   let i_next = builder.createAdd(i_phi, ctx.getConstInt32(1), name="i_next")
   i_phi.addIncoming(i_next, loop_body_bb)
-
   let _ = builder.createBr(loop_cond_bb)
 
   // 循环退出块
   builder.setInsertPoint(loop_exit_bb)
   let _ = builder.createRetVoid()
-
-  let expect = 
+  let expect =
     #|define void @fill_array(ptr %0, i32 %1, i32 %2) {
     #|entry:
     #|  br label %loop_cond
@@ -324,7 +317,6 @@ test {
     #|  ret void
     #|}
     #|
-
   inspect(fill_array_func, content=expect)
 }
 ```
@@ -353,11 +345,11 @@ result_address = base_address + (index * sizeof(element_type))
 现在让我们将所有部分组合起来，创建一个完整的数组操作程序：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("complete_array_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let void_ty = ctx.getVoidTy()
@@ -371,7 +363,6 @@ test {
   let fill_array_func = mod.addFunction(fill_array_ty, "my_fill_array")
   let arr_param = fill_array_func.getArg(0).unwrap()
   let num_param = fill_array_func.getArg(1).unwrap()
-
   let fill_bb = fill_array_func.addBasicBlock(name="entry")
   builder.setInsertPoint(fill_bb)
 
@@ -391,30 +382,25 @@ test {
   // arr[2] = num
   let ptr2 = builder.createGEP(arr_param, i32_ty, [const_2], name="ptr2")
   let _ = builder.createStore(num_param, ptr2)
-
   let _ = builder.createRetVoid()
 
   // 定义 main 函数
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
 
   // 创建栈数组
   let array_ty = ctx.getArrayType(i32_ty, 5)
   let stack_arr = builder.createAlloca(array_ty, name="stack_arr")
-
   let const_42 = ctx.getConstInt32(42)
   let const_5 = ctx.getConstInt32(5)
 
   // 填充和打印栈数组
   let _ = builder.createCall(fill_array_func, [stack_arr, const_42, const_5])
   let _ = builder.createCall(print_array_func, [stack_arr, const_5])
-
   let _ = builder.createRet(const_0)
-
-  let expect = 
+  let expect =
     #|; ModuleID = 'complete_array_demo'
     #|source_filename = "complete_array_demo"
     #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
@@ -440,7 +426,6 @@ test {
     #|  ret i32 0
     #|}
     #|
-
   inspect(mod, content=expect)
 }
 ```

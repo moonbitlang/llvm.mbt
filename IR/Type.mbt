@@ -188,9 +188,8 @@ fn initAbstractType_err(
 
 ///|
 fn initAbstractType(typeref : @unsafe.LLVMTypeRef) -> &Type {
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => ty
-    Err(_) => {
+  initAbstractType_err(typeref) catch {
+    _ => {
       println("ICE: Invalid Type kind")
       panic()
     }
@@ -712,7 +711,7 @@ pub impl Type for HalfType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for HalfType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -745,7 +744,7 @@ pub impl Type for BFloatType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for BFloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -778,7 +777,7 @@ pub impl Type for FloatType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -816,7 +815,7 @@ pub impl Type for DoubleType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for DoubleType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -857,7 +856,7 @@ pub impl Type for FP128Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FP128Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -889,7 +888,7 @@ pub impl Type for Int1Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int1Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -921,7 +920,7 @@ pub impl Type for Int8Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int8Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -953,7 +952,7 @@ pub impl Type for Int16Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int16Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -985,7 +984,7 @@ pub impl Type for Int32Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int32Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1017,7 +1016,7 @@ pub impl Type for Int64Type with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int64Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1044,7 +1043,7 @@ pub impl Show for VoidType with output(self, logger : &Logger) {
 
 ///|
 pub impl Type for VoidType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1077,7 +1076,7 @@ pub impl Type for LabelType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for LabelType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1104,7 +1103,7 @@ pub impl Type for MetadataType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for MetadataType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1132,7 +1131,7 @@ pub impl Type for TokenType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for TokenType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1197,9 +1196,10 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   guard idx >= 0 && idx < param_types.length() else { return None }
   let typeref = param_types[idx]
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => Some(ty)
-    Err(_) => None
+  try initAbstractType_err(typeref) catch {
+    _ => None
+  } noraise {
+    ty => Some(ty)
   }
 }
 
@@ -1215,7 +1215,7 @@ pub impl Type for FunctionType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FunctionType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1298,9 +1298,10 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
     self.getTypeRef(),
     idx.reinterpret_as_uint(),
   )
-  match (try? initAbstractType_err(typeref)) {
-    Ok(ty) => Some(ty)
-    Err(_) => None
+  try initAbstractType_err(typeref) catch {
+    _ => None
+  } noraise {
+    ty => Some(ty)
   }
 }
 
@@ -1357,7 +1358,7 @@ pub impl Type for StructType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for StructType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1395,7 +1396,7 @@ pub impl Type for ArrayType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ArrayType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1435,7 +1436,7 @@ pub impl Type for VectorType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for VectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1475,7 +1476,7 @@ pub impl Type for ScalableVectorType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ScalableVectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }
 
 ///|
@@ -1533,5 +1534,5 @@ pub impl Type for PointerType with asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for PointerType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.inner()
+  self.0
 }

@@ -45,6 +45,7 @@ int add42(int a, int b) {
 这个函数接受两个整数参数，将它们相加，再加上常数42，最后返回结果。让我们看看如何使用llvm.mbt来实现这个功能：
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("arithmetic_demo")
@@ -64,21 +65,21 @@ test {
 
   // 开始构建函数体
   builder.setInsertPoint(entry_bb)
-  
+
   // 执行 a + b
   let sum_ab = builder.createAdd(arg_a, arg_b, name="sum_ab")
-  
+
   // 创建常数42
   let const_42 = ctx.getConstInt32(42)
-  
+
   // 执行 (a + b) + 42
   let final_sum = builder.createAdd(sum_ab, const_42, name="final_sum")
-  
+
   // 返回结果
   let _ = builder.createRet(final_sum)
 
   // 验证生成的LLVM IR
-  let expect = 
+  let expect =
     #|define i32 @add42(i32 %0, i32 %1) {
     #|entry:
     #|  %sum_ab = add i32 %0, %1
@@ -86,7 +87,6 @@ test {
     #|  ret i32 %final_sum
     #|}
     #|
-
   inspect(add42_func, content=expect)
 }
 ```
@@ -165,6 +165,7 @@ llvm.mbt提供了完整的整数算术运算支持：
 在LLVM的类型系统中，存在一种特殊的整数类型——`Int1Type`，它专门用于表示布尔值。这种类型只能存储两个值：`true`（1）和`false`（0）。
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("boolean_demo")
@@ -172,30 +173,27 @@ test {
 
   // 获取布尔类型
   let i1_ty = ctx.getInt1Ty()
-  
+
   // 创建布尔常量
   let const_true = ctx.getConstTrue()
   let const_false = ctx.getConstFalse()
-
   inspect(const_true, content="i1 true")
   inspect(const_false, content="i1 false")
-  
+
   // 创建一个返回布尔值的函数
   let func_ty = ctx.getFunctionType(i1_ty, [])
   let bool_func = mod.addFunction(func_ty, "get_true")
   let entry_bb = bool_func.addBasicBlock(name="entry")
-  
   builder.setInsertPoint(entry_bb)
   let _ = builder.createRet(const_true)
 
   // 验证生成的LLVM IR
-  let expect = 
+  let expect =
     #|define i1 @get_true() {
     #|entry:
     #|  ret i1 true
     #|}
     #|
-
   inspect(bool_func, content=expect)
 }
 ```
@@ -213,6 +211,7 @@ double add1(double a, double b) {
 ```
 
 ```moonbit
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("float_demo")
@@ -232,21 +231,21 @@ test {
 
   // 构建函数体
   builder.setInsertPoint(entry_bb)
-  
+
   // 执行 a + b（注意：使用createFAdd而不是createAdd）
   let sum_ab = builder.createFAdd(arg_a, arg_b, name="sum_ab")
-  
+
   // 创建浮点常数1.0
   let const_1_0 = ctx.getConstDouble(1.0)
-  
+
   // 执行 (a + b) + 1.0
   let final_sum = builder.createFAdd(sum_ab, const_1_0, name="final_sum")
-  
+
   // 返回结果
   let _ = builder.createRet(final_sum)
 
   // 验证生成的LLVM IR
-  let expect = 
+  let expect =
     #|define double @add1(double %0, double %1) {
     #|entry:
     #|  %sum_ab = fadd double %0, %1
@@ -254,7 +253,6 @@ test {
     #|  ret double %final_sum
     #|}
     #|
-
   inspect(add1_func, content=expect)
 }
 ```

@@ -1,8 +1,8 @@
 ///|
-typealias @IR.Context
+using @IR {type Context}
 
 ///|
-typealias @IR.BuilderError
+using @IR {type BuilderError}
 
 ///|
 test "Binary Int Add Test" {
