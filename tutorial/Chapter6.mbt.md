@@ -103,6 +103,7 @@ test {
 使用`getArrayType`创建数组类型：
 
 ```moonbit skip
+///|
 let array_ty = ctx.getArrayType(element_type, element_count)
 ```
 
@@ -113,6 +114,7 @@ let array_ty = ctx.getArrayType(element_type, element_count)
 栈上数组使用`createAlloca`分配：
 
 ```moonbit skip
+///|
 let arr = builder.createAlloca(array_ty, name="arr")
 ```
 
@@ -143,11 +145,11 @@ int main() {
 在llvm.mbt中实现：
 
 ```moonbit skip
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("heap_array_demo")
   let builder = ctx.createBuilder()
-
   let i32_ty = ctx.getInt32Ty()
   let ptr_ty = ctx.getPtrTy()
   let void_ty = ctx.getVoidTy()
@@ -155,7 +157,6 @@ test {
   // 声明外部函数
   let fill_array_ty = ctx.getFunctionType(void_ty, [ptr_ty, i32_ty, i32_ty])
   let fill_array_func = mod.addFunction(fill_array_ty, "fill_array")
-
   let print_array_ty = ctx.getFunctionType(void_ty, [ptr_ty, i32_ty])
   let print_array_func = mod.addFunction(print_array_ty, "print_array")
 
@@ -164,28 +165,24 @@ test {
   let make_array_func = mod.addFunction(make_array_ty, "make_array")
   let make_bb = make_array_func.addBasicBlock(name="entry")
   let make_len = make_array_func.getArg(0).unwrap()
-
   builder.setInsertPoint(make_bb)
 
   // 分配堆上数组：int* arr = malloc(sizeof(int) * len)
   // 这里我们需要计算数组的总大小
-  let i32_size = ctx.getConstInt32(4)  // sizeof(int) = 4 bytes
+  let i32_size = ctx.getConstInt32(4) // sizeof(int) = 4 bytes
   let total_size = builder.createMul(make_len, i32_size, name="total_size")
-  
+
   // 使用原始malloc调用，因为我们需要分配可变大小的内存
   let malloc_ty = ctx.getFunctionType(ptr_ty, [i32_ty])
   let malloc_func = mod.addFunction(malloc_ty, "malloc")
   let arr = builder.createCall(malloc_func, [total_size], name="arr")
-
   let _ = builder.createRet(arr)
 
   // 定义 main 函数
   let main_ty = ctx.getFunctionType(i32_ty, [])
   let main_func = mod.addFunction(main_ty, "main")
   let main_bb = main_func.addBasicBlock(name="entry")
-
   builder.setInsertPoint(main_bb)
-
   let const_0 = ctx.getConstInt32(0)
   let const_5 = ctx.getConstInt32(5)
   let const_42 = ctx.getConstInt32(42)
@@ -198,10 +195,8 @@ test {
 
   // 调用 print_array(arr, 5)
   let _ = builder.createCall(print_array_func, [heap_arr, const_5])
-
   let _ = builder.createRet(const_0)
-
-  let expect = 
+  let expect =
     #|declare void @fill_array(ptr, i32, i32)
     #|
     #|declare void @print_array(ptr, i32)
@@ -222,7 +217,6 @@ test {
     #|  call void @print_array(ptr %heap_arr, i32 5)
     #|  ret i32 0
     #|}
-
   inspect(mod, content=expect)
 }
 ```
@@ -326,7 +320,13 @@ test {
 GEP指令的一般形式为：
 
 ```moonbit skip
-let elem_ptr = builder.createGEP(base_ptr, pointee_type, indices, name="elem_ptr")
+///|
+let elem_ptr = builder.createGEP(
+  base_ptr,
+  pointee_type,
+  indices,
+  name="elem_ptr",
+)
 ```
 
 参数说明：

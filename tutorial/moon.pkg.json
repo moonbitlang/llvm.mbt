@@ -1,7 +1,4 @@
 {
-  "test-import" : [
-    "Kaida-Amethyst/llvm/IR"
-  ],
   "link" : {
     "native" : {
       "cc" : "$CC",

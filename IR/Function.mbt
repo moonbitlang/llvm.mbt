@@ -36,7 +36,7 @@ fn Function::getNextFunction(self : Self) -> Function? {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
@@ -54,7 +54,7 @@ pub fn Function::getName(self : Self) -> String {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
@@ -74,7 +74,7 @@ pub fn Function::setName(self : Self, name : String) -> Unit {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
@@ -92,7 +92,7 @@ pub fn Function::getType(self : Self) -> FunctionType {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let f32_ty = ctx.getFloatTy()
 /// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 /// let fma_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty, f32_ty])
@@ -113,7 +113,7 @@ pub fn Function::getNumArgs(self : Self) -> Int {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let f32_ty = ctx.getFloatTy()
 /// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
@@ -139,7 +139,7 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let f32_ty = ctx.getFloatTy()
 /// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
@@ -237,19 +237,19 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// 
+///
 /// let fval = mod.addFunction(fty, "add_demo")
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-/// 
+///
 /// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
-/// 
+///
 /// fval.addFnAttr(NoInline)
 ///
 /// let expect = 
@@ -279,19 +279,19 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// 
+///
 /// let fval = mod.addFunction(fty, "add_demo")
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-/// 
+///
 /// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
-/// 
+///
 /// fval.addFnAttr(NoInline)
 ///
 /// let expect = 
@@ -334,19 +334,19 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// 
+///
 /// let fval = mod.addFunction(fty, "add_demo")
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-/// 
+///
 /// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
-/// 
+///
 /// fval.addFnAttr(NoInline)
 /// assert_eq(fval.countFnAttrs(), 1)
 ///
@@ -367,19 +367,19 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// 
+///
 /// let fval = mod.addFunction(fty, "add_demo")
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-/// 
+///
 /// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
-/// 
+///
 /// fval.addRetAttr(InReg)
 ///
 /// let expect = 
@@ -405,19 +405,19 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
-/// 
+///
 /// let i32_ty = ctx.getInt32Ty()
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// 
+///
 /// let fval = mod.addFunction(fty, "add_demo")
 /// let bb = fval.addBasicBlock(name="entry")
 /// let arg1 = fval.getArg(0).unwrap()
 /// let arg2 = fval.getArg(1).unwrap()
-/// 
+///
 /// builder.setInsertPoint(bb)
 /// let add = builder.createAdd(arg1, arg2, name="sum")
 /// let _ = builder.createRet(add)
-/// 
+///
 /// fval.addRetAttr(InReg)
 ///
 /// let expect = 
@@ -491,7 +491,7 @@ pub impl Value for Argument with asValueEnum(self) {
 /// ```moonbit
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let f32_ty = ctx.getFloatTy()
 /// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
@@ -512,7 +512,7 @@ pub fn Argument::getName(self : Self) -> String {
 /// ```moonbit skip due to duplicate test.
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
-/// 
+///
 /// let f32_ty = ctx.getFloatTy()
 /// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///

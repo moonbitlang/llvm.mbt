@@ -188,7 +188,13 @@ test {
 对于结构体，GEP指令的索引数组包含两个元素：
 
 ```moonbit skip
-let member_ptr = builder.createGEP(struct_ptr, struct_type, [0, member_index], name="member_ptr")
+///|
+let member_ptr = builder.createGEP(
+  struct_ptr,
+  struct_type,
+  [0, member_index],
+  name="member_ptr",
+)
 ```
 
 - **第一个索引（0）**：表示这是一个指针解引用操作
@@ -404,7 +410,10 @@ gcc struct_demo.o print_helper.o -o struct_demo
 结构体可以包含其他结构体作为成员：
 
 ```moonbit skip
+///|
 let point_ty = ctx.getStructType([f64_ty, f64_ty], name="Point")
+
+///|
 let rectangle_ty = ctx.getStructType([point_ty, point_ty], name="Rectangle")
 ```
 
@@ -413,7 +422,10 @@ let rectangle_ty = ctx.getStructType([point_ty, point_ty], name="Rectangle")
 可以创建结构体的数组：
 
 ```moonbit skip
+///|
 let rational_array_ty = ctx.getArrayType(rational_ty, 10)
+
+///|
 let rational_array = builder.createAlloca(rational_array_ty, name="rationals")
 ```
 
@@ -422,6 +434,7 @@ let rational_array = builder.createAlloca(rational_array_ty, name="rationals")
 使用`isPacked=true`可以创建没有内存对齐的紧密打包结构体：
 
 ```moonbit skip
+///|
 let packed_ty = ctx.getStructType([i8_ty, i32_ty], isPacked=true, name="Packed")
 ```
 
