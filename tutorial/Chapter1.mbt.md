@@ -7,10 +7,12 @@
 在开始具体的运算操作之前，让我们首先回顾并深入理解llvm.mbt中的三个核心组件，它们构成了所有LLVM程序构建的基础：
 
 ```moonbit skip
+///|
 test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
+
 }
 ```
 
@@ -120,9 +122,16 @@ llvm.mbt提供了四种标准整数类型，满足绝大多数编程语言的需
 
 相应的类型获取方法为：
 ```moonbit skip
+///|
 let i8_ty = ctx.getInt8Ty()
+
+///|
 let i16_ty = ctx.getInt16Ty()
+
+///|
 let i32_ty = ctx.getInt32Ty()
+
+///|
 let i64_ty = ctx.getInt64Ty()
 ```
 
@@ -279,7 +288,10 @@ llvm.mbt支持多种精度的浮点数类型和相应的运算操作：
 
 相应的类型获取方法：
 ```moonbit skip
+///|
 let float_ty = ctx.getFloatTy()
+
+///|
 let double_ty = ctx.getDoubleTy()
 ```
 

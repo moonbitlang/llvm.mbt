@@ -9,7 +9,7 @@ import(
 
 // Errors
 pub suberror BasicBlockHasNoParentError String
-impl Show for BasicBlockHasNoParentError
+pub impl Show for BasicBlockHasNoParentError
 
 pub suberror BuilderError {
   UnsetPosition
@@ -19,31 +19,31 @@ pub suberror BuilderError {
   InValidArgument(String)
   UnImplemented(String)
 }
-impl Show for BuilderError
+pub impl Show for BuilderError
 
 pub suberror InValidOperation String
-impl Show for InValidOperation
+pub impl Show for InValidOperation
 
 pub suberror InValidTypeError String
-impl Show for InValidTypeError
+pub impl Show for InValidTypeError
 
 pub suberror IndexOutOfBounds String
-impl Show for IndexOutOfBounds
+pub impl Show for IndexOutOfBounds
 
 pub suberror InterpreterError {
   CreateInterpreterFailed(String)
 }
-impl Show for InterpreterError
+pub impl Show for InterpreterError
 
 pub suberror SetBodyForNonOpaqueStruct String
-impl Show for SetBodyForNonOpaqueStruct
+pub impl Show for SetBodyForNonOpaqueStruct
 
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
 }
 
 pub suberror WriteBitCodeToFileFailed String
-impl Show for WriteBitCodeToFileFailed
+pub impl Show for WriteBitCodeToFileFailed
 
 // Types and methods
 pub enum AbstractTypeEnum {
@@ -53,16 +53,16 @@ pub enum AbstractTypeEnum {
   TokenType(TokenType)
   FunctionType(FunctionType)
 }
-impl Show for AbstractTypeEnum
+pub impl Show for AbstractTypeEnum
 
 pub struct AddressSpace(UInt)
 #deprecated
-fn AddressSpace::inner(Self) -> UInt
-fn AddressSpace::new(UInt) -> Self
-impl Default for AddressSpace
-impl Eq for AddressSpace
-impl Hash for AddressSpace
-impl Show for AddressSpace
+pub fn AddressSpace::inner(Self) -> UInt
+pub fn AddressSpace::new(UInt) -> Self
+pub impl Default for AddressSpace
+pub impl Eq for AddressSpace
+pub impl Hash for AddressSpace
+pub impl Show for AddressSpace
 
 pub enum AggregateTypeEnum {
   StructType(StructType)
@@ -70,125 +70,125 @@ pub enum AggregateTypeEnum {
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
 }
-fn AggregateTypeEnum::asTypeClass(Self) -> &Type
-fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
-impl Eq for AggregateTypeEnum
-impl Show for AggregateTypeEnum
+pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
+pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
+pub impl Eq for AggregateTypeEnum
+pub impl Show for AggregateTypeEnum
 
 pub struct AllocaInst(@unsafe.LLVMValueRef)
-fn AllocaInst::getAllocatedType(Self) -> &Type
+pub fn AllocaInst::getAllocatedType(Self) -> &Type
 #deprecated
-fn AllocaInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for AllocaInst
-impl Instruction for AllocaInst
-impl Value for AllocaInst
-impl Show for AllocaInst
+pub fn AllocaInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for AllocaInst
+pub impl Instruction for AllocaInst
+pub impl Value for AllocaInst
+pub impl Show for AllocaInst
 
 pub struct Argument {
   value_ref : @unsafe.LLVMValueRef
   idx : Int
 }
-fn Argument::addAttr(Self, ParamAttr) -> Unit
-fn Argument::getFunction(Self) -> Function
-fn Argument::getName(Self) -> String
-fn Argument::removeAttr(Self, ParamAttr) -> Unit
-fn Argument::setName(Self, String) -> Unit
-impl Value for Argument
-impl Show for Argument
+pub fn Argument::addAttr(Self, ParamAttr) -> Unit
+pub fn Argument::getFunction(Self) -> Function
+pub fn Argument::getName(Self) -> String
+pub fn Argument::removeAttr(Self, ParamAttr) -> Unit
+pub fn Argument::setName(Self, String) -> Unit
+pub impl Value for Argument
+pub impl Show for Argument
 
 pub struct ArrayType(@unsafe.LLVMTypeRef)
-fn ArrayType::getElementCount(Self) -> Int
-fn ArrayType::getElementType(Self) -> &Type
+pub fn ArrayType::getElementCount(Self) -> Int
+pub fn ArrayType::getElementType(Self) -> &Type
 #deprecated
-fn ArrayType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AggregateType for ArrayType
-impl Type for ArrayType
-impl Eq for ArrayType
-impl Show for ArrayType
+pub fn ArrayType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AggregateType for ArrayType
+pub impl Type for ArrayType
+pub impl Eq for ArrayType
+pub impl Show for ArrayType
 
 pub struct Attribute(@unsafe.LLVMAttributeRef)
 #deprecated
-fn Attribute::inner(Self) -> @unsafe.LLVMAttributeRef
+pub fn Attribute::inner(Self) -> @unsafe.LLVMAttributeRef
 
 pub struct BFloatType(@unsafe.LLVMTypeRef)
 #deprecated
-fn BFloatType::inner(Self) -> @unsafe.LLVMTypeRef
-impl FPType for BFloatType
-impl PrimitiveType for BFloatType
-impl Type for BFloatType
-impl Eq for BFloatType
-impl Show for BFloatType
+pub fn BFloatType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl FPType for BFloatType
+pub impl PrimitiveType for BFloatType
+pub impl Type for BFloatType
+pub impl Eq for BFloatType
+pub impl Show for BFloatType
 
 pub struct BasicBlock(@unsafe.LLVMBasicBlockRef)
-fn BasicBlock::eraseFromParent(Self) -> Unit raise
-fn BasicBlock::getContext(Self) -> Context
-fn BasicBlock::getFirstInst(Self) -> &Instruction?
-fn BasicBlock::getLastInst(Self) -> &Instruction?
-fn BasicBlock::getName(Self) -> String
-fn BasicBlock::getNextBasicBlock(Self) -> Self?
-fn BasicBlock::getParent(Self) -> Function?
-fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
-fn BasicBlock::getTerminator(Self) -> &Instruction?
+pub fn BasicBlock::eraseFromParent(Self) -> Unit raise
+pub fn BasicBlock::getContext(Self) -> Context
+pub fn BasicBlock::getFirstInst(Self) -> &Instruction?
+pub fn BasicBlock::getLastInst(Self) -> &Instruction?
+pub fn BasicBlock::getName(Self) -> String
+pub fn BasicBlock::getNextBasicBlock(Self) -> Self?
+pub fn BasicBlock::getParent(Self) -> Function?
+pub fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
+pub fn BasicBlock::getTerminator(Self) -> &Instruction?
 #deprecated
-fn BasicBlock::inner(Self) -> @unsafe.LLVMBasicBlockRef
-fn BasicBlock::moveAfter(Self, Self) -> Unit raise
-fn BasicBlock::moveBefore(Self, Self) -> Unit raise
-fn BasicBlock::removeFromParent(Self) -> Unit raise
-fn BasicBlock::setName(Self, String) -> Unit
-impl InsertPoint for BasicBlock
-impl Value for BasicBlock
-impl Show for BasicBlock
+pub fn BasicBlock::inner(Self) -> @unsafe.LLVMBasicBlockRef
+pub fn BasicBlock::moveAfter(Self, Self) -> Unit raise
+pub fn BasicBlock::moveBefore(Self, Self) -> Unit raise
+pub fn BasicBlock::removeFromParent(Self) -> Unit raise
+pub fn BasicBlock::setName(Self, String) -> Unit
+pub impl InsertPoint for BasicBlock
+pub impl Value for BasicBlock
+pub impl Show for BasicBlock
 
 pub struct BinaryInst(@unsafe.LLVMValueRef)
 #deprecated
-fn BinaryInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for BinaryInst
-impl Instruction for BinaryInst
-impl Value for BinaryInst
-impl Show for BinaryInst
+pub fn BinaryInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for BinaryInst
+pub impl Instruction for BinaryInst
+pub impl Value for BinaryInst
+pub impl Show for BinaryInst
 
 pub struct BranchInst(@unsafe.LLVMValueRef)
-fn BranchInst::getNumSuccessors(Self) -> Int
-fn BranchInst::getSuccessor(Self, Int) -> BasicBlock?
+pub fn BranchInst::getNumSuccessors(Self) -> Int
+pub fn BranchInst::getSuccessor(Self, Int) -> BasicBlock?
 #deprecated
-fn BranchInst::inner(Self) -> @unsafe.LLVMValueRef
-fn BranchInst::isConditional(Self) -> Bool
+pub fn BranchInst::inner(Self) -> @unsafe.LLVMValueRef
+pub fn BranchInst::isConditional(Self) -> Bool
 #callsite(autofill(loc))
-fn BranchInst::setCondition(Self, &Value, loc~ : SourceLoc) -> Unit raise
+pub fn BranchInst::setCondition(Self, &Value, loc~ : SourceLoc) -> Unit raise
 #callsite(autofill(loc))
-fn BranchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
-impl InsertPoint for BranchInst
-impl Instruction for BranchInst
-impl Value for BranchInst
-impl Show for BranchInst
+pub fn BranchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
+pub impl InsertPoint for BranchInst
+pub impl Instruction for BranchInst
+pub impl Value for BranchInst
+pub impl Show for BranchInst
 
 pub struct CallInst(@unsafe.LLVMValueRef)
-fn CallInst::getTailCallKind(Self) -> TailCallKind
+pub fn CallInst::getTailCallKind(Self) -> TailCallKind
 #deprecated
-fn CallInst::inner(Self) -> @unsafe.LLVMValueRef
-fn CallInst::isTailCall(Self) -> Bool
-fn CallInst::removeTailCall(Self) -> Unit
-fn CallInst::setTailCall(Self) -> Unit
-fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
-impl InsertPoint for CallInst
-impl Instruction for CallInst
-impl Value for CallInst
-impl Show for CallInst
+pub fn CallInst::inner(Self) -> @unsafe.LLVMValueRef
+pub fn CallInst::isTailCall(Self) -> Bool
+pub fn CallInst::removeTailCall(Self) -> Unit
+pub fn CallInst::setTailCall(Self) -> Unit
+pub fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
+pub impl InsertPoint for CallInst
+pub impl Instruction for CallInst
+pub impl Value for CallInst
+pub impl Show for CallInst
 
 pub struct CastInst(@unsafe.LLVMValueRef)
 #deprecated
-fn CastInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for CastInst
-impl Instruction for CastInst
-impl Value for CastInst
-impl Show for CastInst
+pub fn CastInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for CastInst
+pub impl Instruction for CastInst
+pub impl Value for CastInst
+pub impl Show for CastInst
 
 pub struct ConstantArray(@unsafe.LLVMValueRef)
 #deprecated
-fn ConstantArray::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for ConstantArray
-impl Value for ConstantArray
-impl Show for ConstantArray
+pub fn ConstantArray::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for ConstantArray
+pub impl Value for ConstantArray
+pub impl Show for ConstantArray
 
 pub enum ConstantEnum {
   ConstantInt(ConstantInt)
@@ -203,133 +203,135 @@ pub enum ConstantEnum {
 
 pub struct ConstantFP(@unsafe.LLVMValueRef)
 #deprecated
-fn ConstantFP::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for ConstantFP
-impl Value for ConstantFP
-impl Show for ConstantFP
+pub fn ConstantFP::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for ConstantFP
+pub impl Value for ConstantFP
+pub impl Show for ConstantFP
 
 pub struct ConstantInt(@unsafe.LLVMValueRef)
+pub fn ConstantInt::getValueAsInt64(Self) -> Int64
+pub fn ConstantInt::getValueAsUInt64(Self) -> UInt64
 #deprecated
-fn ConstantInt::inner(Self) -> @unsafe.LLVMValueRef
-fn ConstantInt::to_int(Self) -> Int
-fn ConstantInt::to_uint(Self) -> UInt
-impl Constant for ConstantInt
-impl Value for ConstantInt
-impl Show for ConstantInt
+pub fn ConstantInt::inner(Self) -> @unsafe.LLVMValueRef
+pub fn ConstantInt::to_int(Self) -> Int
+pub fn ConstantInt::to_uint(Self) -> UInt
+pub impl Constant for ConstantInt
+pub impl Value for ConstantInt
+pub impl Show for ConstantInt
 
 pub struct ConstantPointerNull(@unsafe.LLVMValueRef)
 #deprecated
-fn ConstantPointerNull::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for ConstantPointerNull
-impl Value for ConstantPointerNull
-impl Show for ConstantPointerNull
+pub fn ConstantPointerNull::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for ConstantPointerNull
+pub impl Value for ConstantPointerNull
+pub impl Show for ConstantPointerNull
 
 pub struct ConstantStruct(@unsafe.LLVMValueRef)
 #deprecated
-fn ConstantStruct::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for ConstantStruct
-impl Value for ConstantStruct
-impl Show for ConstantStruct
+pub fn ConstantStruct::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for ConstantStruct
+pub impl Value for ConstantStruct
+pub impl Show for ConstantStruct
 
 pub struct ConstantVector(@unsafe.LLVMValueRef)
 #deprecated
-fn ConstantVector::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for ConstantVector
-impl Value for ConstantVector
-impl Show for ConstantVector
+pub fn ConstantVector::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for ConstantVector
+pub impl Value for ConstantVector
+pub impl Show for ConstantVector
 
 pub struct Context(@unsafe.LLVMContextRef)
-fn Context::addModule(Self, String) -> Module
-fn Context::createBuilder(Self) -> IRBuilder
-fn Context::drop(Self) -> Unit
-fn Context::getArrayType(Self, &Type, Int) -> ArrayType
-fn Context::getBFloatTy(Self) -> BFloatType
-fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray
-fn Context::getConstDouble(Self, Double) -> ConstantFP
-fn Context::getConstFalse(Self) -> ConstantInt
-fn Context::getConstFloat(Self, Float) -> ConstantFP
-fn Context::getConstInt16(Self, Int) -> ConstantInt
-fn Context::getConstInt32(Self, Int) -> ConstantInt
-fn Context::getConstInt64(Self, Int64) -> ConstantInt
-fn Context::getConstInt8(Self, Int) -> ConstantInt
-fn Context::getConstPointerNull(Self, &Type) -> ConstantPointerNull
-fn Context::getConstStruct(Self, Array[&Constant], isPacked? : Bool) -> ConstantStruct
-fn Context::getConstTrue(Self) -> ConstantInt
-fn Context::getConstUInt16(Self, UInt16) -> ConstantInt
-fn Context::getConstUInt32(Self, UInt) -> ConstantInt
-fn Context::getConstUInt64(Self, UInt64) -> ConstantInt
-fn Context::getConstUInt8(Self, Int) -> ConstantInt
-fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector
-fn Context::getConstZeroDouble(Self, isNegative~ : Bool) -> ConstantFP
-fn Context::getConstZeroFloat(Self, isNegative~ : Bool) -> ConstantFP
-fn Context::getDoubleTy(Self) -> DoubleType
-fn Context::getFP128Ty(Self) -> FP128Type
-fn[T : Type] Context::getFixedVectorType(Self, T, Int) -> VectorType
-fn Context::getFloatTy(Self) -> FloatType
-fn Context::getFunctionType(Self, &Type, Array[&Type], isVarArg? : Bool) -> FunctionType
-fn Context::getHalfTy(Self) -> HalfType
-fn Context::getInt16Ty(Self) -> Int16Type
-fn Context::getInt1Ty(Self) -> Int1Type
-fn Context::getInt32Ty(Self) -> Int32Type
-fn Context::getInt64Ty(Self) -> Int64Type
-fn Context::getInt8Ty(Self) -> Int8Type
-fn Context::getLabelTy(Self) -> LabelType
-fn Context::getMetadataTy(Self) -> MetadataType
-fn Context::getPoision(Self, &Type) -> PoisonValue
-fn Context::getPtrTy(Self, addressSpace? : AddressSpace) -> PointerType
-fn Context::getScalableVectorType(Self, &Type, UInt) -> ScalableVectorType
-fn Context::getStructType(Self, Array[&Type], isPacked? : Bool, name? : String) -> StructType
-fn Context::getStructTypeByName(Self, String) -> StructType?
-fn Context::getTokenTy(Self) -> TokenType
-fn Context::getUndef(Self, &Type) -> UndefValue
-fn Context::getVoidTy(Self) -> VoidType
+pub fn Context::addModule(Self, String) -> Module
+pub fn Context::createBuilder(Self) -> IRBuilder
+pub fn Context::drop(Self) -> Unit
+pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
+pub fn Context::getBFloatTy(Self) -> BFloatType
+pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray
+pub fn Context::getConstDouble(Self, Double) -> ConstantFP
+pub fn Context::getConstFalse(Self) -> ConstantInt
+pub fn Context::getConstFloat(Self, Float) -> ConstantFP
+pub fn Context::getConstInt16(Self, Int) -> ConstantInt
+pub fn Context::getConstInt32(Self, Int) -> ConstantInt
+pub fn Context::getConstInt64(Self, Int64) -> ConstantInt
+pub fn Context::getConstInt8(Self, Int) -> ConstantInt
+pub fn Context::getConstPointerNull(Self, &Type) -> ConstantPointerNull
+pub fn Context::getConstStruct(Self, Array[&Constant], isPacked? : Bool) -> ConstantStruct
+pub fn Context::getConstTrue(Self) -> ConstantInt
+pub fn Context::getConstUInt16(Self, UInt16) -> ConstantInt
+pub fn Context::getConstUInt32(Self, UInt) -> ConstantInt
+pub fn Context::getConstUInt64(Self, UInt64) -> ConstantInt
+pub fn Context::getConstUInt8(Self, Int) -> ConstantInt
+pub fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector
+pub fn Context::getConstZeroDouble(Self, isNegative~ : Bool) -> ConstantFP
+pub fn Context::getConstZeroFloat(Self, isNegative~ : Bool) -> ConstantFP
+pub fn Context::getDoubleTy(Self) -> DoubleType
+pub fn Context::getFP128Ty(Self) -> FP128Type
+pub fn[T : Type] Context::getFixedVectorType(Self, T, Int) -> VectorType
+pub fn Context::getFloatTy(Self) -> FloatType
+pub fn Context::getFunctionType(Self, &Type, Array[&Type], isVarArg? : Bool) -> FunctionType
+pub fn Context::getHalfTy(Self) -> HalfType
+pub fn Context::getInt16Ty(Self) -> Int16Type
+pub fn Context::getInt1Ty(Self) -> Int1Type
+pub fn Context::getInt32Ty(Self) -> Int32Type
+pub fn Context::getInt64Ty(Self) -> Int64Type
+pub fn Context::getInt8Ty(Self) -> Int8Type
+pub fn Context::getLabelTy(Self) -> LabelType
+pub fn Context::getMetadataTy(Self) -> MetadataType
+pub fn Context::getPoision(Self, &Type) -> PoisonValue
+pub fn Context::getPtrTy(Self, addressSpace? : AddressSpace) -> PointerType
+pub fn Context::getScalableVectorType(Self, &Type, UInt) -> ScalableVectorType
+pub fn Context::getStructType(Self, Array[&Type], isPacked? : Bool, name? : String) -> StructType
+pub fn Context::getStructTypeByName(Self, String) -> StructType?
+pub fn Context::getTokenTy(Self) -> TokenType
+pub fn Context::getUndef(Self, &Type) -> UndefValue
+pub fn Context::getVoidTy(Self) -> VoidType
 #deprecated
-fn Context::inner(Self) -> @unsafe.LLVMContextRef
-fn Context::new() -> Self
-impl Eq for Context
+pub fn Context::inner(Self) -> @unsafe.LLVMContextRef
+pub fn Context::new() -> Self
+pub impl Eq for Context
 
 pub struct DataLayout(@unsafe.LLVMTargetDataRef)
-fn DataLayout::getTypeAlignment(Self, &Type) -> Int
-fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
-fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
-fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
+pub fn DataLayout::getTypeAlignment(Self, &Type) -> Int
+pub fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
+pub fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
+pub fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
 #deprecated
-fn DataLayout::inner(Self) -> @unsafe.LLVMTargetDataRef
+pub fn DataLayout::inner(Self) -> @unsafe.LLVMTargetDataRef
 
 pub struct DoubleType(@unsafe.LLVMTypeRef)
 #deprecated
-fn DoubleType::inner(Self) -> @unsafe.LLVMTypeRef
-impl FPType for DoubleType
-impl PrimitiveType for DoubleType
-impl Type for DoubleType
-impl Eq for DoubleType
-impl Show for DoubleType
+pub fn DoubleType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl FPType for DoubleType
+pub impl PrimitiveType for DoubleType
+pub impl Type for DoubleType
+pub impl Eq for DoubleType
+pub impl Show for DoubleType
 
 pub struct ExtractValueInst(@unsafe.LLVMValueRef)
 #deprecated
-fn ExtractValueInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for ExtractValueInst
-impl Instruction for ExtractValueInst
-impl Value for ExtractValueInst
-impl Show for ExtractValueInst
+pub fn ExtractValueInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for ExtractValueInst
+pub impl Instruction for ExtractValueInst
+pub impl Value for ExtractValueInst
+pub impl Show for ExtractValueInst
 
 pub struct FCmpInst(@unsafe.LLVMValueRef)
-fn FCmpInst::getPredicate(Self) -> FloatPredicate
+pub fn FCmpInst::getPredicate(Self) -> FloatPredicate
 #deprecated
-fn FCmpInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for FCmpInst
-impl Instruction for FCmpInst
-impl Value for FCmpInst
-impl Show for FCmpInst
+pub fn FCmpInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for FCmpInst
+pub impl Instruction for FCmpInst
+pub impl Value for FCmpInst
+pub impl Show for FCmpInst
 
 pub struct FP128Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn FP128Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl FPType for FP128Type
-impl PrimitiveType for FP128Type
-impl Type for FP128Type
-impl Eq for FP128Type
-impl Show for FP128Type
+pub fn FP128Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl FPType for FP128Type
+pub impl PrimitiveType for FP128Type
+pub impl Type for FP128Type
+pub impl Eq for FP128Type
+pub impl Show for FP128Type
 
 pub enum FPTypeEnum {
   HalfType(HalfType)
@@ -338,10 +340,10 @@ pub enum FPTypeEnum {
   DoubleType(DoubleType)
   FP128Type(FP128Type)
 }
-fn FPTypeEnum::asTypeClass(Self) -> &Type
-fn FPTypeEnum::getFPMantissaWidth(Self) -> UInt
-impl Eq for FPTypeEnum
-impl Show for FPTypeEnum
+pub fn FPTypeEnum::asTypeClass(Self) -> &Type
+pub fn FPTypeEnum::getFPMantissaWidth(Self) -> UInt
+pub impl Eq for FPTypeEnum
+pub impl Show for FPTypeEnum
 
 pub(all) enum FastMathFlags {
   AllowReassoc
@@ -352,7 +354,7 @@ pub(all) enum FastMathFlags {
   AllowContract
   ApproxFunc
 }
-fn FastMathFlags::to_llvm(Self) -> @unsafe.LLVMFastMathFlags
+pub fn FastMathFlags::to_llvm(Self) -> @unsafe.LLVMFastMathFlags
 
 pub(all) enum FloatPredicate {
   OEQ
@@ -375,12 +377,12 @@ pub(all) enum FloatPredicate {
 
 pub struct FloatType(@unsafe.LLVMTypeRef)
 #deprecated
-fn FloatType::inner(Self) -> @unsafe.LLVMTypeRef
-impl FPType for FloatType
-impl PrimitiveType for FloatType
-impl Type for FloatType
-impl Eq for FloatType
-impl Show for FloatType
+pub fn FloatType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl FPType for FloatType
+pub impl PrimitiveType for FloatType
+pub impl Type for FloatType
+pub impl Eq for FloatType
+pub impl Show for FloatType
 
 pub(all) enum FnAttr {
   AllocAlign
@@ -394,70 +396,70 @@ pub(all) enum FnAttr {
   NoAlias
   AllocSize(Int)
 }
-impl Eq for FnAttr
+pub impl Eq for FnAttr
 
 pub struct Function(@unsafe.LLVMValueRef)
-fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock
-fn Function::addFnAttr(Self, FnAttr) -> Unit
-fn Function::addRetAttr(Self, RetAttr) -> Unit
-fn Function::countFnAttrs(Self) -> Int
-fn Function::getArg(Self, Int) -> Argument?
-fn Function::getArgs(Self) -> Array[Argument]
-fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
-fn Function::getName(Self) -> String
-fn Function::getNumArgs(Self) -> Int
-fn Function::getNumBasicBlocks(Self) -> Int
-fn Function::getType(Self) -> FunctionType
+pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock
+pub fn Function::addFnAttr(Self, FnAttr) -> Unit
+pub fn Function::addRetAttr(Self, RetAttr) -> Unit
+pub fn Function::countFnAttrs(Self) -> Int
+pub fn Function::getArg(Self, Int) -> Argument?
+pub fn Function::getArgs(Self) -> Array[Argument]
+pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
+pub fn Function::getName(Self) -> String
+pub fn Function::getNumArgs(Self) -> Int
+pub fn Function::getNumBasicBlocks(Self) -> Int
+pub fn Function::getType(Self) -> FunctionType
 #deprecated
-fn Function::inner(Self) -> @unsafe.LLVMValueRef
-fn Function::removeFnAttr(Self, FnAttr) -> Unit
-fn Function::removeRetAttr(Self, RetAttr) -> Unit
-fn Function::setName(Self, String) -> Unit
-impl GlobalValue for Function
-impl Value for Function
-impl Show for Function
+pub fn Function::inner(Self) -> @unsafe.LLVMValueRef
+pub fn Function::removeFnAttr(Self, FnAttr) -> Unit
+pub fn Function::removeRetAttr(Self, RetAttr) -> Unit
+pub fn Function::setName(Self, String) -> Unit
+pub impl GlobalValue for Function
+pub impl Value for Function
+pub impl Show for Function
 
 pub struct FunctionType(@unsafe.LLVMTypeRef)
-fn FunctionType::getNumParams(Self) -> Int
-fn FunctionType::getParamType(Self, Int) -> &Type?
-fn FunctionType::getParamTypes(Self) -> Array[&Type]
-fn FunctionType::getReturnType(Self) -> &Type
+pub fn FunctionType::getNumParams(Self) -> Int
+pub fn FunctionType::getParamType(Self, Int) -> &Type?
+pub fn FunctionType::getParamTypes(Self) -> Array[&Type]
+pub fn FunctionType::getReturnType(Self) -> &Type
 #deprecated
-fn FunctionType::inner(Self) -> @unsafe.LLVMTypeRef
-fn FunctionType::isVarArg(Self) -> Bool
-fn FunctionType::numOfParams(Self) -> Int
-fn FunctionType::params(Self) -> Array[&Type]
-impl AbstractType for FunctionType
-impl Type for FunctionType
-impl Eq for FunctionType
-impl Show for FunctionType
+pub fn FunctionType::inner(Self) -> @unsafe.LLVMTypeRef
+pub fn FunctionType::isVarArg(Self) -> Bool
+pub fn FunctionType::numOfParams(Self) -> Int
+pub fn FunctionType::params(Self) -> Array[&Type]
+pub impl AbstractType for FunctionType
+pub impl Type for FunctionType
+pub impl Eq for FunctionType
+pub impl Show for FunctionType
 
 pub struct GenericValue(@unsafe.LLVMGenericValueRef)
 #deprecated
-fn GenericValue::inner(Self) -> @unsafe.LLVMGenericValueRef
-fn GenericValue::toInt(Self) -> Int
-fn GenericValue::toInt64(Self) -> Int64
-fn GenericValue::toUInt(Self) -> UInt
-fn GenericValue::toUInt64(Self) -> UInt64
+pub fn GenericValue::inner(Self) -> @unsafe.LLVMGenericValueRef
+pub fn GenericValue::toInt(Self) -> Int
+pub fn GenericValue::toInt64(Self) -> Int64
+pub fn GenericValue::toUInt(Self) -> UInt
+pub fn GenericValue::toUInt64(Self) -> UInt64
 
 pub struct GetElementPtrInst(@unsafe.LLVMValueRef)
-fn GetElementPtrInst::getSourceElementType(Self) -> &Type
+pub fn GetElementPtrInst::getSourceElementType(Self) -> &Type
 #deprecated
-fn GetElementPtrInst::inner(Self) -> @unsafe.LLVMValueRef
-fn GetElementPtrInst::isInBounds(Self) -> Bool
-fn GetElementPtrInst::removeInBounds(Self) -> Unit
-fn GetElementPtrInst::setInBounds(Self) -> Unit
-impl InsertPoint for GetElementPtrInst
-impl Instruction for GetElementPtrInst
-impl Value for GetElementPtrInst
-impl Show for GetElementPtrInst
+pub fn GetElementPtrInst::inner(Self) -> @unsafe.LLVMValueRef
+pub fn GetElementPtrInst::isInBounds(Self) -> Bool
+pub fn GetElementPtrInst::removeInBounds(Self) -> Unit
+pub fn GetElementPtrInst::setInBounds(Self) -> Unit
+pub impl InsertPoint for GetElementPtrInst
+pub impl Instruction for GetElementPtrInst
+pub impl Value for GetElementPtrInst
+pub impl Show for GetElementPtrInst
 
 pub struct GlobalConstant(@unsafe.LLVMValueRef)
 #deprecated
-fn GlobalConstant::inner(Self) -> @unsafe.LLVMValueRef
-impl GlobalValue for GlobalConstant
-impl Value for GlobalConstant
-impl Show for GlobalConstant
+pub fn GlobalConstant::inner(Self) -> @unsafe.LLVMValueRef
+pub impl GlobalValue for GlobalConstant
+pub impl Value for GlobalConstant
+pub impl Show for GlobalConstant
 
 pub enum GlobalEnum {
   Function(Function)
@@ -467,210 +469,210 @@ pub enum GlobalEnum {
 
 pub struct GlobalVariable(@unsafe.LLVMValueRef)
 #deprecated
-fn GlobalVariable::inner(Self) -> @unsafe.LLVMValueRef
-impl GlobalValue for GlobalVariable
-impl Value for GlobalVariable
-impl Show for GlobalVariable
+pub fn GlobalVariable::inner(Self) -> @unsafe.LLVMValueRef
+pub impl GlobalValue for GlobalVariable
+pub impl Value for GlobalVariable
+pub impl Show for GlobalVariable
 
 pub struct HalfType(@unsafe.LLVMTypeRef)
 #deprecated
-fn HalfType::inner(Self) -> @unsafe.LLVMTypeRef
-impl FPType for HalfType
-impl PrimitiveType for HalfType
-impl Type for HalfType
-impl Eq for HalfType
-impl Show for HalfType
+pub fn HalfType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl FPType for HalfType
+pub impl PrimitiveType for HalfType
+pub impl Type for HalfType
+pub impl Eq for HalfType
+pub impl Show for HalfType
 
 pub struct ICmpInst(@unsafe.LLVMValueRef)
-fn ICmpInst::getPredicate(Self) -> IntPredicate
+pub fn ICmpInst::getPredicate(Self) -> IntPredicate
 #deprecated
-fn ICmpInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for ICmpInst
-impl Instruction for ICmpInst
-impl Value for ICmpInst
-impl Show for ICmpInst
+pub fn ICmpInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for ICmpInst
+pub impl Instruction for ICmpInst
+pub impl Value for ICmpInst
+pub impl Show for ICmpInst
 
 pub struct IRBuilder {
   builder_ref : @unsafe.LLVMBuilderRef
   // private fields
 }
 #callsite(autofill(loc))
-fn IRBuilder::createAShr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createAShr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createAlloca(Self, &Type, name? : String) -> AllocaInst raise
+pub fn IRBuilder::createAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createAlloca(Self, &Type, name? : String) -> AllocaInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createAnd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createAnd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createBitCast(Self, &Value, &Type, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createBr(Self, BasicBlock) -> BranchInst raise
+pub fn IRBuilder::createBitCast(Self, &Value, &Type, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createBr(Self, BasicBlock) -> BranchInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createCall(Self, Function, Array[&Value], name? : String, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createCall(Self, Function, Array[&Value], name? : String, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createCallPtr(Self, &Value, FunctionType, Array[&Value], name? : String, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createCallPtr(Self, &Value, FunctionType, Array[&Value], name? : String, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createCondBr(Self, &Value, BasicBlock, BasicBlock, loc~ : SourceLoc) -> BranchInst raise
+pub fn IRBuilder::createCondBr(Self, &Value, BasicBlock, BasicBlock, loc~ : SourceLoc) -> BranchInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createExactSDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createExactSDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createExactUDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createExactUDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createExtractValue(Self, &Value, Int, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createExtractValue(Self, &Value, Int, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFAdd(Self, &Value, &Value, name? : String, fast_math? : Array[FastMathFlags], loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFAdd(Self, &Value, &Value, name? : String, fast_math? : Array[FastMathFlags], loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmp(Self, FloatPredicate, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmp(Self, FloatPredicate, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpOEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpOEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpOGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpOGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpOGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpOGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpOLE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpOLE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpOLT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpOLT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpONE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpONE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpORD(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpORD(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpUEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpUEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpUGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpUGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpUGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpUGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpULE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpULE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpULT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpULT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFCmpUNE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFCmpUNE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFNeg(Self, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFNeg(Self, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFPExt(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFPExt(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFPToSI(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFPToSI(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFPToUI(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFPToUI(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFPTrunc(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFPTrunc(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFRem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFRem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFSub(Self, &Value, &Value, name? : String, fast_math? : Array[FastMathFlags], loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createFSub(Self, &Value, &Value, name? : String, fast_math? : Array[FastMathFlags], loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createFree(Self, &Value, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createFree(Self, &Value, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createGEP(Self, &Value, &Type, Array[&Value], name? : String, inbounds? : Bool, loc~ : SourceLoc) -> GetElementPtrInst raise
-fn IRBuilder::createGlobalString(Self, String, name? : String) -> GlobalConstant raise
+pub fn IRBuilder::createGEP(Self, &Value, &Type, Array[&Value], name? : String, inbounds? : Bool, loc~ : SourceLoc) -> GetElementPtrInst raise
+pub fn IRBuilder::createGlobalString(Self, String, name? : String) -> GlobalConstant raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmp(Self, IntPredicate, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmp(Self, IntPredicate, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpEQ(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpNE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpNE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpSGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpSGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpSGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpSGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpSLE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpSLE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpSLT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpSLT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpUGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpUGE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpUGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpUGT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpULE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpULE(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createICmpULT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createICmpULT(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createInsertValue(Self, &Value, &Value, Int, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createIntToPtr(Self, &Value, name? : String) -> &Value raise
+pub fn IRBuilder::createInsertValue(Self, &Value, &Value, Int, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createIntToPtr(Self, &Value, name? : String) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createLShr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createLoad(Self, &Type, &Value, name? : String) -> LoadInst raise
+pub fn IRBuilder::createLShr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createLoad(Self, &Type, &Value, name? : String) -> LoadInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createMalloc(Self, &Type, name? : String, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createMalloc(Self, &Type, name? : String, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createMemCpy(Self, &Value, Int, &Value, Int, &Value, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createMemCpy(Self, &Value, Int, &Value, Int, &Value, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createMemMove(Self, &Value, Int, &Value, Int, &Value, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createMemMove(Self, &Value, Int, &Value, Int, &Value, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createMemSet(Self, &Value, &Value, &Value, Int, loc~ : SourceLoc) -> CallInst raise
+pub fn IRBuilder::createMemSet(Self, &Value, &Value, &Value, Int, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNSWAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNSWAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNSWMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNSWMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNSWSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNSWSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNUWAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNUWAdd(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNUWMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNUWMul(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNUWSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNUWSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createNot(Self, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createNot(Self, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createOr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createPHI(Self, &Type, name? : String) -> PHINode raise
+pub fn IRBuilder::createOr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createPHI(Self, &Type, name? : String) -> PHINode raise
 #callsite(autofill(loc))
-fn IRBuilder::createPtrDiff(Self, &Type, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createPtrDiff(Self, &Type, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createPtrToInt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::createRet(Self, &Value) -> ReturnInst raise
-fn IRBuilder::createRetVoid(Self) -> ReturnInst raise
+pub fn IRBuilder::createPtrToInt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createRet(Self, &Value) -> ReturnInst raise
+pub fn IRBuilder::createRetVoid(Self) -> ReturnInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createSDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createSExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createSIToFP(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSIToFP(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createSRem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSRem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createSelect(Self, &Value, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSelect(Self, &Value, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createShl(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createShl(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createStore(Self, &Value, &Value, loc~ : SourceLoc) -> StoreInst raise
+pub fn IRBuilder::createStore(Self, &Value, &Value, loc~ : SourceLoc) -> StoreInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createSub(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createSwitch(Self, &Value, BasicBlock, loc~ : SourceLoc) -> SwitchInst raise
+pub fn IRBuilder::createSwitch(Self, &Value, BasicBlock, loc~ : SourceLoc) -> SwitchInst raise
 #callsite(autofill(loc))
-fn IRBuilder::createTrunc(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createTrunc(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createUDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createUDiv(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createUIToFP(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createUIToFP(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createURem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createURem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
-fn IRBuilder::createZExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
-fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
-fn IRBuilder::inner(Self) -> @unsafe.LLVMBuilderRef
-fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
+pub fn IRBuilder::createZExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
+pub fn IRBuilder::inner(Self) -> @unsafe.LLVMBuilderRef
+pub fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
 
 pub struct InsertValueInst(@unsafe.LLVMValueRef)
 #deprecated
-fn InsertValueInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for InsertValueInst
-impl Instruction for InsertValueInst
-impl Value for InsertValueInst
-impl Show for InsertValueInst
+pub fn InsertValueInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for InsertValueInst
+pub impl Instruction for InsertValueInst
+pub impl Value for InsertValueInst
+pub impl Show for InsertValueInst
 
 pub enum InstructionEnum {
   AllocaInst(AllocaInst)
@@ -694,48 +696,48 @@ pub enum InstructionEnum {
 
 pub struct Int16Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn Int16Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl IntegerType for Int16Type
-impl PrimitiveType for Int16Type
-impl Type for Int16Type
-impl Eq for Int16Type
-impl Show for Int16Type
+pub fn Int16Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl IntegerType for Int16Type
+pub impl PrimitiveType for Int16Type
+pub impl Type for Int16Type
+pub impl Eq for Int16Type
+pub impl Show for Int16Type
 
 pub struct Int1Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn Int1Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl IntegerType for Int1Type
-impl PrimitiveType for Int1Type
-impl Type for Int1Type
-impl Eq for Int1Type
-impl Show for Int1Type
+pub fn Int1Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl IntegerType for Int1Type
+pub impl PrimitiveType for Int1Type
+pub impl Type for Int1Type
+pub impl Eq for Int1Type
+pub impl Show for Int1Type
 
 pub struct Int32Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn Int32Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl IntegerType for Int32Type
-impl PrimitiveType for Int32Type
-impl Type for Int32Type
-impl Eq for Int32Type
-impl Show for Int32Type
+pub fn Int32Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl IntegerType for Int32Type
+pub impl PrimitiveType for Int32Type
+pub impl Type for Int32Type
+pub impl Eq for Int32Type
+pub impl Show for Int32Type
 
 pub struct Int64Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn Int64Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl IntegerType for Int64Type
-impl PrimitiveType for Int64Type
-impl Type for Int64Type
-impl Eq for Int64Type
-impl Show for Int64Type
+pub fn Int64Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl IntegerType for Int64Type
+pub impl PrimitiveType for Int64Type
+pub impl Type for Int64Type
+pub impl Eq for Int64Type
+pub impl Show for Int64Type
 
 pub struct Int8Type(@unsafe.LLVMTypeRef)
 #deprecated
-fn Int8Type::inner(Self) -> @unsafe.LLVMTypeRef
-impl IntegerType for Int8Type
-impl PrimitiveType for Int8Type
-impl Type for Int8Type
-impl Eq for Int8Type
-impl Show for Int8Type
+pub fn Int8Type::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl IntegerType for Int8Type
+pub impl PrimitiveType for Int8Type
+pub impl Type for Int8Type
+pub impl Eq for Int8Type
+pub impl Show for Int8Type
 
 pub(all) enum IntPredicate {
   EQ
@@ -757,32 +759,32 @@ pub enum IntegerTypeEnum {
   Int32Type(Int32Type)
   Int64Type(Int64Type)
 }
-fn IntegerTypeEnum::asTypeClass(Self) -> &Type
-fn IntegerTypeEnum::getBitWidth(Self) -> UInt
-impl Eq for IntegerTypeEnum
-impl Show for IntegerTypeEnum
+pub fn IntegerTypeEnum::asTypeClass(Self) -> &Type
+pub fn IntegerTypeEnum::getBitWidth(Self) -> UInt
+pub impl Eq for IntegerTypeEnum
+pub impl Show for IntegerTypeEnum
 
 pub struct Interpreter {
   engine : @unsafe.LLVMExecutionEngineRef
   mod : Module
   ctx : Context
 }
-fn Interpreter::createGenericValueDouble(Self, Double) -> GenericValue
-fn Interpreter::createGenericValueFloat(Self, Float) -> GenericValue
-fn Interpreter::createGenericValueInt(Self, Int) -> GenericValue
-fn Interpreter::createGenericValueInt64(Self, Int64) -> GenericValue
-fn Interpreter::createGenericValueUInt(Self, UInt) -> GenericValue
-fn Interpreter::createGenericValueUInt64(Self, UInt64) -> GenericValue
-fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
-fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
+pub fn Interpreter::createGenericValueDouble(Self, Double) -> GenericValue
+pub fn Interpreter::createGenericValueFloat(Self, Float) -> GenericValue
+pub fn Interpreter::createGenericValueInt(Self, Int) -> GenericValue
+pub fn Interpreter::createGenericValueInt64(Self, Int64) -> GenericValue
+pub fn Interpreter::createGenericValueUInt(Self, UInt) -> GenericValue
+pub fn Interpreter::createGenericValueUInt64(Self, UInt64) -> GenericValue
+pub fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
+pub fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
 
 pub struct LabelType(@unsafe.LLVMTypeRef)
 #deprecated
-fn LabelType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AbstractType for LabelType
-impl Type for LabelType
-impl Eq for LabelType
-impl Show for LabelType
+pub fn LabelType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AbstractType for LabelType
+pub impl Type for LabelType
+pub impl Eq for LabelType
+pub impl Show for LabelType
 
 pub(all) enum Linkage {
   ExternalLinkage
@@ -806,53 +808,53 @@ pub(all) enum Linkage {
 
 pub struct LoadInst(@unsafe.LLVMValueRef)
 #deprecated
-fn LoadInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for LoadInst
-impl Instruction for LoadInst
-impl Value for LoadInst
-impl Show for LoadInst
+pub fn LoadInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for LoadInst
+pub impl Instruction for LoadInst
+pub impl Value for LoadInst
+pub impl Show for LoadInst
 
 pub struct MetadataType(@unsafe.LLVMTypeRef)
 #deprecated
-fn MetadataType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AbstractType for MetadataType
-impl Type for MetadataType
-impl Eq for MetadataType
-impl Show for MetadataType
+pub fn MetadataType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AbstractType for MetadataType
+pub impl Type for MetadataType
+pub impl Eq for MetadataType
+pub impl Show for MetadataType
 
 pub struct Module(@unsafe.LLVMModuleRef)
-fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function
-fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant
-fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable
-fn Module::createInterpreter(Self) -> Interpreter raise
-fn Module::dump(Self) -> Unit
-fn Module::getContext(Self) -> Context
-fn Module::getDataLayout(Self) -> DataLayout
-fn Module::getFirstFunction(Self) -> Function?
-fn Module::getFunction(Self, String) -> Function?
-fn Module::getFunctions(Self) -> Array[Function]
-fn Module::getLastFunction(Self) -> Function?
-fn Module::getName(Self) -> String
-fn Module::getSourceFileName(Self) -> String
+pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function
+pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant
+pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable
+pub fn Module::createInterpreter(Self) -> Interpreter raise
+pub fn Module::dump(Self) -> Unit
+pub fn Module::getContext(Self) -> Context
+pub fn Module::getDataLayout(Self) -> DataLayout
+pub fn Module::getFirstFunction(Self) -> Function?
+pub fn Module::getFunction(Self, String) -> Function?
+pub fn Module::getFunctions(Self) -> Array[Function]
+pub fn Module::getLastFunction(Self) -> Function?
+pub fn Module::getName(Self) -> String
+pub fn Module::getSourceFileName(Self) -> String
 #deprecated
-fn Module::inner(Self) -> @unsafe.LLVMModuleRef
-fn Module::setDataLayout(Self, String) -> Unit
-fn Module::setDefaultDataLayout(Self) -> Unit
-fn Module::setName(Self, String) -> Unit
-fn Module::setSourceFileName(Self, String) -> Unit
-fn Module::writeBitCodeToFile(Self, String) -> Unit raise
-impl Show for Module
+pub fn Module::inner(Self) -> @unsafe.LLVMModuleRef
+pub fn Module::setDataLayout(Self, String) -> Unit
+pub fn Module::setDefaultDataLayout(Self) -> Unit
+pub fn Module::setName(Self, String) -> Unit
+pub fn Module::setSourceFileName(Self, String) -> Unit
+pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise
+pub impl Show for Module
 
 pub struct PHINode(@unsafe.LLVMValueRef)
-fn PHINode::addIncoming(Self, &Value, BasicBlock) -> Unit
-fn PHINode::countIncoming(Self) -> Int
-fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
+pub fn PHINode::addIncoming(Self, &Value, BasicBlock) -> Unit
+pub fn PHINode::countIncoming(Self) -> Int
+pub fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
 #deprecated
-fn PHINode::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for PHINode
-impl Instruction for PHINode
-impl Value for PHINode
-impl Show for PHINode
+pub fn PHINode::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for PHINode
+pub impl Instruction for PHINode
+pub impl Value for PHINode
+pub impl Show for PHINode
 
 pub(all) enum ParamAttr {
   Alignment(Int)
@@ -860,27 +862,27 @@ pub(all) enum ParamAttr {
   NonNull
   InReg
 }
-impl Eq for ParamAttr
+pub impl Eq for ParamAttr
 
 pub struct PointerType(@unsafe.LLVMTypeRef)
-fn PointerType::getAddressSpace(Self) -> AddressSpace
+pub fn PointerType::getAddressSpace(Self) -> AddressSpace
 #deprecated
-fn PointerType::inner(Self) -> @unsafe.LLVMTypeRef
-fn PointerType::isLoadableOrStorableType(&Type) -> Bool
-impl Type for PointerType
-impl Eq for PointerType
-impl Show for PointerType
+pub fn PointerType::inner(Self) -> @unsafe.LLVMTypeRef
+pub fn PointerType::isLoadableOrStorableType(&Type) -> Bool
+pub impl Type for PointerType
+pub impl Eq for PointerType
+pub impl Show for PointerType
 
 pub struct PoisonValue(@unsafe.LLVMValueRef)
 #deprecated
-fn PoisonValue::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for PoisonValue
-impl Value for PoisonValue
-impl Show for PoisonValue
+pub fn PoisonValue::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for PoisonValue
+pub impl Value for PoisonValue
+pub impl Show for PoisonValue
 
 type PositionState
-impl Eq for PositionState
-impl Show for PositionState
+pub impl Eq for PositionState
+pub impl Show for PositionState
 
 pub enum PrimitiveTypeEnum {
   HalfType(HalfType)
@@ -894,78 +896,78 @@ pub enum PrimitiveTypeEnum {
   Int32Type(Int32Type)
   Int64Type(Int64Type)
 }
-impl Eq for PrimitiveTypeEnum
-impl Show for PrimitiveTypeEnum
+pub impl Eq for PrimitiveTypeEnum
+pub impl Show for PrimitiveTypeEnum
 
 pub(all) enum RetAttr {
   NoAlias
   NonNull
   InReg
 }
-impl Eq for RetAttr
+pub impl Eq for RetAttr
 
 pub struct ReturnInst(@unsafe.LLVMValueRef)
 #deprecated
-fn ReturnInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for ReturnInst
-impl Instruction for ReturnInst
-impl Value for ReturnInst
-impl Show for ReturnInst
+pub fn ReturnInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for ReturnInst
+pub impl Instruction for ReturnInst
+pub impl Value for ReturnInst
+pub impl Show for ReturnInst
 
 pub struct ScalableVectorType(@unsafe.LLVMTypeRef)
-fn ScalableVectorType::getElementCount(Self) -> Int
-fn ScalableVectorType::getElementType(Self) -> &Type
+pub fn ScalableVectorType::getElementCount(Self) -> Int
+pub fn ScalableVectorType::getElementType(Self) -> &Type
 #deprecated
-fn ScalableVectorType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AggregateType for ScalableVectorType
-impl Type for ScalableVectorType
-impl Eq for ScalableVectorType
-impl Show for ScalableVectorType
+pub fn ScalableVectorType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AggregateType for ScalableVectorType
+pub impl Type for ScalableVectorType
+pub impl Eq for ScalableVectorType
+pub impl Show for ScalableVectorType
 
 pub struct SelectInst(@unsafe.LLVMValueRef)
 #deprecated
-fn SelectInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for SelectInst
-impl Instruction for SelectInst
-impl Value for SelectInst
-impl Show for SelectInst
+pub fn SelectInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for SelectInst
+pub impl Instruction for SelectInst
+pub impl Value for SelectInst
+pub impl Show for SelectInst
 
 pub struct StoreInst(@unsafe.LLVMValueRef)
 #deprecated
-fn StoreInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for StoreInst
-impl Instruction for StoreInst
-impl Value for StoreInst
-impl Show for StoreInst
+pub fn StoreInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for StoreInst
+pub impl Instruction for StoreInst
+pub impl Value for StoreInst
+pub impl Show for StoreInst
 
 pub struct StructType(@unsafe.LLVMTypeRef)
-fn StructType::elements(Self) -> Array[&Type]
-fn StructType::getElementType(Self, Int) -> &Type?
+pub fn StructType::elements(Self) -> Array[&Type]
+pub fn StructType::getElementType(Self, Int) -> &Type?
 #deprecated
-fn StructType::inner(Self) -> @unsafe.LLVMTypeRef
-fn StructType::isLiteral(Self) -> Bool
-fn StructType::isOpaque(Self) -> Bool
-fn StructType::isPacked(Self) -> Bool
-fn StructType::isSized(Self) -> Bool
-fn StructType::numOfElements(Self) -> Int
-fn StructType::setBody(Self, Array[&Type], isPacked? : Bool) -> Unit raise
-impl AggregateType for StructType
-impl Type for StructType
-impl Eq for StructType
-impl Show for StructType
+pub fn StructType::inner(Self) -> @unsafe.LLVMTypeRef
+pub fn StructType::isLiteral(Self) -> Bool
+pub fn StructType::isOpaque(Self) -> Bool
+pub fn StructType::isPacked(Self) -> Bool
+pub fn StructType::isSized(Self) -> Bool
+pub fn StructType::numOfElements(Self) -> Int
+pub fn StructType::setBody(Self, Array[&Type], isPacked? : Bool) -> Unit raise
+pub impl AggregateType for StructType
+pub impl Type for StructType
+pub impl Eq for StructType
+pub impl Show for StructType
 
 pub struct SwitchInst(@unsafe.LLVMValueRef)
-fn SwitchInst::addCase(Self, &Value, BasicBlock) -> Unit raise
-fn SwitchInst::getNumSuccessors(Self) -> Int
-fn SwitchInst::getSuccessor(Self, Int) -> BasicBlock?
+pub fn SwitchInst::addCase(Self, &Value, BasicBlock) -> Unit raise
+pub fn SwitchInst::getNumSuccessors(Self) -> Int
+pub fn SwitchInst::getSuccessor(Self, Int) -> BasicBlock?
 #deprecated
-fn SwitchInst::inner(Self) -> @unsafe.LLVMValueRef
+pub fn SwitchInst::inner(Self) -> @unsafe.LLVMValueRef
 #callsite(autofill(loc))
-fn SwitchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
-impl InsertPoint for SwitchInst
-impl Instruction for SwitchInst
-impl Value for SwitchInst
-impl Show for SwitchInst
+pub fn SwitchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
+pub impl InsertPoint for SwitchInst
+pub impl Instruction for SwitchInst
+pub impl Value for SwitchInst
+pub impl Show for SwitchInst
 
 pub(all) enum TailCallKind {
   None
@@ -973,15 +975,15 @@ pub(all) enum TailCallKind {
   MustTail
   NoTail
 }
-impl Show for TailCallKind
+pub impl Show for TailCallKind
 
 pub struct TokenType(@unsafe.LLVMTypeRef)
 #deprecated
-fn TokenType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AbstractType for TokenType
-impl Type for TokenType
-impl Eq for TokenType
-impl Show for TokenType
+pub fn TokenType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AbstractType for TokenType
+pub impl Type for TokenType
+pub impl Eq for TokenType
+pub impl Show for TokenType
 
 pub enum TypeEnum {
   HalfType(HalfType)
@@ -1005,24 +1007,24 @@ pub enum TypeEnum {
   ScalableVectorType(ScalableVectorType)
   PointerType(PointerType)
 }
-fn TypeEnum::asTypeClass(Self) -> &Type
-impl Eq for TypeEnum
-impl Show for TypeEnum
+pub fn TypeEnum::asTypeClass(Self) -> &Type
+pub impl Eq for TypeEnum
+pub impl Show for TypeEnum
 
 pub struct UnaryInst(@unsafe.LLVMValueRef)
 #deprecated
-fn UnaryInst::inner(Self) -> @unsafe.LLVMValueRef
-impl InsertPoint for UnaryInst
-impl Instruction for UnaryInst
-impl Value for UnaryInst
-impl Show for UnaryInst
+pub fn UnaryInst::inner(Self) -> @unsafe.LLVMValueRef
+pub impl InsertPoint for UnaryInst
+pub impl Instruction for UnaryInst
+pub impl Value for UnaryInst
+pub impl Show for UnaryInst
 
 pub struct UndefValue(@unsafe.LLVMValueRef)
 #deprecated
-fn UndefValue::inner(Self) -> @unsafe.LLVMValueRef
-impl Constant for UndefValue
-impl Value for UndefValue
-impl Show for UndefValue
+pub fn UndefValue::inner(Self) -> @unsafe.LLVMValueRef
+pub impl Constant for UndefValue
+pub impl Value for UndefValue
+pub impl Show for UndefValue
 
 pub(all) enum UnnamedAddr {
   NoUnnamedAddr
@@ -1064,22 +1066,22 @@ pub enum ValueEnum {
 }
 
 pub struct VectorType(@unsafe.LLVMTypeRef)
-fn VectorType::getElementCount(Self) -> Int
-fn VectorType::getElementType(Self) -> &Type
+pub fn VectorType::getElementCount(Self) -> Int
+pub fn VectorType::getElementType(Self) -> &Type
 #deprecated
-fn VectorType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AggregateType for VectorType
-impl Type for VectorType
-impl Eq for VectorType
-impl Show for VectorType
+pub fn VectorType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AggregateType for VectorType
+pub impl Type for VectorType
+pub impl Eq for VectorType
+pub impl Show for VectorType
 
 pub struct VoidType(@unsafe.LLVMTypeRef)
 #deprecated
-fn VoidType::inner(Self) -> @unsafe.LLVMTypeRef
-impl AbstractType for VoidType
-impl Type for VoidType
-impl Eq for VoidType
-impl Show for VoidType
+pub fn VoidType::inner(Self) -> @unsafe.LLVMTypeRef
+pub impl AbstractType for VoidType
+pub impl Type for VoidType
+pub impl Eq for VoidType
+pub impl Show for VoidType
 
 // Type aliases
 pub using @unsafe {type LLVMValueRef as ValueRef}
@@ -1095,7 +1097,7 @@ pub trait AggregateType : Type {
 }
 
 pub trait Constant : Value {
-  asConstEnum(Self) -> ConstantEnum
+  asConstantEnum(Self) -> ConstantEnum
 }
 
 pub trait FPType : PrimitiveType {
@@ -1175,7 +1177,7 @@ pub trait Value : Show {
   getValueName(Self) -> String?
   setValueName(Self, String) -> Unit
   replaceAllUsesWith(Self, &Value) -> Unit
-  tryAsConst(Self) -> &Constant?
-  tryAsConstEnum(Self) -> ConstantEnum?
+  tryAsConstant(Self) -> &Constant?
+  tryAsConstantEnum(Self) -> ConstantEnum?
 }
 

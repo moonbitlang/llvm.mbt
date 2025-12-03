@@ -17,6 +17,7 @@ pub fn ConstantInt::getValueAsInt64(self : Self) -> Int64 {
   val
 }
 
+///|
 pub fn ConstantInt::getValueAsUInt64(self : Self) -> UInt64 {
   let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
   val
