@@ -203,8 +203,13 @@ test {
 
 #### 1. 内存分配阶段
 ```moonbit skip
+///|
 let a_square_ptr = builder.createAlloca(i32_ty, name="a_square")
-let b_square_ptr = builder.createAlloca(i32_ty, name="b_square") 
+
+///|
+let b_square_ptr = builder.createAlloca(i32_ty, name="b_square")
+
+///|
 let sum_ptr = builder.createAlloca(i32_ty, name="sum")
 ```
 
@@ -220,7 +225,12 @@ let _ = builder.createStore(a_squared_val, a_square_ptr)
 
 #### 3. 加载与使用
 ```moonbit skip
-let a_square_loaded = builder.createLoad(i32_ty, a_square_ptr, name="a_square_loaded")
+///|
+let a_square_loaded = builder.createLoad(
+  i32_ty,
+  a_square_ptr,
+  name="a_square_loaded",
+)
 ```
 
 当需要使用变量的值时，我们使用`load`指令从内存中读取。`load`指令需要两个参数：要加载的数据类型和源内存地址。

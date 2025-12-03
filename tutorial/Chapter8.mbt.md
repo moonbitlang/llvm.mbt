@@ -31,17 +31,19 @@
 示例程序：
 
 ```moonbit skip
-fn calculate_area(radius: Double) -> Double {
-  let pi: Double = 3.14159;
-  let area: Double = pi * radius * radius;
-  return area;
+///|
+fn calculate_area(radius : Double) -> Double {
+  let pi : Double = 3.14159
+  let area : Double = pi * radius * radius
+  return area
 }
 
+///|
 fn main {
-  let mut result: Double = 0.0;
-  let r: Double = 5.0;
-  result = calculate_area(r);
-  println_double(result);
+  let mut result : Double = 0.0
+  let r : Double = 5.0
+  result = calculate_area(r)
+  println_double(result)
 }
 ```
 
@@ -52,74 +54,99 @@ fn main {
 **原始表达式：**
 
 ```moonbit skip
-let x = 1.0;
-let y = 2.0;
-let z = sin(x) * cos(y) + sin(y) * cos(x);
+///|
+let x = 1.0
+
+///|
+let y = 2.0
+
+///|
+let z = sin(x) * cos(y) + sin(y) * cos(x)
 ```
 
 **KNF 转换后：**
 
 ```moonbit skip
-let x = 1.0;
-let y = 2.0;
-let tmp1: Double = sin(x);
-let tmp2: Double = cos(y);
-let tmp3: Double = tmp1 * tmp2;
-let tmp4: Double = sin(y);
-let tmp5: Double = cos(x);
-let tmp6: Double = tmp4 * tmp5;
-let z: Double = tmp3 + tmp6;
+///|
+let x = 1.0
+
+///|
+let y = 2.0
+
+///|
+let tmp1 : Double = sin(x)
+
+///|
+let tmp2 : Double = cos(y)
+
+///|
+let tmp3 : Double = tmp1 * tmp2
+
+///|
+let tmp4 : Double = sin(y)
+
+///|
+let tmp5 : Double = cos(x)
+
+///|
+let tmp6 : Double = tmp4 * tmp5
+
+///|
+let z : Double = tmp3 + tmp6
 ```
 
 表达式 ADT 定义：
 
 ```moonbit skip
+///|
 enum Expr {
   // 整数运算
-  Neg(String)                    // -operand
-  Add(String, String)            // lhs + rhs
-  Sub(String, String)            // lhs - rhs
-  Mul(String, String)            // lhs * rhs
-  Div(String, String)            // lhs / rhs
-  
+  Neg(String) // -operand
+  Add(String, String) // lhs + rhs
+  Sub(String, String) // lhs - rhs
+  Mul(String, String) // lhs * rhs
+  Div(String, String) // lhs / rhs
+
   // 整数比较
-  IEQ(String, String)            // lhs == rhs
-  INE(String, String)            // lhs != rhs
-  IGE(String, String)            // lhs >= rhs
-  IGT(String, String)            // lhs > rhs
-  ILE(String, String)            // lhs <= rhs
-  ILT(String, String)            // lhs < rhs
-  
+  IEQ(String, String) // lhs == rhs
+  INE(String, String) // lhs != rhs
+  IGE(String, String) // lhs >= rhs
+  IGT(String, String) // lhs > rhs
+  ILE(String, String) // lhs <= rhs
+  ILT(String, String) // lhs < rhs
+
   // 浮点运算
-  FNeg(String)                   // -operand
-  FAdd(String, String)           // lhs + rhs
-  FSub(String, String)           // lhs - rhs
-  FMul(String, String)           // lhs * rhs
-  FDiv(String, String)           // lhs / rhs
-  
+  FNeg(String) // -operand
+  FAdd(String, String) // lhs + rhs
+  FSub(String, String) // lhs - rhs
+  FMul(String, String) // lhs * rhs
+  FDiv(String, String) // lhs / rhs
+
   // 浮点比较
-  FEQ(String, String)            // lhs == rhs
-  FNE(String, String)            // lhs != rhs
-  FGE(String, String)            // lhs >= rhs
-  FGT(String, String)            // lhs > rhs
-  FLE(String, String)            // lhs <= rhs
-  FLT(String, String)            // lhs < rhs
-  
+  FEQ(String, String) // lhs == rhs
+  FNE(String, String) // lhs != rhs
+  FGE(String, String) // lhs >= rhs
+  FGT(String, String) // lhs > rhs
+  FLE(String, String) // lhs <= rhs
+  FLT(String, String) // lhs < rhs
+
   // 函数调用
-  Call(String, Array[String])    // function_name(args...)
+  Call(String, Array[String]) // function_name(args...)
 }
 ```
 
 ### 8.3.1 类型定义
 
 ```moonbit skip
+///|
 enum ParserType {
   Int
   Double
   Unit
 }
 
-fn ParserType::to_llvm(self, ctx: Context) -> &Type {
+///|
+fn ParserType::to_llvm(self, ctx : Context) -> &Type {
   match self {
     Int => ctx.getInt32Ty() as &Type
     Double => ctx.getDoubleTy()
@@ -131,29 +158,32 @@ fn ParserType::to_llvm(self, ctx: Context) -> &Type {
 ### 8.3.2 语句定义
 
 ```moonbit skip
+///|
 enum Stmt {
-  Let(String, ParserType, Expr)          // let var: type = expr;
-  LetMut(String, ParserType, Expr)       // let mut var: type = expr;
-  Assign(String, Expr)                   // var = expr;
-  If(Expr, Array[Stmt], Array[Stmt])     // if cond { stmts } else { stmts }
-  While(Expr, Array[Stmt])               // while cond { stmts }
-  Return(Expr?)                          // return expr?;
-  ExprStmt(Expr)                         // expr;
+  Let(String, ParserType, Expr) // let var: type = expr;
+  LetMut(String, ParserType, Expr) // let mut var: type = expr;
+  Assign(String, Expr) // var = expr;
+  If(Expr, Array[Stmt], Array[Stmt]) // if cond { stmts } else { stmts }
+  While(Expr, Array[Stmt]) // while cond { stmts }
+  Return(Expr?) // return expr?;
+  ExprStmt(Expr) // expr;
 }
 ```
 
 ### 8.3.3 函数定义
 
 ```moonbit skip
+///|
 struct FunctionDef {
-  name: String
-  params: Array[(String, ParserType)]    // [(param_name, param_type), ...]
-  ret_ty: ParserType
-  body: Array[Stmt]
+  name : String
+  params : Array[(String, ParserType)] // [(param_name, param_type), ...]
+  ret_ty : ParserType
+  body : Array[Stmt]
 }
 
+///|
 struct Program {
-  functions: Array[FunctionDef]
+  functions : Array[FunctionDef]
 }
 ```
 
@@ -162,19 +192,21 @@ struct Program {
 ### 8.4.1 代码生成器结构
 
 ```moonbit skip
+///|
 struct CodeGen {
-  ctx: Context
-  mod: Module
-  builder: IRBuilder
-  symbol_table: Map[String, &Value]
-  
+  ctx : Context
+  mod : Module
+  builder : IRBuilder
+  symbol_table : Map[String, &Value]
+
   // 控制流管理
-  current_function: Function?
-  break_blocks: Array[BasicBlock]    // 用于 break 语句
-  continue_blocks: Array[BasicBlock] // 用于 continue 语句
+  current_function : Function?
+  break_blocks : Array[BasicBlock] // 用于 break 语句
+  continue_blocks : Array[BasicBlock] // 用于 continue 语句
 }
 
-fn CodeGen::new(ctx: Context, mod_name: String) -> Self {
+///|
+fn CodeGen::new(ctx : Context, mod_name : String) -> Self {
   let mod = ctx.addModule(mod_name)
   let builder = ctx.createBuilder()
   CodeGen::{
@@ -194,7 +226,8 @@ fn CodeGen::new(ctx: Context, mod_name: String) -> Self {
 表达式代码生成的核心是从符号表获取操作数，然后生成相应的 LLVM 指令：
 
 ```moonbit skip
-fn Expr::compile(self, gen: CodeGen) -> &Value raise {
+///|
+fn Expr::compile(self, gen : CodeGen) -> &Value raise {
   match self {
     // 整数取负：使用 0 - operand
     Neg(operand) => {
@@ -202,140 +235,127 @@ fn Expr::compile(self, gen: CodeGen) -> &Value raise {
       let zero = gen.ctx.getConstInt32(0)
       gen.builder.createSub(zero, operand_val)
     }
-    
+
     // 整数加法
     Add(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createAdd(lhs_val, rhs_val)
     }
-    
+
     // 整数减法
     Sub(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createSub(lhs_val, rhs_val)
     }
-    
+
     // 整数乘法
     Mul(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createMul(lhs_val, rhs_val)
     }
-    
+
     // 整数除法
     Div(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createSDiv(lhs_val, rhs_val)
     }
-    
+
     // 整数比较
     IEQ(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpEQ(lhs_val, rhs_val)
     }
-    
     INE(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpNE(lhs_val, rhs_val)
     }
-    
     IGE(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpSGE(lhs_val, rhs_val)
     }
-    
     IGT(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpSGT(lhs_val, rhs_val)
     }
-    
     ILE(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpSLE(lhs_val, rhs_val)
     }
-    
     ILT(lhs, rhs) => {
       let lhs_val = self.get_value(gen, lhs)
       let rhs_val = self.get_value(gen, rhs)
       gen.builder.createICmpSLT(lhs_val, rhs_val)
     }
-    
+
     // 浮点取负：使用专用的 FNeg 指令
     FNeg(operand) => {
       let operand_val = self.get_float_value(gen, operand)
       gen.builder.createFNeg(operand_val)
     }
-    
+
     // 浮点运算
     FAdd(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFAdd(lhs_val, rhs_val)
     }
-    
     FSub(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFSub(lhs_val, rhs_val)
     }
-    
     FMul(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFMul(lhs_val, rhs_val)
     }
-    
     FDiv(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFDiv(lhs_val, rhs_val)
     }
-    
+
     // 浮点比较
     FEQ(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpOEQ(lhs_val, rhs_val)
     }
-    
     FNE(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpONE(lhs_val, rhs_val)
     }
-    
     FGE(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpOGE(lhs_val, rhs_val)
     }
-    
     FGT(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpOGT(lhs_val, rhs_val)
     }
-    
     FLE(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpOLE(lhs_val, rhs_val)
     }
-    
     FLT(lhs, rhs) => {
       let lhs_val = self.get_float_value(gen, lhs)
       let rhs_val = self.get_float_value(gen, rhs)
       gen.builder.createFCmpOLT(lhs_val, rhs_val)
     }
-    
+
     // 函数调用
     Call(fname, args) => {
       let func = gen.symbol_table.get(fname).unwrap()
@@ -362,7 +382,9 @@ fn Expr::compile(self, gen: CodeGen) -> &Value raise {
 }
 
 // 辅助方法：获取整数值
-fn Expr::get_value(self: Expr, gen: CodeGen, name: String) -> &Value raise {
+
+///|
+fn Expr::get_value(self : Expr, gen : CodeGen, name : String) -> &Value raise {
   let val = gen.symbol_table.get(name).unwrap()
   match val.getType().asTypeEnum() {
     PointerType(_) => gen.builder.createLoad(gen.ctx.getInt32Ty(), val)
@@ -372,7 +394,13 @@ fn Expr::get_value(self: Expr, gen: CodeGen, name: String) -> &Value raise {
 }
 
 // 辅助方法：获取浮点值
-fn Expr::get_float_value(self: Expr, gen: CodeGen, name: String) -> &Value raise {
+
+///|
+fn Expr::get_float_value(
+  self : Expr,
+  gen : CodeGen,
+  name : String,
+) -> &Value raise {
   let val = gen.symbol_table.get(name).unwrap()
   match val.getType().asTypeEnum() {
     PointerType(_) => gen.builder.createLoad(gen.ctx.getDoubleTy(), val)
@@ -387,14 +415,15 @@ fn Expr::get_float_value(self: Expr, gen: CodeGen, name: String) -> &Value raise
 语句代码生成处理控制流和变量管理：
 
 ```moonbit skip
-fn Stmt::compile(self: Stmt, gen: CodeGen) -> Unit raise {
+///|
+fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
   match self {
     // 不可变变量声明
     Let(vname, ptype, expr) => {
       let expr_val = expr.compile(gen)
       gen.symbol_table.set(vname, expr_val)
     }
-    
+
     // 可变变量声明
     LetMut(vname, ptype, expr) => {
       let expr_val = expr.compile(gen)
@@ -403,7 +432,7 @@ fn Stmt::compile(self: Stmt, gen: CodeGen) -> Unit raise {
       let _ = gen.builder.createStore(expr_val, ptr)
       gen.symbol_table.set(vname, ptr)
     }
-    
+
     // 变量赋值
     Assign(vname, expr) => {
       let expr_val = expr.compile(gen)
@@ -412,95 +441,99 @@ fn Stmt::compile(self: Stmt, gen: CodeGen) -> Unit raise {
         raise ValueError("Cannot assign to immutable variable")
       }
       let _ = gen.builder.createStore(expr_val, ptr)
+
     }
-    
+
     // 条件语句
     If(cond_expr, then_stmts, else_stmts) => {
       let cond_val = cond_expr.compile(gen)
-      
       let current_func = gen.current_function.unwrap()
       let then_bb = current_func.addBasicBlock(name="if.then")
       let else_bb = current_func.addBasicBlock(name="if.else")
       let merge_bb = current_func.addBasicBlock(name="if.end")
-      
+
       // 生成条件跳转
       let _ = gen.builder.createCondBr(cond_val, then_bb, else_bb)
-      
+
       // 生成 then 分支
       gen.builder.setInsertPoint(then_bb)
       then_stmts.each(stmt => stmt.compile(gen))
       // 如果 then 分支没有 return，跳转到 merge
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(merge_bb)
+
       }
-      
+
       // 生成 else 分支
       gen.builder.setInsertPoint(else_bb)
       else_stmts.each(stmt => stmt.compile(gen))
       // 如果 else 分支没有 return，跳转到 merge
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(merge_bb)
+
       }
-      
+
       // 设置插入点到 merge 块
       gen.builder.setInsertPoint(merge_bb)
     }
-    
+
     // 循环语句
     While(cond_expr, body_stmts) => {
       let current_func = gen.current_function.unwrap()
       let loop_cond_bb = current_func.addBasicBlock(name="while.cond")
       let loop_body_bb = current_func.addBasicBlock(name="while.body")
       let loop_end_bb = current_func.addBasicBlock(name="while.end")
-      
+
       // 跳转到条件检查
       let _ = gen.builder.createBr(loop_cond_bb)
-      
+
       // 生成条件检查
       gen.builder.setInsertPoint(loop_cond_bb)
       let cond_val = cond_expr.compile(gen)
       let _ = gen.builder.createCondBr(cond_val, loop_body_bb, loop_end_bb)
-      
+
       // 生成循环体
       gen.builder.setInsertPoint(loop_body_bb)
-      
+
       // 保存当前的 break/continue 目标
       let old_break = gen.break_blocks
       let old_continue = gen.continue_blocks
       gen.break_blocks = gen.break_blocks.push(loop_end_bb)
       gen.continue_blocks = gen.continue_blocks.push(loop_cond_bb)
-      
       body_stmts.each(stmt => stmt.compile(gen))
-      
+
       // 恢复 break/continue 目标
       gen.break_blocks = old_break
       gen.continue_blocks = old_continue
-      
+
       // 循环体结束，跳回条件检查
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(loop_cond_bb)
+
       }
-      
+
       // 设置插入点到循环结束
       gen.builder.setInsertPoint(loop_end_bb)
     }
-    
+
     // 返回语句
-    Return(expr_opt) => {
+    Return(expr_opt) =>
       match expr_opt {
         Some(expr) => {
           let ret_val = expr.compile(gen)
           let _ = gen.builder.createRet(ret_val)
+
         }
         None => {
           let _ = gen.builder.createRetVoid()
+
         }
       }
-    }
-    
+
     // 表达式语句
     ExprStmt(expr) => {
       let _ = expr.compile(gen)
+
     }
   }
 }
@@ -509,31 +542,32 @@ fn Stmt::compile(self: Stmt, gen: CodeGen) -> Unit raise {
 ### 8.4.4 函数代码生成
 
 ```moonbit skip
-fn FunctionDef::compile(self, gen: CodeGen) -> Function raise {
+///|
+fn FunctionDef::compile(self, gen : CodeGen) -> Function raise {
   // 构建函数类型
   let param_types = self.params.map(param => param.1.to_llvm(gen.ctx))
   let ret_type = self.ret_ty.to_llvm(gen.ctx)
   let func_type = gen.ctx.getFunctionType(ret_type, param_types)
-  
+
   // 创建函数
   let func = gen.mod.addFunction(func_type, self.name)
   gen.symbol_table.set(self.name, func)
   gen.current_function = Some(func)
-  
+
   // 创建入口基本块
   let entry_bb = func.addBasicBlock(name="entry")
   gen.builder.setInsertPoint(entry_bb)
-  
+
   // 处理函数参数
   self.params.mapi((param, i) => {
     let arg = func.getArg(i).unwrap()
     arg.setName(param.0)
     gen.symbol_table.set(param.0, arg)
   })
-  
+
   // 生成函数体
   self.body.each(stmt => stmt.compile(gen))
-  
+
   // 如果函数没有显式返回，添加默认返回
   if gen.builder.getInsertBlock().getTerminator() is None {
     match self.ret_ty {
@@ -548,7 +582,6 @@ fn FunctionDef::compile(self, gen: CodeGen) -> Function raise {
       }
     }
   }
-  
   func
 }
 ```
@@ -556,12 +589,13 @@ fn FunctionDef::compile(self, gen: CodeGen) -> Function raise {
 ### 8.4.5 程序代码生成
 
 ```moonbit skip
-fn Program::compile(self, gen: CodeGen) -> Module raise {
+///|
+fn Program::compile(self, gen : CodeGen) -> Module raise {
   // 编译所有函数
   self.functions.each(func => {
     let _ = func.compile(gen)
+
   })
-  
   gen.mod
 }
 ```
@@ -573,26 +607,29 @@ fn Program::compile(self, gen: CodeGen) -> Module raise {
 ### 8.5.1 源程序
 
 ```moonbit skip
-fn factorial(n: Int) -> Int {
-  let mut result: Int = 1;
-  let mut i: Int = 1;
+///|
+fn factorial(n : Int) -> Int {
+  let mut result : Int = 1
+  let mut i : Int = 1
   while i <= n {
-    result = result * i;
-    i = i + 1;
+    result = result * i
+    i = i + 1
   }
-  return result;
+  return result
 }
 
+///|
 fn main() -> Int {
-  let n: Int = 5;
-  let fact: Int = factorial(n);
-  return fact;
+  let n : Int = 5
+  let fact : Int = factorial(n)
+  return fact
 }
 ```
 
 ### 8.5.2 对应的 AST
 
 ```moonbit skip
+///|
 let program = Program({
   functions: [
     FunctionDef({
@@ -602,15 +639,12 @@ let program = Program({
       body: [
         LetMut("result", Int, Call("const_int", ["1"])),
         LetMut("i", Int, Call("const_int", ["1"])),
-        While(
-          ILE("i", "n"),
-          [
-            Assign("result", Mul("result", "i")),
-            Assign("i", Add("i", Call("const_int", ["1"])))
-          ]
-        ),
-        Return(Some(Call("load", ["result"])))
-      ]
+        While(ILE("i", "n"), [
+          Assign("result", Mul("result", "i")),
+          Assign("i", Add("i", Call("const_int", ["1"]))),
+        ]),
+        Return(Some(Call("load", ["result"]))),
+      ],
     }),
     FunctionDef({
       name: "main",
@@ -619,10 +653,10 @@ let program = Program({
       body: [
         Let("n", Int, Call("const_int", ["5"])),
         Let("fact", Int, Call("factorial", ["n"])),
-        Return(Some(Call("load", ["fact"])))
-      ]
-    })
-  ]
+        Return(Some(Call("load", ["fact"]))),
+      ],
+    }),
+  ],
 })
 ```
 
@@ -687,15 +721,18 @@ test "compiler_backend_example" {
 在实际的编译器实现中，需要处理各种错误情况：
 
 ```moonbit skip
+///|
 enum CodeGenError {
   UndefinedVariable(String)
-  TypeMismatch(String, String)  // expected, actual
+  TypeMismatch(String, String) // expected, actual
   InvalidOperation(String)
   ControlFlowError(String)
 }
 
 // 在代码生成过程中进行错误检查
-fn check_variable_defined(gen: CodeGen, var_name: String) -> Unit raise {
+
+///|
+fn check_variable_defined(gen : CodeGen, var_name : String) -> Unit raise {
   guard gen.symbol_table.contains_key(var_name) else {
     raise UndefinedVariable("Variable '\{var_name}' is not defined")
   }

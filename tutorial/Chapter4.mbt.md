@@ -99,6 +99,7 @@ test {
 `addFunction`方法用于在模块中添加函数。它接受函数类型和函数名，返回一个函数对象：
 
 ```moonbit skip
+///|
 let func = mod.addFunction(function_type, "function_name")
 ```
 
@@ -110,6 +111,7 @@ let func = mod.addFunction(function_type, "function_name")
 `createCall`方法用于生成函数调用指令：
 
 ```moonbit skip
+///|
 let result = builder.createCall(function, arguments, name="result")
 ```
 
@@ -218,6 +220,7 @@ test {
 `createCallPtr`方法用于通过函数指针进行间接调用：
 
 ```moonbit skip
+///|
 let result = builder.createCallPtr(func_pointer, function_type, arguments)
 ```
 
