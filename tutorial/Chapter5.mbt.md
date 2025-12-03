@@ -282,6 +282,7 @@ gcc heap_demo.o print_helper.o -o heap_demo
 
 ```moonbit skip
 // 分配链表节点
+
 ///|
 let node = builder.createMalloc(node_ty, name="list_node")
 ```
@@ -292,6 +293,7 @@ let node = builder.createMalloc(node_ty, name="list_node")
 
 ```moonbit skip
 // 分配n个整数的数组
+
 ///|
 let array = builder.createMalloc(array_ty, name="dynamic_array")
 ```
