@@ -2,3 +2,5 @@ target/
 .mooncakes/
 .DS_Store
 llvm-19
+_build/
+target
