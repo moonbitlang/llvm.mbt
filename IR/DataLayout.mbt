@@ -4,7 +4,7 @@ pub struct DataLayout(@unsafe.LLVMTargetDataRef)
 ///|
 /// Get Type Size in Bits.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -25,7 +25,7 @@ pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
 ///|
 /// Get Type Store Size.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///

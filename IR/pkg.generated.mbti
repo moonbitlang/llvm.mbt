@@ -1,14 +1,16 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/IR"
 
-import(
-  "Kaida-Amethyst/llvm/unsafe"
-)
+import {
+  "Kaida-Amethyst/llvm/unsafe",
+}
 
 // Values
 
 // Errors
-pub suberror BasicBlockHasNoParentError String
+pub suberror BasicBlockHasNoParentError {
+  BasicBlockHasNoParentError(String)
+}
 pub impl Show for BasicBlockHasNoParentError
 
 pub suberror BuilderError {
@@ -21,13 +23,19 @@ pub suberror BuilderError {
 }
 pub impl Show for BuilderError
 
-pub suberror InValidOperation String
+pub suberror InValidOperation {
+  InValidOperation(String)
+}
 pub impl Show for InValidOperation
 
-pub suberror InValidTypeError String
+pub suberror InValidTypeError {
+  InValidTypeError(String)
+}
 pub impl Show for InValidTypeError
 
-pub suberror IndexOutOfBounds String
+pub suberror IndexOutOfBounds {
+  IndexOutOfBounds(String)
+}
 pub impl Show for IndexOutOfBounds
 
 pub suberror InterpreterError {
@@ -35,14 +43,18 @@ pub suberror InterpreterError {
 }
 pub impl Show for InterpreterError
 
-pub suberror SetBodyForNonOpaqueStruct String
+pub suberror SetBodyForNonOpaqueStruct {
+  SetBodyForNonOpaqueStruct(String)
+}
 pub impl Show for SetBodyForNonOpaqueStruct
 
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
 }
 
-pub suberror WriteBitCodeToFileFailed String
+pub suberror WriteBitCodeToFileFailed {
+  WriteBitCodeToFileFailed(String)
+}
 pub impl Show for WriteBitCodeToFileFailed
 
 // Types and methods

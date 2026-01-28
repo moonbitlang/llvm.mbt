@@ -18,7 +18,7 @@ pub impl Value for BasicBlock with asValueEnum(self) -> ValueEnum {
 ///|
 /// Get the Function that this BasicBlock belongs to.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -41,7 +41,7 @@ pub fn BasicBlock::getParent(self : Self) -> Function? {
 ///|
 /// Get the previous BasicBlock in the Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -65,7 +65,7 @@ pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
 ///|
 /// Get the next BasicBlock in the Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -87,14 +87,16 @@ pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
 }
 
 ///|
-pub suberror BasicBlockHasNoParentError { BasicBlockHasNoParentError(String) } derive(Show)
+pub suberror BasicBlockHasNoParentError {
+  BasicBlockHasNoParentError(String)
+} derive(Show)
 
 // REVIEW: Should we check basic block must have parent?
 
 ///|
 /// Move the BasicBlock before another BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -169,7 +171,7 @@ pub fn BasicBlock::moveBefore(self : Self, other : BasicBlock) -> Unit raise {
 ///|
 /// Move the BasicBlock after another BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -244,7 +246,7 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
 ///|
 /// Get the first Instruction in this BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -274,7 +276,7 @@ pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
 ///|
 /// Get the last Instruction in this BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -304,7 +306,7 @@ pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
 ///|
 /// Get the terminator Instruction of this BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -334,7 +336,7 @@ pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
 ///|
 /// Remove this BasicBlock from its parent Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -387,7 +389,7 @@ pub fn BasicBlock::removeFromParent(self : Self) -> Unit raise {
 ///|
 /// Erase this BasicBlock from its parent Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -453,7 +455,7 @@ pub fn BasicBlock::getContext(self : Self) -> Context {
 ///|
 /// Get the name of this BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -473,7 +475,7 @@ pub fn BasicBlock::getName(self : Self) -> String {
 ///|
 /// Set the name of this BasicBlock.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///

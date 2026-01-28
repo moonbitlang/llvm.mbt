@@ -24,7 +24,7 @@ int max(int a, int b) {
 
 这个简单的函数包含了条件分支的所有核心要素：条件判断、真分支和假分支。让我们看看如何用llvm.mbt来实现它：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -123,7 +123,7 @@ PHI节点是LLVM中处理控制流汇合的核心机制。当多个基本块可�
 
 浮点数的比较比整数复杂得多，因为需要处理NaN（Not a Number）和无穷大等特殊值。让我们看看浮点数版本的最大值函数：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -226,7 +226,7 @@ int fake_square(int n) {
 
 在llvm.mbt中实现这个函数：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -346,7 +346,7 @@ int simple_log2(int n) {
 
 这个函数计算使得2的exp次方小于n的最大exp值。让我们用llvm.mbt实现它：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()

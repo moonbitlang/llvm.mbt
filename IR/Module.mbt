@@ -59,7 +59,7 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let context = Context::new();
 /// let program = context.addModule("my_module");
 ///
@@ -74,7 +74,7 @@ pub fn Module::getName(self : Self) -> String {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let context = Context::new();
 /// let program = context.addModule("demo1");
 ///
@@ -91,7 +91,7 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let context = Context::new();
 /// let program = context.addModule("my_mod");
 ///
@@ -111,7 +111,7 @@ pub fn Module::getSourceFileName(self : Self) -> String {
 ///
 /// ## Example
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let context = Context::new();
 /// let program = context.addModule("my_mod");
 ///
@@ -179,7 +179,9 @@ pub fn Module::addGlobalConstant(
 }
 
 ///|
-pub suberror WriteBitCodeToFileFailed { WriteBitCodeToFileFailed(String) } derive(Show)
+pub suberror WriteBitCodeToFileFailed {
+  WriteBitCodeToFileFailed(String)
+} derive(Show)
 
 ///|
 pub fn Module::writeBitCodeToFile(

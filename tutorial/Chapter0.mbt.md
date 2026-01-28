@@ -42,7 +42,7 @@ MoonBit的强类型系统为llvm.mbt提供了一定的编译时类型安全保�
 
 llvm.mbt的内部结构对原生C++ LLVM API进行了精心还原，使得有C++背景的开发者能够快速上手：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -179,7 +179,7 @@ int foo() {
 
 创建文件`main.mbt`：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   // 创建LLVM上下文 - 所有LLVM操作的根

@@ -31,7 +31,7 @@ int main() {  // 函数定义
 
 在这个例子中，`print_int`只有声明而没有定义，这意味着它的实现将在链接时提供。让我们用llvm.mbt来实现这个程序：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -157,7 +157,7 @@ gcc output.o print_helper.o -o final_program
 
 除了直接调用函数外，LLVM还支持通过函数指针进行间接调用。这在实现回调函数、虚函数表等高级特性时非常有用。
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()

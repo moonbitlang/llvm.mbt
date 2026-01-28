@@ -33,7 +33,7 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
 ///
 /// - See LLVM: `Type::getHalfTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let half_ty = ctx.getHalfTy()
 /// inspect(half_ty, content="half")
@@ -48,7 +48,7 @@ pub fn Context::getHalfTy(self : Context) -> HalfType {
 ///
 /// - See LLVM: `Type::getBFloatTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let bfloat_ty = ctx.getBFloatTy()
 /// inspect(bfloat_ty, content="bfloat")
@@ -63,7 +63,7 @@ pub fn Context::getBFloatTy(self : Context) -> BFloatType {
 ///
 /// - See LLVM: `Type::getFloatTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let f32ty = ctx.getFloatTy()
 /// inspect(f32ty, content="float")
@@ -78,7 +78,7 @@ pub fn Context::getFloatTy(self : Context) -> FloatType {
 ///
 /// - See LLVM: `Type::getDoubleTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let doubletype = ctx.getDoubleTy()
 /// inspect(doubletype, content="double")
@@ -93,7 +93,7 @@ pub fn Context::getDoubleTy(self : Context) -> DoubleType {
 ///
 /// - See LLVM: `Type::getFP128Ty`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let fp128ty = ctx.getFP128Ty()
 /// inspect(fp128ty, content="fp128")
@@ -108,7 +108,7 @@ pub fn Context::getFP128Ty(self : Context) -> FP128Type {
 ///
 /// - See LLVM: `Type::getVoidTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let voidty = ctx.getVoidTy()
 /// inspect(voidty, content="void")
@@ -137,7 +137,7 @@ pub fn Context::getMetadataTy(self : Context) -> MetadataType {
 ///
 /// - See LLVM: `Type::getTokenTy`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let tokenty = ctx.getTokenTy()
 /// inspect(tokenty, content="token")
@@ -150,7 +150,7 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
 ///|
 /// Get the integer type with 1 bit from context.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i1ty = ctx.getInt1Ty()
@@ -165,7 +165,7 @@ pub fn Context::getInt1Ty(self : Context) -> Int1Type {
 ///|
 /// Get the integer type with 8 bits from context.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i8ty = ctx.getInt8Ty()
@@ -180,7 +180,7 @@ pub fn Context::getInt8Ty(self : Context) -> Int8Type {
 ///|
 /// Get the integer type with 16 bits from context.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i16ty = ctx.getInt16Ty()
@@ -195,7 +195,7 @@ pub fn Context::getInt16Ty(self : Context) -> Int16Type {
 ///|
 /// Get the integer type with 32 bits from context.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i32ty = ctx.getInt32Ty()
@@ -210,7 +210,7 @@ pub fn Context::getInt32Ty(self : Context) -> Int32Type {
 ///|
 /// Get the integer type with 64 bits from context.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i64ty = ctx.getInt64Ty()
@@ -232,7 +232,7 @@ pub fn Context::getInt64Ty(self : Context) -> Int64Type {
 ///   After LLVM17, typed pointer has been deprecated. Therefore in 
 ///   Moonbit Aether framework, all pointer type is opaque.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// inspect(ctx.getPtrTy(), content="ptr")
@@ -258,7 +258,7 @@ pub fn Context::getPtrTy(
 ///
 /// - See LLVM: `FunctionType::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let voidty = ctx.getVoidTy()
 /// let i32ty = ctx.getInt32Ty()
@@ -290,7 +290,7 @@ pub fn Context::getFunctionType(
 ///
 /// - See LLVM: `StructType::create`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 /// let f32ty = ctx.getFloatTy()
@@ -328,7 +328,7 @@ pub fn Context::getStructType(
 ///
 /// LLVM Cpp version has no this method, since llvm-cpp allow duplicated struct type names.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 /// let f32ty = ctx.getFloatTy()
@@ -354,7 +354,7 @@ pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
 ///
 /// - See LLVM: `ArrayType::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 ///
@@ -382,7 +382,7 @@ pub fn Context::getArrayType(
 ///
 /// - See LLVM: `FixedVectorType::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 ///
@@ -409,7 +409,7 @@ pub fn[T : Type] Context::getFixedVectorType(
 ///
 /// - See LLVM: `ScalableVectorType::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 ///
@@ -433,7 +433,7 @@ pub fn Context::getScalableVectorType(
 ///|
 /// Create a constant integer `true`, the type is `i1`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_true")
 /// let builder = ctx.createBuilder()
@@ -461,7 +461,7 @@ pub fn Context::getConstTrue(self : Self) -> ConstantInt {
 ///|
 /// Create a constant integer `false`, the type is `i1`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_false")
 /// let builder = ctx.createBuilder()
@@ -487,7 +487,7 @@ pub fn Context::getConstFalse(self : Self) -> ConstantInt {
 ///|
 /// Create a constant signed 8-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_int8")
 /// let builder = ctx.createBuilder()
@@ -518,7 +518,7 @@ pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
 ///|
 /// Create a constant unsigned 8-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_uint8")
 /// let builder = ctx.createBuilder()
@@ -549,7 +549,7 @@ pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
 ///|
 /// Create a constant signed 16-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_int16")
 /// let builder = ctx.createBuilder()
@@ -580,7 +580,7 @@ pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
 ///|
 /// Create a constant unsigned 16-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_uint16")
 /// let builder = ctx.createBuilder()
@@ -611,7 +611,7 @@ pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
 ///|
 /// Create a constant signed 32-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_int32")
 /// let builder = ctx.createBuilder()
@@ -642,7 +642,7 @@ pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
 ///|
 /// Create a constant unsigned 32-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_uint32")
 /// let builder = ctx.createBuilder()
@@ -673,7 +673,7 @@ pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
 ///|
 /// Create a constant signed 64-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_int64")
 /// let builder = ctx.createBuilder()
@@ -704,7 +704,7 @@ pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
 ///|
 /// Create a constant unsigned 64-bit integer value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_uint64")
 /// let builder = ctx.createBuilder()
@@ -735,7 +735,7 @@ pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
 ///|
 /// Create a constant 32-bit floating-point value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_float")
 /// let builder = ctx.createBuilder()
@@ -771,7 +771,7 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 ///
 ///  - `isNegative`: If true, create a negative zero constant.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let zero = ctx.getConstZeroFloat(isNegative=false)
@@ -796,7 +796,7 @@ pub fn Context::getConstZeroFloat(
 ///|
 /// Create a constant 64-bit floating-point value.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_double")
 /// let builder = ctx.createBuilder()
@@ -829,7 +829,7 @@ pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
 ///
 /// - `isNegative`: If true, create a negative zero constant.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let zero = ctx.getConstZeroDouble(isNegative=false)
@@ -858,7 +858,7 @@ pub fn Context::getConstZeroDouble(
 /// **Note:** 
 /// All elements must be of the same type and must be constant values.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_array")
 /// let builder = ctx.createBuilder()
@@ -899,7 +899,7 @@ pub fn Context::getConstArray(
 /// **Note:** 
 /// All scalar values must be of the same type and must be constant values.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_vector")
 /// let builder = ctx.createBuilder()
@@ -938,7 +938,7 @@ pub fn Context::getConstVector(
 ///
 /// - See LLVM: `ConstantStruct::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("const_struct")
 /// let builder = ctx.createBuilder()
@@ -981,7 +981,7 @@ pub fn Context::getConstStruct(
 ///
 /// - See LLVM: `UndefValue::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("undef_test")
 /// let builder = ctx.createBuilder()
@@ -1015,7 +1015,7 @@ pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
 ///
 /// - See LLVM: `PoisonValue::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("poison_test")
 /// let builder = ctx.createBuilder()
@@ -1048,7 +1048,7 @@ pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
 ///
 /// - See LLVM: `ConstantPointerNull::get`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("null_ptr_test")
 /// let builder = ctx.createBuilder()

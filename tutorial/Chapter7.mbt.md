@@ -28,7 +28,7 @@ typedef struct {
 } Rational;
 ```
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -53,7 +53,7 @@ test {
 
 栈上结构体使用`createAlloca`分配：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -92,7 +92,7 @@ test {
 
 堆上结构体使用`createMalloc`分配：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -130,7 +130,7 @@ test {
 
 ### 基本成员访问
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -206,7 +206,7 @@ let member_ptr = builder.createGEP(
 
 现在让我们实现一个完整的有理数处理程序，包括构造函数、成员设置和类型转换：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()

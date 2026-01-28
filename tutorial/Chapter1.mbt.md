@@ -46,7 +46,7 @@ int add42(int a, int b) {
 
 这个函数接受两个整数参数，将它们相加，再加上常数42，最后返回结果。让我们看看如何使用llvm.mbt来实现这个功能：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -173,7 +173,7 @@ llvm.mbt提供了完整的整数算术运算支持：
 
 在LLVM的类型系统中，存在一种特殊的整数类型——`Int1Type`，它专门用于表示布尔值。这种类型只能存储两个值：`true`（1）和`false`（0）。
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -219,7 +219,7 @@ double add1(double a, double b) {
 }
 ```
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()

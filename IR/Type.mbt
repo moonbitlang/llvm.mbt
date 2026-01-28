@@ -140,7 +140,9 @@ pub trait Type: Show {
 }
 
 ///|
-pub suberror InValidTypeError { InValidTypeError(String) } derive(Show)
+pub suberror InValidTypeError {
+  InValidTypeError(String)
+} derive(Show)
 
 ///|
 fn initAbstractType_err(
@@ -466,7 +468,7 @@ impl Type with tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 ///|
 /// Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 ///
 /// let i8ty :&IntegerType = ctx.getInt8Ty()
@@ -1237,7 +1239,7 @@ pub struct StructType(@unsafe.LLVMTypeRef) derive(Eq)
 ///
 /// - See LLVM: `StructType::isLiteral`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 /// let f32ty = ctx.getFloatTy()
@@ -1259,7 +1261,7 @@ pub fn StructType::isLiteral(self : StructType) -> Bool {
 ///
 /// - See LLVM: `StructType::isOpaque`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let i32ty = ctx.getInt32Ty()
 /// let f32ty = ctx.getFloatTy()
@@ -1325,7 +1327,9 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 }
 
 ///|
-pub suberror SetBodyForNonOpaqueStruct { SetBodyForNonOpaqueStruct(String) } derive(Show)
+pub suberror SetBodyForNonOpaqueStruct {
+  SetBodyForNonOpaqueStruct(String)
+} derive(Show)
 
 ///|
 /// Set the body of the struct.

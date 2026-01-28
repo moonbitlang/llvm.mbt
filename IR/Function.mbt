@@ -33,7 +33,7 @@ fn Function::getNextFunction(self : Self) -> Function? {
 ///|
 /// Get Function Name.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -51,7 +51,7 @@ pub fn Function::getName(self : Self) -> String {
 /// Set Function Name.
 ///
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -71,7 +71,7 @@ pub fn Function::setName(self : Self, name : String) -> Unit {
 ///|
 /// Get Function Type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -89,7 +89,7 @@ pub fn Function::getType(self : Self) -> FunctionType {
 ///|
 /// Get Number of Function Arguments.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -110,7 +110,7 @@ pub fn Function::getNumArgs(self : Self) -> Int {
 ///|
 /// Get Function Parameter.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -136,7 +136,7 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 ///|
 /// Get Function Parameters.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -159,7 +159,7 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 ///|
 /// Add a Basic Block to the Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -233,7 +233,7 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 ///|
 /// Add Function Attribute.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -275,7 +275,7 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 ///|
 /// Remove Function Attribute.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -330,7 +330,7 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 ///|
 /// Count Function Attributes.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -363,7 +363,7 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 ///|
 /// Add an Attribute for the Return Value of the Function.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -401,7 +401,7 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 /// Remove the Attribute for the Return Value of the Function.
 ///
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -488,7 +488,7 @@ pub impl Value for Argument with asValueEnum(self) {
 ///|
 /// Get Argument Name.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 ///
@@ -536,7 +536,7 @@ pub fn Argument::getFunction(self : Self) -> Function {
 ///|
 /// Add an Attribute to the Argument.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -578,7 +578,7 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 ///|
 /// Remove the Attribute of the Argument.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()

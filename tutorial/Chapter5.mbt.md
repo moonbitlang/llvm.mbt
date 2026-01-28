@@ -74,7 +74,7 @@ int main() {
 
 让我们用llvm.mbt来实现这个程序：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()

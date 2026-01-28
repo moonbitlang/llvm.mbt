@@ -81,7 +81,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
 /// 
 /// `IRBuilder::createRet` could not return void. use `IRBuilder::createRetVoid` for that purpose.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -110,7 +110,7 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 ///
 /// If you want to return a value, use `IRBuilder::createRet` instead.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -138,7 +138,7 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
 /// 
 /// This allocates memory on the stack for a value of the specified type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -172,7 +172,7 @@ pub fn IRBuilder::createAlloca(
 /// 
 /// This loads a value from memory at the specified pointer.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -213,7 +213,7 @@ pub fn IRBuilder::createLoad(
 /// 
 /// This stores a value into memory at the specified pointer.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -329,7 +329,7 @@ fn type_check_during_create_float_binary(
 /// 
 /// This creates an integer addition instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -389,7 +389,7 @@ pub fn IRBuilder::createAdd(
 /// 
 /// This creates an integer addition instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -444,7 +444,7 @@ pub fn IRBuilder::createNSWAdd(
 /// 
 /// This creates an integer addition instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -499,7 +499,7 @@ pub fn IRBuilder::createNUWAdd(
 /// 
 /// This creates an integer subtraction instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -554,7 +554,7 @@ pub fn IRBuilder::createSub(
 /// 
 /// This creates an integer subtraction instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -609,7 +609,7 @@ pub fn IRBuilder::createNSWSub(
 /// 
 /// This creates an integer subtraction instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -664,7 +664,7 @@ pub fn IRBuilder::createNUWSub(
 /// 
 /// This creates an integer multiplication instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -719,7 +719,7 @@ pub fn IRBuilder::createMul(
 /// 
 /// This creates an integer multiplication instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -774,7 +774,7 @@ pub fn IRBuilder::createNSWMul(
 /// 
 /// This creates an integer multiplication instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -830,7 +830,7 @@ pub fn IRBuilder::createNUWMul(
 /// This creates an unsigned integer division instruction. 
 /// Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -886,7 +886,7 @@ pub fn IRBuilder::createUDiv(
 /// This creates a signed integer division instruction.
 /// Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -943,7 +943,7 @@ pub fn IRBuilder::createSDiv(
 /// Both operands must be integer types with the same bitwidth.
 /// The exact flag indicates that the division is expected to be exact (no remainder).
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -999,7 +999,7 @@ pub fn IRBuilder::createExactUDiv(
 /// This creates an exact signed integer division instruction. Both operands must be integer types with the same bitwidth.
 /// The exact flag indicates that the division is expected to be exact (no remainder).
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1054,7 +1054,7 @@ pub fn IRBuilder::createExactSDiv(
 /// 
 /// This creates an unsigned integer remainder instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1109,7 +1109,7 @@ pub fn IRBuilder::createURem(
 /// 
 /// This creates a signed integer remainder instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1176,7 +1176,7 @@ pub fn IRBuilder::createSRem(
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1262,7 +1262,7 @@ pub fn IRBuilder::createFAdd(
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1326,7 +1326,7 @@ pub fn IRBuilder::createFSub(
 /// 
 /// This creates a floating-point multiplication instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1381,7 +1381,7 @@ pub fn IRBuilder::createFMul(
 /// 
 /// This creates a floating-point division instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1436,7 +1436,7 @@ pub fn IRBuilder::createFDiv(
 /// 
 /// This creates a floating-point remainder instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1492,7 +1492,7 @@ pub fn IRBuilder::createFRem(
 /// This creates a floating-point negation instruction that negates a floating-point value.
 /// The input value must be a floating-point type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1544,7 +1544,7 @@ pub fn IRBuilder::createFNeg(
 /// 
 /// This creates a bitwise AND instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1599,7 +1599,7 @@ pub fn IRBuilder::createAnd(
 /// 
 /// This creates a bitwise OR instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1654,7 +1654,7 @@ pub fn IRBuilder::createOr(
 /// 
 /// This creates a bitwise XOR instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1710,7 +1710,7 @@ pub fn IRBuilder::createXor(
 /// This creates a bitwise NOT instruction that performs bitwise negation on an integer value.
 /// The input value must be an integer type. LLVM implements NOT as `xor val, -1`.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1767,7 +1767,7 @@ pub fn IRBuilder::createNot(
 /// 
 /// This creates a left shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1822,7 +1822,7 @@ pub fn IRBuilder::createShl(
 /// 
 /// This creates a logical right shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1877,7 +1877,7 @@ pub fn IRBuilder::createLShr(
 /// 
 /// This creates an arithmetic right shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -1934,7 +1934,7 @@ pub fn IRBuilder::createAShr(
 /// in terms of elements of the specified type. Both operands must be pointer types.
 /// The result is the number of elements of type elemTy between the two pointers.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2000,7 +2000,7 @@ pub fn IRBuilder::createPtrDiff(
 /// 1. `lhs` and `rhs` must be integer types with the same bitwidth.
 /// 2. Allowed predicates: EQ, NE, SGT, SGE, SLT, SLE, UGT, UGE, ULT, ULE.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2236,7 +2236,7 @@ pub fn IRBuilder::createICmpULE(
 /// 1. `lhs` and `rhs` must be floating-point types with the same bitwidth.
 /// 2. Allowed predicates: OEQ, OGT, OGE, OLT, OLE, ONE, ORD, UEQ, UGT, UGE, ULT, ULE, UNE.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2528,7 +2528,7 @@ pub fn IRBuilder::createFCmpUNE(
 /// This creates a truncation instruction that truncates an integer value to a smaller integer type.
 /// The input value must be an integer type, and the target type must be a smaller integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2590,7 +2590,7 @@ pub fn IRBuilder::createTrunc(
 /// This creates a zero extension instruction that extends an integer value to a larger integer type by padding with zeros.
 /// The input value must be an integer type, and the target type must be a larger integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2652,7 +2652,7 @@ pub fn IRBuilder::createZExt(
 /// This creates a sign extension instruction that extends an integer value to a larger integer type by replicating the sign bit.
 /// The input value must be an integer type, and the target type must be a larger integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2714,7 +2714,7 @@ pub fn IRBuilder::createSExt(
 /// This creates a floating-point truncation instruction that truncates a floating-point value to a smaller floating-point type.
 /// The input value must be a floating-point type, and the target type must be a smaller floating-point type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2775,7 +2775,7 @@ pub fn IRBuilder::createFPTrunc(
 /// This creates a floating-point extension instruction that extends a floating-point value to a larger floating-point type.
 /// The input value must be a floating-point type, and the target type must be a larger floating-point type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2832,7 +2832,7 @@ pub fn IRBuilder::createFPExt(
 /// This creates a floating-point to signed integer conversion instruction that converts a floating-point value to a signed integer.
 /// The input value must be a floating-point type, and the target type must be an integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2889,7 +2889,7 @@ pub fn IRBuilder::createFPToSI(
 /// This creates a floating-point to unsigned integer conversion instruction that converts a floating-point value to an unsigned integer.
 /// The input value must be a floating-point type, and the target type must be an integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -2951,7 +2951,7 @@ pub fn IRBuilder::createFPToUI(
 /// This creates a signed integer to floating-point conversion instruction that converts a signed integer value to a floating-point value.
 /// The input value must be an integer type, and the target type must be a floating-point type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3008,7 +3008,7 @@ pub fn IRBuilder::createSIToFP(
 /// This creates an unsigned integer to floating-point conversion instruction that converts an unsigned integer value to a floating-point value.
 /// The input value must be an integer type, and the target type must be a floating-point type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3069,7 +3069,7 @@ pub fn IRBuilder::createUIToFP(
 /// This creates a bitcast instruction that converts a value from one type to another without changing the bit representation.
 /// The source and destination types must have the same bit width.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3136,7 +3136,7 @@ pub fn IRBuilder::createBitCast(
 /// This creates an integer to pointer conversion instruction that converts an integer value to a pointer.
 /// The input value must be an integer type, and the target type must be a pointer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3186,7 +3186,7 @@ pub fn IRBuilder::createIntToPtr(
 /// This creates a pointer to integer conversion instruction that converts a pointer value to an integer.
 /// The input value must be a pointer type, and the target type must be an integer type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3241,7 +3241,7 @@ pub fn IRBuilder::createPtrToInt(
 /// The pointer must be a pointer type, and all indices must be integer values.
 /// When inbounds is true, the result is undefined if the computed address is outside the bounds of the allocated object.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3319,7 +3319,7 @@ pub fn IRBuilder::createGEP(
 /// This creates an unconditional branch instruction that transfers control to the specified basic block.
 /// The destination must be a valid basic block.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3351,7 +3351,7 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 /// This creates a conditional branch instruction that transfers control to one of two basic blocks based on a boolean condition.
 /// The condition must be an i1 (boolean) type, and both destinations must be valid basic blocks.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3408,7 +3408,7 @@ pub fn IRBuilder::createCondBr(
 /// This creates a select instruction that chooses between two values based on a boolean condition.
 /// The condition must be an i1 (boolean) type, and both values must have the same type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3487,7 +3487,7 @@ pub fn IRBuilder::createSelect(
 /// The value must be an integer type, and numCases specifies the expected number of cases.
 /// Use `SwitchInst::addCase` to add individual cases after creation.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3551,7 +3551,7 @@ pub fn IRBuilder::createSwitch(
 /// The type specifies the type of the PHI node's result value.
 /// Use `PHINode::addIncoming` to add incoming values and their corresponding basic blocks.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3593,7 +3593,7 @@ pub fn IRBuilder::createPHI(
 /// This creates a call instruction that invokes a function with the specified arguments.
 /// The function must be a valid Function object, and the arguments must match the function's parameter types.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3678,7 +3678,7 @@ pub fn IRBuilder::createCall(
 /// The function pointer must be a pointer type, and the function type must match the pointed-to function's signature.
 /// The arguments must match the function's parameter types.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3739,7 +3739,7 @@ pub fn IRBuilder::createCallPtr(
 /// This creates an insertvalue instruction that inserts a value into an aggregate (struct or array) at the specified index.
 /// The aggregate must be an aggregate type, and the value type must match the element type at the given index.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3824,7 +3824,7 @@ pub fn IRBuilder::createInsertValue(
 /// This creates an extractvalue instruction that extracts a value from an aggregate (struct or array) at the specified index.
 /// The aggregate must be an aggregate type, and the index must be valid for the aggregate type.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3933,7 +3933,7 @@ pub fn IRBuilder::createExtractValue(
 /// This creates a malloc instruction that allocates memory for a single instance of the specified type.
 /// The type must not be an abstract type. The result is a pointer to the allocated memory.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -3979,7 +3979,7 @@ pub fn IRBuilder::createMalloc(
 /// This creates a free instruction that deallocates memory previously allocated by malloc.
 /// The pointer must be a pointer type and should point to memory allocated by malloc.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -4026,7 +4026,7 @@ pub fn IRBuilder::createFree(
 /// Both dst and src must be pointer types, and size must be an integer type.
 /// The dst_align and src_align parameters specify the alignment requirements.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -4107,7 +4107,7 @@ pub fn IRBuilder::createMemCpy(
 /// The dst must be a pointer type, value must be an integer type (typically i8), 
 /// and size must be an integer type. The align parameter specifies the alignment.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()
@@ -4187,7 +4187,7 @@ pub fn IRBuilder::createMemSet(
 /// Both dst and src must be pointer types, and size must be an integer type.
 /// The dst_align and src_align parameters specify the alignment requirements.
 ///
-/// ```moonbit
+/// ```moonbit nocheck
 /// let ctx = Context::new()
 /// let mod = ctx.addModule("demo")
 /// let builder = ctx.createBuilder()

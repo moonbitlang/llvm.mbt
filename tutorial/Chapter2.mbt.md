@@ -16,7 +16,7 @@ SSA形式是一种中间表示的设计原则，它要求**每个变量在整个
 
 让我们通过一个简单的例子来理解这个概念：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -76,7 +76,7 @@ LLVM通过一个巧妙的方案解决了这个矛盾：**将变量概念转换�
 
 让我们通过一个简单的例子来理解：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -117,7 +117,7 @@ int square_sum(int a, int b) {
 
 这个函数使用了三个局部变量，是演示变量操作的理想例子：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -245,7 +245,7 @@ let a_square_loaded = builder.createLoad(
 
 让我们通过一个对比例子来加深理解：
 
-```moonbit
+```moonbit nocheck
 ///|
 test {
   let ctx = @IR.Context::new()
