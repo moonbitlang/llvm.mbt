@@ -179,7 +179,7 @@ pub fn Module::addGlobalConstant(
 }
 
 ///|
-pub suberror WriteBitCodeToFileFailed String derive(Show)
+pub suberror WriteBitCodeToFileFailed { WriteBitCodeToFileFailed(String) } derive(Show)
 
 ///|
 pub fn Module::writeBitCodeToFile(

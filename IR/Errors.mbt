@@ -1,2 +1,2 @@
 ///|
-pub suberror IndexOutOfBounds String derive(Show)
+pub suberror IndexOutOfBounds { IndexOutOfBounds(String) } derive(Show)

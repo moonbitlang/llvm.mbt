@@ -140,7 +140,7 @@ pub trait Type: Show {
 }
 
 ///|
-pub suberror InValidTypeError String derive(Show)
+pub suberror InValidTypeError { InValidTypeError(String) } derive(Show)
 
 ///|
 fn initAbstractType_err(
@@ -1325,7 +1325,7 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 }
 
 ///|
-pub suberror SetBodyForNonOpaqueStruct String derive(Show)
+pub suberror SetBodyForNonOpaqueStruct { SetBodyForNonOpaqueStruct(String) } derive(Show)
 
 ///|
 /// Set the body of the struct.

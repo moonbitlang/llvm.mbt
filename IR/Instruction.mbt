@@ -674,7 +674,7 @@ pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
 }
 
 ///|
-pub suberror InValidOperation String derive(Show)
+pub suberror InValidOperation { InValidOperation(String) } derive(Show)
 
 ///|
 #callsite(autofill(loc))

@@ -1,6 +1,7 @@
 {
   "import" : [
-    "Kaida-Amethyst/llvm/unsafe"
+    "Kaida-Amethyst/llvm/unsafe",
+    "moonbitlang/core/uint"
   ],
   "link" : {
     "native" : {
