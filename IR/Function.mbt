@@ -2,17 +2,17 @@
 pub struct Function(ValueRef)
 
 ///|
-pub impl Value for Function with getValueRef(self) -> ValueRef {
+pub impl Value for Function with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for Function with asValueEnum(self) {
+pub impl Value for Function with fn asValueEnum(self) {
   Function(self)
 }
 
 ///|
-pub impl GlobalValue for Function with asGlobalEnum(self) {
+pub impl GlobalValue for Function with fn asGlobalEnum(self) {
   Function(self)
 }
 
@@ -151,9 +151,9 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 /// inspect(args[1], content="float %1")
 /// ```
 pub fn Function::getArgs(self : Self) -> Array[Argument] {
-  @unsafe.llvm_get_params(self.getValueRef()).mapi((r, i) => Argument::construct(
-    i, r,
-  ))
+  @unsafe.llvm_get_params(self.getValueRef()).mapi((r, i) => {
+    Argument::construct(i, r)
+  })
 }
 
 ///|
@@ -450,7 +450,7 @@ pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
 }
 
 ///|
-pub impl Show for Function with output(self, logger) {
+pub impl Show for Function with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }
@@ -476,12 +476,12 @@ fn Argument::inner(self : Self) -> ValueRef {
 }
 
 ///|
-pub impl Value for Argument with getValueRef(self) -> ValueRef {
+pub impl Value for Argument with fn getValueRef(self) -> ValueRef {
   self.inner()
 }
 
 ///|
-pub impl Value for Argument with asValueEnum(self) {
+pub impl Value for Argument with fn asValueEnum(self) {
   Argument(self)
 }
 
@@ -631,7 +631,7 @@ pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
 }
 
 ///|
-pub impl Show for Argument with output(self, logger) {
+pub impl Show for Argument with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }

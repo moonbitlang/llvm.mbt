@@ -50,29 +50,29 @@ pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
 
 ///|
 pub trait Type: Show {
-  getTypeRef(Self) -> @unsafe.LLVMTypeRef
-  asTypeEnum(Self) -> TypeEnum
-  getContext(Self) -> Context = _
+  fn getTypeRef(Self) -> @unsafe.LLVMTypeRef
+  fn asTypeEnum(Self) -> TypeEnum
+  fn getContext(Self) -> Context = _
   //print(Self, logger: &Logger, isForDebug~ = false, noDetails~ = false)
   //dump(Self)
 
   /// Return true if this is a 16-bit float type.
-  is16bitFPTy(Self) -> Bool = _
+  fn is16bitFPTy(Self) -> Bool = _
 
   /// Return true if this is a well-behaved IEEE-like type, which has a IEEE
   /// compatible layout, and does not have non-IEEE values, such as x86_fp80's
   /// unnormal values.
-  isIEEELikeFPTy(Self) -> Bool = _
+  fn isIEEELikeFPTy(Self) -> Bool = _
 
   /// Return true if this is one of the floating-point types
-  isFloatingPointTy(Self) -> Bool = _
+  fn isFloatingPointTy(Self) -> Bool = _
 
   /// Return true if this is a target extension type with a scalable layout.
-  isScalableTargetExtTy(Self) -> Bool = _
+  fn isScalableTargetExtTy(Self) -> Bool = _
 
   /// Return true if this is a type whose size is a known multiple of vscale.
   // REVIEW: cpp has another `isScalableTy` function
-  isScalableTy(Self) -> Bool = _
+  fn isScalableTy(Self) -> Bool = _
 
   /// Return true if this type is or contains a target extension type that
   /// disallows being used as a global.
@@ -85,58 +85,58 @@ pub trait Type: Show {
   //bool containsNonLocalTargetExtType() const;
 
   /// Return true if this is a FP type or a vector of FP.
-  isFPOrFPVectorTy(Self) -> Bool = _
+  fn isFPOrFPVectorTy(Self) -> Bool = _
 
   /// Return true if this is an integer type or a vector of integer types.
   // REVIEW: cpp has another `isIntOrIntVectorTy` function
-  isIntOrIntVectorTy(Self) -> Bool = _
+  fn isIntOrIntVectorTy(Self) -> Bool = _
 
   /// Return true if this is an integer type or a pointer type.
-  isIntOrPtrTy(Self) -> Bool = _
+  fn isIntOrPtrTy(Self) -> Bool = _
 
   /// Return true if this is a pointer type or a vector of pointer types.
-  isPtrOrPtrVectorTy(Self) -> Bool = _
+  fn isPtrOrPtrVectorTy(Self) -> Bool = _
 
   /// Return true if this type is empty, that is, it has no elements or all of
   /// its elements are empty.
-  isEmptyTy(Self) -> Bool = _
+  fn isEmptyTy(Self) -> Bool = _
 
   /// Return true if the type is "first class", meaning it is a valid type for a
   /// Value.
-  isFirstClassType(Self) -> Bool = _
+  fn isFirstClassType(Self) -> Bool = _
 
   /// Return true if the type is a valid type for a register in codegen. This
   /// includes all first-class types except struct and array types.
-  isSingleValueType(Self) -> Bool = _
+  fn isSingleValueType(Self) -> Bool = _
 
   /// Return true if the type is an aggregate type. This means it is valid as
   /// the first operand of an insertvalue or extractvalue instruction. This
   /// includes struct and array types, but does not include vector types.
-  isAggregateType(Self) -> Bool = _
+  fn isAggregateType(Self) -> Bool = _
 
   /// Return true if it makes sense to take the size of this type. To get the
   /// actual size for a particular target, it is reasonable to use the
   /// DataLayout subsystem to do this.
-  isSized(Self) -> Bool = _
-  sizeOf(Self) -> &Value? = _
+  fn isSized(Self) -> Bool = _
+  fn sizeOf(Self) -> &Value? = _
 
   /// Return true if this type is a valid type for a GEP instruction.
-  isValidGEPType(Self) -> Bool = _
+  fn isValidGEPType(Self) -> Bool = _
 
   /// If this is a vector type, return the getPrimitiveSizeInBits value for the
   /// element type. Otherwise return the getPrimitiveSizeInBits value for this
   /// type.
-  getScalarType(Self) -> &Type = _
-  tryAsIntType(Self) -> &IntegerType? = _
-  tryAsIntTypeEnum(Self) -> IntegerTypeEnum? = _
-  tryAsFPType(Self) -> &FPType? = _
-  tryAsFPTypeEnum(Self) -> FPTypeEnum? = _
-  tryAsPrimitiveType(Self) -> &PrimitiveType? = _
-  tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum? = _
-  tryAsAggregateType(Self) -> &AggregateType? = _
-  tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum? = _
-  tryAsAbstractType(Self) -> &AbstractType? = _
-  tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum? = _
+  fn getScalarType(Self) -> &Type = _
+  fn tryAsIntType(Self) -> &IntegerType? = _
+  fn tryAsIntTypeEnum(Self) -> IntegerTypeEnum? = _
+  fn tryAsFPType(Self) -> &FPType? = _
+  fn tryAsFPTypeEnum(Self) -> FPTypeEnum? = _
+  fn tryAsPrimitiveType(Self) -> &PrimitiveType? = _
+  fn tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum? = _
+  fn tryAsAggregateType(Self) -> &AggregateType? = _
+  fn tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum? = _
+  fn tryAsAbstractType(Self) -> &AbstractType? = _
+  fn tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum? = _
 }
 
 ///|
@@ -199,57 +199,57 @@ fn initAbstractType(typeref : @unsafe.LLVMTypeRef) -> &Type {
 }
 
 ///|
-impl Eq for &Type with equal(self, other) {
+impl Eq for &Type with fn equal(self, other) {
   self.asTypeEnum() == other.asTypeEnum()
 }
 
 ///|
-impl Type with getContext(self) -> Context {
+impl Type with fn getContext(self) -> Context {
   Context(@unsafe.llvm_get_type_context(self.getTypeRef()))
 }
 
 ///|
-impl Type with is16bitFPTy(self) -> Bool {
+impl Type with fn is16bitFPTy(self) -> Bool {
   self.asTypeEnum() is (HalfType(_) | BFloatType(_))
 }
 
 ///|
-impl Type with isIEEELikeFPTy(self) -> Bool {
+impl Type with fn isIEEELikeFPTy(self) -> Bool {
   self.tryAsFPTypeEnum() is Some(_)
 }
 
 ///|
-impl Type with isFloatingPointTy(self) -> Bool {
+impl Type with fn isFloatingPointTy(self) -> Bool {
   self.tryAsFPTypeEnum() is Some(_)
 }
 
 ///|
 #internal(unsafe, "This functions is not fully implemented yet")
-impl Type with isScalableTargetExtTy(_) {
+impl Type with fn isScalableTargetExtTy(_) {
   false
 }
 
 ///|
 #internal(unsafe, "This functions is not fully implemented yet")
-impl Type with isScalableTy(_) -> Bool {
+impl Type with fn isScalableTy(_) -> Bool {
   false
 }
 
 ///|
-impl Type with isIntOrIntVectorTy(self) -> Bool {
+impl Type with fn isIntOrIntVectorTy(self) -> Bool {
   self.getScalarType().asTypeEnum()
   is (Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_))
 }
 
 ///|
-impl Type with isFPOrFPVectorTy(self) -> Bool {
+impl Type with fn isFPOrFPVectorTy(self) -> Bool {
   self.getScalarType().isFloatingPointTy()
 }
 
 //impl Type with isRISCVectorTupleTy(self) -> Bool
 
 ///|
-impl Type with isIntOrPtrTy(self) -> Bool {
+impl Type with fn isIntOrPtrTy(self) -> Bool {
   self.asTypeEnum()
   is (Int1Type(_)
   | Int8Type(_)
@@ -260,12 +260,12 @@ impl Type with isIntOrPtrTy(self) -> Bool {
 }
 
 ///|
-impl Type with isPtrOrPtrVectorTy(self) -> Bool {
+impl Type with fn isPtrOrPtrVectorTy(self) -> Bool {
   self.getScalarType().asTypeEnum() is PointerType(_)
 }
 
 ///|
-impl Type with isEmptyTy(self) -> Bool {
+impl Type with fn isEmptyTy(self) -> Bool {
   match self.asTypeEnum() {
     ArrayType(arr) if arr.getElementCount() == 0 => true
     ArrayType(arr) => arr.getElementType().isEmptyTy()
@@ -278,7 +278,7 @@ impl Type with isEmptyTy(self) -> Bool {
 ///|
 ///
 /// Only FunctionType, VoidType, Opaque Struct is not first class type.
-impl Type with isFirstClassType(self) {
+impl Type with fn isFirstClassType(self) {
   match self.asTypeEnum() {
     StructType(sty) => not(sty.isOpaque())
     FunctionType(_) | VoidType(_) => false
@@ -289,7 +289,7 @@ impl Type with isFirstClassType(self) {
 // REVIEW: Maybe we could use math-cases
 
 ///|
-impl Type with isSingleValueType(self) -> Bool {
+impl Type with fn isSingleValueType(self) -> Bool {
   match self.asTypeEnum() {
     HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) | FP128Type(_) =>
       true
@@ -302,7 +302,7 @@ impl Type with isSingleValueType(self) -> Bool {
 }
 
 ///|
-impl Type with isAggregateType(self) -> Bool {
+impl Type with fn isAggregateType(self) -> Bool {
   match self.asTypeEnum() {
     StructType(_) | ArrayType(_) => true
     VectorType(_) | ScalableVectorType(_) => true
@@ -311,12 +311,12 @@ impl Type with isAggregateType(self) -> Bool {
 }
 
 ///|
-impl Type with isSized(self) -> Bool {
+impl Type with fn isSized(self) -> Bool {
   @unsafe.llvm_type_is_sized(self.getTypeRef())
 }
 
 ///|
-impl Type with sizeOf(self) -> &Value? {
+impl Type with fn sizeOf(self) -> &Value? {
   let valueref = @unsafe.llvm_size_of(self.getTypeRef())
   if @unsafe.llvm_value_ref_is_null(valueref) {
     None
@@ -327,12 +327,12 @@ impl Type with sizeOf(self) -> &Value? {
 }
 
 ///|
-impl Type with isValidGEPType(self) -> Bool {
+impl Type with fn isValidGEPType(self) -> Bool {
   self.tryAsAbstractTypeEnum() is None
 }
 
 ///|
-impl Type with getScalarType(self) {
+impl Type with fn getScalarType(self) {
   if self.asTypeEnum() is VectorType(vec) {
     vec.getElementType()
   } else {
@@ -341,7 +341,7 @@ impl Type with getScalarType(self) {
 }
 
 ///|
-impl Type with tryAsIntType(self) -> &IntegerType? {
+impl Type with fn tryAsIntType(self) -> &IntegerType? {
   match self.asTypeEnum() {
     Int1Type(i) => Some(i)
     Int8Type(i) => Some(i)
@@ -353,7 +353,7 @@ impl Type with tryAsIntType(self) -> &IntegerType? {
 }
 
 ///|
-impl Type with tryAsIntTypeEnum(self) -> IntegerTypeEnum? {
+impl Type with fn tryAsIntTypeEnum(self) -> IntegerTypeEnum? {
   match self.asTypeEnum() {
     Int1Type(i) => Some(Int1Type(i))
     Int8Type(i) => Some(Int8Type(i))
@@ -365,7 +365,7 @@ impl Type with tryAsIntTypeEnum(self) -> IntegerTypeEnum? {
 }
 
 ///|
-impl Type with tryAsFPType(self) -> &FPType? {
+impl Type with fn tryAsFPType(self) -> &FPType? {
   match self.asTypeEnum() {
     HalfType(h) => Some(h)
     BFloatType(b) => Some(b)
@@ -377,7 +377,7 @@ impl Type with tryAsFPType(self) -> &FPType? {
 }
 
 ///|
-impl Type with tryAsFPTypeEnum(self) -> FPTypeEnum? {
+impl Type with fn tryAsFPTypeEnum(self) -> FPTypeEnum? {
   match self.asTypeEnum() {
     HalfType(half) => Some(HalfType(half))
     BFloatType(bfloat) => Some(BFloatType(bfloat))
@@ -389,7 +389,7 @@ impl Type with tryAsFPTypeEnum(self) -> FPTypeEnum? {
 }
 
 ///|
-impl Type with tryAsPrimitiveType(self) -> &PrimitiveType? {
+impl Type with fn tryAsPrimitiveType(self) -> &PrimitiveType? {
   match self.asTypeEnum() {
     HalfType(half) => Some(half)
     BFloatType(bfloat) => Some(bfloat)
@@ -401,7 +401,7 @@ impl Type with tryAsPrimitiveType(self) -> &PrimitiveType? {
 }
 
 ///|
-impl Type with tryAsPrimitiveTypeEnum(self) -> PrimitiveTypeEnum? {
+impl Type with fn tryAsPrimitiveTypeEnum(self) -> PrimitiveTypeEnum? {
   match self.asTypeEnum() {
     HalfType(half) => Some(HalfType(half))
     BFloatType(bfloat) => Some(BFloatType(bfloat))
@@ -413,7 +413,7 @@ impl Type with tryAsPrimitiveTypeEnum(self) -> PrimitiveTypeEnum? {
 }
 
 ///|
-impl Type with tryAsAggregateType(self) -> &AggregateType? {
+impl Type with fn tryAsAggregateType(self) -> &AggregateType? {
   match self.asTypeEnum() {
     StructType(sty) => Some(sty)
     ArrayType(arr) => Some(arr)
@@ -424,7 +424,7 @@ impl Type with tryAsAggregateType(self) -> &AggregateType? {
 }
 
 ///|
-impl Type with tryAsAggregateTypeEnum(self) -> AggregateTypeEnum? {
+impl Type with fn tryAsAggregateTypeEnum(self) -> AggregateTypeEnum? {
   match self.asTypeEnum() {
     StructType(sty) => Some(StructType(sty))
     ArrayType(arr) => Some(ArrayType(arr))
@@ -435,7 +435,7 @@ impl Type with tryAsAggregateTypeEnum(self) -> AggregateTypeEnum? {
 }
 
 ///|
-impl Type with tryAsAbstractType(self) -> &AbstractType? {
+impl Type with fn tryAsAbstractType(self) -> &AbstractType? {
   match self.asTypeEnum() {
     VoidType(v) => Some(v)
     LabelType(label) => Some(label)
@@ -447,7 +447,7 @@ impl Type with tryAsAbstractType(self) -> &AbstractType? {
 }
 
 ///|
-impl Type with tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
+impl Type with fn tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
   match self.asTypeEnum() {
     VoidType(v) => Some(VoidType(v))
     LabelType(label) => Some(LabelType(label))
@@ -483,8 +483,8 @@ impl Type with tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 /// inspect(i32ty, content="i32")
 /// ```
 pub trait IntegerType: PrimitiveType {
-  asIntegerTypeEnum(Self) -> IntegerTypeEnum
-  getExtendedType(Self) -> &IntegerType? = _
+  fn asIntegerTypeEnum(Self) -> IntegerTypeEnum
+  fn getExtendedType(Self) -> &IntegerType? = _
 }
 
 /////|
@@ -493,7 +493,7 @@ pub trait IntegerType: PrimitiveType {
 //}
 
 ///|
-impl IntegerType with getExtendedType(self) -> &IntegerType? {
+impl IntegerType with fn getExtendedType(self) -> &IntegerType? {
   let ctx = self.getContext()
   match self.asIntegerTypeEnum() {
     Int8Type(_) => ctx.getInt16Ty() |> Some
@@ -541,10 +541,10 @@ pub fn IntegerTypeEnum::getBitWidth(self : IntegerTypeEnum) -> UInt {
 
 ///|
 pub trait FPType: PrimitiveType {
-  asFPTypeEnum(Self) -> FPTypeEnum
+  fn asFPTypeEnum(Self) -> FPTypeEnum
 
   /// Return the width of the mantissa of this type. 
-  getFPMantissaWidth(Self) -> UInt = _
+  fn getFPMantissaWidth(Self) -> UInt = _
 }
 
 ///|
@@ -579,7 +579,7 @@ pub fn FPTypeEnum::getFPMantissaWidth(self : FPTypeEnum) -> UInt {
 }
 
 ///|
-impl FPType with getFPMantissaWidth(self) {
+impl FPType with fn getFPMantissaWidth(self) {
   self.asFPTypeEnum().getFPMantissaWidth()
 }
 
@@ -589,12 +589,12 @@ impl FPType with getFPMantissaWidth(self) {
 
 ///|
 pub trait PrimitiveType: Type {
-  asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
-  getBitWidth(Self) -> Int = _
+  fn asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+  fn getBitWidth(Self) -> Int = _
 }
 
 ///|
-impl PrimitiveType with getBitWidth(self) -> Int {
+impl PrimitiveType with fn getBitWidth(self) -> Int {
   match self.asPrimitiveTypeEnum() {
     HalfType(_) => 16
     BFloatType(_) => 16
@@ -634,12 +634,12 @@ pub enum PrimitiveTypeEnum {
 
 ///|
 pub trait AggregateType: Type {
-  asAggregateTypeEnum(Self) -> AggregateTypeEnum
-  getElementType(Self, Int) -> &Type? = _
+  fn asAggregateTypeEnum(Self) -> AggregateTypeEnum
+  fn getElementType(Self, Int) -> &Type? = _
 }
 
 ///|
-impl AggregateType with getElementType(self, idx : Int) -> &Type? {
+impl AggregateType with fn getElementType(self, idx : Int) -> &Type? {
   match self.asAggregateTypeEnum() {
     StructType(sty) => sty.getElementType(idx)
     ArrayType(arr) => arr.getElementType() |> Some
@@ -682,7 +682,7 @@ pub fn AggregateTypeEnum::asTypeClass(self : Self) -> &Type {
 
 ///|
 pub trait AbstractType: Type {
-  asAbstractTypeEnum(Self) -> AbstractTypeEnum
+  fn asAbstractTypeEnum(Self) -> AbstractTypeEnum
 }
 
 ///|
@@ -702,27 +702,27 @@ pub enum AbstractTypeEnum {
 pub struct HalfType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for HalfType with output(self, logger) {
+pub impl Show for HalfType with fn output(self, logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for HalfType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for HalfType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::HalfType(self)
 }
 
 ///|
-pub impl Type for HalfType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for HalfType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl FPType for HalfType with asFPTypeEnum(self) -> FPTypeEnum {
+pub impl FPType for HalfType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FPTypeEnum::HalfType(self)
 }
 
 ///|
-pub impl PrimitiveType for HalfType with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for HalfType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   PrimitiveTypeEnum::HalfType(self)
 }
 
@@ -735,27 +735,27 @@ pub impl PrimitiveType for HalfType with asPrimitiveTypeEnum(self) -> PrimitiveT
 pub struct BFloatType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for BFloatType with output(self, logger : &Logger) {
+pub impl Show for BFloatType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for BFloatType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for BFloatType with fn asTypeEnum(self) -> TypeEnum {
   BFloatType(self)
 }
 
 ///|
-pub impl Type for BFloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for BFloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl FPType for BFloatType with asFPTypeEnum(self) -> FPTypeEnum {
+pub impl FPType for BFloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   BFloatType(self)
 }
 
 ///|
-pub impl PrimitiveType for BFloatType with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for BFloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   BFloatType(self)
 }
 
@@ -768,27 +768,27 @@ pub impl PrimitiveType for BFloatType with asPrimitiveTypeEnum(self) -> Primitiv
 pub struct FloatType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for FloatType with output(self, logger : &Logger) {
+pub impl Show for FloatType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for FloatType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for FloatType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::FloatType(self)
 }
 
 ///|
-pub impl Type for FloatType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for FloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl FPType for FloatType with asFPTypeEnum(self) -> FPTypeEnum {
+pub impl FPType for FloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FloatType(self)
 }
 
 ///|
-pub impl PrimitiveType for FloatType with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for FloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FloatType(self)
 }
 
@@ -806,27 +806,27 @@ pub struct DoubleType(@unsafe.LLVMTypeRef) derive(Eq)
 //}
 
 ///|
-pub impl Show for DoubleType with output(self, logger : &Logger) {
+pub impl Show for DoubleType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for DoubleType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for DoubleType with fn asTypeEnum(self) -> TypeEnum {
   DoubleType(self)
 }
 
 ///|
-pub impl Type for DoubleType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for DoubleType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl FPType for DoubleType with asFPTypeEnum(self) -> FPTypeEnum {
+pub impl FPType for DoubleType with fn asFPTypeEnum(self) -> FPTypeEnum {
   DoubleType(self)
 }
 
 ///|
-pub impl PrimitiveType for DoubleType with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for DoubleType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   DoubleType(self)
 }
 
@@ -847,27 +847,27 @@ pub struct FP128Type(@unsafe.LLVMTypeRef) derive(Eq)
 //}
 
 ///|
-pub impl Show for FP128Type with output(self, logger : &Logger) {
+pub impl Show for FP128Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for FP128Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for FP128Type with fn asTypeEnum(self) -> TypeEnum {
   FP128Type(self)
 }
 
 ///|
-pub impl Type for FP128Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for FP128Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl FPType for FP128Type with asFPTypeEnum(self) -> FPTypeEnum {
+pub impl FPType for FP128Type with fn asFPTypeEnum(self) -> FPTypeEnum {
   FP128Type(self)
 }
 
 ///|
-pub impl PrimitiveType for FP128Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for FP128Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FP128Type(self)
 }
 
@@ -879,27 +879,27 @@ pub impl PrimitiveType for FP128Type with asPrimitiveTypeEnum(self) -> Primitive
 pub struct Int1Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for Int1Type with output(self, logger : &Logger) {
+pub impl Show for Int1Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for Int1Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for Int1Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int1Type(self)
 }
 
 ///|
-pub impl Type for Int1Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int1Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl IntegerType for Int1Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+pub impl IntegerType for Int1Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int1Type(self)
 }
 
 ///|
-pub impl PrimitiveType for Int1Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for Int1Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int1Type(self)
 }
 
@@ -911,27 +911,27 @@ pub impl PrimitiveType for Int1Type with asPrimitiveTypeEnum(self) -> PrimitiveT
 pub struct Int8Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for Int8Type with output(self, logger : &Logger) {
+pub impl Show for Int8Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for Int8Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for Int8Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int8Type(self)
 }
 
 ///|
-pub impl Type for Int8Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int8Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl IntegerType for Int8Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+pub impl IntegerType for Int8Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int8Type(self)
 }
 
 ///|
-pub impl PrimitiveType for Int8Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for Int8Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int8Type(self)
 }
 
@@ -943,27 +943,27 @@ pub impl PrimitiveType for Int8Type with asPrimitiveTypeEnum(self) -> PrimitiveT
 pub struct Int16Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for Int16Type with output(self, logger : &Logger) {
+pub impl Show for Int16Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for Int16Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for Int16Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int16Type(self)
 }
 
 ///|
-pub impl Type for Int16Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int16Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl IntegerType for Int16Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+pub impl IntegerType for Int16Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int16Type(self)
 }
 
 ///|
-pub impl PrimitiveType for Int16Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for Int16Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int16Type(self)
 }
 
@@ -975,27 +975,27 @@ pub impl PrimitiveType for Int16Type with asPrimitiveTypeEnum(self) -> Primitive
 pub struct Int32Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for Int32Type with output(self, logger : &Logger) {
+pub impl Show for Int32Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for Int32Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for Int32Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int32Type(self)
 }
 
 ///|
-pub impl Type for Int32Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int32Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl IntegerType for Int32Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+pub impl IntegerType for Int32Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int32Type(self)
 }
 
 ///|
-pub impl PrimitiveType for Int32Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for Int32Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int32Type(self)
 }
 
@@ -1007,27 +1007,27 @@ pub impl PrimitiveType for Int32Type with asPrimitiveTypeEnum(self) -> Primitive
 pub struct Int64Type(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for Int64Type with output(self, logger : &Logger) {
+pub impl Show for Int64Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for Int64Type with asTypeEnum(self) -> TypeEnum {
+pub impl Type for Int64Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int64Type(self)
 }
 
 ///|
-pub impl Type for Int64Type with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for Int64Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl IntegerType for Int64Type with asIntegerTypeEnum(self) -> IntegerTypeEnum {
+pub impl IntegerType for Int64Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int64Type(self)
 }
 
 ///|
-pub impl PrimitiveType for Int64Type with asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
+pub impl PrimitiveType for Int64Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int64Type(self)
 }
 
@@ -1039,22 +1039,22 @@ pub impl PrimitiveType for Int64Type with asPrimitiveTypeEnum(self) -> Primitive
 pub struct VoidType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for VoidType with output(self, logger : &Logger) {
+pub impl Show for VoidType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for VoidType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for VoidType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl Type for VoidType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for VoidType with fn asTypeEnum(self) -> TypeEnum {
   VoidType(self)
 }
 
 ///|
-pub impl AbstractType for VoidType with asAbstractTypeEnum(self) -> AbstractTypeEnum {
+pub impl AbstractType for VoidType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   VoidType(self)
 }
 
@@ -1067,22 +1067,22 @@ pub impl AbstractType for VoidType with asAbstractTypeEnum(self) -> AbstractType
 pub struct LabelType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for LabelType with output(self, logger : &Logger) {
+pub impl Show for LabelType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for LabelType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for LabelType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::LabelType(self)
 }
 
 ///|
-pub impl Type for LabelType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for LabelType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AbstractType for LabelType with asAbstractTypeEnum(self) -> AbstractTypeEnum {
+pub impl AbstractType for LabelType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   LabelType(self)
 }
 
@@ -1094,22 +1094,22 @@ pub impl AbstractType for LabelType with asAbstractTypeEnum(self) -> AbstractTyp
 pub struct MetadataType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for MetadataType with output(self, logger : &Logger) {
+pub impl Show for MetadataType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for MetadataType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for MetadataType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::MetadataType(self)
 }
 
 ///|
-pub impl Type for MetadataType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for MetadataType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AbstractType for MetadataType with asAbstractTypeEnum(self) -> AbstractTypeEnum {
+pub impl AbstractType for MetadataType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   MetadataType(self)
 }
 
@@ -1122,22 +1122,22 @@ pub impl AbstractType for MetadataType with asAbstractTypeEnum(self) -> Abstract
 pub struct TokenType(@unsafe.LLVMTypeRef) derive(Eq)
 
 ///|
-pub impl Show for TokenType with output(self, logger : &Logger) {
+pub impl Show for TokenType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for TokenType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for TokenType with fn asTypeEnum(self) -> TypeEnum {
   TokenType(self)
 }
 
 ///|
-pub impl Type for TokenType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for TokenType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AbstractType for TokenType with asAbstractTypeEnum(self) -> AbstractTypeEnum {
+pub impl AbstractType for TokenType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   TokenType(self)
 }
 
@@ -1206,22 +1206,22 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
 }
 
 ///|
-pub impl Show for FunctionType with output(self, logger : &Logger) {
+pub impl Show for FunctionType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for FunctionType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for FunctionType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::FunctionType(self)
 }
 
 ///|
-pub impl Type for FunctionType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for FunctionType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AbstractType for FunctionType with asAbstractTypeEnum(self) -> AbstractTypeEnum {
+pub impl AbstractType for FunctionType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   AbstractTypeEnum::FunctionType(self)
 }
 
@@ -1351,22 +1351,22 @@ pub fn StructType::setBody(
 }
 
 ///|
-pub impl Show for StructType with output(self, logger : &Logger) {
+pub impl Show for StructType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for StructType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for StructType with fn asTypeEnum(self) -> TypeEnum {
   StructType(self)
 }
 
 ///|
-pub impl Type for StructType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for StructType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AggregateType for StructType with asAggregateTypeEnum(self) -> AggregateTypeEnum {
+pub impl AggregateType for StructType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   StructType(self)
 }
 
@@ -1389,22 +1389,22 @@ pub fn ArrayType::getElementType(self : ArrayType) -> &Type {
 }
 
 ///|
-pub impl Show for ArrayType with output(self, logger : &Logger) {
+pub impl Show for ArrayType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for ArrayType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for ArrayType with fn asTypeEnum(self) -> TypeEnum {
   ArrayType(self)
 }
 
 ///|
-pub impl Type for ArrayType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for ArrayType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AggregateType for ArrayType with asAggregateTypeEnum(self) -> AggregateTypeEnum {
+pub impl AggregateType for ArrayType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   ArrayType(self)
 }
 
@@ -1429,22 +1429,22 @@ pub fn VectorType::getElementCount(self : VectorType) -> Int {
 }
 
 ///|
-pub impl Show for VectorType with output(self, logger : &Logger) {
+pub impl Show for VectorType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for VectorType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for VectorType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::VectorType(self)
 }
 
 ///|
-pub impl Type for VectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AggregateType for VectorType with asAggregateTypeEnum(self) -> AggregateTypeEnum {
+pub impl AggregateType for VectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   VectorType(self)
 }
 
@@ -1469,22 +1469,22 @@ pub fn ScalableVectorType::getElementCount(self : ScalableVectorType) -> Int {
 }
 
 ///|
-pub impl Show for ScalableVectorType with output(self, logger : &Logger) {
+pub impl Show for ScalableVectorType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for ScalableVectorType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for ScalableVectorType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::ScalableVectorType(self)
 }
 
 ///|
-pub impl Type for ScalableVectorType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
 
 ///|
-pub impl AggregateType for ScalableVectorType with asAggregateTypeEnum(self) -> AggregateTypeEnum {
+pub impl AggregateType for ScalableVectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   ScalableVectorType(self)
 }
 
@@ -1527,16 +1527,16 @@ pub fn PointerType::isLoadableOrStorableType(eleTy : &Type) -> Bool {
 }
 
 ///|
-pub impl Show for PointerType with output(self, logger : &Logger) {
+pub impl Show for PointerType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
-pub impl Type for PointerType with asTypeEnum(self) -> TypeEnum {
+pub impl Type for PointerType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::PointerType(self)
 }
 
 ///|
-pub impl Type for PointerType with getTypeRef(self) -> @unsafe.LLVMTypeRef {
+pub impl Type for PointerType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }

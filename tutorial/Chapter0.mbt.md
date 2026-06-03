@@ -50,7 +50,6 @@ test {
   let i32_ty = ctx.getInt32Ty()
   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
   let _ = mod.addFunction(func_ty, "add")
-
 }
 // llvm.mbt (MoonBit风格)
 ```

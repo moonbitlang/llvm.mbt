@@ -210,7 +210,7 @@ pub fn Module::dump(self : Module) -> Unit {
 }
 
 ///|
-pub impl Show for Module with output(self, logger) {
+pub impl Show for Module with fn output(self, logger) {
   let s = @unsafe.llvm_print_module_to_string(self.0)
   logger.write_string(s)
 }

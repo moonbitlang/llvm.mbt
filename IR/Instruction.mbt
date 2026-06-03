@@ -12,27 +12,27 @@ pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
 }
 
 ///|
-pub impl Value for AllocaInst with getValueRef(self) -> ValueRef {
+pub impl Value for AllocaInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for AllocaInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for AllocaInst with fn asValueEnum(self) -> ValueEnum {
   AllocaInst(self)
 }
 
 ///|
-pub impl Instruction for AllocaInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for AllocaInst with fn asInstEnum(self) -> InstructionEnum {
   AllocaInst(self)
 }
 
 ///|
-pub impl InsertPoint for AllocaInst with asInsertPtEnum(self) {
+pub impl InsertPoint for AllocaInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for AllocaInst with output(self, logger) {
+pub impl Show for AllocaInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -44,27 +44,27 @@ pub impl Show for AllocaInst with output(self, logger) {
 pub struct LoadInst(ValueRef)
 
 ///|
-pub impl Value for LoadInst with getValueRef(self) -> ValueRef {
+pub impl Value for LoadInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for LoadInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for LoadInst with fn asValueEnum(self) -> ValueEnum {
   LoadInst(self)
 }
 
 ///|
-pub impl Instruction for LoadInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for LoadInst with fn asInstEnum(self) -> InstructionEnum {
   LoadInst(self)
 }
 
 ///|
-pub impl InsertPoint for LoadInst with asInsertPtEnum(self) {
+pub impl InsertPoint for LoadInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for LoadInst with output(self, logger) {
+pub impl Show for LoadInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -76,27 +76,27 @@ pub impl Show for LoadInst with output(self, logger) {
 pub struct StoreInst(ValueRef)
 
 ///|
-pub impl Value for StoreInst with getValueRef(self) -> ValueRef {
+pub impl Value for StoreInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for StoreInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for StoreInst with fn asValueEnum(self) -> ValueEnum {
   StoreInst(self)
 }
 
 ///|
-pub impl Instruction for StoreInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for StoreInst with fn asInstEnum(self) -> InstructionEnum {
   StoreInst(self)
 }
 
 ///|
-pub impl InsertPoint for StoreInst with asInsertPtEnum(self) {
+pub impl InsertPoint for StoreInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for StoreInst with output(self, logger) {
+pub impl Show for StoreInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -108,27 +108,27 @@ pub impl Show for StoreInst with output(self, logger) {
 pub struct CastInst(ValueRef)
 
 ///|
-pub impl Value for CastInst with getValueRef(self) -> ValueRef {
+pub impl Value for CastInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for CastInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for CastInst with fn asValueEnum(self) -> ValueEnum {
   CastInst(self)
 }
 
 ///|
-pub impl Instruction for CastInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for CastInst with fn asInstEnum(self) -> InstructionEnum {
   CastInst(self)
 }
 
 ///|
-pub impl InsertPoint for CastInst with asInsertPtEnum(self) {
+pub impl InsertPoint for CastInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for CastInst with output(self, logger) {
+pub impl Show for CastInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -140,27 +140,27 @@ pub impl Show for CastInst with output(self, logger) {
 pub struct UnaryInst(ValueRef)
 
 ///|
-pub impl Value for UnaryInst with getValueRef(self) -> ValueRef {
+pub impl Value for UnaryInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for UnaryInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for UnaryInst with fn asValueEnum(self) -> ValueEnum {
   UnaryInst(self)
 }
 
 ///|
-pub impl Instruction for UnaryInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for UnaryInst with fn asInstEnum(self) -> InstructionEnum {
   UnaryInst(self)
 }
 
 ///|
-pub impl InsertPoint for UnaryInst with asInsertPtEnum(self) {
+pub impl InsertPoint for UnaryInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for UnaryInst with output(self, logger) {
+pub impl Show for UnaryInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -172,27 +172,27 @@ pub impl Show for UnaryInst with output(self, logger) {
 pub struct BinaryInst(ValueRef)
 
 ///|
-pub impl Value for BinaryInst with getValueRef(self) -> ValueRef {
+pub impl Value for BinaryInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for BinaryInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for BinaryInst with fn asValueEnum(self) -> ValueEnum {
   BinaryInst(self)
 }
 
 ///|
-pub impl Instruction for BinaryInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for BinaryInst with fn asInstEnum(self) -> InstructionEnum {
   BinaryInst(self)
 }
 
 ///|
-pub impl InsertPoint for BinaryInst with asInsertPtEnum(self) {
+pub impl InsertPoint for BinaryInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for BinaryInst with output(self, logger) {
+pub impl Show for BinaryInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -284,27 +284,27 @@ pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
 }
 
 ///|
-pub impl Value for ICmpInst with getValueRef(self) -> ValueRef {
+pub impl Value for ICmpInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ICmpInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for ICmpInst with fn asValueEnum(self) -> ValueEnum {
   ICmpInst(self)
 }
 
 ///|
-pub impl Instruction for ICmpInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for ICmpInst with fn asInstEnum(self) -> InstructionEnum {
   ICmpInst(self)
 }
 
 ///|
-pub impl InsertPoint for ICmpInst with asInsertPtEnum(self) {
+pub impl InsertPoint for ICmpInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for ICmpInst with output(self, logger) {
+pub impl Show for ICmpInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -390,27 +390,27 @@ pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
 }
 
 ///|
-pub impl Value for FCmpInst with getValueRef(self) -> ValueRef {
+pub impl Value for FCmpInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for FCmpInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for FCmpInst with fn asValueEnum(self) -> ValueEnum {
   FCmpInst(self)
 }
 
 ///|
-pub impl Instruction for FCmpInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for FCmpInst with fn asInstEnum(self) -> InstructionEnum {
   FCmpInst(self)
 }
 
 ///|
-pub impl InsertPoint for FCmpInst with asInsertPtEnum(self) {
+pub impl InsertPoint for FCmpInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for FCmpInst with output(self, logger) {
+pub impl Show for FCmpInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -445,27 +445,27 @@ pub fn GetElementPtrInst::getSourceElementType(
 }
 
 ///|
-pub impl Value for GetElementPtrInst with getValueRef(self) -> ValueRef {
+pub impl Value for GetElementPtrInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for GetElementPtrInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for GetElementPtrInst with fn asValueEnum(self) -> ValueEnum {
   GetElementPtrInst(self)
 }
 
 ///|
-pub impl Instruction for GetElementPtrInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for GetElementPtrInst with fn asInstEnum(self) -> InstructionEnum {
   GetElementPtrInst(self)
 }
 
 ///|
-pub impl InsertPoint for GetElementPtrInst with asInsertPtEnum(self) {
+pub impl InsertPoint for GetElementPtrInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for GetElementPtrInst with output(self, logger) {
+pub impl Show for GetElementPtrInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -477,22 +477,22 @@ pub impl Show for GetElementPtrInst with output(self, logger) {
 pub struct SelectInst(ValueRef)
 
 ///|
-pub impl Value for SelectInst with getValueRef(self) -> ValueRef {
+pub impl Value for SelectInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for SelectInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for SelectInst with fn asValueEnum(self) -> ValueEnum {
   SelectInst(self)
 }
 
 ///|
-pub impl Instruction for SelectInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for SelectInst with fn asInstEnum(self) -> InstructionEnum {
   SelectInst(self)
 }
 
 ///|
-pub impl Show for SelectInst with output(self, logger) {
+pub impl Show for SelectInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -504,32 +504,32 @@ pub impl Show for SelectInst with output(self, logger) {
 pub struct ExtractValueInst(ValueRef)
 
 ///|
-pub impl Value for ExtractValueInst with getValueRef(self) -> ValueRef {
+pub impl Value for ExtractValueInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ExtractValueInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for ExtractValueInst with fn asValueEnum(self) -> ValueEnum {
   ExtractValueInst(self)
 }
 
 ///|
-pub impl Instruction for ExtractValueInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for ExtractValueInst with fn asInstEnum(self) -> InstructionEnum {
   ExtractValueInst(self)
 }
 
 ///|
-pub impl InsertPoint for SelectInst with asInsertPtEnum(self) {
+pub impl InsertPoint for SelectInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl InsertPoint for ExtractValueInst with asInsertPtEnum(self) {
+pub impl InsertPoint for ExtractValueInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for ExtractValueInst with output(self, logger) {
+pub impl Show for ExtractValueInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -541,27 +541,27 @@ pub impl Show for ExtractValueInst with output(self, logger) {
 pub struct InsertValueInst(ValueRef)
 
 ///|
-pub impl Value for InsertValueInst with getValueRef(self) -> ValueRef {
+pub impl Value for InsertValueInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for InsertValueInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for InsertValueInst with fn asValueEnum(self) -> ValueEnum {
   InsertValueInst(self)
 }
 
 ///|
-pub impl Instruction for InsertValueInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for InsertValueInst with fn asInstEnum(self) -> InstructionEnum {
   InsertValueInst(self)
 }
 
 ///|
-pub impl InsertPoint for InsertValueInst with asInsertPtEnum(self) {
+pub impl InsertPoint for InsertValueInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for InsertValueInst with output(self, logger) {
+pub impl Show for InsertValueInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -599,33 +599,35 @@ pub fn PHINode::countIncoming(self : PHINode) -> Int {
 
 ///|
 pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
-  when(idx >= 0 && idx < self.countIncoming(), () => BasicBlock(
-    @unsafe.llvm_get_incoming_block(self.0, idx.reinterpret_as_uint()),
-  ))
+  when(idx >= 0 && idx < self.countIncoming(), () => {
+    BasicBlock(
+      @unsafe.llvm_get_incoming_block(self.0, idx.reinterpret_as_uint()),
+    )
+  })
 }
 
 ///|
-pub impl Value for PHINode with getValueRef(self) -> ValueRef {
+pub impl Value for PHINode with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for PHINode with asValueEnum(self) -> ValueEnum {
+pub impl Value for PHINode with fn asValueEnum(self) -> ValueEnum {
   PHINode(self)
 }
 
 ///|
-pub impl Instruction for PHINode with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for PHINode with fn asInstEnum(self) -> InstructionEnum {
   PHINode(self)
 }
 
 ///|
-pub impl InsertPoint for PHINode with asInsertPtEnum(self) {
+pub impl InsertPoint for PHINode with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for PHINode with output(self, logger) {
+pub impl Show for PHINode with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -637,27 +639,27 @@ pub impl Show for PHINode with output(self, logger) {
 pub struct ReturnInst(ValueRef)
 
 ///|
-pub impl Value for ReturnInst with getValueRef(self) -> ValueRef {
+pub impl Value for ReturnInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ReturnInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for ReturnInst with fn asValueEnum(self) -> ValueEnum {
   ReturnInst(self)
 }
 
 ///|
-pub impl Instruction for ReturnInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for ReturnInst with fn asInstEnum(self) -> InstructionEnum {
   ReturnInst(self)
 }
 
 ///|
-pub impl InsertPoint for ReturnInst with asInsertPtEnum(self) {
+pub impl InsertPoint for ReturnInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for ReturnInst with output(self, logger) {
+pub impl Show for ReturnInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -701,9 +703,9 @@ pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
 
 ///|
 pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
-  when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
-    @unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()),
-  ))
+  when(idx >= 0 && idx < self.getNumSuccessors(), () => {
+    BasicBlock(@unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()))
+  })
 }
 
 ///|
@@ -724,27 +726,27 @@ pub fn BranchInst::setSuccessor(
 }
 
 ///|
-pub impl Value for BranchInst with getValueRef(self) -> ValueRef {
+pub impl Value for BranchInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for BranchInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for BranchInst with fn asValueEnum(self) -> ValueEnum {
   BranchInst(self)
 }
 
 ///|
-pub impl Instruction for BranchInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for BranchInst with fn asInstEnum(self) -> InstructionEnum {
   BranchInst(self)
 }
 
 ///|
-pub impl InsertPoint for BranchInst with asInsertPtEnum(self) {
+pub impl InsertPoint for BranchInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for BranchInst with output(self, logger) {
+pub impl Show for BranchInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -781,9 +783,9 @@ pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
 
 ///|
 pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
-  when(idx >= 0 && idx < self.getNumSuccessors(), () => BasicBlock(
-    @unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()),
-  ))
+  when(idx >= 0 && idx < self.getNumSuccessors(), () => {
+    BasicBlock(@unsafe.llvm_get_successor(self.0, idx.reinterpret_as_uint()))
+  })
 }
 
 ///|
@@ -804,27 +806,27 @@ pub fn SwitchInst::setSuccessor(
 }
 
 ///|
-pub impl Value for SwitchInst with getValueRef(self) -> ValueRef {
+pub impl Value for SwitchInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for SwitchInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for SwitchInst with fn asValueEnum(self) -> ValueEnum {
   SwitchInst(self)
 }
 
 ///|
-pub impl Instruction for SwitchInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for SwitchInst with fn asInstEnum(self) -> InstructionEnum {
   SwitchInst(self)
 }
 
 ///|
-pub impl InsertPoint for SwitchInst with asInsertPtEnum(self) {
+pub impl InsertPoint for SwitchInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for SwitchInst with output(self, logger) {
+pub impl Show for SwitchInst with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -889,26 +891,26 @@ pub fn CallInst::setTailCallKind(self : CallInst, kind : TailCallKind) -> Unit {
 }
 
 ///|
-pub impl Value for CallInst with getValueRef(self) -> ValueRef {
+pub impl Value for CallInst with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for CallInst with asValueEnum(self) -> ValueEnum {
+pub impl Value for CallInst with fn asValueEnum(self) -> ValueEnum {
   CallInst(self)
 }
 
 ///|
-pub impl Instruction for CallInst with asInstEnum(self) -> InstructionEnum {
+pub impl Instruction for CallInst with fn asInstEnum(self) -> InstructionEnum {
   CallInst(self)
 }
 
 ///|
-pub impl InsertPoint for CallInst with asInsertPtEnum(self) {
+pub impl InsertPoint for CallInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
-pub impl Show for CallInst with output(self, logger) {
+pub impl Show for CallInst with fn output(self, logger) {
   self.0.output(logger)
 }

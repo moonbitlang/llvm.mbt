@@ -6,12 +6,12 @@
 pub struct BasicBlock(@unsafe.LLVMBasicBlockRef)
 
 ///|
-pub impl Value for BasicBlock with getValueRef(self) -> ValueRef {
+pub impl Value for BasicBlock with fn getValueRef(self) -> ValueRef {
   @unsafe.llvm_basic_block_as_value(self.0)
 }
 
 ///|
-pub impl Value for BasicBlock with asValueEnum(self) -> ValueEnum {
+pub impl Value for BasicBlock with fn asValueEnum(self) -> ValueEnum {
   BasicBlock(self)
 }
 
@@ -268,9 +268,9 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
 /// ```
 pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_first_instruction(self.0)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    initInstruction(valueref)
+  })
 }
 
 ///|
@@ -298,9 +298,9 @@ pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
 /// ```
 pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_last_instruction(self.0)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    initInstruction(valueref)
+  })
 }
 
 ///|
@@ -328,9 +328,9 @@ pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
 /// ```
 pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
   let valueref = @unsafe.llvm_get_basic_block_terminator(self.0)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => initInstruction(
-    valueref,
-  ))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    initInstruction(valueref)
+  })
 }
 
 ///|
@@ -507,7 +507,7 @@ pub fn BasicBlock::setName(self : Self, name : String) -> Unit {
 //}
 
 ///|
-pub impl Show for BasicBlock with output(self, logger) {
+pub impl Show for BasicBlock with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(
     @unsafe.llvm_basic_block_as_value(self.0),
   )

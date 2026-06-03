@@ -1771,11 +1771,8 @@ pub(all) enum LLVMAtomicRMWBinOp {
 pub fn LLVMAtomicRMWBinOp::from_int(Int) -> Self
 pub fn LLVMAtomicRMWBinOp::to_int(Self) -> Int
 
-pub(all) struct LLVMAttributeIndex(UInt)
-#deprecated
-pub fn LLVMAttributeIndex::inner(Self) -> UInt
+pub(all) struct LLVMAttributeIndex(UInt) derive(Eq)
 pub fn LLVMAttributeIndex::new(UInt) -> Self
-pub impl Eq for LLVMAttributeIndex
 
 #external
 pub type LLVMAttributeRef
@@ -1831,8 +1828,7 @@ pub(all) enum LLVMBinaryType {
 pub fn LLVMBinaryType::from_int(Int) -> Self
 pub fn LLVMBinaryType::to_int(Self) -> Int
 
-type LLVMBool
-pub impl Eq for LLVMBool
+type LLVMBool derive(Eq)
 
 #external
 pub type LLVMBuilderRef
@@ -2188,12 +2184,9 @@ pub(all) enum LLVMDWARFSourceLanguage {
 pub fn LLVMDWARFSourceLanguage::from_int(Int) -> Self
 pub fn LLVMDWARFSourceLanguage::to_int(Self) -> Int
 
-pub(all) struct LLVMDWARFTypeEncoding(UInt)
-#deprecated
-pub fn LLVMDWARFTypeEncoding::inner(Self) -> UInt
+pub(all) struct LLVMDWARFTypeEncoding(UInt) derive(Eq)
 pub fn LLVMDWARFTypeEncoding::into(Self) -> UInt
 pub fn LLVMDWARFTypeEncoding::new(UInt) -> Self
-pub impl Eq for LLVMDWARFTypeEncoding
 
 #external
 pub type LLVMDbgRecordRef
@@ -2279,11 +2272,7 @@ pub(all) enum LLVMJITSymbolGenericFlags {
 pub fn LLVMJITSymbolGenericFlags::from_int(Int) -> Self
 pub fn LLVMJITSymbolGenericFlags::to_int(Self) -> Int
 
-pub(all) struct LLVMJITSymbolTargetFlags(UInt)
-#deprecated
-pub fn LLVMJITSymbolTargetFlags::inner(Self) -> UInt
-pub impl Eq for LLVMJITSymbolTargetFlags
-pub impl Show for LLVMJITSymbolTargetFlags
+pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq, Show)
 
 pub(all) enum LLVMLandingPadClauseTy {
   LLVMLandingPadCatch
@@ -2367,12 +2356,9 @@ pub fn LLVMMemoryBufferRef::dispose_memory_buffer(Self) -> Unit
 pub fn LLVMMemoryBufferRef::get_buffer_size(Self) -> Int
 pub fn LLVMMemoryBufferRef::get_buffer_start(Self) -> String
 
-pub(all) struct LLVMMetadataKind(UInt)
-#deprecated
-pub fn LLVMMetadataKind::inner(Self) -> UInt
+pub(all) struct LLVMMetadataKind(UInt) derive(Eq)
 pub fn LLVMMetadataKind::into(Self) -> UInt
 pub fn LLVMMetadataKind::new(UInt) -> Self
-pub impl Eq for LLVMMetadataKind
 
 #external
 pub type LLVMMetadataRef
@@ -2497,10 +2483,9 @@ pub(all) enum LLVMOpcode {
   LLVMCatchPad
   LLVMCleanupPad
   LLVMCatchSwitch
-}
+} derive(Show)
 pub fn LLVMOpcode::from_int(Int) -> Self
 pub fn LLVMOpcode::to_int(Self) -> Int
-pub impl Show for LLVMOpcode
 
 #external
 pub type LLVMOperandBundleRef
@@ -2511,21 +2496,12 @@ pub fn LLVMOperandBundleRef::get_num_args(Self) -> UInt
 #external
 pub type LLVMOrcExecutionSessionRef
 
-pub(all) struct LLVMOrcExecutorAddress(UInt64)
-#deprecated
-pub fn LLVMOrcExecutorAddress::inner(Self) -> UInt64
-pub impl Default for LLVMOrcExecutorAddress
-pub impl Eq for LLVMOrcExecutorAddress
-pub impl Show for LLVMOrcExecutorAddress
+pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Default, Eq, Show)
 
 #external
 pub type LLVMOrcJITDylibRef
 
-pub(all) struct LLVMOrcJITTargetAddress(UInt64)
-#deprecated
-pub fn LLVMOrcJITTargetAddress::inner(Self) -> UInt64
-pub impl Eq for LLVMOrcJITTargetAddress
-pub impl Show for LLVMOrcJITTargetAddress
+pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq, Show)
 
 #external
 pub type LLVMOrcLLJITBuilderRef
@@ -2616,10 +2592,9 @@ pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindTail
   LLVMTailCallKindMustTail
   LLVMTailCallKindNoTail
-}
+} derive(Eq)
 pub fn LLVMTailCallKind::from_int(Int) -> Self
 pub fn LLVMTailCallKind::to_int(Self) -> Int
-pub impl Eq for LLVMTailCallKind
 
 #external
 pub type LLVMTargetDataRef
@@ -2665,11 +2640,9 @@ pub(all) enum LLVMTypeKind {
   LLVMBFloatTypeKind
   LLVMX86_AMXTypeKind
   LLVMTargetExtTypeKind
-}
+} derive(Eq, Show)
 pub fn LLVMTypeKind::from_int(Int) -> Self
 pub fn LLVMTypeKind::to_int(Self) -> Int
-pub impl Eq for LLVMTypeKind
-pub impl Show for LLVMTypeKind
 
 #external
 pub type LLVMTypeRef
@@ -2751,11 +2724,9 @@ pub(all) enum LLVMUnnamedAddr {
   LLVMNoUnnamedAddr
   LLVMLocalUnnamedAddr
   LLVMGlobalUnnamedAddr
-}
+} derive(Eq, Show)
 pub fn LLVMUnnamedAddr::from_int(Int) -> Self
 pub fn LLVMUnnamedAddr::to_int(Self) -> Int
-pub impl Eq for LLVMUnnamedAddr
-pub impl Show for LLVMUnnamedAddr
 
 #external
 pub type LLVMUseRef

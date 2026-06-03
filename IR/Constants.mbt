@@ -30,22 +30,22 @@ pub fn ConstantInt::to_uint(self : Self) -> UInt {
 }
 
 ///|
-pub impl Value for ConstantInt with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantInt with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantInt with asValueEnum(self) {
+pub impl Value for ConstantInt with fn asValueEnum(self) {
   ConstantInt(self)
 }
 
 ///|
-pub impl Constant for ConstantInt with asConstantEnum(self) {
+pub impl Constant for ConstantInt with fn asConstantEnum(self) {
   ConstantInt(self)
 }
 
 ///|
-pub impl Show for ConstantInt with output(self, logger) {
+pub impl Show for ConstantInt with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -57,22 +57,22 @@ pub impl Show for ConstantInt with output(self, logger) {
 pub struct ConstantFP(ValueRef)
 
 ///|
-pub impl Value for ConstantFP with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantFP with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantFP with asValueEnum(self) {
+pub impl Value for ConstantFP with fn asValueEnum(self) {
   ConstantFP(self)
 }
 
 ///|
-pub impl Constant for ConstantFP with asConstantEnum(self) {
+pub impl Constant for ConstantFP with fn asConstantEnum(self) {
   ConstantFP(self)
 }
 
 ///|
-pub impl Show for ConstantFP with output(self, logger) {
+pub impl Show for ConstantFP with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -84,22 +84,22 @@ pub impl Show for ConstantFP with output(self, logger) {
 pub struct ConstantPointerNull(ValueRef)
 
 ///|
-pub impl Value for ConstantPointerNull with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantPointerNull with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantPointerNull with asValueEnum(self) {
+pub impl Value for ConstantPointerNull with fn asValueEnum(self) {
   ConstantPointerNull(self)
 }
 
 ///|
-pub impl Constant for ConstantPointerNull with asConstantEnum(self) {
+pub impl Constant for ConstantPointerNull with fn asConstantEnum(self) {
   ConstantPointerNull(self)
 }
 
 ///|
-pub impl Show for ConstantPointerNull with output(self, logger) {
+pub impl Show for ConstantPointerNull with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -111,22 +111,22 @@ pub impl Show for ConstantPointerNull with output(self, logger) {
 pub struct ConstantArray(ValueRef)
 
 ///|
-pub impl Value for ConstantArray with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantArray with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantArray with asValueEnum(self) {
+pub impl Value for ConstantArray with fn asValueEnum(self) {
   ConstantArray(self)
 }
 
 ///|
-pub impl Constant for ConstantArray with asConstantEnum(self) {
+pub impl Constant for ConstantArray with fn asConstantEnum(self) {
   ConstantArray(self)
 }
 
 ///|
-pub impl Show for ConstantArray with output(self, logger) {
+pub impl Show for ConstantArray with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -138,22 +138,22 @@ pub impl Show for ConstantArray with output(self, logger) {
 pub struct ConstantStruct(ValueRef)
 
 ///|
-pub impl Value for ConstantStruct with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantStruct with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantStruct with asValueEnum(self) {
+pub impl Value for ConstantStruct with fn asValueEnum(self) {
   ConstantStruct(self)
 }
 
 ///|
-pub impl Constant for ConstantStruct with asConstantEnum(self) {
+pub impl Constant for ConstantStruct with fn asConstantEnum(self) {
   ConstantStruct(self)
 }
 
 ///|
-pub impl Show for ConstantStruct with output(self, logger) {
+pub impl Show for ConstantStruct with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -165,22 +165,22 @@ pub impl Show for ConstantStruct with output(self, logger) {
 pub struct ConstantVector(ValueRef)
 
 ///|
-pub impl Value for ConstantVector with getValueRef(self) -> ValueRef {
+pub impl Value for ConstantVector with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for ConstantVector with asValueEnum(self) {
+pub impl Value for ConstantVector with fn asValueEnum(self) {
   ConstantVector(self)
 }
 
 ///|
-pub impl Constant for ConstantVector with asConstantEnum(self) {
+pub impl Constant for ConstantVector with fn asConstantEnum(self) {
   ConstantVector(self)
 }
 
 ///|
-pub impl Show for ConstantVector with output(self, logger) {
+pub impl Show for ConstantVector with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -192,22 +192,22 @@ pub impl Show for ConstantVector with output(self, logger) {
 pub struct UndefValue(ValueRef)
 
 ///|
-pub impl Value for UndefValue with getValueRef(self) -> ValueRef {
+pub impl Value for UndefValue with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for UndefValue with asValueEnum(self) {
+pub impl Value for UndefValue with fn asValueEnum(self) {
   UndefValue(self)
 }
 
 ///|
-pub impl Constant for UndefValue with asConstantEnum(self) {
+pub impl Constant for UndefValue with fn asConstantEnum(self) {
   UndefValue(self)
 }
 
 ///|
-pub impl Show for UndefValue with output(self, logger) {
+pub impl Show for UndefValue with fn output(self, logger) {
   self.0.output(logger)
 }
 
@@ -219,21 +219,21 @@ pub impl Show for UndefValue with output(self, logger) {
 pub struct PoisonValue(ValueRef)
 
 ///|
-pub impl Constant for PoisonValue with asConstantEnum(self) {
+pub impl Constant for PoisonValue with fn asConstantEnum(self) {
   PoisonValue(self)
 }
 
 ///|
-pub impl Value for PoisonValue with getValueRef(self) -> ValueRef {
+pub impl Value for PoisonValue with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for PoisonValue with asValueEnum(self) {
+pub impl Value for PoisonValue with fn asValueEnum(self) {
   PoisonValue(self)
 }
 
 ///|
-pub impl Show for PoisonValue with output(self, logger) {
+pub impl Show for PoisonValue with fn output(self, logger) {
   self.0.output(logger)
 }

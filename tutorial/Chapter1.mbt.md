@@ -12,7 +12,6 @@ test {
   let ctx = @IR.Context::new()
   let mod = ctx.addModule("demo")
   let builder = ctx.createBuilder()
-
 }
 ```
 

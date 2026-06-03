@@ -2,22 +2,22 @@
 pub struct GlobalVariable(ValueRef)
 
 ///|
-pub impl Value for GlobalVariable with getValueRef(self) -> ValueRef {
+pub impl Value for GlobalVariable with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for GlobalVariable with asValueEnum(self) -> ValueEnum {
+pub impl Value for GlobalVariable with fn asValueEnum(self) -> ValueEnum {
   GlobalVariable(self)
 }
 
 ///|
-pub impl GlobalValue for GlobalVariable with asGlobalEnum(self) -> GlobalEnum {
+pub impl GlobalValue for GlobalVariable with fn asGlobalEnum(self) -> GlobalEnum {
   GlobalVariable(self)
 }
 
 ///|
-pub impl Show for GlobalVariable with output(self, logger) {
+pub impl Show for GlobalVariable with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }
@@ -26,22 +26,22 @@ pub impl Show for GlobalVariable with output(self, logger) {
 pub struct GlobalConstant(ValueRef)
 
 ///|
-pub impl Value for GlobalConstant with getValueRef(self) -> ValueRef {
+pub impl Value for GlobalConstant with fn getValueRef(self) -> ValueRef {
   self.0
 }
 
 ///|
-pub impl Value for GlobalConstant with asValueEnum(self) -> ValueEnum {
+pub impl Value for GlobalConstant with fn asValueEnum(self) -> ValueEnum {
   GlobalConstant(self)
 }
 
 ///|
-pub impl GlobalValue for GlobalConstant with asGlobalEnum(self) -> GlobalEnum {
+pub impl GlobalValue for GlobalConstant with fn asGlobalEnum(self) -> GlobalEnum {
   GlobalConstant(self)
 }
 
 ///|
-pub impl Show for GlobalConstant with output(self, logger) {
+pub impl Show for GlobalConstant with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
   logger.write_string(s)
 }

@@ -441,7 +441,6 @@ fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
         raise ValueError("Cannot assign to immutable variable")
       }
       let _ = gen.builder.createStore(expr_val, ptr)
-
     }
 
     // 条件语句
@@ -461,7 +460,6 @@ fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
       // 如果 then 分支没有 return，跳转到 merge
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(merge_bb)
-
       }
 
       // 生成 else 分支
@@ -470,7 +468,6 @@ fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
       // 如果 else 分支没有 return，跳转到 merge
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(merge_bb)
-
       }
 
       // 设置插入点到 merge 块
@@ -509,7 +506,6 @@ fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
       // 循环体结束，跳回条件检查
       if gen.builder.getInsertBlock().getTerminator() is None {
         let _ = gen.builder.createBr(loop_cond_bb)
-
       }
 
       // 设置插入点到循环结束
@@ -522,18 +518,15 @@ fn Stmt::compile(self : Stmt, gen : CodeGen) -> Unit raise {
         Some(expr) => {
           let ret_val = expr.compile(gen)
           let _ = gen.builder.createRet(ret_val)
-
         }
         None => {
           let _ = gen.builder.createRetVoid()
-
         }
       }
 
     // 表达式语句
     ExprStmt(expr) => {
       let _ = expr.compile(gen)
-
     }
   }
 }
@@ -594,7 +587,6 @@ fn Program::compile(self, gen : CodeGen) -> Module raise {
   // 编译所有函数
   self.functions.each(func => {
     let _ = func.compile(gen)
-
   })
   gen.mod
 }

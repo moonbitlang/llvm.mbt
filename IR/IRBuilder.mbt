@@ -20,7 +20,7 @@ pub suberror BuilderError {
 
 ///|
 trait InsertPoint {
-  asInsertPtEnum(Self) -> InsertPointEnum
+  fn asInsertPtEnum(Self) -> InsertPointEnum
 }
 
 ///|
@@ -30,7 +30,7 @@ priv enum InsertPointEnum {
 }
 
 ///|
-pub impl InsertPoint for BasicBlock with asInsertPtEnum(self) {
+pub impl InsertPoint for BasicBlock with fn asInsertPtEnum(self) {
   BasicBlock(self)
 }
 
