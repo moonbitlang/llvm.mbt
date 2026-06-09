@@ -8,6 +8,9 @@
 #include <stdlib.h>
 #include <string.h>
 
+#ifdef memcpy
+#undef memcpy
+#endif
 #include "moonbit.h"
 
 void *moonbit_str_to_c_str(moonbit_string_t ms) {
@@ -1601,4 +1604,3 @@ LLVMExecutionEngineRef llvm_new_execution_engine() {
 // ================================================
 // LLJIT
 // ================================================
-
