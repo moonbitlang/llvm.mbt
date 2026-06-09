@@ -206,16 +206,31 @@ pub type LLVMErrorRef
 
 ///|
 /// Represents an address in the executor process.
-pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Show, Eq)
+pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
+
+///|
+pub impl Show for LLVMOrcJITTargetAddress with fn output(self, logger) {
+  self.0.output(logger)
+}
 
 ///|
 /// Represents an address in the executor process.
-pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Show, Eq, Default)
+pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Eq, Default)
+
+///|
+pub impl Show for LLVMOrcExecutorAddress with fn output(self, logger) {
+  self.0.output(logger)
+}
 
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
 
 ///|
-pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Show, Eq)
+pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq)
+
+///|
+pub impl Show for LLVMJITSymbolTargetFlags with fn output(self, logger) {
+  self.0.output(logger)
+}
 
 ///|
 /// A reference to an orc::ExecutionSession instance.
@@ -356,7 +371,12 @@ pub(all) enum LLVMOpcode {
   LLVMCatchPad
   LLVMCleanupPad
   LLVMCatchSwitch
-} derive(Show)
+}
+
+///|
+pub impl Show for LLVMOpcode with fn output(self, logger) {
+  self.to_int().output(logger)
+}
 
 ///|
 pub fn LLVMOpcode::to_int(self : LLVMOpcode) -> Int {
@@ -528,7 +548,12 @@ pub(all) enum LLVMTypeKind {
   LLVMBFloatTypeKind
   LLVMX86_AMXTypeKind
   LLVMTargetExtTypeKind
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for LLVMTypeKind with fn output(self, logger) {
+  self.to_int().output(logger)
+}
 
 ///|
 pub fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
@@ -684,7 +709,12 @@ pub(all) enum LLVMUnnamedAddr {
   LLVMNoUnnamedAddr
   LLVMLocalUnnamedAddr
   LLVMGlobalUnnamedAddr
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+pub impl Show for LLVMUnnamedAddr with fn output(self, logger) {
+  self.to_int().output(logger)
+}
 
 ///|
 pub fn LLVMUnnamedAddr::to_int(self : LLVMUnnamedAddr) -> Int {

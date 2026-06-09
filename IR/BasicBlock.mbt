@@ -89,7 +89,7 @@ pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
 ///|
 pub suberror BasicBlockHasNoParentError {
   BasicBlockHasNoParentError(String)
-} derive(Show)
+}
 
 // REVIEW: Should we check basic block must have parent?
 

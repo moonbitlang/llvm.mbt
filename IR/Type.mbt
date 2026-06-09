@@ -20,7 +20,7 @@ pub enum TypeEnum {
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
   PointerType(PointerType)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
@@ -142,7 +142,7 @@ pub trait Type: Show {
 ///|
 pub suberror InValidTypeError {
   InValidTypeError(String)
-} derive(Show)
+}
 
 ///|
 fn initAbstractType_err(
@@ -511,7 +511,7 @@ pub enum IntegerTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
@@ -554,7 +554,7 @@ pub enum FPTypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
@@ -626,7 +626,7 @@ pub enum PrimitiveTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 // ====================================================================
 // Aggregate Types, AggregateType && AggregateTypeEnum
@@ -654,7 +654,7 @@ pub enum AggregateTypeEnum {
   ArrayType(ArrayType)
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn AggregateTypeEnum::toTypeEnum(self : AggregateTypeEnum) -> TypeEnum {
@@ -692,7 +692,7 @@ pub enum AbstractTypeEnum {
   MetadataType(MetadataType)
   TokenType(TokenType)
   FunctionType(FunctionType)
-} derive(Show)
+}
 
 // ====================================================================
 // HalfType
@@ -1329,7 +1329,7 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 ///|
 pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
-} derive(Show)
+}
 
 ///|
 /// Set the body of the struct.
@@ -1494,7 +1494,7 @@ pub impl AggregateType for ScalableVectorType with fn asAggregateTypeEnum(self) 
 
 ///|
 /// Memory address space of a pointer type.
-pub struct AddressSpace(UInt) derive(Hash, Show, Eq, Default)
+pub struct AddressSpace(UInt) derive(Hash, Eq, Default)
 
 ///|
 pub fn AddressSpace::new(v : UInt) -> AddressSpace {

@@ -678,7 +678,7 @@ pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
 ///|
 pub suberror InValidOperation {
   InValidOperation(String)
-} derive(Show)
+}
 
 ///|
 #callsite(autofill(loc))
@@ -840,7 +840,7 @@ pub(all) enum TailCallKind {
   Tail
   MustTail
   NoTail
-} derive(Show)
+}
 
 ///|
 fn TailCallKind::to_llvm(self : TailCallKind) -> @unsafe.LLVMTailCallKind {

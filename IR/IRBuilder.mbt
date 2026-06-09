@@ -6,7 +6,7 @@
 enum PositionState {
   NotSet
   Set
-} derive(Show, Eq)
+} derive(Eq)
 
 ///|
 pub suberror BuilderError {
@@ -16,7 +16,7 @@ pub suberror BuilderError {
   BitwidthError(String)
   InValidArgument(String)
   UnImplemented(String)
-} derive(Show)
+}
 
 ///|
 trait InsertPoint {
