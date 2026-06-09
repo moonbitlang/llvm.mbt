@@ -28,11 +28,9 @@ case $(uname -ms) in
     ;;
 'Linux x86_64')
     target=linux-x86_64
-    # downloaded llvm-19 only support use lld to link
     llvm_home=/usr/lib/llvm-19
-    ld=lld
-    llvm_include="-I $llvm_home/include"
-    llvm_link_dir="-L $llvm_home/lib"
+    llvm_include="-I$llvm_home/include"
+    llvm_link_dir="-L$llvm_home/lib"
 
     export C_INCLUDE_PATH="$llvm_home/include":$C_INCLUDE_PATH
     export CC=clang

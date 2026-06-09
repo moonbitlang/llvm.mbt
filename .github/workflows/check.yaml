@@ -78,6 +78,7 @@ jobs:
       - name: moon test
         run: |
           source ./.github/ci_env.sh 
+          python3 ./.github/update_moon_link_config.py
           moon test --target native --release
         # each step uses different environment variable
         # don't separate `source env.sh` and `moon build`
