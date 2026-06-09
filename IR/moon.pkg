@@ -1,6 +1,7 @@
 supported_targets = "native"
 
 import {
+  "moonbitlang/core/debug",
   "Kaida-Amethyst/llvm/unsafe",
   "moonbitlang/core/uint",
 }

@@ -44,13 +44,14 @@ pub fn Module::getFunction(self : Self, name : String) -> Function? {
 ///|
 pub fn Module::getFunctions(self : Self) -> Array[Function] {
   let funcs : Array[Function] = Array::new()
-  let func = self.getFirstFunction()
-  loop func {
-    Some(f) => {
-      funcs.push(f)
-      continue f.getNextFunction()
+  for func = self.getFirstFunction() {
+    match func {
+      Some(f) => {
+        funcs.push(f)
+        continue f.getNextFunction()
+      }
+      None => break funcs
     }
-    None => break funcs
   }
 }
 
@@ -181,7 +182,7 @@ pub fn Module::addGlobalConstant(
 ///|
 pub suberror WriteBitCodeToFileFailed {
   WriteBitCodeToFileFailed(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub fn Module::writeBitCodeToFile(

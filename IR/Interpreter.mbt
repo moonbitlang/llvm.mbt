@@ -7,7 +7,7 @@ pub struct GenericValue(@unsafe.LLVMGenericValueRef)
 ///|
 pub suberror InterpreterError {
   CreateInterpreterFailed(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 pub struct Interpreter {

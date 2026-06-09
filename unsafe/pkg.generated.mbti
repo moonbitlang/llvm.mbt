@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/unsafe"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn llvm_abi_alignment_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt
 
@@ -2272,7 +2276,7 @@ pub(all) enum LLVMJITSymbolGenericFlags {
 pub fn LLVMJITSymbolGenericFlags::from_int(Int) -> Self
 pub fn LLVMJITSymbolGenericFlags::to_int(Self) -> Int
 
-pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq, Show)
+pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq, @debug.Debug)
 
 pub(all) enum LLVMLandingPadClauseTy {
   LLVMLandingPadCatch
@@ -2483,9 +2487,10 @@ pub(all) enum LLVMOpcode {
   LLVMCatchPad
   LLVMCleanupPad
   LLVMCatchSwitch
-} derive(Show)
+} derive(@debug.Debug)
 pub fn LLVMOpcode::from_int(Int) -> Self
 pub fn LLVMOpcode::to_int(Self) -> Int
+pub impl Show for LLVMOpcode
 
 #external
 pub type LLVMOperandBundleRef
@@ -2496,12 +2501,12 @@ pub fn LLVMOperandBundleRef::get_num_args(Self) -> UInt
 #external
 pub type LLVMOrcExecutionSessionRef
 
-pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Default, Eq, Show)
+pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Default, Eq, @debug.Debug)
 
 #external
 pub type LLVMOrcJITDylibRef
 
-pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq, Show)
+pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq, @debug.Debug)
 
 #external
 pub type LLVMOrcLLJITBuilderRef
@@ -2640,9 +2645,10 @@ pub(all) enum LLVMTypeKind {
   LLVMBFloatTypeKind
   LLVMX86_AMXTypeKind
   LLVMTargetExtTypeKind
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 pub fn LLVMTypeKind::from_int(Int) -> Self
 pub fn LLVMTypeKind::to_int(Self) -> Int
+pub impl Show for LLVMTypeKind
 
 #external
 pub type LLVMTypeRef
@@ -2724,7 +2730,7 @@ pub(all) enum LLVMUnnamedAddr {
   LLVMNoUnnamedAddr
   LLVMLocalUnnamedAddr
   LLVMGlobalUnnamedAddr
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
 pub fn LLVMUnnamedAddr::from_int(Int) -> Self
 pub fn LLVMUnnamedAddr::to_int(Self) -> Int
 

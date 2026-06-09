@@ -20,7 +20,7 @@ pub enum TypeEnum {
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
   PointerType(PointerType)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
@@ -140,9 +140,19 @@ pub trait Type: Show {
 }
 
 ///|
+fn type_debug_repr(ty : &Type) -> @debug.Repr {
+  @debug.Repr::literal(ty.to_string())
+}
+
+///|
+pub impl Debug for TypeEnum with fn to_repr(self) {
+  type_debug_repr(self.asTypeClass())
+}
+
+///|
 pub suberror InValidTypeError {
   InValidTypeError(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn initAbstractType_err(
@@ -511,7 +521,7 @@ pub enum IntegerTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
@@ -522,6 +532,11 @@ pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
     Int32Type(t) => t
     Int64Type(t) => t
   }
+}
+
+///|
+pub impl Debug for IntegerTypeEnum with fn to_repr(self) {
+  type_debug_repr(self.asTypeClass())
 }
 
 ///|
@@ -554,7 +569,7 @@ pub enum FPTypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
@@ -565,6 +580,11 @@ pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
     DoubleType(t) => t
     FP128Type(t) => t
   }
+}
+
+///|
+pub impl Debug for FPTypeEnum with fn to_repr(self) {
+  type_debug_repr(self.asTypeClass())
 }
 
 ///|
@@ -626,7 +646,24 @@ pub enum PrimitiveTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
+
+///|
+pub impl Debug for PrimitiveTypeEnum with fn to_repr(self) {
+  let ty : &Type = match self {
+    HalfType(t) => (t : &Type)
+    BFloatType(t) => t
+    FloatType(t) => t
+    DoubleType(t) => t
+    FP128Type(t) => t
+    Int1Type(t) => t
+    Int8Type(t) => t
+    Int16Type(t) => t
+    Int32Type(t) => t
+    Int64Type(t) => t
+  }
+  type_debug_repr(ty)
+}
 
 // ====================================================================
 // Aggregate Types, AggregateType && AggregateTypeEnum
@@ -654,7 +691,7 @@ pub enum AggregateTypeEnum {
   ArrayType(ArrayType)
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
-} derive(Eq, Show)
+} derive(Eq)
 
 ///|
 pub fn AggregateTypeEnum::toTypeEnum(self : AggregateTypeEnum) -> TypeEnum {
@@ -676,6 +713,11 @@ pub fn AggregateTypeEnum::asTypeClass(self : Self) -> &Type {
   }
 }
 
+///|
+pub impl Debug for AggregateTypeEnum with fn to_repr(self) {
+  type_debug_repr(self.asTypeClass())
+}
+
 // ====================================================================
 // Abstract Types, AbstractType && AbstractTypeEnum
 // ====================================================================
@@ -692,7 +734,19 @@ pub enum AbstractTypeEnum {
   MetadataType(MetadataType)
   TokenType(TokenType)
   FunctionType(FunctionType)
-} derive(Show)
+}
+
+///|
+pub impl Debug for AbstractTypeEnum with fn to_repr(self) {
+  let ty : &Type = match self {
+    VoidType(t) => (t : &Type)
+    LabelType(t) => t
+    MetadataType(t) => t
+    TokenType(t) => t
+    FunctionType(t) => t
+  }
+  type_debug_repr(ty)
+}
 
 // ====================================================================
 // HalfType
@@ -1329,7 +1383,7 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 ///|
 pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Set the body of the struct.
@@ -1494,7 +1548,7 @@ pub impl AggregateType for ScalableVectorType with fn asAggregateTypeEnum(self) 
 
 ///|
 /// Memory address space of a pointer type.
-pub struct AddressSpace(UInt) derive(Hash, Show, Eq, Default)
+pub struct AddressSpace(UInt) derive(Hash, Debug, Eq, Default)
 
 ///|
 pub fn AddressSpace::new(v : UInt) -> AddressSpace {

@@ -1,5 +1,9 @@
 supported_targets = "native"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 options(
   "is-main": false,
   "native-stub": [ "wrap.c" ],

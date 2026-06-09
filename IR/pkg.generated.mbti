@@ -3,6 +3,7 @@ package "Kaida-Amethyst/llvm/IR"
 
 import {
   "Kaida-Amethyst/llvm/unsafe",
+  "moonbitlang/core/debug",
 }
 
 // Values
@@ -10,7 +11,7 @@ import {
 // Errors
 pub suberror BasicBlockHasNoParentError {
   BasicBlockHasNoParentError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror BuilderError {
   UnsetPosition
@@ -19,27 +20,27 @@ pub suberror BuilderError {
   BitwidthError(String)
   InValidArgument(String)
   UnImplemented(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror InValidOperation {
   InValidOperation(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror InValidTypeError {
   InValidTypeError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror IndexOutOfBounds {
   IndexOutOfBounds(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror InterpreterError {
   CreateInterpreterFailed(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
@@ -47,7 +48,7 @@ pub suberror SwitchInstError {
 
 pub suberror WriteBitCodeToFileFailed {
   WriteBitCodeToFileFailed(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Types and methods
 pub enum AbstractTypeEnum {
@@ -56,9 +57,10 @@ pub enum AbstractTypeEnum {
   MetadataType(MetadataType)
   TokenType(TokenType)
   FunctionType(FunctionType)
-} derive(Show)
+}
+pub impl @debug.Debug for AbstractTypeEnum
 
-pub struct AddressSpace(UInt) derive(Default, Eq, Hash, Show)
+pub struct AddressSpace(UInt) derive(Default, Eq, Hash, @debug.Debug)
 pub fn AddressSpace::new(UInt) -> Self
 
 pub enum AggregateTypeEnum {
@@ -66,9 +68,10 @@ pub enum AggregateTypeEnum {
   ArrayType(ArrayType)
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
 pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
+pub impl @debug.Debug for AggregateTypeEnum
 
 pub struct AllocaInst(@unsafe.LLVMValueRef)
 pub fn AllocaInst::getAllocatedType(Self) -> &Type
@@ -287,9 +290,10 @@ pub enum FPTypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn FPTypeEnum::asTypeClass(Self) -> &Type
 pub fn FPTypeEnum::getFPMantissaWidth(Self) -> UInt
+pub impl @debug.Debug for FPTypeEnum
 
 pub(all) enum FastMathFlags {
   AllowReassoc
@@ -665,9 +669,10 @@ pub enum IntegerTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn IntegerTypeEnum::asTypeClass(Self) -> &Type
 pub fn IntegerTypeEnum::getBitWidth(Self) -> UInt
+pub impl @debug.Debug for IntegerTypeEnum
 
 pub struct Interpreter {
   engine : @unsafe.LLVMExecutionEngineRef
@@ -767,7 +772,7 @@ pub impl Constant for PoisonValue
 pub impl Value for PoisonValue
 pub impl Show for PoisonValue
 
-type PositionState derive(Eq, Show)
+type PositionState derive(Eq, @debug.Debug)
 
 pub enum PrimitiveTypeEnum {
   HalfType(HalfType)
@@ -780,7 +785,8 @@ pub enum PrimitiveTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
+pub impl @debug.Debug for PrimitiveTypeEnum
 
 pub(all) enum RetAttr {
   NoAlias
@@ -842,7 +848,7 @@ pub(all) enum TailCallKind {
   Tail
   MustTail
   NoTail
-} derive(Show)
+} derive(@debug.Debug)
 
 pub struct TokenType(@unsafe.LLVMTypeRef) derive(Eq)
 pub impl AbstractType for TokenType
@@ -870,8 +876,9 @@ pub enum TypeEnum {
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
   PointerType(PointerType)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn TypeEnum::asTypeClass(Self) -> &Type
+pub impl @debug.Debug for TypeEnum
 
 pub struct UnaryInst(@unsafe.LLVMValueRef)
 pub impl InsertPoint for UnaryInst
