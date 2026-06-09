@@ -146,7 +146,7 @@ extern "C" fn llvm_new_null_orc_lljit_builder() -> LLVMOrcLLJITBuilderRef = "__l
 ///|
 pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef {
   let builder = llvm_new_null_orc_lljit_builder()
-  let result : Ref[LLVMOrcLLJITRef] = Ref::new(llvm_new_null_orc_lljit())
+  let result : Ref[LLVMOrcLLJITRef] = Ref(llvm_new_null_orc_lljit())
   let err = __llvm_orc_create_lljit(result, builder)
   if llvm_error_is_null(err) {
     result.val
@@ -301,7 +301,7 @@ pub fn llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
   name : String,
 ) -> LLVMOrcExecutorAddress? {
-  let addr : Ref[LLVMOrcExecutorAddress] = Ref::new(
+  let addr : Ref[LLVMOrcExecutorAddress] = Ref(
     LLVMOrcExecutorAddress::default(),
   )
   let err = __llvm_orc_lljit_lookup(j, addr, moonbit_str_to_c_str(name))

@@ -280,7 +280,7 @@ impl Type with fn isEmptyTy(self) -> Bool {
 /// Only FunctionType, VoidType, Opaque Struct is not first class type.
 impl Type with fn isFirstClassType(self) {
   match self.asTypeEnum() {
-    StructType(sty) => not(sty.isOpaque())
+    StructType(sty) => !sty.isOpaque()
     FunctionType(_) | VoidType(_) => false
     _ => true
   }

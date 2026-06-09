@@ -95,70 +95,59 @@ test "Cast Test" {
   inspect(fval, content=expect)
 
   // 错误测试 - createTrunc 类型不匹配
-  assert_true(
-    (try? builder.createTrunc(f64_arg, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createTrunc(f64_arg, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createZExt 类型不匹配
   let f32_val = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createZExt(f32_val, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createZExt(f32_val, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createSExt 类型不匹配
-  assert_true(
-    (try? builder.createSExt(f64_arg, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSExt(f64_arg, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createFPTrunc 类型不匹配
-  assert_true(
-    (try? builder.createFPTrunc(i64_arg, f32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFPTrunc(i64_arg, f32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createFPExt 类型不匹配
   let i32_val = ctx.getConstInt32(1)
-  assert_true(
-    (try? builder.createFPExt(i32_val, f64_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFPExt(i32_val, f64_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createFPToSI 类型不匹配
-  assert_true(
-    (try? builder.createFPToSI(i64_arg, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFPToSI(i64_arg, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createFPToUI 类型不匹配
-  assert_true(
-    (try? builder.createFPToUI(i32_val, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFPToUI(i32_val, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createSIToFP 类型不匹配
-  assert_true(
-    (try? builder.createSIToFP(f64_arg, f32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSIToFP(f64_arg, f32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createUIToFP 类型不匹配
-  assert_true(
-    (try? builder.createUIToFP(f32_val, f32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createUIToFP(f32_val, f32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createIntToPtr 类型不匹配
-  assert_true(
-    (try? builder.createIntToPtr(f64_arg))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createIntToPtr(f64_arg), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - createPtrToInt 类型不匹配
-  assert_true(
-    (try? builder.createPtrToInt(i64_arg, i32_ty))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createPtrToInt(i64_arg, i32_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }

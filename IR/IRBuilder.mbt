@@ -3586,6 +3586,11 @@ pub fn IRBuilder::createPHI(
 }
 
 ///|
+fn format_type_list(types : Array[&Type]) -> String {
+  "[" + types.map(ty => ty.to_string()).join(", ") + "]"
+}
+
+///|
 /// Create a Call Instruction
 ///
 /// **Note:**
@@ -3631,8 +3636,8 @@ pub fn IRBuilder::createCall(
         (
           $| loc: \{loc}:
           #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
-          $|    param_tys: \{param_tys}
-          $|    arg_tys: \{arg_tys}
+          $|    param_tys: \{format_type_list(param_tys)}
+          $|    arg_tys: \{format_type_list(arg_tys)}
         ),
       )
     }
@@ -3645,13 +3650,13 @@ pub fn IRBuilder::createCall(
         break
       }
     }
-    guard not(type_mismatch) else {
+    guard !type_mismatch else {
       raise InValidArgument(
         (
           $| loc: \{loc}:
           #| Misuse `IRBuilder::createCall`, fixed arguments must match function parameter types
-          $|    param_tys: \{param_tys}
-          $|    arg_tys: \{arg_tys}
+          $|    param_tys: \{format_type_list(param_tys)}
+          $|    arg_tys: \{format_type_list(arg_tys)}
         ),
       )
     }
@@ -3958,7 +3963,7 @@ pub fn IRBuilder::createMalloc(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  guard not(ty.tryAsAbstractType() is Some(_)) else {
+  guard !(ty.tryAsAbstractType() is Some(_)) else {
     raise ValueTypeError(
       (
         $| loc: \{loc}:

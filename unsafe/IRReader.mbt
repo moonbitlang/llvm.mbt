@@ -42,8 +42,8 @@ pub fn llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
   mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) {
-  let cstr_ref : Ref[CStr] = Ref::new(CStr::create_null())
-  let out_m_ref : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null())
+  let cstr_ref : Ref[CStr] = Ref(CStr::create_null())
+  let out_m_ref : Ref[LLVMModuleRef] = Ref(LLVMModuleRef::null())
   let result = __llvm_parse_ir_in_context(ctx_ref, mem_buf, out_m_ref, cstr_ref)
   let str = cstr_ref.val.to_string()
   (out_m_ref.val, str, result)

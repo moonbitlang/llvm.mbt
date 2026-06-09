@@ -29,7 +29,7 @@ extern "C" fn __llvm_parse_bitcode2(
 
 ///|
 pub fn llvm_parse_bitcode2(mem_buf : LLVMMemoryBufferRef) -> LLVMModuleRef? {
-  let out_mod : Ref[LLVMModuleRef] = Ref::new(LLVMModuleRef::null())
+  let out_mod : Ref[LLVMModuleRef] = Ref(LLVMModuleRef::null())
   let result = __llvm_parse_bitcode2(mem_buf, out_mod)
   match result {
     true => Some(out_mod.val)

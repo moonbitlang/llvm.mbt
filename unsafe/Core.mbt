@@ -12,9 +12,9 @@ pub extern "C" fn llvm_shutdown() = "LLVMShutdown"
 
 ///|
 pub fn llvm_get_version() -> (UInt, UInt, UInt) {
-  let major = Ref::new(0U)
-  let minor = Ref::new(0U)
-  let patch = Ref::new(0U)
+  let major = Ref(0U)
+  let minor = Ref(0U)
+  let patch = Ref(0U)
   __llvm_get_version(major, minor, patch)
   (major.val, minor.val, patch.val)
 }
@@ -296,7 +296,7 @@ extern "C" fn __llvm_get_string_attribute_kind(
 
 ///|
 pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String {
-  let sz = Ref::new(0U)
+  let sz = Ref(0U)
   let cstr = __llvm_get_string_attribute_kind(a, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val)
 }
@@ -310,7 +310,7 @@ extern "C" fn __llvm_get_string_attribute_value(
 
 ///|
 pub fn llvm_get_string_attribute_value(a : LLVMAttributeRef) -> String {
-  let sz = Ref::new(0U)
+  let sz = Ref(0U)
   let cstr = __llvm_get_string_attribute_value(a, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val)
 }
@@ -529,7 +529,7 @@ extern "C" fn __llvm_get_module_identifier(
 
 ///|
 pub fn llvm_get_module_identifier(m : LLVMModuleRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_module_identifier(m, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -571,7 +571,7 @@ extern "C" fn __llvm_get_source_file_name(
 ///
 /// - see Module::getSourceFileName()
 pub fn llvm_get_source_file_name(m : LLVMModuleRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_source_file_name(m, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -882,7 +882,7 @@ extern "C" fn __llvm_get_module_inline_asm(
 /// 
 /// - see Module::getModuleInlineAsm()
 pub fn llvm_get_module_inline_asm(m : LLVMModuleRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_module_inline_asm(m, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -953,7 +953,7 @@ pub extern "C" fn llvm_get_inline_asm(
 
 ///|
 pub fn llvm_get_inline_asm_string(inline_asm_val : LLVMValueRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_inline_asm_asm_string(inline_asm_val, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -971,7 +971,7 @@ extern "C" fn __llvm_get_inline_asm_asm_string(
 pub fn llvm_get_inline_asm_constraint_string(
   inline_asm_val : LLVMValueRef,
 ) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_inline_asm_constraint_string(inline_asm_val, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -1196,7 +1196,7 @@ extern "C" fn __llvm_get_named_metadata_name(
 
 ///|
 pub fn llvm_get_named_metadata_name(named_md : LLVMNamedMDNodeRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_named_metadata_name(named_md, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -1333,7 +1333,7 @@ extern "C" fn __llvm_get_debug_loc_directory(
 /// - see llvm::Function::getSubprogram()
 /// 
 pub fn llvm_get_debug_loc_directory(val : LLVMValueRef) -> String {
-  let sz = Ref::new(0U)
+  let sz = Ref(0U)
   let cstr = __llvm_get_debug_loc_directory(val, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val)
 }
@@ -1349,7 +1349,7 @@ pub fn llvm_get_debug_loc_directory(val : LLVMValueRef) -> String {
 /// - see llvm::Function::getSubprogram()
 /// 
 pub fn llvm_get_debug_loc_filename(val : LLVMValueRef) -> String {
-  let sz = Ref::new(0U)
+  let sz = Ref(0U)
   let cstr = __llvm_get_debug_loc_filename(val, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val)
 }
@@ -3048,7 +3048,7 @@ pub fn LLVMValueRef::get_value_kind(self : LLVMValueRef) -> LLVMValueKind {
 /// 
 /// - see llvm::Value::getName()
 pub fn llvm_get_value_name(val : LLVMValueRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_value_name2(val, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -4743,7 +4743,7 @@ extern "C" fn __llvm_const_real_get_double(
 pub fn llvm_const_real_get_double(
   constant_val : LLVMValueRef,
 ) -> (Double, Bool) {
-  let loses_info : Ref[LLVMBool] = Ref::new(0)
+  let loses_info : Ref[LLVMBool] = Ref(0)
   let v = __llvm_const_real_get_double(constant_val, loses_info)
   (v, loses_info.val.to_moonbit_bool())
 }
@@ -4876,7 +4876,7 @@ extern "C" fn __llvm_get_as_string(
 /// 
 /// - see ConstantDataSequential::getAsString()
 pub fn llvm_get_as_string(c : LLVMValueRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_as_string(c, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -6440,7 +6440,7 @@ extern "C" fn __llvm_intrinsic_get_name(id : UInt, size : Ref[UInt64]) -> CStr =
 /// 
 /// - see llvm::Intrinsic::getName()
 pub fn llvm_intrinsic_get_name(id : UInt) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_intrinsic_get_name(id, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
@@ -7138,7 +7138,7 @@ extern "C" fn __llvm_get_md_string(v : LLVMValueRef, size : Ref[UInt]) -> CStr =
 
 ///|
 pub fn llvm_get_md_string(v : LLVMValueRef) -> String {
-  let sz = Ref::new(0U)
+  let sz = Ref(0U)
   let cstr = __llvm_get_md_string(v, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val)
 }
@@ -7316,7 +7316,7 @@ extern "C" fn __llvm_get_operand_bundle_tag(
 ///|
 /// Get the tag of an operand bundle.
 pub fn llvm_get_operand_bundle_tag(bundle : LLVMOperandBundleRef) -> String {
-  let sz = Ref::new(0UL)
+  let sz = Ref(0UL)
   let cstr = __llvm_get_operand_bundle_tag(bundle, sz)
   c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
 }
