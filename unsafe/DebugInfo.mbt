@@ -406,7 +406,7 @@ pub extern "C" fn llvm_di_scope_get_file(
 /// - see `DIFile::getDirectory()`
 /// 
 pub fn llvm_di_file_get_directory(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref::new(0)
+  let len : Ref[UInt] = Ref(0)
   let cstr = __llvm_di_file_get_directory(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
@@ -432,7 +432,7 @@ extern "C" fn __llvm_di_file_get_directory(
 /// 
 /// - see `DIFile::getFilename()`
 pub fn llvm_di_file_get_filename(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref::new(0)
+  let len : Ref[UInt] = Ref(0)
   let cstr = __llvm_di_file_get_filename(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
@@ -459,7 +459,7 @@ extern "C" fn __llvm_di_file_get_filename(
 /// 
 /// - see `DIFile::getSource()`
 pub fn llvm_di_file_get_source(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref::new(0)
+  let len : Ref[UInt] = Ref(0)
   let cstr = __llvm_di_file_get_source(file_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }
@@ -1025,7 +1025,7 @@ pub extern "C" fn llvm_di_builder_create_artificial_type(
 /// 
 /// - see `DIType::getName()`
 pub fn llvm_di_type_get_name(type_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref::new(0)
+  let len : Ref[UInt] = Ref(0)
   let cstr = __llvm_di_type_get_name(type_ref, len)
   c_str_to_moonbit_str_with_length(cstr, len.val)
 }

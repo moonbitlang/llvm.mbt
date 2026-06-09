@@ -267,7 +267,7 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
   @unsafe.llvm_add_attribute_at_index(
     self.getValueRef(),
-    @uint.max_value,
+    @uint.MAX_VALUE,
     fn_attr.0,
   )
 }
@@ -322,7 +322,7 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
   )
   @unsafe.llvm_remove_enum_attribute_at_index(
     self.getValueRef(),
-    @uint.max_value,
+    @uint.MAX_VALUE,
     kind_n,
   )
 }
@@ -357,7 +357,7 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 /// assert_eq(fval.countFnAttrs(), 1)
 /// ```
 pub fn Function::countFnAttrs(self : Self) -> Int {
-  @unsafe.llvm_get_attribute_count_at_index(self.getValueRef(), @uint.max_value).reinterpret_as_int()
+  @unsafe.llvm_get_attribute_count_at_index(self.getValueRef(), @uint.MAX_VALUE).reinterpret_as_int()
 }
 
 ///|

@@ -33,10 +33,9 @@ test "Simple Stack Memory Test" {
   inspect(fval, content=expect)
 
   // Test store with non-pointer - may not be checked in current implementation
-  assert_true(
-    (try? builder.createStore(arg0, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createStore(arg0, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }
 
 ///|
@@ -128,23 +127,21 @@ test "Aggregate Stack Memory Test" {
   inspect(fval, content=expect)
 
   // Test GEP with wrong pointer type
-  assert_true(
-    (try? builder.createGEP(val42, array_ty, [zero, one]))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createGEP(val42, array_ty, [zero, one]), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // Test GEP with non-integer index
   let f32_val = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createGEP(array_alloca, array_ty, [zero, f32_val]))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createGEP(array_alloca, array_ty, [zero, f32_val]),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // Test extractvalue with wrong index - may not be checked
-  assert_true(
-    (try? builder.createExtractValue(struct_val, 5))
-    is Err(BuilderError::InValidArgument(_)),
-  )
+  assert_builder_error(() => builder.createExtractValue(struct_val, 5), err => {
+    err is BuilderError::InValidArgument(_)
+  })
 }
 
 ///|
@@ -187,15 +184,15 @@ test "Simple Heap Memory Test" {
   inspect(fval, content=expect)
 
   // Test malloc with abstract type (should fail)
-  assert_true(
-    (try? builder.createMalloc(void_ty)) is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createMalloc(void_ty), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // Test free with non-pointer
   let i32_val = ctx.getConstInt32(42)
-  assert_true(
-    (try? builder.createFree(i32_val)) is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFree(i32_val), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }
 
 ///|
@@ -320,26 +317,24 @@ test "Aggregate Heap Memory Test" {
   let i32_val = ctx.getConstInt32(42)
 
   // Test memset with wrong dst type - may not be checked
-  assert_true(
-    (try? builder.createMemSet(i32_val, byte_val, size_64, 4))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createMemSet(i32_val, byte_val, size_64, 4),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // Test memcpy with wrong src type - may not be checked
-  assert_true(
-    (try? builder.createMemCpy(struct_malloc, 4, i32_val, 4, size_64))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createMemCpy(struct_malloc, 4, i32_val, 4, size_64),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // Test insertvalue with wrong type - may not be checked
-  assert_true(
-    (try? builder.createInsertValue(i32_val, val100, 0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createInsertValue(i32_val, val100, 0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // Test extractvalue from non-aggregate - may not be checked
-  assert_true(
-    (try? builder.createExtractValue(i32_val, 0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createExtractValue(i32_val, 0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }

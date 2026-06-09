@@ -138,7 +138,7 @@ pub fn LLVMTypeRef::is_null(self : LLVMTypeRef) -> Bool {
 
 ///|
 pub fn LLVMTypeRef::is_not_null(self : LLVMTypeRef) -> Bool {
-  llvm_type_is_null(self).to_moonbit_bool() |> not
+  !llvm_type_is_null(self).to_moonbit_bool()
 }
 
 ///|
@@ -157,7 +157,7 @@ pub fn LLVMValueRef::is_null(self : LLVMValueRef) -> Bool {
 
 ///|
 pub fn LLVMValueRef::is_not_null(self : LLVMValueRef) -> Bool {
-  llvm_value_ref_is_null(self) |> not
+  !llvm_value_ref_is_null(self)
 }
 
 ///|
@@ -170,7 +170,7 @@ pub fn LLVMUseRef::is_null(self : LLVMUseRef) -> Bool {
 
 ///|
 pub fn LLVMUseRef::is_not_null(self : LLVMUseRef) -> Bool {
-  llvm_use_is_null(self).to_moonbit_bool() |> not
+  !llvm_use_is_null(self).to_moonbit_bool()
 }
 
 ///|
@@ -183,7 +183,7 @@ pub fn LLVMBasicBlockRef::is_null(self : LLVMBasicBlockRef) -> Bool {
 
 ///|
 pub fn LLVMBasicBlockRef::is_not_null(self : LLVMBasicBlockRef) -> Bool {
-  llvm_bb_is_null(self) |> not
+  !llvm_bb_is_null(self)
 }
 
 ///|
@@ -196,7 +196,7 @@ pub fn LLVMAttributeRef::is_null(self : LLVMAttributeRef) -> Bool {
 
 ///|
 pub fn LLVMAttributeRef::is_not_null(self : LLVMAttributeRef) -> Bool {
-  llvm_attr_is_null(self).to_moonbit_bool() |> not
+  !llvm_attr_is_null(self).to_moonbit_bool()
 }
 
 ///|
@@ -209,7 +209,7 @@ pub fn LLVMComdatRef::is_null(self : LLVMComdatRef) -> Bool {
 
 ///|
 pub fn LLVMComdatRef::is_not_null(self : LLVMComdatRef) -> Bool {
-  llvm_comdat_is_null(self).to_moonbit_bool() |> not
+  !llvm_comdat_is_null(self).to_moonbit_bool()
 }
 
 ///|

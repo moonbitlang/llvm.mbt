@@ -96,8 +96,8 @@ extern "C" fn __llvm_create_execution_engine_for_module(
 pub fn llvm_create_execution_engine_for_module(
   m : LLVMModuleRef,
 ) -> (LLVMExecutionEngineRef?, String) {
-  let execution_engine = Ref::new(__llvm_new_execution_engine())
-  let err_msg = Ref::new(CStr::new())
+  let execution_engine = Ref(__llvm_new_execution_engine())
+  let err_msg = Ref(CStr::new())
   let res = __llvm_create_execution_engine_for_module(
     execution_engine, m, err_msg,
   )
@@ -124,8 +124,8 @@ extern "C" fn __llvm_create_interpreter_for_module(
 pub fn llvm_create_interpreter_for_module(
   m : LLVMModuleRef,
 ) -> (LLVMExecutionEngineRef?, String) {
-  let interpreter = Ref::new(__llvm_new_execution_engine())
-  let err_msg = Ref::new(CStr::new())
+  let interpreter = Ref(__llvm_new_execution_engine())
+  let err_msg = Ref(CStr::new())
   let res = __llvm_create_interpreter_for_module(interpreter, m, err_msg)
   match res {
     true => (None, c_str_to_moonbit_str(err_msg.val))

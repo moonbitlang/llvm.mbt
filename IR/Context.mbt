@@ -305,7 +305,7 @@ pub fn Context::getStructType(
   isPacked? : Bool = false,
   name? : String = "",
 ) -> StructType {
-  guard not(name.is_empty() && elements.is_empty()) else {
+  guard !(name.is_empty() && elements.is_empty()) else {
     println(
       "Error: Misuse `Context::getStructType`:  Empty struct type must have a name.",
     )

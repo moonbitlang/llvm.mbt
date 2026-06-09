@@ -76,24 +76,22 @@ test "Simple Branch Test" {
   inspect(switch_inst, content=expected_switch)
 
   // 错误测试 - createCondBr 条件必须是 i1 类型
-  assert_true(
-    (try? builder.createCondBr(switch_val, true_bb, false_bb))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createCondBr(switch_val, true_bb, false_bb),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // 错误测试 - createSwitch 值必须是整数类型
   let f32_val = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createSwitch(f32_val, default_bb))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSwitch(f32_val, default_bb), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 
   // 错误测试 - switch addCase 值必须是整数类型
   let another_switch = builder.createSwitch(switch_val, default_bb)
-  assert_true(
-    (try? another_switch.addCase(f32_val, case1_bb))
-    is Err(SwitchInstError::InValidSwitchCaseValue(_)),
-  )
+  assert_switch_inst_error(() => another_switch.addCase(f32_val, case1_bb), err => {
+    err is SwitchInstError::InValidSwitchCaseValue(_)
+  })
 }
 
 ///|
@@ -261,21 +259,20 @@ test "PHI Test" {
   inspect(fval, content=expect)
 
   // 错误测试 - createSelect 条件必须是 i1 类型
-  assert_true(
-    (try? builder.createSelect(true_val, true_val, false_val))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createSelect(true_val, true_val, false_val),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // 错误测试 - createCondBr 条件类型错误
-  assert_true(
-    (try? builder.createCondBr(true_val, true_bb, false_bb))
-    is Err(BuilderError::ValueTypeError(_)),
+  assert_builder_error(
+    () => builder.createCondBr(true_val, true_bb, false_bb),
+    err => err is BuilderError::ValueTypeError(_),
   )
 
   // 错误测试 - createSwitch 值类型错误
   let f64_val = ctx.getConstDouble(1.0)
-  assert_true(
-    (try? builder.createSwitch(f64_val, default_bb))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSwitch(f64_val, default_bb), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }

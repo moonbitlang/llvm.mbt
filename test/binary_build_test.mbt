@@ -31,15 +31,13 @@ test "Binary Int Add Test" {
     #|
   inspect(fval, content=expect)
   let f32_one = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createAdd(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createAdd(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   let i64_one = ctx.getConstInt64(1)
-  assert_true(
-    (try? builder.createAdd(arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createAdd(arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
 }
 
 ///|
@@ -70,26 +68,22 @@ test "Binary Int Sub Test" {
   inspect(fval, content=expect)
   // 错误测试：类型不匹配
   let f32_one = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createSub(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSub(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：位宽不匹配
   let i64_one = ctx.getConstInt64(1)
-  assert_true(
-    (try? builder.createSub(arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createSub(arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：NSW Sub 类型不匹配
-  assert_true(
-    (try? builder.createNSWSub(f32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createNSWSub(f32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：NUW Sub 位宽不匹配
-  assert_true(
-    (try? builder.createNUWSub(arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createNUWSub(arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
 }
 
 ///|
@@ -120,26 +114,22 @@ test "Binary Int Mul Test" {
   inspect(fval, content=expect)
   // 错误测试：类型不匹配
   let f64_one = ctx.getConstDouble(1.0)
-  assert_true(
-    (try? builder.createMul(arg0, f64_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createMul(arg0, f64_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：位宽不匹配
   let i16_one = ctx.getConstInt16(1)
-  assert_true(
-    (try? builder.createMul(arg0, i16_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createMul(arg0, i16_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：NSW Mul 类型不匹配
-  assert_true(
-    (try? builder.createNSWMul(f64_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createNSWMul(f64_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：NUW Mul 位宽不匹配
-  assert_true(
-    (try? builder.createNUWMul(arg0, i16_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createNUWMul(arg0, i16_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
 }
 
 ///|
@@ -174,37 +164,31 @@ test "Binary Int Div Test" {
   inspect(fval, content=expect)
   // 错误测试：SDiv 类型不匹配
   let f32_one = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createSDiv(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSDiv(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：UDiv 位宽不匹配
   let i64_one = ctx.getConstInt64(1)
-  assert_true(
-    (try? builder.createUDiv(arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createUDiv(arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：ExactSDiv 类型不匹配
-  assert_true(
-    (try? builder.createExactSDiv(f32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createExactSDiv(f32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：ExactUDiv 位宽不匹配
   let i8_one = ctx.getConstInt8(1)
-  assert_true(
-    (try? builder.createExactUDiv(arg0, i8_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createExactUDiv(arg0, i8_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：左操作数类型不匹配
-  assert_true(
-    (try? builder.createSDiv(f32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSDiv(f32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：右操作数类型不匹配
-  assert_true(
-    (try? builder.createUDiv(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createUDiv(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }
 
 ///|
@@ -234,32 +218,27 @@ test "Binary Int Rem Test" {
   inspect(fval, content=expect)
   // 错误测试：SRem 类型不匹配
   let f32_one = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createSRem(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSRem(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：URem 位宽不匹配
   let i64_one = ctx.getConstInt64(1)
-  assert_true(
-    (try? builder.createURem(arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createURem(arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：左操作数类型不匹配
-  assert_true(
-    (try? builder.createSRem(f32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createSRem(f32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：右操作数类型不匹配
-  assert_true(
-    (try? builder.createURem(arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createURem(arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：URem 位宽不匹配（更多情况）
   let i16_one = ctx.getConstInt16(1)
-  assert_true(
-    (try? builder.createURem(arg0, i16_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createURem(arg0, i16_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
 }
 
 ///|
@@ -295,36 +274,30 @@ test "Binary Float Test" {
   inspect(fval, content=expect)
   // 错误测试：FAdd 类型不匹配
   let i32_one = ctx.getConstInt32(1)
-  assert_true(
-    (try? builder.createFAdd(arg0, i32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFAdd(arg0, i32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：FSub 位宽不匹配
   let f64_one = ctx.getConstDouble(1.0)
-  assert_true(
-    (try? builder.createFSub(arg0, f64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createFSub(arg0, f64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：FMul 类型不匹配
-  assert_true(
-    (try? builder.createFMul(i32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFMul(i32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：FDiv 位宽不匹配
-  assert_true(
-    (try? builder.createFDiv(arg0, f64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createFDiv(arg0, f64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：FRem 类型不匹配
-  assert_true(
-    (try? builder.createFRem(arg0, i32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFRem(arg0, i32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：左操作数类型不匹配
-  assert_true(
-    (try? builder.createFAdd(i32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFAdd(i32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }
 
 ///|
@@ -372,26 +345,22 @@ test "Integer Compare Test" {
   inspect(fval, content=expect)
   // 错误测试：类型不匹配
   let f32_one = ctx.getConstFloat(1.0)
-  assert_true(
-    (try? builder.createICmp(EQ, arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createICmp(EQ, arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：位宽不匹配
   let i64_one = ctx.getConstInt64(1)
-  assert_true(
-    (try? builder.createICmp(NE, arg0, i64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createICmp(NE, arg0, i64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：左操作数类型不匹配
-  assert_true(
-    (try? builder.createICmp(SGT, f32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createICmp(SGT, f32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：右操作数类型不匹配
-  assert_true(
-    (try? builder.createICmp(SLT, arg0, f32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createICmp(SLT, arg0, f32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
 }
 
 ///|
@@ -445,29 +414,24 @@ test "Float Compare Test" {
   inspect(fval, content=expect)
   // 错误测试：类型不匹配
   let i32_one = ctx.getConstInt32(1)
-  assert_true(
-    (try? builder.createFCmpOEQ(arg0, i32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFCmpOEQ(arg0, i32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：位宽不匹配
   let f64_one = ctx.getConstDouble(1.0)
-  assert_true(
-    (try? builder.createFCmpOGT(arg0, f64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createFCmpOGT(arg0, f64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
   // 错误测试：左操作数类型不匹配
-  assert_true(
-    (try? builder.createFCmpOGE(i32_one, arg0))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFCmpOGE(i32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：右操作数类型不匹配
-  assert_true(
-    (try? builder.createFCmpOLT(arg0, i32_one))
-    is Err(BuilderError::ValueTypeError(_)),
-  )
+  assert_builder_error(() => builder.createFCmpOLT(arg0, i32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
   // 错误测试：位宽不匹配（更多情况）
-  assert_true(
-    (try? builder.createFCmpONE(arg0, f64_one))
-    is Err(BuilderError::BitwidthError(_)),
-  )
+  assert_builder_error(() => builder.createFCmpONE(arg0, f64_one), err => {
+    err is BuilderError::BitwidthError(_)
+  })
 }
