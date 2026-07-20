@@ -175,7 +175,7 @@ pub extend &Instruction with Value::{getValueRef}
 
 ///|
 impl Instruction with fn getParentBasicBlock(self) {
-  let valuref = self.getValueRef()
+  let valuref = Value::getValueRef(self)
   let bb_ref = @unsafe.llvm_get_instruction_parent(valuref)
   match @unsafe.llvm_bb_is_null(bb_ref) {
     true => None
@@ -251,7 +251,7 @@ fn initInstruction(valueref : ValueRef) -> &Instruction {
 
 ///|
 impl Instruction with fn getNextInst(self) {
-  let valueref = self.getValueRef()
+  let valueref = Value::getValueRef(self)
   let next_ref = @unsafe.llvm_get_next_instruction(valueref)
   unless(@unsafe.llvm_value_ref_is_null(next_ref), () => {
     initInstruction(next_ref)
@@ -260,7 +260,7 @@ impl Instruction with fn getNextInst(self) {
 
 ///|
 impl Instruction with fn getPrevInst(self) {
-  let valueref = self.getValueRef()
+  let valueref = Value::getValueRef(self)
   let prev_ref = @unsafe.llvm_get_previous_instruction(valueref)
   unless(@unsafe.llvm_value_ref_is_null(prev_ref), () => {
     initInstruction(prev_ref)
@@ -272,17 +272,17 @@ impl Instruction with fn getPrevInst(self) {
 /// After `remove` the instruction is no longer in the parent basic block.
 /// But it is still in the module, so it can be reused.
 impl Instruction with fn removeFromParent(self) {
-  @unsafe.llvm_instruction_remove_from_parent(self.getValueRef())
+  @unsafe.llvm_instruction_remove_from_parent(Value::getValueRef(self))
 }
 
 ///|
 impl Instruction with fn eraseFromParent(self) {
-  @unsafe.llvm_instruction_erase_from_parent(self.getValueRef())
+  @unsafe.llvm_instruction_erase_from_parent(Value::getValueRef(self))
 }
 
 ///|
 impl Instruction with fn getNumArgOperands(self) {
-  @unsafe.llvm_get_num_arg_operands(self.getValueRef()).reinterpret_as_int()
+  @unsafe.llvm_get_num_arg_operands(Value::getValueRef(self)).reinterpret_as_int()
 }
 
 ///|
@@ -332,32 +332,32 @@ pub enum GlobalEnum {
 
 ///|
 impl GlobalValue with fn getLinkage(self) {
-  let linkage = @unsafe.llvm_get_linkage(self.getValueRef())
+  let linkage = @unsafe.llvm_get_linkage(Value::getValueRef(self))
   Linkage::from_llvm_linkage(linkage)
 }
 
 ///|
 impl GlobalValue with fn setLinkage(self, linkage : Linkage) {
   let llvm_linkage = linkage.to_llvm_linkage()
-  @unsafe.llvm_set_linkage(self.getValueRef(), llvm_linkage)
+  @unsafe.llvm_set_linkage(Value::getValueRef(self), llvm_linkage)
 }
 
 ///|
 impl GlobalValue with fn getUnnamedAddr(self) {
-  let ua = @unsafe.llvm_get_unnamed_address(self.getValueRef())
+  let ua = @unsafe.llvm_get_unnamed_address(Value::getValueRef(self))
   UnnamedAddr::from_llvm_unnamed_addr(ua)
 }
 
 ///|
 impl GlobalValue with fn setUnnamedAddr(self, ua : UnnamedAddr) {
   let llvm_ua = ua.to_llvm_unnamed_addr()
-  @unsafe.llvm_set_unnamed_address(self.getValueRef(), llvm_ua)
+  @unsafe.llvm_set_unnamed_address(Value::getValueRef(self), llvm_ua)
 }
 
 ///|
 impl GlobalValue with fn removeUnnamedAddr(self) {
   @unsafe.llvm_set_unnamed_address(
-    self.getValueRef(),
+    Value::getValueRef(self),
     @unsafe.LLVMNoUnnamedAddr,
   )
 }

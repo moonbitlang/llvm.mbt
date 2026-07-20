@@ -494,7 +494,7 @@ pub trait IntegerType: PrimitiveType {
 
 ///|
 impl IntegerType with fn getExtendedType(self) -> &IntegerType? {
-  let ctx = self.getContext()
+  let ctx = Type::getContext(self)
   match self.asIntegerTypeEnum() {
     Int8Type(_) => ctx.getInt16Ty() |> Some
     Int16Type(_) => ctx.getInt32Ty() |> Some
@@ -602,15 +602,15 @@ impl PrimitiveType with fn getBitWidth(self) -> Int {
     DoubleType(_) => 64
     FP128Type(_) => 128
     Int1Type(_) =>
-      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
     Int8Type(_) =>
-      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
     Int16Type(_) =>
-      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
     Int32Type(_) =>
-      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
     Int64Type(_) =>
-      @unsafe.llvm_get_int_type_width(self.getTypeRef()).reinterpret_as_int()
+      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
   }
 }
 
