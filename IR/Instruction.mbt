@@ -690,7 +690,7 @@ pub fn BranchInst::setCondition(
   guard self.isConditional() else {
     let msg =
       $| loc: \{loc}:
-      #| Misuse `BranchInst::setCondition`, Instruction is not conditional.
+      $| Misuse `BranchInst::setCondition`, Instruction is not conditional.
     raise InValidOperation(msg)
   }
   @unsafe.llvm_set_condition(self.0, cond.getValueRef())
@@ -719,7 +719,7 @@ pub fn BranchInst::setSuccessor(
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =
       $| loc: \{loc}:
-      #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
+      $| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
   @unsafe.llvm_set_successor(self.0, idx.reinterpret_as_uint(), block.0)
@@ -799,7 +799,7 @@ pub fn SwitchInst::setSuccessor(
   guard idx >= 0 && idx < self.getNumSuccessors() else {
     let msg =
       $| loc: \{loc}:
-      #| Misuse `BranchInst::setSuccessor`, Index out of bounds.
+      $| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
   @unsafe.llvm_set_successor(self.0, idx.reinterpret_as_uint(), block.0)

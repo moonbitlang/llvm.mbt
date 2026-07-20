@@ -243,7 +243,7 @@ pub fn IRBuilder::createStore(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createStore`, pointer value's type is not a pointer type
+        $| Misuse `IRBuilder::createStore`, pointer value's type is not a pointer type
       ),
     )
   }
@@ -1525,7 +1525,7 @@ pub fn IRBuilder::createFNeg(
     raise ValueTypeError(
       (
         $| loc: \{loc}
-        #| Misuse `IRBuilder::createFNeg`, value is not a floating-point type, it is \{value.getType()}"
+        $| Misuse `IRBuilder::createFNeg`, value is not a floating-point type, it is \{value.getType()}"
       ),
     )
   }
@@ -1744,7 +1744,7 @@ pub fn IRBuilder::createNot(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createNot`, value is not an integer type, it is \{value.getType()}
+        $| Misuse `IRBuilder::createNot`, value is not an integer type, it is \{value.getType()}
       ),
     )
   }
@@ -1967,7 +1967,7 @@ pub fn IRBuilder::createPtrDiff(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createPtrDiff`, lhs is not a pointer type, it is \{lhs.getType()}
+        $| Misuse `IRBuilder::createPtrDiff`, lhs is not a pointer type, it is \{lhs.getType()}
       ),
     )
   }
@@ -1975,7 +1975,7 @@ pub fn IRBuilder::createPtrDiff(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createPtrDiff`, rhs is not a pointer type, it is \{rhs.getType()}
+        $| Misuse `IRBuilder::createPtrDiff`, rhs is not a pointer type, it is \{rhs.getType()}
       ),
     )
   }
@@ -2564,7 +2564,7 @@ pub fn IRBuilder::createTrunc(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createTrunc`, from must be an integer type
+        $| Misuse `IRBuilder::createTrunc`, from must be an integer type
       ),
     )
   }
@@ -2626,7 +2626,7 @@ pub fn IRBuilder::createZExt(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createZExt`, from must be an integer type
+        $| Misuse `IRBuilder::createZExt`, from must be an integer type
       ),
     )
   }
@@ -2688,7 +2688,7 @@ pub fn IRBuilder::createSExt(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createSExt`, from must be an integer type
+        $| Misuse `IRBuilder::createSExt`, from must be an integer type
       ),
     )
   }
@@ -2749,7 +2749,7 @@ pub fn IRBuilder::createFPTrunc(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createFPTrunc`: 'from' must be a floating-point type"
+        $| Misuse `IRBuilder::createFPTrunc`: 'from' must be a floating-point type"
       ),
     )
   }
@@ -2806,7 +2806,7 @@ pub fn IRBuilder::createFPExt(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createFPExt`: 'from' must be a floating-point type"
+        $| Misuse `IRBuilder::createFPExt`: 'from' must be a floating-point type"
       ),
     )
   }
@@ -2863,7 +2863,7 @@ pub fn IRBuilder::createFPToSI(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createFPToSI`: 'from' must be a floating-point type"
+        $| Misuse `IRBuilder::createFPToSI`: 'from' must be a floating-point type"
       ),
     )
   }
@@ -2925,7 +2925,7 @@ pub fn IRBuilder::createFPToUI(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createFPToUI`: 'from' must be a floating-point type"
+        $| Misuse `IRBuilder::createFPToUI`: 'from' must be a floating-point type"
       ),
     )
   }
@@ -2982,7 +2982,7 @@ pub fn IRBuilder::createSIToFP(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createSIToFP`: 'from' must be a integer type"
+        $| Misuse `IRBuilder::createSIToFP`: 'from' must be a integer type"
       ),
     )
   }
@@ -3043,7 +3043,7 @@ pub fn IRBuilder::createUIToFP(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createUIToFP`: 'from' must be a integer type"
+        $| Misuse `IRBuilder::createUIToFP`: 'from' must be a integer type"
       ),
     )
   }
@@ -3217,7 +3217,7 @@ pub fn IRBuilder::createPtrToInt(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createPtrToInt`, from must be a pointer type",
+        $| Misuse `IRBuilder::createPtrToInt`, from must be a pointer type",
       ),
     )
   }
@@ -3277,7 +3277,7 @@ pub fn IRBuilder::createGEP(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createGEP`, ptr must be a pointer type"
+        $| Misuse `IRBuilder::createGEP`, ptr must be a pointer type"
       ),
     )
   }
@@ -3384,7 +3384,7 @@ pub fn IRBuilder::createCondBr(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createCondBr`, cond must be i1 type
+        $| Misuse `IRBuilder::createCondBr`, cond must be i1 type
       ),
     )
   }
@@ -3442,7 +3442,7 @@ pub fn IRBuilder::createSelect(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createSelect`, cond must be i1 type",
+        $| Misuse `IRBuilder::createSelect`, cond must be i1 type",
       ),
     )
   }
@@ -3527,7 +3527,7 @@ pub fn IRBuilder::createSwitch(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createSwitch`, value must be an integer type",
+        $| Misuse `IRBuilder::createSwitch`, value must be an integer type",
       ),
     )
   }
@@ -3635,7 +3635,7 @@ pub fn IRBuilder::createCall(
       raise InValidArgument(
         (
           $| loc: \{loc}:
-          #| Misuse `IRBuilder::createCall`, arguments must match function parameter types
+          $| Misuse `IRBuilder::createCall`, arguments must match function parameter types
           $|    param_tys: \{format_type_list(param_tys)}
           $|    arg_tys: \{format_type_list(arg_tys)}
         ),
@@ -3654,7 +3654,7 @@ pub fn IRBuilder::createCall(
       raise InValidArgument(
         (
           $| loc: \{loc}:
-          #| Misuse `IRBuilder::createCall`, fixed arguments must match function parameter types
+          $| Misuse `IRBuilder::createCall`, fixed arguments must match function parameter types
           $|    param_tys: \{format_type_list(param_tys)}
           $|    arg_tys: \{format_type_list(arg_tys)}
         ),
@@ -3719,7 +3719,7 @@ pub fn IRBuilder::createCallPtr(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createCallPtr`, funcPtr must be a pointer type
+        $| Misuse `IRBuilder::createCallPtr`, funcPtr must be a pointer type
       ),
     )
   }
@@ -3777,7 +3777,7 @@ pub fn IRBuilder::createInsertValue(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createInsertValue`, aggregate must be an aggregate type
+        $| Misuse `IRBuilder::createInsertValue`, aggregate must be an aggregate type
       ),
     )
   }
@@ -3785,7 +3785,7 @@ pub fn IRBuilder::createInsertValue(
     raise InValidArgument(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createInsertValue`, index out of bounds for aggregate type
+        $| Misuse `IRBuilder::createInsertValue`, index out of bounds for aggregate type
       ),
     )
   }
@@ -3793,7 +3793,7 @@ pub fn IRBuilder::createInsertValue(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createInsertValue`, value type must match the aggregate element type at index
+        $| Misuse `IRBuilder::createInsertValue`, value type must match the aggregate element type at index
       ),
     )
   }
@@ -3860,7 +3860,7 @@ pub fn IRBuilder::createExtractValue(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createExtractValue`, aggregate must be an aggregate type",
+        $| Misuse `IRBuilder::createExtractValue`, aggregate must be an aggregate type",
       ),
     )
   }
@@ -3870,7 +3870,7 @@ pub fn IRBuilder::createExtractValue(
         raise InValidArgument(
           (
             $| loc: \{loc}:
-            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for struct type",
+            $| Misuse `IRBuilder::createExtractValue`, index out of bounds for struct type",
           ),
         )
       }
@@ -3880,7 +3880,7 @@ pub fn IRBuilder::createExtractValue(
         raise InValidArgument(
           (
             $| loc: \{loc}:
-            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for array type",
+            $| Misuse `IRBuilder::createExtractValue`, index out of bounds for array type",
           ),
         )
       }
@@ -3890,7 +3890,7 @@ pub fn IRBuilder::createExtractValue(
         raise InValidArgument(
           (
             $| loc: \{loc}:
-            #| Misuse `IRBuilder::createExtractValue`, index out of bounds for vector type",
+            $| Misuse `IRBuilder::createExtractValue`, index out of bounds for vector type",
           ),
         )
       }
@@ -4013,7 +4013,7 @@ pub fn IRBuilder::createFree(
     raise ValueTypeError(
       (
         $| loc: \{loc}
-        #| Misuse `IRBuilder::createFree`, ptr must be a pointer type",
+        $| Misuse `IRBuilder::createFree`, ptr must be a pointer type",
       ),
     )
   }
@@ -4067,7 +4067,7 @@ pub fn IRBuilder::createMemCpy(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemcpy`, dst must be a pointer type",
+        $| Misuse `IRBuilder::createMemcpy`, dst must be a pointer type",
       ),
     )
   }
@@ -4075,7 +4075,7 @@ pub fn IRBuilder::createMemCpy(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemcpy`, src must be a pointer type",
+        $| Misuse `IRBuilder::createMemcpy`, src must be a pointer type",
       ),
     )
   }
@@ -4083,7 +4083,7 @@ pub fn IRBuilder::createMemCpy(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemcpy`, size must be an integer type",
+        $| Misuse `IRBuilder::createMemcpy`, size must be an integer type",
       ),
     )
   }
@@ -4148,7 +4148,7 @@ pub fn IRBuilder::createMemSet(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemSet`, dst must be a pointer type",
+        $| Misuse `IRBuilder::createMemSet`, dst must be a pointer type",
       ),
     )
   }
@@ -4156,7 +4156,7 @@ pub fn IRBuilder::createMemSet(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemSet`, value must be an integer type",
+        $| Misuse `IRBuilder::createMemSet`, value must be an integer type",
       ),
     )
   }
@@ -4164,7 +4164,7 @@ pub fn IRBuilder::createMemSet(
     raise ValueTypeError(
       (
         $| loc: \{loc}:
-        #| Misuse `IRBuilder::createMemSet`, size must be an integer type",
+        $| Misuse `IRBuilder::createMemSet`, size must be an integer type",
       ),
     )
   }
@@ -4228,7 +4228,7 @@ pub fn IRBuilder::createMemMove(
     raise ValueTypeError(
       (
         $| loc \{loc}:
-        #| Misuse `IRBuilder::createMemMove`, dst must be a pointer type
+        $| Misuse `IRBuilder::createMemMove`, dst must be a pointer type
       ),
     )
   }
@@ -4236,7 +4236,7 @@ pub fn IRBuilder::createMemMove(
     raise ValueTypeError(
       (
         $| loc \{loc}:
-        #| Misuse `IRBuilder::createMemMove`, src must be a pointer type
+        $| Misuse `IRBuilder::createMemMove`, src must be a pointer type
       ),
     )
   }
@@ -4244,7 +4244,7 @@ pub fn IRBuilder::createMemMove(
     raise ValueTypeError(
       (
         $| loc \{loc}:
-        #| Misuse `IRBuilder::createMemMove`, size must be an integer type
+        $| Misuse `IRBuilder::createMemMove`, size must be an integer type
       ),
     )
   }
