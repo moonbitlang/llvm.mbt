@@ -141,6 +141,9 @@ pub trait Constant: Value {
 }
 
 ///|
+pub extend &Constant with Value::{getValueRef}
+
+///|
 pub enum ConstantEnum {
   ConstantInt(ConstantInt)
   ConstantFP(ConstantFP)
@@ -166,6 +169,9 @@ pub trait Instruction: Value {
   fn eraseFromParent(Self) -> Unit = _
   fn getNumArgOperands(Self) -> Int = _
 }
+
+///|
+pub extend &Instruction with Value::{getValueRef}
 
 ///|
 impl Instruction with fn getParentBasicBlock(self) {
@@ -313,6 +319,9 @@ pub trait GlobalValue: Value {
   fn setUnnamedAddr(Self, UnnamedAddr) -> Unit = _
   fn removeUnnamedAddr(Self) -> Unit = _
 }
+
+///|
+pub extend &GlobalValue with Value::{getValueRef}
 
 ///|
 pub enum GlobalEnum {
