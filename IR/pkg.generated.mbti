@@ -10,7 +10,7 @@ import {
 // Errors
 pub suberror BasicBlockHasNoParentError {
   BasicBlockHasNoParentError(String)
-} derive(Show)
+}
 
 pub suberror BuilderError {
   UnsetPosition
@@ -19,27 +19,27 @@ pub suberror BuilderError {
   BitwidthError(String)
   InValidArgument(String)
   UnImplemented(String)
-} derive(Show)
+}
 
 pub suberror InValidOperation {
   InValidOperation(String)
-} derive(Show)
+}
 
 pub suberror InValidTypeError {
   InValidTypeError(String)
-} derive(Show)
+}
 
 pub suberror IndexOutOfBounds {
   IndexOutOfBounds(String)
-} derive(Show)
+}
 
 pub suberror InterpreterError {
   CreateInterpreterFailed(String)
-} derive(Show)
+}
 
 pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
-} derive(Show)
+}
 
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
@@ -47,7 +47,7 @@ pub suberror SwitchInstError {
 
 pub suberror WriteBitCodeToFileFailed {
   WriteBitCodeToFileFailed(String)
-} derive(Show)
+}
 
 // Types and methods
 pub enum AbstractTypeEnum {
@@ -56,9 +56,9 @@ pub enum AbstractTypeEnum {
   MetadataType(MetadataType)
   TokenType(TokenType)
   FunctionType(FunctionType)
-} derive(Show)
+}
 
-pub struct AddressSpace(UInt) derive(Default, Eq, Hash, Show)
+pub struct AddressSpace(UInt) derive(Default, Eq, Hash)
 pub fn AddressSpace::new(UInt) -> Self
 
 pub enum AggregateTypeEnum {
@@ -66,7 +66,7 @@ pub enum AggregateTypeEnum {
   ArrayType(ArrayType)
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
 pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
 
@@ -90,8 +90,11 @@ pub impl Value for Argument
 pub impl Show for Argument
 
 pub struct ArrayType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn ArrayType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
+pub fn ArrayType::asTypeEnum(Self) -> TypeEnum
 pub fn ArrayType::getElementCount(Self) -> Int
 pub fn ArrayType::getElementType(Self) -> &Type
+pub fn ArrayType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AggregateType for ArrayType
 pub impl Type for ArrayType
 pub impl Show for ArrayType
@@ -99,6 +102,10 @@ pub impl Show for ArrayType
 pub struct Attribute(@unsafe.LLVMAttributeRef)
 
 pub struct BFloatType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn BFloatType::asFPTypeEnum(Self) -> FPTypeEnum
+pub fn BFloatType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn BFloatType::asTypeEnum(Self) -> TypeEnum
+pub fn BFloatType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl FPType for BFloatType
 pub impl PrimitiveType for BFloatType
 pub impl Type for BFloatType
@@ -257,6 +264,10 @@ pub fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
 pub fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
 
 pub struct DoubleType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn DoubleType::asFPTypeEnum(Self) -> FPTypeEnum
+pub fn DoubleType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn DoubleType::asTypeEnum(Self) -> TypeEnum
+pub fn DoubleType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl FPType for DoubleType
 pub impl PrimitiveType for DoubleType
 pub impl Type for DoubleType
@@ -276,6 +287,10 @@ pub impl Value for FCmpInst
 pub impl Show for FCmpInst
 
 pub struct FP128Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn FP128Type::asFPTypeEnum(Self) -> FPTypeEnum
+pub fn FP128Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn FP128Type::asTypeEnum(Self) -> TypeEnum
+pub fn FP128Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl FPType for FP128Type
 pub impl PrimitiveType for FP128Type
 pub impl Type for FP128Type
@@ -287,7 +302,7 @@ pub enum FPTypeEnum {
   FloatType(FloatType)
   DoubleType(DoubleType)
   FP128Type(FP128Type)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn FPTypeEnum::asTypeClass(Self) -> &Type
 pub fn FPTypeEnum::getFPMantissaWidth(Self) -> UInt
 
@@ -322,6 +337,10 @@ pub(all) enum FloatPredicate {
 }
 
 pub struct FloatType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn FloatType::asFPTypeEnum(Self) -> FPTypeEnum
+pub fn FloatType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn FloatType::asTypeEnum(Self) -> TypeEnum
+pub fn FloatType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl FPType for FloatType
 pub impl PrimitiveType for FloatType
 pub impl Type for FloatType
@@ -360,10 +379,13 @@ pub impl Value for Function
 pub impl Show for Function
 
 pub struct FunctionType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn FunctionType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
+pub fn FunctionType::asTypeEnum(Self) -> TypeEnum
 pub fn FunctionType::getNumParams(Self) -> Int
 pub fn FunctionType::getParamType(Self, Int) -> &Type?
 pub fn FunctionType::getParamTypes(Self) -> Array[&Type]
 pub fn FunctionType::getReturnType(Self) -> &Type
+pub fn FunctionType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub fn FunctionType::isVarArg(Self) -> Bool
 pub fn FunctionType::numOfParams(Self) -> Int
 pub fn FunctionType::params(Self) -> Array[&Type]
@@ -404,6 +426,10 @@ pub impl Value for GlobalVariable
 pub impl Show for GlobalVariable
 
 pub struct HalfType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn HalfType::asFPTypeEnum(Self) -> FPTypeEnum
+pub fn HalfType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn HalfType::asTypeEnum(Self) -> TypeEnum
+pub fn HalfType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl FPType for HalfType
 pub impl PrimitiveType for HalfType
 pub impl Type for HalfType
@@ -617,30 +643,50 @@ pub enum InstructionEnum {
 }
 
 pub struct Int16Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn Int16Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
+pub fn Int16Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn Int16Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int16Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl IntegerType for Int16Type
 pub impl PrimitiveType for Int16Type
 pub impl Type for Int16Type
 pub impl Show for Int16Type
 
 pub struct Int1Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn Int1Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
+pub fn Int1Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn Int1Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int1Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl IntegerType for Int1Type
 pub impl PrimitiveType for Int1Type
 pub impl Type for Int1Type
 pub impl Show for Int1Type
 
 pub struct Int32Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn Int32Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
+pub fn Int32Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn Int32Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int32Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl IntegerType for Int32Type
 pub impl PrimitiveType for Int32Type
 pub impl Type for Int32Type
 pub impl Show for Int32Type
 
 pub struct Int64Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn Int64Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
+pub fn Int64Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn Int64Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int64Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl IntegerType for Int64Type
 pub impl PrimitiveType for Int64Type
 pub impl Type for Int64Type
 pub impl Show for Int64Type
 
 pub struct Int8Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn Int8Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
+pub fn Int8Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+pub fn Int8Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int8Type::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl IntegerType for Int8Type
 pub impl PrimitiveType for Int8Type
 pub impl Type for Int8Type
@@ -665,7 +711,7 @@ pub enum IntegerTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn IntegerTypeEnum::asTypeClass(Self) -> &Type
 pub fn IntegerTypeEnum::getBitWidth(Self) -> UInt
 
@@ -684,6 +730,9 @@ pub fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
 pub fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
 
 pub struct LabelType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn LabelType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
+pub fn LabelType::asTypeEnum(Self) -> TypeEnum
+pub fn LabelType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AbstractType for LabelType
 pub impl Type for LabelType
 pub impl Show for LabelType
@@ -715,6 +764,9 @@ pub impl Value for LoadInst
 pub impl Show for LoadInst
 
 pub struct MetadataType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn MetadataType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
+pub fn MetadataType::asTypeEnum(Self) -> TypeEnum
+pub fn MetadataType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AbstractType for MetadataType
 pub impl Type for MetadataType
 pub impl Show for MetadataType
@@ -757,7 +809,9 @@ pub(all) enum ParamAttr {
 } derive(Eq)
 
 pub struct PointerType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn PointerType::asTypeEnum(Self) -> TypeEnum
 pub fn PointerType::getAddressSpace(Self) -> AddressSpace
+pub fn PointerType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub fn PointerType::isLoadableOrStorableType(&Type) -> Bool
 pub impl Type for PointerType
 pub impl Show for PointerType
@@ -767,7 +821,7 @@ pub impl Constant for PoisonValue
 pub impl Value for PoisonValue
 pub impl Show for PoisonValue
 
-type PositionState derive(Eq, Show)
+type PositionState derive(Eq)
 
 pub enum PrimitiveTypeEnum {
   HalfType(HalfType)
@@ -780,7 +834,7 @@ pub enum PrimitiveTypeEnum {
   Int16Type(Int16Type)
   Int32Type(Int32Type)
   Int64Type(Int64Type)
-} derive(Eq, Show)
+} derive(Eq)
 
 pub(all) enum RetAttr {
   NoAlias
@@ -795,8 +849,11 @@ pub impl Value for ReturnInst
 pub impl Show for ReturnInst
 
 pub struct ScalableVectorType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn ScalableVectorType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
+pub fn ScalableVectorType::asTypeEnum(Self) -> TypeEnum
 pub fn ScalableVectorType::getElementCount(Self) -> Int
 pub fn ScalableVectorType::getElementType(Self) -> &Type
+pub fn ScalableVectorType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AggregateType for ScalableVectorType
 pub impl Type for ScalableVectorType
 pub impl Show for ScalableVectorType
@@ -814,8 +871,11 @@ pub impl Value for StoreInst
 pub impl Show for StoreInst
 
 pub struct StructType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn StructType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
+pub fn StructType::asTypeEnum(Self) -> TypeEnum
 pub fn StructType::elements(Self) -> Array[&Type]
 pub fn StructType::getElementType(Self, Int) -> &Type?
+pub fn StructType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub fn StructType::isLiteral(Self) -> Bool
 pub fn StructType::isOpaque(Self) -> Bool
 pub fn StructType::isPacked(Self) -> Bool
@@ -842,9 +902,12 @@ pub(all) enum TailCallKind {
   Tail
   MustTail
   NoTail
-} derive(Show)
+}
 
 pub struct TokenType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn TokenType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
+pub fn TokenType::asTypeEnum(Self) -> TypeEnum
+pub fn TokenType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AbstractType for TokenType
 pub impl Type for TokenType
 pub impl Show for TokenType
@@ -870,7 +933,7 @@ pub enum TypeEnum {
   VectorType(VectorType)
   ScalableVectorType(ScalableVectorType)
   PointerType(PointerType)
-} derive(Eq, Show)
+} derive(Eq)
 pub fn TypeEnum::asTypeClass(Self) -> &Type
 
 pub struct UnaryInst(@unsafe.LLVMValueRef)
@@ -924,13 +987,19 @@ pub enum ValueEnum {
 }
 
 pub struct VectorType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn VectorType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
+pub fn VectorType::asTypeEnum(Self) -> TypeEnum
 pub fn VectorType::getElementCount(Self) -> Int
 pub fn VectorType::getElementType(Self) -> &Type
+pub fn VectorType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AggregateType for VectorType
 pub impl Type for VectorType
 pub impl Show for VectorType
 
 pub struct VoidType(@unsafe.LLVMTypeRef) derive(Eq)
+pub fn VoidType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
+pub fn VoidType::asTypeEnum(Self) -> TypeEnum
+pub fn VoidType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
 pub impl AbstractType for VoidType
 pub impl Type for VoidType
 pub impl Show for VoidType

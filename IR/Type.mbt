@@ -717,14 +717,23 @@ pub impl Type for HalfType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend HalfType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl FPType for HalfType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FPTypeEnum::HalfType(self)
 }
 
 ///|
+pub extend HalfType with FPType::{asFPTypeEnum}
+
+///|
 pub impl PrimitiveType for HalfType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   PrimitiveTypeEnum::HalfType(self)
 }
+
+///|
+pub extend HalfType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // BFloatType
@@ -750,14 +759,23 @@ pub impl Type for BFloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend BFloatType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl FPType for BFloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   BFloatType(self)
 }
 
 ///|
+pub extend BFloatType with FPType::{asFPTypeEnum}
+
+///|
 pub impl PrimitiveType for BFloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   BFloatType(self)
 }
+
+///|
+pub extend BFloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // FloatType
@@ -783,14 +801,23 @@ pub impl Type for FloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend FloatType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl FPType for FloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FloatType(self)
 }
 
 ///|
+pub extend FloatType with FPType::{asFPTypeEnum}
+
+///|
 pub impl PrimitiveType for FloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FloatType(self)
 }
+
+///|
+pub extend FloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // DoubleType
@@ -821,14 +848,23 @@ pub impl Type for DoubleType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend DoubleType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl FPType for DoubleType with fn asFPTypeEnum(self) -> FPTypeEnum {
   DoubleType(self)
 }
 
 ///|
+pub extend DoubleType with FPType::{asFPTypeEnum}
+
+///|
 pub impl PrimitiveType for DoubleType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   DoubleType(self)
 }
+
+///|
+pub extend DoubleType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // FP128Type
@@ -862,14 +898,23 @@ pub impl Type for FP128Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend FP128Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl FPType for FP128Type with fn asFPTypeEnum(self) -> FPTypeEnum {
   FP128Type(self)
 }
 
 ///|
+pub extend FP128Type with FPType::{asFPTypeEnum}
+
+///|
 pub impl PrimitiveType for FP128Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FP128Type(self)
 }
+
+///|
+pub extend FP128Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // Int1Type
@@ -894,14 +939,23 @@ pub impl Type for Int1Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend Int1Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl IntegerType for Int1Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int1Type(self)
 }
 
 ///|
+pub extend Int1Type with IntegerType::{asIntegerTypeEnum}
+
+///|
 pub impl PrimitiveType for Int1Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int1Type(self)
 }
+
+///|
+pub extend Int1Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // Int8Type
@@ -926,14 +980,23 @@ pub impl Type for Int8Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend Int8Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl IntegerType for Int8Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int8Type(self)
 }
 
 ///|
+pub extend Int8Type with IntegerType::{asIntegerTypeEnum}
+
+///|
 pub impl PrimitiveType for Int8Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int8Type(self)
 }
+
+///|
+pub extend Int8Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // Int16Type
@@ -958,14 +1021,23 @@ pub impl Type for Int16Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend Int16Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl IntegerType for Int16Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int16Type(self)
 }
 
 ///|
+pub extend Int16Type with IntegerType::{asIntegerTypeEnum}
+
+///|
 pub impl PrimitiveType for Int16Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int16Type(self)
 }
+
+///|
+pub extend Int16Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // Int32Type
@@ -990,14 +1062,23 @@ pub impl Type for Int32Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend Int32Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl IntegerType for Int32Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int32Type(self)
 }
 
 ///|
+pub extend Int32Type with IntegerType::{asIntegerTypeEnum}
+
+///|
 pub impl PrimitiveType for Int32Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int32Type(self)
 }
+
+///|
+pub extend Int32Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // Int64Type
@@ -1022,14 +1103,23 @@ pub impl Type for Int64Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend Int64Type with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl IntegerType for Int64Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int64Type(self)
 }
 
 ///|
+pub extend Int64Type with IntegerType::{asIntegerTypeEnum}
+
+///|
 pub impl PrimitiveType for Int64Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int64Type(self)
 }
+
+///|
+pub extend Int64Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
 // VoidType
@@ -1054,9 +1144,15 @@ pub impl Type for VoidType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
+pub extend VoidType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AbstractType for VoidType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   VoidType(self)
 }
+
+///|
+pub extend VoidType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
 // LabelType
@@ -1082,9 +1178,15 @@ pub impl Type for LabelType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend LabelType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AbstractType for LabelType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   LabelType(self)
 }
+
+///|
+pub extend LabelType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
 // MetadataType
@@ -1109,9 +1211,15 @@ pub impl Type for MetadataType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend MetadataType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AbstractType for MetadataType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   MetadataType(self)
 }
+
+///|
+pub extend MetadataType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
 // TokenTy
@@ -1137,9 +1245,15 @@ pub impl Type for TokenType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend TokenType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AbstractType for TokenType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   TokenType(self)
 }
+
+///|
+pub extend TokenType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
 // FunctionType
@@ -1221,9 +1335,15 @@ pub impl Type for FunctionType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend FunctionType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AbstractType for FunctionType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   AbstractTypeEnum::FunctionType(self)
 }
+
+///|
+pub extend FunctionType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
 // StructType
@@ -1366,9 +1486,15 @@ pub impl Type for StructType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend StructType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AggregateType for StructType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   StructType(self)
 }
+
+///|
+pub extend StructType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
 // ArrayType
@@ -1404,9 +1530,15 @@ pub impl Type for ArrayType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend ArrayType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AggregateType for ArrayType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   ArrayType(self)
 }
+
+///|
+pub extend ArrayType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
 // VectorType
@@ -1444,9 +1576,15 @@ pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 }
 
 ///|
+pub extend VectorType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AggregateType for VectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   VectorType(self)
 }
+
+///|
+pub extend VectorType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
 // ScalableVectorType
@@ -1484,9 +1622,15 @@ pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTyp
 }
 
 ///|
+pub extend ScalableVectorType with Type::{asTypeEnum, getTypeRef}
+
+///|
 pub impl AggregateType for ScalableVectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   ScalableVectorType(self)
 }
+
+///|
+pub extend ScalableVectorType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
 // PointerType
@@ -1540,3 +1684,6 @@ pub impl Type for PointerType with fn asTypeEnum(self) -> TypeEnum {
 pub impl Type for PointerType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.0
 }
+
+///|
+pub extend PointerType with Type::{asTypeEnum, getTypeRef}
