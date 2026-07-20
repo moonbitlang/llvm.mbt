@@ -140,6 +140,9 @@ pub trait Type: Show {
 }
 
 ///|
+pub extend &Type with Show::{to_string}
+
+///|
 pub suberror InValidTypeError {
   InValidTypeError(String)
 }
@@ -505,6 +508,12 @@ impl IntegerType with fn getExtendedType(self) -> &IntegerType? {
 }
 
 ///|
+pub extend &IntegerType with PrimitiveType::{getBitWidth}
+
+///|
+pub extend &IntegerType with Type::{getTypeRef}
+
+///|
 pub enum IntegerTypeEnum {
   Int1Type(Int1Type)
   Int8Type(Int8Type)
@@ -546,6 +555,12 @@ pub trait FPType: PrimitiveType {
   /// Return the width of the mantissa of this type. 
   fn getFPMantissaWidth(Self) -> UInt = _
 }
+
+///|
+pub extend &FPType with PrimitiveType::{getBitWidth}
+
+///|
+pub extend &FPType with Type::{getTypeRef}
 
 ///|
 pub enum FPTypeEnum {
