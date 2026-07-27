@@ -15,7 +15,5 @@ description = "llvm-c binding for Moonbit with friendly API, keeps the Cpp Style
 preferred_target = "native"
 
 options(
-  scripts: {
-    "postadd": "curl -O https://raw.githubusercontent.com/moonbitlang/llvm.mbt/blob/master/env.sh",
-  },
+  "--moonbit-unstable-prebuild": "build.js",
 )
