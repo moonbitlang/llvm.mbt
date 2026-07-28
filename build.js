@@ -47,6 +47,36 @@ const ARTIFACTS = Object.freeze({
       'https://github.com/moonbitlang/llvm.mbt/releases/download/' +
       'llvm-22.1.0/llvm-22.1.0-r1-macos-arm64.tar.xz',
   }),
+  // Node.js 把 AMD64/x86_64 统一称为 `x64`，所以这里的键使用
+  // `linux-x64`；产物名称和缓存目录仍使用更常见的 `x86_64`。
+  'linux-x64': Object.freeze({
+    artifact: 'llvm-22.1.0-r1-linux-x86_64',
+    llvmVersion: '22.1.0',
+    revision: 'r1',
+    platform: 'linux-x86_64',
+    host: 'x86_64-unknown-linux-gnu',
+    minimumGlibcVersion: '2.31',
+    archiveName: 'llvm-22.1.0-r1-linux-x86_64.tar.xz',
+    archiveSize: 43_236_400,
+    archiveSha256:
+      '49b988f2459d84cae7fcb3c0627d27aaa7b550681395c0b42283d09609b2ee59',
+    staticLibrary: 'lib/libLLVM-mbt.a',
+    staticLibrarySize: 336_001_376,
+    staticLibrarySha256:
+      'fde96a4a4c3fe028a94fc68158a421a0d5c1f2abcf82fe52a1a6cfa74d2498e8',
+    includeDirectory: 'include',
+    systemLinkFlags: Object.freeze([
+      '-lrt',
+      '-ldl',
+      '-lpthread',
+      '-lm',
+      '-lstdc++',
+      '-pthread',
+    ]),
+    url:
+      'https://github.com/moonbitlang/llvm.mbt/releases/download/' +
+      'llvm-22.1.0/llvm-22.1.0-r1-linux-x86_64.tar.xz',
+  }),
 });
 
 class CacheValidationError extends Error {
@@ -136,6 +166,43 @@ function selectArtifact() {
   );
 }
 
+function compareVersions(left, right) {
+  const leftParts = left.split('.').map((part) => Number.parseInt(part, 10));
+  const rightParts = right.split('.').map((part) => Number.parseInt(part, 10));
+  const length = Math.max(leftParts.length, rightParts.length);
+  for (let index = 0; index < length; index += 1) {
+    const difference = (leftParts[index] || 0) - (rightParts[index] || 0);
+    if (difference !== 0) {
+      return difference;
+    }
+  }
+  return 0;
+}
+
+// Linux 产物以 glibc 2.31 为兼容基线。musl 系统也会被 Node 报告成“没有
+// glibc 版本”；与其等到最终链接或运行时给出模糊错误，不如在下载 41 MiB
+// 之前就明确拒绝。这个检查只约束 Linux，不影响 macOS。
+function validateHostCompatibility(artifact) {
+  if (!artifact.minimumGlibcVersion) {
+    return;
+  }
+
+  const reportHeader = process.report?.getReport?.().header;
+  const runtimeVersion = reportHeader && reportHeader.glibcVersionRuntime;
+  if (!runtimeVersion) {
+    throw new Error(
+      `当前 Linux 环境无法识别 glibc；${artifact.artifact} 只支持 ` +
+        `glibc ${artifact.minimumGlibcVersion} 或更高版本，不支持 musl。`,
+    );
+  }
+  if (compareVersions(runtimeVersion, artifact.minimumGlibcVersion) < 0) {
+    throw new Error(
+      `当前 glibc ${runtimeVersion} 低于 ${artifact.artifact} 要求的 ` +
+        `${artifact.minimumGlibcVersion}。`,
+    );
+  }
+}
+
 function cachePaths(moonHome, artifact) {
   const cacheRoot = path.join(moonHome, 'cache', 'lib', 'llvm.mbt');
   const versionRoot = path.join(
@@ -209,10 +276,18 @@ async function validateInstalledArtifact(installRoot, artifact, requireMarker) {
     manifest.host === artifact.host,
     `LLVM 产物 host 不匹配：期望 ${artifact.host}，实际 ${manifest.host}`,
   );
-  requireManifestField(
-    manifest.minimum_macos_version === artifact.minimumMacOSVersion,
-    'LLVM 产物的最低 macOS 版本与 build.js 中记录的不一致',
-  );
+  if (artifact.minimumMacOSVersion) {
+    requireManifestField(
+      manifest.minimum_macos_version === artifact.minimumMacOSVersion,
+      'LLVM 产物的最低 macOS 版本与 build.js 中记录的不一致',
+    );
+  }
+  if (artifact.minimumGlibcVersion) {
+    requireManifestField(
+      manifest.minimum_glibc_version === artifact.minimumGlibcVersion,
+      'LLVM 产物的最低 glibc 版本与 build.js 中记录的不一致',
+    );
+  }
   requireManifestField(
     manifest.include_dir === artifact.includeDirectory,
     'LLVM 产物的 include 目录与 build.js 中记录的不一致',
@@ -426,17 +501,18 @@ async function downloadAndVerify(artifact, archivePath) {
 }
 
 function extractArchive(archivePath, destination) {
-  // 第一版只支持 macOS ARM64，因此可以使用系统自带的 bsdtar。
-  // 参数通过 spawnSync 的数组传递，不经过 shell，路径中有空格或引号也不会
-  // 被当成命令的一部分。压缩包已经通过固定 SHA-256 验证，才会进入解压步骤。
+  // macOS 的 bsdtar 和 Linux 的 GNU tar 都会根据文件格式自动调用 xz
+  // 解压，但不同系统会把 tar 放在 /usr/bin 或 /bin，因此通过 PATH 查找。
+  // 参数通过 spawnSync 的数组传递，不经过 shell，路径中有空格或引号也
+  // 不会被当成命令的一部分。压缩包通过固定 SHA-256 验证后才会进入解压。
   const result = spawnSync(
-    '/usr/bin/tar',
+    'tar',
     ['-xf', archivePath, '-C', destination],
     { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] },
   );
 
   if (result.error) {
-    throw new Error(`无法启动 /usr/bin/tar：${result.error.message}`);
+    throw new Error(`无法启动 tar：${result.error.message}`);
   }
   if (result.status !== 0) {
     const detail = (result.stderr || result.stdout || '').trim();
@@ -491,7 +567,8 @@ async function installArtifact(paths, artifact) {
   try {
     await fsp.mkdir(extractionRoot);
     report(
-      '首次安装需要下载约 29.3 MiB；解压后的 LLVM 静态库约占 199 MiB',
+      `首次安装需要下载约 ${formatMiB(artifact.archiveSize)} MiB；` +
+        `解压后的 LLVM 静态库约占 ${formatMiB(artifact.staticLibrarySize)} MiB`,
     );
     await downloadAndVerify(artifact, archivePath);
 
@@ -606,10 +683,19 @@ function makeBuildOutput(validated, artifact) {
   };
 }
 
+function formatMiB(bytes) {
+  return (bytes / (1024 * 1024)).toFixed(1);
+}
+
 function formatTopLevelError(error) {
   if (error && error.code === 'ENOSPC') {
+    const artifact = ARTIFACTS[`${process.platform}-${process.arch}`];
+    const sizeHint = artifact
+      ? `压缩包约 ${formatMiB(artifact.archiveSize)} MiB，` +
+        `静态库约 ${formatMiB(artifact.staticLibrarySize)} MiB；`
+      : '';
     return (
-      '磁盘空间不足。LLVM 压缩包约 29.3 MiB，解压后的静态库约 199 MiB；' +
+      `磁盘空间不足。${sizeHint}` +
       '请清理 $MOON_HOME/cache/lib/llvm.mbt 所在磁盘后重试。'
     );
   }
@@ -622,6 +708,7 @@ function formatTopLevelError(error) {
 async function main() {
   const input = await readBuildInput();
   const artifact = selectArtifact();
+  validateHostCompatibility(artifact);
   const moonHome = resolveMoonHome(input);
   const validated = await ensureArtifact(moonHome, artifact);
   const output = makeBuildOutput(validated, artifact);

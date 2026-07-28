@@ -5,7 +5,7 @@ options(
   "native-stub": [ "wrap.c" ],
   link: {
     "native": {
-      "stub-cc": "clang",
+      "stub-cc": "cc",
       "stub-cc-flags": "${build.LLVM_MBT_STUB_CC_FLAGS}",
     },
   },

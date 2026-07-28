@@ -9,102 +9,84 @@ on:
 
 jobs:
   check:
+    name: native / ${{ matrix.runner.name }} / ${{ matrix.version }}
     strategy:
       matrix:
-        os: ['ubuntu-latest', 'macos-latest'] #, 'windows-latest']
-        version: ['latest', 'nightly']
+        runner:
+          - name: Linux x86_64
+            os: ubuntu-22.04
+          - name: macOS ARM64
+            os: macos-15
+        version: [latest, nightly]
       fail-fast: false
-    runs-on: ${{ matrix.os }}
-    continue-on-error: false
+    runs-on: ${{ matrix.runner.os }}
     steps:
       - uses: actions/checkout@v4
 
-      - name: download llvm-19 on ubuntu-latest
-        if: ${{ runner.os == 'Linux' }}
+      - name: Verify runner architecture
+        shell: bash
         run: |
-          sudo apt install llvm-19-dev -y
+          case "${{ matrix.runner.name }}:$(uname -s):$(uname -m)" in
+            "Linux x86_64:Linux:x86_64"|"macOS ARM64:Darwin:arm64") ;;
+            *) echo "Unexpected runner architecture: $(uname -s) $(uname -m)" >&2; exit 1 ;;
+          esac
 
-      - name: download llvm-19 on macos
-        if: ${{ runner.os == 'macOS' }}
-        run: |
-          brew install llvm@19
-
-      - name: install stable version on unix
-        if: ${{ runner.os != 'Windows' }}
+      - name: Install MoonBit
+        shell: bash
         run: |
           curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s "${{ matrix.version }}"
-          echo "$HOME/.moon/bin" >> $GITHUB_PATH
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
 
-      - name: install on windows
-        if: ${{ runner.os == 'Windows' }}
-        env:
-          MOONBIT_INSTALL_VERSION: ${{ matrix.version }}
-        run: |
-          Set-ExecutionPolicy RemoteSigned -Scope CurrentUser; irm https://cli.moonbitlang.com/install/powershell.ps1 | iex
-          "C:\Users\runneradmin\.moon\bin" | Out-File -FilePath $env:GITHUB_PATH -Append
-      
-      - name: moon version
+      - name: Show toolchain versions
+        shell: bash
         run: |
           moon version --all
           moonrun --version
-      
-      - name: install module dependencies
-        run: |
-          moon update
-          moon install
+          node --version
 
-      - name: moon check
+      - name: Update module dependencies
+        shell: bash
+        run: moon update
+
+      # runner 是一次性的，所以这里主动清空 llvm.mbt 自己的缓存。第一次调用
+      # 必须走 Release 下载，第二次调用必须命中共享缓存；两个输出还应完全一致。
+      - name: Verify LLVM download and shared cache
+        shell: bash
+        run: |
+          moon_home="${MOON_HOME:-$HOME/.moon}"
+          rm -rf "$moon_home/cache/lib/llvm.mbt"
+          node ./build.js </dev/null > "$RUNNER_TEMP/llvm-cold.json" 2> "$RUNNER_TEMP/llvm-cold.log"
+          node ./build.js </dev/null > "$RUNNER_TEMP/llvm-hot.json" 2> "$RUNNER_TEMP/llvm-hot.log"
+          cat "$RUNNER_TEMP/llvm-cold.log"
+          cat "$RUNNER_TEMP/llvm-hot.log"
+          grep -F "LLVM 共享缓存校验通过" "$RUNNER_TEMP/llvm-hot.log"
+          cmp "$RUNNER_TEMP/llvm-cold.json" "$RUNNER_TEMP/llvm-hot.json"
+
+      - name: Moon check
         run: moon check --target native
 
-      # - name: moon info
-      #   run: |
-      #     moon info --target native
-      #     git diff --exit-code
-
-      # - name: format diff
-      #   run: |
-      #     moon fmt --block-style
-      #     git diff --exit-code
-
-      - name: Setup MSVC
-        if: ${{ runner.os == 'Windows' }}
-        uses: ilammy/msvc-dev-cmd@v1
-
-      - name: Set ulimit on unix
-        if: ${{ runner.os != 'Windows' }}
+      - name: Moon test
+        shell: bash
         run: |
           ulimit -s 8176
-
-      - name: moon test
-        run: |
-          source ./.github/ci_env.sh 
-          python3 ./.github/update_moon_link_config.py
           moon test --target native --release
-        # each step uses different environment variable
-        # don't separate `source env.sh` and `moon build`
-
-      # # TODO: Add `--doc` option when all doc problems fixed.
-      # - name: moon test --target native
-      #   run: |
-      #     source env.sh 
-      #     moon test --target native
 
   moon-json-format-check:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
 
-      - name: check `moon.*.json` format
+      - name: Check moon.*.json format
         shell: bash
         run: |
-          _passed=0;
-          for f in $(find . -type f -name "moon.*.json"); do
-            if ! jq '.' $f > /dev/null; then
-              echo $f;
-              _passed=1;
+          passed=0
+          while IFS= read -r -d '' file; do
+            if ! jq '.' "$file" > /dev/null; then
+              echo "$file"
+              passed=1
             fi
-          done
-          (exit $_passed)
+          done < <(find . -type f -name 'moon.*.json' -print0)
+          exit "$passed"
 
   typo-check:
     runs-on: ubuntu-latest
@@ -115,5 +97,5 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Spell Check Repo
+      - name: Spell check repository
         uses: crate-ci/typos@v1.19.0
