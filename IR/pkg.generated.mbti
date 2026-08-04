@@ -41,6 +41,11 @@ pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
 }
 
+pub suberror StringError {
+  ContainsNul
+  MalformedUtf8(Bytes)
+}
+
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
 }
