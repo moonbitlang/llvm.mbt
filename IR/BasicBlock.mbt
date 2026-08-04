@@ -31,7 +31,7 @@ pub impl Value for BasicBlock with fn asValueEnum(self) -> ValueEnum {
 ///
 /// let parent = bb.getParent().unwrap()
 ///
-/// assert_eq(parent.getName(), "foo")
+/// assert_eq(parent.getName(), Some("foo"))
 /// ```
 pub fn BasicBlock::getParent(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_basic_block_parent(self.0)
@@ -55,7 +55,7 @@ pub fn BasicBlock::getParent(self : Self) -> Function? {
 ///
 /// let prev_block = block1.getPreviousBasicBlock().unwrap()
 ///
-/// assert_eq(prev_block.getName(), "entry")
+/// assert_eq(prev_block.getName(), Some("entry"))
 /// ```
 pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
   let valueref = @unsafe.llvm_get_previous_basic_block(self.0)
@@ -79,7 +79,7 @@ pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
 ///
 /// let next_block = entry.getNextBasicBlock().unwrap()
 ///
-/// assert_eq(next_block.getName(), "block1")
+/// assert_eq(next_block.getName(), Some("block1"))
 /// ```
 pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
   let valueref = @unsafe.llvm_get_next_basic_block(self.0)
@@ -466,10 +466,10 @@ pub fn BasicBlock::getContext(self : Self) -> Context {
 ///
 /// let entry = fval.addBasicBlock(name="entry")
 ///
-/// assert_eq(entry.getName(), "entry")
+/// assert_eq(entry.getName(), Some("entry"))
 /// ```
-pub fn BasicBlock::getName(self : Self) -> String raise {
-  @unsafe.llvm_get_basic_block_name(self.0)
+pub fn BasicBlock::getName(self : Self) -> String? raise StringError {
+  self.getValueName()
 }
 
 ///|
@@ -485,10 +485,10 @@ pub fn BasicBlock::getName(self : Self) -> String raise {
 /// let fval = mod.addFunction(fty, "foo")
 ///
 /// let entry = fval.addBasicBlock(name="entry")
-/// assert_eq(entry.getName(), "entry")
+/// assert_eq(entry.getName(), Some("entry"))
 ///
 /// entry.setName("new_entry")
-/// assert_eq(entry.getName(), "new_entry")
+/// assert_eq(entry.getName(), Some("new_entry"))
 /// ```
 pub fn BasicBlock::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_value_name(@unsafe.llvm_basic_block_as_value(self.0), name)

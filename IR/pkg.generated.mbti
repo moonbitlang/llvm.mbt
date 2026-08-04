@@ -88,7 +88,7 @@ pub struct Argument {
 }
 pub fn Argument::addAttr(Self, ParamAttr) -> Unit
 pub fn Argument::getFunction(Self) -> Function
-pub fn Argument::getName(Self) -> String raise
+pub fn Argument::getName(Self) -> String? raise StringError
 pub fn Argument::removeAttr(Self, ParamAttr) -> Unit
 pub fn Argument::setName(Self, String) -> Unit
 pub impl Value for Argument
@@ -121,7 +121,7 @@ pub fn BasicBlock::eraseFromParent(Self) -> Unit raise
 pub fn BasicBlock::getContext(Self) -> Context
 pub fn BasicBlock::getFirstInst(Self) -> &Instruction?
 pub fn BasicBlock::getLastInst(Self) -> &Instruction?
-pub fn BasicBlock::getName(Self) -> String raise
+pub fn BasicBlock::getName(Self) -> String? raise StringError
 pub fn BasicBlock::getNextBasicBlock(Self) -> Self?
 pub fn BasicBlock::getParent(Self) -> Function?
 pub fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
@@ -372,7 +372,7 @@ pub fn Function::countFnAttrs(Self) -> Int
 pub fn Function::getArg(Self, Int) -> Argument?
 pub fn Function::getArgs(Self) -> Array[Argument]
 pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
-pub fn Function::getName(Self) -> String raise
+pub fn Function::getName(Self) -> String? raise StringError
 pub fn Function::getNumArgs(Self) -> Int
 pub fn Function::getNumBasicBlocks(Self) -> Int
 pub fn Function::getType(Self) -> FunctionType
@@ -1100,7 +1100,7 @@ pub trait Value : Show {
   fn asValueEnum(Self) -> ValueEnum
   fn getType(Self) -> &Type
   fn getContext(Self) -> Context
-  fn getValueName(Self) -> String? raise
+  fn getValueName(Self) -> String? raise StringError
   fn setValueName(Self, String) -> Unit
   fn replaceAllUsesWith(Self, &Value) -> Unit
   fn tryAsConstant(Self) -> &Constant?

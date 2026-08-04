@@ -41,10 +41,10 @@ fn Function::getNextFunction(self : Self) -> Function? {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "plus1")
-/// assert_eq(fval.getName(), "plus1")
+/// assert_eq(fval.getName(), Some("plus1"))
 /// ```
-pub fn Function::getName(self : Self) -> String raise {
-  @unsafe.llvm_get_value_name(self.getValueRef())
+pub fn Function::getName(self : Self) -> String? raise StringError {
+  self.getValueName()
 }
 
 ///|
@@ -59,10 +59,10 @@ pub fn Function::getName(self : Self) -> String raise {
 /// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
 /// let fval = mod.addFunction(fty, "plus1")
-/// assert_eq(fval.getName(), "plus1")
+/// assert_eq(fval.getName(), Some("plus1"))
 ///
 /// fval.setName("increment")
-/// assert_eq(fval.getName(), "increment")
+/// assert_eq(fval.getName(), Some("increment"))
 /// ```
 pub fn Function::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_value_name(self.getValueRef(), name)
@@ -500,12 +500,12 @@ pub impl Value for Argument with fn asValueEnum(self) {
 /// let fmul = mod.addFunction(fmul_ty, "fmul")
 ///
 /// let arg0 = fmul.getArg(0).unwrap()
-/// inspect(arg0.getName(), content="")
+/// assert_eq(arg0.getName(), None)
 /// arg0.setName("a")
-/// inspect(arg0.getName(), content="a")
+/// assert_eq(arg0.getName(), Some("a"))
 /// ```
-pub fn Argument::getName(self : Self) -> String raise {
-  @unsafe.llvm_get_value_name(self.getValueRef())
+pub fn Argument::getName(self : Self) -> String? raise StringError {
+  self.getValueName()
 }
 
 ///|
@@ -521,9 +521,9 @@ pub fn Argument::getName(self : Self) -> String raise {
 /// let fmul = mod.addFunction(fmul_ty, "fmul")
 ///
 /// let arg0 = fmul.getArg(0).unwrap()
-/// inspect(arg0.getName(), content="")
+/// assert_eq(arg0.getName(), None)
 /// arg0.setName("a")
-/// inspect(arg0.getName(), content="a")
+/// assert_eq(arg0.getName(), Some("a"))
 /// ```
 pub fn Argument::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_value_name(self.getValueRef(), name)
