@@ -175,10 +175,10 @@
 
 ## Commit 19：恢复 tutorial Chapter7 并完成全量检查
 
-- [ ] 将 `tutorial/Chapter7.mbt.md` 中的 5 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 保留 Chapter7 和 Chapter8 原有的 `moonbit skip`；Chapter8 没有 `moonbit nocheck`，不做机械改动。
-- [ ] 确认 `IR` 和 `tutorial` 中不再存在 `moonbit nocheck`。
-- [ ] 运行最终全量检查，预期 181 个测试全部通过。
+- [x] 将 `tutorial/Chapter7.mbt.md` 中的 5 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 保留 Chapter7 和 Chapter8 原有的 `moonbit skip`；Chapter8 没有 `moonbit nocheck`，不做机械改动。
+- [x] 确认 `IR` 和 `tutorial` 中不再存在 `moonbit nocheck`。
+- [x] 运行最终全量检查，预期 181 个测试全部通过。
 
 建议提交信息：`docs(tutorial): check Chapter7 examples`
 
@@ -193,12 +193,12 @@
 
 ## 每个代码 commit 的检查要求
 
-- [ ] 运行 `moon fmt`，检查 doc string 和 Markdown 代码块的格式化结果。
-- [ ] 运行 `moon info`，确认 `.mbti` 没有非预期变化。
-- [ ] 在配置 `env.sh` 后运行 `moon check --target native`。
-- [ ] 运行 `moon test --target native`，确认新启用的 doc test 实际执行并通过。
-- [ ] 遇到快照差异时先判断是实现错误还是预期过期，不直接使用 `moon test --update` 掩盖行为问题。
-- [ ] 检查本 commit 之外的 `moonbit nocheck` 和所有 `moonbit skip` 没有被批量改动。
-- [ ] 不混入字符串边界、UTF-16、其他错误模型或无关重构。
+- [x] 运行 `moon fmt`，检查 doc string 和 Markdown 代码块的格式化结果。
+- [x] 运行 `moon info`，确认 `.mbti` 没有非预期变化。
+- [x] 在配置 `env.sh` 后运行 `moon check --target native`。
+- [x] 运行 `moon test --target native`，确认新启用的 doc test 实际执行并通过。
+- [x] 遇到快照差异时先判断是实现错误还是预期过期，不直接使用 `moon test --update` 掩盖行为问题。
+- [x] 检查本 commit 之外的 `moonbit nocheck` 和所有 `moonbit skip` 没有被批量改动。
+- [x] 不混入字符串边界、UTF-16、其他错误模型或无关重构。
 
 全量临时验证已经确认：完成上述转换、修复 Float 负零并增加 tutorial 测试导入后，`moon check --target native` 为 0 error，`moon test --target native` 为 181/181 passed；仅保留 `unsafe/Types.mbt` 中原有的 6 条 deprecated warning。
