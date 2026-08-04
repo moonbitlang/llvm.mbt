@@ -107,10 +107,10 @@
 
 ## Commit 11：恢复 IRBuilder 的其余示例
 
-- [ ] 处理 branch、select、switch 和 PHI 示例。
-- [ ] 处理 Call、CallPtr、InsertValue、ExtractValue 示例。
-- [ ] 处理 Malloc、Free、MemCpy、MemSet、MemMove、GlobalString 等剩余示例。
-- [ ] 共恢复最后 14 个 doc test，确认 `IR/IRBuilder.mbt` 不再包含 `moonbit nocheck`。
+- [x] 处理 branch、select、switch 和 PHI 示例。
+- [x] 处理 Call、CallPtr、InsertValue、ExtractValue 示例。
+- [x] 处理 Malloc、Free、MemCpy、MemSet、MemMove 等剩余示例；确认 GlobalString 当前没有 `moonbit nocheck` 示例，不在本轮新增。
+- [x] 共恢复最后 14 个 doc test，确认 `IR/IRBuilder.mbt` 不再包含 `moonbit nocheck`。
 
 建议提交信息：`docs(IRBuilder): check control flow and aggregate examples`
 

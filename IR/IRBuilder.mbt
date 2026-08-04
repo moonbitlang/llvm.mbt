@@ -3538,22 +3538,24 @@ pub fn IRBuilder::createGEP(
 /// This creates an unconditional branch instruction that transfers control to the specified basic block.
 /// The destination must be a valid basic block.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let fty = ctx.getFunctionType(void_ty, [])
+///   let void_ty = ctx.getVoidTy()
+///   let fty = ctx.getFunctionType(void_ty, [])
 ///
-/// let fval = mod.addFunction(fty, "br_demo")
-/// let entry_bb = fval.addBasicBlock(name="entry")
-/// let target_bb = fval.addBasicBlock(name="target")
+///   let fval = mod.addFunction(fty, "br_demo")
+///   let entry_bb = fval.addBasicBlock(name="entry")
+///   let target_bb = fval.addBasicBlock(name="target")
 ///
-/// builder.setInsertPoint(entry_bb)
-/// let br = builder.createBr(target_bb)
+///   builder.setInsertPoint(entry_bb)
+///   let br = builder.createBr(target_bb)
 ///
-/// inspect(br, content = "  br label %target")
+///   inspect(br, content="  br label %target")
+/// }
 /// ```
 pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
@@ -3570,25 +3572,30 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 /// This creates a conditional branch instruction that transfers control to one of two basic blocks based on a boolean condition.
 /// The condition must be an i1 (boolean) type, and both destinations must be valid basic blocks.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i1_ty = ctx.getInt1Ty()
-/// let void_ty = ctx.getVoidTy()
-/// let fty = ctx.getFunctionType(void_ty, [i1_ty])
+///   let i1_ty = ctx.getInt1Ty()
+///   let void_ty = ctx.getVoidTy()
+///   let fty = ctx.getFunctionType(void_ty, [i1_ty])
 ///
-/// let fval = mod.addFunction(fty, "cond_br_demo")
-/// let entry_bb = fval.addBasicBlock(name="entry")
-/// let true_bb = fval.addBasicBlock(name="true_branch")
-/// let false_bb = fval.addBasicBlock(name="false_branch")
-/// let cond = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "cond_br_demo")
+///   let entry_bb = fval.addBasicBlock(name="entry")
+///   let true_bb = fval.addBasicBlock(name="true_branch")
+///   let false_bb = fval.addBasicBlock(name="false_branch")
+///   let cond = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(entry_bb)
-/// let cond_br = builder.createCondBr(cond, true_bb, false_bb)
+///   builder.setInsertPoint(entry_bb)
+///   let cond_br = builder.createCondBr(cond, true_bb, false_bb)
 ///
-/// inspect(cond_br, content = "  br i1 %0, label %true_branch, label %false_branch")
+///   inspect(
+///     cond_br,
+///     content="  br i1 %0, label %true_branch, label %false_branch",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createCondBr(
@@ -3627,25 +3634,27 @@ pub fn IRBuilder::createCondBr(
 /// This creates a select instruction that chooses between two values based on a boolean condition.
 /// The condition must be an i1 (boolean) type, and both values must have the same type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i1_ty = ctx.getInt1Ty()
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i1_ty, i32_ty, i32_ty])
+///   let i1_ty = ctx.getInt1Ty()
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i1_ty, i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "select_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let cond = fval.getArg(0).unwrap()
-/// let true_val = fval.getArg(1).unwrap()
-/// let false_val = fval.getArg(2).unwrap()
+///   let fval = mod.addFunction(fty, "select_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let cond = fval.getArg(0).unwrap()
+///   let true_val = fval.getArg(1).unwrap()
+///   let false_val = fval.getArg(2).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let select = builder.createSelect(cond, true_val, false_val, name="result")
+///   builder.setInsertPoint(bb)
+///   let select = builder.createSelect(cond, true_val, false_val, name="result")
 ///
-/// inspect(select, content = "  %result = select i1 %0, i32 %1, i32 %2")
+///   inspect(select, content="  %result = select i1 %0, i32 %1, i32 %2")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createSelect(
@@ -3708,32 +3717,34 @@ pub fn IRBuilder::createSelect(
 /// The value must be an integer type, and numCases specifies the expected number of cases.
 /// Use `SwitchInst::addCase` to add individual cases after creation.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let void_ty = ctx.getVoidTy()
-/// let fty = ctx.getFunctionType(void_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let void_ty = ctx.getVoidTy()
+///   let fty = ctx.getFunctionType(void_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "switch_demo")
-/// let entry_bb = fval.addBasicBlock(name="entry")
-/// let case1_bb = fval.addBasicBlock(name="case1")
-/// let default_bb = fval.addBasicBlock(name="default")
-/// let value = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "switch_demo")
+///   let entry_bb = fval.addBasicBlock(name="entry")
+///   let case1_bb = fval.addBasicBlock(name="case1")
+///   let default_bb = fval.addBasicBlock(name="default")
+///   let value = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(entry_bb)
-/// let switch = builder.createSwitch(value, default_bb)
-/// let case_val = ctx.getConstInt32(42)
-/// switch.addCase(case_val, case1_bb)
+///   builder.setInsertPoint(entry_bb)
+///   let switch = builder.createSwitch(value, default_bb)
+///   let case_val = ctx.getConstInt32(42)
+///   switch.addCase(case_val, case1_bb)
 ///
-/// let expect = 
-///   #|  switch i32 %0, label %default [
-///   #|    i32 42, label %case1
-///   #|  ]
+///   let expect =
+///     #|  switch i32 %0, label %default [
+///     #|    i32 42, label %case1
+///     #|  ]
 ///
-/// inspect(switch, content = expect)
+///   inspect(switch, content=expect)
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createSwitch(
@@ -3772,27 +3783,29 @@ pub fn IRBuilder::createSwitch(
 /// The type specifies the type of the PHI node's result value.
 /// Use `PHINode::addIncoming` to add incoming values and their corresponding basic blocks.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [])
 ///
-/// let fval = mod.addFunction(fty, "phi_demo")
-/// let entry_bb = fval.addBasicBlock(name="entry")
-/// let block_bb = fval.addBasicBlock(name="block")
-/// let merge_bb = fval.addBasicBlock(name="merge")
-/// let val1 = ctx.getConstInt32(10)
-/// let val2 = ctx.getConstInt32(20)
+///   let fval = mod.addFunction(fty, "phi_demo")
+///   let entry_bb = fval.addBasicBlock(name="entry")
+///   let block_bb = fval.addBasicBlock(name="block")
+///   let merge_bb = fval.addBasicBlock(name="merge")
+///   let val1 = ctx.getConstInt32(10)
+///   let val2 = ctx.getConstInt32(20)
 ///
-/// builder.setInsertPoint(merge_bb)
-/// let phi = builder.createPHI(i32_ty, name="result")
-/// phi.addIncoming(val1, entry_bb)
-/// phi.addIncoming(val2, block_bb)
+///   builder.setInsertPoint(merge_bb)
+///   let phi = builder.createPHI(i32_ty, name="result")
+///   phi.addIncoming(val1, entry_bb)
+///   phi.addIncoming(val2, block_bb)
 ///
-/// inspect(phi, content = "  %result = phi i32 [ 10, %entry ], [ 20, %block ]")
+///   inspect(phi, content="  %result = phi i32 [ 10, %entry ], [ 20, %block ]")
+/// }
 /// ```
 pub fn IRBuilder::createPHI(
   self : Self,
@@ -3821,25 +3834,27 @@ fn format_type_list(types : Array[&Type]) -> String {
 /// This creates a call instruction that invokes a function with the specified arguments.
 /// The function must be a valid Function object, and the arguments must match the function's parameter types.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let add_fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// let main_fty = ctx.getFunctionType(i32_ty, [])
+///   let i32_ty = ctx.getInt32Ty()
+///   let add_fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let main_fty = ctx.getFunctionType(i32_ty, [])
 ///
-/// let add_func = mod.addFunction(add_fty, "add")
-/// let main_func = mod.addFunction(main_fty, "main")
-/// let bb = main_func.addBasicBlock(name="entry")
-/// let arg1 = ctx.getConstInt32(10)
-/// let arg2 = ctx.getConstInt32(20)
+///   let add_func = mod.addFunction(add_fty, "add")
+///   let main_func = mod.addFunction(main_fty, "main")
+///   let bb = main_func.addBasicBlock(name="entry")
+///   let arg1 = ctx.getConstInt32(10)
+///   let arg2 = ctx.getConstInt32(20)
 ///
-/// builder.setInsertPoint(bb)
-/// let call = builder.createCall(add_func, [arg1, arg2], name="sum")
+///   builder.setInsertPoint(bb)
+///   let call = builder.createCall(add_func, [arg1, arg2], name="sum")
 ///
-/// inspect(call, content = "  %sum = call i32 @add(i32 10, i32 20)")
+///   inspect(call, content="  %sum = call i32 @add(i32 10, i32 20)")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createCall(
@@ -3908,26 +3923,33 @@ pub fn IRBuilder::createCall(
 /// The function pointer must be a pointer type, and the function type must match the pointed-to function's signature.
 /// The arguments must match the function's parameter types.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// let func_ptr_ty = ctx.getPtrTy()
-/// let main_fty = ctx.getFunctionType(i32_ty, [func_ptr_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let func_ty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let func_ptr_ty = ctx.getPtrTy()
+///   let main_fty = ctx.getFunctionType(i32_ty, [func_ptr_ty])
 ///
-/// let main_func = mod.addFunction(main_fty, "main")
-/// let bb = main_func.addBasicBlock(name="entry")
-/// let func_ptr = main_func.getArg(0).unwrap()
-/// let arg1 = ctx.getConstInt32(10)
-/// let arg2 = ctx.getConstInt32(20)
+///   let main_func = mod.addFunction(main_fty, "main")
+///   let bb = main_func.addBasicBlock(name="entry")
+///   let func_ptr = main_func.getArg(0).unwrap()
+///   let arg1 = ctx.getConstInt32(10)
+///   let arg2 = ctx.getConstInt32(20)
 ///
-/// builder.setInsertPoint(bb)
-/// let call = builder.createCallPtr(func_ptr, func_ty, [arg1, arg2], name="result")
+///   builder.setInsertPoint(bb)
+///   let call = builder.createCallPtr(
+///     func_ptr,
+///     func_ty,
+///     [arg1, arg2],
+///     name="result",
+///   )
 ///
-/// inspect(call, content = "  %result = call i32 %0(i32 10, i32 20)")
+///   inspect(call, content="  %result = call i32 %0(i32 10, i32 20)")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createCallPtr(
@@ -3971,24 +3993,31 @@ pub fn IRBuilder::createCallPtr(
 /// This creates an insertvalue instruction that inserts a value into an aggregate (struct or array) at the specified index.
 /// The aggregate must be an aggregate type, and the value type must match the element type at the given index.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let struct_ty = ctx.getStructType([i32_ty, i32_ty])
-/// let fty = ctx.getFunctionType(struct_ty, [struct_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let struct_ty = ctx.getStructType([i32_ty, i32_ty])
+///   let fty = ctx.getFunctionType(struct_ty, [struct_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "insertvalue_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let aggregate = fval.getArg(0).unwrap()
-/// let new_value = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "insertvalue_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let aggregate = fval.getArg(0).unwrap()
+///   let new_value = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let insert = builder.createInsertValue(aggregate, new_value, 1, name="updated")
+///   builder.setInsertPoint(bb)
+///   let insert = builder.createInsertValue(
+///     aggregate,
+///     new_value,
+///     1,
+///     name="updated",
+///   )
 ///
-/// inspect(insert, content = "  %updated = insertvalue { i32, i32 } %0, i32 %1, 1")
+///   inspect(insert, content="  %updated = insertvalue { i32, i32 } %0, i32 %1, 1")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createInsertValue(
@@ -4058,23 +4087,25 @@ pub fn IRBuilder::createInsertValue(
 /// This creates an extractvalue instruction that extracts a value from an aggregate (struct or array) at the specified index.
 /// The aggregate must be an aggregate type, and the index must be valid for the aggregate type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let struct_ty = ctx.getStructType([i32_ty, i32_ty])
-/// let fty = ctx.getFunctionType(i32_ty, [struct_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let struct_ty = ctx.getStructType([i32_ty, i32_ty])
+///   let fty = ctx.getFunctionType(i32_ty, [struct_ty])
 ///
-/// let fval = mod.addFunction(fty, "extractvalue_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let aggregate = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "extractvalue_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let aggregate = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let extract = builder.createExtractValue(aggregate, 0, name="field")
+///   builder.setInsertPoint(bb)
+///   let extract = builder.createExtractValue(aggregate, 0, name="field")
 ///
-/// inspect(extract, content = "  %field = extractvalue { i32, i32 } %0, 0")
+///   inspect(extract, content="  %field = extractvalue { i32, i32 } %0, 0")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createExtractValue(
@@ -4169,22 +4200,27 @@ pub fn IRBuilder::createExtractValue(
 /// This creates a malloc instruction that allocates memory for a single instance of the specified type.
 /// The type must not be an abstract type. The result is a pointer to the allocated memory.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(ptr_ty, [])
+///   let i32_ty = ctx.getInt32Ty()
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(ptr_ty, [])
 ///
-/// let fval = mod.addFunction(fty, "malloc_demo")
-/// let bb = fval.addBasicBlock(name="entry")
+///   let fval = mod.addFunction(fty, "malloc_demo")
+///   let bb = fval.addBasicBlock(name="entry")
 ///
-/// builder.setInsertPoint(bb)
-/// let malloc = builder.createMalloc(i32_ty, name="ptr")
+///   builder.setInsertPoint(bb)
+///   let malloc = builder.createMalloc(i32_ty, name="ptr")
 ///
-/// inspect(malloc, content = "  %ptr = tail call ptr @malloc(i32 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i32))")
+///   inspect(
+///     malloc,
+///     content="  %ptr = tail call ptr @malloc(i32 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i32))",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createMalloc(
@@ -4217,23 +4253,25 @@ pub fn IRBuilder::createMalloc(
 /// This creates a free instruction that deallocates memory previously allocated by malloc.
 /// The pointer must be a pointer type and should point to memory allocated by malloc.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(void_ty, [ptr_ty])
+///   let void_ty = ctx.getVoidTy()
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(void_ty, [ptr_ty])
 ///
-/// let fval = mod.addFunction(fty, "free_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let ptr_arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "free_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let ptr_arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let free = builder.createFree(ptr_arg)
+///   builder.setInsertPoint(bb)
+///   let free = builder.createFree(ptr_arg)
 ///
-/// inspect(free, content = "  tail call void @free(ptr %0)")
+///   inspect(free, content="  tail call void @free(ptr %0)")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFree(
@@ -4264,26 +4302,31 @@ pub fn IRBuilder::createFree(
 /// Both dst and src must be pointer types, and size must be an integer type.
 /// The dst_align and src_align parameters specify the alignment requirements.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let ptr_ty = ctx.getPtrTy()
-/// let i64_ty = ctx.getInt64Ty()
-/// let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
+///   let void_ty = ctx.getVoidTy()
+///   let ptr_ty = ctx.getPtrTy()
+///   let i64_ty = ctx.getInt64Ty()
+///   let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
 ///
-/// let fval = mod.addFunction(fty, "memcpy_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let dst = fval.getArg(0).unwrap()
-/// let src = fval.getArg(1).unwrap()
-/// let size = fval.getArg(2).unwrap()
+///   let fval = mod.addFunction(fty, "memcpy_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let dst = fval.getArg(0).unwrap()
+///   let src = fval.getArg(1).unwrap()
+///   let size = fval.getArg(2).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let memcpy = builder.createMemCpy(dst, 4, src, 4, size)
+///   builder.setInsertPoint(bb)
+///   let memcpy = builder.createMemCpy(dst, 4, src, 4, size)
 ///
-/// inspect(memcpy, content = "  call void @llvm.memcpy.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)")
+///   inspect(
+///     memcpy,
+///     content="  call void @llvm.memcpy.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createMemCpy(
@@ -4345,27 +4388,32 @@ pub fn IRBuilder::createMemCpy(
 /// The dst must be a pointer type, value must be an integer type (typically i8), 
 /// and size must be an integer type. The align parameter specifies the alignment.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let ptr_ty = ctx.getPtrTy()
-/// let i8_ty = ctx.getInt8Ty()
-/// let i64_ty = ctx.getInt64Ty()
-/// let fty = ctx.getFunctionType(void_ty, [ptr_ty, i8_ty, i64_ty])
+///   let void_ty = ctx.getVoidTy()
+///   let ptr_ty = ctx.getPtrTy()
+///   let i8_ty = ctx.getInt8Ty()
+///   let i64_ty = ctx.getInt64Ty()
+///   let fty = ctx.getFunctionType(void_ty, [ptr_ty, i8_ty, i64_ty])
 ///
-/// let fval = mod.addFunction(fty, "memset_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let dst = fval.getArg(0).unwrap()
-/// let value = fval.getArg(1).unwrap()
-/// let size = fval.getArg(2).unwrap()
+///   let fval = mod.addFunction(fty, "memset_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let dst = fval.getArg(0).unwrap()
+///   let value = fval.getArg(1).unwrap()
+///   let size = fval.getArg(2).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let memset = builder.createMemSet(dst, value, size, 4)
+///   builder.setInsertPoint(bb)
+///   let memset = builder.createMemSet(dst, value, size, 4)
 ///
-/// inspect(memset, content = "  call void @llvm.memset.p0.i64(ptr align 4 %0, i8 %1, i64 %2, i1 false)")
+///   inspect(
+///     memset,
+///     content="  call void @llvm.memset.p0.i64(ptr align 4 %0, i8 %1, i64 %2, i1 false)",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createMemSet(
@@ -4425,26 +4473,31 @@ pub fn IRBuilder::createMemSet(
 /// Both dst and src must be pointer types, and size must be an integer type.
 /// The dst_align and src_align parameters specify the alignment requirements.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let ptr_ty = ctx.getPtrTy()
-/// let i64_ty = ctx.getInt64Ty()
-/// let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
+///   let void_ty = ctx.getVoidTy()
+///   let ptr_ty = ctx.getPtrTy()
+///   let i64_ty = ctx.getInt64Ty()
+///   let fty = ctx.getFunctionType(void_ty, [ptr_ty, ptr_ty, i64_ty])
 ///
-/// let fval = mod.addFunction(fty, "memmove_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let dst = fval.getArg(0).unwrap()
-/// let src = fval.getArg(1).unwrap()
-/// let size = fval.getArg(2).unwrap()
+///   let fval = mod.addFunction(fty, "memmove_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let dst = fval.getArg(0).unwrap()
+///   let src = fval.getArg(1).unwrap()
+///   let size = fval.getArg(2).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let memmove = builder.createMemMove(dst, 4, src, 4, size)
+///   builder.setInsertPoint(bb)
+///   let memmove = builder.createMemMove(dst, 4, src, 4, size)
 ///
-/// inspect(memmove, content = "  call void @llvm.memmove.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)")
+///   inspect(
+///     memmove,
+///     content="  call void @llvm.memmove.p0.p0.i64(ptr align 4 %0, ptr align 4 %1, i64 %2, i1 false)",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createMemMove(
