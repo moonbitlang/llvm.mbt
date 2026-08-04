@@ -90,9 +90,9 @@
 
 ## Commit 8：转换 IRBuilder 的浮点与位操作名称错误
 
-- [ ] 处理浮点 add、sub、mul、div、rem、neg。
-- [ ] 处理 and、or、xor、not、shift 和 ptrdiff。
-- [ ] 只修改直接调用 unsafe 字符串 API 的基础入口，派生 convenience API 继续复用基础入口。
+- [x] 处理浮点 add、sub、mul、div、rem、neg。
+- [x] 处理 and、or、xor、not、shift 和 ptrdiff。
+- [x] 只修改直接调用 unsafe 字符串 API 的基础入口，派生 convenience API 继续复用基础入口。
 
 建议提交信息：`IRBuilder: map floating and bitwise name errors`
 

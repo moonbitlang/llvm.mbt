@@ -1265,7 +1265,9 @@ pub fn IRBuilder::createFAdd(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => {
@@ -1340,7 +1342,9 @@ pub fn IRBuilder::createFSub(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => {
@@ -1403,7 +1407,9 @@ pub fn IRBuilder::createFMul(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1458,7 +1464,9 @@ pub fn IRBuilder::createFDiv(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1513,7 +1521,9 @@ pub fn IRBuilder::createFRem(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1566,7 +1576,9 @@ pub fn IRBuilder::createFNeg(
     )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_f_neg(self.builder_ref, value_ref, name)
+  let res_valueref = @unsafe.llvm_build_f_neg(self.builder_ref, value_ref, name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => UnaryInst::UnaryInst(res_valueref)
@@ -1621,7 +1633,9 @@ pub fn IRBuilder::createAnd(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1676,7 +1690,9 @@ pub fn IRBuilder::createOr(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1731,7 +1747,9 @@ pub fn IRBuilder::createXor(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1785,7 +1803,9 @@ pub fn IRBuilder::createNot(
     )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_not(self.builder_ref, value_ref, name)
+  let res_valueref = @unsafe.llvm_build_not(self.builder_ref, value_ref, name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   // Note: It is correct, llvm has no `not` instruction,
   // it will actually generate a `xor`, use `xor val, -1`
   // to represent a bitwise NOT operation.
@@ -1844,7 +1864,9 @@ pub fn IRBuilder::createShl(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1899,7 +1921,9 @@ pub fn IRBuilder::createLShr(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1954,7 +1978,9 @@ pub fn IRBuilder::createAShr(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -2024,7 +2050,9 @@ pub fn IRBuilder::createPtrDiff(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   BinaryInst::BinaryInst(res_valueref)
 }
 
