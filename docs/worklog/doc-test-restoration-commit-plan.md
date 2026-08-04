@@ -9,9 +9,9 @@
 
 ## Commit 1：恢复 DataLayout doc test
 
-- [ ] 将 `IR/DataLayout.mbt` 中的 2 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将两个语句片段分别包进匿名 `test { ... }`。
-- [ ] 不修改 DataLayout 的实现。
+- [x] 将 `IR/DataLayout.mbt` 中的 2 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将两个语句片段分别包进匿名 `test { ... }`。
+- [x] 不修改 DataLayout 的实现。
 
 建议提交信息：`docs(IR): check DataLayout examples`
 
