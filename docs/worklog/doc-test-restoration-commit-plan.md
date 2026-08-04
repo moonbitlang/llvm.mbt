@@ -17,9 +17,9 @@
 
 ## Commit 2：恢复 Module doc test
 
-- [ ] 将 `IR/Module.mbt` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将每个语句片段包进独立的匿名测试。
-- [ ] 只做示例语法和格式所需的调整，不修改 Module 行为。
+- [x] 将 `IR/Module.mbt` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将每个语句片段包进独立的匿名测试。
+- [x] 只做示例语法和格式所需的调整，不修改 Module 行为。
 
 建议提交信息：`docs(IR): check Module examples`
 

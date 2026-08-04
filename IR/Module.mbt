@@ -62,11 +62,13 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 ///
 /// ## Example
 ///
-/// ```moonbit nocheck
-/// let context = Context::new();
-/// let program = context.addModule("my_module");
+/// ```mbt check
+/// test {
+///   let context = Context::new()
+///   let program = context.addModule("my_module")
 ///
-/// inspect(program.getName(), content="my_module");
+///   inspect(program.getName(), content="my_module")
+/// }
 /// ```
 pub fn Module::getName(self : Self) -> String raise StringError {
   @unsafe.llvm_get_module_identifier(self.0) catch {
@@ -79,13 +81,15 @@ pub fn Module::getName(self : Self) -> String raise StringError {
 ///
 /// ## Example (Not Tested)
 ///
-/// ```moonbit nocheck
-/// let context = Context::new();
-/// let program = context.addModule("demo1");
+/// ```mbt check
+/// test {
+///   let context = Context::new()
+///   let program = context.addModule("demo1")
 ///
-/// program.setName("demo2");
+///   program.setName("demo2")
 ///
-/// inspect(program.getName(), content="demo2");
+///   inspect(program.getName(), content="demo2")
+/// }
 /// ```
 pub fn Module::setName(self : Self, name : String) -> Unit {
   @unsafe.llvm_set_module_identifier(self.0, name)
@@ -96,16 +100,18 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 ///
 /// ## Example
 ///
-/// ```moonbit nocheck
-/// let context = Context::new();
-/// let program = context.addModule("my_mod");
+/// ```mbt check
+/// test {
+///   let context = Context::new()
+///   let program = context.addModule("my_mod")
 ///
-/// inspect(program.getSourceFileName(), content="my_mod");
+///   inspect(program.getSourceFileName(), content="my_mod")
 ///
-/// program.setSourceFileName("my_mod.mbt");
+///   program.setSourceFileName("my_mod.mbt")
 ///
-/// inspect(program.getName(), content="my_mod");
-/// inspect(program.getSourceFileName(), content="my_mod.mbt");
+///   inspect(program.getName(), content="my_mod")
+///   inspect(program.getSourceFileName(), content="my_mod.mbt")
+/// }
 /// ```
 pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
   @unsafe.llvm_get_source_file_name(self.0) catch {
@@ -118,16 +124,18 @@ pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
 ///
 /// ## Example
 ///
-/// ```moonbit nocheck
-/// let context = Context::new();
-/// let program = context.addModule("my_mod");
+/// ```mbt check
+/// test {
+///   let context = Context::new()
+///   let program = context.addModule("my_mod")
 ///
-/// inspect(program.getSourceFileName(), content="my_mod");
+///   inspect(program.getSourceFileName(), content="my_mod")
 ///
-/// program.setSourceFileName("my_mod.mbt");
+///   program.setSourceFileName("my_mod.mbt")
 ///
-/// inspect(program.getName(), content="my_mod");
-/// inspect(program.getSourceFileName(), content="my_mod.mbt");
+///   inspect(program.getName(), content="my_mod")
+///   inspect(program.getSourceFileName(), content="my_mod.mbt")
+/// }
 /// ```
 pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
   @unsafe.llvm_set_source_file_name(self.0, name)
