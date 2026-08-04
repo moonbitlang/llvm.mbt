@@ -10,11 +10,7 @@ llvm的moonbit语言binding，使用llvm-19。
 
 - `moon test --target native -p test` 仅运行test目录下的测试。
 
-注意，首次运行，需要使用`source env.sh`来配置环境变量。
-
 # 特殊文件
-
-- `env.sh` 环境变量配置文件，终端里首次运行项目需要使用`source env.sh`
 
 - `.mbti` 以mbti为结尾的文件存放了所有可用的函数签名信息。
 
