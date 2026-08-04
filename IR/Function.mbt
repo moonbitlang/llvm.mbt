@@ -64,8 +64,8 @@ pub fn Function::getName(self : Self) -> String? raise StringError {
 /// fval.setName("increment")
 /// assert_eq(fval.getName(), Some("increment"))
 /// ```
-pub fn Function::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_value_name(self.getValueRef(), name)
+pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
+  self.setValueName(name)
 }
 
 ///|
@@ -525,8 +525,8 @@ pub fn Argument::getName(self : Self) -> String? raise StringError {
 /// arg0.setName("a")
 /// assert_eq(arg0.getName(), Some("a"))
 /// ```
-pub fn Argument::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_value_name(self.getValueRef(), name)
+pub fn Argument::setName(self : Self, name : String) -> Unit raise StringError {
+  self.setValueName(name)
 }
 
 ///|

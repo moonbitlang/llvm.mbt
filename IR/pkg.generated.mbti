@@ -90,7 +90,7 @@ pub fn Argument::addAttr(Self, ParamAttr) -> Unit
 pub fn Argument::getFunction(Self) -> Function
 pub fn Argument::getName(Self) -> String? raise StringError
 pub fn Argument::removeAttr(Self, ParamAttr) -> Unit
-pub fn Argument::setName(Self, String) -> Unit
+pub fn Argument::setName(Self, String) -> Unit raise StringError
 pub impl Value for Argument
 pub impl Show for Argument
 
@@ -129,7 +129,7 @@ pub fn BasicBlock::getTerminator(Self) -> &Instruction?
 pub fn BasicBlock::moveAfter(Self, Self) -> Unit raise
 pub fn BasicBlock::moveBefore(Self, Self) -> Unit raise
 pub fn BasicBlock::removeFromParent(Self) -> Unit raise
-pub fn BasicBlock::setName(Self, String) -> Unit
+pub fn BasicBlock::setName(Self, String) -> Unit raise StringError
 pub impl InsertPoint for BasicBlock
 pub impl Value for BasicBlock
 pub impl Show for BasicBlock
@@ -378,7 +378,7 @@ pub fn Function::getNumBasicBlocks(Self) -> Int
 pub fn Function::getType(Self) -> FunctionType
 pub fn Function::removeFnAttr(Self, FnAttr) -> Unit
 pub fn Function::removeRetAttr(Self, RetAttr) -> Unit
-pub fn Function::setName(Self, String) -> Unit
+pub fn Function::setName(Self, String) -> Unit raise StringError
 pub impl GlobalValue for Function
 pub impl Value for Function
 pub impl Show for Function
@@ -1101,7 +1101,7 @@ pub trait Value : Show {
   fn getType(Self) -> &Type
   fn getContext(Self) -> Context
   fn getValueName(Self) -> String? raise StringError
-  fn setValueName(Self, String) -> Unit
+  fn setValueName(Self, String) -> Unit raise StringError
   fn replaceAllUsesWith(Self, &Value) -> Unit
   fn tryAsConstant(Self) -> &Constant?
   fn tryAsConstantEnum(Self) -> ConstantEnum?

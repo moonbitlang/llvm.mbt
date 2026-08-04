@@ -66,7 +66,7 @@ pub trait Value: Show {
   // All values hold a context through their type.
   fn getContext(Self) -> Context = _
   fn getValueName(Self) -> String? raise StringError = _
-  fn setValueName(Self, String) -> Unit = _
+  fn setValueName(Self, String) -> Unit raise StringError = _
 
   //
   fn replaceAllUsesWith(Self, other : &Value) -> Unit = _
@@ -94,7 +94,8 @@ impl Value with fn getValueName(self) raise StringError {
 }
 
 ///|
-impl Value with fn setValueName(self, name : String) {
+impl Value with fn setValueName(self, name : String) raise StringError {
+  guard !name.contains_code_unit(0) else { raise ContainsNul }
   @unsafe.llvm_set_value_name(self.getValueRef(), name)
 }
 

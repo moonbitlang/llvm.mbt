@@ -490,8 +490,11 @@ pub fn BasicBlock::getName(self : Self) -> String? raise StringError {
 /// entry.setName("new_entry")
 /// assert_eq(entry.getName(), Some("new_entry"))
 /// ```
-pub fn BasicBlock::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_value_name(@unsafe.llvm_basic_block_as_value(self.0), name)
+pub fn BasicBlock::setName(
+  self : Self,
+  name : String,
+) -> Unit raise StringError {
+  self.setValueName(name)
 }
 
 //pub fn BasicBlock::getFirstUser(self: Self) -> &User? {
