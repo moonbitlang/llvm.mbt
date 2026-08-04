@@ -82,9 +82,9 @@
 
 ## Commit 8：恢复 IRBuilder 的基础、内存与整数运算示例
 
-- [ ] 处理 return、alloca、load、store 等基础和内存入口。
-- [ ] 处理整数 add、sub、mul、div、rem 各族示例。
-- [ ] 共恢复该区段的 20 个 doc test，不跨入浮点运算区段。
+- [x] 处理 return、alloca、load、store 等基础和内存入口。
+- [x] 处理整数 add、sub、mul、div、rem 各族示例。
+- [x] 共恢复该区段的 20 个 doc test，不跨入浮点运算区段。
 
 建议提交信息：`docs(IRBuilder): check integer operation examples`
 
