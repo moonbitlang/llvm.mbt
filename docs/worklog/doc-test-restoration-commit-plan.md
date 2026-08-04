@@ -168,8 +168,8 @@
 
 ## Commit 18：恢复 tutorial Chapter6
 
-- [ ] 将 `tutorial/Chapter6.mbt.md` 中的 3 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 保留该章原有的 `moonbit skip`。
+- [x] 将 `tutorial/Chapter6.mbt.md` 中的 3 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 保留该章原有的 `moonbit skip`。
 
 建议提交信息：`docs(tutorial): check Chapter6 examples`
 

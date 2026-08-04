@@ -38,7 +38,7 @@ int main() {
 
 在llvm.mbt中实现这个程序：
 
-```moonbit nocheck
+```mbt check
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -238,7 +238,7 @@ void fill_array(int* arr, int num, int len) {
 
 在llvm.mbt中实现：
 
-```moonbit nocheck
+```mbt check
 ///|
 test {
   let ctx = @IR.Context::new()
@@ -344,7 +344,7 @@ result_address = base_address + (index * sizeof(element_type))
 
 现在让我们将所有部分组合起来，创建一个完整的数组操作程序：
 
-```moonbit nocheck
+```mbt check
 ///|
 test {
   let ctx = @IR.Context::new()
