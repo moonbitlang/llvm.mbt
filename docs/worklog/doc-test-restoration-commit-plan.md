@@ -66,9 +66,9 @@
 
 ## Commit 7：恢复其余 Context doc test
 
-- [ ] 将 `IR/Context.mbt` 中剩余的 38 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将每个语句片段包进独立的匿名测试。
-- [ ] 不再混入其他 Context 实现改动。
+- [x] 将 `IR/Context.mbt` 中剩余的 38 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将每个语句片段包进独立的匿名测试。
+- [x] 不再混入其他 Context 实现改动。
 
 建议提交信息：`docs(IR): check Context examples`
 
