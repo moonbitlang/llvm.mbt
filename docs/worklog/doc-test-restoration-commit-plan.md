@@ -49,9 +49,9 @@
 
 ## Commit 5：恢复 BasicBlock doc test
 
-- [ ] 将 `IR/BasicBlock.mbt` 中的 12 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将每个语句片段包进独立的匿名测试。
-- [ ] 只修正启用检查后发现的示例问题，不修改 BasicBlock 行为。
+- [x] 将 `IR/BasicBlock.mbt` 中的 12 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将每个语句片段包进独立的匿名测试。
+- [x] 只修正启用检查后发现的示例问题，不修改 BasicBlock 行为。
 
 建议提交信息：`docs(IR): check BasicBlock examples`
 
