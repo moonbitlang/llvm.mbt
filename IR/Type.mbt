@@ -471,19 +471,20 @@ impl Type with fn tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 ///|
 /// Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
 ///
-/// let i8ty :&IntegerType = ctx.getInt8Ty()
-/// assert_eq(i8ty.getBitWidth(), 8)
-/// inspect(i8ty.getExtendedType().unwrap(), content="i16")
+///   let i8ty : &IntegerType = ctx.getInt8Ty()
+///   assert_eq(i8ty.getBitWidth(), 8)
+///   inspect(i8ty.getExtendedType().unwrap(), content="i16")
 ///
-/// let i32ty = i8ty.getExtendedType().unwrap()
-///                 .getExtendedType().unwrap()
+///   let i32ty = i8ty.getExtendedType().unwrap().getExtendedType().unwrap()
 ///
-/// inspect(i32ty, content="i32")
-/// guard i32ty.asIntegerTypeEnum() is Int32Type(i32ty)
-/// inspect(i32ty, content="i32")
+///   inspect(i32ty, content="i32")
+///   guard! i32ty.asIntegerTypeEnum() is Int32Type(i32ty)
+///   inspect(i32ty, content="i32")
+/// }
 /// ```
 pub trait IntegerType: PrimitiveType {
   fn asIntegerTypeEnum(Self) -> IntegerTypeEnum
@@ -1374,16 +1375,18 @@ pub struct StructType(@unsafe.LLVMTypeRef) derive(Eq)
 ///
 /// - See LLVM: `StructType::isLiteral`.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let i32ty = ctx.getInt32Ty()
-/// let f32ty = ctx.getFloatTy()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let i32ty = ctx.getInt32Ty()
+///   let f32ty = ctx.getFloatTy()
 ///
-/// let foo = ctx.getStructType([i32ty, f32ty])
-/// let bar = ctx.getStructType([i32ty, f32ty], name="bar")
+///   let foo = ctx.getStructType([i32ty, f32ty])
+///   let bar = ctx.getStructType([i32ty, f32ty], name="bar")
 ///
-/// assert_true(foo.isLiteral())
-/// assert_false(bar.isLiteral())
+///   assert_true(foo.isLiteral())
+///   assert_false(bar.isLiteral())
+/// }
 /// ```
 pub fn StructType::isLiteral(self : StructType) -> Bool {
   @unsafe.llvm_is_literal_struct(self.getTypeRef())
@@ -1396,13 +1399,15 @@ pub fn StructType::isLiteral(self : StructType) -> Bool {
 ///
 /// - See LLVM: `StructType::isOpaque`.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let i32ty = ctx.getInt32Ty()
-/// let f32ty = ctx.getFloatTy()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let i32ty = ctx.getInt32Ty()
+///   let f32ty = ctx.getFloatTy()
 ///
-/// let bar = ctx.getStructType([i32ty, f32ty], name="bar")
-/// assert_false(bar.isOpaque())
+///   let bar = ctx.getStructType([i32ty, f32ty], name="bar")
+///   assert_false(bar.isOpaque())
+/// }
 /// ```
 pub fn StructType::isOpaque(self : StructType) -> Bool {
   @unsafe.llvm_is_opaque_struct(self.getTypeRef())

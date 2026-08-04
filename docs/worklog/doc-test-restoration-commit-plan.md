@@ -25,9 +25,9 @@
 
 ## Commit 3：恢复 Type doc test
 
-- [ ] 将 `IR/Type.mbt` 中的 3 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将每个语句片段包进独立的匿名测试。
-- [ ] 将用于断言类型分支的 `guard` 改为明确表示必定匹配的 `guard!`，避免新增 lint warning。
+- [x] 将 `IR/Type.mbt` 中的 3 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将每个语句片段包进独立的匿名测试。
+- [x] 将用于断言类型分支的 `guard` 改为明确表示必定匹配的 `guard!`，避免新增 lint warning。
 
 建议提交信息：`docs(IR): check Type examples`
 
