@@ -529,7 +529,9 @@ pub fn llvm_set_is_new_dbg_info_format(
 extern "C" fn __llvm_get_module_identifier(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_module_identifier"
 
 ///|
-pub fn llvm_get_module_identifier(m : LLVMModuleRef) -> String raise {
+pub fn llvm_get_module_identifier(
+  m : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   __llvm_get_module_identifier(m) |> @utf8.decode
 }
 
@@ -565,7 +567,9 @@ extern "C" fn __llvm_get_source_file_name(m : LLVMModuleRef) -> Bytes = "llvm_mb
 /// @return The original source file name of M
 ///
 /// - see Module::getSourceFileName()
-pub fn llvm_get_source_file_name(m : LLVMModuleRef) -> String raise {
+pub fn llvm_get_source_file_name(
+  m : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   __llvm_get_source_file_name(m) |> @utf8.decode
 }
 

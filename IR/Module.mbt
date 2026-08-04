@@ -66,8 +66,8 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 ///
 /// inspect(program.getName(), content="my_module");
 /// ```
-pub fn Module::getName(self : Self) -> String raise {
-  @unsafe.llvm_get_module_identifier(self.0)
+pub fn Module::getName(self : Self) -> String raise StringError {
+  translate_utf8_error(() => @unsafe.llvm_get_module_identifier(self.0))
 }
 
 ///|
@@ -103,8 +103,8 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 /// inspect(program.getName(), content="my_mod");
 /// inspect(program.getSourceFileName(), content="my_mod.mbt");
 /// ```
-pub fn Module::getSourceFileName(self : Self) -> String raise {
-  @unsafe.llvm_get_source_file_name(self.0)
+pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
+  translate_utf8_error(() => @unsafe.llvm_get_source_file_name(self.0))
 }
 
 ///|

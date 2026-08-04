@@ -830,7 +830,7 @@ pub fn llvm_get_module_debug_metadata_version(LLVMModuleRef) -> UInt
 
 pub fn llvm_get_module_flag(LLVMModuleRef, String) -> LLVMMetadataRef
 
-pub fn llvm_get_module_identifier(LLVMModuleRef) -> String raise
+pub fn llvm_get_module_identifier(LLVMModuleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_module_inline_asm(LLVMModuleRef) -> String raise
 
@@ -958,7 +958,7 @@ pub fn llvm_get_return_type(LLVMTypeRef) -> LLVMTypeRef
 
 pub fn llvm_get_section(LLVMValueRef) -> String raise @utf8.Malformed
 
-pub fn llvm_get_source_file_name(LLVMModuleRef) -> String raise
+pub fn llvm_get_source_file_name(LLVMModuleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_string_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, String) -> LLVMAttributeRef
 
