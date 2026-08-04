@@ -124,10 +124,10 @@
 
 ## Commit 12：建立 tutorial doc test 依赖并恢复 Chapter0
 
-- [ ] 在 `tutorial/moon.pkg` 中为测试导入 `Kaida-Amethyst/llvm/IR`，别名为 `@IR`。
-- [ ] 使用 `for "test"` 限定导入，避免给 tutorial package 增加未使用依赖 warning。
-- [ ] 将 `tutorial/Chapter0.mbt.md` 中的 2 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 保留示例中已有的完整测试块，不增加多余的嵌套 `test`。
+- [x] 在 `tutorial/moon.pkg` 中为测试导入 `Kaida-Amethyst/llvm/IR`，别名为 `@IR`。
+- [x] 使用 `for "test"` 限定导入，避免给 tutorial package 增加未使用依赖 warning。
+- [x] 将 `tutorial/Chapter0.mbt.md` 中的 2 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 保留示例中已有的完整测试块，不增加多余的嵌套 `test`。
 
 建议提交信息：`docs(tutorial): check Chapter0 examples`
 
