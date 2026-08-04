@@ -178,10 +178,16 @@ pub fn Function::addBasicBlock(
   self : Self,
   name? : String = "",
   before? : BasicBlock? = None,
-) -> BasicBlock raise @unsafe.CStringError {
+) -> BasicBlock raise StringError {
   let blockref = match before {
-    None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)
-    Some(bb) => @unsafe.llvm_insert_basic_block(bb.0, name)
+    None =>
+      @unsafe.llvm_append_basic_block(self.getValueRef(), name) catch {
+        @unsafe.EmbeddedNul => raise ContainsNul
+      }
+    Some(bb) =>
+      @unsafe.llvm_insert_basic_block(bb.0, name) catch {
+        @unsafe.EmbeddedNul => raise ContainsNul
+      }
   }
   BasicBlock(blockref)
 }

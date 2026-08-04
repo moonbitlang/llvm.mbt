@@ -7,8 +7,10 @@ pub fn Module::addFunction(
   fty : FunctionType,
   name : String,
   linkage? : Linkage,
-) -> Function raise @unsafe.CStringError {
-  let valueref = @unsafe.llvm_add_function(self.0, name, fty.0)
+) -> Function raise StringError {
+  let valueref = @unsafe.llvm_add_function(self.0, name, fty.0) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   let fval = Function::Function(valueref)
   match linkage {
     Some(l) => @unsafe.llvm_set_linkage(valueref, l.to_llvm_linkage())
@@ -143,8 +145,10 @@ pub fn Module::setDefaultDataLayout(self : Module) -> Unit {
 pub fn Module::setDataLayout(
   self : Module,
   layout : String,
-) -> Unit raise @unsafe.CStringError {
-  @unsafe.llvm_set_data_layout(self.0, layout)
+) -> Unit raise StringError {
+  @unsafe.llvm_set_data_layout(self.0, layout) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
 }
 
 ///|
@@ -160,8 +164,10 @@ pub fn Module::addGlobalVariable(
   name : String,
   initializer? : &Constant,
   linkage? : Linkage,
-) -> GlobalVariable raise @unsafe.CStringError {
-  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
+) -> GlobalVariable raise StringError {
+  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   if initializer is Some(init) {
     @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
   }
@@ -178,8 +184,10 @@ pub fn Module::addGlobalConstant(
   name : String,
   value : &Constant,
   linkage? : Linkage,
-) -> GlobalConstant raise @unsafe.CStringError {
-  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
+) -> GlobalConstant raise StringError {
+  let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   @unsafe.llvm_set_global_constant(gv_ref, true)
   @unsafe.llvm_set_initializer(gv_ref, value.getValueRef())
   if linkage is Some(link) {
