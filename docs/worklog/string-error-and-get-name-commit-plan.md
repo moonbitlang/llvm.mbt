@@ -82,9 +82,9 @@
 
 ## Commit 7：转换 IRBuilder 的整数操作名称错误
 
-- [ ] 处理 allocation/load 等带名称的基础入口。
-- [ ] 处理整数 add、sub、mul、div、rem 各族的基础入口。
-- [ ] 只转换名称引发的 `CStringError`；不调整 `BuilderError` 和其他 `raise` 标注。
+- [x] 处理 allocation/load 等带名称的基础入口。
+- [x] 处理整数 add、sub、mul、div、rem 各族的基础入口。
+- [x] 只转换名称引发的 `CStringError`；不调整 `BuilderError` 和其他 `raise` 标注。
 
 建议提交信息：`IRBuilder: map integer operation name errors`
 

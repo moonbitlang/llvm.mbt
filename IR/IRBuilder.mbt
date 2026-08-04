@@ -160,9 +160,14 @@ pub fn IRBuilder::createAlloca(
   name? : String = "",
 ) -> AllocaInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  AllocaInst(
-    @unsafe.llvm_build_alloca(self.builder_ref, data_ty.getTypeRef(), name),
-  )
+  let value_ref = @unsafe.llvm_build_alloca(
+    self.builder_ref,
+    data_ty.getTypeRef(),
+    name,
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
+  AllocaInst(value_ref)
 }
 
 ///|
@@ -196,14 +201,15 @@ pub fn IRBuilder::createLoad(
   name? : String = "",
 ) -> LoadInst raise {
   guard self.positioned is Set else { raise UnsetPosition }
-  LoadInst(
-    @unsafe.llvm_build_load2(
-      self.builder_ref,
-      load_ty.getTypeRef(),
-      ptr.getValueRef(),
-      name,
-    ),
-  )
+  let value_ref = @unsafe.llvm_build_load2(
+    self.builder_ref,
+    load_ty.getTypeRef(),
+    ptr.getValueRef(),
+    name,
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
+  LoadInst(value_ref)
 }
 
 ///|
@@ -370,7 +376,9 @@ pub fn IRBuilder::createAdd(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   //if @unsafe.llvm_is_constant(res_valueref) {
   //  ConstantInt::ConstantInt(res_valueref) as &Value
   //} else {
@@ -430,7 +438,9 @@ pub fn IRBuilder::createNSWAdd(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -485,7 +495,9 @@ pub fn IRBuilder::createNUWAdd(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -540,7 +552,9 @@ pub fn IRBuilder::createSub(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -595,7 +609,9 @@ pub fn IRBuilder::createNSWSub(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -650,7 +666,9 @@ pub fn IRBuilder::createNUWSub(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -705,7 +723,9 @@ pub fn IRBuilder::createMul(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -760,7 +780,9 @@ pub fn IRBuilder::createNSWMul(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -815,7 +837,9 @@ pub fn IRBuilder::createNUWMul(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -871,7 +895,9 @@ pub fn IRBuilder::createUDiv(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -927,7 +953,9 @@ pub fn IRBuilder::createSDiv(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -984,7 +1012,9 @@ pub fn IRBuilder::createExactUDiv(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1040,7 +1070,9 @@ pub fn IRBuilder::createExactSDiv(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1095,7 +1127,9 @@ pub fn IRBuilder::createURem(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
@@ -1150,7 +1184,9 @@ pub fn IRBuilder::createSRem(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => BinaryInst::BinaryInst(res_valueref)
