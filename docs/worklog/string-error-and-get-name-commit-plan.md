@@ -107,17 +107,17 @@
 
 ## Commit 10：转换 IRBuilder 的聚合、调用及剩余名称错误
 
-- [ ] 处理 PHI、Call、CallPtr。
-- [ ] 处理 InsertValue、ExtractValue、Malloc、GlobalString。
-- [ ] 检查并处理此前各组未覆盖的其余带字符串基础入口。
-- [ ] 确认 IRBuilder 不再向上传递底层 `@unsafe.CStringError`。
+- [x] 处理 PHI、Call、CallPtr。
+- [x] 处理 InsertValue、ExtractValue、Malloc、GlobalString。
+- [x] 检查并处理此前各组未覆盖的其余带字符串基础入口。
+- [x] 确认 IRBuilder 不再向上传递底层 `@unsafe.CStringError`。
 
 建议提交信息：`IRBuilder: map aggregate and call name errors`
 
 ## 每个代码 commit 的检查要求
 
-- [ ] 运行 `moon fmt`。
-- [ ] 运行 `moon info`，检查 `.mbti` 变化是否只来自当前 commit。
-- [ ] 在配置 `env.sh` 后运行 `moon check --target native`。
-- [ ] 当前阶段不添加测试；测试问题继续延后。
-- [ ] 不混入 UTF-16、raw bytes API、其他 `raise` 规范修复或无关重构。
+- [x] 运行 `moon fmt`。
+- [x] 运行 `moon info`，检查 `.mbti` 变化是否只来自当前 commit。
+- [x] 在配置 `env.sh` 后运行 `moon check --target native`。
+- [x] 当前阶段不添加测试；测试问题继续延后。
+- [x] 不混入 UTF-16、raw bytes API、其他 `raise` 规范修复或无关重构。

@@ -3679,7 +3679,9 @@ pub fn IRBuilder::createPHI(
   // use `PHINode::addIncoming` to add incoming values.
   guard self.positioned is Set else { raise UnsetPosition }
   let type_ref = type_.getTypeRef()
-  let res_valueref = @unsafe.llvm_build_phi(self.builder_ref, type_ref, name)
+  let res_valueref = @unsafe.llvm_build_phi(self.builder_ref, type_ref, name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   PHINode(res_valueref)
 }
 
@@ -3768,7 +3770,9 @@ pub fn IRBuilder::createCall(
     func_ref,
     args_refs,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   CallInst(res_valueref)
 }
 
@@ -3830,7 +3834,9 @@ pub fn IRBuilder::createCallPtr(
     func_ptr_ref,
     args_refs,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   CallInst(res_valueref)
 }
 
@@ -3903,7 +3909,9 @@ pub fn IRBuilder::createInsertValue(
     value_ref,
     index.reinterpret_as_uint(),
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match aggregate.getType().asTypeEnum() {
@@ -4004,7 +4012,9 @@ pub fn IRBuilder::createExtractValue(
     aggregate_ref,
     index.reinterpret_as_uint(),
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   //ExtractValueInst::ExtractValueInst(res_valueref)
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
@@ -4070,7 +4080,9 @@ pub fn IRBuilder::createMalloc(
     )
   }
   let typeref = ty.getTypeRef()
-  let res_valueref = @unsafe.llvm_build_malloc(self.builder_ref, typeref, name)
+  let res_valueref = @unsafe.llvm_build_malloc(self.builder_ref, typeref, name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   CallInst(res_valueref)
 }
 
@@ -4373,6 +4385,8 @@ pub fn IRBuilder::createGlobalString(
     self.builder_ref,
     string,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   GlobalConstant(res_valueref)
 }
