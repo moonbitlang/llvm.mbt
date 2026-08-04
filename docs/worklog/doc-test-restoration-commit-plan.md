@@ -57,10 +57,10 @@
 
 ## Commit 6：修复 Float 负零常量并启用对应 doc test
 
-- [ ] 修复 `Context::getConstZeroFloat(isNegative=true)`：将 `UInt` 位模式通过 `Float::reinterpret_from_uint` 重解释为 `Float`，再转换为传给 LLVM 的 `Double`。
-- [ ] 只将 `getConstZeroFloat` 的示例改为 `mbt check` 并包进匿名测试，用它验证正零和负零。
-- [ ] 不在本 commit 顺便恢复其他 Context 示例。
-- [ ] 单独审核这一实际行为修复，不把失败快照直接更新为当前错误结果。
+- [x] 修复 `Context::getConstZeroFloat(isNegative=true)`：将 `UInt` 位模式通过 `Float::reinterpret_from_uint` 重解释为 `Float`，再转换为传给 LLVM 的 `Double`。
+- [x] 只将 `getConstZeroFloat` 的示例改为 `mbt check` 并包进匿名测试，用它验证正零和负零。
+- [x] 不在本 commit 顺便恢复其他 Context 示例。
+- [x] 单独审核这一实际行为修复，不把失败快照直接更新为当前错误结果。
 
 建议提交信息：`IR: fix negative zero float constant`
 

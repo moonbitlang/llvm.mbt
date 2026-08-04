@@ -777,21 +777,23 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 ///
 ///  - `isNegative`: If true, create a negative zero constant.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
 ///
-/// let zero = ctx.getConstZeroFloat(isNegative=false)
-/// let neg_zero = ctx.getConstZeroFloat(isNegative=true)
+///   let zero = ctx.getConstZeroFloat(isNegative=false)
+///   let neg_zero = ctx.getConstZeroFloat(isNegative=true)
 ///
-/// inspect(zero, content="float 0.000000e+00")
-/// inspect(neg_zero, content="float -0.000000e+00")
+///   inspect(zero, content="float 0.000000e+00")
+///   inspect(neg_zero, content="float -0.000000e+00")
+/// }
 /// ```
 pub fn Context::getConstZeroFloat(
   self : Self,
   isNegative~ : Bool,
 ) -> ConstantFP {
   let val = if isNegative { 0x8000_0000U } else { 0x0000_0000U }
-  let val = val.reinterpret_as_int()
+  let val = Float::reinterpret_from_uint(val)
   let valueref = @unsafe.llvm_const_real(
     self.getFloatTy().getTypeRef(),
     val.to_double(),
