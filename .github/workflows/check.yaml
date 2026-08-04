@@ -59,7 +59,7 @@ jobs:
           node ./build.js </dev/null > "$RUNNER_TEMP/llvm-hot.json" 2> "$RUNNER_TEMP/llvm-hot.log"
           cat "$RUNNER_TEMP/llvm-cold.log"
           cat "$RUNNER_TEMP/llvm-hot.log"
-          grep -F "LLVM 共享缓存校验通过" "$RUNNER_TEMP/llvm-hot.log"
+          grep -F "LLVM shared cache validation passed" "$RUNNER_TEMP/llvm-hot.log"
           cmp "$RUNNER_TEMP/llvm-cold.json" "$RUNNER_TEMP/llvm-hot.json"
 
       - name: Moon check

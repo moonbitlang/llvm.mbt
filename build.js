@@ -124,11 +124,15 @@ async function readBuildInput() {
   try {
     input = JSON.parse(source);
   } catch (error) {
-    throw new Error(`无法解析 Moon 传给 build.js 的 JSON：${error.message}`);
+    throw new Error(
+      `Cannot parse the JSON passed to build.js by Moon: ${error.message}`,
+    );
   }
 
   if (!input || typeof input !== 'object' || Array.isArray(input)) {
-    throw new Error('Moon 传给 build.js 的输入不是 JSON 对象');
+    throw new Error(
+      'The input passed to build.js by Moon is not a JSON object',
+    );
   }
   if (!input.env || typeof input.env !== 'object' || Array.isArray(input.env)) {
     input.env = { ...process.env };
@@ -146,7 +150,9 @@ function resolveMoonHome(input) {
 
   const userHome = os.homedir();
   if (!userHome) {
-    throw new Error('没有设置 MOON_HOME，并且无法确定当前用户的 home 目录');
+    throw new Error(
+      "MOON_HOME is not set and the current user's home directory could not be determined",
+    );
   }
   return path.join(userHome, '.moon');
 }
@@ -160,9 +166,9 @@ function selectArtifact() {
 
   const supported = Object.keys(ARTIFACTS).join(', ');
   throw new Error(
-    `当前平台 ${platform} 没有 llvm.mbt 预构建 LLVM 产物；` +
-      `当前支持的平台：${supported}。为了保证 LLVM 版本可复现，` +
-      '这里不会回退到系统 llvm-config。',
+    `No prebuilt LLVM artifact is available for ${platform}; ` +
+      `supported platforms: ${supported}. llvm.mbt does not fall back to ` +
+      'system llvm-config, so that the LLVM version remains reproducible.',
   );
 }
 
@@ -191,14 +197,15 @@ function validateHostCompatibility(artifact) {
   const runtimeVersion = reportHeader && reportHeader.glibcVersionRuntime;
   if (!runtimeVersion) {
     throw new Error(
-      `当前 Linux 环境无法识别 glibc；${artifact.artifact} 只支持 ` +
-        `glibc ${artifact.minimumGlibcVersion} 或更高版本，不支持 musl。`,
+      `The current Linux environment does not report a glibc version; ` +
+        `${artifact.artifact} requires glibc ${artifact.minimumGlibcVersion} ` +
+        'or later and does not support musl.',
     );
   }
   if (compareVersions(runtimeVersion, artifact.minimumGlibcVersion) < 0) {
     throw new Error(
-      `当前 glibc ${runtimeVersion} 低于 ${artifact.artifact} 要求的 ` +
-        `${artifact.minimumGlibcVersion}。`,
+      `The current glibc ${runtimeVersion} is older than ` +
+        `${artifact.minimumGlibcVersion}, which is required by ${artifact.artifact}.`,
     );
   }
 }
@@ -233,13 +240,17 @@ async function readJsonFile(filename, description) {
   try {
     source = await fsp.readFile(filename, 'utf8');
   } catch (error) {
-    throw new CacheValidationError(`无法读取${description} ${filename}：${error.message}`);
+    throw new CacheValidationError(
+      `Cannot read ${description} at ${filename}: ${error.message}`,
+    );
   }
 
   try {
     return JSON.parse(source);
   } catch (error) {
-    throw new CacheValidationError(`${description}不是有效 JSON：${error.message}`);
+    throw new CacheValidationError(
+      `${description} is not valid JSON: ${error.message}`,
+    );
   }
 }
 
@@ -254,56 +265,62 @@ function requireManifestField(condition, message) {
 // 也能发现用户手工修改缓存或磁盘损坏。
 async function validateInstalledArtifact(installRoot, artifact, requireMarker) {
   const manifestPath = path.join(installRoot, 'manifest.json');
-  const manifest = await readJsonFile(manifestPath, 'LLVM 产物清单');
+  const manifest = await readJsonFile(manifestPath, 'LLVM artifact manifest');
 
   requireManifestField(
     manifest.schema_version === 1,
-    `不支持的 LLVM 产物清单版本：${manifest.schema_version}`,
+    `Unsupported LLVM artifact manifest schema version: ` +
+      `${manifest.schema_version}`,
   );
   requireManifestField(
     manifest.artifact === artifact.artifact,
-    `LLVM 产物名称不匹配：期望 ${artifact.artifact}，实际 ${manifest.artifact}`,
+    `LLVM artifact name mismatch: expected ${artifact.artifact}, ` +
+      `got ${manifest.artifact}`,
   );
   requireManifestField(
     manifest.llvm_version === artifact.llvmVersion,
-    `LLVM 版本不匹配：期望 ${artifact.llvmVersion}，实际 ${manifest.llvm_version}`,
+    `LLVM version mismatch: expected ${artifact.llvmVersion}, ` +
+      `got ${manifest.llvm_version}`,
   );
   requireManifestField(
     manifest.artifact_revision === artifact.revision,
-    `LLVM 产物修订号不匹配：期望 ${artifact.revision}，实际 ${manifest.artifact_revision}`,
+    `LLVM artifact revision mismatch: expected ${artifact.revision}, ` +
+      `got ${manifest.artifact_revision}`,
   );
   requireManifestField(
     manifest.host === artifact.host,
-    `LLVM 产物 host 不匹配：期望 ${artifact.host}，实际 ${manifest.host}`,
+    `LLVM artifact host mismatch: expected ${artifact.host}, ` +
+      `got ${manifest.host}`,
   );
   if (artifact.minimumMacOSVersion) {
     requireManifestField(
       manifest.minimum_macos_version === artifact.minimumMacOSVersion,
-      'LLVM 产物的最低 macOS 版本与 build.js 中记录的不一致',
+      "The artifact's minimum macOS version does not match build.js",
     );
   }
   if (artifact.minimumGlibcVersion) {
     requireManifestField(
       manifest.minimum_glibc_version === artifact.minimumGlibcVersion,
-      'LLVM 产物的最低 glibc 版本与 build.js 中记录的不一致',
+      "The artifact's minimum glibc version does not match build.js",
     );
   }
   requireManifestField(
     manifest.include_dir === artifact.includeDirectory,
-    'LLVM 产物的 include 目录与 build.js 中记录的不一致',
+    "The artifact's include directory does not match build.js",
   );
   requireManifestField(
     manifest.static_library === artifact.staticLibrary,
-    'LLVM 产物的静态库路径与 build.js 中记录的不一致',
+    "The artifact's static library path does not match build.js",
   );
   requireManifestField(
     manifest.static_library_sha256 === artifact.staticLibrarySha256,
-    'LLVM 产物清单中的静态库 SHA-256 与 build.js 中记录的不一致',
+    'The static library SHA-256 in the artifact manifest does not match ' +
+      'build.js',
   );
   requireManifestField(
     JSON.stringify(manifest.system_link_flags) ===
       JSON.stringify(artifact.systemLinkFlags),
-    'LLVM 产物的系统链接参数与 build.js 中记录的不一致',
+    "The artifact's system linker flags do not match build.js",
   );
 
   const includeDirectory = path.join(installRoot, artifact.includeDirectory);
@@ -311,49 +328,63 @@ async function validateInstalledArtifact(installRoot, artifact, requireMarker) {
   try {
     includeStat = await fsp.lstat(includeDirectory);
   } catch (error) {
-    throw new CacheValidationError(`LLVM include 目录不可用：${error.message}`);
+    throw new CacheValidationError(
+      `LLVM include directory is unavailable: ${error.message}`,
+    );
   }
-  requireManifestField(includeStat.isDirectory(), 'LLVM include 路径不是目录');
+  requireManifestField(
+    includeStat.isDirectory(),
+    'LLVM include path is not a directory',
+  );
 
   const staticLibrary = path.join(installRoot, artifact.staticLibrary);
   let libraryStat;
   try {
     libraryStat = await fsp.lstat(staticLibrary);
   } catch (error) {
-    throw new CacheValidationError(`LLVM 静态库不可用：${error.message}`);
+    throw new CacheValidationError(
+      `LLVM static library is unavailable: ${error.message}`,
+    );
   }
-  requireManifestField(libraryStat.isFile(), 'LLVM 静态库路径不是普通文件');
+  requireManifestField(
+    libraryStat.isFile(),
+    'LLVM static library path is not a regular file',
+  );
   requireManifestField(
     libraryStat.size === artifact.staticLibrarySize,
-    `LLVM 静态库大小不匹配：期望 ${artifact.staticLibrarySize} 字节，` +
-      `实际 ${libraryStat.size} 字节`,
+    `LLVM static library size mismatch: expected ${artifact.staticLibrarySize} ` +
+      `bytes, got ${libraryStat.size} bytes`,
   );
 
   const librarySha256 = await sha256File(staticLibrary);
   requireManifestField(
     librarySha256 === artifact.staticLibrarySha256,
-    `LLVM 静态库 SHA-256 不匹配：期望 ${artifact.staticLibrarySha256}，` +
-      `实际 ${librarySha256}`,
+    `LLVM static library SHA-256 mismatch: expected ` +
+      `${artifact.staticLibrarySha256}, got ${librarySha256}`,
   );
 
   if (requireMarker) {
     const markerPath = path.join(installRoot, '.complete.json');
-    const marker = await readJsonFile(markerPath, 'LLVM 缓存完成标记');
+    const marker = await readJsonFile(
+      markerPath,
+      'LLVM cache completion marker',
+    );
     requireManifestField(
       marker.cache_schema_version === CACHE_SCHEMA_VERSION,
-      `不支持的 llvm.mbt 缓存格式：${marker.cache_schema_version}`,
+      `Unsupported llvm.mbt cache schema version: ` +
+        `${marker.cache_schema_version}`,
     );
     requireManifestField(
       marker.artifact === artifact.artifact,
-      'LLVM 缓存完成标记中的产物名称不匹配',
+      'Artifact name mismatch in LLVM cache completion marker',
     );
     requireManifestField(
       marker.archive_sha256 === artifact.archiveSha256,
-      'LLVM 缓存完成标记中的压缩包 SHA-256 不匹配',
+      'Archive SHA-256 mismatch in LLVM cache completion marker',
     );
     requireManifestField(
       marker.static_library_sha256 === artifact.staticLibrarySha256,
-      'LLVM 缓存完成标记中的静态库 SHA-256 不匹配',
+      'Static library SHA-256 mismatch in LLVM cache completion marker',
     );
   }
 
@@ -366,14 +397,16 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
     try {
       parsedUrl = new URL(url);
     } catch (error) {
-      reject(new Error(`无效的 LLVM 下载地址 ${url}：${error.message}`));
+      reject(new Error(`Invalid LLVM download URL ${url}: ${error.message}`));
       return;
     }
 
     // 固定摘要能够发现内容被替换，而只允许 HTTPS 可以避免无意间把
     // GitHub 的下载重定向降级成明文 HTTP。
     if (parsedUrl.protocol !== 'https:') {
-      reject(new Error(`拒绝通过非 HTTPS 地址下载 LLVM：${url}`));
+      reject(
+        new Error(`Refusing to download LLVM from a non-HTTPS URL: ${url}`),
+      );
       return;
     }
 
@@ -392,7 +425,9 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
         if ([301, 302, 303, 307, 308].includes(statusCode) && location) {
           response.resume();
           if (redirectCount >= MAX_REDIRECTS) {
-            reject(new Error(`LLVM 下载重定向超过 ${MAX_REDIRECTS} 次`));
+            reject(
+              new Error(`LLVM download exceeded ${MAX_REDIRECTS} redirects`),
+            );
             return;
           }
           const redirected = new URL(location, parsedUrl).toString();
@@ -405,7 +440,9 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
 
         if (statusCode !== 200) {
           response.resume();
-          reject(new Error(`LLVM 下载请求返回 HTTP ${statusCode}`));
+          reject(
+            new Error(`LLVM download request returned HTTP ${statusCode}`),
+          );
           return;
         }
 
@@ -417,8 +454,8 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
           response.resume();
           reject(
             new Error(
-              `LLVM 下载大小不匹配：期望 ${expectedSize} 字节，` +
-                `服务器报告 ${contentLength} 字节`,
+              `LLVM download size mismatch: expected ${expectedSize} bytes, ` +
+                `server reported ${contentLength} bytes`,
             ),
           );
           return;
@@ -432,7 +469,8 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
             if (received > expectedSize) {
               callback(
                 new Error(
-                  `LLVM 下载超过预期大小 ${expectedSize} 字节，已中止下载`,
+                  `LLVM download exceeded the expected ${expectedSize} bytes; ` +
+                    'aborting',
                 ),
               );
               return;
@@ -448,7 +486,8 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
             if (received !== expectedSize) {
               reject(
                 new Error(
-                  `LLVM 下载不完整：期望 ${expectedSize} 字节，实际 ${received} 字节`,
+                  `Incomplete LLVM download: expected ${expectedSize} bytes, ` +
+                    `received ${received} bytes`,
                 ),
               );
               return;
@@ -462,7 +501,9 @@ function downloadOnce(url, destination, expectedSize, redirectCount = 0) {
 
     // 这是“连续 30 秒没有网络活动”超时，而不是把整个下载限制在 30 秒内。
     request.setTimeout(DOWNLOAD_IDLE_TIMEOUT_MS, () => {
-      request.destroy(new Error('LLVM 下载连续 30 秒没有收到数据'));
+      request.destroy(
+        new Error('LLVM download received no data for 30 seconds'),
+      );
     });
     request.on('error', reject);
   });
@@ -473,8 +514,8 @@ async function downloadAndVerify(artifact, archivePath) {
     await fsp.rm(archivePath, { force: true });
     try {
       report(
-        `下载 ${artifact.archiveName}（${artifact.archiveSize} 字节，` +
-          `第 ${attempt}/${DOWNLOAD_ATTEMPTS} 次尝试）`,
+        `Downloading ${artifact.archiveName} (${artifact.archiveSize} bytes, ` +
+          `attempt ${attempt}/${DOWNLOAD_ATTEMPTS})`,
       );
       const result = await downloadOnce(
         artifact.url,
@@ -483,18 +524,18 @@ async function downloadAndVerify(artifact, archivePath) {
       );
       if (result.sha256 !== artifact.archiveSha256) {
         throw new Error(
-          `LLVM 压缩包 SHA-256 不匹配：期望 ${artifact.archiveSha256}，` +
-            `实际 ${result.sha256}`,
+          `LLVM archive SHA-256 mismatch: expected ${artifact.archiveSha256}, ` +
+            `got ${result.sha256}`,
         );
       }
-      report('LLVM 压缩包下载完成，SHA-256 校验通过');
+      report('LLVM archive downloaded and SHA-256 verified');
       return;
     } catch (error) {
       await fsp.rm(archivePath, { force: true });
       if (attempt === DOWNLOAD_ATTEMPTS) {
         throw error;
       }
-      report(`本次下载失败：${error.message}；稍后重试`);
+      report(`Download attempt failed: ${error.message}; retrying shortly`);
       await delay(500 * attempt);
     }
   }
@@ -512,11 +553,13 @@ function extractArchive(archivePath, destination) {
   );
 
   if (result.error) {
-    throw new Error(`无法启动 tar：${result.error.message}`);
+    throw new Error(`Failed to start tar: ${result.error.message}`);
   }
   if (result.status !== 0) {
     const detail = (result.stderr || result.stdout || '').trim();
-    throw new Error(`LLVM 压缩包解压失败${detail ? `：${detail}` : ''}`);
+    throw new Error(
+      `Failed to extract LLVM archive${detail ? `: ${detail}` : ''}`,
+    );
   }
 }
 
@@ -539,14 +582,16 @@ async function quarantineInvalidCache(installRoot) {
   const quarantine = `${installRoot}.corrupt-${Date.now()}-${process.pid}`;
   try {
     await fsp.rename(installRoot, quarantine);
-    report(`已把损坏的缓存移到 ${quarantine}`);
+    report(`Moved invalid LLVM cache to ${quarantine}`);
     return quarantine;
   } catch (error) {
     // 另一个并发进程可能已经移走了同一个目录；调用者会重新检查最终路径。
     if (error && error.code === 'ENOENT') {
       return null;
     }
-    throw new Error(`无法隔离损坏的 LLVM 缓存 ${installRoot}：${error.message}`);
+    throw new Error(
+      `Failed to quarantine invalid LLVM cache ${installRoot}: ${error.message}`,
+    );
   }
 }
 
@@ -567,23 +612,24 @@ async function installArtifact(paths, artifact) {
   try {
     await fsp.mkdir(extractionRoot);
     report(
-      `首次安装需要下载约 ${formatMiB(artifact.archiveSize)} MiB；` +
-        `解压后的 LLVM 静态库约占 ${formatMiB(artifact.staticLibrarySize)} MiB`,
+      `First-time installation will download about ` +
+        `${formatMiB(artifact.archiveSize)} MiB; the extracted LLVM static ` +
+        `library uses about ${formatMiB(artifact.staticLibrarySize)} MiB`,
     );
     await downloadAndVerify(artifact, archivePath);
 
-    report('正在解压 LLVM 产物');
+    report('Extracting LLVM artifact');
     extractArchive(archivePath, extractionRoot);
     const extractedArtifact = path.join(extractionRoot, artifact.artifact);
 
-    report('正在校验解压后的 LLVM 静态库');
+    report('Validating extracted LLVM static library');
     await validateInstalledArtifact(extractedArtifact, artifact, false);
     await writeCompletionMarker(extractedArtifact, artifact);
 
     try {
       await fsp.rename(extractedArtifact, paths.installRoot);
       published = true;
-      report(`LLVM 已安装到共享缓存 ${paths.installRoot}`);
+      report(`Installed LLVM into shared cache ${paths.installRoot}`);
     } catch (error) {
       if (!error || !['EEXIST', 'ENOTEMPTY'].includes(error.code)) {
         throw error;
@@ -591,7 +637,9 @@ async function installArtifact(paths, artifact) {
 
       // 两个项目可能同时第一次使用 llvm.mbt。若另一个进程先完成发布，
       // 当前进程直接校验并复用胜出者，不把并发视为错误。
-      report('另一个进程已经写入 LLVM 缓存，正在校验并复用该缓存');
+      report(
+        'Another process populated the LLVM cache; validating and reusing it',
+      );
       await validateInstalledArtifact(paths.installRoot, artifact, true);
       published = true;
     }
@@ -601,12 +649,15 @@ async function installArtifact(paths, artifact) {
     try {
       await fsp.rm(workRoot, { recursive: true, force: true });
     } catch (error) {
-      report(`警告：无法清理临时目录 ${workRoot}：${error.message}`);
+      report(
+        `Warning: failed to clean temporary directory ${workRoot}: ` +
+          `${error.message}`,
+      );
     }
   }
 
   if (!published) {
-    throw new Error('LLVM 产物没有成功写入缓存');
+    throw new Error('LLVM artifact was not installed into the cache');
   }
 }
 
@@ -616,19 +667,19 @@ async function ensureArtifact(moonHome, artifact) {
 
   if (await pathExists(paths.installRoot)) {
     try {
-      report(`发现 LLVM 共享缓存，正在校验 ${paths.installRoot}`);
+      report(`Found LLVM shared cache; validating ${paths.installRoot}`);
       const validated = await validateInstalledArtifact(
         paths.installRoot,
         artifact,
         true,
       );
-      report('LLVM 共享缓存校验通过');
+      report('LLVM shared cache validation passed');
       return validated;
     } catch (error) {
       if (!(error instanceof CacheValidationError)) {
         throw error;
       }
-      report(`LLVM 共享缓存校验失败：${error.message}`);
+      report(`LLVM shared cache validation failed: ${error.message}`);
       quarantine = await quarantineInvalidCache(paths.installRoot);
     }
   }
@@ -642,9 +693,11 @@ async function ensureArtifact(moonHome, artifact) {
   if (quarantine) {
     try {
       await fsp.rm(quarantine, { recursive: true, force: true });
-      report(`新的 LLVM 缓存可用，已删除旧的损坏缓存 ${quarantine}`);
+      report(`New LLVM cache is ready; removed invalid cache ${quarantine}`);
     } catch (error) {
-      report(`警告：无法删除旧的损坏缓存 ${quarantine}：${error.message}`);
+      report(
+        `Warning: failed to remove invalid cache ${quarantine}: ${error.message}`,
+      );
     }
   }
   return validated;
@@ -691,16 +744,18 @@ function formatTopLevelError(error) {
   if (error && error.code === 'ENOSPC') {
     const artifact = ARTIFACTS[`${process.platform}-${process.arch}`];
     const sizeHint = artifact
-      ? `压缩包约 ${formatMiB(artifact.archiveSize)} MiB，` +
-        `静态库约 ${formatMiB(artifact.staticLibrarySize)} MiB；`
+      ? `The archive is about ${formatMiB(artifact.archiveSize)} MiB and ` +
+        `the static library is about ` +
+        `${formatMiB(artifact.staticLibrarySize)} MiB. `
       : '';
     return (
-      `磁盘空间不足。${sizeHint}` +
-      '请清理 $MOON_HOME/cache/lib/llvm.mbt 所在磁盘后重试。'
+      `Not enough disk space. ${sizeHint}` +
+      'Free space on the volume containing ' +
+      '$MOON_HOME/cache/lib/llvm.mbt and try again.'
     );
   }
   if (error && error.code === 'EACCES') {
-    return `没有权限写入 LLVM 共享缓存：${error.message}`;
+    return `Cannot write to the LLVM shared cache: ${error.message}`;
   }
   return error && error.message ? error.message : String(error);
 }
@@ -718,6 +773,6 @@ async function main() {
 }
 
 main().catch((error) => {
-  report(`错误：${formatTopLevelError(error)}`);
+  report(`Error: ${formatTopLevelError(error)}`);
   process.exitCode = 1;
 });
