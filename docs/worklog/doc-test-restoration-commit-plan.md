@@ -147,8 +147,8 @@
 
 ## Commit 15：恢复 tutorial Chapter3
 
-- [ ] 将 `tutorial/Chapter3.mbt.md` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 不修改该章的教程结构和非 MoonBit 展示代码。
+- [x] 将 `tutorial/Chapter3.mbt.md` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 不修改该章的教程结构和非 MoonBit 展示代码。
 
 建议提交信息：`docs(tutorial): check Chapter3 examples`
 
