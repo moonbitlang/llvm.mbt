@@ -2135,7 +2135,9 @@ pub fn IRBuilder::createICmp(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => ICmpInst::ICmpInst(res_valueref)
@@ -2380,7 +2382,9 @@ pub fn IRBuilder::createFCmp(
     lhs_ref,
     rhs_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => FCmpInst::FCmpInst(res_valueref)
@@ -2639,7 +2643,9 @@ pub fn IRBuilder::createTrunc(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -2701,7 +2707,9 @@ pub fn IRBuilder::createZExt(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -2763,7 +2771,9 @@ pub fn IRBuilder::createSExt(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -2824,7 +2834,9 @@ pub fn IRBuilder::createFPTrunc(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -2881,7 +2893,9 @@ pub fn IRBuilder::createFPExt(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -2938,7 +2952,9 @@ pub fn IRBuilder::createFPToSI(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -3000,7 +3016,9 @@ pub fn IRBuilder::createFPToUI(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -3057,7 +3075,9 @@ pub fn IRBuilder::createSIToFP(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -3118,7 +3138,9 @@ pub fn IRBuilder::createUIToFP(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => CastInst::CastInst(res_valueref)
@@ -3167,7 +3189,9 @@ pub fn IRBuilder::createBitCast(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   //CastInst::CastInst(res_valueref)
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
@@ -3238,7 +3262,9 @@ pub fn IRBuilder::createIntToPtr(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   CastInst::CastInst(res_valueref)
 }
 
@@ -3292,7 +3318,9 @@ pub fn IRBuilder::createPtrToInt(
     from_ref,
     to_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   CastInst::CastInst(res_valueref)
 }
 
@@ -3362,7 +3390,9 @@ pub fn IRBuilder::createGEP(
       ptr_ref,
       indices_refs,
       name,
-    )
+    ) catch {
+      @unsafe.EmbeddedNul => raise ContainsNul
+    }
   } else {
     @unsafe.llvm_build_gep2(
       self.builder_ref,
@@ -3370,7 +3400,9 @@ pub fn IRBuilder::createGEP(
       ptr_ref,
       indices_refs,
       name,
-    )
+    ) catch {
+      @unsafe.EmbeddedNul => raise ContainsNul
+    }
   }
   GetElementPtrInst(res_valueref)
 }
@@ -3519,7 +3551,9 @@ pub fn IRBuilder::createSelect(
     true_val_ref,
     false_val_ref,
     name,
-  )
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match trueVal.getType().asTypeEnum() {

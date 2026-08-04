@@ -98,10 +98,10 @@
 
 ## Commit 9：转换 IRBuilder 的比较与转换操作名称错误
 
-- [ ] 处理 ICmp、FCmp 的基础入口。
-- [ ] 处理各种 cast。
-- [ ] 处理 GEP 和 select 等相邻的带名称操作。
-- [ ] 不重复修改只委托给基础入口的 `createICmpEQ`、`createFCmpOEQ` 等 convenience API。
+- [x] 处理 ICmp、FCmp 的基础入口。
+- [x] 处理各种 cast。
+- [x] 处理 GEP 和 select 等相邻的带名称操作。
+- [x] 不重复修改只委托给基础入口的 `createICmpEQ`、`createFCmpOEQ` 等 convenience API。
 
 建议提交信息：`IRBuilder: map comparison and cast name errors`
 
