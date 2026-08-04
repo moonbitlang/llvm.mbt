@@ -99,9 +99,9 @@
 
 ## Commit 10：恢复 IRBuilder 的 cast 与 GEP 示例
 
-- [ ] 处理整数、浮点、指针相关的各种 cast 示例。
-- [ ] 处理 GEP 示例。
-- [ ] 共恢复该区段的 13 个 doc test，不跨入控制流区段。
+- [x] 处理整数、浮点、指针相关的各种 cast 示例。
+- [x] 处理 GEP 示例。
+- [x] 共恢复该区段的 13 个 doc test，不跨入控制流区段。
 
 建议提交信息：`docs(IRBuilder): check cast and GEP examples`
 

@@ -2684,28 +2684,30 @@ pub fn IRBuilder::createFCmpUNE(
 /// This creates a truncation instruction that truncates an integer value to a smaller integer type.
 /// The input value must be an integer type, and the target type must be a smaller integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i64_ty = ctx.getInt64Ty()
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i64_ty])
+///   let i64_ty = ctx.getInt64Ty()
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i64_ty])
 ///
-/// let fval = mod.addFunction(fty, "trunc_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "trunc_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let trunc = builder.createTrunc(arg, i32_ty, name="truncated")
-/// inspect(trunc, content = "  %truncated = trunc i64 %0 to i32")
-/// assert_true(trunc.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let trunc = builder.createTrunc(arg, i32_ty, name="truncated")
+///   inspect(trunc, content="  %truncated = trunc i64 %0 to i32")
+///   assert_true(trunc.asValueEnum() is CastInst(_))
 ///
-/// let big_val = ctx.getConstInt64(0x123456789L)
-/// let small_val = builder.createTrunc(big_val, i32_ty)
-/// inspect(small_val, content = "i32 591751049")
-/// assert_true(small_val.asValueEnum() is ConstantInt(_))
+///   let big_val = ctx.getConstInt64(0x123456789L)
+///   let small_val = builder.createTrunc(big_val, i32_ty)
+///   inspect(small_val, content="i32 591751049")
+///   assert_true(small_val.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createTrunc(
@@ -2748,28 +2750,30 @@ pub fn IRBuilder::createTrunc(
 /// This creates a zero extension instruction that extends an integer value to a larger integer type by padding with zeros.
 /// The input value must be an integer type, and the target type must be a larger integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let i64_ty = ctx.getInt64Ty()
-/// let fty = ctx.getFunctionType(i64_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let i64_ty = ctx.getInt64Ty()
+///   let fty = ctx.getFunctionType(i64_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "zext_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "zext_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let zext = builder.createZExt(arg, i64_ty, name="extended")
-/// inspect(zext, content = "  %extended = zext i32 %0 to i64")
-/// assert_true(zext.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let zext = builder.createZExt(arg, i64_ty, name="extended")
+///   inspect(zext, content="  %extended = zext i32 %0 to i64")
+///   assert_true(zext.asValueEnum() is CastInst(_))
 ///
-/// let small_val = ctx.getConstInt32(42)
-/// let big_val = builder.createZExt(small_val, i64_ty)
-/// inspect(big_val, content = "i64 42")
-/// assert_true(big_val.asValueEnum() is ConstantInt(_))
+///   let small_val = ctx.getConstInt32(42)
+///   let big_val = builder.createZExt(small_val, i64_ty)
+///   inspect(big_val, content="i64 42")
+///   assert_true(big_val.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createZExt(
@@ -2812,28 +2816,30 @@ pub fn IRBuilder::createZExt(
 /// This creates a sign extension instruction that extends an integer value to a larger integer type by replicating the sign bit.
 /// The input value must be an integer type, and the target type must be a larger integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let i64_ty = ctx.getInt64Ty()
-/// let fty = ctx.getFunctionType(i64_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let i64_ty = ctx.getInt64Ty()
+///   let fty = ctx.getFunctionType(i64_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "sext_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "sext_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let sext = builder.createSExt(arg, i64_ty, name="extended")
-/// inspect(sext, content = "  %extended = sext i32 %0 to i64")
-/// assert_true(sext.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let sext = builder.createSExt(arg, i64_ty, name="extended")
+///   inspect(sext, content="  %extended = sext i32 %0 to i64")
+///   assert_true(sext.asValueEnum() is CastInst(_))
 ///
-/// let small_val = ctx.getConstInt32(-42)
-/// let big_val = builder.createSExt(small_val, i64_ty)
-/// inspect(big_val, content = "i64 -42")
-/// assert_true(big_val.asValueEnum() is ConstantInt(_))
+///   let small_val = ctx.getConstInt32(-42)
+///   let big_val = builder.createSExt(small_val, i64_ty)
+///   inspect(big_val, content="i64 -42")
+///   assert_true(big_val.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createSExt(
@@ -2876,27 +2882,29 @@ pub fn IRBuilder::createSExt(
 /// This creates a floating-point truncation instruction that truncates a floating-point value to a smaller floating-point type.
 /// The input value must be a floating-point type, and the target type must be a smaller floating-point type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f64_ty = ctx.getDoubleTy()
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f64_ty])
+///   let f64_ty = ctx.getDoubleTy()
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f64_ty])
 ///
-/// let fval = mod.addFunction(fty, "fptrunc_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "fptrunc_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fptrunc = builder.createFPTrunc(arg, f32_ty, name="truncated")
-/// inspect(fptrunc, content = "  %truncated = fptrunc double %0 to float")
-/// assert_true(fptrunc.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let fptrunc = builder.createFPTrunc(arg, f32_ty, name="truncated")
+///   inspect(fptrunc, content="  %truncated = fptrunc double %0 to float")
+///   assert_true(fptrunc.asValueEnum() is CastInst(_))
 ///
-/// let big_val = ctx.getConstDouble(3.14159)
-/// let small_val = builder.createFPTrunc(big_val, f32_ty)
-/// assert_true(small_val.asValueEnum() is ConstantFP(_))
+///   let big_val = ctx.getConstDouble(3.14159)
+///   let small_val = builder.createFPTrunc(big_val, f32_ty)
+///   assert_true(small_val.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFPTrunc(
@@ -2939,23 +2947,25 @@ pub fn IRBuilder::createFPTrunc(
 /// This creates a floating-point extension instruction that extends a floating-point value to a larger floating-point type.
 /// The input value must be a floating-point type, and the target type must be a larger floating-point type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let f64_ty = ctx.getDoubleTy()
-/// let fty = ctx.getFunctionType(f64_ty, [f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let f64_ty = ctx.getDoubleTy()
+///   let fty = ctx.getFunctionType(f64_ty, [f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fpext_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "fpext_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fpext = builder.createFPExt(arg, f64_ty, name="extended")
+///   builder.setInsertPoint(bb)
+///   let fpext = builder.createFPExt(arg, f64_ty, name="extended")
 ///
-/// inspect(fpext, content = "  %extended = fpext float %0 to double")
+///   inspect(fpext, content="  %extended = fpext float %0 to double")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFPExt(
@@ -2998,23 +3008,25 @@ pub fn IRBuilder::createFPExt(
 /// This creates a floating-point to signed integer conversion instruction that converts a floating-point value to a signed integer.
 /// The input value must be a floating-point type, and the target type must be an integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fptosi_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "fptosi_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fptosi = builder.createFPToSI(arg, i32_ty, name="converted")
+///   builder.setInsertPoint(bb)
+///   let fptosi = builder.createFPToSI(arg, i32_ty, name="converted")
 ///
-/// inspect(fptosi, content = "  %converted = fptosi float %0 to i32")
+///   inspect(fptosi, content="  %converted = fptosi float %0 to i32")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFPToSI(
@@ -3057,28 +3069,30 @@ pub fn IRBuilder::createFPToSI(
 /// This creates a floating-point to unsigned integer conversion instruction that converts a floating-point value to an unsigned integer.
 /// The input value must be a floating-point type, and the target type must be an integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fptoui_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "fptoui_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fptoui = builder.createFPToUI(arg, i32_ty, name="converted")
-/// inspect(fptoui, content = "  %converted = fptoui float %0 to i32")
-/// assert_true(fptoui.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let fptoui = builder.createFPToUI(arg, i32_ty, name="converted")
+///   inspect(fptoui, content="  %converted = fptoui float %0 to i32")
+///   assert_true(fptoui.asValueEnum() is CastInst(_))
 ///
-/// let float_val = ctx.getConstFloat(3.14)
-/// let int_val = builder.createFPToUI(float_val, i32_ty)
-/// inspect(int_val, content = "i32 3")
-/// assert_true(int_val.asValueEnum() is ConstantInt(_))
+///   let float_val = ctx.getConstFloat(3.14)
+///   let int_val = builder.createFPToUI(float_val, i32_ty)
+///   inspect(int_val, content="i32 3")
+///   assert_true(int_val.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFPToUI(
@@ -3121,23 +3135,25 @@ pub fn IRBuilder::createFPToUI(
 /// This creates a signed integer to floating-point conversion instruction that converts a signed integer value to a floating-point value.
 /// The input value must be an integer type, and the target type must be a floating-point type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "sitofp_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "sitofp_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let sitofp = builder.createSIToFP(arg, f32_ty, name="converted")
+///   builder.setInsertPoint(bb)
+///   let sitofp = builder.createSIToFP(arg, f32_ty, name="converted")
 ///
-/// inspect(sitofp, content = "  %converted = sitofp i32 %0 to float")
+///   inspect(sitofp, content="  %converted = sitofp i32 %0 to float")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createSIToFP(
@@ -3180,27 +3196,29 @@ pub fn IRBuilder::createSIToFP(
 /// This creates an unsigned integer to floating-point conversion instruction that converts an unsigned integer value to a floating-point value.
 /// The input value must be an integer type, and the target type must be a floating-point type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "uitofp_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "uitofp_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let uitofp = builder.createUIToFP(arg, f32_ty, name="converted")
-/// inspect(uitofp, content = "  %converted = uitofp i32 %0 to float")
-/// assert_true(uitofp.asValueEnum() is CastInst(_))
+///   builder.setInsertPoint(bb)
+///   let uitofp = builder.createUIToFP(arg, f32_ty, name="converted")
+///   inspect(uitofp, content="  %converted = uitofp i32 %0 to float")
+///   assert_true(uitofp.asValueEnum() is CastInst(_))
 ///
-/// let int_val = ctx.getConstInt32(42)
-/// let float_val = builder.createUIToFP(int_val, f32_ty)
-/// assert_true(float_val.asValueEnum() is ConstantFP(_))
+///   let int_val = ctx.getConstInt32(42)
+///   let float_val = builder.createUIToFP(int_val, f32_ty)
+///   assert_true(float_val.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createUIToFP(
@@ -3243,23 +3261,25 @@ pub fn IRBuilder::createUIToFP(
 /// This creates a bitcast instruction that converts a value from one type to another without changing the bit representation.
 /// The source and destination types must have the same bit width.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "bitcast_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "bitcast_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let bitcast = builder.createBitCast(arg, f32_ty, name="bits")
+///   builder.setInsertPoint(bb)
+///   let bitcast = builder.createBitCast(arg, f32_ty, name="bits")
 ///
-/// inspect(bitcast, content = "  %bits = bitcast i32 %0 to float")
+///   inspect(bitcast, content="  %bits = bitcast i32 %0 to float")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createBitCast(
@@ -3312,23 +3332,25 @@ pub fn IRBuilder::createBitCast(
 /// This creates an integer to pointer conversion instruction that converts an integer value to a pointer.
 /// The input value must be an integer type, and the target type must be a pointer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i64_ty = ctx.getInt64Ty()
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(ptr_ty, [i64_ty])
+///   let i64_ty = ctx.getInt64Ty()
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(ptr_ty, [i64_ty])
 ///
-/// let fval = mod.addFunction(fty, "inttoptr_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "inttoptr_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let inttoptr = builder.createIntToPtr(arg, name="ptr")
+///   builder.setInsertPoint(bb)
+///   let inttoptr = builder.createIntToPtr(arg, name="ptr")
 ///
-/// inspect(inttoptr, content = "  %ptr = inttoptr i64 %0 to ptr")
+///   inspect(inttoptr, content="  %ptr = inttoptr i64 %0 to ptr")
+/// }
 /// ```
 pub fn IRBuilder::createIntToPtr(
   self : Self,
@@ -3364,23 +3386,25 @@ pub fn IRBuilder::createIntToPtr(
 /// This creates a pointer to integer conversion instruction that converts a pointer value to an integer.
 /// The input value must be a pointer type, and the target type must be an integer type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i64_ty = ctx.getInt64Ty()
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(i64_ty, [ptr_ty])
+///   let i64_ty = ctx.getInt64Ty()
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(i64_ty, [ptr_ty])
 ///
-/// let fval = mod.addFunction(fty, "ptrtoint_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "ptrtoint_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let ptrtoint = builder.createPtrToInt(arg, i64_ty, name="int_val")
+///   builder.setInsertPoint(bb)
+///   let ptrtoint = builder.createPtrToInt(arg, i64_ty, name="int_val")
 ///
-/// inspect(ptrtoint, content = "  %int_val = ptrtoint ptr %0 to i64")
+///   inspect(ptrtoint, content="  %int_val = ptrtoint ptr %0 to i64")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createPtrToInt(
@@ -3421,26 +3445,37 @@ pub fn IRBuilder::createPtrToInt(
 /// The pointer must be a pointer type, and all indices must be integer values.
 /// When inbounds is true, the result is undefined if the computed address is outside the bounds of the allocated object.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let array_ty = ctx.getArrayType(i32_ty, 10)
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(ctx.getPtrTy(), [ptr_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let array_ty = ctx.getArrayType(i32_ty, 10)
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(ctx.getPtrTy(), [ptr_ty])
 ///
-/// let fval = mod.addFunction(fty, "gep_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
-/// let zero = ctx.getConstInt32(0)
-/// let two = ctx.getConstInt32(2)
+///   let fval = mod.addFunction(fty, "gep_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
+///   let zero = ctx.getConstInt32(0)
+///   let two = ctx.getConstInt32(2)
 ///
-/// builder.setInsertPoint(bb)
-/// let gep = builder.createGEP(arg, array_ty, [zero, two], name="elem_ptr", inbounds=true)
+///   builder.setInsertPoint(bb)
+///   let gep = builder.createGEP(
+///     arg,
+///     array_ty,
+///     [zero, two],
+///     name="elem_ptr",
+///     inbounds=true,
+///   )
 ///
-/// inspect(gep, content = "  %elem_ptr = getelementptr inbounds [10 x i32], ptr %0, i32 0, i32 2")
+///   inspect(
+///     gep,
+///     content="  %elem_ptr = getelementptr inbounds [10 x i32], ptr %0, i32 0, i32 2",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createGEP(
