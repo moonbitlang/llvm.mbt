@@ -33,15 +33,17 @@ fn Function::getNextFunction(self : Self) -> Function? {
 ///|
 /// Get Function Name.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "plus1")
-/// assert_eq(fval.getName(), Some("plus1"))
+///   let fval = mod.addFunction(fty, "plus1")
+///   assert_eq(fval.getName(), Some("plus1"))
+/// }
 /// ```
 pub fn Function::getName(self : Self) -> String? raise StringError {
   self.getValueName()
@@ -51,18 +53,20 @@ pub fn Function::getName(self : Self) -> String? raise StringError {
 /// Set Function Name.
 ///
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "plus1")
-/// assert_eq(fval.getName(), Some("plus1"))
+///   let fval = mod.addFunction(fty, "plus1")
+///   assert_eq(fval.getName(), Some("plus1"))
 ///
-/// fval.setName("increment")
-/// assert_eq(fval.getName(), Some("increment"))
+///   fval.setName("increment")
+///   assert_eq(fval.getName(), Some("increment"))
+/// }
 /// ```
 pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
   self.setValueName(name)
@@ -71,15 +75,17 @@ pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
 ///|
 /// Get Function Type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "plus1")
-/// inspect(fval.getType(), content="i32 (i32)")
+///   let fval = mod.addFunction(fty, "plus1")
+///   inspect(fval.getType(), content="i32 (i32)")
+/// }
 /// ```
 pub fn Function::getType(self : Self) -> FunctionType {
   let typeref = @unsafe.llvm_global_get_value_type(self.getValueRef())
@@ -89,19 +95,21 @@ pub fn Function::getType(self : Self) -> FunctionType {
 ///|
 /// Get Number of Function Arguments.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
-/// let fma_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let fma_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty, f32_ty])
 ///
-/// let fmul = mod.addFunction(fmul_ty, "fmul")
-/// let fma = mod.addFunction(fma_ty, "fma")
+///   let fmul = mod.addFunction(fmul_ty, "fmul")
+///   let fma = mod.addFunction(fma_ty, "fma")
 ///
-/// assert_eq(fmul.getNumArgs(), 2)
-/// assert_eq(fma.getNumArgs(), 3)
+///   assert_eq(fmul.getNumArgs(), 2)
+///   assert_eq(fma.getNumArgs(), 3)
+/// }
 /// ```
 pub fn Function::getNumArgs(self : Self) -> Int {
   @unsafe.llvm_count_params(self.getValueRef()).reinterpret_as_int()
@@ -110,18 +118,20 @@ pub fn Function::getNumArgs(self : Self) -> Int {
 ///|
 /// Get Function Parameter.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fmul = mod.addFunction(fmul_ty, "fmul")
+///   let fmul = mod.addFunction(fmul_ty, "fmul")
 ///
-/// inspect(fmul.getArg(0).unwrap(), content="float %0")
-/// inspect(fmul.getArg(1).unwrap(), content="float %1")
-/// assert_true(fmul.getArg(2) is None)
+///   inspect(fmul.getArg(0).unwrap(), content="float %0")
+///   inspect(fmul.getArg(1).unwrap(), content="float %1")
+///   assert_true(fmul.getArg(2) is None)
+/// }
 /// ```
 pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
   when(idx >= 0 && idx < self.getNumArgs(), () => {
@@ -136,19 +146,21 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 ///|
 /// Get Function Parameters.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fmul = mod.addFunction(fmul_ty, "fmul")
+///   let fmul = mod.addFunction(fmul_ty, "fmul")
 ///
-/// let args = fmul.getArgs()
+///   let args = fmul.getArgs()
 ///
-/// inspect(args[0], content="float %0")
-/// inspect(args[1], content="float %1")
+///   inspect(args[0], content="float %0")
+///   inspect(args[1], content="float %1")
+/// }
 /// ```
 pub fn Function::getArgs(self : Self) -> Array[Argument] {
   @unsafe.llvm_get_params(self.getValueRef()).mapi((r, i) => {
@@ -159,20 +171,22 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 ///|
 /// Add a Basic Block to the Function.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let void_ty = ctx.getVoidTy()
-/// let fty = ctx.getFunctionType(void_ty, [])
+///   let void_ty = ctx.getVoidTy()
+///   let fty = ctx.getFunctionType(void_ty, [])
 ///
-/// let fval = mod.addFunction(fty, "foo")
+///   let fval = mod.addFunction(fty, "foo")
 ///
-/// let _ = fval.addBasicBlock(name="entry")
-/// let _ = fval.addBasicBlock()
-/// let _ = fval.addBasicBlock()
+///   let _ = fval.addBasicBlock(name="entry")
+///   let _ = fval.addBasicBlock()
+///   let _ = fval.addBasicBlock()
 ///
-/// assert_eq(fval.getNumBasicBlocks(), 3)
+///   assert_eq(fval.getNumBasicBlocks(), 3)
+/// }
 /// ```
 pub fn Function::addBasicBlock(
   self : Self,
@@ -239,35 +253,37 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 ///|
 /// Add Function Attribute.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// fval.addFnAttr(NoInline)
+///   fval.addFnAttr(NoInline)
 ///
-/// let expect = 
-///   #|; Function Attrs: noinline
-///   #|define i32 @add_demo(i32 %0, i32 %1) #0 {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|; Function Attrs: noinline
+///     #|define i32 @add_demo(i32 %0, i32 %1) #0 {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
 ///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
@@ -281,46 +297,48 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 ///|
 /// Remove Function Attribute.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// fval.addFnAttr(NoInline)
+///   fval.addFnAttr(NoInline)
 ///
-/// let expect = 
-///   #|; Function Attrs: noinline
-///   #|define i32 @add_demo(i32 %0, i32 %1) #0 {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|; Function Attrs: noinline
+///     #|define i32 @add_demo(i32 %0, i32 %1) #0 {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
 ///
-/// fval.removeFnAttr(NoInline)
-/// let expect =
-///   #|define i32 @add_demo(i32 %0, i32 %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   fval.removeFnAttr(NoInline)
+///   let expect =
+///     #|define i32 @add_demo(i32 %0, i32 %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(
@@ -336,31 +354,33 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 ///|
 /// Count Function Attributes.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// fval.addFnAttr(NoInline)
-/// assert_eq(fval.countFnAttrs(), 1)
+///   fval.addFnAttr(NoInline)
+///   assert_eq(fval.countFnAttrs(), 1)
 ///
-/// fval.addFnAttr(AlwaysInline)
-/// assert_eq(fval.countFnAttrs(), 2)
+///   fval.addFnAttr(AlwaysInline)
+///   assert_eq(fval.countFnAttrs(), 2)
 ///
-/// fval.removeFnAttr(NoInline)
-/// assert_eq(fval.countFnAttrs(), 1)
+///   fval.removeFnAttr(NoInline)
+///   assert_eq(fval.countFnAttrs(), 1)
+/// }
 /// ```
 pub fn Function::countFnAttrs(self : Self) -> Int {
   @unsafe.llvm_get_attribute_count_at_index(self.getValueRef(), @uint.MAX_VALUE).reinterpret_as_int()
@@ -369,34 +389,36 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 ///|
 /// Add an Attribute for the Return Value of the Function.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// fval.addRetAttr(InReg)
+///   fval.addRetAttr(InReg)
 ///
-/// let expect = 
-///   #|define inreg i32 @add_demo(i32 %0, i32 %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define inreg i32 @add_demo(i32 %0, i32 %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
@@ -407,46 +429,48 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 /// Remove the Attribute for the Return Value of the Function.
 ///
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// fval.addRetAttr(InReg)
+///   fval.addRetAttr(InReg)
 ///
-/// let expect = 
-///   #|define inreg i32 @add_demo(i32 %0, i32 %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define inreg i32 @add_demo(i32 %0, i32 %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
 ///
-/// fval.removeRetAttr(InReg)
+///   fval.removeRetAttr(InReg)
 ///
-/// let expect =
-///   #|define i32 @add_demo(i32 %0, i32 %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define i32 @add_demo(i32 %0, i32 %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(
@@ -496,19 +520,21 @@ pub impl Value for Argument with fn asValueEnum(self) {
 ///|
 /// Get Argument Name.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fmul_ty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fmul = mod.addFunction(fmul_ty, "fmul")
+///   let fmul = mod.addFunction(fmul_ty, "fmul")
 ///
-/// let arg0 = fmul.getArg(0).unwrap()
-/// assert_eq(arg0.getName(), None)
-/// arg0.setName("a")
-/// assert_eq(arg0.getName(), Some("a"))
+///   let arg0 = fmul.getArg(0).unwrap()
+///   assert_eq(arg0.getName(), None)
+///   arg0.setName("a")
+///   assert_eq(arg0.getName(), Some("a"))
+/// }
 /// ```
 pub fn Argument::getName(self : Self) -> String? raise StringError {
   self.getValueName()
@@ -544,35 +570,37 @@ pub fn Argument::getFunction(self : Self) -> Function {
 ///|
 /// Add an Attribute to the Argument.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// arg1.addAttr(NonNull)
-/// arg2.addAttr(InReg)
+///   arg1.addAttr(NonNull)
+///   arg2.addAttr(InReg)
 ///
-/// let expect =
-///   #|define i32 @add_demo(i32 nonnull %0, i32 inreg %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define i32 @add_demo(i32 nonnull %0, i32 inreg %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
   let param_attr = attr.to_llvm_attr(self.getContext())
@@ -586,48 +614,50 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 ///|
 /// Remove the Attribute of the Argument.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "add_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "add_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let add = builder.createAdd(arg1, arg2, name="sum")
-/// let _ = builder.createRet(add)
+///   builder.setInsertPoint(bb)
+///   let add = builder.createAdd(arg1, arg2, name="sum")
+///   let _ = builder.createRet(add)
 ///
-/// arg1.addAttr(NonNull)
-/// arg1.addAttr(InReg)
-/// arg2.addAttr(InReg)
+///   arg1.addAttr(NonNull)
+///   arg1.addAttr(InReg)
+///   arg2.addAttr(InReg)
 ///
-/// let expect =
-///   #|define i32 @add_demo(i32 inreg nonnull %0, i32 inreg %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define i32 @add_demo(i32 inreg nonnull %0, i32 inreg %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
 ///
-/// arg1.removeAttr(NonNull)
+///   arg1.removeAttr(NonNull)
 ///
-/// let expect =
-///   #|define i32 @add_demo(i32 inreg %0, i32 inreg %1) {
-///   #|entry:
-///   #|  %sum = add i32 %0, %1
-///   #|  ret i32 %sum
-///   #|}
-///   #|
+///   let expect =
+///     #|define i32 @add_demo(i32 inreg %0, i32 inreg %1) {
+///     #|entry:
+///     #|  %sum = add i32 %0, %1
+///     #|  ret i32 %sum
+///     #|}
+///     #|
 ///
-/// inspect(fval, content=expect)
+///   inspect(fval, content=expect)
+/// }
 /// ```
 pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
   let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(attr.attr_name())

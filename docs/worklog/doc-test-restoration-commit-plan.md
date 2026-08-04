@@ -41,9 +41,9 @@
 
 ## Commit 4：恢复 Function doc test
 
-- [ ] 将 `IR/Function.mbt` 中的 15 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 将每个语句片段包进独立的匿名测试。
-- [ ] 保留该文件原有的 3 个 `moonbit skip`，不在本 commit 扩大范围。
+- [x] 将 `IR/Function.mbt` 中的 15 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 将每个语句片段包进独立的匿名测试。
+- [x] 保留该文件原有的 3 个 `moonbit skip`，不在本 commit 扩大范围。
 
 建议提交信息：`docs(IR): check Function examples`
 
