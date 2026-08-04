@@ -1252,40 +1252,50 @@ pub fn IRBuilder::createSRem(
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fadd_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "fadd_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fadd = builder.createFAdd(arg1, arg2, name="sum")
-/// inspect(fadd, content = "  %sum = fadd float %0, %1")
-/// assert_true(fadd.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let fadd = builder.createFAdd(arg1, arg2, name="sum")
+///   inspect(fadd, content="  %sum = fadd float %0, %1")
+///   assert_true(fadd.asValueEnum() is BinaryInst(_))
 ///
-/// let one = ctx.getConstFloat(1.0)
-/// let two = ctx.getConstFloat(2.0)
-/// let three = builder.createFAdd(one, two)
-/// inspect(three, content = "float 3.000000e+00")
-/// assert_true(three.asValueEnum() is ConstantFP(_))
+///   let one = ctx.getConstFloat(1.0)
+///   let two = ctx.getConstFloat(2.0)
+///   let three = builder.createFAdd(one, two)
+///   inspect(three, content="float 3.000000e+00")
+///   assert_true(three.asValueEnum() is ConstantFP(_))
 ///
-/// let nnan_fadd = builder.createFAdd(arg1, arg2, name="sum_nnan", fast_math=[NoNaNs])
-/// inspect(nnan_fadd, content = "  %sum_nnan = fadd nnan float %0, %1")
+///   let nnan_fadd = builder.createFAdd(arg1, arg2, name="sum_nnan", fast_math=[
+///     NoNaNs,
+///   ])
+///   inspect(nnan_fadd, content="  %sum_nnan = fadd nnan float %0, %1")
 ///
-/// let ninf_fadd = builder.createFAdd(arg1, arg2, name="sum_ninf", fast_math=[NoInfs])
-/// inspect(ninf_fadd, content = "  %sum_ninf = fadd ninf float %0, %1")
+///   let ninf_fadd = builder.createFAdd(arg1, arg2, name="sum_ninf", fast_math=[
+///     NoInfs,
+///   ])
+///   inspect(ninf_fadd, content="  %sum_ninf = fadd ninf float %0, %1")
 ///
-/// let nnan_ninf_fadd = builder.createFAdd(
-///   arg1, arg2, name="sum_nnan_ninf", fast_math=[NoNaNs, NoInfs]
-/// )
-/// inspect(nnan_ninf_fadd, content = "  %sum_nnan_ninf = fadd nnan ninf float %0, %1")
+///   let nnan_ninf_fadd = builder.createFAdd(arg1, arg2, name="sum_nnan_ninf", fast_math=[
+///     NoNaNs,
+///     NoInfs,
+///   ])
+///   inspect(
+///     nnan_ninf_fadd,
+///     content="  %sum_nnan_ninf = fadd nnan ninf float %0, %1",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFAdd(
@@ -1340,29 +1350,31 @@ pub fn IRBuilder::createFAdd(
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fsub_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "fsub_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fsub = builder.createFSub(arg1, arg2, name="diff")
-/// inspect(fsub, content = "  %diff = fsub float %0, %1")
-/// assert_true(fsub.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let fsub = builder.createFSub(arg1, arg2, name="diff")
+///   inspect(fsub, content="  %diff = fsub float %0, %1")
+///   assert_true(fsub.asValueEnum() is BinaryInst(_))
 ///
-/// let five = ctx.getConstFloat(5.0)
-/// let two = ctx.getConstFloat(2.0)
-/// let three = builder.createFSub(five, two)
-/// inspect(three, content = "float 3.000000e+00")
-/// assert_true(three.asValueEnum() is ConstantFP(_))
+///   let five = ctx.getConstFloat(5.0)
+///   let two = ctx.getConstFloat(2.0)
+///   let three = builder.createFSub(five, two)
+///   inspect(three, content="float 3.000000e+00")
+///   assert_true(three.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFSub(
@@ -1406,29 +1418,31 @@ pub fn IRBuilder::createFSub(
 /// 
 /// This creates a floating-point multiplication instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fmul_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "fmul_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fmul = builder.createFMul(arg1, arg2, name="product")
-/// inspect(fmul, content = "  %product = fmul float %0, %1")
-/// assert_true(fmul.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let fmul = builder.createFMul(arg1, arg2, name="product")
+///   inspect(fmul, content="  %product = fmul float %0, %1")
+///   assert_true(fmul.asValueEnum() is BinaryInst(_))
 ///
-/// let three = ctx.getConstFloat(3.0)
-/// let four = ctx.getConstFloat(4.0)
-/// let twelve = builder.createFMul(three, four)
-/// inspect(twelve, content = "float 1.200000e+01")
-/// assert_true(twelve.asValueEnum() is ConstantFP(_))
+///   let three = ctx.getConstFloat(3.0)
+///   let four = ctx.getConstFloat(4.0)
+///   let twelve = builder.createFMul(three, four)
+///   inspect(twelve, content="float 1.200000e+01")
+///   assert_true(twelve.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFMul(
@@ -1463,29 +1477,31 @@ pub fn IRBuilder::createFMul(
 /// 
 /// This creates a floating-point division instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fdiv_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "fdiv_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fdiv = builder.createFDiv(arg1, arg2, name="quotient")
-/// inspect(fdiv, content = "  %quotient = fdiv float %0, %1")
-/// assert_true(fdiv.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let fdiv = builder.createFDiv(arg1, arg2, name="quotient")
+///   inspect(fdiv, content="  %quotient = fdiv float %0, %1")
+///   assert_true(fdiv.asValueEnum() is BinaryInst(_))
 ///
-/// let eight = ctx.getConstFloat(8.0)
-/// let two = ctx.getConstFloat(2.0)
-/// let four = builder.createFDiv(eight, two)
-/// inspect(four, content = "float 4.000000e+00")
-/// assert_true(four.asValueEnum() is ConstantFP(_))
+///   let eight = ctx.getConstFloat(8.0)
+///   let two = ctx.getConstFloat(2.0)
+///   let four = builder.createFDiv(eight, two)
+///   inspect(four, content="float 4.000000e+00")
+///   assert_true(four.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFDiv(
@@ -1520,29 +1536,31 @@ pub fn IRBuilder::createFDiv(
 /// 
 /// This creates a floating-point remainder instruction. Both operands must be floating-point types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "frem_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "frem_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let frem = builder.createFRem(arg1, arg2, name="remainder")
-/// inspect(frem, content = "  %remainder = frem float %0, %1")
-/// assert_true(frem.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let frem = builder.createFRem(arg1, arg2, name="remainder")
+///   inspect(frem, content="  %remainder = frem float %0, %1")
+///   assert_true(frem.asValueEnum() is BinaryInst(_))
 ///
-/// let five_and_half = ctx.getConstFloat(5.5)
-/// let two = ctx.getConstFloat(2.0)
-/// let one_and_half = builder.createFRem(five_and_half, two)
-/// inspect(one_and_half, content = "float 1.500000e+00")
-/// assert_true(one_and_half.asValueEnum() is ConstantFP(_))
+///   let five_and_half = ctx.getConstFloat(5.5)
+///   let two = ctx.getConstFloat(2.0)
+///   let one_and_half = builder.createFRem(five_and_half, two)
+///   inspect(one_and_half, content="float 1.500000e+00")
+///   assert_true(one_and_half.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFRem(
@@ -1578,26 +1596,28 @@ pub fn IRBuilder::createFRem(
 /// This creates a floating-point negation instruction that negates a floating-point value.
 /// The input value must be a floating-point type.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty])
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty])
 ///
-/// let fval = mod.addFunction(fty, "fneg_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "fneg_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let fneg = builder.createFNeg(arg, name="negated")
-/// inspect(fneg, content = "  %negated = fneg float %0")
-/// assert_true(fneg.asValueEnum() is UnaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let fneg = builder.createFNeg(arg, name="negated")
+///   inspect(fneg, content="  %negated = fneg float %0")
+///   assert_true(fneg.asValueEnum() is UnaryInst(_))
 ///
-/// let pos_val = ctx.getConstFloat(3.14)
-/// let neg_val = builder.createFNeg(pos_val)
-/// assert_true(neg_val.asValueEnum() is ConstantFP(_))
+///   let pos_val = ctx.getConstFloat(3.14)
+///   let neg_val = builder.createFNeg(pos_val)
+///   assert_true(neg_val.asValueEnum() is ConstantFP(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFNeg(
@@ -1632,29 +1652,31 @@ pub fn IRBuilder::createFNeg(
 /// 
 /// This creates a bitwise AND instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "and_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "and_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let and_result = builder.createAnd(arg1, arg2, name="result")
-/// inspect(and_result, content = "  %result = and i32 %0, %1")
-/// assert_true(and_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let and_result = builder.createAnd(arg1, arg2, name="result")
+///   inspect(and_result, content="  %result = and i32 %0, %1")
+///   assert_true(and_result.asValueEnum() is BinaryInst(_))
 ///
-/// let val1 = ctx.getConstInt32(12)  // 1100 in binary
-/// let val2 = ctx.getConstInt32(10)  // 1010 in binary
-/// let result = builder.createAnd(val1, val2)  // 1000 in binary = 8
-/// inspect(result, content = "i32 8")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val1 = ctx.getConstInt32(12) // 1100 in binary
+///   let val2 = ctx.getConstInt32(10) // 1010 in binary
+///   let result = builder.createAnd(val1, val2) // 1000 in binary = 8
+///   inspect(result, content="i32 8")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createAnd(
@@ -1689,29 +1711,31 @@ pub fn IRBuilder::createAnd(
 /// 
 /// This creates a bitwise OR instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "or_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "or_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let or_result = builder.createOr(arg1, arg2, name="result")
-/// inspect(or_result, content = "  %result = or i32 %0, %1")
-/// assert_true(or_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let or_result = builder.createOr(arg1, arg2, name="result")
+///   inspect(or_result, content="  %result = or i32 %0, %1")
+///   assert_true(or_result.asValueEnum() is BinaryInst(_))
 ///
-/// let val1 = ctx.getConstInt32(12)  // 1100 in binary
-/// let val2 = ctx.getConstInt32(10)  // 1010 in binary
-/// let result = builder.createOr(val1, val2)  // 1110 in binary = 14
-/// inspect(result, content = "i32 14")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val1 = ctx.getConstInt32(12) // 1100 in binary
+///   let val2 = ctx.getConstInt32(10) // 1010 in binary
+///   let result = builder.createOr(val1, val2) // 1110 in binary = 14
+///   inspect(result, content="i32 14")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createOr(
@@ -1746,29 +1770,31 @@ pub fn IRBuilder::createOr(
 /// 
 /// This creates a bitwise XOR instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "xor_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "xor_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let xor_result = builder.createXor(arg1, arg2, name="result")
-/// inspect(xor_result, content = "  %result = xor i32 %0, %1")
-/// assert_true(xor_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let xor_result = builder.createXor(arg1, arg2, name="result")
+///   inspect(xor_result, content="  %result = xor i32 %0, %1")
+///   assert_true(xor_result.asValueEnum() is BinaryInst(_))
 ///
-/// let val1 = ctx.getConstInt32(12)  // 1100 in binary
-/// let val2 = ctx.getConstInt32(10)  // 1010 in binary
-/// let result = builder.createXor(val1, val2)  // 0110 in binary = 6
-/// inspect(result, content = "i32 6")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val1 = ctx.getConstInt32(12) // 1100 in binary
+///   let val2 = ctx.getConstInt32(10) // 1010 in binary
+///   let result = builder.createXor(val1, val2) // 0110 in binary = 6
+///   inspect(result, content="i32 6")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createXor(
@@ -1804,27 +1830,29 @@ pub fn IRBuilder::createXor(
 /// This creates a bitwise NOT instruction that performs bitwise negation on an integer value.
 /// The input value must be an integer type. LLVM implements NOT as `xor val, -1`.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "not_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg = fval.getArg(0).unwrap()
+///   let fval = mod.addFunction(fty, "not_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg = fval.getArg(0).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let not_result = builder.createNot(arg, name="inverted")
-/// inspect(not_result, content = "  %inverted = xor i32 %0, -1")
-/// assert_true(not_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let not_result = builder.createNot(arg, name="inverted")
+///   inspect(not_result, content="  %inverted = xor i32 %0, -1")
+///   assert_true(not_result.asValueEnum() is BinaryInst(_))
 ///
-/// let val = ctx.getConstInt32(12)  // 1100 in binary
-/// let result = builder.createNot(val)  // ...11110011 (inverted)
-/// inspect(result, content = "i32 -13")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val = ctx.getConstInt32(12) // 1100 in binary
+///   let result = builder.createNot(val) // ...11110011 (inverted)
+///   inspect(result, content="i32 -13")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createNot(
@@ -1863,29 +1891,31 @@ pub fn IRBuilder::createNot(
 /// 
 /// This creates a left shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "shl_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "shl_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let shl_result = builder.createShl(arg1, arg2, name="result")
-/// inspect(shl_result, content = "  %result = shl i32 %0, %1")
-/// assert_true(shl_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let shl_result = builder.createShl(arg1, arg2, name="result")
+///   inspect(shl_result, content="  %result = shl i32 %0, %1")
+///   assert_true(shl_result.asValueEnum() is BinaryInst(_))
 ///
-/// let val = ctx.getConstInt32(5)   // 101 in binary
-/// let shift = ctx.getConstInt32(2) // shift left by 2
-/// let result = builder.createShl(val, shift)  // 10100 in binary = 20
-/// inspect(result, content = "i32 20")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val = ctx.getConstInt32(5) // 101 in binary
+///   let shift = ctx.getConstInt32(2) // shift left by 2
+///   let result = builder.createShl(val, shift) // 10100 in binary = 20
+///   inspect(result, content="i32 20")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createShl(
@@ -1920,29 +1950,31 @@ pub fn IRBuilder::createShl(
 /// 
 /// This creates a logical right shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "lshr_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "lshr_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let lshr_result = builder.createLShr(arg1, arg2, name="result")
-/// inspect(lshr_result, content = "  %result = lshr i32 %0, %1")
-/// assert_true(lshr_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let lshr_result = builder.createLShr(arg1, arg2, name="result")
+///   inspect(lshr_result, content="  %result = lshr i32 %0, %1")
+///   assert_true(lshr_result.asValueEnum() is BinaryInst(_))
 ///
-/// let twenty = ctx.getConstInt32(20)   // 10100 in binary
-/// let two = ctx.getConstInt32(2)       // shift right by 2
-/// let five = builder.createLShr(twenty, two)  // 101 in binary = 5
-/// inspect(five, content = "i32 5")
-/// assert_true(five.asValueEnum() is ConstantInt(_))
+///   let twenty = ctx.getConstInt32(20) // 10100 in binary
+///   let two = ctx.getConstInt32(2) // shift right by 2
+///   let five = builder.createLShr(twenty, two) // 101 in binary = 5
+///   inspect(five, content="i32 5")
+///   assert_true(five.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createLShr(
@@ -1977,29 +2009,31 @@ pub fn IRBuilder::createLShr(
 /// 
 /// This creates an arithmetic right shift instruction. Both operands must be integer types with the same bitwidth.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
 ///
-/// let fval = mod.addFunction(fty, "ashr_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg1 = fval.getArg(0).unwrap()
-/// let arg2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "ashr_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg1 = fval.getArg(0).unwrap()
+///   let arg2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let ashr_result = builder.createAShr(arg1, arg2, name="result")
-/// inspect(ashr_result, content = "  %result = ashr i32 %0, %1")
-/// assert_true(ashr_result.asValueEnum() is BinaryInst(_))
+///   builder.setInsertPoint(bb)
+///   let ashr_result = builder.createAShr(arg1, arg2, name="result")
+///   inspect(ashr_result, content="  %result = ashr i32 %0, %1")
+///   assert_true(ashr_result.asValueEnum() is BinaryInst(_))
 ///
-/// let twenty = ctx.getConstInt32(20)   // 10100 in binary
-/// let two = ctx.getConstInt32(2)       // shift right by 2
-/// let five = builder.createAShr(twenty, two)  // 101 in binary = 5
-/// inspect(five, content = "i32 5")
-/// assert_true(five.asValueEnum() is ConstantInt(_))
+///   let twenty = ctx.getConstInt32(20) // 10100 in binary
+///   let two = ctx.getConstInt32(2) // shift right by 2
+///   let five = builder.createAShr(twenty, two) // 101 in binary = 5
+///   inspect(five, content="i32 5")
+///   assert_true(five.asValueEnum() is ConstantInt(_))
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createAShr(
@@ -2036,24 +2070,29 @@ pub fn IRBuilder::createAShr(
 /// in terms of elements of the specified type. Both operands must be pointer types.
 /// The result is the number of elements of type elemTy between the two pointers.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let ptr_ty = ctx.getPtrTy()
-/// let fty = ctx.getFunctionType(i32_ty, [ptr_ty, ptr_ty])
+///   let i32_ty = ctx.getInt32Ty()
+///   let ptr_ty = ctx.getPtrTy()
+///   let fty = ctx.getFunctionType(i32_ty, [ptr_ty, ptr_ty])
 ///
-/// let fval = mod.addFunction(fty, "ptrdiff_demo")
-/// let bb = fval.addBasicBlock(name="entry")
-/// let ptr1 = fval.getArg(0).unwrap()
-/// let ptr2 = fval.getArg(1).unwrap()
+///   let fval = mod.addFunction(fty, "ptrdiff_demo")
+///   let bb = fval.addBasicBlock(name="entry")
+///   let ptr1 = fval.getArg(0).unwrap()
+///   let ptr2 = fval.getArg(1).unwrap()
 ///
-/// builder.setInsertPoint(bb)
-/// let diff = builder.createPtrDiff(i32_ty, ptr1, ptr2, name="diff")
+///   builder.setInsertPoint(bb)
+///   let diff = builder.createPtrDiff(i32_ty, ptr1, ptr2, name="diff")
 ///
-/// inspect(diff, content = "  %diff = sdiv exact i64 %4, ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)")
+///   inspect(
+///     diff,
+///     content="  %diff = sdiv exact i64 %4, ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)",
+///   )
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createPtrDiff(
@@ -2104,56 +2143,58 @@ pub fn IRBuilder::createPtrDiff(
 /// 1. `lhs` and `rhs` must be integer types with the same bitwidth.
 /// 2. Allowed predicates: EQ, NE, SGT, SGE, SLT, SLE, UGT, UGE, ULT, ULE.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let i32_ty = ctx.getInt32Ty()
-/// let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-/// let fval = mod.addFunction(fty, "icmp_demo")
+///   let i32_ty = ctx.getInt32Ty()
+///   let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
+///   let fval = mod.addFunction(fty, "icmp_demo")
 ///
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg0 = fval.getArg(0).unwrap()
-/// let arg1 = fval.getArg(1).unwrap()
-/// builder.setInsertPoint(bb)
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg0 = fval.getArg(0).unwrap()
+///   let arg1 = fval.getArg(1).unwrap()
+///   builder.setInsertPoint(bb)
 ///
-/// let eq_cmp = builder.createICmp(IntPredicate::EQ, arg0, arg1, name="eq_cmp")
-/// inspect(eq_cmp, content = "  %eq_cmp = icmp eq i32 %0, %1")
-/// assert_true(eq_cmp.asValueEnum() is ICmpInst(_))
+///   let eq_cmp = builder.createICmp(IntPredicate::EQ, arg0, arg1, name="eq_cmp")
+///   inspect(eq_cmp, content="  %eq_cmp = icmp eq i32 %0, %1")
+///   assert_true(eq_cmp.asValueEnum() is ICmpInst(_))
 ///
-/// let val1 = ctx.getConstInt32(5)
-/// let val2 = ctx.getConstInt32(5)
-/// let result = builder.createICmpEQ(val1, val2)
-/// inspect(result, content = "i1 true")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val1 = ctx.getConstInt32(5)
+///   let val2 = ctx.getConstInt32(5)
+///   let result = builder.createICmpEQ(val1, val2)
+///   inspect(result, content="i1 true")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
 ///
-/// let ne_cmp = builder.createICmpNE(arg0, arg1, name="ne_cmp")
-/// inspect(ne_cmp, content = "  %ne_cmp = icmp ne i32 %0, %1")
+///   let ne_cmp = builder.createICmpNE(arg0, arg1, name="ne_cmp")
+///   inspect(ne_cmp, content="  %ne_cmp = icmp ne i32 %0, %1")
 ///
-/// let sgt_cmp = builder.createICmpSGT(arg0, arg1, name="sgt_cmp")
-/// inspect(sgt_cmp, content = "  %sgt_cmp = icmp sgt i32 %0, %1")
+///   let sgt_cmp = builder.createICmpSGT(arg0, arg1, name="sgt_cmp")
+///   inspect(sgt_cmp, content="  %sgt_cmp = icmp sgt i32 %0, %1")
 ///
-/// let sge_cmp = builder.createICmpSGE(arg0, arg1, name="sge_cmp")
-/// inspect(sge_cmp, content = "  %sge_cmp = icmp sge i32 %0, %1")
+///   let sge_cmp = builder.createICmpSGE(arg0, arg1, name="sge_cmp")
+///   inspect(sge_cmp, content="  %sge_cmp = icmp sge i32 %0, %1")
 ///
-/// let slt_cmp = builder.createICmpSLT(arg0, arg1, name="slt_cmp")
-/// inspect(slt_cmp, content = "  %slt_cmp = icmp slt i32 %0, %1")
+///   let slt_cmp = builder.createICmpSLT(arg0, arg1, name="slt_cmp")
+///   inspect(slt_cmp, content="  %slt_cmp = icmp slt i32 %0, %1")
 ///
-/// let sle_cmp = builder.createICmpSLE(arg0, arg1, name="sle_cmp")
-/// inspect(sle_cmp, content = "  %sle_cmp = icmp sle i32 %0, %1")
+///   let sle_cmp = builder.createICmpSLE(arg0, arg1, name="sle_cmp")
+///   inspect(sle_cmp, content="  %sle_cmp = icmp sle i32 %0, %1")
 ///
-/// let ugt_cmp = builder.createICmpUGT(arg0, arg1, name="ugt_cmp")
-/// inspect(ugt_cmp, content = "  %ugt_cmp = icmp ugt i32 %0, %1")
+///   let ugt_cmp = builder.createICmpUGT(arg0, arg1, name="ugt_cmp")
+///   inspect(ugt_cmp, content="  %ugt_cmp = icmp ugt i32 %0, %1")
 ///
-/// let uge_cmp = builder.createICmpUGE(arg0, arg1, name="uge_cmp")
-/// inspect(uge_cmp, content = "  %uge_cmp = icmp uge i32 %0, %1")
+///   let uge_cmp = builder.createICmpUGE(arg0, arg1, name="uge_cmp")
+///   inspect(uge_cmp, content="  %uge_cmp = icmp uge i32 %0, %1")
 ///
-/// let ult_cmp = builder.createICmpULT(arg0, arg1, name="ult_cmp")
-/// inspect(ult_cmp, content = "  %ult_cmp = icmp ult i32 %0, %1")
+///   let ult_cmp = builder.createICmpULT(arg0, arg1, name="ult_cmp")
+///   inspect(ult_cmp, content="  %ult_cmp = icmp ult i32 %0, %1")
 ///
-/// let ule_cmp = builder.createICmpULE(arg0, arg1, name="ule_cmp")
-/// inspect(ule_cmp, content = "  %ule_cmp = icmp ule i32 %0, %1")
+///   let ule_cmp = builder.createICmpULE(arg0, arg1, name="ule_cmp")
+///   inspect(ule_cmp, content="  %ule_cmp = icmp ule i32 %0, %1")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createICmp(
@@ -2342,65 +2383,72 @@ pub fn IRBuilder::createICmpULE(
 /// 1. `lhs` and `rhs` must be floating-point types with the same bitwidth.
 /// 2. Allowed predicates: OEQ, OGT, OGE, OLT, OLE, ONE, ORD, UEQ, UGT, UGE, ULT, ULE, UNE.
 ///
-/// ```moonbit nocheck
-/// let ctx = Context::new()
-/// let mod = ctx.addModule("demo")
-/// let builder = ctx.createBuilder()
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("demo")
+///   let builder = ctx.createBuilder()
 ///
-/// let f32_ty = ctx.getFloatTy()
-/// let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
-/// let fval = mod.addFunction(fty, "fcmp_demo")
+///   let f32_ty = ctx.getFloatTy()
+///   let fty = ctx.getFunctionType(f32_ty, [f32_ty, f32_ty])
+///   let fval = mod.addFunction(fty, "fcmp_demo")
 ///
-/// let bb = fval.addBasicBlock(name="entry")
-/// let arg0 = fval.getArg(0).unwrap()
-/// let arg1 = fval.getArg(1).unwrap()
-/// builder.setInsertPoint(bb)
+///   let bb = fval.addBasicBlock(name="entry")
+///   let arg0 = fval.getArg(0).unwrap()
+///   let arg1 = fval.getArg(1).unwrap()
+///   builder.setInsertPoint(bb)
 ///
-/// let oeq_cmp = builder.createFCmp(FloatPredicate::OEQ, arg0, arg1, name="oeq_cmp")
-/// inspect(oeq_cmp, content = "  %oeq_cmp = fcmp oeq float %0, %1")
-/// assert_true(oeq_cmp.asValueEnum() is FCmpInst(_))
+///   let oeq_cmp = builder.createFCmp(
+///     FloatPredicate::OEQ,
+///     arg0,
+///     arg1,
+///     name="oeq_cmp",
+///   )
+///   inspect(oeq_cmp, content="  %oeq_cmp = fcmp oeq float %0, %1")
+///   assert_true(oeq_cmp.asValueEnum() is FCmpInst(_))
 ///
-/// let val1 = ctx.getConstFloat(3.14)
-/// let val2 = ctx.getConstFloat(3.14)
-/// let result = builder.createFCmpOEQ(val1, val2)
-/// inspect(result, content = "i1 true")
-/// assert_true(result.asValueEnum() is ConstantInt(_))
+///   let val1 = ctx.getConstFloat(3.14)
+///   let val2 = ctx.getConstFloat(3.14)
+///   let result = builder.createFCmpOEQ(val1, val2)
+///   inspect(result, content="i1 true")
+///   assert_true(result.asValueEnum() is ConstantInt(_))
 ///
-/// let ogt_cmp = builder.createFCmpOGT(arg0, arg1, name="ogt_cmp")
-/// inspect(ogt_cmp, content = "  %ogt_cmp = fcmp ogt float %0, %1")
+///   let ogt_cmp = builder.createFCmpOGT(arg0, arg1, name="ogt_cmp")
+///   inspect(ogt_cmp, content="  %ogt_cmp = fcmp ogt float %0, %1")
 ///
-/// let oge_cmp = builder.createFCmpOGE(arg0, arg1, name="oge_cmp")
-/// inspect(oge_cmp, content = "  %oge_cmp = fcmp oge float %0, %1")
+///   let oge_cmp = builder.createFCmpOGE(arg0, arg1, name="oge_cmp")
+///   inspect(oge_cmp, content="  %oge_cmp = fcmp oge float %0, %1")
 ///
-/// let olt_cmp = builder.createFCmpOLT(arg0, arg1, name="olt_cmp")
-/// inspect(olt_cmp, content = "  %olt_cmp = fcmp olt float %0, %1")
+///   let olt_cmp = builder.createFCmpOLT(arg0, arg1, name="olt_cmp")
+///   inspect(olt_cmp, content="  %olt_cmp = fcmp olt float %0, %1")
 ///
-/// let ole_cmp = builder.createFCmpOLE(arg0, arg1, name="ole_cmp")
-/// inspect(ole_cmp, content = "  %ole_cmp = fcmp ole float %0, %1")
+///   let ole_cmp = builder.createFCmpOLE(arg0, arg1, name="ole_cmp")
+///   inspect(ole_cmp, content="  %ole_cmp = fcmp ole float %0, %1")
 ///
-/// let one_cmp = builder.createFCmpONE(arg0, arg1, name="one_cmp")
-/// inspect(one_cmp, content = "  %one_cmp = fcmp one float %0, %1")
+///   let one_cmp = builder.createFCmpONE(arg0, arg1, name="one_cmp")
+///   inspect(one_cmp, content="  %one_cmp = fcmp one float %0, %1")
 ///
-/// let ord_cmp = builder.createFCmpORD(arg0, arg1, name="ord_cmp")
-/// inspect(ord_cmp, content = "  %ord_cmp = fcmp ord float %0, %1")
+///   let ord_cmp = builder.createFCmpORD(arg0, arg1, name="ord_cmp")
+///   inspect(ord_cmp, content="  %ord_cmp = fcmp ord float %0, %1")
 ///
-/// let ueq_cmp = builder.createFCmpUEQ(arg0, arg1, name="ueq_cmp")
-/// inspect(ueq_cmp, content = "  %ueq_cmp = fcmp ueq float %0, %1")
+///   let ueq_cmp = builder.createFCmpUEQ(arg0, arg1, name="ueq_cmp")
+///   inspect(ueq_cmp, content="  %ueq_cmp = fcmp ueq float %0, %1")
 ///
-/// let ugt_cmp = builder.createFCmpUGT(arg0, arg1, name="ugt_cmp")
-/// inspect(ugt_cmp, content = "  %ugt_cmp = fcmp ugt float %0, %1")
+///   let ugt_cmp = builder.createFCmpUGT(arg0, arg1, name="ugt_cmp")
+///   inspect(ugt_cmp, content="  %ugt_cmp = fcmp ugt float %0, %1")
 ///
-/// let uge_cmp = builder.createFCmpUGE(arg0, arg1, name="uge_cmp")
-/// inspect(uge_cmp, content = "  %uge_cmp = fcmp uge float %0, %1")
+///   let uge_cmp = builder.createFCmpUGE(arg0, arg1, name="uge_cmp")
+///   inspect(uge_cmp, content="  %uge_cmp = fcmp uge float %0, %1")
 ///
-/// let ult_cmp = builder.createFCmpULT(arg0, arg1, name="ult_cmp")
-/// inspect(ult_cmp, content = "  %ult_cmp = fcmp ult float %0, %1")
+///   let ult_cmp = builder.createFCmpULT(arg0, arg1, name="ult_cmp")
+///   inspect(ult_cmp, content="  %ult_cmp = fcmp ult float %0, %1")
 ///
-/// let ule_cmp = builder.createFCmpULE(arg0, arg1, name="ule_cmp")
-/// inspect(ule_cmp, content = "  %ule_cmp = fcmp ule float %0, %1")
+///   let ule_cmp = builder.createFCmpULE(arg0, arg1, name="ule_cmp")
+///   inspect(ule_cmp, content="  %ule_cmp = fcmp ule float %0, %1")
 ///
-/// let une_cmp = builder.createFCmpUNE(arg0, arg1, name="une_cmp")
-/// inspect(une_cmp, content = "  %une_cmp = fcmp une float %0, %1")
+///   let une_cmp = builder.createFCmpUNE(arg0, arg1, name="une_cmp")
+///   inspect(une_cmp, content="  %une_cmp = fcmp une float %0, %1")
+/// }
 /// ```
 #callsite(autofill(loc))
 pub fn IRBuilder::createFCmp(

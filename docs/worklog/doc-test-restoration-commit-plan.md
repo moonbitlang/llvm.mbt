@@ -90,10 +90,10 @@
 
 ## Commit 9：恢复 IRBuilder 的浮点、位运算与比较示例
 
-- [ ] 处理浮点 add、sub、mul、div、rem、neg 示例。
-- [ ] 处理 and、or、xor、not、shift、ptrdiff 示例。
-- [ ] 处理 ICmp、FCmp 基础入口示例。
-- [ ] 共恢复该区段的 16 个 doc test。
+- [x] 处理浮点 add、sub、mul、div、rem、neg 示例。
+- [x] 处理 and、or、xor、not、shift、ptrdiff 示例。
+- [x] 处理 ICmp、FCmp 基础入口示例。
+- [x] 共恢复该区段的 16 个 doc test。
 
 建议提交信息：`docs(IRBuilder): check floating and comparison examples`
 
