@@ -85,25 +85,25 @@ pub extern "C" fn llvm_generic_value_to_float(
 extern "C" fn __llvm_new_execution_engine() -> LLVMExecutionEngineRef = "llvm_new_execution_engine"
 
 ///|
-#borrow(out_ee, out_error)
+#borrow(out_ee, out_failed)
 extern "C" fn __llvm_create_execution_engine_for_module(
   out_ee : Ref[LLVMExecutionEngineRef],
   m : LLVMModuleRef,
-  out_error : Ref[CStr],
-) -> Bool = "LLVMCreateExecutionEngineForModule"
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_create_execution_engine_for_module"
 
 ///|
 pub fn llvm_create_execution_engine_for_module(
   m : LLVMModuleRef,
 ) -> (LLVMExecutionEngineRef?, String) {
   let execution_engine = Ref(__llvm_new_execution_engine())
-  let err_msg = Ref(CStr::new())
-  let res = __llvm_create_execution_engine_for_module(
-    execution_engine, m, err_msg,
+  let failed : Ref[LLVMBool] = Ref(0)
+  let message = __llvm_create_execution_engine_for_module(
+    execution_engine, m, failed,
   )
-  match res {
-    true => (None, c_str_to_moonbit_str(err_msg.val))
-    false => (Some(execution_engine.val), "")
+  match failed.val.to_moonbit_bool() {
+    true => (None, @utf8.decode_lossy(message))
+    false => (Some(execution_engine.val), @utf8.decode_lossy(message))
   }
 }
 
@@ -113,23 +113,23 @@ pub fn llvm_create_execution_engine_for_module(
 //
 
 ///|
-#borrow(out_interp, out_error)
+#borrow(out_interp, out_failed)
 extern "C" fn __llvm_create_interpreter_for_module(
   out_interp : Ref[LLVMExecutionEngineRef],
   m : LLVMModuleRef,
-  out_error : Ref[CStr],
-) -> Bool = "LLVMCreateInterpreterForModule"
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_create_interpreter_for_module"
 
 ///|
 pub fn llvm_create_interpreter_for_module(
   m : LLVMModuleRef,
 ) -> (LLVMExecutionEngineRef?, String) {
   let interpreter = Ref(__llvm_new_execution_engine())
-  let err_msg = Ref(CStr::new())
-  let res = __llvm_create_interpreter_for_module(interpreter, m, err_msg)
-  match res {
-    true => (None, c_str_to_moonbit_str(err_msg.val))
-    false => (Some(interpreter.val), "")
+  let failed : Ref[LLVMBool] = Ref(0)
+  let message = __llvm_create_interpreter_for_module(interpreter, m, failed)
+  match failed.val.to_moonbit_bool() {
+    true => (None, @utf8.decode_lossy(message))
+    false => (Some(interpreter.val), @utf8.decode_lossy(message))
   }
 }
 
@@ -229,14 +229,15 @@ pub fn llvm_get_function_address(
   ee : LLVMExecutionEngineRef,
   name : String,
 ) -> UInt64 {
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name) catch { EmbeddedNul => return 0 }
   __llvm_get_function_address(ee, name)
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_get_function_address(
   ee : LLVMExecutionEngineRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> UInt64 = "LLVMGetFunctionAddress"
 
 //

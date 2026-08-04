@@ -12,7 +12,10 @@ pub fn Context::new() -> Context {
 }
 
 ///|
-pub fn Context::addModule(self : Self, name : String) -> Module {
+pub fn Context::addModule(
+  self : Self,
+  name : String,
+) -> Module raise @unsafe.CStringError {
   let mod = Module(
     @unsafe.llvm_module_create_with_name_in_context(name, self.0),
   )
@@ -304,7 +307,7 @@ pub fn Context::getStructType(
   elements : Array[&Type],
   isPacked? : Bool = false,
   name? : String = "",
-) -> StructType {
+) -> StructType raise @unsafe.CStringError {
   guard !(name.is_empty() && elements.is_empty()) else {
     println(
       "Error: Misuse `Context::getStructType`:  Empty struct type must have a name.",

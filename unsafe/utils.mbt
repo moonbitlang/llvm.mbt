@@ -1,38 +1,32 @@
 ///|
+/// Raw input retained only by the deferred MemoryBuffer boundary.
+///
+/// `LLVMCreateMemoryBufferWithMemoryRange` keeps its input pointer after the
+/// call, so call-scoped MoonBit-managed UTF-8 bytes cannot be used here.
 #external
-type CStr
+priv type DeferredMemoryBufferInput
+
+///|
+/// Raw borrowed bytes retained only by the deferred non-text output boundary.
+#external
+priv type DeferredBorrowedBytes
 
 ///|
 #borrow(s)
-extern "C" fn moonbit_str_to_c_str(s : String) -> CStr = "moonbit_str_to_c_str"
+extern "C" fn DeferredMemoryBufferInput::from_string(
+  s : String,
+) -> DeferredMemoryBufferInput = "llvm_mbt_deferred_memory_buffer_input"
 
 ///|
-extern "C" fn c_str_to_moonbit_str(s : CStr) -> String = "c_str_to_moonbit_str"
+extern "C" fn DeferredBorrowedBytes::to_string(
+  self : DeferredBorrowedBytes,
+) -> String = "llvm_mbt_deferred_borrowed_bytes_to_string"
 
 ///|
-extern "C" fn c_str_to_moonbit_str_with_length(s : CStr, len : UInt) -> String = "c_str_to_moonbit_str_with_length"
-
-///|
-pub extern "C" fn CStr::new() -> CStr = "new_null_cstr"
-
-///|
-extern "C" fn CStr::create_null() -> CStr = "new_null_cstr"
-
-///|
-pub extern "C" fn CStr::free(self : CStr) = "free_cstr"
-
-///|
-fn CStr::from(s : String) -> CStr {
-  moonbit_str_to_c_str(s)
-}
-
-///|
-fn CStr::to_string(self : CStr, length? : UInt? = None) -> String {
-  match length {
-    Some(l) => c_str_to_moonbit_str_with_length(self, l)
-    None => c_str_to_moonbit_str(self)
-  }
-}
+extern "C" fn DeferredBorrowedBytes::to_string_with_length(
+  self : DeferredBorrowedBytes,
+  length : UInt,
+) -> String = "llvm_mbt_deferred_borrowed_bytes_to_string_with_length"
 
 // extern "C" fn llvm_new_null_type_ref() -> LLVMTypeRef = "__llvm_new_null_type_ref"
 //
@@ -63,6 +57,9 @@ extern "C" fn LLVMModuleRef::null() -> LLVMModuleRef = "__llvm_new_null"
 
 ///|
 extern "C" fn LLVMBasicBlockRef::null() -> LLVMBasicBlockRef = "__llvm_new_null"
+
+///|
+extern "C" fn LLVMTargetRef::null() -> LLVMTargetRef = "__llvm_new_null"
 
 ///|
 extern "C" fn llvm_same_type_ref(
@@ -229,12 +226,16 @@ fn to_llvm_bool(b : Bool) -> LLVMBool {
 
 ///|
 pub impl Show for LLVMTypeRef with fn output(self, logger) {
-  let s = llvm_print_type_to_string(self)
+  let s = llvm_print_type_to_string(self) catch {
+    error => "<LLVM type text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }
 
 ///|
 pub impl Show for LLVMValueRef with fn output(self, logger) {
-  let s = llvm_print_value_to_string(self)
+  let s = llvm_print_value_to_string(self) catch {
+    error => "<LLVM value text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }

@@ -47,6 +47,8 @@ This is a [MoonBit](https://docs.moonbitlang.com) project.
 - Try to keep deprecated blocks in file called `deprecated.mbt` in each
   directory.
 
+- 本仓库的代码风格桂发必须额外遵守 [docs/style-guide.md](docs/style-guide.md) 。
+
 ## Tooling
 
 - `moon fmt` is used to format your code properly.

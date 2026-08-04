@@ -1,9 +1,15 @@
 #include <llvm-c/Analysis.h>
 #include <llvm-c/BitWriter.h>
 #include <llvm-c/Core.h>
+#include <llvm-c/DebugInfo.h>
+#include <llvm-c/Error.h>
 #include <llvm-c/ExecutionEngine.h>
+#include <llvm-c/IRReader.h>
+#include <llvm-c/Remarks.h>
 #include <llvm-c/Target.h>
+#include <llvm-c/TargetMachine.h>
 #include <llvm-c/Types.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -13,39 +19,43 @@
 #endif
 #include "moonbit.h"
 
-void *moonbit_str_to_c_str(moonbit_string_t ms) {
-  int32_t len = Moonbit_array_length(ms);
-  char *ptr = (char *)malloc(len + 1);
-  for (int i = 0; i < len; i++) {
-    if (ms[i] < 0x80) {
-      ptr[i] = ms[i];
-    } else {
-      ptr[i] = '?';
-    }
+/*
+ * These three adapters preserve boundaries that Q-01/Q-02 explicitly defer:
+ * MemoryBuffer backing storage and non-text byte output. The MemoryBuffer
+ * input allocation intentionally retains the legacy lifetime/leak until that
+ * separate boundary is redesigned. Do not reuse these for ordinary strings.
+ */
+void *llvm_mbt_deferred_memory_buffer_input(moonbit_string_t value) {
+  int32_t length = Moonbit_array_length(value);
+  char *result = malloc((size_t)length + 1);
+  if (result == NULL) {
+    abort();
   }
-  ptr[len] = '\0';
-  return ptr;
+  for (int32_t index = 0; index < length; index++) {
+    result[index] = value[index] < 0x80 ? (char)value[index] : '?';
+  }
+  result[length] = '\0';
+  return result;
 }
 
-moonbit_string_t c_str_to_moonbit_str(void *ptr) {
-  char *cptr = (char *)ptr;
-  int32_t len = strlen(cptr);
-  moonbit_string_t ms = moonbit_make_string(len, 0);
-  for (int i = 0; i < len; i++) {
-    ms[i] = (uint16_t)cptr[i];
+moonbit_string_t llvm_mbt_deferred_borrowed_bytes_to_string(void *ptr) {
+  char *bytes = ptr;
+  int32_t length = (int32_t)strlen(bytes);
+  moonbit_string_t result = moonbit_make_string(length, 0);
+  for (int32_t index = 0; index < length; index++) {
+    result[index] = (uint16_t)bytes[index];
   }
-  // free(ptr);
-  return ms;
+  return result;
 }
 
-moonbit_string_t c_str_to_moonbit_str_with_length(void *ptr, unsigned len) {
-  char *cptr = (char *)ptr;
-  moonbit_string_t ms = moonbit_make_string(len, 0);
-  for (int i = 0; i < len; i++) {
-    ms[i] = (uint16_t)cptr[i];
+moonbit_string_t llvm_mbt_deferred_borrowed_bytes_to_string_with_length(
+    void *ptr, unsigned length) {
+  char *bytes = ptr;
+  moonbit_string_t result = moonbit_make_string((int32_t)length, 0);
+  for (unsigned index = 0; index < length; index++) {
+    result[index] = (uint16_t)bytes[index];
   }
-  // free(ptr);
-  return ms;
+  return result;
 }
 
 void panic(const char *msg) {
@@ -1260,10 +1270,6 @@ LLVMModuleFlagBehavior llvm_module_flag_behavior_from_int(int i) {
     return LLVMModuleFlagBehaviorError;
   }
 }
-
-void *new_null_cstr() { return (char *)NULL; }
-
-void free_cstr(void *cstr) { free(cstr); }
 
 int ref_is_null(void *ref) {
   return ref == NULL ? 1 : 0;

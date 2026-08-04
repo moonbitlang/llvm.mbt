@@ -28,12 +28,6 @@ extern "C" fn __llvm_get_version(
 ) = "LLVMGetVersion"
 
 ///|
-pub extern "C" fn llvm_create_message(message : CStr) -> CStr = "LLVMCreateMessage"
-
-///|
-pub extern "C" fn llvm_dispose_message(message : CStr) = "LLVMDisposeMessage"
-
-///|
 /// Create a new context.
 /// 
 /// Every call to this function should be paired with a call to
@@ -123,22 +117,25 @@ pub fn LLVMContextRef::dispose(self : LLVMContextRef) -> Unit {
 }
 
 ///|
-/// Return a string representation of the DiagnosticInfo. Use `llvm_dispose_message` to free the string.
+/// Return a string representation of the DiagnosticInfo.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see `DiagnosticInfo::print()`
 /// 
 extern "C" fn __llvm_get_diag_info_description(
   di : LLVMDiagnosticInfoRef,
-) -> CStr = "LLVMGetDiagInfoDescription"
+) -> LLVMMessage = "llvm_mbt_get_diag_info_description"
 
 ///|
-/// Return a string representation of the DiagnosticInfo. Use `llvm_dispose_message` to free the string.
+/// Return a string representation of the DiagnosticInfo.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see `DiagnosticInfo::print()`
 /// 
-pub fn llvm_get_diag_info_description(di : LLVMDiagnosticInfoRef) -> String {
-  let cstr = __llvm_get_diag_info_description(di)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_diag_info_description(
+  di : LLVMDiagnosticInfoRef,
+) -> String raise {
+  __llvm_get_diag_info_description(di).to_string()
 }
 
 ///|
@@ -167,9 +164,10 @@ pub fn LLVMDiagnosticInfoRef::get_severity(
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_get_md_kind_id_in_context(
   context : LLVMContextRef,
-  name : CStr,
+  name : Bytes,
   s_len : UInt,
 ) -> UInt = "LLVMGetMDKindIDInContext"
 
@@ -178,32 +176,35 @@ pub fn llvm_get_md_kind_id_in_context(
   context : LLVMContextRef,
   name : String,
 ) -> UInt {
-  let cstr = moonbit_str_to_c_str(name)
-  let s_len = name.length().reinterpret_as_uint()
-  __llvm_get_md_kind_id_in_context(context, cstr, s_len)
+  let name = @utf8.encode(name)
+  __llvm_get_md_kind_id_in_context(
+    context,
+    name,
+    name.length().reinterpret_as_uint(),
+  )
 }
 
 ///|
-extern "C" fn __llvm_get_md_kind_id(name : CStr, s_len : UInt) -> UInt = "LLVMGetMDKindID"
+#borrow(name)
+extern "C" fn __llvm_get_md_kind_id(name : Bytes, s_len : UInt) -> UInt = "LLVMGetMDKindID"
 
 ///|
 pub fn llvm_get_md_kind_id(name : String) -> UInt {
-  let cstr = moonbit_str_to_c_str(name)
-  let s_len = name.length().reinterpret_as_uint()
-  __llvm_get_md_kind_id(cstr, s_len)
+  let name = @utf8.encode(name)
+  __llvm_get_md_kind_id(name, name.length().reinterpret_as_uint())
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_get_enum_attribute_kind_for_name(
-  name : CStr,
+  name : Bytes,
   s_len : UInt64,
 ) -> UInt = "LLVMGetEnumAttributeKindForName"
 
 ///|
 pub fn llvm_get_enum_attribute_kind_for_name(name : String) -> UInt {
-  let cstr = moonbit_str_to_c_str(name)
-  let s_len = name.length().to_uint64()
-  __llvm_get_enum_attribute_kind_for_name(cstr, s_len)
+  let name = @utf8.encode(name)
+  __llvm_get_enum_attribute_kind_for_name(name, name.length().to_uint64())
 }
 
 ///|
@@ -265,11 +266,12 @@ pub fn LLVMAttributeRef::get_type_attribute_value(
 
 ///|
 /// Create a string attribute.
+#borrow(k, v)
 extern "C" fn __llvm_create_string_attribute(
   ctx : LLVMContextRef,
-  k : CStr,
+  k : Bytes,
   k_len : UInt,
-  v : CStr,
+  v : Bytes,
   v_len : UInt,
 ) -> LLVMAttributeRef = "LLVMCreateStringAttribute"
 
@@ -280,39 +282,33 @@ pub fn llvm_create_string_attribute(
   k : String,
   v : String,
 ) -> LLVMAttributeRef {
-  let k_cstr = moonbit_str_to_c_str(k)
-  let v_cstr = moonbit_str_to_c_str(v)
-  let k_len = k.length().reinterpret_as_uint()
-  let v_len = v.length().reinterpret_as_uint()
-  __llvm_create_string_attribute(ctx, k_cstr, k_len, v_cstr, v_len)
+  let k = @utf8.encode(k)
+  let v = @utf8.encode(v)
+  __llvm_create_string_attribute(
+    ctx,
+    k,
+    k.length().reinterpret_as_uint(),
+    v,
+    v.length().reinterpret_as_uint(),
+  )
 }
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_string_attribute_kind(
-  a : LLVMAttributeRef,
-  size : Ref[UInt],
-) -> CStr = "LLVMGetStringAttributeKind"
+#borrow(a)
+extern "C" fn __llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> Bytes = "llvm_mbt_get_string_attribute_kind"
 
 ///|
-pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String {
-  let sz = Ref(0U)
-  let cstr = __llvm_get_string_attribute_kind(a, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val)
+pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String raise {
+  __llvm_get_string_attribute_kind(a) |> @utf8.decode
 }
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_string_attribute_value(
-  a : LLVMAttributeRef,
-  size : Ref[UInt],
-) -> CStr = "LLVMGetStringAttributeValue"
+#borrow(a)
+extern "C" fn __llvm_get_string_attribute_value(a : LLVMAttributeRef) -> Bytes = "llvm_mbt_get_string_attribute_value"
 
 ///|
-pub fn llvm_get_string_attribute_value(a : LLVMAttributeRef) -> String {
-  let sz = Ref(0U)
-  let cstr = __llvm_get_string_attribute_value(a, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val)
+pub fn llvm_get_string_attribute_value(a : LLVMAttributeRef) -> String raise {
+  __llvm_get_string_attribute_value(a) |> @utf8.decode
 }
 
 ///|
@@ -365,9 +361,10 @@ pub fn LLVMAttributeRef::is_type_attribute(self : LLVMAttributeRef) -> Bool {
 
 ///|
 /// Obtain a Type from a context by its registered name.
+#borrow(name)
 extern "C" fn __llvm_get_type_by_name(
   context : LLVMContextRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMTypeRef = "LLVMGetTypeByName2"
 
 ///|
@@ -376,7 +373,9 @@ pub fn llvm_get_type_by_name(
   context : LLVMContextRef,
   name : String,
 ) -> LLVMTypeRef {
-  let cstr = moonbit_str_to_c_str(name)
+  let cstr = Utf8Z::from_string(name) catch {
+    EmbeddedNul => return LLVMTypeRef::null()
+  }
   __llvm_get_type_by_name(context, cstr)
 }
 
@@ -398,7 +397,10 @@ pub fn LLVMContextRef::get_type_by_name(
 /// Every invocation should be paired with `LLVMDisposeModule()` or memory
 /// will be leaked.
 /// 
-extern "C" fn __llvm_module_create_with_name(module_id : CStr) -> LLVMModuleRef = "LLVMModuleCreateWithName"
+#borrow(module_id)
+extern "C" fn __llvm_module_create_with_name_utf8(
+  module_id : Utf8Z,
+) -> LLVMModuleRef = "LLVMModuleCreateWithName"
 
 ///|
 /// Create a new, empty module in the global context.
@@ -409,9 +411,11 @@ extern "C" fn __llvm_module_create_with_name(module_id : CStr) -> LLVMModuleRef 
 /// Every invocation should be paired with `LLVMDisposeModule()` or memory
 /// will be leaked.
 /// 
-pub fn llvm_module_create_with_name(module_id : String) -> LLVMModuleRef {
-  let cstr = moonbit_str_to_c_str(module_id)
-  __llvm_module_create_with_name(cstr)
+pub fn llvm_module_create_with_name(
+  module_id : String,
+) -> LLVMModuleRef raise CStringError {
+  let module_id = Utf8Z::from_string(module_id)
+  __llvm_module_create_with_name_utf8(module_id)
 }
 
 ///|
@@ -423,8 +427,9 @@ pub fn llvm_module_create_with_name(module_id : String) -> LLVMModuleRef {
 /// Every invocation should be paired with LLVMDisposeModule() or memory
 /// will be leaked.
 /// 
+#borrow(module_id)
 extern "C" fn __llvm_module_create_with_name_in_context(
-  module_id : CStr,
+  module_id : Utf8Z,
   context : LLVMContextRef,
 ) -> LLVMModuleRef = "LLVMModuleCreateWithNameInContext"
 
@@ -440,8 +445,8 @@ extern "C" fn __llvm_module_create_with_name_in_context(
 pub fn llvm_module_create_with_name_in_context(
   module_id : String,
   context : LLVMContextRef,
-) -> LLVMModuleRef {
-  let cstr = moonbit_str_to_c_str(module_id)
+) -> LLVMModuleRef raise CStringError {
+  let cstr = Utf8Z::from_string(module_id)
   __llvm_module_create_with_name_in_context(cstr, context)
 }
 
@@ -457,7 +462,7 @@ pub fn llvm_module_create_with_name_in_context(
 pub fn LLVMContextRef::module_create_with_name(
   self : LLVMContextRef,
   module_id : String,
-) -> LLVMModuleRef {
+) -> LLVMModuleRef raise CStringError {
   llvm_module_create_with_name_in_context(module_id, self)
 }
 
@@ -521,31 +526,25 @@ pub fn llvm_set_is_new_dbg_info_format(
 }
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_module_identifier(
-  m : LLVMModuleRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetModuleIdentifier"
+extern "C" fn __llvm_get_module_identifier(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_module_identifier"
 
 ///|
-pub fn llvm_get_module_identifier(m : LLVMModuleRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_module_identifier(m, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_module_identifier(m : LLVMModuleRef) -> String raise {
+  __llvm_get_module_identifier(m) |> @utf8.decode
 }
 
 ///|
+#borrow(ident)
 extern "C" fn __llvm_set_module_identifier(
   m : LLVMModuleRef,
-  ident : CStr,
+  ident : Bytes,
   len : UInt64,
 ) = "LLVMSetModuleIdentifier"
 
 ///|
 pub fn llvm_set_module_identifier(m : LLVMModuleRef, ident : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(ident)
-  let len = ident.length().to_uint64()
-  __llvm_set_module_identifier(m, cstr, len)
+  let ident = @utf8.encode(ident)
+  __llvm_set_module_identifier(m, ident, ident.length().to_uint64())
 }
 
 ///|
@@ -556,11 +555,7 @@ pub fn llvm_set_module_identifier(m : LLVMModuleRef, ident : String) -> Unit {
 /// @return The original source file name of M
 ///
 /// - see Module::getSourceFileName()
-#borrow(size)
-extern "C" fn __llvm_get_source_file_name(
-  m : LLVMModuleRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetSourceFileName"
+extern "C" fn __llvm_get_source_file_name(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_source_file_name"
 
 ///|
 /// Obtain the module's original source file name.
@@ -570,10 +565,8 @@ extern "C" fn __llvm_get_source_file_name(
 /// @return The original source file name of M
 ///
 /// - see Module::getSourceFileName()
-pub fn llvm_get_source_file_name(m : LLVMModuleRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_source_file_name(m, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_source_file_name(m : LLVMModuleRef) -> String raise {
+  __llvm_get_source_file_name(m) |> @utf8.decode
 }
 
 ///|
@@ -585,15 +578,15 @@ pub fn llvm_get_source_file_name(m : LLVMModuleRef) -> String {
 ///
 /// - see Module::setSourceFileName()
 pub fn llvm_set_source_file_name(m : LLVMModuleRef, name : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(name)
-  let len = name.length().to_uint64()
-  __llvm_set_source_file_name(m, cstr, len)
+  let name = @utf8.encode(name)
+  __llvm_set_source_file_name(m, name, name.length().to_uint64())
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_set_source_file_name(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   len : UInt64,
 ) = "LLVMSetSourceFileName"
 
@@ -606,7 +599,7 @@ extern "C" fn __llvm_set_source_file_name(
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-extern "C" fn __llvm_get_data_layout_str(m : LLVMModuleRef) -> CStr = "LLVMGetDataLayoutStr"
+extern "C" fn __llvm_get_data_layout_str(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_data_layout_str"
 
 ///|
 /// Obtain the data layout for a module.
@@ -617,9 +610,8 @@ extern "C" fn __llvm_get_data_layout_str(m : LLVMModuleRef) -> CStr = "LLVMGetDa
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-pub fn llvm_get_data_layout_str(m : LLVMModuleRef) -> String {
-  let cstr = __llvm_get_data_layout_str(m)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_data_layout_str(m : LLVMModuleRef) -> String raise {
+  __llvm_get_data_layout_str(m) |> @utf8.decode
 }
 
 ///|
@@ -631,24 +623,23 @@ pub fn llvm_get_data_layout_str(m : LLVMModuleRef) -> String {
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-pub fn LLVMModuleRef::get_data_layout_str(self : LLVMModuleRef) -> String {
+pub fn LLVMModuleRef::get_data_layout_str(self : LLVMModuleRef) -> String raise {
   llvm_get_data_layout_str(self)
 }
 
 ///|
 /// Get the data layout for a module.
-extern "C" fn __llvm_get_data_layout(m : LLVMModuleRef) -> CStr = "LLVMGetDataLayout"
+extern "C" fn __llvm_get_data_layout(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_data_layout_str"
 
 ///|
 /// Get the data layout for a module.
-pub fn llvm_get_data_layout(m : LLVMModuleRef) -> String {
-  let cstr = __llvm_get_data_layout(m)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_data_layout(m : LLVMModuleRef) -> String raise {
+  __llvm_get_data_layout(m) |> @utf8.decode
 }
 
 ///|
 /// Get the data layout for a module.
-pub fn LLVMModuleRef::get_data_layout(self : LLVMModuleRef) -> String {
+pub fn LLVMModuleRef::get_data_layout(self : LLVMModuleRef) -> String raise {
   llvm_get_data_layout(self)
 }
 
@@ -657,7 +648,11 @@ pub fn LLVMModuleRef::get_data_layout(self : LLVMModuleRef) -> String {
 /// 
 /// - see Module::setDataLayout()
 /// 
-extern "C" fn __llvm_set_data_layout(m : LLVMModuleRef, data_layout_str : CStr) = "LLVMSetDataLayout"
+#borrow(data_layout_str)
+extern "C" fn __llvm_set_data_layout(
+  m : LLVMModuleRef,
+  data_layout_str : Utf8Z,
+) = "LLVMSetDataLayout"
 
 ///|
 /// Set the data layout for a module.
@@ -667,8 +662,8 @@ extern "C" fn __llvm_set_data_layout(m : LLVMModuleRef, data_layout_str : CStr) 
 pub fn llvm_set_data_layout(
   m : LLVMModuleRef,
   data_layout_str : String,
-) -> Unit {
-  let cstr = moonbit_str_to_c_str(data_layout_str)
+) -> Unit raise CStringError {
+  let cstr = Utf8Z::from_string(data_layout_str)
   __llvm_set_data_layout(m, cstr)
 }
 
@@ -680,7 +675,7 @@ pub fn llvm_set_data_layout(
 pub fn LLVMModuleRef::set_data_layout(
   self : LLVMModuleRef,
   data_layout_str : String,
-) -> Unit {
+) -> Unit raise CStringError {
   llvm_set_data_layout(self, data_layout_str)
 }
 
@@ -689,16 +684,15 @@ pub fn LLVMModuleRef::set_data_layout(
 /// 
 /// - see Module::getTargetTriple()
 /// 
-extern "C" fn __llvm_get_target(m : LLVMModuleRef) -> CStr = "LLVMGetTarget"
+extern "C" fn __llvm_get_target(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_module_target"
 
 ///|
 /// Obtain the target triple for a module.
 /// 
 /// - see Module::getTargetTriple()
 /// 
-pub fn llvm_get_target(m : LLVMModuleRef) -> String {
-  let cstr = __llvm_get_target(m)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_target(m : LLVMModuleRef) -> String raise {
+  __llvm_get_target(m) |> @utf8.decode
 }
 
 ///|
@@ -706,7 +700,7 @@ pub fn llvm_get_target(m : LLVMModuleRef) -> String {
 /// 
 /// - see Module::getTargetTriple()
 /// 
-pub fn LLVMModuleRef::get_target(self : LLVMModuleRef) -> String {
+pub fn LLVMModuleRef::get_target(self : LLVMModuleRef) -> String raise {
   llvm_get_target(self)
 }
 
@@ -715,15 +709,19 @@ pub fn LLVMModuleRef::get_target(self : LLVMModuleRef) -> String {
 /// 
 /// - see Module::setTargetTriple()
 /// 
-extern "C" fn __llvm_set_target(m : LLVMModuleRef, triple : CStr) = "LLVMSetTarget"
+#borrow(triple)
+extern "C" fn __llvm_set_target(m : LLVMModuleRef, triple : Utf8Z) = "LLVMSetTarget"
 
 ///|
 /// Set the target triple for a module.
 /// 
 /// - see Module::setTargetTriple()
 /// 
-pub fn llvm_set_target(m : LLVMModuleRef, triple : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(triple)
+pub fn llvm_set_target(
+  m : LLVMModuleRef,
+  triple : String,
+) -> Unit raise CStringError {
+  let cstr = Utf8Z::from_string(triple)
   __llvm_set_target(m, cstr)
 }
 
@@ -732,7 +730,10 @@ pub fn llvm_set_target(m : LLVMModuleRef, triple : String) -> Unit {
 /// 
 /// - see Module::setTargetTriple()
 /// 
-pub fn LLVMModuleRef::set_target(self : LLVMModuleRef, triple : String) -> Unit {
+pub fn LLVMModuleRef::set_target(
+  self : LLVMModuleRef,
+  triple : String,
+) -> Unit raise CStringError {
   llvm_set_target(self, triple)
 }
 
@@ -762,7 +763,7 @@ pub fn LLVMModuleRef::set_target(self : LLVMModuleRef, triple : String) -> Unit 
 // 
 // - see Module::ModuleFlagEntry::Key
 // 
-// pub extern "C" fn llvm_module_flag_entries_get_key(entries: Ptr[LLVMModuleFlagEntry], index: UInt, len: Ptr[UInt64]) -> CStr = "__llvm_module_flag_entries_get_key"
+// pub extern "C" fn llvm_module_flag_entries_get_key(entries: Ptr[LLVMModuleFlagEntry], index: UInt, len: Ptr[UInt64]) -> Utf8Z = "__llvm_module_flag_entries_get_key"
 
 // 
 // Returns the metadata for a module flag entry at a specific index.
@@ -775,11 +776,18 @@ pub fn LLVMModuleRef::set_target(self : LLVMModuleRef, triple : String) -> Unit 
 /// Add a module-level flag to the module-level flags metadata if it doesn't already exist.
 /// 
 /// - see Module::getModuleFlag()
-pub extern "C" fn llvm_get_module_flag(
+#borrow(key)
+extern "C" fn __llvm_get_module_flag(
   m : LLVMModuleRef,
-  key : CStr,
+  key : Bytes,
   key_len : UInt64,
 ) -> LLVMMetadataRef = "LLVMGetModuleFlag"
+
+///|
+pub fn llvm_get_module_flag(m : LLVMModuleRef, key : String) -> LLVMMetadataRef {
+  let key = @utf8.encode(key)
+  __llvm_get_module_flag(m, key, key.length().to_uint64())
+}
 
 ///|
 /// Add a module-level flag to the module-level flags metadata if it doesn't already exist.
@@ -792,16 +800,22 @@ pub fn llvm_add_module_flag(
   key : String,
   val : LLVMMetadataRef,
 ) -> Unit {
-  let cstr = moonbit_str_to_c_str(key)
-  let key_len = key.length().to_uint64()
-  __llvm_add_module_flag(m, behavior.to_int(), cstr, key_len, val)
+  let key = @utf8.encode(key)
+  __llvm_add_module_flag(
+    m,
+    behavior.to_int(),
+    key,
+    key.length().to_uint64(),
+    val,
+  )
 }
 
 ///|
+#borrow(key)
 extern "C" fn __llvm_add_module_flag(
   m : LLVMModuleRef,
   behavior : Int,
-  key : CStr,
+  key : Bytes,
   key_len : UInt64,
   val : LLVMMetadataRef,
 ) = "__llvm_add_module_flag"
@@ -822,48 +836,43 @@ pub fn LLVMModuleRef::dump(self : LLVMModuleRef) -> Unit {
 // 
 // - see Module::print()
 // 
-// pub extern "C" fn llvm_print_module_to_file(m: LLVMModuleRef, filename: CStr, error_message: Ptr[CStr]) -> LLVMBool = "__llvm_print_module_to_file"
+// pub extern "C" fn llvm_print_module_to_file(m: LLVMModuleRef, filename: Utf8Z, error_message: Ptr[Utf8Z]) -> LLVMBool = "__llvm_print_module_to_file"
 
 ///|
 /// Return a string representation of the module.
 ///
-/// Return a string representation of the module. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see Module::print()
-extern "C" fn __llvm_print_module_to_string(m : LLVMModuleRef) -> CStr = "LLVMPrintModuleToString"
+extern "C" fn __llvm_print_module_to_string(m : LLVMModuleRef) -> LLVMMessage = "llvm_mbt_print_module_to_string"
 
 ///|
 /// Return a string representation of the module.
 ///
-/// Return a string representation of the module. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see Module::print()
-pub fn llvm_print_module_to_string(m : LLVMModuleRef) -> String {
-  let cstr = __llvm_print_module_to_string(m)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_print_module_to_string(m : LLVMModuleRef) -> String raise {
+  __llvm_print_module_to_string(m).to_string()
 }
 
 ///|
 /// Return a string representation of the module.
 ///
-/// Return a string representation of the module. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see Module::print()
-pub fn LLVMModuleRef::print_to_string(self : LLVMModuleRef) -> String {
+pub fn LLVMModuleRef::print_to_string(self : LLVMModuleRef) -> String raise {
   llvm_print_module_to_string(self)
 }
 
 ///|
 /// Return a string representation of the module.
 ///
-/// Return a string representation of the module. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see Module::print()
-pub fn LLVMModuleRef::to_string(self : LLVMModuleRef) -> String {
+pub fn LLVMModuleRef::to_string(self : LLVMModuleRef) -> String raise {
   llvm_print_module_to_string(self)
 }
 
@@ -871,29 +880,24 @@ pub fn LLVMModuleRef::to_string(self : LLVMModuleRef) -> String {
 /// Get inline assembly for a module.
 /// 
 /// - see Module::getModuleInlineAsm()
-#borrow(sz)
-extern "C" fn __llvm_get_module_inline_asm(
-  m : LLVMModuleRef,
-  sz : Ref[UInt64],
-) -> CStr = "LLVMGetModuleInlineAsm"
+extern "C" fn __llvm_get_module_inline_asm(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_module_inline_asm"
 
 ///|
 /// Get inline assembly for a module.
 /// 
 /// - see Module::getModuleInlineAsm()
-pub fn llvm_get_module_inline_asm(m : LLVMModuleRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_module_inline_asm(m, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_module_inline_asm(m : LLVMModuleRef) -> String raise {
+  __llvm_get_module_inline_asm(m) |> @utf8.decode
 }
 
 ///|
 /// Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
+#borrow(asm_str)
 extern "C" fn __llvm_set_module_inline_asm2(
   m : LLVMModuleRef,
-  _asm : CStr,
+  asm_str : Bytes,
   len : UInt64,
 ) = "LLVMSetModuleInlineAsm2"
 
@@ -901,47 +905,47 @@ extern "C" fn __llvm_set_module_inline_asm2(
 /// Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
-pub fn llvm_set_module_inline_asm2(m : LLVMModuleRef, _asm : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(_asm)
-  let len = _asm.length().to_uint64()
-  __llvm_set_module_inline_asm2(m, cstr, len)
+pub fn llvm_set_module_inline_asm2(m : LLVMModuleRef, asm_str : String) -> Unit {
+  let asm_str = @utf8.encode(asm_str)
+  __llvm_set_module_inline_asm2(m, asm_str, asm_str.length().to_uint64())
 }
 
 ///|
 /// Set inline assembly for a module.
 /// 
 /// - see Module::setModuleInlineAsm()
-extern "C" fn __llvm_set_module_inline_asm(m : LLVMModuleRef, _asm : CStr) = "LLVMSetModuleInlineAsm"
-
-///|
-/// Set inline assembly for a module.
-/// 
-/// - see Module::setModuleInlineAsm()
-pub fn llvm_set_module_inline_asm(m : LLVMModuleRef, _asm : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(_asm)
-  __llvm_set_module_inline_asm(m, cstr)
+pub fn llvm_set_module_inline_asm(m : LLVMModuleRef, asm_str : String) -> Unit {
+  llvm_set_module_inline_asm2(m, asm_str)
 }
 
 ///|
 /// Append inline assembly to a module.
 /// 
 /// - see Module::appendModuleInlineAsm()
-pub extern "C" fn llvm_append_module_inline_asm(
+#borrow(asm_str)
+extern "C" fn __llvm_append_module_inline_asm(
   m : LLVMModuleRef,
-  _asm : CStr,
+  asm_str : Bytes,
   len : UInt64,
 ) = "LLVMAppendModuleInlineAsm"
+
+///|
+pub fn llvm_append_module_inline_asm(m : LLVMModuleRef, asm_str : String) -> Unit {
+  let asm_str = @utf8.encode(asm_str)
+  __llvm_append_module_inline_asm(m, asm_str, asm_str.length().to_uint64())
+}
 
 ///|
 /// Create the specified uniqued inline asm string.
 /// 
 /// - see InlineAsm::get()
 /// 
-pub extern "C" fn llvm_get_inline_asm(
+#borrow(asm_string, constraints)
+extern "C" fn __llvm_get_inline_asm(
   ty : LLVMTypeRef,
-  asm_string : CStr,
+  asm_string : Bytes,
   asm_string_size : UInt64,
-  constraints : CStr,
+  constraints : Bytes,
   constraints_size : UInt64,
   has_side_effects : LLVMBool,
   is_align_stack : LLVMBool,
@@ -949,39 +953,58 @@ pub extern "C" fn llvm_get_inline_asm(
   can_throw : LLVMBool,
 ) -> LLVMValueRef = "LLVMGetInlineAsm"
 
+///|
+pub fn llvm_get_inline_asm(
+  ty : LLVMTypeRef,
+  asm_string : String,
+  constraints : String,
+  has_side_effects : LLVMBool,
+  is_align_stack : LLVMBool,
+  dialect : LLVMInlineAsmDialect,
+  can_throw : LLVMBool,
+) -> LLVMValueRef {
+  let asm_string = @utf8.encode(asm_string)
+  let constraints = @utf8.encode(constraints)
+  __llvm_get_inline_asm(
+    ty,
+    asm_string,
+    asm_string.length().to_uint64(),
+    constraints,
+    constraints.length().to_uint64(),
+    has_side_effects,
+    is_align_stack,
+    dialect,
+    can_throw,
+  )
+}
+
 // Get the template string used for an inline assembly snippet
 
 ///|
-pub fn llvm_get_inline_asm_string(inline_asm_val : LLVMValueRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_inline_asm_asm_string(inline_asm_val, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_inline_asm_string(
+  inline_asm_val : LLVMValueRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_inline_asm_asm_string(inline_asm_val) |> @utf8.decode
 }
 
 ///|
-#borrow(size)
 extern "C" fn __llvm_get_inline_asm_asm_string(
   inline_asm_val : LLVMValueRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetInlineAsmAsmString"
+) -> Bytes = "llvm_mbt_get_inline_asm_asm_string"
 
 // Get the raw constraint string for an inline assembly snippet
 
 ///|
 pub fn llvm_get_inline_asm_constraint_string(
   inline_asm_val : LLVMValueRef,
-) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_inline_asm_constraint_string(inline_asm_val, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+) -> String raise @utf8.Malformed {
+  __llvm_get_inline_asm_constraint_string(inline_asm_val) |> @utf8.decode
 }
 
 ///|
-#borrow(size)
 extern "C" fn __llvm_get_inline_asm_constraint_string(
   inline_asm_val : LLVMValueRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetInlineAsmConstraintString"
+) -> Bytes = "llvm_mbt_get_inline_asm_constraint_string"
 
 ///|
 /// Get the dialect used by the inline asm snippet
@@ -1106,9 +1129,10 @@ pub fn LLVMModuleRef::get_context(self : LLVMModuleRef) -> LLVMContextRef {
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_get_type_by_name_in_module(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMTypeRef = "__llvm_get_type_by_name_in_module"
 
 ///|
@@ -1116,7 +1140,9 @@ pub fn llvm_get_type_by_name_in_module(
   m : LLVMModuleRef,
   name : String,
 ) -> LLVMTypeRef {
-  let cstr = moonbit_str_to_c_str(name)
+  let cstr = Utf8Z::from_string(name) catch {
+    EmbeddedNul => return LLVMTypeRef::null()
+  }
   __llvm_get_type_by_name_in_module(m, cstr)
 }
 
@@ -1171,34 +1197,52 @@ pub extern "C" fn llvm_get_previous_named_metadata(
 /// node exists.
 /// 
 /// - see llvm::Module::getNamedMetadata()
-pub extern "C" fn llvm_get_named_metadata(
+#borrow(name)
+extern "C" fn __llvm_get_named_metadata(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> LLVMNamedMDNodeRef = "LLVMGetNamedMetadata"
+
+///|
+pub fn llvm_get_named_metadata(
+  m : LLVMModuleRef,
+  name : String,
+) -> LLVMNamedMDNodeRef {
+  let name = @utf8.encode(name)
+  __llvm_get_named_metadata(m, name, name.length().to_uint64())
+}
 
 ///|
 /// Retrieve a NamedMDNode with the given name, creating a new node if no such node exists.
 /// 
 /// - see llvm::Module::getOrInsertNamedMetadata()
-pub extern "C" fn llvm_get_or_insert_named_metadata(
+#borrow(name)
+extern "C" fn __llvm_get_or_insert_named_metadata(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> LLVMNamedMDNodeRef = "LLVMGetOrInsertNamedMetadata"
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_named_metadata_name(
-  named_md : LLVMNamedMDNodeRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetNamedMetadataName"
+pub fn llvm_get_or_insert_named_metadata(
+  m : LLVMModuleRef,
+  name : String,
+) -> LLVMNamedMDNodeRef {
+  let name = @utf8.encode(name)
+  __llvm_get_or_insert_named_metadata(m, name, name.length().to_uint64())
+}
 
 ///|
-pub fn llvm_get_named_metadata_name(named_md : LLVMNamedMDNodeRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_named_metadata_name(named_md, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+extern "C" fn __llvm_get_named_metadata_name(
+  named_md : LLVMNamedMDNodeRef,
+) -> Bytes = "llvm_mbt_get_named_metadata_name"
+
+///|
+pub fn llvm_get_named_metadata_name(
+  named_md : LLVMNamedMDNodeRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_named_metadata_name(named_md) |> @utf8.decode
 }
 
 ///|
@@ -1206,9 +1250,10 @@ pub fn llvm_get_named_metadata_name(named_md : LLVMNamedMDNodeRef) -> String {
 /// 
 /// - see llvm::NamedMDNode::getName()
 /// 
+#borrow(name)
 extern "C" fn __llvm_get_named_metadata_num_operands(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> UInt = "LLVMGetNamedMetadataNumOperands"
 
 ///|
@@ -1220,7 +1265,7 @@ pub fn llvm_get_named_metadata_num_operands(
   m : LLVMModuleRef,
   name : String,
 ) -> UInt {
-  let cstr = moonbit_str_to_c_str(name)
+  let cstr = Utf8Z::from_string(name) catch { EmbeddedNul => return 0 }
   __llvm_get_named_metadata_num_operands(m, cstr)
 }
 
@@ -1240,9 +1285,10 @@ pub fn LLVMModuleRef::get_named_metadata_num_operands(
 /// Obtain the number of operands for named metadata in a module.
 /// 
 /// - see llvm::Module::getNamedMetadata()
+#borrow(name)
 extern "C" fn __llvm_get_named_metadata_operands(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> Array[LLVMValueRef] = "__llvm_get_named_metadata_operands"
 
 ///|
@@ -1253,7 +1299,7 @@ pub fn llvm_get_named_metadata_operands(
   m : LLVMModuleRef,
   name : String,
 ) -> Array[LLVMValueRef] {
-  let cstr = moonbit_str_to_c_str(name)
+  let cstr = Utf8Z::from_string(name) catch { EmbeddedNul => return [] }
   __llvm_get_named_metadata_operands(m, cstr)
 }
 
@@ -1273,9 +1319,10 @@ pub fn LLVMModuleRef::get_named_metadata(
 /// 
 /// - see llvm::Module::getNamedMetadata()
 /// - see llvm::MDNode::addOperand()
+#borrow(name)
 extern "C" fn __llvm_add_named_metadata_operand(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
   val : LLVMValueRef,
 ) = "LLVMAddNamedMetadataOperand"
 
@@ -1288,8 +1335,8 @@ pub fn llvm_add_named_metadata_operand(
   m : LLVMModuleRef,
   name : String,
   val : LLVMValueRef,
-) -> Unit {
-  let cstr = moonbit_str_to_c_str(name)
+) -> Unit raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_add_named_metadata_operand(m, cstr, val)
 }
 
@@ -1302,7 +1349,7 @@ pub fn LLVMModuleRef::add_named_metadata_operand(
   self : LLVMModuleRef,
   name : String,
   val : LLVMValueRef,
-) -> Unit {
+) -> Unit raise CStringError {
   llvm_add_named_metadata_operand(self, name, val)
 }
 
@@ -1316,11 +1363,7 @@ pub fn LLVMModuleRef::add_named_metadata_operand(
 /// - see llvm::GlobalVariable::getDebugInfo()
 /// - see llvm::Function::getSubprogram()
 /// 
-#borrow(size)
-extern "C" fn __llvm_get_debug_loc_directory(
-  val : LLVMValueRef,
-  size : Ref[UInt],
-) -> CStr = "LLVMGetDebugLocDirectory"
+extern "C" fn __llvm_get_debug_loc_directory(val : LLVMValueRef) -> Bytes = "llvm_mbt_get_debug_loc_directory"
 
 ///|
 /// Return the directory of the debug location for this value.
@@ -1332,34 +1375,11 @@ extern "C" fn __llvm_get_debug_loc_directory(
 /// - see llvm::GlobalVariable::getDebugInfo()
 /// - see llvm::Function::getSubprogram()
 /// 
-pub fn llvm_get_debug_loc_directory(val : LLVMValueRef) -> String {
-  let sz = Ref(0U)
-  let cstr = __llvm_get_debug_loc_directory(val, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val)
-}
-
-///|
-/// Return the filename of the debug location for this value.
-/// 
-/// Return the filename of the debug location for this value, which must be
-/// an llvm::Instruction, llvm::GlobalVariable, or llvm::Function.
-/// 
-/// - see llvm::Instruction::getDebugLoc()
-/// - see llvm::GlobalVariable::getDebugInfo()
-/// - see llvm::Function::getSubprogram()
-/// 
-pub fn llvm_get_debug_loc_filename(val : LLVMValueRef) -> String {
-  let sz = Ref(0U)
-  let cstr = __llvm_get_debug_loc_filename(val, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val)
-}
-
-///|
-#borrow(size)
-extern "C" fn __llvm_get_debug_loc_filename(
+pub fn llvm_get_debug_loc_directory(
   val : LLVMValueRef,
-  size : Ref[UInt],
-) -> CStr = "LLVMGetDebugLocFilename"
+) -> String raise @utf8.Malformed {
+  __llvm_get_debug_loc_directory(val) |> @utf8.decode
+}
 
 ///|
 /// Return the filename of the debug location for this value.
@@ -1371,7 +1391,28 @@ extern "C" fn __llvm_get_debug_loc_filename(
 /// - see llvm::GlobalVariable::getDebugInfo()
 /// - see llvm::Function::getSubprogram()
 /// 
-pub fn LLVMValueRef::get_debug_loc_filename(self : LLVMValueRef) -> String {
+pub fn llvm_get_debug_loc_filename(
+  val : LLVMValueRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_debug_loc_filename(val) |> @utf8.decode
+}
+
+///|
+extern "C" fn __llvm_get_debug_loc_filename(val : LLVMValueRef) -> Bytes = "llvm_mbt_get_debug_loc_filename"
+
+///|
+/// Return the filename of the debug location for this value.
+/// 
+/// Return the filename of the debug location for this value, which must be
+/// an llvm::Instruction, llvm::GlobalVariable, or llvm::Function.
+/// 
+/// - see llvm::Instruction::getDebugLoc()
+/// - see llvm::GlobalVariable::getDebugInfo()
+/// - see llvm::Function::getSubprogram()
+/// 
+pub fn LLVMValueRef::get_debug_loc_filename(
+  self : LLVMValueRef,
+) -> String raise @utf8.Malformed {
   llvm_get_debug_loc_filename(self)
 }
 
@@ -1426,9 +1467,10 @@ pub fn LLVMValueRef::get_debug_loc_column(self : LLVMValueRef) -> UInt {
 /// 
 /// - see llvm::Function::Create()
 /// 
+#borrow(name)
 extern "C" fn __llvm_add_function(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
   function_ty : LLVMTypeRef,
 ) -> LLVMValueRef = "LLVMAddFunction"
 
@@ -1437,8 +1479,8 @@ pub fn llvm_add_function(
   m : LLVMModuleRef,
   name : String,
   function_ty : LLVMTypeRef,
-) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMValueRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_add_function(m, cstr, function_ty)
 }
 
@@ -1451,7 +1493,7 @@ pub fn LLVMModuleRef::add_function(
   self : LLVMModuleRef,
   name : String,
   function_ty : LLVMTypeRef,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_add_function(self, name, function_ty)
 }
 
@@ -1461,10 +1503,12 @@ pub fn LLVMModuleRef::add_function(
 /// The returned value corresponds to a llvm::Function value.
 /// 
 /// - see llvm::Module::getFunction()
+#borrow(name)
 extern "C" fn __llvm_get_named_function(
   m : LLVMModuleRef,
-  name : CStr,
-) -> LLVMValueRef = "LLVMGetNamedFunction"
+  name : Bytes,
+  name_len : UInt64,
+) -> LLVMValueRef = "LLVMGetNamedFunctionWithLength"
 
 ///|
 /// Obtain a Function value from a Module by its name.
@@ -1476,8 +1520,8 @@ pub fn llvm_get_named_function(
   m : LLVMModuleRef,
   name : String,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
-  __llvm_get_named_function(m, cstr)
+  let name = @utf8.encode(name)
+  __llvm_get_named_function(m, name, name.length().to_uint64())
 }
 
 ///|
@@ -1635,40 +1679,36 @@ pub fn LLVMTypeRef::dump(self : LLVMTypeRef) -> Unit {
 ///|
 /// Return a string representation of the type.
 ///
-/// Return a string representation of the type. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Type::print()
 /// 
-pub fn llvm_print_type_to_string(val : LLVMTypeRef) -> String {
-  let cstr = __llvm_print_type_to_string(val)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_print_type_to_string(val : LLVMTypeRef) -> String raise {
+  __llvm_print_type_to_string(val).to_string()
 }
 
 ///|
-extern "C" fn __llvm_print_type_to_string(val : LLVMTypeRef) -> CStr = "LLVMPrintTypeToString"
+extern "C" fn __llvm_print_type_to_string(val : LLVMTypeRef) -> LLVMMessage = "llvm_mbt_print_type_to_string"
 
 ///|
 /// Return a string representation of the type.
 ///
-/// Return a string representation of the type. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Type::print()
 /// 
-pub fn LLVMTypeRef::print_to_string(self : LLVMTypeRef) -> String {
+pub fn LLVMTypeRef::print_to_string(self : LLVMTypeRef) -> String raise {
   llvm_print_type_to_string(self)
 }
 
 ///|
 /// Return a string representation of the type.
 ///
-/// Return a string representation of the type. Use
-/// LLVMDisposeMessage to free the string.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Type::print()
 /// 
-pub fn LLVMTypeRef::to_string(self : LLVMTypeRef) -> String {
+pub fn LLVMTypeRef::to_string(self : LLVMTypeRef) -> String raise {
   llvm_print_type_to_string(self)
 }
 
@@ -2196,9 +2236,10 @@ pub fn LLVMTypeRef::struct_type(
 /// 
 /// - see llvm::StructType::create()
 /// 
+#borrow(name)
 extern "C" fn __llvm_struct_create_named(
   context : LLVMContextRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMTypeRef = "LLVMStructCreateNamed"
 
 ///|
@@ -2209,8 +2250,8 @@ extern "C" fn __llvm_struct_create_named(
 pub fn llvm_struct_create_named(
   context : LLVMContextRef,
   name : String,
-) -> LLVMTypeRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMTypeRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_struct_create_named(context, cstr)
 }
 
@@ -2222,7 +2263,7 @@ pub fn llvm_struct_create_named(
 pub fn LLVMContextRef::struct_create_named(
   self : LLVMContextRef,
   name : String,
-) -> LLVMTypeRef {
+) -> LLVMTypeRef raise CStringError {
   llvm_struct_create_named(self, name)
 }
 
@@ -2230,22 +2271,23 @@ pub fn LLVMContextRef::struct_create_named(
 /// Obtain the name of a structure.
 /// 
 /// - see llvm::StructType::getName()
-extern "C" fn __llvm_get_struct_name(ty : LLVMTypeRef) -> CStr = "LLVMGetStructName"
+extern "C" fn __llvm_get_struct_name(ty : LLVMTypeRef) -> Bytes = "llvm_mbt_get_struct_name"
 
 ///|
 /// Obtain the name of a structure.
 /// 
 /// - see llvm::StructType::getName()
-pub fn llvm_get_struct_name(ty : LLVMTypeRef) -> String {
-  let cstr = __llvm_get_struct_name(ty)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_struct_name(ty : LLVMTypeRef) -> String raise @utf8.Malformed {
+  __llvm_get_struct_name(ty) |> @utf8.decode
 }
 
 ///|
 /// Obtain the name of a structure.
 /// 
 /// - see llvm::StructType::getName()
-pub fn LLVMTypeRef::get_struct_name(self : LLVMTypeRef) -> String {
+pub fn LLVMTypeRef::get_struct_name(
+  self : LLVMTypeRef,
+) -> String raise @utf8.Malformed {
   llvm_get_struct_name(self)
 }
 
@@ -2904,16 +2946,17 @@ pub fn LLVMTypeRef::x86_amx_type() -> LLVMTypeRef {
 /// 
 extern "C" fn __llvm_get_target_ext_type_name(
   target_ext_ty : LLVMTypeRef,
-) -> CStr = "LLVMGetTargetExtTypeName"
+) -> Bytes = "llvm_mbt_get_target_ext_type_name"
 
 ///|
 /// Obtain the name for this target extension type.
 /// 
 /// - see llvm::TargetExtType::getName()
 /// 
-pub fn llvm_get_target_ext_type_name(target_ext_ty : LLVMTypeRef) -> String {
-  let cstr = __llvm_get_target_ext_type_name(target_ext_ty)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_target_ext_type_name(
+  target_ext_ty : LLVMTypeRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_target_ext_type_name(target_ext_ty) |> @utf8.decode
 }
 
 ///|
@@ -2921,7 +2964,9 @@ pub fn llvm_get_target_ext_type_name(target_ext_ty : LLVMTypeRef) -> String {
 /// 
 /// - see llvm::TargetExtType::getName()
 /// 
-pub fn LLVMTypeRef::get_target_ext_type_name(self : LLVMTypeRef) -> String {
+pub fn LLVMTypeRef::get_target_ext_type_name(
+  self : LLVMTypeRef,
+) -> String raise @utf8.Malformed {
   llvm_get_target_ext_type_name(self)
 }
 
@@ -3047,24 +3092,20 @@ pub fn LLVMValueRef::get_value_kind(self : LLVMValueRef) -> LLVMValueKind {
 /// Obtain the string name of a value.
 /// 
 /// - see llvm::Value::getName()
-pub fn llvm_get_value_name(val : LLVMValueRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_value_name2(val, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_value_name(val : LLVMValueRef) -> String raise @utf8.Malformed {
+  __llvm_get_value_name2(val) |> @utf8.decode
 }
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_value_name2(
-  val : LLVMValueRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetValueName2"
+extern "C" fn __llvm_get_value_name2(val : LLVMValueRef) -> Bytes = "llvm_mbt_get_value_name"
 
 ///|
 /// Obtain the string name of a value.
 /// 
 ///
-pub fn LLVMValueRef::get_name(self : LLVMValueRef) -> String {
+pub fn LLVMValueRef::get_name(
+  self : LLVMValueRef,
+) -> String raise @utf8.Malformed {
   llvm_get_value_name(self)
 }
 
@@ -3072,9 +3113,10 @@ pub fn LLVMValueRef::get_name(self : LLVMValueRef) -> String {
 /// Set the string name of a value.
 /// 
 /// - see llvm::Value::setName()
+#borrow(name)
 extern "C" fn __llvm_set_value_name(
   val : LLVMValueRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) = "LLVMSetValueName2"
 
@@ -3083,9 +3125,8 @@ extern "C" fn __llvm_set_value_name(
 /// 
 /// - see llvm::Value::setName()
 pub fn llvm_set_value_name(val : LLVMValueRef, name : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(name)
-  let len = name.length().to_uint64()
-  __llvm_set_value_name(val, cstr, len)
+  let name = @utf8.encode(name)
+  __llvm_set_value_name(val, name, name.length().to_uint64())
 }
 
 ///|
@@ -3116,78 +3157,78 @@ pub fn LLVMValueRef::dump(self : LLVMValueRef) -> Unit {
 }
 
 ///|
-/// Return a string representation of the value. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the value.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Value::print()
-extern "C" fn __llvm_print_value_to_string(val : LLVMValueRef) -> CStr = "LLVMPrintValueToString"
+extern "C" fn __llvm_print_value_to_string(val : LLVMValueRef) -> LLVMMessage = "llvm_mbt_print_value_to_string"
 
 ///|
-/// Return a string representation of the value. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the value.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Value::print()
-pub fn llvm_print_value_to_string(val : LLVMValueRef) -> String {
-  let cstr = __llvm_print_value_to_string(val)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_print_value_to_string(val : LLVMValueRef) -> String raise {
+  __llvm_print_value_to_string(val).to_string()
 }
 
 ///|
-/// Return a string representation of the value. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the value.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Value::print()
-pub fn LLVMValueRef::print(self : LLVMValueRef) -> String {
+pub fn LLVMValueRef::print(self : LLVMValueRef) -> String raise {
   llvm_print_value_to_string(self)
 }
 
 ///|
-/// Return a string representation of the value. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the value.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::Value::print()
-pub fn LLVMValueRef::to_string(self : LLVMValueRef) -> String {
+pub fn LLVMValueRef::to_string(self : LLVMValueRef) -> String raise {
   llvm_print_value_to_string(self)
 }
 
 ///|
-/// Return a string representation of the DbgRecord. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the DbgRecord.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::DbgRecord::print()
 /// 
 extern "C" fn __llvm_print_dbg_record_to_string(
   record : LLVMDbgRecordRef,
-) -> CStr = "LLVMPrintDbgRecordToString"
+) -> LLVMMessage = "llvm_mbt_print_dbg_record_to_string"
 
 ///|
-/// Return a string representation of the DbgRecord. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the DbgRecord.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::DbgRecord::print()
 /// 
-pub fn llvm_print_dbg_record_to_string(record : LLVMDbgRecordRef) -> String {
-  let cstr = __llvm_print_dbg_record_to_string(record)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_print_dbg_record_to_string(
+  record : LLVMDbgRecordRef,
+) -> String raise {
+  __llvm_print_dbg_record_to_string(record).to_string()
 }
 
 ///|
-/// Return a string representation of the DbgRecord. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the DbgRecord.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::DbgRecord::print()
 /// 
-pub fn LLVMDbgRecordRef::print(self : LLVMDbgRecordRef) -> String {
+pub fn LLVMDbgRecordRef::print(self : LLVMDbgRecordRef) -> String raise {
   llvm_print_dbg_record_to_string(self)
 }
 
 ///|
-/// Return a string representation of the DbgRecord. Use
-/// LLVMDisposeMessage to free the string.
+/// Return a string representation of the DbgRecord.
+/// The binding releases the LLVM message through its C finalizer.
 /// 
 /// - see llvm::DbgRecord::print()
 /// 
-pub fn LLVMDbgRecordRef::to_string(self : LLVMDbgRecordRef) -> String {
+pub fn LLVMDbgRecordRef::to_string(self : LLVMDbgRecordRef) -> String raise {
   llvm_print_dbg_record_to_string(self)
 }
 
@@ -4238,18 +4279,6 @@ pub fn LLVMValueRef::isa_md_string(self : LLVMValueRef) -> LLVMValueRef {
   llvm_isa_md_string(self)
 }
 
-//| Obtain the string name of a value.
-// 
-// - see llvm::Value::getName()
-// pub extern "C" fn llvm_get_value_name(val: LLVMValueRef) -> CStr = "LLVMGetValueName"
-// pub fn LLVMValueRef::get_value_name(self: LLVMValueRef) -> String {
-//   let cstr = llvm_get_value_name(self)
-//   c_str_to_moonbit_str(cstr)
-// }
-
-// deprecated
-// pub extern "C" fn llvm_set_value_name(val: LLVMValueRef, name: CStr) = "LLVMSetValueName"
-
 ///|
 /// Obtain the first use of a value.
 /// 
@@ -4568,29 +4597,12 @@ extern "C" fn __llvm_const_int_of_arbitrary_precision(
 /// instead.
 /// 
 /// - see llvm::ConstantInt::get()
-extern "C" fn __llvm_const_int_of_string(
-  int_ty : LLVMTypeRef,
-  text : CStr,
-  radix : Byte,
-) -> LLVMValueRef = "LLVMConstIntOfString"
-
-///|
-/// Obtain a constant value for an integer parsed from a string.
-/// 
-/// A similar API, LLVMConstIntOfStringAndSize is also available. If the
-/// string's length is available, it is preferred to call that function
-/// instead.
-/// 
-/// - see llvm::ConstantInt::get()
-// TODO: use llvm_const_int_of_string_and_size instead
 pub fn llvm_const_int_of_string(
   int_ty : LLVMTypeRef,
   text : String,
   radix : Int,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(text)
-  let radix = radix.to_byte()
-  __llvm_const_int_of_string(int_ty, cstr, radix)
+  llvm_const_int_of_string_and_size(int_ty, text, radix)
 }
 
 ///|
@@ -4610,9 +4622,10 @@ pub fn LLVMTypeRef::const_int_of_string(
 }
 
 ///|
+#borrow(text)
 extern "C" fn __llvm_const_int_of_string_and_size(
   int_ty : LLVMTypeRef,
-  text : CStr,
+  text : Bytes,
   s_len : Int,
   radix : Byte,
 ) -> LLVMValueRef = "LLVMConstIntOfStringAndSize"
@@ -4623,10 +4636,10 @@ pub fn llvm_const_int_of_string_and_size(
   text : String,
   radix : Int,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(text)
+  let text = @utf8.encode(text)
   let s_len = text.length()
   let radix = radix.to_byte()
-  __llvm_const_int_of_string_and_size(int_ty, cstr, s_len, radix)
+  __llvm_const_int_of_string_and_size(int_ty, text, s_len, radix)
 }
 
 ///|
@@ -4647,20 +4660,12 @@ pub fn LLVMTypeRef::const_real(self : LLVMTypeRef, n : Double) -> LLVMValueRef {
 /// 
 /// A similar API, LLVMConstRealOfStringAndSize is also available. It
 /// should be used if the input string's length is known.
-// TODO: use llvm_const_real_of_string_and_size instead
 pub fn llvm_const_real_of_string(
   real_ty : LLVMTypeRef,
   text : String,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(text)
-  __llvm_const_real_of_string(real_ty, cstr)
+  llvm_const_real_of_string_and_size(real_ty, text)
 }
-
-///|
-extern "C" fn __llvm_const_real_of_string(
-  real_ty : LLVMTypeRef,
-  text : CStr,
-) -> LLVMValueRef = "LLVMConstRealOfString"
 
 ///|
 /// Obtain a constant for a floating point value parsed from a string.
@@ -4676,9 +4681,10 @@ pub fn LLVMTypeRef::const_real_of_string(
 
 ///|
 /// Obtain a constant for a floating point value parsed from a string.
+#borrow(text)
 extern "C" fn __llvm_const_real_of_string_and_size(
   real_ty : LLVMTypeRef,
-  text : CStr,
+  text : Bytes,
   s_len : UInt,
 ) -> LLVMValueRef = "LLVMConstRealOfStringAndSize"
 
@@ -4688,9 +4694,12 @@ pub fn llvm_const_real_of_string_and_size(
   real_ty : LLVMTypeRef,
   text : String,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(text)
-  let s_len = text.length().reinterpret_as_uint()
-  __llvm_const_real_of_string_and_size(real_ty, cstr, s_len)
+  let text = @utf8.encode(text)
+  __llvm_const_real_of_string_and_size(
+    real_ty,
+    text,
+    text.length().reinterpret_as_uint(),
+  )
 }
 
 ///|
@@ -4756,9 +4765,10 @@ pub fn llvm_const_real_get_double(
 /// - see llvm::ConstantDataArray::getString()
 /// 
 // TODO: use llvm_const_string_in_context2 instead
+#borrow(str)
 extern "C" fn __llvm_const_string_in_context(
   context : LLVMContextRef,
-  str : CStr,
+  str : Bytes,
   length : UInt,
   dont_null_terminate : LLVMBool,
 ) -> LLVMValueRef = "LLVMConstStringInContext"
@@ -4775,10 +4785,14 @@ pub fn llvm_const_string_in_context(
   str : String,
   dont_null_terminate : Bool,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(str)
-  let length = str.length().reinterpret_as_uint()
+  let str = @utf8.encode(str)
   let dont_null_terminate = to_llvm_bool(dont_null_terminate)
-  __llvm_const_string_in_context(context, cstr, length, dont_null_terminate)
+  __llvm_const_string_in_context(
+    context,
+    str,
+    str.length().reinterpret_as_uint(),
+    dont_null_terminate,
+  )
 }
 
 ///|
@@ -4800,9 +4814,10 @@ pub fn LLVMContextRef::const_string(
 /// Create a ConstantDataSequential and initialize it with a string.
 /// 
 /// - see llvm::ConstantDataArray::getString()
+#borrow(str)
 extern "C" fn __llvm_const_string_in_context2(
   context : LLVMContextRef,
-  str : CStr,
+  str : Bytes,
   length : UInt64,
   dont_null_terminate : LLVMBool,
 ) -> LLVMValueRef = "LLVMConstStringInContext2"
@@ -4816,10 +4831,14 @@ pub fn llvm_const_string_in_context2(
   str : String,
   dont_null_terminate : Bool,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(str)
-  let length = str.length().to_uint64()
+  let str = @utf8.encode(str)
   let dont_null_terminate = to_llvm_bool(dont_null_terminate)
-  __llvm_const_string_in_context2(context, cstr, length, dont_null_terminate)
+  __llvm_const_string_in_context2(
+    context,
+    str,
+    str.length().to_uint64(),
+    dont_null_terminate,
+  )
 }
 
 ///|
@@ -4842,11 +4861,25 @@ pub fn LLVMContextRef::const_string2(
 /// 
 /// - see LLVMConstStringInContext()
 /// - see llvm::ConstantDataArray::getString()
-pub extern "C" fn llvm_const_string(
-  str : CStr,
+#borrow(str)
+extern "C" fn __llvm_const_string(
+  str : Bytes,
   length : UInt,
   dont_null_terminate : LLVMBool,
 ) -> LLVMValueRef = "LLVMConstString"
+
+///|
+pub fn llvm_const_string(
+  str : String,
+  dont_null_terminate : LLVMBool,
+) -> LLVMValueRef {
+  let str = @utf8.encode(str)
+  __llvm_const_string(
+    str,
+    str.length().reinterpret_as_uint(),
+    dont_null_terminate,
+  )
+}
 
 ///|
 extern "C" fn __llvm_is_constant_string(c : LLVMValueRef) -> LLVMBool = "LLVMIsConstantString"
@@ -4865,20 +4898,19 @@ pub fn LLVMValueRef::is_constant_string(self : LLVMValueRef) -> Bool {
 /// Get the given constant data sequential as a string.
 /// 
 /// - see ConstantDataSequential::getAsString()
-#borrow(size)
+#borrow(length)
 extern "C" fn __llvm_get_as_string(
   c : LLVMValueRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetAsString"
+  length : Ref[UInt64],
+) -> DeferredBorrowedBytes = "LLVMGetAsString"
 
 ///|
 /// Get the given constant data sequential as a string.
 /// 
 /// - see ConstantDataSequential::getAsString()
 pub fn llvm_get_as_string(c : LLVMValueRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_as_string(c, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+  let length : Ref[UInt64] = Ref(0UL)
+  __llvm_get_as_string(c, length).to_string_with_length(length.val.to_uint())
 }
 
 ///|
@@ -5622,16 +5654,6 @@ pub fn LLVMValueRef::get_block_address_basic_block(
 
 ///|
 /// Return inlined asm of a constant value.
-extern "C" fn __llvm_const_inline_asm(
-  ty : LLVMTypeRef,
-  asm_string : CStr,
-  constraints : CStr,
-  has_side_effects : LLVMBool,
-  is_align_stack : LLVMBool,
-) -> LLVMValueRef = "LLVMConstInlineAsm"
-
-///|
-/// Return inlined asm of a constant value.
 pub fn llvm_const_inline_asm(
   ty : LLVMTypeRef,
   asm_string : String,
@@ -5639,14 +5661,14 @@ pub fn llvm_const_inline_asm(
   has_side_effects : Bool,
   is_align_stack : Bool,
 ) -> LLVMValueRef {
-  let asm_str = moonbit_str_to_c_str(asm_string)
-  let constraints_str = moonbit_str_to_c_str(constraints)
-  __llvm_const_inline_asm(
+  llvm_get_inline_asm(
     ty,
-    asm_str,
-    constraints_str,
+    asm_string,
+    constraints,
     to_llvm_bool(has_side_effects),
     to_llvm_bool(is_align_stack),
+    LLVMInlineAsmDialectATT,
+    to_llvm_bool(false),
   )
 }
 
@@ -5725,35 +5747,43 @@ pub fn LLVMValueRef::set_linkage(
 
 ///|
 /// Get section for value.
-extern "C" fn __llvm_get_section(global : LLVMValueRef) -> CStr = "LLVMGetSection"
+extern "C" fn __llvm_get_section(global : LLVMValueRef) -> Bytes = "llvm_mbt_get_section"
 
 ///|
 /// Get section for value.
-pub fn llvm_get_section(global : LLVMValueRef) -> String {
-  let cstr = __llvm_get_section(global)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_section(global : LLVMValueRef) -> String raise @utf8.Malformed {
+  __llvm_get_section(global) |> @utf8.decode
 }
 
 ///|
 /// Get section for value.
-pub fn LLVMValueRef::get_section(self : LLVMValueRef) -> String {
+pub fn LLVMValueRef::get_section(
+  self : LLVMValueRef,
+) -> String raise @utf8.Malformed {
   llvm_get_section(self)
 }
 
 ///|
 /// Set section for global value.
-extern "C" fn __llvm_set_section(global : LLVMValueRef, section : CStr) = "LLVMSetSection"
+#borrow(section)
+extern "C" fn __llvm_set_section(global : LLVMValueRef, section : Utf8Z) = "LLVMSetSection"
 
 ///|
 /// Set section for global value.
-pub fn llvm_set_section(global : LLVMValueRef, section : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(section)
+pub fn llvm_set_section(
+  global : LLVMValueRef,
+  section : String,
+) -> Unit raise CStringError {
+  let cstr = Utf8Z::from_string(section)
   __llvm_set_section(global, cstr)
 }
 
 ///|
 /// Set section for global value.
-pub fn LLVMValueRef::set_section(self : LLVMValueRef, section : String) -> Unit {
+pub fn LLVMValueRef::set_section(
+  self : LLVMValueRef,
+  section : String,
+) -> Unit raise CStringError {
   llvm_set_section(self, section)
 }
 
@@ -6009,10 +6039,11 @@ pub fn LLVMValueRef::global_clear_metadata(self : LLVMValueRef) -> Unit {
 // pub extern "C" fn llvm_value_metadata_entries_get_metadata(entries: Array[LLVMValueMetadataEntry], index: UInt) -> LLVMMetadataRef = "__llvm_value_metadata_entries_get_metadata"
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_add_global(
   m : LLVMModuleRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMAddGlobal"
 
 ///|
@@ -6020,16 +6051,17 @@ pub fn llvm_add_global(
   m : LLVMModuleRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMValueRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_add_global(m, ty, cstr)
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_add_global_in_address_space(
   m : LLVMModuleRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
   address_space : UInt,
 ) -> LLVMValueRef = "LLVMAddGlobalInAddressSpace"
 
@@ -6039,21 +6071,23 @@ pub fn llvm_add_global_in_address_space(
   ty : LLVMTypeRef,
   name : String,
   address_space : UInt,
-) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMValueRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_add_global_in_address_space(m, ty, cstr, address_space)
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_get_named_global(
   m : LLVMModuleRef,
-  name : CStr,
-) -> LLVMValueRef = "LLVMGetNamedGlobal"
+  name : Bytes,
+  name_len : UInt64,
+) -> LLVMValueRef = "LLVMGetNamedGlobalWithLength"
 
 ///|
 pub fn llvm_get_named_global(m : LLVMModuleRef, name : String) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
-  __llvm_get_named_global(m, cstr)
+  let name = @utf8.encode(name)
+  __llvm_get_named_global(m, name, name.length().to_uint64())
 }
 
 ///|
@@ -6169,12 +6203,13 @@ pub fn llvm_set_externally_initialized(
 /// Add a GlobalAlias with the given value type, address space and aliasee.
 /// 
 /// - see llvm::GlobalAlias::create()
+#borrow(name)
 extern "C" fn __llvm_add_alias2(
   m : LLVMModuleRef,
   value_ty : LLVMTypeRef,
   addr_space : UInt,
   aliasee : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMAddAlias2"
 
 ///|
@@ -6187,8 +6222,8 @@ pub fn llvm_add_alias2(
   addr_space : UInt,
   aliasee : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMValueRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_add_alias2(m, value_ty, addr_space, aliasee, cstr)
 }
 
@@ -6198,9 +6233,10 @@ pub fn llvm_add_alias2(
 /// The returned value corresponds to a llvm::GlobalAlias value.
 /// 
 /// - see llvm::Module::getNamedAlias()
+#borrow(name)
 extern "C" fn __llvm_get_named_global_alias(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> LLVMValueRef = "LLVMGetNamedGlobalAlias"
 
@@ -6214,9 +6250,8 @@ pub fn llvm_get_named_global_alias(
   m : LLVMModuleRef,
   name : String,
 ) -> LLVMValueRef {
-  let len = name.length().to_uint64()
-  let name = moonbit_str_to_c_str(name)
-  __llvm_get_named_global_alias(m, name, len)
+  let name = @utf8.encode(name)
+  __llvm_get_named_global_alias(m, name, name.length().to_uint64())
 }
 
 ///|
@@ -6343,16 +6378,16 @@ pub extern "C" fn llvm_set_personality_fn(
 /// Obtain the intrinsic ID number which matches the given function name.
 /// 
 /// - see llvm::Intrinsic::lookupIntrinsicID()
+#borrow(name)
 extern "C" fn __llvm_lookup_intrinsic_id(
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> UInt = "LLVMLookupIntrinsicID"
 
 ///|
 pub fn llvm_lookup_intrinsic_id(name : String) -> UInt {
-  let len = name.length().to_uint64()
-  let name = moonbit_str_to_c_str(name)
-  __llvm_lookup_intrinsic_id(name, len)
+  let name = @utf8.encode(name)
+  __llvm_lookup_intrinsic_id(name, name.length().to_uint64())
 }
 
 ///|
@@ -6432,17 +6467,14 @@ pub fn LLVMContextRef::intrinsic_get_type(
 /// Retrieves the name of an intrinsic.
 /// 
 /// - see llvm::Intrinsic::getName()
-#borrow(size)
-extern "C" fn __llvm_intrinsic_get_name(id : UInt, size : Ref[UInt64]) -> CStr = "LLVMIntrinsicGetName"
+extern "C" fn __llvm_intrinsic_get_name(id : UInt) -> Bytes = "llvm_mbt_intrinsic_get_name"
 
 ///|
 /// Retrieves the name of an intrinsic.
 /// 
 /// - see llvm::Intrinsic::getName()
-pub fn llvm_intrinsic_get_name(id : UInt) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_intrinsic_get_name(id, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_intrinsic_get_name(id : UInt) -> String raise @utf8.Malformed {
+  __llvm_intrinsic_get_name(id) |> @utf8.decode
 }
 
 // Deprecated: Use LLVMIntrinsicCopyOverloadedName2 instead.
@@ -6453,24 +6485,22 @@ extern "C" fn __llvm_intrinsic_copy_overloaded_name(
   id : UInt,
   param_types : FixedArray[LLVMTypeRef],
   param_count : UInt,
-) -> CStr = "__llvm_intrinsic_copy_overloaded_name"
+) -> LibcCString = "llvm_mbt_intrinsic_copy_overloaded_name"
 
 ///|
 pub fn llvm_intrinsic_copy_overloaded_name(
   id : UInt,
   param_types : Array[LLVMTypeRef],
-) -> String {
+) -> String raise {
   let cnt = param_types.length().reinterpret_as_uint()
   let param_types = FixedArray::from_array(param_types)
-  let cstr = __llvm_intrinsic_copy_overloaded_name(id, param_types, cnt)
-  c_str_to_moonbit_str(cstr)
+  __llvm_intrinsic_copy_overloaded_name(id, param_types, cnt).to_string()
 }
 
 ///|
 /// Copies the name of an overloaded intrinsic identified by a given list of parameter types.
 /// 
-/// Unlike LLVMIntrinsicGetName, the caller is responsible for freeing the
-/// returned string.
+/// The binding releases LLVM's returned string through its C finalizer.
 /// 
 /// This version also supports unnamed types.
 /// 
@@ -6481,13 +6511,12 @@ extern "C" fn __llvm_intrinsic_copy_overloaded_name2(
   id : UInt,
   param_types : FixedArray[LLVMTypeRef],
   param_count : UInt,
-) -> CStr = "__llvm_intrinsic_copy_overloaded_name2"
+) -> LibcCString = "llvm_mbt_intrinsic_copy_overloaded_name2"
 
 ///|
 /// Copies the name of an overloaded intrinsic identified by a given list of parameter types.
 /// 
-/// Unlike LLVMIntrinsicGetName, the caller is responsible for freeing the
-/// returned string.
+/// The binding releases LLVM's returned string through its C finalizer.
 /// 
 /// This version also supports unnamed types.
 /// 
@@ -6496,11 +6525,10 @@ pub fn llvm_intrinsic_copy_overloaded_name2(
   mod : LLVMModuleRef,
   id : UInt,
   param_types : Array[LLVMTypeRef],
-) -> String {
+) -> String raise {
   let cnt = param_types.length().reinterpret_as_uint()
   let param_types = FixedArray::from_array(param_types)
-  let cstr = __llvm_intrinsic_copy_overloaded_name2(mod, id, param_types, cnt)
-  c_str_to_moonbit_str(cstr)
+  __llvm_intrinsic_copy_overloaded_name2(mod, id, param_types, cnt).to_string()
 }
 
 ///|
@@ -6538,25 +6566,28 @@ pub extern "C" fn llvm_set_function_call_conv(func : LLVMValueRef, cc : UInt) = 
 /// Obtain the name of the garbage collector to use during code generation.
 /// 
 /// - see llvm::Function::getGC()
-pub fn llvm_get_gc(func : LLVMValueRef) -> String {
-  let cstr = __llvm_get_gc(func)
-  c_str_to_moonbit_str(cstr)
+pub fn llvm_get_gc(func : LLVMValueRef) -> String raise @utf8.Malformed {
+  __llvm_get_gc(func) |> @utf8.decode
 }
 
 ///|
-extern "C" fn __llvm_get_gc(func : LLVMValueRef) -> CStr = "LLVMGetGC"
+extern "C" fn __llvm_get_gc(func : LLVMValueRef) -> Bytes = "llvm_mbt_get_gc"
 
 ///|
 /// Define the garbage collector to use during code generation.
 /// 
 /// - see llvm::Function::setGC()
-pub fn llvm_set_gc(func : LLVMValueRef, name : String) -> Unit {
-  let cstr = moonbit_str_to_c_str(name)
+pub fn llvm_set_gc(
+  func : LLVMValueRef,
+  name : String,
+) -> Unit raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_set_gc(func, cstr)
 }
 
 ///|
-extern "C" fn __llvm_set_gc(func : LLVMValueRef, name : CStr) = "LLVMSetGC"
+#borrow(name)
+extern "C" fn __llvm_set_gc(func : LLVMValueRef, name : Utf8Z) = "LLVMSetGC"
 
 ///|
 /// Gets the prefix data associated with a function.
@@ -6651,10 +6682,11 @@ pub extern "C" fn llvm_get_enum_attribute_at_index(
 ) -> LLVMAttributeRef = "LLVMGetEnumAttributeAtIndex"
 
 ///|
+#borrow(k)
 extern "C" fn __llvm_get_string_attribute_at_index(
   f : LLVMValueRef,
   idx : LLVMAttributeIndex,
-  k : CStr,
+  k : Bytes,
   k_len : UInt,
 ) -> LLVMAttributeRef = "LLVMGetStringAttributeAtIndex"
 
@@ -6664,9 +6696,13 @@ pub fn llvm_get_string_attribute_at_index(
   idx : LLVMAttributeIndex,
   k : String,
 ) -> LLVMAttributeRef {
-  let cstr = moonbit_str_to_c_str(k)
-  let len = k.length().reinterpret_as_uint()
-  __llvm_get_string_attribute_at_index(f, idx, cstr, len)
+  let k = @utf8.encode(k)
+  __llvm_get_string_attribute_at_index(
+    f,
+    idx,
+    k,
+    k.length().reinterpret_as_uint(),
+  )
 }
 
 ///|
@@ -6677,10 +6713,11 @@ pub extern "C" fn llvm_remove_enum_attribute_at_index(
 ) = "LLVMRemoveEnumAttributeAtIndex"
 
 ///|
+#borrow(k)
 extern "C" fn __llvm_remove_string_attribute_at_index(
   f : LLVMValueRef,
   idx : LLVMAttributeIndex,
-  k : CStr,
+  k : Bytes,
   k_len : UInt,
 ) = "LLVMRemoveStringAttributeAtIndex"
 
@@ -6690,19 +6727,24 @@ pub fn llvm_remove_string_attribute_at_index(
   idx : LLVMAttributeIndex,
   k : String,
 ) -> Unit {
-  let cstr = moonbit_str_to_c_str(k)
-  let len = k.length().reinterpret_as_uint()
-  __llvm_remove_string_attribute_at_index(f, idx, cstr, len)
+  let k = @utf8.encode(k)
+  __llvm_remove_string_attribute_at_index(
+    f,
+    idx,
+    k,
+    k.length().reinterpret_as_uint(),
+  )
 }
 
 ///|
 /// Add a target-dependent attribute to a function
 ///
 /// - see llvm::AttrBuilder::addAttribute()
+#borrow(a, v)
 extern "C" fn __llvm_add_target_dependent_function_attr(
   func : LLVMValueRef,
-  a : CStr,
-  v : CStr,
+  a : Utf8Z,
+  v : Utf8Z,
 ) = "LLVMAddTargetDependentFunctionAttr"
 
 ///|
@@ -6713,9 +6755,9 @@ pub fn llvm_add_target_dependent_function_attr(
   func : LLVMValueRef,
   a : String,
   v : String,
-) -> Unit {
-  let attr = moonbit_str_to_c_str(a)
-  let val = moonbit_str_to_c_str(v)
+) -> Unit raise CStringError {
+  let attr = Utf8Z::from_string(a)
+  let val = Utf8Z::from_string(v)
   __llvm_add_target_dependent_function_attr(func, attr, val)
 }
 
@@ -6894,9 +6936,10 @@ pub fn LLVMValueRef::set_param_alignment(
 /// Add a global indirect function to a module under a specified name.
 /// 
 /// - see llvm::GlobalIFunc::create()
+#borrow(name)
 extern "C" fn __llvm_add_global_ifunc(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
   ty : LLVMTypeRef,
   addr_space : UInt,
@@ -6914,10 +6957,10 @@ pub fn llvm_add_global_ifunc(
   addr_space : UInt,
   resolver : LLVMValueRef,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
+  let name = @utf8.encode(name)
   __llvm_add_global_ifunc(
     m,
-    cstr,
+    name,
     name.length().to_uint64(),
     ty,
     addr_space,
@@ -6941,9 +6984,10 @@ pub fn LLVMModuleRef::add_global_ifunc(
 
 ///|
 /// Obtain a GlobalIFunc value from a Module by its name.
+#borrow(name)
 extern "C" fn __llvm_get_named_global_ifunc(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> LLVMValueRef = "LLVMGetNamedGlobalIFunc"
 
@@ -6953,8 +6997,8 @@ pub fn llvm_get_named_global_ifunc(
   m : LLVMModuleRef,
   name : String,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(name)
-  __llvm_get_named_global_ifunc(m, cstr, name.length().to_uint64())
+  let name = @utf8.encode(name)
+  __llvm_get_named_global_ifunc(m, name, name.length().to_uint64())
 }
 
 ///|
@@ -7069,9 +7113,10 @@ pub fn LLVMValueRef::remove_global_ifunc(self : LLVMValueRef) -> Unit {
 }
 
 ///|
+#borrow(str)
 extern "C" fn __llvm_md_string_in_context2(
   context : LLVMContextRef,
-  str : CStr,
+  str : Bytes,
   s_len : UInt64,
 ) -> LLVMMetadataRef = "LLVMMDStringInContext2"
 
@@ -7080,8 +7125,8 @@ pub fn llvm_md_string_in_context2(
   context : LLVMContextRef,
   str : String,
 ) -> LLVMMetadataRef {
-  let cstr = moonbit_str_to_c_str(str)
-  __llvm_md_string_in_context2(context, cstr, str.length().to_uint64())
+  let str = @utf8.encode(str)
+  __llvm_md_string_in_context2(context, str, str.length().to_uint64())
 }
 
 ///|
@@ -7133,14 +7178,16 @@ pub fn LLVMValueRef::as_metadata(self : LLVMValueRef) -> LLVMMetadataRef {
 }
 
 ///|
-#borrow(size)
-extern "C" fn __llvm_get_md_string(v : LLVMValueRef, size : Ref[UInt]) -> CStr = "LLVMGetMDString"
+#borrow(length)
+extern "C" fn __llvm_get_md_string(
+  v : LLVMValueRef,
+  length : Ref[UInt],
+) -> DeferredBorrowedBytes = "LLVMGetMDString"
 
 ///|
 pub fn llvm_get_md_string(v : LLVMValueRef) -> String {
-  let sz = Ref(0U)
-  let cstr = __llvm_get_md_string(v, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val)
+  let length : Ref[UInt] = Ref(0U)
+  __llvm_get_md_string(v, length).to_string_with_length(length.val)
 }
 
 ///|
@@ -7196,9 +7243,10 @@ pub fn LLVMValueRef::replace_md_node_operand_with(
 }
 
 ///|
+#borrow(str)
 extern "C" fn __llvm_md_string_in_context(
   context : LLVMContextRef,
-  str : CStr,
+  str : Bytes,
   s_len : UInt,
 ) -> LLVMValueRef = "LLVMMDStringInContext"
 
@@ -7207,8 +7255,8 @@ pub fn llvm_md_string_in_context(
   context : LLVMContextRef,
   str : String,
 ) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(str)
-  __llvm_md_string_in_context(context, cstr, str.length().reinterpret_as_uint())
+  let str = @utf8.encode(str)
+  __llvm_md_string_in_context(context, str, str.length().reinterpret_as_uint())
 }
 
 ///|
@@ -7220,12 +7268,13 @@ pub fn LLVMContextRef::md_string_in_context(
 }
 
 ///|
-extern "C" fn __llvm_md_string(str : CStr, s_len : UInt) -> LLVMValueRef = "LLVMMDString"
+#borrow(str)
+extern "C" fn __llvm_md_string(str : Bytes, s_len : UInt) -> LLVMValueRef = "LLVMMDString"
 
 ///|
 pub fn llvm_md_string(str : String) -> LLVMValueRef {
-  let cstr = moonbit_str_to_c_str(str)
-  __llvm_md_string(cstr, str.length().reinterpret_as_uint())
+  let str = @utf8.encode(str)
+  __llvm_md_string(str, str.length().reinterpret_as_uint())
 }
 
 ///|
@@ -7275,9 +7324,9 @@ extern "C" fn __llvm_md_node(
 
 ///|
 /// Create operand bundle.
-#borrow(args)
+#borrow(args, tag)
 extern "C" fn __llvm_create_operand_bundle(
-  tag : CStr,
+  tag : Bytes,
   tag_len : UInt64,
   args : FixedArray[LLVMValueRef],
   num_args : UInt,
@@ -7289,10 +7338,10 @@ pub fn llvm_create_operand_bundle(
   tag : String,
   args : Array[LLVMValueRef],
 ) -> LLVMOperandBundleRef {
-  let cstr = moonbit_str_to_c_str(tag)
+  let tag = @utf8.encode(tag)
   let num_args = args.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
-  __llvm_create_operand_bundle(cstr, tag.length().to_uint64(), args, num_args)
+  __llvm_create_operand_bundle(tag, tag.length().to_uint64(), args, num_args)
 }
 
 ///|
@@ -7307,18 +7356,16 @@ pub fn LLVMOperandBundleRef::dispose(self : LLVMOperandBundleRef) -> Unit {
 
 ///|
 /// Get the tag of an operand bundle.
-#borrow(size)
 extern "C" fn __llvm_get_operand_bundle_tag(
   bundle : LLVMOperandBundleRef,
-  size : Ref[UInt64],
-) -> CStr = "LLVMGetOperandBundleTag"
+) -> Bytes = "llvm_mbt_get_operand_bundle_tag"
 
 ///|
 /// Get the tag of an operand bundle.
-pub fn llvm_get_operand_bundle_tag(bundle : LLVMOperandBundleRef) -> String {
-  let sz = Ref(0UL)
-  let cstr = __llvm_get_operand_bundle_tag(bundle, sz)
-  c_str_to_moonbit_str_with_length(cstr, sz.val.to_uint())
+pub fn llvm_get_operand_bundle_tag(
+  bundle : LLVMOperandBundleRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_operand_bundle_tag(bundle) |> @utf8.decode
 }
 
 ///|
@@ -7393,18 +7440,21 @@ pub fn LLVMValueRef::as_basic_block(self : LLVMValueRef) -> LLVMBasicBlockRef {
 
 ///|
 /// Get the name of a basic block.
-extern "C" fn __llvm_get_basic_block_name(bb : LLVMBasicBlockRef) -> CStr = "LLVMGetBasicBlockName"
+extern "C" fn __llvm_get_basic_block_name(bb : LLVMBasicBlockRef) -> Bytes = "llvm_mbt_get_basic_block_name"
 
 ///|
 /// Get the name of a basic block.
-pub fn llvm_get_basic_block_name(bb : LLVMBasicBlockRef) -> String {
-  let name = __llvm_get_basic_block_name(bb)
-  c_str_to_moonbit_str(name)
+pub fn llvm_get_basic_block_name(
+  bb : LLVMBasicBlockRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_basic_block_name(bb) |> @utf8.decode
 }
 
 ///|
 /// Get the name of a basic block.
-pub fn LLVMBasicBlockRef::get_name(self : LLVMBasicBlockRef) -> String {
+pub fn LLVMBasicBlockRef::get_name(
+  self : LLVMBasicBlockRef,
+) -> String raise @utf8.Malformed {
   llvm_get_basic_block_name(self)
 }
 
@@ -7573,9 +7623,10 @@ pub fn LLVMValueRef::append_existing_basic_block(
 
 ///|
 /// Create a basic block in a context.
+#borrow(name)
 extern "C" fn __llvm_create_basic_block_in_context(
   context : LLVMContextRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMBasicBlockRef = "LLVMCreateBasicBlockInContext"
 
 ///|
@@ -7583,17 +7634,18 @@ extern "C" fn __llvm_create_basic_block_in_context(
 pub fn llvm_create_basic_block_in_context(
   context : LLVMContextRef,
   name : String,
-) -> LLVMBasicBlockRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMBasicBlockRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_create_basic_block_in_context(context, cstr)
 }
 
 ///|
 /// Append a basic block to a function.
+#borrow(name)
 extern "C" fn __llvm_append_basic_block_in_context(
   context : LLVMContextRef,
   func : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMBasicBlockRef = "LLVMAppendBasicBlockInContext"
 
 ///|
@@ -7602,16 +7654,17 @@ pub fn llvm_append_basic_block_in_context(
   context : LLVMContextRef,
   func : LLVMValueRef,
   name : String,
-) -> LLVMBasicBlockRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMBasicBlockRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_append_basic_block_in_context(context, func, cstr)
 }
 
 ///|
 /// Append a basic block to a function.
+#borrow(name)
 extern "C" fn __llvm_append_basic_block(
   func : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMBasicBlockRef = "LLVMAppendBasicBlock"
 
 ///|
@@ -7619,17 +7672,18 @@ extern "C" fn __llvm_append_basic_block(
 pub fn llvm_append_basic_block(
   func : LLVMValueRef,
   name : String,
-) -> LLVMBasicBlockRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMBasicBlockRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_append_basic_block(func, cstr)
 }
 
 ///|
 /// Insert a basic block after another basic block in context.
+#borrow(name)
 extern "C" fn __llvm_insert_basic_block_in_context(
   context : LLVMContextRef,
   bb : LLVMBasicBlockRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMBasicBlockRef = "LLVMInsertBasicBlockInContext"
 
 ///|
@@ -7638,16 +7692,17 @@ pub fn llvm_insert_basic_block_in_context(
   context : LLVMContextRef,
   bb : LLVMBasicBlockRef,
   name : String,
-) -> LLVMBasicBlockRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMBasicBlockRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_insert_basic_block_in_context(context, bb, cstr)
 }
 
 ///|
 /// Insert a basic block after another basic block.
+#borrow(name)
 extern "C" fn __llvm_insert_basic_block(
   insert_before_bb : LLVMBasicBlockRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMBasicBlockRef = "LLVMInsertBasicBlock"
 
 ///|
@@ -7655,8 +7710,8 @@ extern "C" fn __llvm_insert_basic_block(
 pub fn llvm_insert_basic_block(
   insert_before_bb : LLVMBasicBlockRef,
   name : String,
-) -> LLVMBasicBlockRef {
-  let cstr = moonbit_str_to_c_str(name)
+) -> LLVMBasicBlockRef raise CStringError {
+  let cstr = Utf8Z::from_string(name)
   __llvm_insert_basic_block(insert_before_bb, cstr)
 }
 
@@ -8168,10 +8223,11 @@ pub extern "C" fn llvm_get_call_site_enum_attribute(
 ) -> LLVMAttributeRef = "LLVMGetCallSiteEnumAttribute"
 
 ///|
+#borrow(k)
 extern "C" fn __llvm_get_call_site_string_attribute(
   c : LLVMValueRef,
   idx : LLVMAttributeIndex,
-  k : CStr,
+  k : Bytes,
   k_len : UInt,
 ) -> LLVMAttributeRef = "LLVMGetCallSiteStringAttribute"
 
@@ -8181,11 +8237,11 @@ pub fn llvm_get_call_site_string_attribute(
   idx : LLVMAttributeIndex,
   k : String,
 ) -> LLVMAttributeRef {
-  let cstr = moonbit_str_to_c_str(k)
+  let k = @utf8.encode(k)
   __llvm_get_call_site_string_attribute(
     c,
     idx,
-    cstr,
+    k,
     k.length().reinterpret_as_uint(),
   )
 }
@@ -8198,10 +8254,11 @@ pub extern "C" fn llvm_remove_call_site_enum_attribute(
 ) = "LLVMRemoveCallSiteEnumAttribute"
 
 ///|
+#borrow(k)
 extern "C" fn __llvm_remove_call_site_string_attribute(
   c : LLVMValueRef,
   idx : LLVMAttributeIndex,
-  k : CStr,
+  k : Bytes,
   k_len : UInt,
 ) = "LLVMRemoveCallSiteStringAttribute"
 
@@ -8211,11 +8268,11 @@ pub fn llvm_remove_call_site_string_attribute(
   idx : LLVMAttributeIndex,
   k : String,
 ) -> Unit {
-  let cstr = moonbit_str_to_c_str(k)
+  let k = @utf8.encode(k)
   __llvm_remove_call_site_string_attribute(
     c,
     idx,
-    cstr,
+    k,
     k.length().reinterpret_as_uint(),
   )
 }
@@ -9030,10 +9087,11 @@ pub fn LLVMBuilderRef::insert(
 
 ///|
 /// Insert instruction at the current insertion point with a name.
+#borrow(name)
 extern "C" fn __llvm_insert_into_builder_with_name(
   builder : LLVMBuilderRef,
   instr : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) = "LLVMInsertIntoBuilderWithName"
 
 ///|
@@ -9042,12 +9100,8 @@ pub fn llvm_insert_into_builder_with_name(
   builder : LLVMBuilderRef,
   instr : LLVMValueRef,
   name : String,
-) -> Unit {
-  __llvm_insert_into_builder_with_name(
-    builder,
-    instr,
-    moonbit_str_to_c_str(name),
-  )
+) -> Unit raise CStringError {
+  __llvm_insert_into_builder_with_name(builder, instr, Utf8Z::from_string(name))
 }
 
 ///|
@@ -9346,7 +9400,7 @@ pub fn LLVMBuilderRef::build_indirect_br(
 
 ///|
 /// Build a call branch instruction.
-#borrow(indirect_dests, args, bundles)
+#borrow(indirect_dests, args, bundles, name)
 extern "C" fn __llvm_build_call_br(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9358,7 +9412,7 @@ extern "C" fn __llvm_build_call_br(
   num_args : UInt,
   bundles : FixedArray[LLVMOperandBundleRef],
   num_bundles : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildCallBr"
 
 ///|
@@ -9372,7 +9426,7 @@ pub fn llvm_build_call_br(
   args : Array[LLVMValueRef],
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_indirect_dests = indirect_dests.length().reinterpret_as_uint()
   let num_args = args.length().reinterpret_as_uint()
   let num_bundles = bundles.length().reinterpret_as_uint()
@@ -9390,7 +9444,7 @@ pub fn llvm_build_call_br(
     num_args,
     bundles,
     num_bundles,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9405,7 +9459,7 @@ pub fn LLVMBuilderRef::build_call_br(
   args : Array[LLVMValueRef],
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_call_br(
     self, ty, func, default_dest, indirect_dests, args, bundles, name,
   )
@@ -9413,7 +9467,7 @@ pub fn LLVMBuilderRef::build_call_br(
 
 ///|
 /// Build an invoke instruction.
-#borrow(args)
+#borrow(args, name)
 extern "C" fn __llvm_build_invoke2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9422,7 +9476,7 @@ extern "C" fn __llvm_build_invoke2(
   num_args : UInt,
   then : LLVMBasicBlockRef,
   catch_block : LLVMBasicBlockRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildInvoke2"
 
 ///|
@@ -9435,7 +9489,7 @@ pub fn llvm_build_invoke2(
   then : LLVMBasicBlockRef,
   catch_block : LLVMBasicBlockRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
   __llvm_build_invoke2(
@@ -9446,7 +9500,7 @@ pub fn llvm_build_invoke2(
     num_args,
     then,
     catch_block,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9460,13 +9514,13 @@ pub fn LLVMBuilderRef::build_invoke2(
   then : LLVMBasicBlockRef,
   catch_block : LLVMBasicBlockRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_invoke2(self, ty, func, args, then, catch_block, name)
 }
 
 ///|
 /// Build an invoke instruction with operand bundles.
-#borrow(args, bundles)
+#borrow(args, bundles, name)
 extern "C" fn __llvm_build_invoke_with_operand_bundles(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -9477,7 +9531,7 @@ extern "C" fn __llvm_build_invoke_with_operand_bundles(
   catch_block : LLVMBasicBlockRef,
   bundles : FixedArray[LLVMOperandBundleRef],
   num_bundles : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildInvokeWithOperandBundles"
 
 ///|
@@ -9491,7 +9545,7 @@ pub fn llvm_build_invoke_with_operand_bundles(
   catch_block : LLVMBasicBlockRef,
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let num_bundles = bundles.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
@@ -9506,7 +9560,7 @@ pub fn llvm_build_invoke_with_operand_bundles(
     catch_block,
     bundles,
     num_bundles,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9521,7 +9575,7 @@ pub fn LLVMBuilderRef::build_invoke_with_operand_bundles(
   catch_block : LLVMBasicBlockRef,
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_invoke_with_operand_bundles(
     self, ty, func, args, then, catch_block, bundles, name,
   )
@@ -9557,12 +9611,13 @@ pub fn LLVMBuilderRef::build_resume(
 
 ///|
 /// Build a landing pad instruction.
+#borrow(name)
 extern "C" fn __llvm_build_landing_pad(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   pers_fn : LLVMValueRef,
   num_clauses : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildLandingPad"
 
 ///|
@@ -9573,13 +9628,13 @@ pub fn llvm_build_landing_pad(
   pers_fn : LLVMValueRef,
   num_clauses : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_landing_pad(
     builder,
     ty,
     pers_fn,
     num_clauses,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9591,7 +9646,7 @@ pub fn LLVMBuilderRef::build_landing_pad(
   pers_fn : LLVMValueRef,
   num_clauses : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_landing_pad(self, ty, pers_fn, num_clauses, name)
 }
 
@@ -9633,13 +9688,13 @@ pub fn LLVMBuilderRef::build_catch_ret(
 
 ///|
 /// Build a catch pad instruction.
-#borrow(args)
+#borrow(args, name)
 extern "C" fn __llvm_build_catch_pad(
   builder : LLVMBuilderRef,
   parent_pad : LLVMValueRef,
   args : FixedArray[LLVMValueRef],
   num_args : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "__llvm_build_catch_pad"
 
 ///|
@@ -9649,7 +9704,7 @@ pub fn llvm_build_catch_pad(
   parent_pad : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
   __llvm_build_catch_pad(
@@ -9657,7 +9712,7 @@ pub fn llvm_build_catch_pad(
     parent_pad,
     args,
     num_args,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9668,19 +9723,19 @@ pub fn LLVMBuilderRef::build_catch_pad(
   parent_pad : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_catch_pad(self, parent_pad, args, name)
 }
 
 ///|
 /// Build a cleanup pad instruction.
-#borrow(args)
+#borrow(args, name)
 extern "C" fn __llvm_build_cleanup_pad(
   builder : LLVMBuilderRef,
   parent_pad : LLVMValueRef,
   args : FixedArray[LLVMValueRef],
   num_args : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildCleanupPad"
 
 ///|
@@ -9690,7 +9745,7 @@ pub fn llvm_build_cleanup_pad(
   parent_pad : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
   __llvm_build_cleanup_pad(
@@ -9698,7 +9753,7 @@ pub fn llvm_build_cleanup_pad(
     parent_pad,
     args,
     num_args,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9709,18 +9764,19 @@ pub fn LLVMBuilderRef::build_cleanup_pad(
   parent_pad : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_cleanup_pad(self, parent_pad, args, name)
 }
 
 ///|
 /// Build a catch switch instruction.
+#borrow(name)
 extern "C" fn __llvm_build_catch_switch(
   builder : LLVMBuilderRef,
   parent_pad : LLVMValueRef,
   unwind_bb : LLVMBasicBlockRef,
   num_handlers : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildCatchSwitch"
 
 ///|
@@ -9731,13 +9787,13 @@ pub fn llvm_build_catch_switch(
   unwind_bb : LLVMBasicBlockRef,
   num_handlers : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_catch_switch(
     builder,
     parent_pad,
     unwind_bb,
     num_handlers,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -9749,7 +9805,7 @@ pub fn LLVMBuilderRef::build_catch_switch(
   unwind_bb : LLVMBasicBlockRef,
   num_handlers : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_catch_switch(self, parent_pad, unwind_bb, num_handlers, name)
 }
 
@@ -9913,11 +9969,12 @@ pub extern "C" fn llvm_set_parent_catch_switch(
 
 ///|
 /// Build add instruction.
+#borrow(name)
 extern "C" fn __llvm_build_add(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildAdd"
 
 ///|
@@ -9927,17 +9984,18 @@ pub fn llvm_build_add(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_add(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_add(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build add instruction with nsw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nsw_add(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNSWAdd"
 
 ///|
@@ -9947,17 +10005,18 @@ pub fn llvm_build_nsw_add(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nsw_add(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nsw_add(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build add instruction with nuw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nuw_add(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNUWAdd"
 
 ///|
@@ -9967,17 +10026,18 @@ pub fn llvm_build_nuw_add(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nuw_add(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nuw_add(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build floating-point add instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_add(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFAdd"
 
 ///|
@@ -9987,17 +10047,18 @@ pub fn llvm_build_f_add(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_add(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_add(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build subtract instruction.
+#borrow(name)
 extern "C" fn __llvm_build_sub(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSub"
 
 ///|
@@ -10007,17 +10068,18 @@ pub fn llvm_build_sub(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_sub(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_sub(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build subtract instruction with nsw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nsw_sub(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNSWSub"
 
 ///|
@@ -10027,17 +10089,18 @@ pub fn llvm_build_nsw_sub(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nsw_sub(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nsw_sub(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build subtract instruction with nuw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nuw_sub(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNUWSub"
 
 ///|
@@ -10047,17 +10110,18 @@ pub fn llvm_build_nuw_sub(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nuw_sub(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nuw_sub(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build floating-point subtract instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_sub(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFSub"
 
 ///|
@@ -10067,17 +10131,18 @@ pub fn llvm_build_f_sub(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_sub(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_sub(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build multiply instruction.
+#borrow(name)
 extern "C" fn __llvm_build_mul(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildMul"
 
 ///|
@@ -10087,17 +10152,18 @@ pub fn llvm_build_mul(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_mul(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_mul(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build multiply instruction with nsw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nsw_mul(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNSWMul"
 
 ///|
@@ -10107,17 +10173,18 @@ pub fn llvm_build_nsw_mul(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nsw_mul(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nsw_mul(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build multiply instruction with nuw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nuw_mul(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNUWMul"
 
 ///|
@@ -10127,17 +10194,18 @@ pub fn llvm_build_nuw_mul(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nuw_mul(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nuw_mul(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build floating-point multiply instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_mul(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFMul"
 
 ///|
@@ -10147,17 +10215,18 @@ pub fn llvm_build_f_mul(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_mul(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_mul(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build unsigned division instruction.
+#borrow(name)
 extern "C" fn __llvm_build_u_div(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildUDiv"
 
 ///|
@@ -10167,17 +10236,18 @@ pub fn llvm_build_u_div(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_u_div(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_u_div(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build exact unsigned division instruction.
+#borrow(name)
 extern "C" fn __llvm_build_exact_u_div(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildExactUDiv"
 
 ///|
@@ -10187,17 +10257,18 @@ pub fn llvm_build_exact_u_div(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_exact_u_div(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_exact_u_div(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build signed division instruction.
+#borrow(name)
 extern "C" fn __llvm_build_s_div(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSDiv"
 
 ///|
@@ -10207,17 +10278,18 @@ pub fn llvm_build_s_div(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_s_div(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_s_div(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build exact signed division instruction.
+#borrow(name)
 extern "C" fn __llvm_build_exact_s_div(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildExactSDiv"
 
 ///|
@@ -10227,17 +10299,18 @@ pub fn llvm_build_exact_s_div(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_exact_s_div(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_exact_s_div(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build floating-point division instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_div(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFDiv"
 
 ///|
@@ -10247,17 +10320,18 @@ pub fn llvm_build_f_div(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_div(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_div(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build unsigned remainder instruction.
+#borrow(name)
 extern "C" fn __llvm_build_u_rem(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildURem"
 
 ///|
@@ -10267,17 +10341,18 @@ pub fn llvm_build_u_rem(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_u_rem(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_u_rem(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build signed remainder instruction.
+#borrow(name)
 extern "C" fn __llvm_build_s_rem(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSRem"
 
 ///|
@@ -10287,17 +10362,18 @@ pub fn llvm_build_s_rem(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_s_rem(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_s_rem(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build floating-point remainder instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_rem(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFRem"
 
 ///|
@@ -10307,17 +10383,18 @@ pub fn llvm_build_f_rem(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_rem(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_rem(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise shift left instruction.
+#borrow(name)
 extern "C" fn __llvm_build_shl(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildShl"
 
 ///|
@@ -10327,17 +10404,18 @@ pub fn llvm_build_shl(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_shl(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_shl(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise logical shift right instruction.
+#borrow(name)
 extern "C" fn __llvm_build_l_shr(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildLShr"
 
 ///|
@@ -10347,17 +10425,18 @@ pub fn llvm_build_l_shr(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_l_shr(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_l_shr(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise arithmetic shift right instruction.
+#borrow(name)
 extern "C" fn __llvm_build_a_shr(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildAShr"
 
 ///|
@@ -10367,17 +10446,18 @@ pub fn llvm_build_a_shr(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_a_shr(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_a_shr(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise and instruction.
+#borrow(name)
 extern "C" fn __llvm_build_and(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildAnd"
 
 ///|
@@ -10387,17 +10467,18 @@ pub fn llvm_build_and(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_and(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_and(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise or instruction.
+#borrow(name)
 extern "C" fn __llvm_build_or(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildOr"
 
 ///|
@@ -10407,17 +10488,18 @@ pub fn llvm_build_or(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_or(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_or(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build bitwise xor instruction.
+#borrow(name)
 extern "C" fn __llvm_build_xor(
   builder : LLVMBuilderRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildXor"
 
 ///|
@@ -10427,18 +10509,19 @@ pub fn llvm_build_xor(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_xor(builder, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_xor(builder, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build Binary Operator instruction with a given opcode.
+#borrow(name)
 extern "C" fn __llvm_build_bin_op(
   builder : LLVMBuilderRef,
   op : Int,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "__llvm_build_bin_op"
 
 ///|
@@ -10449,18 +10532,19 @@ pub fn llvm_build_bin_op(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let code = op.to_int()
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name)
   __llvm_build_bin_op(builder, code, lhs, rhs, name)
 }
 
 ///|
 /// Build negation instruction.
+#borrow(name)
 extern "C" fn __llvm_build_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNeg"
 
 ///|
@@ -10468,8 +10552,8 @@ pub fn llvm_build_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_neg(builder, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_neg(builder, v, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10478,16 +10562,17 @@ pub fn LLVMBuilderRef::build_neg(
   self : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_neg(self, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_neg(self, v, Utf8Z::from_string(name))
 }
 
 ///|
 /// Build negation instruction with nsw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nsw_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNSWNeg"
 
 ///|
@@ -10496,8 +10581,8 @@ pub fn llvm_build_nsw_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nsw_neg(builder, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nsw_neg(builder, v, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10506,16 +10591,17 @@ pub fn LLVMBuilderRef::build_nsw_neg(
   self : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_nsw_neg(self, v, name)
 }
 
 ///|
 /// Build negation instruction with nuw flag.
+#borrow(name)
 extern "C" fn __llvm_build_nuw_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNUWNeg"
 
 ///|
@@ -10524,8 +10610,8 @@ pub fn llvm_build_nuw_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_nuw_neg(builder, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_nuw_neg(builder, v, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10534,16 +10620,17 @@ pub fn LLVMBuilderRef::build_nuw_neg(
   self : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_nuw_neg(self, v, name)
 }
 
 ///|
 /// Build floating-point negation instruction.
+#borrow(name)
 extern "C" fn __llvm_build_f_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFNeg"
 
 ///|
@@ -10552,8 +10639,8 @@ pub fn llvm_build_f_neg(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_f_neg(builder, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_f_neg(builder, v, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10562,16 +10649,17 @@ pub fn LLVMBuilderRef::build_f_neg(
   self : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_f_neg(self, v, name)
 }
 
 ///|
 /// Build not instruction.
+#borrow(name)
 extern "C" fn __llvm_build_not(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildNot"
 
 ///|
@@ -10580,8 +10668,8 @@ pub fn llvm_build_not(
   builder : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_not(builder, v, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_not(builder, v, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10590,7 +10678,7 @@ pub fn LLVMBuilderRef::build_not(
   self : LLVMBuilderRef,
   v : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_not(self, v, name)
 }
 
@@ -10858,10 +10946,11 @@ pub fn LLVMValueRef::set_is_disjoint(
 
 ///|
 /// Build a malloc instruction.
+#borrow(name)
 extern "C" fn __llvm_build_malloc(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildMalloc"
 
 ///|
@@ -10870,8 +10959,8 @@ pub fn llvm_build_malloc(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_malloc(builder, ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_malloc(builder, ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10880,17 +10969,18 @@ pub fn LLVMBuilderRef::build_malloc(
   self : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_malloc(self, ty, name)
 }
 
 ///|
 /// Build an array malloc instruction.
+#borrow(name)
 extern "C" fn __llvm_build_array_malloc(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildArrayMalloc"
 
 ///|
@@ -10900,8 +10990,8 @@ pub fn llvm_build_array_malloc(
   ty : LLVMTypeRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_array_malloc(builder, ty, val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_array_malloc(builder, ty, val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -10988,10 +11078,11 @@ pub fn LLVMBuilderRef::build_mem_move(
 
 ///|
 /// Build an alloca instruction.
+#borrow(name)
 extern "C" fn __llvm_build_alloca(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildAlloca"
 
 ///|
@@ -11000,8 +11091,8 @@ pub fn llvm_build_alloca(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_alloca(builder, ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_alloca(builder, ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11010,17 +11101,18 @@ pub fn LLVMBuilderRef::build_alloca(
   self : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_alloca(self, ty, name)
 }
 
 ///|
 /// Build an array alloca instruction.
+#borrow(name)
 extern "C" fn __llvm_build_array_alloca(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildArrayAlloca"
 
 ///|
@@ -11030,8 +11122,8 @@ pub fn llvm_build_array_alloca(
   ty : LLVMTypeRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_array_alloca(builder, ty, val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_array_alloca(builder, ty, val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11041,7 +11133,7 @@ pub fn LLVMBuilderRef::build_array_alloca(
   ty : LLVMTypeRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_array_alloca(self, ty, val, name)
 }
 
@@ -11063,11 +11155,12 @@ pub fn LLVMBuilderRef::build_free(
 
 ///|
 /// Build a load instruction.
+#borrow(name)
 extern "C" fn __llvm_build_load2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   pointer_val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildLoad2"
 
 ///|
@@ -11077,8 +11170,8 @@ pub fn llvm_build_load2(
   ty : LLVMTypeRef,
   pointer_val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_load2(builder, ty, pointer_val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_load2(builder, ty, pointer_val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11087,7 +11180,7 @@ pub fn LLVMBuilderRef::build_load2(
   ty : LLVMTypeRef,
   pointer_val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_load2(self, ty, pointer_val, name)
 }
 
@@ -11111,14 +11204,14 @@ pub fn LLVMBuilderRef::build_store(
 
 ///|
 /// Build a getelementptr instruction.
-#borrow(indices)
+#borrow(indices, name)
 extern "C" fn __llvm_build_gep2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   pointer : LLVMValueRef,
   indices : FixedArray[LLVMValueRef],
   num_indices : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildGEP2"
 
 ///|
@@ -11129,7 +11222,7 @@ pub fn llvm_build_gep2(
   pointer : LLVMValueRef,
   indices : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_indices = indices.length().reinterpret_as_uint()
   let indices = FixedArray::from_array(indices)
   __llvm_build_gep2(
@@ -11138,7 +11231,7 @@ pub fn llvm_build_gep2(
     pointer,
     indices,
     num_indices,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11149,20 +11242,20 @@ pub fn LLVMBuilderRef::build_gep2(
   pointer : LLVMValueRef,
   indices : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_gep2(self, ty, pointer, indices, name)
 }
 
 ///|
 /// Build a getelementptr instruction with inbounds flag.
-#borrow(indices)
+#borrow(indices, name)
 extern "C" fn __llvm_build_in_bounds_gep2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   pointer : LLVMValueRef,
   indices : FixedArray[LLVMValueRef],
   num_indices : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildInBoundsGEP2"
 
 ///|
@@ -11173,7 +11266,7 @@ pub fn llvm_build_in_bounds_gep2(
   pointer : LLVMValueRef,
   indices : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_indices = indices.length().reinterpret_as_uint()
   let indices = FixedArray::from_array(indices)
   __llvm_build_in_bounds_gep2(
@@ -11182,7 +11275,7 @@ pub fn llvm_build_in_bounds_gep2(
     pointer,
     indices,
     num_indices,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11194,7 +11287,7 @@ pub fn LLVMBuilderRef::build_in_bounds_gep2(
   pointer : LLVMValueRef,
   indices : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_in_bounds_gep2(self, ty, pointer, indices, name)
 }
 
@@ -11212,12 +11305,13 @@ pub fn LLVMBuilderRef::build_in_bounds_gep2(
 
 ///|
 /// Build a struct getelementptr instruction.
+#borrow(name)
 extern "C" fn __llvm_build_struct_gep2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   pointer : LLVMValueRef,
   idx : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildStructGEP2"
 
 ///|
@@ -11228,14 +11322,8 @@ pub fn llvm_build_struct_gep2(
   pointer : LLVMValueRef,
   idx : UInt,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_struct_gep2(
-    builder,
-    ty,
-    pointer,
-    idx,
-    moonbit_str_to_c_str(name),
-  )
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_struct_gep2(builder, ty, pointer, idx, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11246,16 +11334,17 @@ pub fn LLVMBuilderRef::build_struct_gep2(
   pointer : LLVMValueRef,
   idx : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_struct_gep2(self, ty, pointer, idx, name)
 }
 
 ///|
 /// Build a global string.
+#borrow(str, name)
 extern "C" fn __llvm_build_global_string(
   builder : LLVMBuilderRef,
-  str : CStr,
-  name : CStr,
+  str : Utf8Z,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildGlobalString"
 
 ///|
@@ -11264,11 +11353,11 @@ pub fn llvm_build_global_string(
   builder : LLVMBuilderRef,
   str : String,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_global_string(
     builder,
-    moonbit_str_to_c_str(str),
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(str),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11278,16 +11367,17 @@ pub fn LLVMBuilderRef::build_global_string(
   self : LLVMBuilderRef,
   str : String,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_global_string(self, str, name)
 }
 
 ///|
 /// Build a global string pointer.
+#borrow(str, name)
 extern "C" fn __llvm_build_global_string_ptr(
   builder : LLVMBuilderRef,
-  str : CStr,
-  name : CStr,
+  str : Utf8Z,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildGlobalStringPtr"
 
 ///|
@@ -11296,11 +11386,11 @@ pub fn llvm_build_global_string_ptr(
   builder : LLVMBuilderRef,
   str : String,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_global_string_ptr(
     builder,
-    moonbit_str_to_c_str(str),
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(str),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11310,7 +11400,7 @@ pub fn LLVMBuilderRef::build_global_string_ptr(
   self : LLVMBuilderRef,
   str : String,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_global_string_ptr(self, str, name)
 }
 
@@ -11469,11 +11559,12 @@ pub fn LLVMValueRef::set_atomic_rmw_bin_op(
 
 ///|
 /// Build a trunc instruction.
+#borrow(name)
 extern "C" fn __llvm_build_trunc(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildTrunc"
 
 ///|
@@ -11483,8 +11574,8 @@ pub fn llvm_build_trunc(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_trunc(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_trunc(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11494,17 +11585,18 @@ pub fn LLVMBuilderRef::build_trunc(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_trunc(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a zext instruction.
+#borrow(name)
 extern "C" fn __llvm_build_z_ext(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildZExt"
 
 ///|
@@ -11514,8 +11606,8 @@ pub fn llvm_build_z_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_z_ext(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_z_ext(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11525,17 +11617,18 @@ pub fn LLVMBuilderRef::build_z_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_z_ext(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a sext instruction.
+#borrow(name)
 extern "C" fn __llvm_build_s_ext(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSExt"
 
 ///|
@@ -11545,8 +11638,8 @@ pub fn llvm_build_s_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_s_ext(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_s_ext(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11556,17 +11649,18 @@ pub fn LLVMBuilderRef::build_s_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_s_ext(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a float to unsigned int instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fp_to_ui(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFPToUI"
 
 ///|
@@ -11576,8 +11670,8 @@ pub fn llvm_build_fp_to_ui(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_fp_to_ui(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_fp_to_ui(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11587,17 +11681,18 @@ pub fn LLVMBuilderRef::build_fp_to_ui(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fp_to_ui(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a float to signed int instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fp_to_si(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFPToSI"
 
 ///|
@@ -11607,8 +11702,8 @@ pub fn llvm_build_fp_to_si(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_fp_to_si(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_fp_to_si(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11618,17 +11713,18 @@ pub fn LLVMBuilderRef::build_fp_to_si(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fp_to_si(self, val, dest_ty, name)
 }
 
 ///|
 /// Build an unsigned int to float instruction.
+#borrow(name)
 extern "C" fn __llvm_build_ui_to_fp(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildUIToFP"
 
 ///|
@@ -11638,8 +11734,8 @@ pub fn llvm_build_ui_to_fp(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_ui_to_fp(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_ui_to_fp(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11649,17 +11745,18 @@ pub fn LLVMBuilderRef::build_ui_to_fp(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_ui_to_fp(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a signed int to float instruction.
+#borrow(name)
 extern "C" fn __llvm_build_si_to_fp(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSIToFP"
 
 ///|
@@ -11669,8 +11766,8 @@ pub fn llvm_build_si_to_fp(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_si_to_fp(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_si_to_fp(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11680,17 +11777,18 @@ pub fn LLVMBuilderRef::build_si_to_fp(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_si_to_fp(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a float truncation instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fp_trunc(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFPTrunc"
 
 ///|
@@ -11700,8 +11798,8 @@ pub fn llvm_build_fp_trunc(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_fp_trunc(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_fp_trunc(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11711,17 +11809,18 @@ pub fn LLVMBuilderRef::build_fp_trunc(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fp_trunc(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a float extension instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fp_ext(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFPExt"
 
 ///|
@@ -11731,8 +11830,8 @@ pub fn llvm_build_fp_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_fp_ext(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_fp_ext(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11742,17 +11841,18 @@ pub fn LLVMBuilderRef::build_fp_ext(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fp_ext(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a ptr to int instruction.
+#borrow(name)
 extern "C" fn __llvm_build_ptr_to_int(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildPtrToInt"
 
 ///|
@@ -11762,8 +11862,8 @@ pub fn llvm_build_ptr_to_int(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_ptr_to_int(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_ptr_to_int(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11773,17 +11873,18 @@ pub fn LLVMBuilderRef::build_ptr_to_int(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_ptr_to_int(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a int to ptr instruction.
+#borrow(name)
 extern "C" fn __llvm_build_int_to_ptr(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildIntToPtr"
 
 ///|
@@ -11793,8 +11894,8 @@ pub fn llvm_build_int_to_ptr(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_int_to_ptr(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_int_to_ptr(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11804,17 +11905,18 @@ pub fn LLVMBuilderRef::build_int_to_ptr(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_int_to_ptr(self, val, dest_ty, name)
 }
 
 ///|
 /// Build a bit cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_bit_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildBitCast"
 
 ///|
@@ -11824,8 +11926,8 @@ pub fn llvm_build_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_bit_cast(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_bit_cast(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11835,17 +11937,18 @@ pub fn LLVMBuilderRef::build_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_bit_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build address space cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_addr_space_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildAddrSpaceCast"
 
 ///|
@@ -11855,13 +11958,8 @@ pub fn llvm_build_addr_space_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_addr_space_cast(
-    builder,
-    val,
-    dest_ty,
-    moonbit_str_to_c_str(name),
-  )
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_addr_space_cast(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -11871,17 +11969,18 @@ pub fn LLVMBuilderRef::build_addr_space_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_addr_space_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build z ext or bit cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_z_ext_or_bit_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildZExtOrBitCast"
 
 ///|
@@ -11891,12 +11990,12 @@ pub fn llvm_build_z_ext_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_z_ext_or_bit_cast(
     builder,
     val,
     dest_ty,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11907,17 +12006,18 @@ pub fn LLVMBuilderRef::build_z_ext_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_z_ext_or_bit_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build s ext or bit cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_s_ext_or_bit_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSExtOrBitCast"
 
 ///|
@@ -11927,12 +12027,12 @@ pub fn llvm_build_s_ext_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_s_ext_or_bit_cast(
     builder,
     val,
     dest_ty,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11943,17 +12043,18 @@ pub fn LLVMBuilderRef::build_s_ext_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_s_ext_or_bit_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build trunc or bit cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_trunc_or_bit_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildTruncOrBitCast"
 
 ///|
@@ -11963,12 +12064,12 @@ pub fn llvm_build_trunc_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_trunc_or_bit_cast(
     builder,
     val,
     dest_ty,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -11979,18 +12080,19 @@ pub fn LLVMBuilderRef::build_trunc_or_bit_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_trunc_or_bit_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build cast instruction with given opcode.
+#borrow(name)
 extern "C" fn __llvm_build_cast(
   builder : LLVMBuilderRef,
   op : Int,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "__llvm_build_cast"
 
 ///|
@@ -12001,9 +12103,9 @@ pub fn llvm_build_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let code = op.to_int()
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name)
   __llvm_build_cast(builder, code, val, dest_ty, name)
 }
 
@@ -12015,17 +12117,18 @@ pub fn LLVMBuilderRef::build_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_cast(self, op, val, dest_ty, name)
 }
 
 ///|
 /// Build pointer cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_pointer_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildPointerCast"
 
 ///|
@@ -12035,8 +12138,8 @@ pub fn llvm_build_pointer_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_pointer_cast(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_pointer_cast(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12046,18 +12149,19 @@ pub fn LLVMBuilderRef::build_pointer_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_pointer_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build int cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_int_cast2(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   is_signed : LLVMBool,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildIntCast2"
 
 ///|
@@ -12068,13 +12172,13 @@ pub fn llvm_build_int_cast2(
   dest_ty : LLVMTypeRef,
   is_signed : Bool,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_int_cast2(
     builder,
     val,
     dest_ty,
     to_llvm_bool(is_signed),
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12086,17 +12190,18 @@ pub fn LLVMBuilderRef::build_int_cast2(
   dest_ty : LLVMTypeRef,
   is_signed : Bool,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_int_cast2(self, val, dest_ty, is_signed, name)
 }
 
 ///|
 /// Build floating point cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fp_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFPCast"
 
 ///|
@@ -12106,8 +12211,8 @@ pub fn llvm_build_fp_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_fp_cast(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_fp_cast(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12117,17 +12222,18 @@ pub fn LLVMBuilderRef::build_fp_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fp_cast(self, val, dest_ty, name)
 }
 
 ///|
 /// Build int cast instruction.
+#borrow(name)
 extern "C" fn __llvm_build_int_cast(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildIntCast"
 
 ///|
@@ -12137,8 +12243,8 @@ pub fn llvm_build_int_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_int_cast(builder, val, dest_ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_int_cast(builder, val, dest_ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12148,7 +12254,7 @@ pub fn LLVMBuilderRef::build_int_cast(
   val : LLVMValueRef,
   dest_ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_int_cast(self, val, dest_ty, name)
 }
 
@@ -12188,12 +12294,13 @@ pub fn LLVMValueRef::get_cast_opcode(
 
 ///|
 /// Build a icmp instruction.
+#borrow(name)
 extern "C" fn __llvm_build_icmp(
   builder : LLVMBuilderRef,
   op : Int,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "__llvm_build_icmp"
 
 ///|
@@ -12204,9 +12311,9 @@ pub fn llvm_build_icmp(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let code = op.to_int()
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name)
   __llvm_build_icmp(builder, code, lhs, rhs, name)
 }
 
@@ -12218,18 +12325,19 @@ pub fn LLVMBuilderRef::build_icmp(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_icmp(self, op, lhs, rhs, name)
 }
 
 ///|
 /// Build a floating point comparison instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fcmp(
   builder : LLVMBuilderRef,
   op : Int,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "__llvm_build_fcmp"
 
 ///|
@@ -12240,9 +12348,9 @@ pub fn llvm_build_fcmp(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let code = op.to_int()
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name)
   __llvm_build_fcmp(builder, code, lhs, rhs, name)
 }
 
@@ -12254,16 +12362,17 @@ pub fn LLVMBuilderRef::build_fcmp(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_fcmp(self, op, lhs, rhs, name)
 }
 
 ///|
 /// Build a phi node.
+#borrow(name)
 extern "C" fn __llvm_build_phi(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildPhi"
 
 ///|
@@ -12272,8 +12381,8 @@ pub fn llvm_build_phi(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_phi(builder, ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_phi(builder, ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12282,20 +12391,20 @@ pub fn LLVMBuilderRef::build_phi(
   self : LLVMBuilderRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_phi(self, ty, name)
 }
 
 ///|
 /// Build a call instruction.
-#borrow(args)
+#borrow(args, name)
 extern "C" fn __llvm_build_call2(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
   func : LLVMValueRef,
   args : FixedArray[LLVMValueRef],
   num_arsg : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildCall2"
 
 ///|
@@ -12306,7 +12415,7 @@ pub fn llvm_build_call2(
   func : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
   __llvm_build_call2(
@@ -12315,7 +12424,7 @@ pub fn llvm_build_call2(
     func,
     args,
     num_args,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12327,13 +12436,13 @@ pub fn LLVMBuilderRef::build_call2(
   func : LLVMValueRef,
   args : Array[LLVMValueRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_call2(self, ty, func, args, name)
 }
 
 ///|
 /// Build a call instruction with operand bundles.
-#borrow(args, bundles)
+#borrow(args, bundles, name)
 extern "C" fn __llvm_build_call_with_operand_bundles(
   builder : LLVMBuilderRef,
   ty : LLVMTypeRef,
@@ -12342,7 +12451,7 @@ extern "C" fn __llvm_build_call_with_operand_bundles(
   num_args : UInt,
   bundles : FixedArray[LLVMOperandBundleRef],
   num_bundles : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildCallWithOperandBundles"
 
 ///|
@@ -12354,7 +12463,7 @@ pub fn llvm_build_call_with_operand_bundles(
   args : Array[LLVMValueRef],
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let num_args = args.length().reinterpret_as_uint()
   let num_bundles = bundles.length().reinterpret_as_uint()
   let args = FixedArray::from_array(args)
@@ -12367,7 +12476,7 @@ pub fn llvm_build_call_with_operand_bundles(
     num_args,
     bundles,
     num_bundles,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12380,18 +12489,19 @@ pub fn LLVMBuilderRef::build_call_with_operand_bundles(
   args : Array[LLVMValueRef],
   bundles : Array[LLVMOperandBundleRef],
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_call_with_operand_bundles(self, ty, func, args, bundles, name)
 }
 
 ///|
 /// Build a select instruction.
+#borrow(name)
 extern "C" fn __llvm_build_select(
   builder : LLVMBuilderRef,
   if_block : LLVMValueRef,
   then : LLVMValueRef,
   else_block : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildSelect"
 
 ///|
@@ -12402,13 +12512,13 @@ pub fn llvm_build_select(
   then : LLVMValueRef,
   else_block : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_select(
     builder,
     if_block,
     then,
     else_block,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12420,17 +12530,18 @@ pub fn LLVMBuilderRef::build_select(
   then : LLVMValueRef,
   else_block : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_select(self, if_block, then, else_block, name)
 }
 
 ///|
 /// Build a variadic argument instruction.
+#borrow(name)
 extern "C" fn __llvm_build_va_arg(
   builder : LLVMBuilderRef,
   list : LLVMValueRef,
   ty : LLVMTypeRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildVAArg"
 
 ///|
@@ -12440,8 +12551,8 @@ pub fn llvm_build_va_arg(
   list : LLVMValueRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_va_arg(builder, list, ty, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_va_arg(builder, list, ty, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12451,17 +12562,18 @@ pub fn LLVMBuilderRef::build_va_arg(
   list : LLVMValueRef,
   ty : LLVMTypeRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_va_arg(self, list, ty, name)
 }
 
 ///|
 /// Build extract element instruction.
+#borrow(name)
 extern "C" fn __llvm_build_extract_element(
   builder : LLVMBuilderRef,
   vec_val : LLVMValueRef,
   index : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildExtractElement"
 
 ///|
@@ -12471,12 +12583,12 @@ pub fn llvm_build_extract_element(
   vec_val : LLVMValueRef,
   index : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_extract_element(
     builder,
     vec_val,
     index,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12487,18 +12599,19 @@ pub fn LLVMBuilderRef::build_extract_element(
   vec_val : LLVMValueRef,
   index : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_extract_element(self, vec_val, index, name)
 }
 
 ///|
 /// Build insert element instruction.
+#borrow(name)
 extern "C" fn __llvm_build_insert_element(
   builder : LLVMBuilderRef,
   vec_val : LLVMValueRef,
   elt_val : LLVMValueRef,
   index : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildInsertElement"
 
 ///|
@@ -12509,13 +12622,13 @@ pub fn llvm_build_insert_element(
   elt_val : LLVMValueRef,
   index : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_insert_element(
     builder,
     vec_val,
     elt_val,
     index,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12527,18 +12640,19 @@ pub fn LLVMBuilderRef::build_insert_element(
   elt_val : LLVMValueRef,
   index : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_insert_element(self, vec_val, elt_val, index, name)
 }
 
 ///|
 /// Build shuffle vector instruction.
+#borrow(name)
 extern "C" fn __llvm_build_shuffle_vector(
   builder : LLVMBuilderRef,
   v1 : LLVMValueRef,
   v2 : LLVMValueRef,
   mask : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildShuffleVector"
 
 ///|
@@ -12549,8 +12663,8 @@ pub fn llvm_build_shuffle_vector(
   v2 : LLVMValueRef,
   mask : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_shuffle_vector(builder, v1, v2, mask, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_shuffle_vector(builder, v1, v2, mask, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12561,17 +12675,18 @@ pub fn LLVMBuilderRef::build_shuffle_vector(
   v2 : LLVMValueRef,
   mask : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_shuffle_vector(self, v1, v2, mask, name)
 }
 
 ///|
 /// Build extract value instruction.
+#borrow(name)
 extern "C" fn __llvm_build_extract_value(
   builder : LLVMBuilderRef,
   agg_val : LLVMValueRef,
   index : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildExtractValue"
 
 ///|
@@ -12581,13 +12696,8 @@ pub fn llvm_build_extract_value(
   agg_val : LLVMValueRef,
   index : UInt,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_extract_value(
-    builder,
-    agg_val,
-    index,
-    moonbit_str_to_c_str(name),
-  )
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_extract_value(builder, agg_val, index, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12597,18 +12707,19 @@ pub fn LLVMBuilderRef::build_extract_value(
   agg_val : LLVMValueRef,
   index : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_extract_value(self, agg_val, index, name)
 }
 
 ///|
 /// Build insert value instruction.
+#borrow(name)
 extern "C" fn __llvm_build_insert_value(
   builder : LLVMBuilderRef,
   agg_val : LLVMValueRef,
   elt_val : LLVMValueRef,
   index : UInt,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildInsertValue"
 
 ///|
@@ -12619,13 +12730,13 @@ pub fn llvm_build_insert_value(
   elt_val : LLVMValueRef,
   index : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   __llvm_build_insert_value(
     builder,
     agg_val,
     elt_val,
     index,
-    moonbit_str_to_c_str(name),
+    Utf8Z::from_string(name),
   )
 }
 
@@ -12637,16 +12748,17 @@ pub fn LLVMBuilderRef::build_insert_value(
   elt_val : LLVMValueRef,
   index : UInt,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_insert_value(self, agg_val, elt_val, index, name)
 }
 
 ///|
 /// Build freeze instruction.
+#borrow(name)
 extern "C" fn __llvm_build_freeze(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFreeze"
 
 ///|
@@ -12655,8 +12767,8 @@ pub fn llvm_build_freeze(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_freeze(builder, val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_freeze(builder, val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12665,16 +12777,17 @@ pub fn LLVMBuilderRef::build_freeze(
   self : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_freeze(self, val, name)
 }
 
 ///|
 /// Build is null instruction.
+#borrow(name)
 extern "C" fn __llvm_build_is_null(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildIsNull"
 
 ///|
@@ -12683,8 +12796,8 @@ pub fn llvm_build_is_null(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_is_null(builder, val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_is_null(builder, val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12693,16 +12806,17 @@ pub fn LLVMBuilderRef::build_is_null(
   self : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_is_null(self, val, name)
 }
 
 ///|
 /// Build is not null instruction.
+#borrow(name)
 extern "C" fn __llvm_build_is_not_null(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildIsNotNull"
 
 ///|
@@ -12711,8 +12825,8 @@ pub fn llvm_build_is_not_null(
   builder : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_is_not_null(builder, val, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_is_not_null(builder, val, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12721,18 +12835,19 @@ pub fn LLVMBuilderRef::build_is_not_null(
   self : LLVMBuilderRef,
   val : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_is_not_null(self, val, name)
 }
 
 ///|
 /// Build ptr diff instruction.
+#borrow(name)
 extern "C" fn __llvm_build_ptr_diff2(
   builder : LLVMBuilderRef,
   elem_ty : LLVMTypeRef,
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildPtrDiff2"
 
 ///|
@@ -12743,8 +12858,8 @@ pub fn llvm_build_ptr_diff2(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
-  __llvm_build_ptr_diff2(builder, elem_ty, lhs, rhs, moonbit_str_to_c_str(name))
+) -> LLVMValueRef raise CStringError {
+  __llvm_build_ptr_diff2(builder, elem_ty, lhs, rhs, Utf8Z::from_string(name))
 }
 
 ///|
@@ -12755,17 +12870,18 @@ pub fn LLVMBuilderRef::build_ptr_diff2(
   lhs : LLVMValueRef,
   rhs : LLVMValueRef,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   llvm_build_ptr_diff2(self, elem_ty, lhs, rhs, name)
 }
 
 ///|
 /// Build fence instruction.
+#borrow(name)
 extern "C" fn __llvm_build_fence(
   builder : LLVMBuilderRef,
   ordering : Int,
   single_thread : LLVMBool,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMValueRef = "LLVMBuildFence"
 
 ///|
@@ -12775,9 +12891,9 @@ pub fn llvm_build_fence(
   ordering : LLVMAtomicOrdering,
   single_thread : Bool,
   name : String,
-) -> LLVMValueRef {
+) -> LLVMValueRef raise CStringError {
   let code = ordering.to_int()
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name)
   let single_thread = to_llvm_bool(single_thread)
   __llvm_build_fence(builder, code, single_thread, name)
 }
@@ -13018,44 +13134,17 @@ pub extern "C" fn llvm_create_module_provider_for_existing_module(
 pub extern "C" fn llvm_dispose_module_provider(m : LLVMModuleProviderRef) = "LLVMDisposeModuleProvider"
 
 ///| Create a new memory buffer with the contents of a file.
-// FIXME: Not implemented
-// extern "C" fn __llvm_create_memory_buffer_with_contents_of_file(path: CStr) -> (LLVMMemoryBufferRef, CStr, LLVMBool) = "__llvm_create_memory_buffer_with_contents_of_file"
-
-///| Create a new memory buffer with the contents of a file.
-///
-/// Return the memory buffer, the error message and a boolean indicating if the operation was successful.
-// pub fn llvm_create_memory_buffer_with_contents_of_file(path: String) -> (LLVMMemoryBufferRef, String, Bool) {
-//   let cpath = moonbit_str_to_c_str(path)
-//   let (mbuf, cstr, is_ok) = __llvm_create_memory_buffer_with_contents_of_file(cpath)
-//   let is_ok = is_ok.to_moonbit_bool()
-//   if is_ok {
-//     (mbuf, c_str_to_moonbit_str(cstr), is_ok)
-//   } else {
-//     (mbuf, "", is_ok)
-//   }
-// }
+/// FIXME: Not implemented. Its operation-error boundary is deferred.
 
 ///| Create a memory buffer with stdin as input.
-// FIXME: Not implemented
-// extern "C" fn __llvm_create_memory_buffer_with_stdin() -> (LLVMMemoryBufferRef, CStr, LLVMBool) = "__llvm_create_memory_buffer_with_stdin"
-
-///| Create a memory buffer with stdin as input.
-// pub fn llvm_create_memory_buffer_with_stdin() -> (LLVMMemoryBufferRef, String, Bool) {
-//   let (mbuf, cstr, is_ok) = __llvm_create_memory_buffer_with_stdin()
-//   let is_ok = is_ok.to_moonbit_bool()
-//   if is_ok {
-//     (mbuf, c_str_to_moonbit_str(cstr), is_ok)
-//   } else {
-//     (mbuf, "", is_ok)
-//   }
-// }
+/// FIXME: Not implemented. Its operation-error boundary is deferred.
 
 ///|
 /// Create a new memory buffer with the contents of a memory range.
 extern "C" fn __llvm_create_memory_buffer_with_memory_range(
-  input_data : CStr,
+  input_data : DeferredMemoryBufferInput,
   input_data_length : Int,
-  buffer_name : CStr,
+  buffer_name : DeferredMemoryBufferInput,
   requires_null_terminator : LLVMBool,
 ) -> LLVMMemoryBufferRef = "LLVMCreateMemoryBufferWithMemoryRange"
 
@@ -13067,8 +13156,8 @@ pub fn llvm_create_memory_buffer_with_memory_range(
   buffer_name : String,
   requires_null_terminator : Bool,
 ) -> LLVMMemoryBufferRef {
-  let input_data = moonbit_str_to_c_str(input_data)
-  let buffer_name = moonbit_str_to_c_str(buffer_name)
+  let input_data = DeferredMemoryBufferInput::from_string(input_data)
+  let buffer_name = DeferredMemoryBufferInput::from_string(buffer_name)
   let requires_null_terminator = to_llvm_bool(requires_null_terminator)
   __llvm_create_memory_buffer_with_memory_range(
     input_data, input_data_length, buffer_name, requires_null_terminator,
@@ -13078,9 +13167,9 @@ pub fn llvm_create_memory_buffer_with_memory_range(
 ///|
 /// Create a new memory buffer with the contents of a memory range.
 extern "C" fn __llvm_create_memory_buffer_with_memory_range_copy(
-  input_data : CStr,
+  input_data : DeferredMemoryBufferInput,
   input_data_length : Int,
-  buffer_name : CStr,
+  buffer_name : DeferredMemoryBufferInput,
 ) -> LLVMMemoryBufferRef = "LLVMCreateMemoryBufferWithMemoryRangeCopy"
 
 ///|
@@ -13090,8 +13179,8 @@ pub fn llvm_create_memory_buffer_with_memory_range_copy(
   input_data_length : Int,
   buffer_name : String,
 ) -> LLVMMemoryBufferRef {
-  let input_data = moonbit_str_to_c_str(input_data)
-  let buffer_name = moonbit_str_to_c_str(buffer_name)
+  let input_data = DeferredMemoryBufferInput::from_string(input_data)
+  let buffer_name = DeferredMemoryBufferInput::from_string(buffer_name)
   __llvm_create_memory_buffer_with_memory_range_copy(
     input_data, input_data_length, buffer_name,
   )
@@ -13100,11 +13189,13 @@ pub fn llvm_create_memory_buffer_with_memory_range_copy(
 // TODO: Need to check if this is correct
 
 ///|
-extern "C" fn __llvm_get_buffer_start(mem_buf : LLVMMemoryBufferRef) -> CStr = "LLVMGetBufferStart"
+extern "C" fn __llvm_get_buffer_start(
+  mem_buf : LLVMMemoryBufferRef,
+) -> DeferredBorrowedBytes = "LLVMGetBufferStart"
 
 ///|
 pub fn llvm_get_buffer_start(mem_buf : LLVMMemoryBufferRef) -> String {
-  c_str_to_moonbit_str(__llvm_get_buffer_start(mem_buf))
+  __llvm_get_buffer_start(mem_buf).to_string()
 }
 
 ///|

@@ -13,56 +13,68 @@ pub extern "C" fn llvm_get_next_target(t : LLVMTargetRef) -> LLVMTargetRef = "LL
 
 ///|
 ///  Finds the target corresponding to the given name.
-extern "C" fn __llvm_get_target_from_name(name : CStr) -> LLVMTargetRef = "LLVMGetTargetFromName"
+#borrow(name)
+extern "C" fn __llvm_get_target_from_name(name : Utf8Z) -> LLVMTargetRef = "LLVMGetTargetFromName"
 
 ///|
 pub fn llvm_get_target_from_name(name : String) -> LLVMTargetRef {
-  let name = moonbit_str_to_c_str(name)
+  let name = Utf8Z::from_string(name) catch {
+    EmbeddedNul => return LLVMTargetRef::null()
+  }
   __llvm_get_target_from_name(name)
 }
 
 ///|
 /// Finds the target corresponding to the given triple and stores it in `T`.
 /// Returns 0 on success. Optionally returns any error in ErrorMessage.
-/// Use LLVMDisposeMessage to dispose the message.
+/// The C adapter disposes LLVM's message after copying it into MoonBit bytes.
 // TODO: check if this is correct
+#borrow(triple, out_target, out_failed)
 extern "C" fn __llvm_get_target_from_triple(
-  triple : CStr,
-) -> (LLVMTargetRef, CStr, LLVMBool) = "__llvm_get_target_from_triple"
+  triple : Utf8Z,
+  out_target : Ref[LLVMTargetRef],
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_get_target_from_triple"
 
 ///|
 /// Finds the target corresponding to the given triple and stores it in `T`.
 /// Returns 0 on success. Optionally returns any error in ErrorMessage.
-/// Use LLVMDisposeMessage to dispose the message.
+/// The C adapter disposes LLVM's message after copying it into MoonBit bytes.
 pub fn llvm_get_target_from_triple(
   triple : String,
 ) -> (LLVMTargetRef, String, Bool) {
-  let triple = moonbit_str_to_c_str(triple)
-  let (target, cstr, is_ok) = __llvm_get_target_from_triple(triple)
-  let is_ok = is_ok.to_moonbit_bool()
-  if is_ok {
-    (target, c_str_to_moonbit_str(cstr), is_ok)
-  } else {
-    (target, "", is_ok)
+  let triple = Utf8Z::from_string(triple) catch {
+    EmbeddedNul =>
+      return (
+        LLVMTargetRef::null(),
+        "target triple contains an embedded NUL",
+        true,
+      )
   }
+  let target = Ref(LLVMTargetRef::null())
+  let failed : Ref[LLVMBool] = Ref(0)
+  let message = __llvm_get_target_from_triple(triple, target, failed)
+  (target.val, @utf8.decode_lossy(message), failed.val.to_moonbit_bool())
 }
 
 ///|
 /// Returns the name of a target. See llvm::Target::getName
-extern "C" fn __llvm_get_target_name(t : LLVMTargetRef) -> CStr = "LLVMGetTargetName"
+extern "C" fn __llvm_get_target_name(t : LLVMTargetRef) -> Bytes = "llvm_mbt_get_target_name"
 
 ///|
-pub fn llvm_get_target_name(t : LLVMTargetRef) -> String {
-  c_str_to_moonbit_str(__llvm_get_target_name(t))
+pub fn llvm_get_target_name(t : LLVMTargetRef) -> String raise @utf8.Malformed {
+  __llvm_get_target_name(t) |> @utf8.decode
 }
 
 ///|
 /// Returns the description  of a target. See llvm::Target::getDescription.
-extern "C" fn __llvm_get_target_description(t : LLVMTargetRef) -> CStr = "LLVMGetTargetDescription"
+extern "C" fn __llvm_get_target_description(t : LLVMTargetRef) -> Bytes = "llvm_mbt_get_target_description"
 
 ///|
-pub fn llvm_get_target_description(t : LLVMTargetRef) -> String {
-  c_str_to_moonbit_str(__llvm_get_target_description(t))
+pub fn llvm_get_target_description(
+  t : LLVMTargetRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_target_description(t) |> @utf8.decode
 }
 
 ///|
@@ -102,17 +114,18 @@ pub extern "C" fn llvm_dispose_target_machine_options(
 ) = "LLVMDisposeTargetMachineOptions"
 
 ///|
+#borrow(cpu)
 extern "C" fn __llvm_target_machine_options_set_cpu(
   options : LLVMTargetMachineOptionsRef,
-  cpu : CStr,
+  cpu : Utf8Z,
 ) = "LLVMTargetMachineOptionsSetCPU"
 
 ///|
 pub fn llvm_target_machine_options_set_cpu(
   options : LLVMTargetMachineOptionsRef,
   cpu : String,
-) -> Unit {
-  let cpu = moonbit_str_to_c_str(cpu)
+) -> Unit raise CStringError {
+  let cpu = Utf8Z::from_string(cpu)
   __llvm_target_machine_options_set_cpu(options, cpu)
 }
 
@@ -120,32 +133,34 @@ pub fn llvm_target_machine_options_set_cpu(
 /// Set the list of features for the target machine.
 /// 
 /// - param Features a comma-separated list of features.
+#borrow(features)
 extern "C" fn __llvm_target_machine_options_set_features(
   options : LLVMTargetMachineOptionsRef,
-  features : CStr,
+  features : Utf8Z,
 ) = "LLVMTargetMachineOptionsSetFeatures"
 
 ///|
 pub fn llvm_target_machine_options_set_features(
   options : LLVMTargetMachineOptionsRef,
   features : String,
-) -> Unit {
-  let features = moonbit_str_to_c_str(features)
+) -> Unit raise CStringError {
+  let features = Utf8Z::from_string(features)
   __llvm_target_machine_options_set_features(options, features)
 }
 
 ///|
+#borrow(abi)
 extern "C" fn __llvm_target_machine_options_set_abi(
   options : LLVMTargetMachineOptionsRef,
-  abi : CStr,
+  abi : Utf8Z,
 ) = "LLVMTargetMachineOptionsSetABI"
 
 ///|
 pub fn llvm_target_machine_options_set_abi(
   options : LLVMTargetMachineOptionsRef,
   abi : String,
-) -> Unit {
-  let abi = moonbit_str_to_c_str(abi)
+) -> Unit raise CStringError {
+  let abi = Utf8Z::from_string(abi)
   __llvm_target_machine_options_set_abi(options, abi)
 }
 
@@ -181,9 +196,10 @@ pub extern "C" fn llvm_target_machine_options_set_code_model(
 //                                    LLVMTargetMachineOptionsRef Options);
 
 ///|
+#borrow(triple)
 extern "C" fn __llvm_create_target_machine_with_options(
   t : LLVMTargetRef,
-  triple : CStr,
+  triple : Utf8Z,
   options : LLVMTargetMachineOptionsRef,
 ) -> LLVMTargetMachineRef = "LLVMCreateTargetMachineWithOptions"
 
@@ -192,8 +208,8 @@ pub fn llvm_create_target_machine_with_options(
   t : LLVMTargetRef,
   triple : String,
   options : LLVMTargetMachineOptionsRef,
-) -> LLVMTargetMachineRef {
-  let triple = moonbit_str_to_c_str(triple)
+) -> LLVMTargetMachineRef raise CStringError {
+  let triple = Utf8Z::from_string(triple)
   __llvm_create_target_machine_with_options(t, triple, options)
 }
 
@@ -207,21 +223,22 @@ pub fn llvm_create_target_machine(
   level : LLVMCodeGenOptLevel,
   reloc : LLVMRelocMode,
   code_model : LLVMCodeModel,
-) -> LLVMTargetMachineRef {
-  let triple = moonbit_str_to_c_str(triple)
-  let cpu = moonbit_str_to_c_str(cpu)
-  let features = moonbit_str_to_c_str(features)
+) -> LLVMTargetMachineRef raise CStringError {
+  let triple = Utf8Z::from_string(triple)
+  let cpu = Utf8Z::from_string(cpu)
+  let features = Utf8Z::from_string(features)
   __llvm_create_target_machine(
     t, triple, cpu, features, level, reloc, code_model,
   )
 }
 
 ///|
+#borrow(triple, cpu, features)
 extern "C" fn __llvm_create_target_machine(
   t : LLVMTargetRef,
-  triple : CStr,
-  cpu : CStr,
-  features : CStr,
+  triple : Utf8Z,
+  cpu : Utf8Z,
+  features : Utf8Z,
   level : LLVMCodeGenOptLevel,
   reloc : LLVMRelocMode,
   code_model : LLVMCodeModel,

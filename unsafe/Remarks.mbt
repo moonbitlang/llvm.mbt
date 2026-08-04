@@ -48,12 +48,14 @@
 
 ///|
 /// Returns the buffer holding the string.
-pub fn llvm_remark_string_get_data(s : LLVMRemarkStringRef) -> String {
-  __llvm_remark_string_get_data(s).to_string()
+pub fn llvm_remark_string_get_data(
+  s : LLVMRemarkStringRef,
+) -> String raise @utf8.Malformed {
+  __llvm_remark_string_get_data(s) |> @utf8.decode
 }
 
 ///|
-extern "C" fn __llvm_remark_string_get_data(s : LLVMRemarkStringRef) -> CStr = "LLVMRemarkStringGetData"
+extern "C" fn __llvm_remark_string_get_data(s : LLVMRemarkStringRef) -> Bytes = "llvm_mbt_remark_string_get_data"
 
 //
 // /**

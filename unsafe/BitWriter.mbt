@@ -7,9 +7,10 @@
 // TODO: Implement C function
 
 ///|
+#borrow(path)
 extern "C" fn __llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,
-  path : CStr,
+  path : Utf8Z,
 ) -> Int = "LLVMWriteBitcodeToFile"
 
 ///|
@@ -17,7 +18,7 @@ pub fn llvm_write_bitcode_to_file(
   mod_ref : LLVMModuleRef,
   path : String,
 ) -> Int {
-  let path = moonbit_str_to_c_str(path)
+  let path = Utf8Z::from_string(path) catch { EmbeddedNul => return 1 }
   __llvm_write_bitcode_to_file(mod_ref, path)
 }
 //

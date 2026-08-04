@@ -18,7 +18,9 @@ pub impl GlobalValue for GlobalVariable with fn asGlobalEnum(self) -> GlobalEnum
 
 ///|
 pub impl Show for GlobalVariable with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
+  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+    error => "<LLVM global variable text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }
 
@@ -42,7 +44,9 @@ pub impl GlobalValue for GlobalConstant with fn asGlobalEnum(self) -> GlobalEnum
 
 ///|
 pub impl Show for GlobalConstant with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
+  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+    error => "<LLVM global constant text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }
 

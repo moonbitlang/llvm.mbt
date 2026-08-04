@@ -405,18 +405,14 @@ pub extern "C" fn llvm_di_scope_get_file(
 /// 
 /// - see `DIFile::getDirectory()`
 /// 
-pub fn llvm_di_file_get_directory(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref(0)
-  let cstr = __llvm_di_file_get_directory(file_ref, len)
-  c_str_to_moonbit_str_with_length(cstr, len.val)
+pub fn llvm_di_file_get_directory(
+  file_ref : LLVMMetadataRef,
+) -> String raise @utf8.Malformed {
+  __llvm_di_file_get_directory(file_ref) |> @utf8.decode
 }
 
 ///|
-#borrow(len)
-extern "C" fn __llvm_di_file_get_directory(
-  file_ref : LLVMMetadataRef,
-  len : Ref[UInt],
-) -> CStr = "__llvm_di_file_get_directory"
+extern "C" fn __llvm_di_file_get_directory(file_ref : LLVMMetadataRef) -> Bytes = "llvm_mbt_di_file_get_directory"
 
 // /**
 //  * Get the name of a given file.
@@ -431,18 +427,14 @@ extern "C" fn __llvm_di_file_get_directory(
 /// Get the name of a given file.
 /// 
 /// - see `DIFile::getFilename()`
-pub fn llvm_di_file_get_filename(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref(0)
-  let cstr = __llvm_di_file_get_filename(file_ref, len)
-  c_str_to_moonbit_str_with_length(cstr, len.val)
+pub fn llvm_di_file_get_filename(
+  file_ref : LLVMMetadataRef,
+) -> String raise @utf8.Malformed {
+  __llvm_di_file_get_filename(file_ref) |> @utf8.decode
 }
 
 ///|
-#borrow(len)
-extern "C" fn __llvm_di_file_get_filename(
-  file_ref : LLVMMetadataRef,
-  len : Ref[UInt],
-) -> CStr = "__llvm_di_file_get_filename"
+extern "C" fn __llvm_di_file_get_filename(file_ref : LLVMMetadataRef) -> Bytes = "llvm_mbt_di_file_get_filename"
 
 //
 // /**
@@ -458,18 +450,14 @@ extern "C" fn __llvm_di_file_get_filename(
 /// Get the source of a given file.
 /// 
 /// - see `DIFile::getSource()`
-pub fn llvm_di_file_get_source(file_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref(0)
-  let cstr = __llvm_di_file_get_source(file_ref, len)
-  c_str_to_moonbit_str_with_length(cstr, len.val)
+pub fn llvm_di_file_get_source(
+  file_ref : LLVMMetadataRef,
+) -> String raise @utf8.Malformed {
+  __llvm_di_file_get_source(file_ref) |> @utf8.decode
 }
 
 ///|
-#borrow(len)
-extern "C" fn __llvm_di_file_get_source(
-  file_ref : LLVMMetadataRef,
-  len : Ref[UInt],
-) -> CStr = "__llvm_di_file_get_source"
+extern "C" fn __llvm_di_file_get_source(file_ref : LLVMMetadataRef) -> Bytes = "llvm_mbt_di_file_get_source"
 // /**
 //  * Create a type array.
 //  * \param Builder        The DIBuilder.
@@ -633,15 +621,19 @@ pub fn llvm_di_builder_create_unspecified_type(
   builder_ref : LLVMDIBuilderRef,
   name : String,
 ) -> LLVMMetadataRef {
-  let cstr = moonbit_str_to_c_str(name)
-  let len = name.length().to_uint64()
-  __llvm_di_builder_create_unspecified_type(builder_ref, cstr, len)
+  let name = @utf8.encode(name)
+  __llvm_di_builder_create_unspecified_type(
+    builder_ref,
+    name,
+    name.length().to_uint64(),
+  )
 }
 
 ///|
+#borrow(name)
 extern "C" fn __llvm_di_builder_create_unspecified_type(
   builder_ref : LLVMDIBuilderRef,
-  name : CStr,
+  name : Bytes,
   name_len : UInt64,
 ) -> LLVMMetadataRef = "__llvm_di_builder_create_unspecified_type"
 
@@ -1024,18 +1016,14 @@ pub extern "C" fn llvm_di_builder_create_artificial_type(
 /// Get the name of this DIType.
 /// 
 /// - see `DIType::getName()`
-pub fn llvm_di_type_get_name(type_ref : LLVMMetadataRef) -> String {
-  let len : Ref[UInt] = Ref(0)
-  let cstr = __llvm_di_type_get_name(type_ref, len)
-  c_str_to_moonbit_str_with_length(cstr, len.val)
+pub fn llvm_di_type_get_name(
+  type_ref : LLVMMetadataRef,
+) -> String raise @utf8.Malformed {
+  __llvm_di_type_get_name(type_ref) |> @utf8.decode
 }
 
 ///|
-#borrow(len)
-extern "C" fn __llvm_di_type_get_name(
-  type_ref : LLVMMetadataRef,
-  len : Ref[UInt],
-) -> CStr = "__llvm_di_type_get_name"
+extern "C" fn __llvm_di_type_get_name(type_ref : LLVMMetadataRef) -> Bytes = "llvm_mbt_di_type_get_name"
 //
 // /**
 //  * Get the size of this DIType in bits.

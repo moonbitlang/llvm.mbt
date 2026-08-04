@@ -7,7 +7,7 @@ pub fn Module::addFunction(
   fty : FunctionType,
   name : String,
   linkage? : Linkage,
-) -> Function {
+) -> Function raise @unsafe.CStringError {
   let valueref = @unsafe.llvm_add_function(self.0, name, fty.0)
   let fval = Function::Function(valueref)
   match linkage {
@@ -66,7 +66,7 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 ///
 /// inspect(program.getName(), content="my_module");
 /// ```
-pub fn Module::getName(self : Self) -> String {
+pub fn Module::getName(self : Self) -> String raise {
   @unsafe.llvm_get_module_identifier(self.0)
 }
 
@@ -103,7 +103,7 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 /// inspect(program.getName(), content="my_mod");
 /// inspect(program.getSourceFileName(), content="my_mod.mbt");
 /// ```
-pub fn Module::getSourceFileName(self : Self) -> String {
+pub fn Module::getSourceFileName(self : Self) -> String raise {
   @unsafe.llvm_get_source_file_name(self.0)
 }
 
@@ -130,11 +130,16 @@ pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
 ///|
 pub fn Module::setDefaultDataLayout(self : Module) -> Unit {
   let layout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-  @unsafe.llvm_set_data_layout(self.0, layout)
+  @unsafe.llvm_set_data_layout(self.0, layout) catch {
+    @unsafe.EmbeddedNul => ()
+  }
 }
 
 ///|
-pub fn Module::setDataLayout(self : Module, layout : String) -> Unit {
+pub fn Module::setDataLayout(
+  self : Module,
+  layout : String,
+) -> Unit raise @unsafe.CStringError {
   @unsafe.llvm_set_data_layout(self.0, layout)
 }
 
@@ -151,7 +156,7 @@ pub fn Module::addGlobalVariable(
   name : String,
   initializer? : &Constant,
   linkage? : Linkage,
-) -> GlobalVariable {
+) -> GlobalVariable raise @unsafe.CStringError {
   let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
   if initializer is Some(init) {
     @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
@@ -169,7 +174,7 @@ pub fn Module::addGlobalConstant(
   name : String,
   value : &Constant,
   linkage? : Linkage,
-) -> GlobalConstant {
+) -> GlobalConstant raise @unsafe.CStringError {
   let gv_ref = @unsafe.llvm_add_global(self.0, ty.getTypeRef(), name)
   @unsafe.llvm_set_global_constant(gv_ref, true)
   @unsafe.llvm_set_initializer(gv_ref, value.getValueRef())
@@ -212,6 +217,8 @@ pub fn Module::dump(self : Module) -> Unit {
 
 ///|
 pub impl Show for Module with fn output(self, logger) {
-  let s = @unsafe.llvm_print_module_to_string(self.0)
+  let s = @unsafe.llvm_print_module_to_string(self.0) catch {
+    error => "<LLVM module text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }

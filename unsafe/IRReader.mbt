@@ -19,13 +19,13 @@
 //                               *OutM, char **OutMessage);
 
 ///|
-#borrow(out_m, out_message)
+#borrow(out_m, out_failed)
 extern "C" fn __llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
   mem_buf : LLVMMemoryBufferRef,
   out_m : Ref[LLVMModuleRef],
-  out_message : Ref[CStr],
-) -> LLVMBool = "__llvm_parse_ir_in_context"
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_parse_ir_in_context"
 
 ///|
 /// Read LLVM IR from a memory buffer and convert it into an in-memory Module object.
@@ -33,8 +33,8 @@ extern "C" fn __llvm_parse_ir_in_context(
 /// Read LLVM IR from a memory buffer and convert it into an in-memory Module
 /// object. Returns 0 on success.
 /// Optionally returns a human-readable description of any errors that
-/// occurred during parsing IR. OutMessage must be disposed with
-/// LLVMDisposeMessage.
+/// occurred during parsing IR. The C adapter disposes LLVM's message after
+/// copying it into MoonBit bytes.
 /// 
 /// - see llvm::ParseIR()
 /// 
@@ -42,11 +42,10 @@ pub fn llvm_parse_ir_in_context(
   ctx_ref : LLVMContextRef,
   mem_buf : LLVMMemoryBufferRef,
 ) -> (LLVMModuleRef, String, LLVMBool) {
-  let cstr_ref : Ref[CStr] = Ref(CStr::create_null())
   let out_m_ref : Ref[LLVMModuleRef] = Ref(LLVMModuleRef::null())
-  let result = __llvm_parse_ir_in_context(ctx_ref, mem_buf, out_m_ref, cstr_ref)
-  let str = cstr_ref.val.to_string()
-  (out_m_ref.val, str, result)
+  let failed : Ref[LLVMBool] = Ref(0)
+  let message = __llvm_parse_ir_in_context(ctx_ref, mem_buf, out_m_ref, failed)
+  (out_m_ref.val, @utf8.decode_lossy(message), failed.val)
 }
 
 ///|
@@ -55,8 +54,8 @@ pub fn llvm_parse_ir_in_context(
 /// Read LLVM IR from a memory buffer and convert it into an in-memory Module
 /// object. Returns 0 on success.
 /// Optionally returns a human-readable description of any errors that
-/// occurred during parsing IR. OutMessage must be disposed with
-/// LLVMDisposeMessage.
+/// occurred during parsing IR. The C adapter disposes LLVM's message after
+/// copying it into MoonBit bytes.
 /// 
 /// - see llvm::ParseIR()
 /// 

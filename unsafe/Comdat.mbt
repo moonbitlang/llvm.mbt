@@ -9,17 +9,18 @@
 /// if it didn't already exist.
 /// 
 /// - see llvm::Module::getOrInsertComdat()
+#borrow(name)
 extern "C" fn __llvm_get_or_insert_comdat(
   m : LLVMModuleRef,
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMComdatRef = "__llvm_get_or_insert_comdat"
 
 ///|
 pub fn llvm_get_or_insert_comdat(
   m : LLVMModuleRef,
   name : String,
-) -> LLVMComdatRef {
-  let name = moonbit_str_to_c_str(name)
+) -> LLVMComdatRef raise CStringError {
+  let name = Utf8Z::from_string(name)
   __llvm_get_or_insert_comdat(m, name)
 }
 
@@ -27,8 +28,8 @@ pub fn llvm_get_or_insert_comdat(
 pub fn LLVMModuleRef::get_or_insert_comdat(
   self : LLVMModuleRef,
   name : String,
-) -> LLVMComdatRef {
-  let name = moonbit_str_to_c_str(name)
+) -> LLVMComdatRef raise CStringError {
+  let name = Utf8Z::from_string(name)
   __llvm_get_or_insert_comdat(self, name)
 }
 

@@ -1,12 +1,16 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/unsafe"
 
+import {
+  "moonbitlang/core/encoding/utf8",
+}
+
 // Values
 pub fn llvm_abi_alignment_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt
 
 pub fn llvm_abi_size_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
 
-pub fn llvm_add_alias2(LLVMModuleRef, LLVMTypeRef, UInt, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_add_alias2(LLVMModuleRef, LLVMTypeRef, UInt, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_add_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, LLVMAttributeRef) -> Unit
 
@@ -18,13 +22,13 @@ pub fn llvm_add_clause(LLVMValueRef, LLVMValueRef) -> Unit
 
 pub fn llvm_add_destination(LLVMValueRef, LLVMBasicBlockRef) -> Unit
 
-pub fn llvm_add_function(LLVMModuleRef, String, LLVMTypeRef) -> LLVMValueRef
+pub fn llvm_add_function(LLVMModuleRef, String, LLVMTypeRef) -> LLVMValueRef raise CStringError
 
-pub fn llvm_add_global(LLVMModuleRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_add_global(LLVMModuleRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_add_global_ifunc(LLVMModuleRef, String, LLVMTypeRef, UInt, LLVMValueRef) -> LLVMValueRef
 
-pub fn llvm_add_global_in_address_space(LLVMModuleRef, LLVMTypeRef, String, UInt) -> LLVMValueRef
+pub fn llvm_add_global_in_address_space(LLVMModuleRef, LLVMTypeRef, String, UInt) -> LLVMValueRef raise CStringError
 
 pub fn llvm_add_handler(LLVMValueRef, LLVMBasicBlockRef) -> Unit
 
@@ -34,9 +38,9 @@ pub fn llvm_add_metadata_to_inst(LLVMBuilderRef, LLVMValueRef) -> Unit
 
 pub fn llvm_add_module_flag(LLVMModuleRef, LLVMModuleFlagBehavior, String, LLVMMetadataRef) -> Unit
 
-pub fn llvm_add_named_metadata_operand(LLVMModuleRef, String, LLVMValueRef) -> Unit
+pub fn llvm_add_named_metadata_operand(LLVMModuleRef, String, LLVMValueRef) -> Unit raise CStringError
 
-pub fn llvm_add_target_dependent_function_attr(LLVMValueRef, String, String) -> Unit
+pub fn llvm_add_target_dependent_function_attr(LLVMValueRef, String, String) -> Unit raise CStringError
 
 pub fn llvm_alias_get_aliasee(LLVMValueRef) -> LLVMValueRef
 
@@ -44,13 +48,13 @@ pub fn llvm_alias_set_aliasee(LLVMValueRef, LLVMValueRef) -> Unit
 
 pub fn llvm_align_of(LLVMTypeRef) -> LLVMValueRef
 
-pub fn llvm_append_basic_block(LLVMValueRef, String) -> LLVMBasicBlockRef
+pub fn llvm_append_basic_block(LLVMValueRef, String) -> LLVMBasicBlockRef raise CStringError
 
-pub fn llvm_append_basic_block_in_context(LLVMContextRef, LLVMValueRef, String) -> LLVMBasicBlockRef
+pub fn llvm_append_basic_block_in_context(LLVMContextRef, LLVMValueRef, String) -> LLVMBasicBlockRef raise CStringError
 
 pub fn llvm_append_existing_basic_block(LLVMValueRef, LLVMBasicBlockRef) -> Unit
 
-pub fn llvm_append_module_inline_asm(LLVMModuleRef, CStr, UInt64) -> Unit
+pub fn llvm_append_module_inline_asm(LLVMModuleRef, String) -> Unit
 
 pub fn llvm_array_type(LLVMTypeRef, UInt) -> LLVMTypeRef
 
@@ -68,127 +72,127 @@ pub fn llvm_bfloat_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
 pub fn llvm_block_address(LLVMValueRef, LLVMBasicBlockRef) -> LLVMValueRef
 
-pub fn llvm_build_a_shr(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_a_shr(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_addr_space_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_addr_space_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_aggregate_ret(LLVMBuilderRef, Array[LLVMValueRef]) -> LLVMValueRef
 
-pub fn llvm_build_alloca(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_alloca(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_and(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_and(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_array_alloca(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_array_alloca(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_array_malloc(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_array_malloc(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_atomic_cmp_xchg(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, LLVMAtomicOrdering, LLVMAtomicOrdering, LLVMBool) -> LLVMValueRef
 
 pub fn llvm_build_atomic_rmw(LLVMBuilderRef, LLVMAtomicRMWBinOp, LLVMValueRef, LLVMValueRef, LLVMAtomicOrdering, LLVMBool) -> LLVMValueRef
 
-pub fn llvm_build_bin_op(LLVMBuilderRef, LLVMOpcode, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_bin_op(LLVMBuilderRef, LLVMOpcode, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_br(LLVMBuilderRef, LLVMBasicBlockRef) -> LLVMValueRef
 
-pub fn llvm_build_call2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn llvm_build_call2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_call_br(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, LLVMBasicBlockRef, Array[LLVMBasicBlockRef], Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef
+pub fn llvm_build_call_br(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, LLVMBasicBlockRef, Array[LLVMBasicBlockRef], Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_call_with_operand_bundles(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef
+pub fn llvm_build_call_with_operand_bundles(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_cast(LLVMBuilderRef, LLVMOpcode, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_cast(LLVMBuilderRef, LLVMOpcode, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_catch_pad(LLVMBuilderRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn llvm_build_catch_pad(LLVMBuilderRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_catch_ret(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef) -> LLVMValueRef
 
-pub fn llvm_build_catch_switch(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef, UInt, String) -> LLVMValueRef
+pub fn llvm_build_catch_switch(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef, UInt, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_cleanup_pad(LLVMBuilderRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn llvm_build_cleanup_pad(LLVMBuilderRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_cleanup_ret(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef) -> LLVMValueRef
 
 pub fn llvm_build_cond_br(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef, LLVMBasicBlockRef) -> LLVMValueRef
 
-pub fn llvm_build_exact_s_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_exact_s_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_exact_u_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_exact_u_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_extract_element(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_extract_element(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_extract_value(LLVMBuilderRef, LLVMValueRef, UInt, String) -> LLVMValueRef
+pub fn llvm_build_extract_value(LLVMBuilderRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_f_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_f_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fcmp(LLVMBuilderRef, LLVMRealPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_fcmp(LLVMBuilderRef, LLVMRealPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fence(LLVMBuilderRef, LLVMAtomicOrdering, Bool, String) -> LLVMValueRef
+pub fn llvm_build_fence(LLVMBuilderRef, LLVMAtomicOrdering, Bool, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fp_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_fp_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fp_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_fp_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fp_to_si(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_fp_to_si(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fp_to_ui(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_fp_to_ui(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_fp_trunc(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_fp_trunc(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_free(LLVMBuilderRef, LLVMValueRef) -> LLVMValueRef
 
-pub fn llvm_build_freeze(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_freeze(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn llvm_build_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_global_string(LLVMBuilderRef, String, String) -> LLVMValueRef
+pub fn llvm_build_global_string(LLVMBuilderRef, String, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_global_string_ptr(LLVMBuilderRef, String, String) -> LLVMValueRef
+pub fn llvm_build_global_string_ptr(LLVMBuilderRef, String, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_icmp(LLVMBuilderRef, LLVMIntPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_icmp(LLVMBuilderRef, LLVMIntPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_in_bounds_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn llvm_build_in_bounds_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_indirect_br(LLVMBuilderRef, LLVMValueRef, UInt) -> LLVMValueRef
 
-pub fn llvm_build_insert_element(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_insert_element(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_insert_value(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, UInt, String) -> LLVMValueRef
+pub fn llvm_build_insert_value(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_int_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_int_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_int_cast2(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, Bool, String) -> LLVMValueRef
+pub fn llvm_build_int_cast2(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, Bool, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_int_to_ptr(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_int_to_ptr(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_invoke2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, String) -> LLVMValueRef
+pub fn llvm_build_invoke2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_invoke_with_operand_bundles(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, Array[LLVMOperandBundleRef], String) -> LLVMValueRef
+pub fn llvm_build_invoke_with_operand_bundles(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_is_not_null(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_is_not_null(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_is_null(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_is_null(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_l_shr(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_l_shr(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_landing_pad(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef
+pub fn llvm_build_landing_pad(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_load2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_load2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_malloc(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_malloc(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_mem_cpy(LLVMBuilderRef, LLVMValueRef, UInt, LLVMValueRef, UInt, LLVMValueRef) -> LLVMValueRef
 
@@ -196,37 +200,37 @@ pub fn llvm_build_mem_move(LLVMBuilderRef, LLVMValueRef, UInt, LLVMValueRef, UIn
 
 pub fn llvm_build_mem_set(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, UInt) -> LLVMValueRef
 
-pub fn llvm_build_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_not(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_not(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nsw_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nsw_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nsw_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nsw_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nsw_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nsw_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nsw_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nsw_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nuw_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nuw_add(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nuw_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nuw_mul(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nuw_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nuw_neg(LLVMBuilderRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_nuw_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_nuw_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_or(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_or(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_phi(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_phi(LLVMBuilderRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_pointer_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_pointer_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_ptr_diff2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_ptr_diff2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_ptr_to_int(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_ptr_to_int(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_resume(LLVMBuilderRef, LLVMValueRef) -> LLVMValueRef
 
@@ -234,49 +238,49 @@ pub fn llvm_build_ret(LLVMBuilderRef, LLVMValueRef) -> LLVMValueRef
 
 pub fn llvm_build_ret_void(LLVMBuilderRef) -> LLVMValueRef
 
-pub fn llvm_build_s_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_s_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_s_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_s_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_s_ext_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_s_ext_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_s_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_s_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_select(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_select(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_shl(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_shl(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_shuffle_vector(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_shuffle_vector(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_si_to_fp(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_si_to_fp(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_store(LLVMBuilderRef, LLVMValueRef, LLVMValueRef) -> LLVMValueRef
 
-pub fn llvm_build_struct_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef
+pub fn llvm_build_struct_gep2(LLVMBuilderRef, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_sub(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_switch(LLVMBuilderRef, LLVMValueRef, LLVMBasicBlockRef, UInt) -> LLVMValueRef
 
-pub fn llvm_build_trunc(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_trunc(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_trunc_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_trunc_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_u_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_u_div(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_u_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_u_rem(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_ui_to_fp(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_ui_to_fp(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_build_unreachable(LLVMBuilderRef) -> LLVMValueRef
 
-pub fn llvm_build_va_arg(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_va_arg(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_xor(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn llvm_build_xor(LLVMBuilderRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_z_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_z_ext(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
-pub fn llvm_build_z_ext_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn llvm_build_z_ext_or_bit_cast(LLVMBuilderRef, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 
 pub fn llvm_builder_get_default_fp_math_tag(LLVMBuilderRef) -> LLVMMetadataRef
 
@@ -366,7 +370,7 @@ pub fn llvm_const_real_of_string_and_size(LLVMTypeRef, String) -> LLVMValueRef
 
 pub fn llvm_const_shuffle_vector(LLVMValueRef, LLVMValueRef, LLVMValueRef) -> LLVMValueRef
 
-pub fn llvm_const_string(CStr, UInt, LLVMBool) -> LLVMValueRef
+pub fn llvm_const_string(String, LLVMBool) -> LLVMValueRef
 
 pub fn llvm_const_string_in_context(LLVMContextRef, String, Bool) -> LLVMValueRef
 
@@ -406,7 +410,7 @@ pub fn llvm_count_params(LLVMValueRef) -> UInt
 
 pub fn llvm_count_struct_element_types(LLVMTypeRef) -> UInt
 
-pub fn llvm_create_basic_block_in_context(LLVMContextRef, String) -> LLVMBasicBlockRef
+pub fn llvm_create_basic_block_in_context(LLVMContextRef, String) -> LLVMBasicBlockRef raise CStringError
 
 pub fn llvm_create_builder() -> LLVMBuilderRef
 
@@ -432,8 +436,6 @@ pub fn llvm_create_memory_buffer_with_memory_range(String, Int, String, Bool) ->
 
 pub fn llvm_create_memory_buffer_with_memory_range_copy(String, Int, String) -> LLVMMemoryBufferRef
 
-pub fn llvm_create_message(CStr) -> CStr
-
 pub fn llvm_create_module_provider_for_existing_module(LLVMModuleRef) -> LLVMModuleProviderRef
 
 pub fn llvm_create_operand_bundle(String, Array[LLVMValueRef]) -> LLVMOperandBundleRef
@@ -444,15 +446,15 @@ pub fn llvm_create_pass_manager() -> LLVMPassManagerRef
 
 pub fn llvm_create_string_attribute(LLVMContextRef, String, String) -> LLVMAttributeRef
 
-pub fn llvm_create_string_error(CStr) -> LLVMErrorRef
+pub fn llvm_create_string_error(String) -> LLVMErrorRef
 
-pub fn llvm_create_target_data(String) -> LLVMTargetDataRef
+pub fn llvm_create_target_data(String) -> LLVMTargetDataRef raise CStringError
 
-pub fn llvm_create_target_machine(LLVMTargetRef, String, String, String, LLVMCodeGenOptLevel, LLVMRelocMode, LLVMCodeModel) -> LLVMTargetMachineRef
+pub fn llvm_create_target_machine(LLVMTargetRef, String, String, String, LLVMCodeGenOptLevel, LLVMRelocMode, LLVMCodeModel) -> LLVMTargetMachineRef raise CStringError
 
 pub fn llvm_create_target_machine_options() -> LLVMTargetMachineOptionsRef
 
-pub fn llvm_create_target_machine_with_options(LLVMTargetRef, String, LLVMTargetMachineOptionsRef) -> LLVMTargetMachineRef
+pub fn llvm_create_target_machine_with_options(LLVMTargetRef, String, LLVMTargetMachineOptionsRef) -> LLVMTargetMachineRef raise CStringError
 
 pub fn llvm_create_type_attribute(LLVMContextRef, UInt, LLVMTypeRef) -> LLVMAttributeRef
 
@@ -496,11 +498,11 @@ pub fn llvm_di_builder_insert_label_at_end(LLVMDIBuilderRef, LLVMMetadataRef, LL
 
 pub fn llvm_di_builder_insert_label_before(LLVMDIBuilderRef, LLVMMetadataRef, LLVMMetadataRef, LLVMValueRef) -> LLVMDbgRecordRef
 
-pub fn llvm_di_file_get_directory(LLVMMetadataRef) -> String
+pub fn llvm_di_file_get_directory(LLVMMetadataRef) -> String raise @utf8.Malformed
 
-pub fn llvm_di_file_get_filename(LLVMMetadataRef) -> String
+pub fn llvm_di_file_get_filename(LLVMMetadataRef) -> String raise @utf8.Malformed
 
-pub fn llvm_di_file_get_source(LLVMMetadataRef) -> String
+pub fn llvm_di_file_get_source(LLVMMetadataRef) -> String raise @utf8.Malformed
 
 pub fn llvm_di_global_variable_expression_get_expression(LLVMMetadataRef) -> LLVMMetadataRef
 
@@ -524,7 +526,7 @@ pub fn llvm_di_type_get_flags(LLVMMetadataRef) -> LLVMDIFlags
 
 pub fn llvm_di_type_get_line(LLVMMetadataRef) -> UInt
 
-pub fn llvm_di_type_get_name(LLVMMetadataRef) -> String
+pub fn llvm_di_type_get_name(LLVMMetadataRef) -> String raise @utf8.Malformed
 
 pub fn llvm_di_type_get_offset_in_bits(LLVMMetadataRef) -> UInt64
 
@@ -540,11 +542,7 @@ pub fn llvm_dispose_builder(LLVMBuilderRef) -> Unit
 
 pub fn llvm_dispose_di_builder(LLVMDIBuilderRef) -> Unit
 
-pub fn llvm_dispose_error_message(CStr) -> Unit
-
 pub fn llvm_dispose_memory_buffer(LLVMMemoryBufferRef) -> Unit
-
-pub fn llvm_dispose_message(CStr) -> Unit
 
 pub fn llvm_dispose_module(LLVMModuleRef) -> Unit
 
@@ -610,7 +608,7 @@ pub fn llvm_get_attribute_count_at_index(LLVMValueRef, LLVMAttributeIndex) -> UI
 
 pub fn llvm_get_attributes_at_index(LLVMValueRef, LLVMAttributeIndex) -> Array[LLVMAttributeRef]
 
-pub fn llvm_get_basic_block_name(LLVMBasicBlockRef) -> String
+pub fn llvm_get_basic_block_name(LLVMBasicBlockRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_basic_block_parent(LLVMBasicBlockRef) -> LLVMValueRef
 
@@ -670,21 +668,21 @@ pub fn llvm_get_current_debug_location(LLVMBuilderRef) -> LLVMValueRef
 
 pub fn llvm_get_current_debug_location2(LLVMBuilderRef) -> LLVMMetadataRef
 
-pub fn llvm_get_data_layout(LLVMModuleRef) -> String
+pub fn llvm_get_data_layout(LLVMModuleRef) -> String raise
 
-pub fn llvm_get_data_layout_str(LLVMModuleRef) -> String
+pub fn llvm_get_data_layout_str(LLVMModuleRef) -> String raise
 
 pub fn llvm_get_debug_loc_column(LLVMValueRef) -> UInt
 
-pub fn llvm_get_debug_loc_directory(LLVMValueRef) -> String
+pub fn llvm_get_debug_loc_directory(LLVMValueRef) -> String raise @utf8.Malformed
 
-pub fn llvm_get_debug_loc_filename(LLVMValueRef) -> String
+pub fn llvm_get_debug_loc_filename(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_debug_loc_line(LLVMValueRef) -> UInt
 
 pub fn llvm_get_di_node_tag(LLVMMetadataRef) -> UInt16
 
-pub fn llvm_get_diag_info_description(LLVMDiagnosticInfoRef) -> String
+pub fn llvm_get_diag_info_description(LLVMDiagnosticInfoRef) -> String raise
 
 pub fn llvm_get_dll_storage_class(LLVMValueRef) -> LLVMDLLStorageClass
 
@@ -700,7 +698,7 @@ pub fn llvm_get_enum_attribute_kind_for_name(String) -> UInt
 
 pub fn llvm_get_enum_attribute_value(LLVMAttributeRef) -> UInt64
 
-pub fn llvm_get_error_message(LLVMErrorRef) -> String
+pub fn llvm_get_error_message(LLVMErrorRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_exact(LLVMValueRef) -> Bool
 
@@ -734,7 +732,7 @@ pub fn llvm_get_function_address(LLVMExecutionEngineRef, String) -> UInt64
 
 pub fn llvm_get_function_call_conv(LLVMValueRef) -> UInt
 
-pub fn llvm_get_gc(LLVMValueRef) -> String
+pub fn llvm_get_gc(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_gep_source_element_type(LLVMValueRef) -> LLVMTypeRef
 
@@ -756,11 +754,11 @@ pub fn llvm_get_indices(LLVMValueRef) -> Array[UInt]
 
 pub fn llvm_get_initializer(LLVMValueRef) -> LLVMValueRef
 
-pub fn llvm_get_inline_asm(LLVMTypeRef, CStr, UInt64, CStr, UInt64, LLVMBool, LLVMBool, LLVMInlineAsmDialect, LLVMBool) -> LLVMValueRef
+pub fn llvm_get_inline_asm(LLVMTypeRef, String, String, LLVMBool, LLVMBool, LLVMInlineAsmDialect, LLVMBool) -> LLVMValueRef
 
 pub fn llvm_get_inline_asm_can_unwind(LLVMValueRef) -> Bool
 
-pub fn llvm_get_inline_asm_constraint_string(LLVMValueRef) -> String
+pub fn llvm_get_inline_asm_constraint_string(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_inline_asm_dialect(LLVMValueRef) -> LLVMInlineAsmDialect
 
@@ -770,7 +768,7 @@ pub fn llvm_get_inline_asm_has_side_effects(LLVMValueRef) -> Bool
 
 pub fn llvm_get_inline_asm_needs_aligned_stack(LLVMValueRef) -> Bool
 
-pub fn llvm_get_inline_asm_string(LLVMValueRef) -> String
+pub fn llvm_get_inline_asm_string(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_insert_block(LLVMBuilderRef) -> LLVMBasicBlockRef
 
@@ -830,11 +828,11 @@ pub fn llvm_get_module_data_layout(LLVMModuleRef) -> LLVMTargetDataRef
 
 pub fn llvm_get_module_debug_metadata_version(LLVMModuleRef) -> UInt
 
-pub fn llvm_get_module_flag(LLVMModuleRef, CStr, UInt64) -> LLVMMetadataRef
+pub fn llvm_get_module_flag(LLVMModuleRef, String) -> LLVMMetadataRef
 
-pub fn llvm_get_module_identifier(LLVMModuleRef) -> String
+pub fn llvm_get_module_identifier(LLVMModuleRef) -> String raise
 
-pub fn llvm_get_module_inline_asm(LLVMModuleRef) -> String
+pub fn llvm_get_module_inline_asm(LLVMModuleRef) -> String raise
 
 pub fn llvm_get_n_neg(LLVMValueRef) -> Bool
 
@@ -846,9 +844,9 @@ pub fn llvm_get_named_global_alias(LLVMModuleRef, String) -> LLVMValueRef
 
 pub fn llvm_get_named_global_ifunc(LLVMModuleRef, String) -> LLVMValueRef
 
-pub fn llvm_get_named_metadata(LLVMModuleRef, CStr, UInt64) -> LLVMNamedMDNodeRef
+pub fn llvm_get_named_metadata(LLVMModuleRef, String) -> LLVMNamedMDNodeRef
 
-pub fn llvm_get_named_metadata_name(LLVMNamedMDNodeRef) -> String
+pub fn llvm_get_named_metadata_name(LLVMNamedMDNodeRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_named_metadata_num_operands(LLVMModuleRef, String) -> UInt
 
@@ -908,13 +906,13 @@ pub fn llvm_get_operand_bundle_arg_at_index(LLVMOperandBundleRef, UInt) -> LLVMV
 
 pub fn llvm_get_operand_bundle_at_index(LLVMValueRef, UInt) -> LLVMOperandBundleRef
 
-pub fn llvm_get_operand_bundle_tag(LLVMOperandBundleRef) -> String
+pub fn llvm_get_operand_bundle_tag(LLVMOperandBundleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_operand_use(LLVMValueRef, UInt) -> LLVMUseRef
 
-pub fn llvm_get_or_insert_comdat(LLVMModuleRef, String) -> LLVMComdatRef
+pub fn llvm_get_or_insert_comdat(LLVMModuleRef, String) -> LLVMComdatRef raise CStringError
 
-pub fn llvm_get_or_insert_named_metadata(LLVMModuleRef, CStr, UInt64) -> LLVMNamedMDNodeRef
+pub fn llvm_get_or_insert_named_metadata(LLVMModuleRef, String) -> LLVMNamedMDNodeRef
 
 pub fn llvm_get_ordering(LLVMValueRef) -> LLVMAtomicOrdering
 
@@ -958,19 +956,19 @@ pub fn llvm_get_prologue_data(LLVMValueRef) -> LLVMValueRef
 
 pub fn llvm_get_return_type(LLVMTypeRef) -> LLVMTypeRef
 
-pub fn llvm_get_section(LLVMValueRef) -> String
+pub fn llvm_get_section(LLVMValueRef) -> String raise @utf8.Malformed
 
-pub fn llvm_get_source_file_name(LLVMModuleRef) -> String
+pub fn llvm_get_source_file_name(LLVMModuleRef) -> String raise
 
 pub fn llvm_get_string_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, String) -> LLVMAttributeRef
 
-pub fn llvm_get_string_attribute_kind(LLVMAttributeRef) -> String
+pub fn llvm_get_string_attribute_kind(LLVMAttributeRef) -> String raise
 
-pub fn llvm_get_string_attribute_value(LLVMAttributeRef) -> String
+pub fn llvm_get_string_attribute_value(LLVMAttributeRef) -> String raise
 
 pub fn llvm_get_struct_element_types(LLVMTypeRef) -> Array[LLVMTypeRef]
 
-pub fn llvm_get_struct_name(LLVMTypeRef) -> String
+pub fn llvm_get_struct_name(LLVMTypeRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_subprogram(LLVMValueRef) -> LLVMMetadataRef
 
@@ -982,13 +980,13 @@ pub fn llvm_get_switch_default_dest(LLVMValueRef) -> LLVMBasicBlockRef
 
 pub fn llvm_get_tail_call_kind(LLVMValueRef) -> LLVMTailCallKind
 
-pub fn llvm_get_target(LLVMModuleRef) -> String
+pub fn llvm_get_target(LLVMModuleRef) -> String raise
 
-pub fn llvm_get_target_description(LLVMTargetRef) -> String
+pub fn llvm_get_target_description(LLVMTargetRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_target_ext_type_int_param(LLVMTypeRef, UInt) -> UInt
 
-pub fn llvm_get_target_ext_type_name(LLVMTypeRef) -> String
+pub fn llvm_get_target_ext_type_name(LLVMTypeRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_target_ext_type_num_int_params(LLVMTypeRef) -> UInt
 
@@ -1000,7 +998,7 @@ pub fn llvm_get_target_from_name(String) -> LLVMTargetRef
 
 pub fn llvm_get_target_from_triple(String) -> (LLVMTargetRef, String, Bool)
 
-pub fn llvm_get_target_name(LLVMTargetRef) -> String
+pub fn llvm_get_target_name(LLVMTargetRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_thread_local_mode(LLVMValueRef) -> LLVMThreadLocalMode
 
@@ -1028,7 +1026,7 @@ pub fn llvm_get_user(LLVMUseRef) -> LLVMValueRef
 
 pub fn llvm_get_value_kind(LLVMValueRef) -> LLVMValueKind
 
-pub fn llvm_get_value_name(LLVMValueRef) -> String
+pub fn llvm_get_value_name(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_vector_size(LLVMTypeRef) -> UInt
 
@@ -1084,15 +1082,15 @@ pub fn llvm_initialize_transform_utils(LLVMPassRegistryRef) -> Unit
 
 pub fn llvm_initialize_vectorization(LLVMPassRegistryRef) -> Unit
 
-pub fn llvm_insert_basic_block(LLVMBasicBlockRef, String) -> LLVMBasicBlockRef
+pub fn llvm_insert_basic_block(LLVMBasicBlockRef, String) -> LLVMBasicBlockRef raise CStringError
 
-pub fn llvm_insert_basic_block_in_context(LLVMContextRef, LLVMBasicBlockRef, String) -> LLVMBasicBlockRef
+pub fn llvm_insert_basic_block_in_context(LLVMContextRef, LLVMBasicBlockRef, String) -> LLVMBasicBlockRef raise CStringError
 
 pub fn llvm_insert_existing_basic_block_after_insert_block(LLVMBuilderRef, LLVMBasicBlockRef) -> Unit
 
 pub fn llvm_insert_into_builder(LLVMBuilderRef, LLVMValueRef) -> Unit
 
-pub fn llvm_insert_into_builder_with_name(LLVMBuilderRef, LLVMValueRef, String) -> Unit
+pub fn llvm_insert_into_builder_with_name(LLVMBuilderRef, LLVMValueRef, String) -> Unit raise CStringError
 
 pub fn llvm_instruction_clone(LLVMValueRef) -> LLVMValueRef
 
@@ -1132,11 +1130,11 @@ pub fn llvm_int_type(UInt) -> LLVMTypeRef
 
 pub fn llvm_int_type_in_context(LLVMContextRef, UInt) -> LLVMTypeRef
 
-pub fn llvm_intrinsic_copy_overloaded_name(UInt, Array[LLVMTypeRef]) -> String
+pub fn llvm_intrinsic_copy_overloaded_name(UInt, Array[LLVMTypeRef]) -> String raise
 
-pub fn llvm_intrinsic_copy_overloaded_name2(LLVMModuleRef, UInt, Array[LLVMTypeRef]) -> String
+pub fn llvm_intrinsic_copy_overloaded_name2(LLVMModuleRef, UInt, Array[LLVMTypeRef]) -> String raise
 
-pub fn llvm_intrinsic_get_name(UInt) -> String
+pub fn llvm_intrinsic_get_name(UInt) -> String raise @utf8.Malformed
 
 pub fn llvm_intrinsic_get_type(LLVMContextRef, UInt, Array[LLVMTypeRef]) -> LLVMTypeRef
 
@@ -1400,9 +1398,9 @@ pub fn llvm_metadata_replace_all_uses_with(LLVMMetadataRef, LLVMMetadataRef) -> 
 
 pub fn llvm_metadata_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
-pub fn llvm_module_create_with_name(String) -> LLVMModuleRef
+pub fn llvm_module_create_with_name(String) -> LLVMModuleRef raise CStringError
 
-pub fn llvm_module_create_with_name_in_context(String, LLVMContextRef) -> LLVMModuleRef
+pub fn llvm_module_create_with_name_in_context(String, LLVMContextRef) -> LLVMModuleRef raise CStringError
 
 pub fn llvm_move_basic_block_after(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
@@ -1480,15 +1478,15 @@ pub fn llvm_ppc_fp128_type() -> LLVMTypeRef
 
 pub fn llvm_ppc_fp128_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
-pub fn llvm_print_dbg_record_to_string(LLVMDbgRecordRef) -> String
+pub fn llvm_print_dbg_record_to_string(LLVMDbgRecordRef) -> String raise
 
-pub fn llvm_print_module_to_string(LLVMModuleRef) -> String
+pub fn llvm_print_module_to_string(LLVMModuleRef) -> String raise
 
-pub fn llvm_print_type_to_string(LLVMTypeRef) -> String
+pub fn llvm_print_type_to_string(LLVMTypeRef) -> String raise
 
-pub fn llvm_print_value_to_string(LLVMValueRef) -> String
+pub fn llvm_print_value_to_string(LLVMValueRef) -> String raise
 
-pub fn llvm_remark_string_get_data(LLVMRemarkStringRef) -> String
+pub fn llvm_remark_string_get_data(LLVMRemarkStringRef) -> String raise @utf8.Malformed
 
 pub fn llvm_remark_string_get_len(LLVMRemarkStringRef) -> UInt
 
@@ -1540,7 +1538,7 @@ pub fn llvm_set_condition(LLVMValueRef, LLVMValueRef) -> Unit
 
 pub fn llvm_set_current_debug_location2(LLVMBuilderRef, LLVMMetadataRef) -> Unit
 
-pub fn llvm_set_data_layout(LLVMModuleRef, String) -> Unit
+pub fn llvm_set_data_layout(LLVMModuleRef, String) -> Unit raise CStringError
 
 pub fn llvm_set_exact(LLVMValueRef, Bool) -> Unit
 
@@ -1550,7 +1548,7 @@ pub fn llvm_set_fast_math_flags(LLVMValueRef, LLVMFastMathFlags) -> Unit
 
 pub fn llvm_set_function_call_conv(LLVMValueRef, UInt) -> Unit
 
-pub fn llvm_set_gc(LLVMValueRef, String) -> Unit
+pub fn llvm_set_gc(LLVMValueRef, String) -> Unit raise CStringError
 
 pub fn llvm_set_global_constant(LLVMValueRef, Bool) -> Unit
 
@@ -1602,7 +1600,7 @@ pub fn llvm_set_prefix_data(LLVMValueRef, LLVMValueRef) -> Unit
 
 pub fn llvm_set_prologue_data(LLVMValueRef, LLVMValueRef) -> Unit
 
-pub fn llvm_set_section(LLVMValueRef, String) -> Unit
+pub fn llvm_set_section(LLVMValueRef, String) -> Unit raise CStringError
 
 pub fn llvm_set_source_file_name(LLVMModuleRef, String) -> Unit
 
@@ -1614,7 +1612,7 @@ pub fn llvm_set_tail_call(LLVMValueRef, Bool) -> Unit
 
 pub fn llvm_set_tail_call_kind(LLVMValueRef, LLVMTailCallKind) -> Unit
 
-pub fn llvm_set_target(LLVMModuleRef, String) -> Unit
+pub fn llvm_set_target(LLVMModuleRef, String) -> Unit raise CStringError
 
 pub fn llvm_set_thread_local(LLVMValueRef, Bool) -> Unit
 
@@ -1648,7 +1646,7 @@ pub fn llvm_store_size_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
 
 pub fn llvm_strip_module_debug_info(LLVMModuleRef) -> LLVMBool
 
-pub fn llvm_struct_create_named(LLVMContextRef, String) -> LLVMTypeRef
+pub fn llvm_struct_create_named(LLVMContextRef, String) -> LLVMTypeRef raise CStringError
 
 pub fn llvm_struct_get_type_at_index(LLVMTypeRef, UInt) -> LLVMTypeRef
 
@@ -1664,15 +1662,15 @@ pub fn llvm_target_has_jit(LLVMTargetRef) -> LLVMBool
 
 pub fn llvm_target_has_target_machine(LLVMTargetRef) -> Bool
 
-pub fn llvm_target_machine_options_set_abi(LLVMTargetMachineOptionsRef, String) -> Unit
+pub fn llvm_target_machine_options_set_abi(LLVMTargetMachineOptionsRef, String) -> Unit raise CStringError
 
 pub fn llvm_target_machine_options_set_code_model(LLVMTargetMachineOptionsRef, LLVMCodeModel) -> Unit
 
 pub fn llvm_target_machine_options_set_codegen_opt_level(LLVMTargetMachineOptionsRef, LLVMCodeGenOptLevel) -> Unit
 
-pub fn llvm_target_machine_options_set_cpu(LLVMTargetMachineOptionsRef, String) -> Unit
+pub fn llvm_target_machine_options_set_cpu(LLVMTargetMachineOptionsRef, String) -> Unit raise CStringError
 
-pub fn llvm_target_machine_options_set_features(LLVMTargetMachineOptionsRef, String) -> Unit
+pub fn llvm_target_machine_options_set_features(LLVMTargetMachineOptionsRef, String) -> Unit raise CStringError
 
 pub fn llvm_target_machine_options_set_reloc_mode(LLVMTargetMachineOptionsRef, LLVMRelocMode) -> Unit
 
@@ -1731,12 +1729,11 @@ pub fn llvm_x86_mmx_type() -> LLVMTypeRef
 pub fn llvm_x86_mmx_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
 // Errors
+pub suberror CStringError {
+  EmbeddedNul
+}
 
 // Types and methods
-type CStr
-pub fn CStr::free(Self) -> Unit
-pub fn CStr::new() -> Self
-
 pub(all) enum LLVMAtomicOrdering {
   LLVMAtomicOrderingNotAtomic
   LLVMAtomicOrderingUnordered
@@ -1792,7 +1789,7 @@ pub fn LLVMBasicBlockRef::as_value_ref(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::delete(Self) -> Unit
 pub fn LLVMBasicBlockRef::get_first_instruction(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::get_last_instruction(Self) -> LLVMValueRef
-pub fn LLVMBasicBlockRef::get_name(Self) -> String
+pub fn LLVMBasicBlockRef::get_name(Self) -> String raise @utf8.Malformed
 pub fn LLVMBasicBlockRef::get_next_basic_block(Self) -> Self
 pub fn LLVMBasicBlockRef::get_parent(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::get_previous_basic_block(Self) -> Self
@@ -1833,81 +1830,81 @@ type LLVMBool derive(Eq)
 #external
 pub type LLVMBuilderRef
 pub fn LLVMBuilderRef::add_metadata_to_inst(Self, LLVMValueRef) -> Unit
-pub fn LLVMBuilderRef::build_addr_space_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_addr_space_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_aggregate_ret(Self, Array[LLVMValueRef]) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_alloca(Self, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_array_alloca(Self, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_alloca(Self, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_array_alloca(Self, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_atomic_rmw(Self, LLVMAtomicRMWBinOp, LLVMValueRef, LLVMValueRef, LLVMAtomicOrdering, LLVMBool) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_br(Self, LLVMBasicBlockRef) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_call2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_call_br(Self, LLVMTypeRef, LLVMValueRef, LLVMBasicBlockRef, Array[LLVMBasicBlockRef], Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_call_with_operand_bundles(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_cast(Self, LLVMOpcode, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_catch_pad(Self, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_call2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_call_br(Self, LLVMTypeRef, LLVMValueRef, LLVMBasicBlockRef, Array[LLVMBasicBlockRef], Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_call_with_operand_bundles(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_cast(Self, LLVMOpcode, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_catch_pad(Self, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_catch_ret(Self, LLVMValueRef, LLVMBasicBlockRef) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_catch_switch(Self, LLVMValueRef, LLVMBasicBlockRef, UInt, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_cleanup_pad(Self, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_catch_switch(Self, LLVMValueRef, LLVMBasicBlockRef, UInt, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_cleanup_pad(Self, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_cleanup_ret(Self, LLVMValueRef, LLVMBasicBlockRef) -> LLVMValueRef
 pub fn LLVMBuilderRef::build_cond_br(Self, LLVMValueRef, LLVMBasicBlockRef, LLVMBasicBlockRef) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_extract_element(Self, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_extract_value(Self, LLVMValueRef, UInt, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_f_neg(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fcmp(Self, LLVMRealPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fp_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fp_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fp_to_si(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fp_to_ui(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_fp_trunc(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_extract_element(Self, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_extract_value(Self, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_f_neg(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fcmp(Self, LLVMRealPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fp_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fp_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fp_to_si(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fp_to_ui(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_fp_trunc(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_free(Self, LLVMValueRef) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_freeze(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_gep2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_global_string(Self, String, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_global_string_ptr(Self, String, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_icmp(Self, LLVMIntPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_in_bounds_gep2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_freeze(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_gep2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_global_string(Self, String, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_global_string_ptr(Self, String, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_icmp(Self, LLVMIntPredicate, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_in_bounds_gep2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_indirect_br(Self, LLVMValueRef, UInt) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_insert_element(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_insert_value(Self, LLVMValueRef, LLVMValueRef, UInt, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_int_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_int_cast2(Self, LLVMValueRef, LLVMTypeRef, Bool, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_int_to_ptr(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_invoke2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_invoke_with_operand_bundles(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, Array[LLVMOperandBundleRef], String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_is_not_null(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_is_null(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_landing_pad(Self, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_load2(Self, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_malloc(Self, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_insert_element(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_insert_value(Self, LLVMValueRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_int_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_int_cast2(Self, LLVMValueRef, LLVMTypeRef, Bool, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_int_to_ptr(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_invoke2(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_invoke_with_operand_bundles(Self, LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef], LLVMBasicBlockRef, LLVMBasicBlockRef, Array[LLVMOperandBundleRef], String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_is_not_null(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_is_null(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_landing_pad(Self, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_load2(Self, LLVMTypeRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_malloc(Self, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_mem_cpy(Self, LLVMValueRef, UInt, LLVMValueRef, UInt, LLVMValueRef) -> LLVMValueRef
 pub fn LLVMBuilderRef::build_mem_move(Self, LLVMValueRef, UInt, LLVMValueRef, UInt, LLVMValueRef) -> LLVMValueRef
 pub fn LLVMBuilderRef::build_mem_set(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, UInt) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_neg(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_not(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_nsw_neg(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_nuw_neg(Self, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_phi(Self, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_pointer_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_ptr_diff2(Self, LLVMTypeRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_ptr_to_int(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_neg(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_not(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_nsw_neg(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_nuw_neg(Self, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_phi(Self, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_pointer_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_ptr_diff2(Self, LLVMTypeRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_ptr_to_int(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_resume(Self, LLVMValueRef) -> LLVMValueRef
 pub fn LLVMBuilderRef::build_ret(Self, LLVMValueRef) -> LLVMValueRef
 pub fn LLVMBuilderRef::build_ret_void(Self) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_s_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_s_ext_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_select(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_shuffle_vector(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_si_to_fp(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_s_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_s_ext_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_select(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_shuffle_vector(Self, LLVMValueRef, LLVMValueRef, LLVMValueRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_si_to_fp(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_store(Self, LLVMValueRef, LLVMValueRef) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_struct_gep2(Self, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_struct_gep2(Self, LLVMTypeRef, LLVMValueRef, UInt, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_switch(Self, LLVMValueRef, LLVMBasicBlockRef, UInt) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_trunc(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_trunc_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_ui_to_fp(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_trunc(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_trunc_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_ui_to_fp(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::build_unreachable(Self) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_va_arg(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_z_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
-pub fn LLVMBuilderRef::build_z_ext_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef
+pub fn LLVMBuilderRef::build_va_arg(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_z_ext(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
+pub fn LLVMBuilderRef::build_z_ext_or_bit_cast(Self, LLVMValueRef, LLVMTypeRef, String) -> LLVMValueRef raise CStringError
 pub fn LLVMBuilderRef::clear_insertion_position(Self) -> Unit
 pub fn LLVMBuilderRef::create() -> Self
 pub fn LLVMBuilderRef::dispose(Self) -> Unit
@@ -2042,13 +2039,13 @@ pub fn LLVMContextRef::md_node_in_context2(Self, Array[LLVMMetadataRef]) -> LLVM
 pub fn LLVMContextRef::md_string_in_context(Self, String) -> LLVMValueRef
 pub fn LLVMContextRef::md_string_in_context2(Self, String) -> LLVMMetadataRef
 pub fn LLVMContextRef::metadata_type(Self) -> LLVMTypeRef
-pub fn LLVMContextRef::module_create_with_name(Self, String) -> LLVMModuleRef
+pub fn LLVMContextRef::module_create_with_name(Self, String) -> LLVMModuleRef raise CStringError
 pub fn LLVMContextRef::parse_ir(Self, LLVMMemoryBufferRef) -> (LLVMModuleRef, String, Bool)
 pub fn LLVMContextRef::pointer_type(Self, UInt) -> LLVMTypeRef
 pub fn LLVMContextRef::ppc_fp128_type(Self) -> LLVMTypeRef
 pub fn LLVMContextRef::set_discard_value_names(Self, Bool) -> Unit
 pub fn LLVMContextRef::should_discard_value_names(Self) -> Bool
-pub fn LLVMContextRef::struct_create_named(Self, String) -> LLVMTypeRef
+pub fn LLVMContextRef::struct_create_named(Self, String) -> LLVMTypeRef raise CStringError
 pub fn LLVMContextRef::struct_type(Self, Array[LLVMTypeRef], Bool) -> LLVMTypeRef
 pub fn LLVMContextRef::token_type(Self) -> LLVMTypeRef
 pub fn LLVMContextRef::void_type(Self) -> LLVMTypeRef
@@ -2192,8 +2189,8 @@ pub fn LLVMDWARFTypeEncoding::new(UInt) -> Self
 pub type LLVMDbgRecordRef
 pub fn LLVMDbgRecordRef::get_next_dbg_record(Self) -> Self
 pub fn LLVMDbgRecordRef::get_previous_dbg_record(Self) -> Self
-pub fn LLVMDbgRecordRef::print(Self) -> String
-pub fn LLVMDbgRecordRef::to_string(Self) -> String
+pub fn LLVMDbgRecordRef::print(Self) -> String raise
+pub fn LLVMDbgRecordRef::to_string(Self) -> String raise
 
 #external
 pub type LLVMDiagnosticInfoRef
@@ -2383,16 +2380,16 @@ pub type LLVMModuleProviderRef
 
 #external
 pub type LLVMModuleRef
-pub fn LLVMModuleRef::add_function(Self, String, LLVMTypeRef) -> LLVMValueRef
+pub fn LLVMModuleRef::add_function(Self, String, LLVMTypeRef) -> LLVMValueRef raise CStringError
 pub fn LLVMModuleRef::add_global_ifunc(Self, String, LLVMTypeRef, UInt, LLVMValueRef) -> LLVMValueRef
-pub fn LLVMModuleRef::add_named_metadata_operand(Self, String, LLVMValueRef) -> Unit
+pub fn LLVMModuleRef::add_named_metadata_operand(Self, String, LLVMValueRef) -> Unit raise CStringError
 pub fn LLVMModuleRef::clone(Self) -> Self
 pub fn LLVMModuleRef::create_function_pass_manager(Self) -> LLVMPassManagerRef
 pub fn LLVMModuleRef::dispose(Self) -> Unit
 pub fn LLVMModuleRef::dump(Self) -> Unit
 pub fn LLVMModuleRef::get_context(Self) -> LLVMContextRef
-pub fn LLVMModuleRef::get_data_layout(Self) -> String
-pub fn LLVMModuleRef::get_data_layout_str(Self) -> String
+pub fn LLVMModuleRef::get_data_layout(Self) -> String raise
+pub fn LLVMModuleRef::get_data_layout_str(Self) -> String raise
 pub fn LLVMModuleRef::get_first_function(Self) -> LLVMValueRef
 pub fn LLVMModuleRef::get_first_global_alias(Self) -> LLVMValueRef
 pub fn LLVMModuleRef::get_first_global_ifunc(Self) -> LLVMValueRef
@@ -2404,14 +2401,14 @@ pub fn LLVMModuleRef::get_named_function(Self, String) -> LLVMValueRef
 pub fn LLVMModuleRef::get_named_global_ifunc(Self, String) -> LLVMValueRef
 pub fn LLVMModuleRef::get_named_metadata(Self, String) -> Array[LLVMValueRef]
 pub fn LLVMModuleRef::get_named_metadata_num_operands(Self, String) -> UInt
-pub fn LLVMModuleRef::get_or_insert_comdat(Self, String) -> LLVMComdatRef
-pub fn LLVMModuleRef::get_target(Self) -> String
+pub fn LLVMModuleRef::get_or_insert_comdat(Self, String) -> LLVMComdatRef raise CStringError
+pub fn LLVMModuleRef::get_target(Self) -> String raise
 pub fn LLVMModuleRef::get_type_by_name(Self, String) -> LLVMTypeRef
 pub fn LLVMModuleRef::is_new_dbg_info_format(Self) -> Bool
-pub fn LLVMModuleRef::print_to_string(Self) -> String
-pub fn LLVMModuleRef::set_data_layout(Self, String) -> Unit
-pub fn LLVMModuleRef::set_target(Self, String) -> Unit
-pub fn LLVMModuleRef::to_string(Self) -> String
+pub fn LLVMModuleRef::print_to_string(Self) -> String raise
+pub fn LLVMModuleRef::set_data_layout(Self, String) -> Unit raise CStringError
+pub fn LLVMModuleRef::set_target(Self, String) -> Unit raise CStringError
+pub fn LLVMModuleRef::to_string(Self) -> String raise
 
 #external
 pub type LLVMNamedMDNodeRef
@@ -2682,10 +2679,10 @@ pub fn LLVMTypeRef::get_pointer_address_space(Self) -> UInt
 pub fn LLVMTypeRef::get_poison(Self) -> LLVMValueRef
 pub fn LLVMTypeRef::get_return_type(Self) -> Self
 pub fn LLVMTypeRef::get_struct_element_types(Self) -> Array[Self]
-pub fn LLVMTypeRef::get_struct_name(Self) -> String
+pub fn LLVMTypeRef::get_struct_name(Self) -> String raise @utf8.Malformed
 pub fn LLVMTypeRef::get_subtypes(Self) -> Array[Self]
 pub fn LLVMTypeRef::get_target_ext_type_int_param(Self, UInt) -> UInt
-pub fn LLVMTypeRef::get_target_ext_type_name(Self) -> String
+pub fn LLVMTypeRef::get_target_ext_type_name(Self) -> String raise @utf8.Malformed
 pub fn LLVMTypeRef::get_target_ext_type_num_int_params(Self) -> UInt
 pub fn LLVMTypeRef::get_target_ext_type_num_type_params(Self) -> UInt
 pub fn LLVMTypeRef::get_target_ext_type_type_param(Self, UInt) -> Self
@@ -2711,12 +2708,12 @@ pub fn LLVMTypeRef::is_sized(Self) -> Bool
 pub fn LLVMTypeRef::label_type() -> Self
 pub fn LLVMTypeRef::pointer_type(Self, UInt) -> Self
 pub fn LLVMTypeRef::ppc_fp128_type() -> Self
-pub fn LLVMTypeRef::print_to_string(Self) -> String
+pub fn LLVMTypeRef::print_to_string(Self) -> String raise
 pub fn LLVMTypeRef::scalable_vector_type(Self, UInt) -> Self
 pub fn LLVMTypeRef::set_body(Self, Array[Self], Bool) -> Unit
 pub fn LLVMTypeRef::size_of(Self) -> LLVMValueRef
 pub fn LLVMTypeRef::struct_type(Array[Self], Bool) -> Self
-pub fn LLVMTypeRef::to_string(Self) -> String
+pub fn LLVMTypeRef::to_string(Self) -> String raise
 pub fn LLVMTypeRef::vector_type(Self, UInt) -> Self
 pub fn LLVMTypeRef::void_type() -> Self
 pub fn LLVMTypeRef::x86_amx_type() -> Self
@@ -2838,7 +2835,7 @@ pub fn LLVMValueRef::get_cast_opcode(Self, Bool, LLVMTypeRef, Bool) -> LLVMOpcod
 pub fn LLVMValueRef::get_clause(Self, UInt) -> Self
 pub fn LLVMValueRef::get_condition(Self) -> Self
 pub fn LLVMValueRef::get_debug_loc_column(Self) -> UInt
-pub fn LLVMValueRef::get_debug_loc_filename(Self) -> String
+pub fn LLVMValueRef::get_debug_loc_filename(Self) -> String raise @utf8.Malformed
 pub fn LLVMValueRef::get_debug_loc_line(Self) -> UInt
 pub fn LLVMValueRef::get_dll_storage_class(Self) -> LLVMDLLStorageClass
 pub fn LLVMValueRef::get_entry_basic_block(Self) -> LLVMBasicBlockRef
@@ -2873,7 +2870,7 @@ pub fn LLVMValueRef::get_md_node_operands(Self) -> Array[Self]
 pub fn LLVMValueRef::get_md_string(Self) -> String
 pub fn LLVMValueRef::get_metadata(Self, UInt) -> Self
 pub fn LLVMValueRef::get_n_neg(Self) -> Bool
-pub fn LLVMValueRef::get_name(Self) -> String
+pub fn LLVMValueRef::get_name(Self) -> String raise @utf8.Malformed
 pub fn LLVMValueRef::get_next_function(Self) -> Self
 pub fn LLVMValueRef::get_next_global_alias(Self) -> Self
 pub fn LLVMValueRef::get_next_global_ifunc(Self) -> Self
@@ -2899,7 +2896,7 @@ pub fn LLVMValueRef::get_previous_function(Self) -> Self
 pub fn LLVMValueRef::get_previous_global_ifunc(Self) -> Self
 pub fn LLVMValueRef::get_previous_instruction(Self) -> Self
 pub fn LLVMValueRef::get_previous_param(Self) -> Self
-pub fn LLVMValueRef::get_section(Self) -> String
+pub fn LLVMValueRef::get_section(Self) -> String raise @utf8.Malformed
 pub fn LLVMValueRef::get_successor(Self, UInt) -> LLVMBasicBlockRef
 pub fn LLVMValueRef::get_switch_default_dest(Self) -> LLVMBasicBlockRef
 pub fn LLVMValueRef::get_tail_call_kind(Self) -> LLVMTailCallKind
@@ -3023,7 +3020,7 @@ pub fn LLVMValueRef::isa_va_arg_inst(Self) -> Self
 pub fn LLVMValueRef::isa_value_as_metadata(Self) -> Self
 pub fn LLVMValueRef::isa_z_ext_inst(Self) -> Self
 pub fn LLVMValueRef::md_string(String) -> Self
-pub fn LLVMValueRef::print(Self) -> String
+pub fn LLVMValueRef::print(Self) -> String raise
 pub fn LLVMValueRef::remove_global_ifunc(Self) -> Unit
 pub fn LLVMValueRef::replace_all_uses_with(Self, Self) -> Unit
 pub fn LLVMValueRef::replace_md_node_operand_with(Self, UInt, LLVMMetadataRef) -> Unit
@@ -3048,7 +3045,7 @@ pub fn LLVMValueRef::set_nuw(Self, Bool) -> Unit
 pub fn LLVMValueRef::set_operand(Self, UInt, Self) -> Unit
 pub fn LLVMValueRef::set_ordering(Self, LLVMAtomicOrdering) -> Unit
 pub fn LLVMValueRef::set_param_alignment(Self, UInt) -> Unit
-pub fn LLVMValueRef::set_section(Self, String) -> Unit
+pub fn LLVMValueRef::set_section(Self, String) -> Unit raise CStringError
 pub fn LLVMValueRef::set_successor(Self, UInt, LLVMBasicBlockRef) -> Unit
 pub fn LLVMValueRef::set_tail_call(Self, Bool) -> Unit
 pub fn LLVMValueRef::set_tail_call_kind(Self, LLVMTailCallKind) -> Unit
@@ -3058,7 +3055,7 @@ pub fn LLVMValueRef::set_unwind_dest(Self, LLVMBasicBlockRef) -> Unit
 pub fn LLVMValueRef::set_visibility(Self, LLVMVisibility) -> Unit
 pub fn LLVMValueRef::set_volatile(Self, Bool) -> Unit
 pub fn LLVMValueRef::set_weak(Self, Bool) -> Unit
-pub fn LLVMValueRef::to_string(Self) -> String
+pub fn LLVMValueRef::to_string(Self) -> String raise
 pub impl Eq for LLVMValueRef
 pub impl Show for LLVMValueRef
 
@@ -3087,4 +3084,3 @@ pub type LVMMCJITMemoryManagerRef
 // Type aliases
 
 // Traits
-

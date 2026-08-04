@@ -212,13 +212,18 @@ pub extern "C" fn llvm_get_module_data_layout(
 // LLVMTargetDataRef LLVMCreateTargetData(const char *StringRep);
 
 ///|
-pub fn llvm_create_target_data(string_rep : String) -> LLVMTargetDataRef {
-  let string_rep = moonbit_str_to_c_str(string_rep)
+pub fn llvm_create_target_data(
+  string_rep : String,
+) -> LLVMTargetDataRef raise CStringError {
+  let string_rep = Utf8Z::from_string(string_rep)
   __llvm_create_target_data(string_rep)
 }
 
 ///|
-extern "C" fn __llvm_create_target_data(string_rep : CStr) -> LLVMTargetDataRef = "LLVMCreateTargetData"
+#borrow(string_rep)
+extern "C" fn __llvm_create_target_data(
+  string_rep : Utf8Z,
+) -> LLVMTargetDataRef = "LLVMCreateTargetData"
 
 //
 // /** Deallocates a TargetData.

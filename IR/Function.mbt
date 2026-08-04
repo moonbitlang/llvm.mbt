@@ -43,7 +43,7 @@ fn Function::getNextFunction(self : Self) -> Function? {
 /// let fval = mod.addFunction(fty, "plus1")
 /// assert_eq(fval.getName(), "plus1")
 /// ```
-pub fn Function::getName(self : Self) -> String {
+pub fn Function::getName(self : Self) -> String raise {
   @unsafe.llvm_get_value_name(self.getValueRef())
 }
 
@@ -178,7 +178,7 @@ pub fn Function::addBasicBlock(
   self : Self,
   name? : String = "",
   before? : BasicBlock? = None,
-) -> BasicBlock {
+) -> BasicBlock raise @unsafe.CStringError {
   let blockref = match before {
     None => @unsafe.llvm_append_basic_block(self.getValueRef(), name)
     Some(bb) => @unsafe.llvm_insert_basic_block(bb.0, name)
@@ -451,7 +451,9 @@ pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
 
 ///|
 pub impl Show for Function with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
+  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+    error => "<LLVM function text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }
 
@@ -502,7 +504,7 @@ pub impl Value for Argument with fn asValueEnum(self) {
 /// arg0.setName("a")
 /// inspect(arg0.getName(), content="a")
 /// ```
-pub fn Argument::getName(self : Self) -> String {
+pub fn Argument::getName(self : Self) -> String raise {
   @unsafe.llvm_get_value_name(self.getValueRef())
 }
 
@@ -632,6 +634,8 @@ pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
 
 ///|
 pub impl Show for Argument with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef())
+  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+    error => "<LLVM argument text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }

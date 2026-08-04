@@ -468,7 +468,7 @@ pub fn BasicBlock::getContext(self : Self) -> Context {
 ///
 /// assert_eq(entry.getName(), "entry")
 /// ```
-pub fn BasicBlock::getName(self : Self) -> String {
+pub fn BasicBlock::getName(self : Self) -> String raise {
   @unsafe.llvm_get_basic_block_name(self.0)
 }
 
@@ -510,6 +510,8 @@ pub fn BasicBlock::setName(self : Self, name : String) -> Unit {
 pub impl Show for BasicBlock with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(
     @unsafe.llvm_basic_block_as_value(self.0),
-  )
+  ) catch {
+    error => "<LLVM basic block text unavailable: \{error}>"
+  }
   logger.write_string(s)
 }

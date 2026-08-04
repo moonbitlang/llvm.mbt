@@ -16,14 +16,17 @@ pub fn llvm_run_passes(
   tm : LLVMTargetMachineRef,
   options : LLVMPassBuilderOptionsRef,
 ) -> LLVMErrorRef {
-  let passes = CStr::from(passes)
+  let passes = Utf8Z::from_string(passes) catch {
+    EmbeddedNul => return llvm_embedded_nul_error()
+  }
   __llvm_run_passes(m, passes, tm, options)
 }
 
 ///|
+#borrow(passes)
 extern "C" fn __llvm_run_passes(
   m : LLVMModuleRef,
-  passes : CStr,
+  passes : Utf8Z,
   tm : LLVMTargetMachineRef,
   options : LLVMPassBuilderOptionsRef,
 ) -> LLVMErrorRef = "LLVMRunPasses"

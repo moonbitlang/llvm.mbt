@@ -301,10 +301,11 @@ pub fn llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
   name : String,
 ) -> LLVMOrcExecutorAddress? {
+  let name = Utf8Z::from_string(name) catch { EmbeddedNul => return None }
   let addr : Ref[LLVMOrcExecutorAddress] = Ref(
     LLVMOrcExecutorAddress::default(),
   )
-  let err = __llvm_orc_lljit_lookup(j, addr, moonbit_str_to_c_str(name))
+  let err = __llvm_orc_lljit_lookup(j, addr, name)
   if llvm_error_is_null(err) {
     Some(addr.val)
   } else {
@@ -313,11 +314,11 @@ pub fn llvm_orc_lljit_lookup(
 }
 
 ///|
-#borrow(result)
+#borrow(result, name)
 extern "C" fn __llvm_orc_lljit_lookup(
   j : LLVMOrcLLJITRef,
   result : Ref[LLVMOrcExecutorAddress],
-  name : CStr,
+  name : Utf8Z,
 ) -> LLVMErrorRef = "LLVMOrcLLJITLookup"
 
 // /**

@@ -83,7 +83,7 @@ pub struct Argument {
 }
 pub fn Argument::addAttr(Self, ParamAttr) -> Unit
 pub fn Argument::getFunction(Self) -> Function
-pub fn Argument::getName(Self) -> String
+pub fn Argument::getName(Self) -> String raise
 pub fn Argument::removeAttr(Self, ParamAttr) -> Unit
 pub fn Argument::setName(Self, String) -> Unit
 pub impl Value for Argument
@@ -116,7 +116,7 @@ pub fn BasicBlock::eraseFromParent(Self) -> Unit raise
 pub fn BasicBlock::getContext(Self) -> Context
 pub fn BasicBlock::getFirstInst(Self) -> &Instruction?
 pub fn BasicBlock::getLastInst(Self) -> &Instruction?
-pub fn BasicBlock::getName(Self) -> String
+pub fn BasicBlock::getName(Self) -> String raise
 pub fn BasicBlock::getNextBasicBlock(Self) -> Self?
 pub fn BasicBlock::getParent(Self) -> Function?
 pub fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
@@ -211,7 +211,7 @@ pub impl Value for ConstantVector
 pub impl Show for ConstantVector
 
 pub struct Context(@unsafe.LLVMContextRef) derive(Eq)
-pub fn Context::addModule(Self, String) -> Module
+pub fn Context::addModule(Self, String) -> Module raise @unsafe.CStringError
 pub fn Context::createBuilder(Self) -> IRBuilder
 pub fn Context::drop(Self) -> Unit
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
@@ -250,7 +250,7 @@ pub fn Context::getMetadataTy(Self) -> MetadataType
 pub fn Context::getPoision(Self, &Type) -> PoisonValue
 pub fn Context::getPtrTy(Self, addressSpace? : AddressSpace) -> PointerType
 pub fn Context::getScalableVectorType(Self, &Type, UInt) -> ScalableVectorType
-pub fn Context::getStructType(Self, Array[&Type], isPacked? : Bool, name? : String) -> StructType
+pub fn Context::getStructType(Self, Array[&Type], isPacked? : Bool, name? : String) -> StructType raise @unsafe.CStringError
 pub fn Context::getStructTypeByName(Self, String) -> StructType?
 pub fn Context::getTokenTy(Self) -> TokenType
 pub fn Context::getUndef(Self, &Type) -> UndefValue
@@ -360,14 +360,14 @@ pub(all) enum FnAttr {
 } derive(Eq)
 
 pub struct Function(@unsafe.LLVMValueRef)
-pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock
+pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock raise @unsafe.CStringError
 pub fn Function::addFnAttr(Self, FnAttr) -> Unit
 pub fn Function::addRetAttr(Self, RetAttr) -> Unit
 pub fn Function::countFnAttrs(Self) -> Int
 pub fn Function::getArg(Self, Int) -> Argument?
 pub fn Function::getArgs(Self) -> Array[Argument]
 pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
-pub fn Function::getName(Self) -> String
+pub fn Function::getName(Self) -> String raise
 pub fn Function::getNumArgs(Self) -> Int
 pub fn Function::getNumBasicBlocks(Self) -> Int
 pub fn Function::getType(Self) -> FunctionType
@@ -772,9 +772,9 @@ pub impl Type for MetadataType
 pub impl Show for MetadataType
 
 pub struct Module(@unsafe.LLVMModuleRef)
-pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function
-pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant
-pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable
+pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise @unsafe.CStringError
+pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise @unsafe.CStringError
+pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise @unsafe.CStringError
 pub fn Module::createInterpreter(Self) -> Interpreter raise
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
@@ -783,9 +783,9 @@ pub fn Module::getFirstFunction(Self) -> Function?
 pub fn Module::getFunction(Self, String) -> Function?
 pub fn Module::getFunctions(Self) -> Array[Function]
 pub fn Module::getLastFunction(Self) -> Function?
-pub fn Module::getName(Self) -> String
-pub fn Module::getSourceFileName(Self) -> String
-pub fn Module::setDataLayout(Self, String) -> Unit
+pub fn Module::getName(Self) -> String raise
+pub fn Module::getSourceFileName(Self) -> String raise
+pub fn Module::setDataLayout(Self, String) -> Unit raise @unsafe.CStringError
 pub fn Module::setDefaultDataLayout(Self) -> Unit
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
@@ -1095,10 +1095,9 @@ pub trait Value : Show {
   fn asValueEnum(Self) -> ValueEnum
   fn getType(Self) -> &Type
   fn getContext(Self) -> Context
-  fn getValueName(Self) -> String?
+  fn getValueName(Self) -> String? raise
   fn setValueName(Self, String) -> Unit
   fn replaceAllUsesWith(Self, &Value) -> Unit
   fn tryAsConstant(Self) -> &Constant?
   fn tryAsConstantEnum(Self) -> ConstantEnum?
 }
-

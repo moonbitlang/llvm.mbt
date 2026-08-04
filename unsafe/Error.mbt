@@ -55,16 +55,18 @@ pub extern "C" fn llvm_consume_error(err : LLVMErrorRef) = "LLVMConsumeError"
 //  */
 
 ///|
-pub fn llvm_get_error_message(err : LLVMErrorRef) -> String {
-  __llvm_get_error_message(err) |> c_str_to_moonbit_str
+pub fn llvm_get_error_message(
+  err : LLVMErrorRef,
+) -> String raise @utf8.Malformed {
+  __llvm_get_error_message(err).to_string()
 }
 
 ///|
-extern "C" fn __llvm_get_error_message(err : LLVMErrorRef) -> CStr = "LLVMGetErrorMessage"
+extern "C" fn __llvm_get_error_message(err : LLVMErrorRef) -> LLVMErrorMessage = "llvm_mbt_get_error_message"
 
 ///|
 /// Disposes of the given error message.
-pub extern "C" fn llvm_dispose_error_message(err_msg : CStr) = "LLVMDisposeErrorMessage"
+// LLVM error messages are disposed by the LLVMErrorMessage C finalizer.
 //
 // /**
 //  * Returns the type id for llvm StringError.
@@ -73,4 +75,13 @@ pub extern "C" fn llvm_dispose_error_message(err_msg : CStr) = "LLVMDisposeError
 
 ///|
 /// Creates a string error with the given message.
-pub extern "C" fn llvm_create_string_error(err_msg : CStr) -> LLVMErrorRef = "LLVMCreateStringError"
+#borrow(err_msg)
+extern "C" fn __llvm_create_string_error(err_msg : Utf8Z) -> LLVMErrorRef = "LLVMCreateStringError"
+
+///|
+pub fn llvm_create_string_error(err_msg : String) -> LLVMErrorRef {
+  let err_msg = Utf8Z::from_string(err_msg) catch {
+    EmbeddedNul => return llvm_embedded_nul_error()
+  }
+  __llvm_create_string_error(err_msg)
+}
