@@ -140,8 +140,8 @@
 
 ## Commit 14：恢复 tutorial Chapter2
 
-- [ ] 将 `tutorial/Chapter2.mbt.md` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
-- [ ] 保留该章原有的 `moonbit skip`。
+- [x] 将 `tutorial/Chapter2.mbt.md` 中的 4 个 `moonbit nocheck` 改为 `mbt check`。
+- [x] 保留该章原有的 `moonbit skip`。
 
 建议提交信息：`docs(tutorial): check Chapter2 examples`
 
