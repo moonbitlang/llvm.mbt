@@ -1,4 +1,4 @@
-# Q-06. Value 派生对象与 Module 的 getName 返回模型 待讨论
+# Q-06. Value 派生对象与 Module 的 getName 返回模型 已解决
 
 > 最后更新日期：2026-08-04
 > 仓库：github.com/moonbitlang/llvm.mbt
@@ -42,6 +42,8 @@ Module 的 `getName` 则不是同一种可选 Value 名称；它返回 Module Id
 
 Option 应优先表示名称是否存在，UTF-8 解码失败则是“存在一段名称字节，但 MoonBit `String` 无法表示”。把两者都转换成 `None` 可以得到简单的无异常 API，但会丢失这个区别。
 
+在安全 `IR` 层采用 UTF-8 文本约定后，非 UTF-8 名称属于明确的边界错误，而不是“没有名字”。因此 `None` 只表示未命名，解码失败需要通过 `StringError` 与之区分。
+
 返回 `"<invalid>"` 也不能保留区别，因为它本身可以是合法 LLVM 名称；名称比较、查找或重新设置时，调用者无法判断拿到的是实际名称还是占位符。占位字符串和 lossy UTF-8 更适合 `Show`、日志等展示路径，不适合作为语义 getter 的结果。
 
 统一范围应首先限定为 Value 名称：[`Value::getValueName`](../../IR/Value.mbt)、[`Function::getName` 与 `Argument::getName`](../../IR/Function.mbt)、[`BasicBlock::getName`](../../IR/BasicBlock.mbt) 应共享同一语义。[`Module::getName`](../../IR/Module.mbt) 应作为 Module Identifier 单独设计，后续可以考虑改名或补充 `getIdentifier`，避免名称相同造成误解。
@@ -52,7 +54,7 @@ Option 应优先表示名称是否存在，UTF-8 解码失败则是“存在一�
 
 ## 建议的解决方案
 
-### A1. Value 名称统一返回 String?，解码失败也返回 None 【建议采纳】
+### A1. Value 名称统一返回 String?，解码失败也返回 None
 
 #### 方案描述
 
@@ -69,7 +71,7 @@ Option 应优先表示名称是否存在，UTF-8 解码失败则是“存在一�
 - 无法区分真正未命名和存在非 UTF-8 名称字节。
 - 调用者不能诊断或无损处理非法 UTF-8 名称。
 
-### A2. Value 名称返回 String? raise StringError
+### A2. Value 名称返回 String? raise StringError 【已采纳】
 
 #### 方案描述
 
@@ -130,4 +132,4 @@ pub enum ValueName {
 
 ## 最终采用方案
 
-待定
+A2. Value 名称返回 String? raise StringError

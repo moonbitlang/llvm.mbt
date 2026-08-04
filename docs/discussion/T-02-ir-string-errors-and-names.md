@@ -10,5 +10,5 @@
 
 ## 关联问题
 
-- [Q-05](Q-05-ir-string-error.md) 〔待讨论〕：IR 对外 StringError 的建立与 LLVM 名称解码
-- [Q-06](Q-06-get-name-return-model.md) 〔待讨论〕：Value 派生对象与 Module 的 getName 返回模型
+- [Q-05](Q-05-ir-string-error.md) 〔已解决〕：IR 对外 StringError 的建立与 LLVM 名称解码
+- [Q-06](Q-06-get-name-return-model.md) 〔已解决〕：Value 派生对象与 Module 的 getName 返回模型

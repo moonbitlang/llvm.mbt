@@ -1,4 +1,4 @@
-# Q-05. IR 对外 StringError 的建立与 LLVM 名称解码 待讨论
+# Q-05. IR 对外 StringError 的建立与 LLVM 名称解码 已解决
 
 > 最后更新日期：2026-08-04
 > 仓库：github.com/moonbitlang/llvm.mbt
@@ -50,6 +50,8 @@ LLVM parser 会把名称中的 `\xx` 转回单个字节，并且对变量名称�
 
 `CStringError` 描述的是 unsafe 层的 C ABI 条件，`@utf8.Malformed` 描述的是标准库解码细节；两者都不适合作为 `IR` 的稳定公开词汇。`IR` 应在 wrapper 边界显式捕获并转换，而不是只在签名上更名。已经有状态码、`Option` 或 `LLVMErrorRef` 等自然失败通道的 API，应保留原有错误模型，不必为了统一而一律 `raise StringError`。
 
+本 binding 的安全 `IR` 层采用 UTF-8 作为 MoonBit `String` 与 LLVM 字节串之间的文本编码约定；`unsafe` 层仍保留 LLVM 原始字节语义。因此非 UTF-8 名称是安全层可明确报告的边界错误，不能被解释成 LLVM getter 自身失败，也不应通过占位字符串或 lossy decode 静默隐藏。
+
 NUL 也不能只按“C string”统一判断：pointer + length API 不应自动拒绝 NUL，但 LLVM `Value::setName` 虽然接收长度，内部仍明确断言 Value 名称不得含 NUL。是否产生字符串错误应由目标 API 的实际约束决定。
 
 ## 关联问题
@@ -77,7 +79,7 @@ NUL 也不能只按“C string”统一判断：pointer + length API 不应自�
 - 同一种 IR 层字符串问题会出现不同错误类型。
 - 以后替换底层字符串实现会影响 `IR` 用户。
 
-### A2. 建立 IR.StringError 并在 wrapper 边界转换 【建议采纳】
+### A2. 建立 IR.StringError 并在 wrapper 边界转换 【已采纳】
 
 #### 方案描述
 
@@ -108,4 +110,4 @@ pub suberror StringError {
 
 ## 最终采用方案
 
-待定
+A2. 建立 IR.StringError 并在 wrapper 边界转换
