@@ -7,38 +7,38 @@
 
 ## Commit 1：记录已采用的讨论方案
 
-- [ ] 提交 Q-05、Q-06 的“已解决”状态和 A2 最终方案。
-- [ ] 同步 T-02 中两个问题的状态。
-- [ ] 不包含代码改动。
+- [x] 提交 Q-05、Q-06 的“已解决”状态和 A2 最终方案。
+- [x] 同步 T-02 中两个问题的状态。
+- [x] 不包含代码改动。
 
 建议提交信息：`docs: adopt IR string error decisions`
 
 ## Commit 2：建立 IR.StringError 基础设施
 
-- [ ] 新增 `IR/StringError.mbt`。
-- [ ] 定义 `StringError::ContainsNul` 和 `StringError::MalformedUtf8(Bytes)`。
-- [ ] 增加私有的 `CStringError -> StringError` 和 `@utf8.Malformed -> StringError` 转换 helper；helper 保持直接、简短，不建立额外抽象框架。
-- [ ] 按需更新 `IR/moon.pkg` 和 `IR/pkg.generated.mbti`。
-- [ ] 不修改现有公开函数。
+- [x] 新增 `IR/StringError.mbt`。
+- [x] 定义 `StringError::ContainsNul` 和 `StringError::MalformedUtf8(Bytes)`。
+- [x] 增加私有的 `CStringError -> StringError` 和 `@utf8.Malformed -> StringError` 转换 helper；helper 保持直接、简短，不建立额外抽象框架。
+- [x] 按需更新 `IR/moon.pkg` 和 `IR/pkg.generated.mbti`。
+- [x] 不修改现有公开函数。
 
 建议提交信息：`IR: introduce StringError`
 
 ## Commit 3：转换 Module 文本 getter 的错误
 
-- [ ] 处理 `Module::getName`。
-- [ ] 处理 `Module::getSourceFileName`。
-- [ ] 两个函数仍返回 `String`，只把 `@utf8.Malformed` 转换为 `StringError`。
-- [ ] 更新对应公开接口。
+- [x] 处理 `Module::getName`。
+- [x] 处理 `Module::getSourceFileName`。
+- [x] 两个函数仍返回 `String`，只把 `@utf8.Malformed` 转换为 `StringError`。
+- [x] 更新对应公开接口。
 
 建议提交信息：`IR: map module text getters to StringError`
 
 ## Commit 4：统一 Value 名称 getter
 
-- [ ] 将 `Value::getValueName` 改为 `String? raise StringError`。
-- [ ] 将 `Function::getName`、`Argument::getName`、`BasicBlock::getName` 统一为相同返回模型。
-- [ ] `None` 只表示没有名字；非法 UTF-8 通过 `StringError::MalformedUtf8` 传播。
-- [ ] 尽量让专用 getter 复用 Value 名称的共同实现。
-- [ ] 更新相关 doc test、调用示例和 `.mbti`。
+- [x] 将 `Value::getValueName` 改为 `String? raise StringError`。
+- [x] 将 `Function::getName`、`Argument::getName`、`BasicBlock::getName` 统一为相同返回模型。
+- [x] `None` 只表示没有名字；非法 UTF-8 通过 `StringError::MalformedUtf8` 传播。
+- [x] 尽量让专用 getter 复用 Value 名称的共同实现。
+- [x] 更新相关 doc test、调用示例和 `.mbti`。
 
 建议提交信息：`IR: unify Value name getters`
 
@@ -53,21 +53,21 @@
 
 ## Commit 5：校验 Value 名称 setter
 
-- [ ] 处理 `Value::setValueName`。
-- [ ] 处理 `Function::setName`、`Argument::setName`、`BasicBlock::setName`。
-- [ ] 在调用 LLVM 前拒绝名称中的 NUL，并传播 `StringError::ContainsNul`。
-- [ ] 不改变 `Module::setName` 和 `Module::setSourceFileName`；它们使用 pointer + length API，不能仅因使用长度参数就自动拒绝 NUL。
-- [ ] 更新对应 `.mbti` 和文档示例。
+- [x] 处理 `Value::setValueName`。
+- [x] 处理 `Function::setName`、`Argument::setName`、`BasicBlock::setName`。
+- [x] 在调用 LLVM 前拒绝名称中的 NUL，并传播 `StringError::ContainsNul`。
+- [x] 不改变 `Module::setName` 和 `Module::setSourceFileName`；它们使用 pointer + length API，不能仅因使用长度参数就自动拒绝 NUL。
+- [x] 更新对应 `.mbti` 和文档示例。
 
 建议提交信息：`IR: validate Value names on set`
 
 ## Commit 6：转换非 Builder 的命名构造 API
 
-- [ ] 处理 `Context::addModule`、`Context::getStructType`。
-- [ ] 处理 `Module::addFunction`、`Module::addGlobalVariable`、`Module::addGlobalConstant`、`Module::setDataLayout`。
-- [ ] 处理 `Function::addBasicBlock`。
-- [ ] 捕获 `@unsafe.CStringError` 并转换为 `IR.StringError`，公开接口不再暴露 `@unsafe.CStringError`。
-- [ ] 不顺便修改这些函数的其他错误模型。
+- [x] 处理 `Context::addModule`、`Context::getStructType`。
+- [x] 处理 `Module::addFunction`、`Module::addGlobalVariable`、`Module::addGlobalConstant`、`Module::setDataLayout`。
+- [x] 处理 `Function::addBasicBlock`。
+- [x] 捕获 `@unsafe.CStringError` 并转换为 `IR.StringError`，公开接口不再暴露 `@unsafe.CStringError`。
+- [x] 不顺便修改这些函数的其他错误模型。
 
 建议提交信息：`IR: map named construction errors`
 
