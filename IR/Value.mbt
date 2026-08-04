@@ -87,9 +87,9 @@ impl Value with fn getContext(self) {
 
 ///|
 impl Value with fn getValueName(self) raise StringError {
-  let name = translate_utf8_error(() => {
-    @unsafe.llvm_get_value_name(self.getValueRef())
-  })
+  let name = @unsafe.llvm_get_value_name(self.getValueRef()) catch {
+    @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
+  }
   unless(name.is_empty(), () => name)
 }
 
