@@ -28,6 +28,7 @@ pub enum ValueEnum {
   ConstantArray(ConstantArray)
   ConstantVector(ConstantVector)
   ConstantStruct(ConstantStruct)
+  ConstantExpr(ConstantExpr)
   UndefValue(UndefValue)
   PoisonValue(PoisonValue)
   //
@@ -113,6 +114,7 @@ impl Value with fn tryAsConstant(self) {
     ConstantArray(c) => Some(c)
     ConstantStruct(c) => Some(c)
     ConstantVector(c) => Some(c)
+    ConstantExpr(c) => Some(c)
     UndefValue(c) => Some(c)
     PoisonValue(c) => Some(c)
     _ => None
@@ -128,6 +130,7 @@ impl Value with fn tryAsConstantEnum(self) {
     ConstantArray(c) => Some(ConstantEnum::ConstantArray(c))
     ConstantStruct(c) => Some(ConstantEnum::ConstantStruct(c))
     ConstantVector(c) => Some(ConstantEnum::ConstantVector(c))
+    ConstantExpr(c) => Some(ConstantEnum::ConstantExpr(c))
     UndefValue(c) => Some(ConstantEnum::UndefValue(c))
     PoisonValue(c) => Some(ConstantEnum::PoisonValue(c))
     _ => None
@@ -154,6 +157,7 @@ pub enum ConstantEnum {
   ConstantArray(ConstantArray)
   ConstantStruct(ConstantStruct)
   ConstantVector(ConstantVector)
+  ConstantExpr(ConstantExpr)
   UndefValue(UndefValue)
   PoisonValue(PoisonValue)
 }
@@ -182,12 +186,12 @@ impl Instruction with fn getParentBasicBlock(self) {
   let bb_ref = @unsafe.llvm_get_instruction_parent(valuref)
   match @unsafe.llvm_bb_is_null(bb_ref) {
     true => None
-    false => Some(BasicBlock(bb_ref))
+    false => Some(BasicBlock::from_raw(bb_ref, get_instruction_module(self)))
   }
 }
 
 ///|
-fn initInstruction(valueref : ValueRef) -> &Instruction {
+fn initInstruction(valueref : ValueRef, owner_module : Module) -> &Instruction {
   fn is_binary_opcode(opcode : @unsafe.LLVMOpcode) -> Bool {
     match opcode {
       LLVMAdd
@@ -226,23 +230,25 @@ fn initInstruction(valueref : ValueRef) -> &Instruction {
 
   let opcode = @unsafe.llvm_get_instruction_opcode(valueref)
   match opcode {
-    LLVMAlloca => AllocaInst::AllocaInst(valueref) as &Instruction
-    LLVMLoad => LoadInst::LoadInst(valueref)
-    LLVMStore => StoreInst::StoreInst(valueref)
-    LLVMGetElementPtr => GetElementPtrInst::GetElementPtrInst(valueref)
-    LLVMFNeg => UnaryInst::UnaryInst(valueref)
-    LLVMICmp => ICmpInst::ICmpInst(valueref)
-    LLVMFCmp => FCmpInst::FCmpInst(valueref)
-    LLVMSelect => SelectInst::SelectInst(valueref)
-    LLVMExtractValue => ExtractValueInst::ExtractValueInst(valueref)
-    LLVMInsertValue => InsertValueInst::InsertValueInst(valueref)
-    LLVMPHI => PHINode::PHINode(valueref)
-    LLVMRet => ReturnInst::ReturnInst(valueref)
-    LLVMBr => BranchInst::BranchInst(valueref)
-    LLVMSwitch => SwitchInst::SwitchInst(valueref)
-    LLVMCall => CallInst::CallInst(valueref)
-    opcode if is_binary_opcode(opcode) => BinaryInst::BinaryInst(valueref)
-    opcode if is_cast_opcode(opcode) => CastInst::CastInst(valueref)
+    LLVMAlloca => AllocaInst::from_raw(valueref, owner_module) as &Instruction
+    LLVMLoad => LoadInst::from_raw(valueref, owner_module)
+    LLVMStore => StoreInst::from_raw(valueref, owner_module)
+    LLVMGetElementPtr => GetElementPtrInst::from_raw(valueref, owner_module)
+    LLVMFNeg => UnaryInst::from_raw(valueref, owner_module)
+    LLVMICmp => ICmpInst::from_raw(valueref, owner_module)
+    LLVMFCmp => FCmpInst::from_raw(valueref, owner_module)
+    LLVMSelect => SelectInst::from_raw(valueref, owner_module)
+    LLVMExtractValue => ExtractValueInst::from_raw(valueref, owner_module)
+    LLVMInsertValue => InsertValueInst::from_raw(valueref, owner_module)
+    LLVMPHI => PHINode::from_raw(valueref, owner_module)
+    LLVMRet => ReturnInst::from_raw(valueref, owner_module)
+    LLVMBr => BranchInst::from_raw(valueref, owner_module)
+    LLVMSwitch => SwitchInst::from_raw(valueref, owner_module)
+    LLVMCall => CallInst::from_raw(valueref, owner_module)
+    opcode if is_binary_opcode(opcode) =>
+      BinaryInst::from_raw(valueref, owner_module)
+    opcode if is_cast_opcode(opcode) =>
+      CastInst::from_raw(valueref, owner_module)
     _ => {
       println(
         "ICE: `initInstruction` get unknown instruction opcode: \{opcode}",
@@ -253,11 +259,34 @@ fn initInstruction(valueref : ValueRef) -> &Instruction {
 }
 
 ///|
+fn get_instruction_module(inst : &Instruction) -> Module {
+  match inst.asInstEnum() {
+    AllocaInst(inst) => inst.get_module()
+    LoadInst(inst) => inst.get_module()
+    StoreInst(inst) => inst.get_module()
+    CastInst(inst) => inst.get_module()
+    UnaryInst(inst) => inst.get_module()
+    BinaryInst(inst) => inst.get_module()
+    ICmpInst(inst) => inst.get_module()
+    FCmpInst(inst) => inst.get_module()
+    GetElementPtrInst(inst) => inst.get_module()
+    SelectInst(inst) => inst.get_module()
+    ExtractValueInst(inst) => inst.get_module()
+    InsertValueInst(inst) => inst.get_module()
+    PHINode(inst) => inst.get_module()
+    ReturnInst(inst) => inst.get_module()
+    BranchInst(inst) => inst.get_module()
+    SwitchInst(inst) => inst.get_module()
+    CallInst(inst) => inst.get_module()
+  }
+}
+
+///|
 impl Instruction with fn getNextInst(self) {
   let valueref = Value::getValueRef(self)
   let next_ref = @unsafe.llvm_get_next_instruction(valueref)
   unless(@unsafe.llvm_value_ref_is_null(next_ref), () => {
-    initInstruction(next_ref)
+    initInstruction(next_ref, get_instruction_module(self))
   })
 }
 
@@ -266,7 +295,7 @@ impl Instruction with fn getPrevInst(self) {
   let valueref = Value::getValueRef(self)
   let prev_ref = @unsafe.llvm_get_previous_instruction(valueref)
   unless(@unsafe.llvm_value_ref_is_null(prev_ref), () => {
-    initInstruction(prev_ref)
+    initInstruction(prev_ref, get_instruction_module(self))
   })
 }
 

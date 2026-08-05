@@ -324,7 +324,7 @@ impl Type with fn sizeOf(self) -> &Value? {
   if @unsafe.llvm_value_ref_is_null(valueref) {
     None
   } else {
-    let value = CastInst::CastInst(valueref)
+    let value = ConstantExpr::ConstantExpr(valueref)
     Some(value)
   }
 }

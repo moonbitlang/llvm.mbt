@@ -237,3 +237,31 @@ pub impl Value for PoisonValue with fn asValueEnum(self) {
 pub impl Show for PoisonValue with fn output(self, logger) {
   self.0.output(logger)
 }
+
+// ==================================================
+// ConstantExpr
+// ==================================================
+
+///|
+/// An LLVM constant expression. Its Context owner is added in Commit 6.
+pub struct ConstantExpr(ValueRef)
+
+///|
+pub impl Value for ConstantExpr with fn getValueRef(self) -> ValueRef {
+  self.0
+}
+
+///|
+pub impl Value for ConstantExpr with fn asValueEnum(self) {
+  ConstantExpr(self)
+}
+
+///|
+pub impl Constant for ConstantExpr with fn asConstantEnum(self) {
+  ConstantExpr(self)
+}
+
+///|
+pub impl Show for ConstantExpr with fn output(self, logger) {
+  self.0.output(logger)
+}

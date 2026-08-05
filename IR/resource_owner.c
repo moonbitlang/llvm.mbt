@@ -15,6 +15,7 @@ struct llvm_mbt_module_owner {
 struct llvm_mbt_builder_owner {
   LLVMBuilderRef raw;
   struct llvm_mbt_context_owner *context;
+  struct llvm_mbt_module_owner *module;
 };
 
 static void llvm_mbt_finalize_inactive_context_owner(void *payload) {
@@ -35,8 +36,13 @@ static void llvm_mbt_finalize_inactive_module_owner(void *payload) {
 static void llvm_mbt_finalize_inactive_builder_owner(void *payload) {
   struct llvm_mbt_builder_owner *owner = payload;
   struct llvm_mbt_context_owner *context = owner->context;
+  struct llvm_mbt_module_owner *module = owner->module;
   owner->raw = NULL;
   owner->context = NULL;
+  owner->module = NULL;
+  if (module != NULL) {
+    moonbit_decref(module);
+  }
   if (context != NULL) {
     moonbit_decref(context);
   }
@@ -68,6 +74,7 @@ void *llvm_mbt_ir_builder_owner_new(
       (uint32_t)sizeof(struct llvm_mbt_builder_owner));
   owner->raw = raw;
   owner->context = context;
+  owner->module = NULL;
   moonbit_incref(context);
   return owner;
 }
@@ -91,6 +98,17 @@ void *llvm_mbt_ir_module_owner_context(
 LLVMBuilderRef llvm_mbt_ir_builder_owner_raw(
     struct llvm_mbt_builder_owner *owner) {
   return owner->raw;
+}
+
+void llvm_mbt_ir_builder_owner_set_module(
+    struct llvm_mbt_builder_owner *owner,
+    struct llvm_mbt_module_owner *module) {
+  struct llvm_mbt_module_owner *old_module = owner->module;
+  moonbit_incref(module);
+  owner->module = module;
+  if (old_module != NULL) {
+    moonbit_decref(old_module);
+  }
 }
 
 void *llvm_mbt_ir_builder_owner_context(

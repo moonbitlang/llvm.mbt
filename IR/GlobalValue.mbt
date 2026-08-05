@@ -1,9 +1,25 @@
 ///|
-pub struct GlobalVariable(ValueRef)
+pub struct GlobalVariable {
+  priv value : ModuleOwnedValue
+}
+
+///|
+fn GlobalVariable::from_raw(
+  value_ref : ValueRef,
+  owner_module : Module,
+) -> GlobalVariable {
+  GlobalVariable::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+}
+
+///|
+#warnings("-unused_value")
+fn GlobalVariable::get_module(self : GlobalVariable) -> Module {
+  self.value.get_module()
+}
 
 ///|
 pub impl Value for GlobalVariable with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -25,11 +41,27 @@ pub impl Show for GlobalVariable with fn output(self, logger) {
 }
 
 ///|
-pub struct GlobalConstant(ValueRef)
+pub struct GlobalConstant {
+  priv value : ModuleOwnedValue
+}
+
+///|
+fn GlobalConstant::from_raw(
+  value_ref : ValueRef,
+  owner_module : Module,
+) -> GlobalConstant {
+  GlobalConstant::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+}
+
+///|
+#warnings("-unused_value")
+fn GlobalConstant::get_module(self : GlobalConstant) -> Module {
+  self.value.get_module()
+}
 
 ///|
 pub impl Value for GlobalConstant with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|

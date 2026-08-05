@@ -29,7 +29,7 @@ pub fn Module::addFunction(
   let valueref = @unsafe.llvm_add_function(self.get_unsafe_ref(), name, fty.0) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  let fval = Function::Function(valueref)
+  let fval = Function::from_raw(valueref, self)
   match linkage {
     Some(l) => @unsafe.llvm_set_linkage(valueref, l.to_llvm_linkage())
     None => ()
@@ -45,19 +45,25 @@ pub fn Module::getContext(self : Self) -> Context {
 ///|
 pub fn Module::getFirstFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_first_function(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    Function::from_raw(valueref, self)
+  })
 }
 
 ///|
 pub fn Module::getLastFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_last_function(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    Function::from_raw(valueref, self)
+  })
 }
 
 ///|
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
   let valueref = @unsafe.llvm_get_named_function(self.get_unsafe_ref(), name)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    Function::from_raw(valueref, self)
+  })
 }
 
 ///|
@@ -205,7 +211,7 @@ pub fn Module::addGlobalVariable(
   if linkage is Some(link) {
     @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
   }
-  GlobalVariable(gv_ref)
+  GlobalVariable::from_raw(gv_ref, self)
 }
 
 ///|
@@ -228,7 +234,7 @@ pub fn Module::addGlobalConstant(
   if linkage is Some(link) {
     @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
   }
-  GlobalConstant(gv_ref)
+  GlobalConstant::from_raw(gv_ref, self)
 }
 
 ///|

@@ -95,7 +95,7 @@ pub fn Interpreter::runFunction(
   args : Array[GenericValue],
 ) -> GenericValue {
   let args_ref = args.map(arg => arg.0)
-  @unsafe.llvm_run_function(self.engine, func.0, args_ref)
+  @unsafe.llvm_run_function(self.engine, func.getValueRef(), args_ref)
 }
 
 // ====================================================

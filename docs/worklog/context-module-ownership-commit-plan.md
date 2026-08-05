@@ -71,19 +71,20 @@
 
 ## Commit 5：迁移 Module-owned Value、BasicBlock 与 IRBuilder
 
-- [ ] 让 Function、Argument、GlobalVariable、GlobalConstant、BasicBlock 和全部 Instruction wrapper 强持有 Module。
-- [ ] 更新 Module/Function/BasicBlock 的 factory、iterator、parent/next/previous getter 以及 `initInstruction`，构造返回值时传播同一个 Module owner。
-- [ ] 让 IRBuilder 使用 managed Builder owner 并保持 Context 存活；设置 insertion point 后，还必须在 builder native handle 释放前保持对应 Module 存活。
-- [ ] 更新所有 IRBuilder build 路径，使新建 Instruction 和 GlobalConstant 获得当前 insertion Module，而不是返回 raw-only wrapper。
-- [ ] `IRBuilder::getInsertBlock` 以及从 Instruction 返回 BasicBlock 的路径必须传播 owner。
-- [ ] 这组对象形成相互依赖的构造闭包，因此放在同一个 commit；按文件和 factory 分段审核，不拆出无法编译的中间表示。
-- [ ] Builder finalizer 仍不调用 `LLVMDisposeBuilder`。
+- [x] 让 Function、Argument、GlobalVariable、GlobalConstant、BasicBlock 和全部 Instruction wrapper 强持有 Module。
+- [x] 更新 Module/Function/BasicBlock 的 factory、iterator、parent/next/previous getter 以及 `initInstruction`，构造返回值时传播同一个 Module owner。
+- [x] 让 IRBuilder 使用 managed Builder owner 并保持 Context 存活；设置 insertion point 后，还必须在 builder native handle 释放前保持对应 Module 存活。
+- [x] 更新所有 IRBuilder build 路径，使新建 Instruction 和 GlobalConstant 获得当前 insertion Module，而不是返回 raw-only wrapper。
+- [x] `IRBuilder::getInsertBlock` 以及从 Instruction 返回 BasicBlock 的路径必须传播 owner。
+- [x] 修正 `Type::sizeOf` 将 LLVM constant expression 误包装成 `CastInst` 的原有分类错误，引入 `ConstantExpr`；它与其他 context-owned Constant 一起在 Commit 6 建立 Context anchor。
+- [x] 这组对象形成相互依赖的构造闭包，因此放在同一个 commit；按文件和 factory 分段审核，不拆出无法编译的中间表示。
+- [x] Builder finalizer 仍不调用 `LLVMDisposeBuilder`。
 
 建议提交信息：`IR: anchor module-owned values and builders`
 
 ## Commit 6：迁移 Context-owned Constant
 
-- [ ] 让 ConstantInt、ConstantFP、ConstantPointerNull、ConstantArray、ConstantStruct、ConstantVector、UndefValue 和 PoisonValue 持有 Context。
+- [ ] 让 ConstantInt、ConstantFP、ConstantPointerNull、ConstantArray、ConstantStruct、ConstantVector、ConstantExpr、UndefValue 和 PoisonValue 持有 Context；`Type::sizeOf` 返回的 LLVM constant expression 不再误包装为 Module-owned `CastInst`。
 - [ ] 更新 Context 中全部 constant factory，使返回值传播调用者的 Context owner。
 - [ ] 更新 IRBuilder 中可能返回 constant wrapper 的折叠或 convenience 路径，使用 builder 保存的 Context，而不是只包装 raw value。
 - [ ] 不把 context-owned Constant 错误地绑定到某个 Module。

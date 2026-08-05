@@ -1,9 +1,21 @@
 ///|
-pub struct Function(ValueRef)
+pub struct Function {
+  priv value : ModuleOwnedValue
+}
+
+///|
+fn Function::from_raw(value_ref : ValueRef, owner_module : Module) -> Function {
+  Function::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+}
+
+///|
+fn Function::get_module(self : Function) -> Module {
+  self.value.get_module()
+}
 
 ///|
 pub impl Value for Function with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -19,7 +31,9 @@ pub impl GlobalValue for Function with fn asGlobalEnum(self) {
 ///|
 fn Function::getNextFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_next_function(self.getValueRef())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
+  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+    Function::from_raw(valueref, self.get_module())
+  })
 }
 
 //fn Function::getPreviousFunction(self: Self) -> Function? {
@@ -139,7 +153,7 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
       self.getValueRef(),
       idx.reinterpret_as_uint(),
     )
-    Argument::construct(valueref, idx)
+    Argument::construct(valueref, idx, self.get_module())
   })
 }
 
@@ -164,7 +178,7 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 /// ```
 pub fn Function::getArgs(self : Self) -> Array[Argument] {
   @unsafe.llvm_get_params(self.getValueRef()).mapi((r, i) => {
-    Argument::construct(i, r)
+    Argument::construct(i, r, self.get_module())
   })
 }
 
@@ -199,11 +213,11 @@ pub fn Function::addBasicBlock(
         @unsafe.EmbeddedNul => raise ContainsNul
       }
     Some(bb) =>
-      @unsafe.llvm_insert_basic_block(bb.0, name) catch {
+      @unsafe.llvm_insert_basic_block(bb.get_unsafe_ref(), name) catch {
         @unsafe.EmbeddedNul => raise ContainsNul
       }
   }
-  BasicBlock(blockref)
+  BasicBlock::from_raw(blockref, self.get_module())
 }
 
 ///|
@@ -247,7 +261,9 @@ pub fn Function::getNumBasicBlocks(self : Self) -> Int {
 /// assert_eq(fval.getBasicBlocks().length(), 3)
 /// ```
 pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
-  @unsafe.llvm_get_basic_blocks(self.getValueRef()).map(r => BasicBlock(r))
+  @unsafe.llvm_get_basic_blocks(self.getValueRef()).map(r => {
+    BasicBlock::from_raw(r, self.get_module())
+  })
 }
 
 ///|
@@ -493,18 +509,28 @@ pub impl Show for Function with fn output(self, logger) {
 
 ///|
 pub struct Argument {
-  value_ref : ValueRef
-  idx : Int
+  priv value_ref : ValueRef
+  priv idx : Int
+  priv owner_module : Module
 }
 
 ///|
-fn Argument::construct(value_ref : ValueRef, idx : Int) -> Self {
-  Argument::{ value_ref, idx }
+fn Argument::construct(
+  value_ref : ValueRef,
+  idx : Int,
+  owner_module : Module,
+) -> Self {
+  Argument::{ value_ref, idx, owner_module }
 }
 
 ///|
 fn Argument::inner(self : Self) -> ValueRef {
   self.value_ref
+}
+
+///|
+fn Argument::get_module(self : Argument) -> Module {
+  self.owner_module
 }
 
 ///|
@@ -564,7 +590,7 @@ pub fn Argument::setName(self : Self, name : String) -> Unit raise StringError {
 ///|
 pub fn Argument::getFunction(self : Self) -> Function {
   let func_ref = @unsafe.llvm_get_param_parent(self.getValueRef())
-  Function(func_ref)
+  Function::from_raw(func_ref, self.get_module())
 }
 
 ///|

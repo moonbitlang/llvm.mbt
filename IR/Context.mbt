@@ -66,7 +66,10 @@ pub fn Context::addModule(
 ///|
 pub fn Context::createBuilder(self : Self) -> IRBuilder {
   IRBuilder::{
-    builder_ref: @unsafe.llvm_create_builder_in_context(self.get_unsafe_ref()),
+    owner: BuilderOwner::new(
+      @unsafe.llvm_create_builder_in_context(self.get_unsafe_ref()),
+      self.get_owner(),
+    ),
     positioned: NotSet,
   }
 }

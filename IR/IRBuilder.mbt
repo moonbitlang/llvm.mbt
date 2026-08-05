@@ -5,8 +5,8 @@
 ///|
 enum PositionState {
   NotSet
-  Set
-} derive(Eq)
+  Set(Module)
+}
 
 ///|
 pub suberror BuilderError {
@@ -37,19 +37,31 @@ pub impl InsertPoint for BasicBlock with fn asInsertPtEnum(self) {
 ///|
 /// IRBuilder
 pub struct IRBuilder {
-  builder_ref : @unsafe.LLVMBuilderRef
+  priv owner : BuilderOwner
   priv mut positioned : PositionState
 }
 
 ///|
-pub fn IRBuilder::inner(self : Self) -> @unsafe.LLVMBuilderRef {
-  self.builder_ref
+fn IRBuilder::get_unsafe_ref(self : Self) -> @unsafe.LLVMBuilderRef {
+  self.owner.raw()
+}
+
+///|
+fn IRBuilder::get_insert_module(self : Self) -> Module raise BuilderError {
+  match self.positioned {
+    Set(owner_module) => owner_module
+    NotSet => raise UnsetPosition
+  }
 }
 
 ///|
 pub fn IRBuilder::getInsertBlock(self : Self) -> BasicBlock? {
-  let bb_ref = @unsafe.llvm_get_insert_block(self.builder_ref)
-  unless(@unsafe.llvm_bb_is_null(bb_ref), () => BasicBlock(bb_ref))
+  let bb_ref = @unsafe.llvm_get_insert_block(self.get_unsafe_ref())
+  match (self.positioned, @unsafe.llvm_bb_is_null(bb_ref)) {
+    (Set(owner_module), false) =>
+      Some(BasicBlock::from_raw(bb_ref, owner_module))
+    _ => None
+  }
 }
 
 ///|
@@ -57,10 +69,14 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   self : Self,
   insertPt : T,
 ) -> Unit raise {
-  self.positioned = Set
-  match insertPt.asInsertPtEnum() {
-    BasicBlock(bb) =>
-      @unsafe.llvm_position_builder_at_end(self.builder_ref, bb.0)
+  let owner_module = match insertPt.asInsertPtEnum() {
+    BasicBlock(bb) => {
+      @unsafe.llvm_position_builder_at_end(
+        self.get_unsafe_ref(),
+        bb.get_unsafe_ref(),
+      )
+      bb.get_module()
+    }
     Instruction(inst) => {
       let bb = match inst.getParentBasicBlock() {
         Some(bb) => bb
@@ -69,9 +85,16 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
             "Instruction as Insert Point, does not have a parent basic block",
           )
       }
-      @unsafe.llvm_position_builder(self.builder_ref, bb.0, inst.getValueRef())
+      @unsafe.llvm_position_builder(
+        self.get_unsafe_ref(),
+        bb.get_unsafe_ref(),
+        inst.getValueRef(),
+      )
+      get_instruction_module(inst)
     }
   }
+  self.owner.set_module(owner_module.get_owner())
+  self.positioned = Set(owner_module)
 }
 
 ///|
@@ -101,8 +124,11 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
 /// }
 /// ```
 pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
-  ReturnInst(@unsafe.llvm_build_ret(self.builder_ref, value.getValueRef()))
+  guard self.positioned is Set(_) else { raise UnsetPosition }
+  ReturnInst::from_raw(
+    @unsafe.llvm_build_ret(self.get_unsafe_ref(), value.getValueRef()),
+    self.get_insert_module(),
+  )
 }
 
 ///|
@@ -131,8 +157,11 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 /// }
 /// ```
 pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
-  ReturnInst(@unsafe.llvm_build_ret_void(self.builder_ref))
+  guard self.positioned is Set(_) else { raise UnsetPosition }
+  ReturnInst::from_raw(
+    @unsafe.llvm_build_ret_void(self.get_unsafe_ref()),
+    self.get_insert_module(),
+  )
 }
 
 ///|
@@ -165,15 +194,15 @@ pub fn IRBuilder::createAlloca(
   data_ty : &Type,
   name? : String = "",
 ) -> AllocaInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let value_ref = @unsafe.llvm_build_alloca(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     data_ty.getTypeRef(),
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  AllocaInst(value_ref)
+  AllocaInst::from_raw(value_ref, self.get_insert_module())
 }
 
 ///|
@@ -208,16 +237,16 @@ pub fn IRBuilder::createLoad(
   ptr : &Value,
   name? : String = "",
 ) -> LoadInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let value_ref = @unsafe.llvm_build_load2(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     load_ty.getTypeRef(),
     ptr.getValueRef(),
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  LoadInst(value_ref)
+  LoadInst::from_raw(value_ref, self.get_insert_module())
 }
 
 ///|
@@ -254,7 +283,7 @@ pub fn IRBuilder::createStore(
   ptr : &Value,
   loc~ : SourceLoc,
 ) -> StoreInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -263,12 +292,13 @@ pub fn IRBuilder::createStore(
       ),
     )
   }
-  StoreInst(
+  StoreInst::from_raw(
     @unsafe.llvm_build_store(
-      self.builder_ref,
+      self.get_unsafe_ref(),
       value.getValueRef(),
       ptr.getValueRef(),
     ),
+    self.get_insert_module(),
   )
 }
 
@@ -379,12 +409,12 @@ pub fn IRBuilder::createAdd(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAdd", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_add(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -394,11 +424,11 @@ pub fn IRBuilder::createAdd(
   //if @unsafe.llvm_is_constant(res_valueref) {
   //  ConstantInt::ConstantInt(res_valueref) as &Value
   //} else {
-  //  BinaryInst::BinaryInst(res_valueref)
+  //  BinaryInst::from_raw(res_valueref, self.get_insert_module())
   //}
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -443,12 +473,12 @@ pub fn IRBuilder::createNSWAdd(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWAdd", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nsw_add(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -457,7 +487,7 @@ pub fn IRBuilder::createNSWAdd(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -502,12 +532,12 @@ pub fn IRBuilder::createNUWAdd(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWAdd", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nuw_add(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -516,7 +546,7 @@ pub fn IRBuilder::createNUWAdd(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -561,12 +591,12 @@ pub fn IRBuilder::createSub(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSub", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_sub(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -575,7 +605,7 @@ pub fn IRBuilder::createSub(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -620,12 +650,12 @@ pub fn IRBuilder::createNSWSub(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWSub", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nsw_sub(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -634,7 +664,7 @@ pub fn IRBuilder::createNSWSub(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -679,12 +709,12 @@ pub fn IRBuilder::createNUWSub(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWSub", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nuw_sub(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -693,7 +723,7 @@ pub fn IRBuilder::createNUWSub(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -738,12 +768,12 @@ pub fn IRBuilder::createMul(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createMul", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_mul(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -752,7 +782,7 @@ pub fn IRBuilder::createMul(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -797,12 +827,12 @@ pub fn IRBuilder::createNSWMul(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNSWMul", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nsw_mul(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -811,7 +841,7 @@ pub fn IRBuilder::createNSWMul(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -856,12 +886,12 @@ pub fn IRBuilder::createNUWMul(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createNUWMul", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_nuw_mul(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -870,7 +900,7 @@ pub fn IRBuilder::createNUWMul(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -916,12 +946,12 @@ pub fn IRBuilder::createUDiv(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createUDiv", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_u_div(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -930,7 +960,7 @@ pub fn IRBuilder::createUDiv(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -976,12 +1006,12 @@ pub fn IRBuilder::createSDiv(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSDiv", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_s_div(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -990,7 +1020,7 @@ pub fn IRBuilder::createSDiv(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1037,12 +1067,12 @@ pub fn IRBuilder::createExactUDiv(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactUDiv", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_exact_u_div(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1051,7 +1081,7 @@ pub fn IRBuilder::createExactUDiv(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1097,12 +1127,12 @@ pub fn IRBuilder::createExactSDiv(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createExactSDiv", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_exact_s_div(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1111,7 +1141,7 @@ pub fn IRBuilder::createExactSDiv(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1156,12 +1186,12 @@ pub fn IRBuilder::createURem(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createURem", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_u_rem(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1170,7 +1200,7 @@ pub fn IRBuilder::createURem(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1215,12 +1245,12 @@ pub fn IRBuilder::createSRem(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createSRem", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_s_rem(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1229,7 +1259,7 @@ pub fn IRBuilder::createSRem(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1306,12 +1336,12 @@ pub fn IRBuilder::createFAdd(
   fast_math? : Array[FastMathFlags] = [],
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFAdd", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_f_add(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1321,11 +1351,13 @@ pub fn IRBuilder::createFAdd(
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => {
-      let inst = BinaryInst::BinaryInst(res_valueref)
+      let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
         [] => ()
         flags =>
-          flags.each(f => @unsafe.llvm_set_fast_math_flags(inst.0, f.to_llvm()))
+          flags.each(f => {
+            @unsafe.llvm_set_fast_math_flags(inst.getValueRef(), f.to_llvm())
+          })
       }
       inst
     }
@@ -1385,12 +1417,12 @@ pub fn IRBuilder::createFSub(
   fast_math? : Array[FastMathFlags] = [],
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFSub", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_f_sub(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1400,11 +1432,13 @@ pub fn IRBuilder::createFSub(
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
     false => {
-      let inst = BinaryInst::BinaryInst(res_valueref)
+      let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
         [] => ()
         flags =>
-          flags.each(f => @unsafe.llvm_set_fast_math_flags(inst.0, f.to_llvm()))
+          flags.each(f => {
+            @unsafe.llvm_set_fast_math_flags(inst.getValueRef(), f.to_llvm())
+          })
       }
       inst
     }
@@ -1452,12 +1486,12 @@ pub fn IRBuilder::createFMul(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFMul", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_f_mul(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1466,7 +1500,7 @@ pub fn IRBuilder::createFMul(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1511,12 +1545,12 @@ pub fn IRBuilder::createFDiv(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFDiv", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_f_div(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1525,7 +1559,7 @@ pub fn IRBuilder::createFDiv(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1570,12 +1604,12 @@ pub fn IRBuilder::createFRem(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFRem", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_f_rem(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1584,7 +1618,7 @@ pub fn IRBuilder::createFRem(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1626,7 +1660,7 @@ pub fn IRBuilder::createFNeg(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard value.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -1636,12 +1670,16 @@ pub fn IRBuilder::createFNeg(
     )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_f_neg(self.builder_ref, value_ref, name) catch {
+  let res_valueref = @unsafe.llvm_build_f_neg(
+    self.get_unsafe_ref(),
+    value_ref,
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => UnaryInst::UnaryInst(res_valueref)
+    false => UnaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1686,12 +1724,12 @@ pub fn IRBuilder::createAnd(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAnd", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_and(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1700,7 +1738,7 @@ pub fn IRBuilder::createAnd(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1745,12 +1783,12 @@ pub fn IRBuilder::createOr(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createOr", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_or(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1759,7 +1797,7 @@ pub fn IRBuilder::createOr(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1804,12 +1842,12 @@ pub fn IRBuilder::createXor(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createXor", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_xor(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1818,7 +1856,7 @@ pub fn IRBuilder::createXor(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1861,7 +1899,7 @@ pub fn IRBuilder::createNot(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -1871,7 +1909,11 @@ pub fn IRBuilder::createNot(
     )
   }
   let value_ref = value.getValueRef()
-  let res_valueref = @unsafe.llvm_build_not(self.builder_ref, value_ref, name) catch {
+  let res_valueref = @unsafe.llvm_build_not(
+    self.get_unsafe_ref(),
+    value_ref,
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   // Note: It is correct, llvm has no `not` instruction,
@@ -1880,7 +1922,7 @@ pub fn IRBuilder::createNot(
   // so it is BinaryInst, not UnaryInst.
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1925,12 +1967,12 @@ pub fn IRBuilder::createShl(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createShl", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_shl(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1939,7 +1981,7 @@ pub fn IRBuilder::createShl(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -1984,12 +2026,12 @@ pub fn IRBuilder::createLShr(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createLShr", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_l_shr(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -1998,7 +2040,7 @@ pub fn IRBuilder::createLShr(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2043,12 +2085,12 @@ pub fn IRBuilder::createAShr(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createAShr", loc)
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_a_shr(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     lhs_ref,
     rhs_ref,
     name,
@@ -2057,7 +2099,7 @@ pub fn IRBuilder::createAShr(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => BinaryInst::BinaryInst(res_valueref)
+    false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2103,7 +2145,7 @@ pub fn IRBuilder::createPtrDiff(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard lhs.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -2124,7 +2166,7 @@ pub fn IRBuilder::createPtrDiff(
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_ptr_diff2(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     elem_ty_ref,
     lhs_ref,
     rhs_ref,
@@ -2132,7 +2174,7 @@ pub fn IRBuilder::createPtrDiff(
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  BinaryInst::BinaryInst(res_valueref)
+  BinaryInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -2205,13 +2247,13 @@ pub fn IRBuilder::createICmp(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
   let pred = pred.to_llvm_int_predicate()
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_icmp(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     pred,
     lhs_ref,
     rhs_ref,
@@ -2221,7 +2263,7 @@ pub fn IRBuilder::createICmp(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => ICmpInst::ICmpInst(res_valueref)
+    false => ICmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2459,13 +2501,13 @@ pub fn IRBuilder::createFCmp(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   type_check_during_create_float_binary(lhs, rhs, "createFCmp", loc)
   let pred = pred.to_llvm_float_predicate()
   let lhs_ref = lhs.getValueRef()
   let rhs_ref = rhs.getValueRef()
   let res_valueref = @unsafe.llvm_build_fcmp(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     pred,
     lhs_ref,
     rhs_ref,
@@ -2475,7 +2517,7 @@ pub fn IRBuilder::createFCmp(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => FCmpInst::FCmpInst(res_valueref)
+    false => FCmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2717,7 +2759,7 @@ pub fn IRBuilder::createTrunc(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2729,7 +2771,7 @@ pub fn IRBuilder::createTrunc(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_trunc(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -2738,7 +2780,7 @@ pub fn IRBuilder::createTrunc(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2783,7 +2825,7 @@ pub fn IRBuilder::createZExt(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2795,7 +2837,7 @@ pub fn IRBuilder::createZExt(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_z_ext(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -2804,7 +2846,7 @@ pub fn IRBuilder::createZExt(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2849,7 +2891,7 @@ pub fn IRBuilder::createSExt(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2861,7 +2903,7 @@ pub fn IRBuilder::createSExt(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_s_ext(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -2870,7 +2912,7 @@ pub fn IRBuilder::createSExt(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2914,7 +2956,7 @@ pub fn IRBuilder::createFPTrunc(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2926,7 +2968,7 @@ pub fn IRBuilder::createFPTrunc(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_fp_trunc(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -2935,7 +2977,7 @@ pub fn IRBuilder::createFPTrunc(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -2975,7 +3017,7 @@ pub fn IRBuilder::createFPExt(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2987,7 +3029,7 @@ pub fn IRBuilder::createFPExt(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_fp_ext(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -2996,7 +3038,7 @@ pub fn IRBuilder::createFPExt(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3036,7 +3078,7 @@ pub fn IRBuilder::createFPToSI(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3048,7 +3090,7 @@ pub fn IRBuilder::createFPToSI(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_fp_to_si(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -3057,7 +3099,7 @@ pub fn IRBuilder::createFPToSI(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3102,7 +3144,7 @@ pub fn IRBuilder::createFPToUI(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3114,7 +3156,7 @@ pub fn IRBuilder::createFPToUI(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_fp_to_ui(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -3123,7 +3165,7 @@ pub fn IRBuilder::createFPToUI(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantInt::ConstantInt(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3163,7 +3205,7 @@ pub fn IRBuilder::createSIToFP(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3175,7 +3217,7 @@ pub fn IRBuilder::createSIToFP(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_si_to_fp(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -3184,7 +3226,7 @@ pub fn IRBuilder::createSIToFP(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3228,7 +3270,7 @@ pub fn IRBuilder::createUIToFP(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3240,7 +3282,7 @@ pub fn IRBuilder::createUIToFP(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_ui_to_fp(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
@@ -3249,7 +3291,7 @@ pub fn IRBuilder::createUIToFP(
   }
   match @unsafe.llvm_is_constant(res_valueref) {
     true => ConstantFP::ConstantFP(res_valueref) as &Value
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3289,18 +3331,18 @@ pub fn IRBuilder::createBitCast(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_bit_cast(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  //CastInst::CastInst(res_valueref)
+  //CastInst::from_raw(res_valueref, self.get_insert_module())
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match to.asTypeEnum() {
@@ -3320,7 +3362,7 @@ pub fn IRBuilder::createBitCast(
             ),
           )
       }
-    false => CastInst::CastInst(res_valueref)
+    false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3357,7 +3399,7 @@ pub fn IRBuilder::createIntToPtr(
   from : &Value,
   name? : String = "",
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       "Misuse `IRBuilder::createIntToPtr`, from must be an integer type",
@@ -3368,14 +3410,14 @@ pub fn IRBuilder::createIntToPtr(
   let to_ref = ptr_ty.getTypeRef()
   let from_ref = from.getValueRef()
   let res_valueref = @unsafe.llvm_build_int_to_ptr(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  CastInst::CastInst(res_valueref)
+  CastInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3414,7 +3456,7 @@ pub fn IRBuilder::createPtrToInt(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard from.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -3426,14 +3468,14 @@ pub fn IRBuilder::createPtrToInt(
   let from_ref = from.getValueRef()
   let to_ref = to.getTypeRef()
   let res_valueref = @unsafe.llvm_build_ptr_to_int(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     from_ref,
     to_ref,
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  CastInst::CastInst(res_valueref)
+  CastInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3487,7 +3529,7 @@ pub fn IRBuilder::createGEP(
   inbounds? : Bool = false,
   loc~ : SourceLoc,
 ) -> GetElementPtrInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -3508,7 +3550,7 @@ pub fn IRBuilder::createGEP(
   let indices_refs = indices.map(v => v.getValueRef())
   let res_valueref = if inbounds {
     @unsafe.llvm_build_in_bounds_gep2(
-      self.builder_ref,
+      self.get_unsafe_ref(),
       pointee_ref,
       ptr_ref,
       indices_refs,
@@ -3518,7 +3560,7 @@ pub fn IRBuilder::createGEP(
     }
   } else {
     @unsafe.llvm_build_gep2(
-      self.builder_ref,
+      self.get_unsafe_ref(),
       pointee_ref,
       ptr_ref,
       indices_refs,
@@ -3527,7 +3569,7 @@ pub fn IRBuilder::createGEP(
       @unsafe.EmbeddedNul => raise ContainsNul
     }
   }
-  GetElementPtrInst(res_valueref)
+  GetElementPtrInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3558,10 +3600,10 @@ pub fn IRBuilder::createGEP(
 /// }
 /// ```
 pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
-  let dest_ref = dest.0
-  let res_valueref = @unsafe.llvm_build_br(self.builder_ref, dest_ref)
-  BranchInst(res_valueref)
+  guard self.positioned is Set(_) else { raise UnsetPosition }
+  let dest_ref = dest.get_unsafe_ref()
+  let res_valueref = @unsafe.llvm_build_br(self.get_unsafe_ref(), dest_ref)
+  BranchInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3605,7 +3647,7 @@ pub fn IRBuilder::createCondBr(
   falseDest : BasicBlock,
   loc~ : SourceLoc,
 ) -> BranchInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
@@ -3615,15 +3657,15 @@ pub fn IRBuilder::createCondBr(
     )
   }
   let cond_ref = cond.getValueRef()
-  let true_dest_ref = trueDest.0
-  let false_dest_ref = falseDest.0
+  let true_dest_ref = trueDest.get_unsafe_ref()
+  let false_dest_ref = falseDest.get_unsafe_ref()
   let res_valueref = @unsafe.llvm_build_cond_br(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     cond_ref,
     true_dest_ref,
     false_dest_ref,
   )
-  BranchInst(res_valueref)
+  BranchInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3665,7 +3707,7 @@ pub fn IRBuilder::createSelect(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
@@ -3678,7 +3720,7 @@ pub fn IRBuilder::createSelect(
   let true_val_ref = trueVal.getValueRef()
   let false_val_ref = falseVal.getValueRef()
   let res_valueref = @unsafe.llvm_build_select(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     cond_ref,
     true_val_ref,
     false_val_ref,
@@ -3704,7 +3746,7 @@ pub fn IRBuilder::createSelect(
             "Unanticipated constant type in `createSelect`, the trueVal type is \{trueVal.getType()}",
           )
       }
-    false => SelectInst::SelectInst(res_valueref)
+    false => SelectInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -3754,7 +3796,7 @@ pub fn IRBuilder::createSwitch(
   loc~ : SourceLoc,
 ) -> SwitchInst raise {
   // use `SwitchInst::addCase` to add cases.
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3764,14 +3806,14 @@ pub fn IRBuilder::createSwitch(
     )
   }
   let value_ref = value.getValueRef()
-  let default_dest_ref = defaultDest.0
+  let default_dest_ref = defaultDest.get_unsafe_ref()
   let res_valueref = @unsafe.llvm_build_switch(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     value_ref,
     default_dest_ref,
     0,
   )
-  SwitchInst(res_valueref)
+  SwitchInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3813,12 +3855,16 @@ pub fn IRBuilder::createPHI(
   name? : String = "",
 ) -> PHINode raise {
   // use `PHINode::addIncoming` to add incoming values.
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let type_ref = type_.getTypeRef()
-  let res_valueref = @unsafe.llvm_build_phi(self.builder_ref, type_ref, name) catch {
+  let res_valueref = @unsafe.llvm_build_phi(
+    self.get_unsafe_ref(),
+    type_ref,
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  PHINode(res_valueref)
+  PHINode::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3864,7 +3910,7 @@ pub fn IRBuilder::createCall(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let func_ty = func.getType()
   let param_tys = func_ty.getParamTypes()
   let arg_tys = args.map(v => v.getType())
@@ -3903,7 +3949,7 @@ pub fn IRBuilder::createCall(
   let func_ref = func.getValueRef()
   let args_refs = args.map(v => v.getValueRef())
   let res_valueref = @unsafe.llvm_build_call2(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     func_type_ref,
     func_ref,
     args_refs,
@@ -3911,7 +3957,7 @@ pub fn IRBuilder::createCall(
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -3961,7 +4007,7 @@ pub fn IRBuilder::createCallPtr(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   // REVIEW: Check if it is correct.
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard funcPtr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -3974,7 +4020,7 @@ pub fn IRBuilder::createCallPtr(
   let func_ptr_ref = funcPtr.getValueRef()
   let args_refs = args.map(v => v.getValueRef())
   let res_valueref = @unsafe.llvm_build_call2(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     func_type_ref,
     func_ptr_ref,
     args_refs,
@@ -3982,7 +4028,7 @@ pub fn IRBuilder::createCallPtr(
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4028,7 +4074,7 @@ pub fn IRBuilder::createInsertValue(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
     raise ValueTypeError(
       (
@@ -4056,7 +4102,7 @@ pub fn IRBuilder::createInsertValue(
   let aggregate_ref = aggregate.getValueRef()
   let value_ref = value.getValueRef()
   let res_valueref = @unsafe.llvm_build_insert_value(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     aggregate_ref,
     value_ref,
     index.reinterpret_as_uint(),
@@ -4075,7 +4121,7 @@ pub fn IRBuilder::createInsertValue(
             "Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}",
           )
       }
-    false => InsertValueInst::InsertValueInst(res_valueref)
+    false => InsertValueInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -4115,7 +4161,7 @@ pub fn IRBuilder::createExtractValue(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
     raise ValueTypeError(
       (
@@ -4162,14 +4208,14 @@ pub fn IRBuilder::createExtractValue(
   }
   let aggregate_ref = aggregate.getValueRef()
   let res_valueref = @unsafe.llvm_build_extract_value(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     aggregate_ref,
     index.reinterpret_as_uint(),
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  //ExtractValueInst::ExtractValueInst(res_valueref)
+  //ExtractValueInst::from_raw(res_valueref, self.get_insert_module())
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match aggregate.getType().asTypeEnum() {
@@ -4188,7 +4234,7 @@ pub fn IRBuilder::createExtractValue(
             "Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}",
           )
       }
-    false => ExtractValueInst::ExtractValueInst(res_valueref)
+    false => ExtractValueInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
 
@@ -4229,7 +4275,7 @@ pub fn IRBuilder::createMalloc(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard !(ty.tryAsAbstractType() is Some(_)) else {
     raise ValueTypeError(
       (
@@ -4239,10 +4285,14 @@ pub fn IRBuilder::createMalloc(
     )
   }
   let typeref = ty.getTypeRef()
-  let res_valueref = @unsafe.llvm_build_malloc(self.builder_ref, typeref, name) catch {
+  let res_valueref = @unsafe.llvm_build_malloc(
+    self.get_unsafe_ref(),
+    typeref,
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4279,7 +4329,7 @@ pub fn IRBuilder::createFree(
   ptr : &Value,
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4289,8 +4339,8 @@ pub fn IRBuilder::createFree(
     )
   }
   let ptr_ref = ptr.getValueRef()
-  let res_valueref = @unsafe.llvm_build_free(self.builder_ref, ptr_ref)
-  CallInst(res_valueref)
+  let res_valueref = @unsafe.llvm_build_free(self.get_unsafe_ref(), ptr_ref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4338,7 +4388,7 @@ pub fn IRBuilder::createMemCpy(
   size : &Value,
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4369,14 +4419,14 @@ pub fn IRBuilder::createMemCpy(
   let src_align = src_align.reinterpret_as_uint()
   let size_ref = size.getValueRef()
   let res_valueref = @unsafe.llvm_build_mem_cpy(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     dst_ref,
     dst_align,
     src_ref,
     src_align,
     size_ref,
   )
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4424,7 +4474,7 @@ pub fn IRBuilder::createMemSet(
   align : Int,
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4454,13 +4504,13 @@ pub fn IRBuilder::createMemSet(
   let size_ref = size.getValueRef()
   let align = align.reinterpret_as_uint()
   let res_valueref = @unsafe.llvm_build_mem_set(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     dst_ref,
     value_ref,
     size_ref,
     align,
   )
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4509,7 +4559,7 @@ pub fn IRBuilder::createMemMove(
   size : &Value,
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4540,14 +4590,14 @@ pub fn IRBuilder::createMemMove(
   let src_align = src_align.reinterpret_as_uint()
   let size_ref = size.getValueRef()
   let res_valueref = @unsafe.llvm_build_mem_move(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     dst_ref,
     dst_align,
     src_ref,
     src_align,
     size_ref,
   )
-  CallInst(res_valueref)
+  CallInst::from_raw(res_valueref, self.get_insert_module())
 }
 
 ///|
@@ -4556,13 +4606,13 @@ pub fn IRBuilder::createGlobalString(
   string : String,
   name? : String = "",
 ) -> GlobalConstant raise {
-  guard self.positioned is Set else { raise UnsetPosition }
+  guard self.positioned is Set(_) else { raise UnsetPosition }
   let res_valueref = @unsafe.llvm_build_global_string(
-    self.builder_ref,
+    self.get_unsafe_ref(),
     string,
     name,
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  GlobalConstant(res_valueref)
+  GlobalConstant::from_raw(res_valueref, self.get_insert_module())
 }

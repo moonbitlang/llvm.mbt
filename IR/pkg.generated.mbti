@@ -75,7 +75,9 @@ pub enum AggregateTypeEnum {
 pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
 pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
 
-pub struct AllocaInst(@unsafe.LLVMValueRef)
+pub struct AllocaInst {
+  // private fields
+}
 pub fn AllocaInst::getAllocatedType(Self) -> &Type
 pub impl InsertPoint for AllocaInst
 pub impl Instruction for AllocaInst
@@ -83,8 +85,7 @@ pub impl Value for AllocaInst
 pub impl Show for AllocaInst
 
 pub struct Argument {
-  value_ref : @unsafe.LLVMValueRef
-  idx : Int
+  // private fields
 }
 pub fn Argument::addAttr(Self, ParamAttr) -> Unit
 pub fn Argument::getFunction(Self) -> Function
@@ -116,7 +117,9 @@ pub impl PrimitiveType for BFloatType
 pub impl Type for BFloatType
 pub impl Show for BFloatType
 
-pub struct BasicBlock(@unsafe.LLVMBasicBlockRef)
+pub struct BasicBlock {
+  // private fields
+}
 pub fn BasicBlock::eraseFromParent(Self) -> Unit raise
 pub fn BasicBlock::getContext(Self) -> Context
 pub fn BasicBlock::getFirstInst(Self) -> &Instruction?
@@ -134,13 +137,17 @@ pub impl InsertPoint for BasicBlock
 pub impl Value for BasicBlock
 pub impl Show for BasicBlock
 
-pub struct BinaryInst(@unsafe.LLVMValueRef)
+pub struct BinaryInst {
+  // private fields
+}
 pub impl InsertPoint for BinaryInst
 pub impl Instruction for BinaryInst
 pub impl Value for BinaryInst
 pub impl Show for BinaryInst
 
-pub struct BranchInst(@unsafe.LLVMValueRef)
+pub struct BranchInst {
+  // private fields
+}
 pub fn BranchInst::getNumSuccessors(Self) -> Int
 pub fn BranchInst::getSuccessor(Self, Int) -> BasicBlock?
 pub fn BranchInst::isConditional(Self) -> Bool
@@ -153,7 +160,9 @@ pub impl Instruction for BranchInst
 pub impl Value for BranchInst
 pub impl Show for BranchInst
 
-pub struct CallInst(@unsafe.LLVMValueRef)
+pub struct CallInst {
+  // private fields
+}
 pub fn CallInst::getTailCallKind(Self) -> TailCallKind
 pub fn CallInst::isTailCall(Self) -> Bool
 pub fn CallInst::removeTailCall(Self) -> Unit
@@ -164,7 +173,9 @@ pub impl Instruction for CallInst
 pub impl Value for CallInst
 pub impl Show for CallInst
 
-pub struct CastInst(@unsafe.LLVMValueRef)
+pub struct CastInst {
+  // private fields
+}
 pub impl InsertPoint for CastInst
 pub impl Instruction for CastInst
 pub impl Value for CastInst
@@ -182,9 +193,15 @@ pub enum ConstantEnum {
   ConstantArray(ConstantArray)
   ConstantStruct(ConstantStruct)
   ConstantVector(ConstantVector)
+  ConstantExpr(ConstantExpr)
   UndefValue(UndefValue)
   PoisonValue(PoisonValue)
 }
+
+pub struct ConstantExpr(@unsafe.LLVMValueRef)
+pub impl Constant for ConstantExpr
+pub impl Value for ConstantExpr
+pub impl Show for ConstantExpr
 
 pub struct ConstantFP(@unsafe.LLVMValueRef)
 pub impl Constant for ConstantFP
@@ -281,13 +298,17 @@ pub impl PrimitiveType for DoubleType
 pub impl Type for DoubleType
 pub impl Show for DoubleType
 
-pub struct ExtractValueInst(@unsafe.LLVMValueRef)
+pub struct ExtractValueInst {
+  // private fields
+}
 pub impl InsertPoint for ExtractValueInst
 pub impl Instruction for ExtractValueInst
 pub impl Value for ExtractValueInst
 pub impl Show for ExtractValueInst
 
-pub struct FCmpInst(@unsafe.LLVMValueRef)
+pub struct FCmpInst {
+  // private fields
+}
 pub fn FCmpInst::getPredicate(Self) -> FloatPredicate
 pub impl InsertPoint for FCmpInst
 pub impl Instruction for FCmpInst
@@ -367,7 +388,9 @@ pub(all) enum FnAttr {
   AllocSize(Int)
 } derive(Eq)
 
-pub struct Function(@unsafe.LLVMValueRef)
+pub struct Function {
+  // private fields
+}
 pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock raise StringError
 pub fn Function::addFnAttr(Self, FnAttr) -> Unit
 pub fn Function::addRetAttr(Self, RetAttr) -> Unit
@@ -407,7 +430,9 @@ pub fn GenericValue::toInt64(Self) -> Int64
 pub fn GenericValue::toUInt(Self) -> UInt
 pub fn GenericValue::toUInt64(Self) -> UInt64
 
-pub struct GetElementPtrInst(@unsafe.LLVMValueRef)
+pub struct GetElementPtrInst {
+  // private fields
+}
 pub fn GetElementPtrInst::getSourceElementType(Self) -> &Type
 pub fn GetElementPtrInst::isInBounds(Self) -> Bool
 pub fn GetElementPtrInst::removeInBounds(Self) -> Unit
@@ -417,7 +442,9 @@ pub impl Instruction for GetElementPtrInst
 pub impl Value for GetElementPtrInst
 pub impl Show for GetElementPtrInst
 
-pub struct GlobalConstant(@unsafe.LLVMValueRef)
+pub struct GlobalConstant {
+  // private fields
+}
 pub impl GlobalValue for GlobalConstant
 pub impl Value for GlobalConstant
 pub impl Show for GlobalConstant
@@ -428,7 +455,9 @@ pub enum GlobalEnum {
   GlobalConstant(GlobalConstant)
 }
 
-pub struct GlobalVariable(@unsafe.LLVMValueRef)
+pub struct GlobalVariable {
+  // private fields
+}
 pub impl GlobalValue for GlobalVariable
 pub impl Value for GlobalVariable
 pub impl Show for GlobalVariable
@@ -443,7 +472,9 @@ pub impl PrimitiveType for HalfType
 pub impl Type for HalfType
 pub impl Show for HalfType
 
-pub struct ICmpInst(@unsafe.LLVMValueRef)
+pub struct ICmpInst {
+  // private fields
+}
 pub fn ICmpInst::getPredicate(Self) -> IntPredicate
 pub impl InsertPoint for ICmpInst
 pub impl Instruction for ICmpInst
@@ -451,7 +482,6 @@ pub impl Value for ICmpInst
 pub impl Show for ICmpInst
 
 pub struct IRBuilder {
-  builder_ref : @unsafe.LLVMBuilderRef
   // private fields
 }
 #callsite(autofill(loc))
@@ -621,10 +651,11 @@ pub fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceL
 #callsite(autofill(loc))
 pub fn IRBuilder::createZExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 pub fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
-pub fn IRBuilder::inner(Self) -> @unsafe.LLVMBuilderRef
 pub fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
 
-pub struct InsertValueInst(@unsafe.LLVMValueRef)
+pub struct InsertValueInst {
+  // private fields
+}
 pub impl InsertPoint for InsertValueInst
 pub impl Instruction for InsertValueInst
 pub impl Value for InsertValueInst
@@ -765,7 +796,9 @@ pub(all) enum Linkage {
   LinkerPrivateWeakLinkage
 }
 
-pub struct LoadInst(@unsafe.LLVMValueRef)
+pub struct LoadInst {
+  // private fields
+}
 pub impl InsertPoint for LoadInst
 pub impl Instruction for LoadInst
 pub impl Value for LoadInst
@@ -802,7 +835,9 @@ pub fn Module::setSourceFileName(Self, String) -> Unit
 pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise
 pub impl Show for Module
 
-pub struct PHINode(@unsafe.LLVMValueRef)
+pub struct PHINode {
+  // private fields
+}
 pub fn PHINode::addIncoming(Self, &Value, BasicBlock) -> Unit
 pub fn PHINode::countIncoming(Self) -> Int
 pub fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
@@ -831,7 +866,7 @@ pub impl Constant for PoisonValue
 pub impl Value for PoisonValue
 pub impl Show for PoisonValue
 
-type PositionState derive(Eq)
+type PositionState
 
 pub enum PrimitiveTypeEnum {
   HalfType(HalfType)
@@ -852,7 +887,9 @@ pub(all) enum RetAttr {
   InReg
 } derive(Eq)
 
-pub struct ReturnInst(@unsafe.LLVMValueRef)
+pub struct ReturnInst {
+  // private fields
+}
 pub impl InsertPoint for ReturnInst
 pub impl Instruction for ReturnInst
 pub impl Value for ReturnInst
@@ -868,13 +905,17 @@ pub impl AggregateType for ScalableVectorType
 pub impl Type for ScalableVectorType
 pub impl Show for ScalableVectorType
 
-pub struct SelectInst(@unsafe.LLVMValueRef)
+pub struct SelectInst {
+  // private fields
+}
 pub impl InsertPoint for SelectInst
 pub impl Instruction for SelectInst
 pub impl Value for SelectInst
 pub impl Show for SelectInst
 
-pub struct StoreInst(@unsafe.LLVMValueRef)
+pub struct StoreInst {
+  // private fields
+}
 pub impl InsertPoint for StoreInst
 pub impl Instruction for StoreInst
 pub impl Value for StoreInst
@@ -896,7 +937,9 @@ pub impl AggregateType for StructType
 pub impl Type for StructType
 pub impl Show for StructType
 
-pub struct SwitchInst(@unsafe.LLVMValueRef)
+pub struct SwitchInst {
+  // private fields
+}
 pub fn SwitchInst::addCase(Self, &Value, BasicBlock) -> Unit raise
 pub fn SwitchInst::getNumSuccessors(Self) -> Int
 pub fn SwitchInst::getSuccessor(Self, Int) -> BasicBlock?
@@ -946,7 +989,9 @@ pub enum TypeEnum {
 } derive(Eq)
 pub fn TypeEnum::asTypeClass(Self) -> &Type
 
-pub struct UnaryInst(@unsafe.LLVMValueRef)
+pub struct UnaryInst {
+  // private fields
+}
 pub impl InsertPoint for UnaryInst
 pub impl Instruction for UnaryInst
 pub impl Value for UnaryInst
@@ -973,6 +1018,7 @@ pub enum ValueEnum {
   ConstantArray(ConstantArray)
   ConstantVector(ConstantVector)
   ConstantStruct(ConstantStruct)
+  ConstantExpr(ConstantExpr)
   UndefValue(UndefValue)
   PoisonValue(PoisonValue)
   Argument(Argument)

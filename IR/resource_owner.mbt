@@ -14,7 +14,8 @@ priv type ModuleOwner
 ///|
 /// A MoonBit-managed owner for an LLVM builder.
 ///
-/// The C payload retains the builder's ContextOwner.
+/// The C payload retains the builder's ContextOwner and, while positioned, the
+/// ModuleOwner containing its insertion point.
 priv type BuilderOwner
 
 ///|
@@ -51,6 +52,13 @@ extern "C" fn BuilderOwner::new(
 #borrow(self)
 #warnings("-unused_value")
 extern "C" fn BuilderOwner::raw(self : BuilderOwner) -> @unsafe.LLVMBuilderRef = "llvm_mbt_ir_builder_owner_raw"
+
+///|
+#borrow(self, owner_module)
+extern "C" fn BuilderOwner::set_module(
+  self : BuilderOwner,
+  owner_module : ModuleOwner,
+) = "llvm_mbt_ir_builder_owner_set_module"
 
 ///|
 #borrow(self)
