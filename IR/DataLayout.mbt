@@ -1,5 +1,23 @@
 ///|
-pub struct DataLayout(@unsafe.LLVMTargetDataRef)
+pub struct DataLayout {
+  priv target_data_ref : @unsafe.LLVMTargetDataRef
+  priv owner_module : Module
+}
+
+///|
+fn DataLayout::from_raw(
+  target_data_ref : @unsafe.LLVMTargetDataRef,
+  owner_module : Module,
+) -> DataLayout {
+  { target_data_ref, owner_module }
+}
+
+///|
+fn DataLayout::get_unsafe_ref(self : DataLayout) -> @unsafe.LLVMTargetDataRef {
+  // Borrowing the raw view must also keep its owning Module alive.
+  ignore(self.owner_module)
+  self.target_data_ref
+}
 
 ///|
 /// Get Type Size in Bits.
@@ -20,7 +38,10 @@ pub struct DataLayout(@unsafe.LLVMTargetDataRef)
 /// }
 /// ```
 pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_size_of_type_in_bits(self.0, ty.getTypeRef())
+  let size = @unsafe.llvm_size_of_type_in_bits(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+  )
   size.to_int()
 }
 
@@ -50,18 +71,27 @@ pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
 /// }
 /// ```
 pub fn DataLayout::getTypeStoreSize(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_store_size_of_type(self.0, ty.getTypeRef())
+  let size = @unsafe.llvm_store_size_of_type(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+  )
   size.to_int()
 }
 
 ///|
 pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_abi_size_of_type(self.0, ty.getTypeRef())
+  let size = @unsafe.llvm_abi_size_of_type(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+  )
   size.to_int()
 }
 
 ///|
 pub fn DataLayout::getTypeAlignment(self : DataLayout, ty : &Type) -> Int {
-  let align = @unsafe.llvm_abi_alignment_of_type(self.0, ty.getTypeRef())
+  let align = @unsafe.llvm_abi_alignment_of_type(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+  )
   align.reinterpret_as_int()
 }

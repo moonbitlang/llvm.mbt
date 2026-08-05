@@ -300,7 +300,9 @@ pub fn Context::getVoidTy(Self) -> VoidType
 pub fn Context::new() -> Self
 pub impl Eq for Context
 
-pub struct DataLayout(@unsafe.LLVMTargetDataRef)
+pub struct DataLayout {
+  // private fields
+}
 pub fn DataLayout::getTypeAlignment(Self, &Type) -> Int
 pub fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
 pub fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int

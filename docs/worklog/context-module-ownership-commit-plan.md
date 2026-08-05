@@ -103,10 +103,10 @@
 
 ## Commit 8：迁移 DataLayout 与其余安全 borrowed view
 
-- [ ] 让 `Module::getDataLayout` 返回的 DataLayout 持有 Module，因为该指针是 Module-borrowed view。
-- [ ] 检查 Attribute 及 `IR` 包中其他由 Context/Module 返回的 raw-only view；对安全 API 实际能够创建和持有的对象补充正确 owner。
-- [ ] 不扩大到用户主动通过 `@unsafe` raw constructor 伪造 wrapper 的场景，也不在本 commit 清理全部 unsafe public surface。
-- [ ] 不处理 execution engine 的 Module ownership transfer；该问题留到检查点三。
+- [x] 让 `Module::getDataLayout` 返回的 DataLayout 持有 Module，因为该指针是 Module-borrowed view。
+- [x] 检查 Attribute 及 `IR` 包中其他由 Context/Module 返回的 raw-only view；对安全 API 实际能够创建和持有的对象补充正确 owner。
+- [x] 不扩大到用户主动通过 `@unsafe` raw constructor 伪造 wrapper 的场景，也不在本 commit 清理全部 unsafe public surface。
+- [x] 不处理 execution engine 的 Module ownership transfer；该问题留到检查点三。
 
 建议提交信息：`IR: anchor remaining borrowed views`
 

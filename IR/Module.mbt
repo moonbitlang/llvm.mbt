@@ -191,7 +191,7 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
   let target_data_ref = @unsafe.llvm_get_module_data_layout(
     self.get_unsafe_ref(),
   )
-  DataLayout(target_data_ref)
+  DataLayout::from_raw(target_data_ref, self)
 }
 
 ///|
