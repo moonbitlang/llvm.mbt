@@ -47,6 +47,11 @@ fn IRBuilder::get_unsafe_ref(self : Self) -> @unsafe.LLVMBuilderRef {
 }
 
 ///|
+fn IRBuilder::get_context(self : Self) -> Context {
+  Context::from_owner(self.owner.context())
+}
+
+///|
 fn IRBuilder::get_insert_module(self : Self) -> Module raise BuilderError {
   match self.positioned {
     Set(owner_module) => owner_module
@@ -422,12 +427,12 @@ pub fn IRBuilder::createAdd(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   //if @unsafe.llvm_is_constant(res_valueref) {
-  //  ConstantInt::ConstantInt(res_valueref) as &Value
+  //  ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
   //} else {
   //  BinaryInst::from_raw(res_valueref, self.get_insert_module())
   //}
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -486,7 +491,7 @@ pub fn IRBuilder::createNSWAdd(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -545,7 +550,7 @@ pub fn IRBuilder::createNUWAdd(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -604,7 +609,7 @@ pub fn IRBuilder::createSub(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -663,7 +668,7 @@ pub fn IRBuilder::createNSWSub(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -722,7 +727,7 @@ pub fn IRBuilder::createNUWSub(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -781,7 +786,7 @@ pub fn IRBuilder::createMul(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -840,7 +845,7 @@ pub fn IRBuilder::createNSWMul(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -899,7 +904,7 @@ pub fn IRBuilder::createNUWMul(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -959,7 +964,7 @@ pub fn IRBuilder::createUDiv(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1019,7 +1024,7 @@ pub fn IRBuilder::createSDiv(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1080,7 +1085,7 @@ pub fn IRBuilder::createExactUDiv(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1140,7 +1145,7 @@ pub fn IRBuilder::createExactSDiv(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1199,7 +1204,7 @@ pub fn IRBuilder::createURem(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1258,7 +1263,7 @@ pub fn IRBuilder::createSRem(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1349,7 +1354,7 @@ pub fn IRBuilder::createFAdd(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => {
       let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
@@ -1430,7 +1435,7 @@ pub fn IRBuilder::createFSub(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => {
       let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
@@ -1499,7 +1504,7 @@ pub fn IRBuilder::createFMul(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1558,7 +1563,7 @@ pub fn IRBuilder::createFDiv(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1617,7 +1622,7 @@ pub fn IRBuilder::createFRem(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1678,7 +1683,7 @@ pub fn IRBuilder::createFNeg(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => UnaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1737,7 +1742,7 @@ pub fn IRBuilder::createAnd(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1796,7 +1801,7 @@ pub fn IRBuilder::createOr(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1855,7 +1860,7 @@ pub fn IRBuilder::createXor(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1921,7 +1926,7 @@ pub fn IRBuilder::createNot(
   // to represent a bitwise NOT operation.
   // so it is BinaryInst, not UnaryInst.
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1980,7 +1985,7 @@ pub fn IRBuilder::createShl(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2039,7 +2044,7 @@ pub fn IRBuilder::createLShr(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2098,7 +2103,7 @@ pub fn IRBuilder::createAShr(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2262,7 +2267,7 @@ pub fn IRBuilder::createICmp(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => ICmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2516,7 +2521,7 @@ pub fn IRBuilder::createFCmp(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => FCmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2779,7 +2784,7 @@ pub fn IRBuilder::createTrunc(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2845,7 +2850,7 @@ pub fn IRBuilder::createZExt(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2911,7 +2916,7 @@ pub fn IRBuilder::createSExt(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2976,7 +2981,7 @@ pub fn IRBuilder::createFPTrunc(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3037,7 +3042,7 @@ pub fn IRBuilder::createFPExt(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3098,7 +3103,7 @@ pub fn IRBuilder::createFPToSI(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3164,7 +3169,7 @@ pub fn IRBuilder::createFPToUI(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantInt::ConstantInt(res_valueref) as &Value
+    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3225,7 +3230,7 @@ pub fn IRBuilder::createSIToFP(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3290,7 +3295,7 @@ pub fn IRBuilder::createUIToFP(
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   match @unsafe.llvm_is_constant(res_valueref) {
-    true => ConstantFP::ConstantFP(res_valueref) as &Value
+    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3350,10 +3355,12 @@ pub fn IRBuilder::createBitCast(
         | Int8Type(_)
         | Int16Type(_)
         | Int32Type(_)
-        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        | Int64Type(_) =>
+          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::ConstantFP(res_valueref)
-        StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
+          ConstantFP::from_raw(res_valueref, self.get_context())
+        StructType(_) =>
+          ConstantStruct::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             (
@@ -3735,12 +3742,16 @@ pub fn IRBuilder::createSelect(
         | Int8Type(_)
         | Int16Type(_)
         | Int32Type(_)
-        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        | Int64Type(_) =>
+          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::ConstantFP(res_valueref)
-        StructType(_) => ConstantStruct::ConstantStruct(res_valueref)
-        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+          ConstantFP::from_raw(res_valueref, self.get_context())
+        StructType(_) =>
+          ConstantStruct::from_raw(res_valueref, self.get_context())
+        ArrayType(_) =>
+          ConstantArray::from_raw(res_valueref, self.get_context())
+        VectorType(_) =>
+          ConstantVector::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             "Unanticipated constant type in `createSelect`, the trueVal type is \{trueVal.getType()}",
@@ -4113,9 +4124,12 @@ pub fn IRBuilder::createInsertValue(
   match @unsafe.llvm_is_constant(res_valueref) {
     true =>
       match aggregate.getType().asTypeEnum() {
-        StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
-        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+        StructType(_) =>
+          ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
+        ArrayType(_) =>
+          ConstantArray::from_raw(res_valueref, self.get_context())
+        VectorType(_) =>
+          ConstantVector::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             "Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}",
@@ -4223,12 +4237,16 @@ pub fn IRBuilder::createExtractValue(
         | Int8Type(_)
         | Int16Type(_)
         | Int32Type(_)
-        | Int64Type(_) => ConstantInt::ConstantInt(res_valueref) as &Value
+        | Int64Type(_) =>
+          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
         HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::ConstantFP(res_valueref)
-        StructType(_) => ConstantStruct::ConstantStruct(res_valueref) as &Value
-        ArrayType(_) => ConstantArray::ConstantArray(res_valueref)
-        VectorType(_) => ConstantVector::ConstantVector(res_valueref)
+          ConstantFP::from_raw(res_valueref, self.get_context())
+        StructType(_) =>
+          ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
+        ArrayType(_) =>
+          ConstantArray::from_raw(res_valueref, self.get_context())
+        VectorType(_) =>
+          ConstantVector::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             "Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}",

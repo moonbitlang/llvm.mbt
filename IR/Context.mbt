@@ -554,7 +554,7 @@ pub fn Context::getScalableVectorType(
 /// ```
 pub fn Context::getConstTrue(self : Self) -> ConstantInt {
   let valueref = @unsafe.llvm_const_int(self.getInt1Ty().getTypeRef(), 1, true)
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -582,7 +582,7 @@ pub fn Context::getConstTrue(self : Self) -> ConstantInt {
 /// ```
 pub fn Context::getConstFalse(self : Self) -> ConstantInt {
   let valueref = @unsafe.llvm_const_int(self.getInt1Ty().getTypeRef(), 0, true)
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -615,7 +615,7 @@ pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
     val.to_uint64(),
     true,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -648,7 +648,7 @@ pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
     val.to_uint64(),
     false,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -681,7 +681,7 @@ pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
     val.to_uint64(),
     true,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -714,7 +714,7 @@ pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
     val.to_uint64(),
     false,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -747,7 +747,7 @@ pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
     val.to_uint64(),
     true,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -780,7 +780,7 @@ pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
     val.to_uint64(),
     false,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -813,7 +813,7 @@ pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
     val.reinterpret_as_uint64(),
     true,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -846,7 +846,7 @@ pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
     val,
     false,
   )
-  ConstantInt(valueref)
+  ConstantInt::from_raw(valueref, self)
 }
 
 ///|
@@ -878,7 +878,7 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
     self.getFloatTy().getTypeRef(),
     val.to_double(),
   )
-  ConstantFP(valueref)
+  ConstantFP::from_raw(valueref, self)
 }
 
 ///|
@@ -911,7 +911,7 @@ pub fn Context::getConstZeroFloat(
     self.getFloatTy().getTypeRef(),
     val.to_double(),
   )
-  ConstantFP(valueref)
+  ConstantFP::from_raw(valueref, self)
 }
 
 ///|
@@ -940,7 +940,7 @@ pub fn Context::getConstZeroFloat(
 /// ```
 pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
   let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
-  ConstantFP(valueref)
+  ConstantFP::from_raw(valueref, self)
 }
 
 ///|
@@ -974,7 +974,7 @@ pub fn Context::getConstZeroDouble(
   }
   let val = val.reinterpret_as_double()
   let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
-  ConstantFP(valueref)
+  ConstantFP::from_raw(valueref, self)
 }
 
 ///|
@@ -1015,7 +1015,7 @@ pub fn Context::getConstArray(
     elementType.getTypeRef(),
     element_refs,
   )
-  ConstantArray(valueref)
+  ConstantArray::from_raw(valueref, self)
 }
 
 // REVIEW: Check if this is correct.
@@ -1055,7 +1055,7 @@ pub fn Context::getConstVector(
   ignore(self)
   let scalar_refs = scalar_constant_vals.map(v => v.getValueRef())
   let valueref = @unsafe.llvm_const_vector(scalar_refs)
-  ConstantVector(valueref)
+  ConstantVector::from_raw(valueref, self)
 }
 
 ///|
@@ -1103,7 +1103,7 @@ pub fn Context::getConstStruct(
     element_refs,
     isPacked,
   )
-  ConstantStruct(valueref)
+  ConstantStruct::from_raw(valueref, self)
 }
 
 ///|
@@ -1138,7 +1138,7 @@ pub fn Context::getConstStruct(
 pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
   ignore(self)
   let valueref = @unsafe.llvm_get_undef(ty.getTypeRef())
-  UndefValue(valueref)
+  UndefValue::from_raw(valueref, self)
 }
 
 ///|
@@ -1174,7 +1174,7 @@ pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
 pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
   ignore(self)
   let valueref = @unsafe.llvm_get_poison(ty.getTypeRef())
-  PoisonValue(valueref)
+  PoisonValue::from_raw(valueref, self)
 }
 
 ///|
@@ -1208,5 +1208,5 @@ pub fn Context::getConstPointerNull(
 ) -> ConstantPointerNull {
   ignore(self)
   let valueref = @unsafe.llvm_const_pointer_null(ty.getTypeRef())
-  ConstantPointerNull(valueref)
+  ConstantPointerNull::from_raw(valueref, self)
 }

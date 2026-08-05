@@ -84,10 +84,10 @@
 
 ## Commit 6：迁移 Context-owned Constant
 
-- [ ] 让 ConstantInt、ConstantFP、ConstantPointerNull、ConstantArray、ConstantStruct、ConstantVector、ConstantExpr、UndefValue 和 PoisonValue 持有 Context；`Type::sizeOf` 返回的 LLVM constant expression 不再误包装为 Module-owned `CastInst`。
-- [ ] 更新 Context 中全部 constant factory，使返回值传播调用者的 Context owner。
-- [ ] 更新 IRBuilder 中可能返回 constant wrapper 的折叠或 convenience 路径，使用 builder 保存的 Context，而不是只包装 raw value。
-- [ ] 不把 context-owned Constant 错误地绑定到某个 Module。
+- [x] 让 ConstantInt、ConstantFP、ConstantPointerNull、ConstantArray、ConstantStruct、ConstantVector、ConstantExpr、UndefValue 和 PoisonValue 持有 Context；`Type::sizeOf` 返回的 LLVM constant expression 不再误包装为 Module-owned `CastInst`。
+- [x] 更新 Context 中全部 constant factory，使返回值传播调用者的 Context owner。
+- [x] 更新 IRBuilder 中可能返回 constant wrapper 的折叠或 convenience 路径，使用 builder 保存的 Context，而不是只包装 raw value。
+- [x] 不把 context-owned Constant 错误地绑定到某个 Module。
 
 建议提交信息：`IR: anchor constants to Context`
 

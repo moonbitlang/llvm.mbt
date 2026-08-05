@@ -3,7 +3,17 @@
 // ==================================================
 
 ///|
-pub struct ConstantInt(ValueRef)
+pub struct ConstantInt {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantInt::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantInt {
+  ConstantInt::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub fn ConstantInt::to_int(self : Self) -> Int {
@@ -31,12 +41,17 @@ pub fn ConstantInt::to_uint(self : Self) -> UInt {
 
 ///|
 pub impl Value for ConstantInt with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantInt with fn asValueEnum(self) {
   ConstantInt(self)
+}
+
+///|
+pub impl Value for ConstantInt with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -46,7 +61,7 @@ pub impl Constant for ConstantInt with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantInt with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -54,16 +69,28 @@ pub impl Show for ConstantInt with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct ConstantFP(ValueRef)
+pub struct ConstantFP {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantFP::from_raw(value_ref : ValueRef, context : Context) -> ConstantFP {
+  ConstantFP::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantFP with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantFP with fn asValueEnum(self) {
   ConstantFP(self)
+}
+
+///|
+pub impl Value for ConstantFP with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -73,7 +100,7 @@ pub impl Constant for ConstantFP with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantFP with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -81,16 +108,31 @@ pub impl Show for ConstantFP with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct ConstantPointerNull(ValueRef)
+pub struct ConstantPointerNull {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantPointerNull::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantPointerNull {
+  ConstantPointerNull::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantPointerNull with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantPointerNull with fn asValueEnum(self) {
   ConstantPointerNull(self)
+}
+
+///|
+pub impl Value for ConstantPointerNull with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -100,7 +142,7 @@ pub impl Constant for ConstantPointerNull with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantPointerNull with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -108,16 +150,31 @@ pub impl Show for ConstantPointerNull with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct ConstantArray(ValueRef)
+pub struct ConstantArray {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantArray::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantArray {
+  ConstantArray::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantArray with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantArray with fn asValueEnum(self) {
   ConstantArray(self)
+}
+
+///|
+pub impl Value for ConstantArray with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -127,7 +184,7 @@ pub impl Constant for ConstantArray with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantArray with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -135,16 +192,31 @@ pub impl Show for ConstantArray with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct ConstantStruct(ValueRef)
+pub struct ConstantStruct {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantStruct::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantStruct {
+  ConstantStruct::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantStruct with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantStruct with fn asValueEnum(self) {
   ConstantStruct(self)
+}
+
+///|
+pub impl Value for ConstantStruct with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -154,7 +226,7 @@ pub impl Constant for ConstantStruct with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantStruct with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -162,16 +234,31 @@ pub impl Show for ConstantStruct with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct ConstantVector(ValueRef)
+pub struct ConstantVector {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantVector::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantVector {
+  ConstantVector::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantVector with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantVector with fn asValueEnum(self) {
   ConstantVector(self)
+}
+
+///|
+pub impl Value for ConstantVector with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -181,7 +268,7 @@ pub impl Constant for ConstantVector with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantVector with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -189,16 +276,28 @@ pub impl Show for ConstantVector with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct UndefValue(ValueRef)
+pub struct UndefValue {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn UndefValue::from_raw(value_ref : ValueRef, context : Context) -> UndefValue {
+  UndefValue::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for UndefValue with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for UndefValue with fn asValueEnum(self) {
   UndefValue(self)
+}
+
+///|
+pub impl Value for UndefValue with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -208,7 +307,7 @@ pub impl Constant for UndefValue with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for UndefValue with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -216,7 +315,17 @@ pub impl Show for UndefValue with fn output(self, logger) {
 // ==================================================
 
 ///|
-pub struct PoisonValue(ValueRef)
+pub struct PoisonValue {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn PoisonValue::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> PoisonValue {
+  PoisonValue::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Constant for PoisonValue with fn asConstantEnum(self) {
@@ -225,7 +334,7 @@ pub impl Constant for PoisonValue with fn asConstantEnum(self) {
 
 ///|
 pub impl Value for PoisonValue with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -234,8 +343,13 @@ pub impl Value for PoisonValue with fn asValueEnum(self) {
 }
 
 ///|
+pub impl Value for PoisonValue with fn getContext(self) {
+  self.value.get_context()
+}
+
+///|
 pub impl Show for PoisonValue with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }
 
 // ==================================================
@@ -243,17 +357,32 @@ pub impl Show for PoisonValue with fn output(self, logger) {
 // ==================================================
 
 ///|
-/// An LLVM constant expression. Its Context owner is added in Commit 6.
-pub struct ConstantExpr(ValueRef)
+/// An LLVM constant expression.
+pub struct ConstantExpr {
+  priv value : ContextOwnedValue
+}
+
+///|
+fn ConstantExpr::from_raw(
+  value_ref : ValueRef,
+  context : Context,
+) -> ConstantExpr {
+  ConstantExpr::{ value: ContextOwnedValue::new(value_ref, context) }
+}
 
 ///|
 pub impl Value for ConstantExpr with fn getValueRef(self) -> ValueRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
 pub impl Value for ConstantExpr with fn asValueEnum(self) {
   ConstantExpr(self)
+}
+
+///|
+pub impl Value for ConstantExpr with fn getContext(self) {
+  self.value.get_context()
 }
 
 ///|
@@ -263,5 +392,5 @@ pub impl Constant for ConstantExpr with fn asConstantEnum(self) {
 
 ///|
 pub impl Show for ConstantExpr with fn output(self, logger) {
-  self.0.output(logger)
+  self.getValueRef().output(logger)
 }

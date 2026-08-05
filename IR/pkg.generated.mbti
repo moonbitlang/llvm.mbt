@@ -181,7 +181,9 @@ pub impl Instruction for CastInst
 pub impl Value for CastInst
 pub impl Show for CastInst
 
-pub struct ConstantArray(@unsafe.LLVMValueRef)
+pub struct ConstantArray {
+  // private fields
+}
 pub impl Constant for ConstantArray
 pub impl Value for ConstantArray
 pub impl Show for ConstantArray
@@ -198,17 +200,23 @@ pub enum ConstantEnum {
   PoisonValue(PoisonValue)
 }
 
-pub struct ConstantExpr(@unsafe.LLVMValueRef)
+pub struct ConstantExpr {
+  // private fields
+}
 pub impl Constant for ConstantExpr
 pub impl Value for ConstantExpr
 pub impl Show for ConstantExpr
 
-pub struct ConstantFP(@unsafe.LLVMValueRef)
+pub struct ConstantFP {
+  // private fields
+}
 pub impl Constant for ConstantFP
 pub impl Value for ConstantFP
 pub impl Show for ConstantFP
 
-pub struct ConstantInt(@unsafe.LLVMValueRef)
+pub struct ConstantInt {
+  // private fields
+}
 pub fn ConstantInt::getValueAsInt64(Self) -> Int64
 pub fn ConstantInt::getValueAsUInt64(Self) -> UInt64
 pub fn ConstantInt::to_int(Self) -> Int
@@ -217,17 +225,23 @@ pub impl Constant for ConstantInt
 pub impl Value for ConstantInt
 pub impl Show for ConstantInt
 
-pub struct ConstantPointerNull(@unsafe.LLVMValueRef)
+pub struct ConstantPointerNull {
+  // private fields
+}
 pub impl Constant for ConstantPointerNull
 pub impl Value for ConstantPointerNull
 pub impl Show for ConstantPointerNull
 
-pub struct ConstantStruct(@unsafe.LLVMValueRef)
+pub struct ConstantStruct {
+  // private fields
+}
 pub impl Constant for ConstantStruct
 pub impl Value for ConstantStruct
 pub impl Show for ConstantStruct
 
-pub struct ConstantVector(@unsafe.LLVMValueRef)
+pub struct ConstantVector {
+  // private fields
+}
 pub impl Constant for ConstantVector
 pub impl Value for ConstantVector
 pub impl Show for ConstantVector
@@ -861,7 +875,9 @@ pub fn PointerType::isLoadableOrStorableType(&Type) -> Bool
 pub impl Type for PointerType
 pub impl Show for PointerType
 
-pub struct PoisonValue(@unsafe.LLVMValueRef)
+pub struct PoisonValue {
+  // private fields
+}
 pub impl Constant for PoisonValue
 pub impl Value for PoisonValue
 pub impl Show for PoisonValue
@@ -997,7 +1013,9 @@ pub impl Instruction for UnaryInst
 pub impl Value for UnaryInst
 pub impl Show for UnaryInst
 
-pub struct UndefValue(@unsafe.LLVMValueRef)
+pub struct UndefValue {
+  // private fields
+}
 pub impl Constant for UndefValue
 pub impl Value for UndefValue
 pub impl Show for UndefValue
