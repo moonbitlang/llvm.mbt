@@ -1,6 +1,6 @@
 ///|
 pub struct GlobalVariable {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -8,7 +8,7 @@ fn GlobalVariable::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GlobalVariable {
-  GlobalVariable::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  GlobalVariable::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -41,7 +41,7 @@ pub impl Show for GlobalVariable with fn output(self, logger) {
 
 ///|
 pub struct GlobalConstant {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -49,7 +49,7 @@ fn GlobalConstant::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GlobalConstant {
-  GlobalConstant::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  GlobalConstant::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|

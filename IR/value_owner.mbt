@@ -1,49 +1,49 @@
 ///|
 /// A value handle whose lifetime is bounded by its defining Module.
-priv struct ModuleOwnedValue {
+priv struct ModuleAnchoredValue {
   value_ref : ValueRef
   owner_module : Module
 }
 
 ///|
-fn ModuleOwnedValue::new(
+fn ModuleAnchoredValue::new(
   value_ref : ValueRef,
   owner_module : Module,
-) -> ModuleOwnedValue {
-  ModuleOwnedValue::{ value_ref, owner_module }
+) -> ModuleAnchoredValue {
+  ModuleAnchoredValue::{ value_ref, owner_module }
 }
 
 ///|
-fn ModuleOwnedValue::get_unsafe_ref(self : ModuleOwnedValue) -> ValueRef {
+fn ModuleAnchoredValue::get_unsafe_ref(self : ModuleAnchoredValue) -> ValueRef {
   self.value_ref
 }
 
 ///|
-fn ModuleOwnedValue::get_module(self : ModuleOwnedValue) -> Module {
+fn ModuleAnchoredValue::get_module(self : ModuleAnchoredValue) -> Module {
   self.owner_module
 }
 
 ///|
 /// A value handle whose lifetime is bounded by its LLVM Context.
-priv struct ContextOwnedValue {
+priv struct ContextAnchoredValue {
   value_ref : ValueRef
   context : Context
 }
 
 ///|
-fn ContextOwnedValue::new(
+fn ContextAnchoredValue::new(
   value_ref : ValueRef,
   context : Context,
-) -> ContextOwnedValue {
-  ContextOwnedValue::{ value_ref, context }
+) -> ContextAnchoredValue {
+  ContextAnchoredValue::{ value_ref, context }
 }
 
 ///|
-fn ContextOwnedValue::get_unsafe_ref(self : ContextOwnedValue) -> ValueRef {
+fn ContextAnchoredValue::get_unsafe_ref(self : ContextAnchoredValue) -> ValueRef {
   self.value_ref
 }
 
 ///|
-fn ContextOwnedValue::get_context(self : ContextOwnedValue) -> Context {
+fn ContextAnchoredValue::get_context(self : ContextAnchoredValue) -> Context {
   self.context
 }

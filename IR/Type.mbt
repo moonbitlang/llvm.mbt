@@ -737,7 +737,7 @@ pub enum AbstractTypeEnum {
 
 ///|
 pub struct HalfType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -745,7 +745,7 @@ fn HalfType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> HalfType {
-  HalfType::{ value: ContextOwnedType::new(type_ref, context) }
+  HalfType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -794,7 +794,7 @@ pub extend HalfType with PrimitiveType::{asPrimitiveTypeEnum}
 ///|
 /// BFloatType
 pub struct BFloatType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -802,7 +802,7 @@ fn BFloatType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> BFloatType {
-  BFloatType::{ value: ContextOwnedType::new(type_ref, context) }
+  BFloatType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -851,7 +851,7 @@ pub extend BFloatType with PrimitiveType::{asPrimitiveTypeEnum}
 ///|
 /// FloatType
 pub struct FloatType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -859,7 +859,7 @@ fn FloatType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> FloatType {
-  FloatType::{ value: ContextOwnedType::new(type_ref, context) }
+  FloatType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -908,7 +908,7 @@ pub extend FloatType with PrimitiveType::{asPrimitiveTypeEnum}
 ///|
 /// DoubleType
 pub struct DoubleType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -916,7 +916,7 @@ fn DoubleType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> DoubleType {
-  DoubleType::{ value: ContextOwnedType::new(type_ref, context) }
+  DoubleType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -970,7 +970,7 @@ pub extend DoubleType with PrimitiveType::{asPrimitiveTypeEnum}
 ///|
 /// FP128Ty
 pub struct FP128Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -978,7 +978,7 @@ fn FP128Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> FP128Type {
-  FP128Type::{ value: ContextOwnedType::new(type_ref, context) }
+  FP128Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1034,7 +1034,7 @@ pub extend FP128Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct Int1Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1042,7 +1042,7 @@ fn Int1Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> Int1Type {
-  Int1Type::{ value: ContextOwnedType::new(type_ref, context) }
+  Int1Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1090,7 +1090,7 @@ pub extend Int1Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct Int8Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1098,7 +1098,7 @@ fn Int8Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> Int8Type {
-  Int8Type::{ value: ContextOwnedType::new(type_ref, context) }
+  Int8Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1146,7 +1146,7 @@ pub extend Int8Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct Int16Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1154,7 +1154,7 @@ fn Int16Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> Int16Type {
-  Int16Type::{ value: ContextOwnedType::new(type_ref, context) }
+  Int16Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1202,7 +1202,7 @@ pub extend Int16Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct Int32Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1210,7 +1210,7 @@ fn Int32Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> Int32Type {
-  Int32Type::{ value: ContextOwnedType::new(type_ref, context) }
+  Int32Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1258,7 +1258,7 @@ pub extend Int32Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct Int64Type {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1266,7 +1266,7 @@ fn Int64Type::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> Int64Type {
-  Int64Type::{ value: ContextOwnedType::new(type_ref, context) }
+  Int64Type::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1314,7 +1314,7 @@ pub extend Int64Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 pub struct VoidType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1322,7 +1322,7 @@ fn VoidType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> VoidType {
-  VoidType::{ value: ContextOwnedType::new(type_ref, context) }
+  VoidType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1363,7 +1363,7 @@ pub extend VoidType with AbstractType::{asAbstractTypeEnum}
 ///|
 /// LabelTy
 pub struct LabelType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1371,7 +1371,7 @@ fn LabelType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> LabelType {
-  LabelType::{ value: ContextOwnedType::new(type_ref, context) }
+  LabelType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1411,7 +1411,7 @@ pub extend LabelType with AbstractType::{asAbstractTypeEnum}
 
 ///|
 pub struct MetadataType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1419,7 +1419,7 @@ fn MetadataType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> MetadataType {
-  MetadataType::{ value: ContextOwnedType::new(type_ref, context) }
+  MetadataType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1460,7 +1460,7 @@ pub extend MetadataType with AbstractType::{asAbstractTypeEnum}
 ///|
 /// TokenTy
 pub struct TokenType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1468,7 +1468,7 @@ fn TokenType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> TokenType {
-  TokenType::{ value: ContextOwnedType::new(type_ref, context) }
+  TokenType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1508,7 +1508,7 @@ pub extend TokenType with AbstractType::{asAbstractTypeEnum}
 
 ///|
 pub struct FunctionType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1516,7 +1516,7 @@ fn FunctionType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> FunctionType {
-  FunctionType::{ value: ContextOwnedType::new(type_ref, context) }
+  FunctionType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1613,7 +1613,7 @@ pub extend FunctionType with AbstractType::{asAbstractTypeEnum}
 
 ///|
 pub struct StructType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1621,7 +1621,7 @@ fn StructType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> StructType {
-  StructType::{ value: ContextOwnedType::new(type_ref, context) }
+  StructType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1783,7 +1783,7 @@ pub extend StructType with AggregateType::{asAggregateTypeEnum}
 
 ///|
 pub struct ArrayType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1791,7 +1791,7 @@ fn ArrayType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> ArrayType {
-  ArrayType::{ value: ContextOwnedType::new(type_ref, context) }
+  ArrayType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1842,7 +1842,7 @@ pub extend ArrayType with AggregateType::{asAggregateTypeEnum}
 
 ///|
 pub struct VectorType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1850,7 +1850,7 @@ fn VectorType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> VectorType {
-  VectorType::{ value: ContextOwnedType::new(type_ref, context) }
+  VectorType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1903,7 +1903,7 @@ pub extend VectorType with AggregateType::{asAggregateTypeEnum}
 
 ///|
 pub struct ScalableVectorType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1911,7 +1911,7 @@ fn ScalableVectorType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> ScalableVectorType {
-  ScalableVectorType::{ value: ContextOwnedType::new(type_ref, context) }
+  ScalableVectorType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|
@@ -1973,7 +1973,7 @@ pub fn AddressSpace::new(v : UInt) -> AddressSpace {
 
 ///|
 pub struct PointerType {
-  priv value : ContextOwnedType
+  priv value : ContextAnchoredType
 } derive(Eq)
 
 ///|
@@ -1981,7 +1981,7 @@ fn PointerType::from_raw(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
 ) -> PointerType {
-  PointerType::{ value: ContextOwnedType::new(type_ref, context) }
+  PointerType::{ value: ContextAnchoredType::new(type_ref, context) }
 }
 
 ///|

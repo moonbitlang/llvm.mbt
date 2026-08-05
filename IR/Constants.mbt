@@ -4,7 +4,7 @@
 
 ///|
 pub struct ConstantInt {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -12,7 +12,7 @@ fn ConstantInt::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantInt {
-  ConstantInt::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantInt::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -70,12 +70,12 @@ pub impl Show for ConstantInt with fn output(self, logger) {
 
 ///|
 pub struct ConstantFP {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
 fn ConstantFP::from_raw(value_ref : ValueRef, context : Context) -> ConstantFP {
-  ConstantFP::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantFP::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -109,7 +109,7 @@ pub impl Show for ConstantFP with fn output(self, logger) {
 
 ///|
 pub struct ConstantPointerNull {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -117,7 +117,7 @@ fn ConstantPointerNull::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantPointerNull {
-  ConstantPointerNull::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantPointerNull::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -151,7 +151,7 @@ pub impl Show for ConstantPointerNull with fn output(self, logger) {
 
 ///|
 pub struct ConstantArray {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -159,7 +159,7 @@ fn ConstantArray::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantArray {
-  ConstantArray::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantArray::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -193,7 +193,7 @@ pub impl Show for ConstantArray with fn output(self, logger) {
 
 ///|
 pub struct ConstantStruct {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -201,7 +201,7 @@ fn ConstantStruct::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantStruct {
-  ConstantStruct::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantStruct::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -235,7 +235,7 @@ pub impl Show for ConstantStruct with fn output(self, logger) {
 
 ///|
 pub struct ConstantVector {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -243,7 +243,7 @@ fn ConstantVector::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantVector {
-  ConstantVector::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantVector::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -277,12 +277,12 @@ pub impl Show for ConstantVector with fn output(self, logger) {
 
 ///|
 pub struct UndefValue {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
 fn UndefValue::from_raw(value_ref : ValueRef, context : Context) -> UndefValue {
-  UndefValue::{ value: ContextOwnedValue::new(value_ref, context) }
+  UndefValue::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -316,7 +316,7 @@ pub impl Show for UndefValue with fn output(self, logger) {
 
 ///|
 pub struct PoisonValue {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -324,7 +324,7 @@ fn PoisonValue::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> PoisonValue {
-  PoisonValue::{ value: ContextOwnedValue::new(value_ref, context) }
+  PoisonValue::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|
@@ -359,7 +359,7 @@ pub impl Show for PoisonValue with fn output(self, logger) {
 ///|
 /// An LLVM constant expression.
 pub struct ConstantExpr {
-  priv value : ContextOwnedValue
+  priv value : ContextAnchoredValue
 }
 
 ///|
@@ -367,7 +367,7 @@ fn ConstantExpr::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantExpr {
-  ConstantExpr::{ value: ContextOwnedValue::new(value_ref, context) }
+  ConstantExpr::{ value: ContextAnchoredValue::new(value_ref, context) }
 }
 
 ///|

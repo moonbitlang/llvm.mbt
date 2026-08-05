@@ -1,11 +1,11 @@
 ///|
 pub struct Function {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn Function::from_raw(value_ref : ValueRef, owner_module : Module) -> Function {
-  Function::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  Function::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|

@@ -45,17 +45,17 @@ f.getName()
 可以用少量 package-private handle 统一传播规则，例如：
 
 ```moonbit
-priv struct ContextValueHandle {
+priv struct ContextAnchoredValue {
   raw : @unsafe.LLVMValueRef
   context : Context
 }
 
-priv struct ModuleValueHandle {
+priv struct ModuleAnchoredValue {
   raw : @unsafe.LLVMValueRef
   module : Module
 }
 
-priv struct TypeHandle {
+priv struct ContextAnchoredType {
   raw : @unsafe.LLVMTypeRef
   context : Context
 }

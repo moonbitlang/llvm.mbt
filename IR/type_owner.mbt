@@ -1,31 +1,31 @@
 ///|
 /// A type handle whose lifetime is bounded by its LLVM Context.
-priv struct ContextOwnedType {
+priv struct ContextAnchoredType {
   type_ref : @unsafe.LLVMTypeRef
   context : Context
 }
 
 ///|
-fn ContextOwnedType::new(
+fn ContextAnchoredType::new(
   type_ref : @unsafe.LLVMTypeRef,
   context : Context,
-) -> ContextOwnedType {
-  ContextOwnedType::{ type_ref, context }
+) -> ContextAnchoredType {
+  ContextAnchoredType::{ type_ref, context }
 }
 
 ///|
-fn ContextOwnedType::get_unsafe_ref(
-  self : ContextOwnedType,
+fn ContextAnchoredType::get_unsafe_ref(
+  self : ContextAnchoredType,
 ) -> @unsafe.LLVMTypeRef {
   self.type_ref
 }
 
 ///|
-fn ContextOwnedType::get_context(self : ContextOwnedType) -> Context {
+fn ContextAnchoredType::get_context(self : ContextAnchoredType) -> Context {
   self.context
 }
 
 ///|
-impl Eq for ContextOwnedType with fn equal(self, other) {
+impl Eq for ContextAnchoredType with fn equal(self, other) {
   self.type_ref == other.type_ref
 }

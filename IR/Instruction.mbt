@@ -4,7 +4,7 @@
 
 ///|
 pub struct AllocaInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -12,7 +12,7 @@ fn AllocaInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> AllocaInst {
-  AllocaInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  AllocaInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -57,12 +57,12 @@ pub impl Show for AllocaInst with fn output(self, logger) {
 
 ///|
 pub struct LoadInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn LoadInst::from_raw(value_ref : ValueRef, owner_module : Module) -> LoadInst {
-  LoadInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  LoadInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -101,7 +101,7 @@ pub impl Show for LoadInst with fn output(self, logger) {
 
 ///|
 pub struct StoreInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -109,7 +109,7 @@ fn StoreInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> StoreInst {
-  StoreInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  StoreInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -148,12 +148,12 @@ pub impl Show for StoreInst with fn output(self, logger) {
 
 ///|
 pub struct CastInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn CastInst::from_raw(value_ref : ValueRef, owner_module : Module) -> CastInst {
-  CastInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  CastInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -192,7 +192,7 @@ pub impl Show for CastInst with fn output(self, logger) {
 
 ///|
 pub struct UnaryInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -200,7 +200,7 @@ fn UnaryInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> UnaryInst {
-  UnaryInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  UnaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -239,7 +239,7 @@ pub impl Show for UnaryInst with fn output(self, logger) {
 
 ///|
 pub struct BinaryInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -247,7 +247,7 @@ fn BinaryInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> BinaryInst {
-  BinaryInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  BinaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -360,12 +360,12 @@ fn IntPredicate::from_llvm_int_predicate(
 
 ///|
 pub struct ICmpInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn ICmpInst::from_raw(value_ref : ValueRef, owner_module : Module) -> ICmpInst {
-  ICmpInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  ICmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -478,12 +478,12 @@ fn FloatPredicate::from_llvm_float_predicate(
 
 ///|
 pub struct FCmpInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn FCmpInst::from_raw(value_ref : ValueRef, owner_module : Module) -> FCmpInst {
-  FCmpInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  FCmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -528,7 +528,7 @@ pub impl Show for FCmpInst with fn output(self, logger) {
 
 ///|
 pub struct GetElementPtrInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -536,7 +536,7 @@ fn GetElementPtrInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GetElementPtrInst {
-  GetElementPtrInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  GetElementPtrInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -598,7 +598,7 @@ pub impl Show for GetElementPtrInst with fn output(self, logger) {
 
 ///|
 pub struct SelectInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -606,7 +606,7 @@ fn SelectInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> SelectInst {
-  SelectInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  SelectInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -640,7 +640,7 @@ pub impl Show for SelectInst with fn output(self, logger) {
 
 ///|
 pub struct ExtractValueInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -648,7 +648,7 @@ fn ExtractValueInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> ExtractValueInst {
-  ExtractValueInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  ExtractValueInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -692,7 +692,7 @@ pub impl Show for ExtractValueInst with fn output(self, logger) {
 
 ///|
 pub struct InsertValueInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -700,7 +700,7 @@ fn InsertValueInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> InsertValueInst {
-  InsertValueInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  InsertValueInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -739,12 +739,12 @@ pub impl Show for InsertValueInst with fn output(self, logger) {
 
 ///|
 pub struct PHINode {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn PHINode::from_raw(value_ref : ValueRef, owner_module : Module) -> PHINode {
-  PHINode::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  PHINode::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -823,7 +823,7 @@ pub impl Show for PHINode with fn output(self, logger) {
 
 ///|
 pub struct ReturnInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -831,7 +831,7 @@ fn ReturnInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> ReturnInst {
-  ReturnInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  ReturnInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -870,7 +870,7 @@ pub impl Show for ReturnInst with fn output(self, logger) {
 
 ///|
 pub struct BranchInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -878,7 +878,7 @@ fn BranchInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> BranchInst {
-  BranchInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  BranchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -984,7 +984,7 @@ pub suberror SwitchInstError {
 
 ///|
 pub struct SwitchInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
@@ -992,7 +992,7 @@ fn SwitchInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> SwitchInst {
-  SwitchInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  SwitchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
@@ -1113,12 +1113,12 @@ fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
 
 ///|
 pub struct CallInst {
-  priv value : ModuleOwnedValue
+  priv value : ModuleAnchoredValue
 }
 
 ///|
 fn CallInst::from_raw(value_ref : ValueRef, owner_module : Module) -> CallInst {
-  CallInst::{ value: ModuleOwnedValue::new(value_ref, owner_module) }
+  CallInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
 }
 
 ///|
