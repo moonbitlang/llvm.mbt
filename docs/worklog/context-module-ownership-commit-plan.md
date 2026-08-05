@@ -123,11 +123,11 @@
 
 ## Commit 9：增加 owner 传播审计与迁移期回归测试
 
-- [ ] 增加 package-private/白盒测试，检查 Context、Module、Function、BasicBlock、Instruction、Type、Constant 和 DataLayout 之间保存的是预期 owner。
-- [ ] 覆盖原始局部 Context/Module binding 已离开最后使用位置、但派生对象仍可通过保存的 owner 继续工作的场景。
-- [ ] 审计所有具体 wrapper constructor、factory、getter、iterator 和动态初始化函数，清除安全 IR 路径中的 raw-only 临时构造入口。
-- [ ] 增加可重复运行的静态审计方式，防止后续代码重新引入不带 owner 的安全 wrapper 构造路径；审计范围只覆盖本轮对象。
-- [ ] 此时测试主要验证 owner 身份和传播；exact-once disposal 与析构顺序留到 finalizer commit 验证。
+- [x] 增加 package-private/白盒测试，检查 Context、Module、Function、BasicBlock、Instruction、Type、Constant 和 DataLayout 之间保存的是预期 owner。
+- [x] 覆盖原始局部 Context/Module binding 已离开最后使用位置、但派生对象仍可通过保存的 owner 继续工作的场景。
+- [x] 审计所有具体 wrapper constructor、factory、getter、iterator 和动态初始化函数，清除安全 IR 路径中的 raw-only 临时构造入口。
+- [x] 增加可重复运行的静态审计方式，防止后续代码重新引入不带 owner 的安全 wrapper 构造路径；审计范围只覆盖本轮对象。
+- [x] 此时测试主要验证 owner 身份和传播；exact-once disposal 与析构顺序留到 finalizer commit 验证。
 
 建议提交信息：`test(IR): audit resource owner propagation`
 

@@ -39,7 +39,9 @@ fn ContextAnchoredValue::new(
 }
 
 ///|
-fn ContextAnchoredValue::get_unsafe_ref(self : ContextAnchoredValue) -> ValueRef {
+fn ContextAnchoredValue::get_unsafe_ref(
+  self : ContextAnchoredValue,
+) -> ValueRef {
   self.value_ref
 }
 

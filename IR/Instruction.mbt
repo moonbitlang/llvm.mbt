@@ -536,7 +536,9 @@ fn GetElementPtrInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GetElementPtrInst {
-  GetElementPtrInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  GetElementPtrInst::{
+    value: ModuleAnchoredValue::new(value_ref, owner_module),
+  }
 }
 
 ///|
