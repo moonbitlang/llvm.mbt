@@ -18,12 +18,10 @@ priv type ModuleOwner
 priv type BuilderOwner
 
 ///|
-#warnings("-unused_value")
 extern "C" fn ContextOwner::new(raw : @unsafe.LLVMContextRef) -> ContextOwner = "llvm_mbt_ir_context_owner_new"
 
 ///|
 #borrow(self)
-#warnings("-unused_value")
 extern "C" fn ContextOwner::raw(self : ContextOwner) -> @unsafe.LLVMContextRef = "llvm_mbt_ir_context_owner_raw"
 
 ///|
@@ -36,7 +34,6 @@ extern "C" fn ContextOwner::same(
 
 ///|
 #borrow(context)
-#warnings("-unused_value")
 extern "C" fn ModuleOwner::new(
   raw : @unsafe.LLVMModuleRef,
   context : ContextOwner,
@@ -44,12 +41,10 @@ extern "C" fn ModuleOwner::new(
 
 ///|
 #borrow(self)
-#warnings("-unused_value")
 extern "C" fn ModuleOwner::raw(self : ModuleOwner) -> @unsafe.LLVMModuleRef = "llvm_mbt_ir_module_owner_raw"
 
 ///|
 #borrow(self)
-#warnings("-unused_value")
 extern "C" fn ModuleOwner::context(self : ModuleOwner) -> ContextOwner = "llvm_mbt_ir_module_owner_context"
 
 ///|

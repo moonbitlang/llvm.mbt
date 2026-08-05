@@ -779,7 +779,9 @@ pub impl AbstractType for MetadataType
 pub impl Type for MetadataType
 pub impl Show for MetadataType
 
-pub struct Module(@unsafe.LLVMModuleRef)
+pub struct Module {
+  // private fields
+}
 pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise StringError
 pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise StringError
 pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise StringError

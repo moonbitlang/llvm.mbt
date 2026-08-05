@@ -4,8 +4,13 @@ pub struct Context {
 }
 
 ///|
+fn Context::from_owner(owner : ContextOwner) -> Context {
+  Context::{ owner, }
+}
+
+///|
 fn Context::from_raw(raw : @unsafe.LLVMContextRef) -> Context {
-  Context::{ owner: ContextOwner::new(raw) }
+  Context::from_owner(ContextOwner::new(raw))
 }
 
 ///|
@@ -17,7 +22,6 @@ fn Context::from_borrowed_raw(raw : @unsafe.LLVMContextRef) -> Context {
 }
 
 ///|
-#warnings("-unused_value")
 fn Context::owner(self : Context) -> ContextOwner {
   self.owner
 }
@@ -53,7 +57,7 @@ pub fn Context::addModule(
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  let mod = Module(module_ref)
+  let mod = Module::from_raw(module_ref, self)
   mod.setDefaultDataLayout()
   mod
 }

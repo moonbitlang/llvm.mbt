@@ -37,3 +37,13 @@ test "module owner retains its context owner" {
   inspect(owner_test_module_finalize_count(), content="1")
   inspect(owner_test_context_finalize_count(), content="1")
 }
+
+///|
+test "Module returns its original Context owner" {
+  let context = Context::new()
+  let mod = context.addModule("owner_identity")
+  let module_context = mod.getContext()
+  inspect(context.owner().same(module_context.owner()), content="true")
+  @unsafe.llvm_dispose_module(mod.inner())
+  context.drop()
+}

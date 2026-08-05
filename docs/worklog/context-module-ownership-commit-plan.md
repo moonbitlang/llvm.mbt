@@ -37,11 +37,11 @@
 
 ## Commit 4：让 Module 使用 managed owner 并持有 Context
 
-- [ ] 将公开 `Module` 的内部表示改为 private Module owner。
-- [ ] `Context::addModule` 使用当前 Context 创建 Module owner，并建立 `Module -> Context` 强引用。
-- [ ] `Module::getContext` 返回 owner 中保存的同一个 Context，不再把 `LLVMGetModuleContext` 的 borrowed raw pointer 包装成新的 owning Context。
-- [ ] IR 包内部统一通过 package-private helper 借用 `LLVMModuleRef`，更新 Module 的直接调用点。
-- [ ] finalizer 仍不调用 `LLVMDisposeModule`；现有派生 wrapper 暂时仍可保持 raw-only 表示。
+- [x] 将公开 `Module` 的内部表示改为 private Module owner。
+- [x] `Context::addModule` 使用当前 Context 创建 Module owner，并建立 `Module -> Context` 强引用。
+- [x] `Module::getContext` 返回 owner 中保存的同一个 Context，不再把 `LLVMGetModuleContext` 的 borrowed raw pointer 包装成新的 owning Context。
+- [x] IR 包内部统一通过 package-private helper 借用 `LLVMModuleRef`，更新 Module 的直接调用点。
+- [x] finalizer 仍不调用 `LLVMDisposeModule`；现有派生 wrapper 暂时仍可保持 raw-only 表示。
 
 建议提交信息：`IR: anchor Module to Context`
 
