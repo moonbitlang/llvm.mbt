@@ -5,3 +5,14 @@ import {
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/uint",
 }
+
+options(
+  "is-main": false,
+  "native-stub": [ "resource_owner.c" ],
+  link: {
+    "native": {
+      "stub-cc": "cc",
+      "stub-cc-flags": "${build.LLVM_MBT_STUB_CC_FLAGS}",
+    },
+  },
+)

@@ -17,11 +17,11 @@
 
 ## Commit 2：建立暂不释放 LLVM 资源的 owner 基础设施
 
-- [ ] 在 `IR` 包中增加 Context、Module 和 Builder 所需的 private managed external owner 类型及 C control block。
-- [ ] 提供 package-private 的创建和 raw-handle borrow 入口，不向公开接口暴露新的 raw capability。
-- [ ] Module owner 在 C payload 中显式持有 Context owner；Builder owner 至少持有 Context owner。C payload 内的 parent 引用使用配对的 `moonbit_incref`/`moonbit_decref`。
-- [ ] 本 commit 的 finalizer 只维护 control block 的 MoonBit 引用，不调用三个 LLVM disposer；不得提前改变 native 资源释放行为。
-- [ ] 增加最小白盒检查，确认 alias 指向同一个 owner，Module owner 能保持 Context owner 存活。
+- [x] 在 `IR` 包中增加 Context、Module 和 Builder 所需的 private managed external owner 类型及 C control block。
+- [x] 提供 package-private 的创建和 raw-handle borrow 入口，不向公开接口暴露新的 raw capability。
+- [x] Module owner 在 C payload 中显式持有 Context owner；Builder owner 至少持有 Context owner。C payload 内的 parent 引用使用配对的 `moonbit_incref`/`moonbit_decref`。
+- [x] 本 commit 的 finalizer 只维护 control block 的 MoonBit 引用，不调用三个 LLVM disposer；不得提前改变 native 资源释放行为。
+- [x] 增加最小白盒检查，确认 alias 指向同一个 owner，Module owner 能保持 Context owner 存活。
 
 建议提交信息：`IR: add inactive native owner controls`
 
