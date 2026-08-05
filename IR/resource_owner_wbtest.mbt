@@ -1,49 +1,27 @@
 ///|
-extern "C" fn owner_test_reset() = "llvm_mbt_ir_owner_test_reset"
-
-///|
-extern "C" fn owner_test_context_new() -> ContextOwner = "llvm_mbt_ir_owner_test_context_new"
-
-///|
-#borrow(context)
-extern "C" fn owner_test_module_new(context : ContextOwner) -> ModuleOwner = "llvm_mbt_ir_owner_test_module_new"
-
-///|
-extern "C" fn owner_test_context_finalize_count() -> Int = "llvm_mbt_ir_owner_test_context_finalize_count"
-
-///|
-extern "C" fn owner_test_module_finalize_count() -> Int = "llvm_mbt_ir_owner_test_module_finalize_count"
-
-///|
-test "owner aliases share one managed object" {
-  owner_test_reset()
-  let owner = owner_test_context_new()
-  let owner_copy = owner
-  inspect(owner.same(owner_copy), content="true")
-  inspect(owner_test_context_finalize_count(), content="0")
-  owner |> ignore
-  owner_copy |> ignore
-  inspect(owner_test_context_finalize_count(), content="1")
-}
-
-///|
-test "module owner retains its context owner" {
-  owner_test_reset()
-  let context = owner_test_context_new()
-  let mod = owner_test_module_new(context)
-  context |> ignore
-  inspect(owner_test_context_finalize_count(), content="0")
-  mod |> ignore
-  inspect(owner_test_module_finalize_count(), content="1")
-  inspect(owner_test_context_finalize_count(), content="1")
-}
-
-///|
+// Verifies that Module::getContext reuses the exact ContextOwner instead of
+// creating a second owner for the same borrowed LLVMContextRef. This does not
+// test native disposal.
 test "Module returns its original Context owner" {
   let context = Context::new()
   let mod = context.addModule("owner_identity")
   let module_context = mod.getContext()
-  inspect(context.owner().same(module_context.owner()), content="true")
-  @unsafe.llvm_dispose_module(mod.inner())
+  inspect(
+    physical_equal(context.get_owner(), module_context.get_owner()),
+    content="true",
+  )
+  @unsafe.llvm_dispose_module(mod.get_unsafe_ref())
+  context.drop()
+}
+
+///|
+// Exercises the real temporary-Context path as a liveness smoke test. Because
+// native finalizers are still inactive, this does not prove exact reference
+// counts, exact-once disposal, or native destruction order.
+test "Module retains a temporary Context owner" {
+  let mod = Context::new().addModule("owner_lifetime")
+  let context = mod.getContext()
+  inspect(context.getInt32Ty(), content="i32")
+  @unsafe.llvm_dispose_module(mod.get_unsafe_ref())
   context.drop()
 }

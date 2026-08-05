@@ -25,14 +25,6 @@ extern "C" fn ContextOwner::new(raw : @unsafe.LLVMContextRef) -> ContextOwner = 
 extern "C" fn ContextOwner::raw(self : ContextOwner) -> @unsafe.LLVMContextRef = "llvm_mbt_ir_context_owner_raw"
 
 ///|
-#borrow(self, other)
-#warnings("-unused_value")
-extern "C" fn ContextOwner::same(
-  self : ContextOwner,
-  other : ContextOwner,
-) -> Bool = "llvm_mbt_ir_context_owner_same"
-
-///|
 #borrow(context)
 extern "C" fn ModuleOwner::new(
   raw : @unsafe.LLVMModuleRef,

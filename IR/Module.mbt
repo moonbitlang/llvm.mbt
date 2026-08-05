@@ -5,17 +5,17 @@ pub struct Module {
 
 ///|
 fn Module::from_raw(raw : @unsafe.LLVMModuleRef, context : Context) -> Module {
-  Module::{ owner: ModuleOwner::new(raw, context.owner()) }
+  Module::{ owner: ModuleOwner::new(raw, context.get_owner()) }
 }
 
 ///|
 #warnings("-unused_value")
-fn Module::owner(self : Module) -> ModuleOwner {
+fn Module::get_owner(self : Module) -> ModuleOwner {
   self.owner
 }
 
 ///|
-fn Module::inner(self : Module) -> @unsafe.LLVMModuleRef {
+fn Module::get_unsafe_ref(self : Module) -> @unsafe.LLVMModuleRef {
   self.owner.raw()
 }
 
@@ -26,7 +26,7 @@ pub fn Module::addFunction(
   name : String,
   linkage? : Linkage,
 ) -> Function raise StringError {
-  let valueref = @unsafe.llvm_add_function(self.inner(), name, fty.0) catch {
+  let valueref = @unsafe.llvm_add_function(self.get_unsafe_ref(), name, fty.0) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   let fval = Function::Function(valueref)
@@ -44,19 +44,19 @@ pub fn Module::getContext(self : Self) -> Context {
 
 ///|
 pub fn Module::getFirstFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_first_function(self.inner())
+  let valueref = @unsafe.llvm_get_first_function(self.get_unsafe_ref())
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getLastFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_last_function(self.inner())
+  let valueref = @unsafe.llvm_get_last_function(self.get_unsafe_ref())
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
 ///|
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
-  let valueref = @unsafe.llvm_get_named_function(self.inner(), name)
+  let valueref = @unsafe.llvm_get_named_function(self.get_unsafe_ref(), name)
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => Function(valueref))
 }
 
@@ -88,7 +88,7 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 /// }
 /// ```
 pub fn Module::getName(self : Self) -> String raise StringError {
-  @unsafe.llvm_get_module_identifier(self.inner()) catch {
+  @unsafe.llvm_get_module_identifier(self.get_unsafe_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -109,7 +109,7 @@ pub fn Module::getName(self : Self) -> String raise StringError {
 /// }
 /// ```
 pub fn Module::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_module_identifier(self.inner(), name)
+  @unsafe.llvm_set_module_identifier(self.get_unsafe_ref(), name)
 }
 
 ///|
@@ -131,7 +131,7 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 /// }
 /// ```
 pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
-  @unsafe.llvm_get_source_file_name(self.inner()) catch {
+  @unsafe.llvm_get_source_file_name(self.get_unsafe_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -155,13 +155,13 @@ pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
 /// }
 /// ```
 pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
-  @unsafe.llvm_set_source_file_name(self.inner(), name)
+  @unsafe.llvm_set_source_file_name(self.get_unsafe_ref(), name)
 }
 
 ///|
 pub fn Module::setDefaultDataLayout(self : Module) -> Unit {
   let layout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-  @unsafe.llvm_set_data_layout(self.inner(), layout) catch {
+  @unsafe.llvm_set_data_layout(self.get_unsafe_ref(), layout) catch {
     @unsafe.EmbeddedNul => ()
   }
 }
@@ -171,14 +171,16 @@ pub fn Module::setDataLayout(
   self : Module,
   layout : String,
 ) -> Unit raise StringError {
-  @unsafe.llvm_set_data_layout(self.inner(), layout) catch {
+  @unsafe.llvm_set_data_layout(self.get_unsafe_ref(), layout) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
 }
 
 ///|
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
-  let target_data_ref = @unsafe.llvm_get_module_data_layout(self.inner())
+  let target_data_ref = @unsafe.llvm_get_module_data_layout(
+    self.get_unsafe_ref(),
+  )
   DataLayout(target_data_ref)
 }
 
@@ -190,7 +192,11 @@ pub fn Module::addGlobalVariable(
   initializer? : &Constant,
   linkage? : Linkage,
 ) -> GlobalVariable raise StringError {
-  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name) catch {
+  let gv_ref = @unsafe.llvm_add_global(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   if initializer is Some(init) {
@@ -210,7 +216,11 @@ pub fn Module::addGlobalConstant(
   value : &Constant,
   linkage? : Linkage,
 ) -> GlobalConstant raise StringError {
-  let gv_ref = @unsafe.llvm_add_global(self.inner(), ty.getTypeRef(), name) catch {
+  let gv_ref = @unsafe.llvm_add_global(
+    self.get_unsafe_ref(),
+    ty.getTypeRef(),
+    name,
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   @unsafe.llvm_set_global_constant(gv_ref, true)
@@ -231,14 +241,16 @@ pub fn Module::writeBitCodeToFile(
   self : Module,
   filename : String,
 ) -> Unit raise {
-  if 0 != @unsafe.llvm_write_bitcode_to_file(self.inner(), filename) {
+  if 0 != @unsafe.llvm_write_bitcode_to_file(self.get_unsafe_ref(), filename) {
     raise WriteBitCodeToFileFailed(filename)
   }
 }
 
 ///|
 pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
-  let (engref, err) = @unsafe.llvm_create_interpreter_for_module(self.inner())
+  let (engref, err) = @unsafe.llvm_create_interpreter_for_module(
+    self.get_unsafe_ref(),
+  )
   let engref = match engref {
     Some(e) => e
     None => raise CreateInterpreterFailed(err)
@@ -249,12 +261,12 @@ pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
 
 ///|
 pub fn Module::dump(self : Module) -> Unit {
-  @unsafe.llvm_dump_module(self.inner())
+  @unsafe.llvm_dump_module(self.get_unsafe_ref())
 }
 
 ///|
 pub impl Show for Module with fn output(self, logger) {
-  let s = @unsafe.llvm_print_module_to_string(self.inner()) catch {
+  let s = @unsafe.llvm_print_module_to_string(self.get_unsafe_ref()) catch {
     error => "<LLVM module text unavailable: \{error}>"
   }
   logger.write_string(s)

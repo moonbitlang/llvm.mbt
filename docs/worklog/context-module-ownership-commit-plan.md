@@ -55,6 +55,20 @@
 - LLVM disposer 是否确实尚未接入 finalizer。
 - 每个 commit 是否分别通过全量 native check/test。
 
+## 追加 Commit 4A：移除生产 payload 中的测试专用状态
+
+- [x] 从 Context、Module 和 Builder 的 C owner payload 中删除 `tracked_for_test`；生产对象不为测试保存额外字段或执行测试计数分支。
+- [x] 删除依赖 `owner_test_context_new`、`owner_test_module_new` 等假对象 factory 的测试入口、仅由这些入口使用的析构计数器，以及只为测试提供的 C `ContextOwner::same` helper。
+- [x] 改用 `Context::new`、`Context::addModule` 和 `Module::getContext` 等真实用户路径验证 owner 身份与父 owner 保活关系；owner 对象身份直接用 MoonBit 的 `physical_equal` 检查，并明确这些测试验证的是 owner graph，而不是 exact-once native disposal。
+- [x] 将 package-private 的 `Context::owner`、`Module::owner` 分别改名为 `Context::get_owner`、`Module::get_owner`，并更新全部调用点。
+- [x] 将 package-private 的 `Context::inner`、`Module::inner` 分别改名为 `Context::get_unsafe_ref`、`Module::get_unsafe_ref`，明确返回值是只能在内部谨慎借用的 unsafe LLVM raw reference；重命名使用 `moon ide rename` 完成。
+- [x] 在迁移期 helper `Context::from_borrowed_raw` 上方增加 TODO，明确其调用点完成 owner 传播后必须删除；本 commit 不把 borrowed raw 包装提升为正式 API。
+- [x] 本 commit 继续保持 inactive finalizer，不调用 LLVM disposer，也不提前加入重复析构的 fail-fast 分支。
+- [x] 将重复释放的 fail-fast 实现明确延后至 Commit 11；本 commit 只移除测试状态，不提前引入尚无真实 disposer 可保护的分支。
+- [x] 明确不把上述 fail-fast 当作唯一 owner 的保证：两个不同 owner 包装同一个 LLVM raw pointer 无法由各自的 disposed 状态发现，仍须依靠 private 构造入口、owner 传播和 Commit 9 的构造路径审计来排除。
+
+建议提交信息：`IR: simplify owner controls and clarify internal accessors`
+
 ## Commit 5：迁移 Module-owned Value、BasicBlock 与 IRBuilder
 
 - [ ] 让 Function、Argument、GlobalVariable、GlobalConstant、BasicBlock 和全部 Instruction wrapper 强持有 Module。
@@ -139,6 +153,7 @@
 ## Commit 11：启用 Context、Module 与 Builder finalizer
 
 - [ ] 将此前 inactive 的 C finalizer 接入 `LLVMContextDispose`、`LLVMDisposeModule` 和 `LLVMDisposeBuilder`；若 Module ownership 已转移，则遵守 Commit 10 确定的唯一 disposer 规则。
+- [ ] 让 owner 的 native disposal 统一经过内部 `take_raw`/`dispose_once` 路径；若同一个仍存活的 owner 已交出 raw reference，则向 `stderr` 输出醒目的错误信息并调用 `abort()`，不得继续第二次析构。
 - [ ] 删除公开 `Context::drop`，不新增公开 `close/drop` 替代入口。
 - [ ] 增加最小 C 测试探针和白盒测试，验证 alias 只触发一次 native disposal。
 - [ ] 验证仅保留 Function/Instruction/DataLayout 时 Module 不会提前析构，仅保留 Type/Constant 时 Context 不会提前析构。
