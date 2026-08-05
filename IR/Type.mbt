@@ -208,7 +208,7 @@ impl Eq for &Type with fn equal(self, other) {
 
 ///|
 impl Type with fn getContext(self) -> Context {
-  Context(@unsafe.llvm_get_type_context(self.getTypeRef()))
+  Context::from_borrowed_raw(@unsafe.llvm_get_type_context(self.getTypeRef()))
 }
 
 ///|

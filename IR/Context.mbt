@@ -1,14 +1,45 @@
 ///|
-pub struct Context(@unsafe.LLVMContextRef) derive(Eq)
+pub struct Context {
+  priv owner : ContextOwner
+}
+
+///|
+fn Context::from_raw(raw : @unsafe.LLVMContextRef) -> Context {
+  Context::{ owner: ContextOwner::new(raw) }
+}
+
+///|
+fn Context::from_borrowed_raw(raw : @unsafe.LLVMContextRef) -> Context {
+  // This transition-only wrapper is safe while ContextOwner finalization does
+  // not dispose LLVM contexts. All callers must be removed before disposal is
+  // enabled.
+  Context::from_raw(raw)
+}
+
+///|
+#warnings("-unused_value")
+fn Context::owner(self : Context) -> ContextOwner {
+  self.owner
+}
+
+///|
+fn Context::inner(self : Context) -> @unsafe.LLVMContextRef {
+  self.owner.raw()
+}
+
+///|
+pub impl Eq for Context with fn equal(self, other) {
+  self.inner() == other.inner()
+}
 
 ///|
 pub fn Context::drop(self : Context) -> Unit {
-  @unsafe.llvm_context_dispose(self.0)
+  @unsafe.llvm_context_dispose(self.inner())
 }
 
 ///|
 pub fn Context::new() -> Context {
-  Context(@unsafe.llvm_context_create())
+  Context::from_raw(@unsafe.llvm_context_create())
 }
 
 ///|
@@ -16,7 +47,10 @@ pub fn Context::addModule(
   self : Self,
   name : String,
 ) -> Module raise StringError {
-  let module_ref = @unsafe.llvm_module_create_with_name_in_context(name, self.0) catch {
+  let module_ref = @unsafe.llvm_module_create_with_name_in_context(
+    name,
+    self.inner(),
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   let mod = Module(module_ref)
@@ -27,7 +61,7 @@ pub fn Context::addModule(
 ///|
 pub fn Context::createBuilder(self : Self) -> IRBuilder {
   IRBuilder::{
-    builder_ref: @unsafe.llvm_create_builder_in_context(self.0),
+    builder_ref: @unsafe.llvm_create_builder_in_context(self.inner()),
     positioned: NotSet,
   }
 }
@@ -45,7 +79,7 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
 /// }
 /// ```
 pub fn Context::getHalfTy(self : Context) -> HalfType {
-  let typeref = @unsafe.llvm_half_type_in_context(self.0)
+  let typeref = @unsafe.llvm_half_type_in_context(self.inner())
   HalfType(typeref)
 }
 
@@ -62,7 +96,7 @@ pub fn Context::getHalfTy(self : Context) -> HalfType {
 /// }
 /// ```
 pub fn Context::getBFloatTy(self : Context) -> BFloatType {
-  let typeref = @unsafe.llvm_bfloat_type_in_context(self.0)
+  let typeref = @unsafe.llvm_bfloat_type_in_context(self.inner())
   BFloatType(typeref)
 }
 
@@ -79,7 +113,7 @@ pub fn Context::getBFloatTy(self : Context) -> BFloatType {
 /// }
 /// ```
 pub fn Context::getFloatTy(self : Context) -> FloatType {
-  let typeref = @unsafe.llvm_float_type_in_context(self.0)
+  let typeref = @unsafe.llvm_float_type_in_context(self.inner())
   FloatType(typeref)
 }
 
@@ -96,7 +130,7 @@ pub fn Context::getFloatTy(self : Context) -> FloatType {
 /// }
 /// ```
 pub fn Context::getDoubleTy(self : Context) -> DoubleType {
-  let typeref = @unsafe.llvm_double_type_in_context(self.0)
+  let typeref = @unsafe.llvm_double_type_in_context(self.inner())
   DoubleType(typeref)
 }
 
@@ -113,7 +147,7 @@ pub fn Context::getDoubleTy(self : Context) -> DoubleType {
 /// }
 /// ```
 pub fn Context::getFP128Ty(self : Context) -> FP128Type {
-  let typeref = @unsafe.llvm_fp128_type_in_context(self.0)
+  let typeref = @unsafe.llvm_fp128_type_in_context(self.inner())
   FP128Type(typeref)
 }
 
@@ -130,21 +164,21 @@ pub fn Context::getFP128Ty(self : Context) -> FP128Type {
 /// }
 /// ```
 pub fn Context::getVoidTy(self : Context) -> VoidType {
-  let typeref = @unsafe.llvm_void_type_in_context(self.0)
+  let typeref = @unsafe.llvm_void_type_in_context(self.inner())
   VoidType(typeref)
 }
 
 ///|
 /// Get the label type from context.
 pub fn Context::getLabelTy(self : Context) -> LabelType {
-  let typeref = @unsafe.llvm_label_type_in_context(self.0)
+  let typeref = @unsafe.llvm_label_type_in_context(self.inner())
   LabelType(typeref)
 }
 
 ///|
 /// Get the metadata type from context.
 pub fn Context::getMetadataTy(self : Context) -> MetadataType {
-  let typeref = @unsafe.llvm_metadata_type_in_context(self.0)
+  let typeref = @unsafe.llvm_metadata_type_in_context(self.inner())
   MetadataType(typeref)
 }
 
@@ -161,7 +195,7 @@ pub fn Context::getMetadataTy(self : Context) -> MetadataType {
 /// }
 /// ```
 pub fn Context::getTokenTy(self : Context) -> TokenType {
-  let typeref = @unsafe.llvm_token_type_in_context(self.0)
+  let typeref = @unsafe.llvm_token_type_in_context(self.inner())
   TokenType(typeref)
 }
 
@@ -178,7 +212,7 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
 /// }
 /// ```
 pub fn Context::getInt1Ty(self : Context) -> Int1Type {
-  let typeref = @unsafe.llvm_int1_type_in_context(self.0)
+  let typeref = @unsafe.llvm_int1_type_in_context(self.inner())
   Int1Type(typeref)
 }
 
@@ -195,7 +229,7 @@ pub fn Context::getInt1Ty(self : Context) -> Int1Type {
 /// }
 /// ```
 pub fn Context::getInt8Ty(self : Context) -> Int8Type {
-  let typeref = @unsafe.llvm_int8_type_in_context(self.0)
+  let typeref = @unsafe.llvm_int8_type_in_context(self.inner())
   Int8Type(typeref)
 }
 
@@ -212,7 +246,7 @@ pub fn Context::getInt8Ty(self : Context) -> Int8Type {
 /// }
 /// ```
 pub fn Context::getInt16Ty(self : Context) -> Int16Type {
-  let typeref = @unsafe.llvm_int16_type_in_context(self.0)
+  let typeref = @unsafe.llvm_int16_type_in_context(self.inner())
   Int16Type(typeref)
 }
 
@@ -229,7 +263,7 @@ pub fn Context::getInt16Ty(self : Context) -> Int16Type {
 /// }
 /// ```
 pub fn Context::getInt32Ty(self : Context) -> Int32Type {
-  let typeref = @unsafe.llvm_int32_type_in_context(self.0)
+  let typeref = @unsafe.llvm_int32_type_in_context(self.inner())
   Int32Type(typeref)
 }
 
@@ -246,7 +280,7 @@ pub fn Context::getInt32Ty(self : Context) -> Int32Type {
 /// }
 /// ```
 pub fn Context::getInt64Ty(self : Context) -> Int64Type {
-  let typeref = @unsafe.llvm_int64_type_in_context(self.0)
+  let typeref = @unsafe.llvm_int64_type_in_context(self.inner())
   Int64Type(typeref)
 }
 
@@ -274,7 +308,10 @@ pub fn Context::getPtrTy(
   self : Context,
   addressSpace? : AddressSpace = AddressSpace::default(),
 ) -> PointerType {
-  let typeref = @unsafe.llvm_pointer_type_in_context(self.0, addressSpace.0)
+  let typeref = @unsafe.llvm_pointer_type_in_context(
+    self.inner(),
+    addressSpace.0,
+  )
   PointerType(typeref)
 }
 
@@ -347,9 +384,10 @@ pub fn Context::getStructType(
   }
   let field_types = elements.map(v => v.getTypeRef())
   let typeref = match name {
-    "" => @unsafe.llvm_struct_type_in_context(self.0, field_types, isPacked)
+    "" =>
+      @unsafe.llvm_struct_type_in_context(self.inner(), field_types, isPacked)
     _ as name => {
-      let typeref = @unsafe.llvm_struct_create_named(self.0, name) catch {
+      let typeref = @unsafe.llvm_struct_create_named(self.inner(), name) catch {
         @unsafe.EmbeddedNul => raise ContainsNul
       }
       @unsafe.llvm_struct_set_body(typeref, field_types, isPacked)
@@ -378,7 +416,7 @@ pub fn Context::getStructType(
 /// }
 /// ```
 pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
-  let typeref = @unsafe.llvm_get_type_by_name(self.0, name)
+  let typeref = @unsafe.llvm_get_type_by_name(self.inner(), name)
   unless(typeref.is_null(), () => StructType(typeref))
 }
 
@@ -1046,7 +1084,7 @@ pub fn Context::getConstStruct(
   ignore(self)
   let element_refs = elements.map(v => v.getValueRef())
   let valueref = @unsafe.llvm_const_struct_in_context(
-    self.0,
+    self.inner(),
     element_refs,
     isPacked,
   )

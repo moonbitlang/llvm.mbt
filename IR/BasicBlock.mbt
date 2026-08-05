@@ -465,7 +465,7 @@ pub fn BasicBlock::eraseFromParent(self : Self) -> Unit raise {
 
 ///|
 pub fn BasicBlock::getContext(self : Self) -> Context {
-  Context(
+  Context::from_borrowed_raw(
     @unsafe.llvm_get_type_context(
       @unsafe.llvm_type_of(@unsafe.llvm_basic_block_as_value(self.0)),
     ),

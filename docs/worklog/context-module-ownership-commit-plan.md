@@ -27,11 +27,11 @@
 
 ## Commit 3：让 Context 使用 managed owner
 
-- [ ] 将公开 `Context` 的内部表示改为 private owner，不再直接保存公开的 `LLVMContextRef` positional field。
-- [ ] `Context::new` 创建 Context owner；IR 包内部统一通过 package-private borrow helper 取得 raw handle。
-- [ ] 更新 Context 自身以及其他文件中直接读取 `ctx.0` 的调用点。
-- [ ] 暂时保留现有 `Context::drop`，其行为仍直接调用 LLVM disposer；本 commit 不声称已经解决重复释放。
-- [ ] finalizer 仍不释放 native Context。
+- [x] 将公开 `Context` 的内部表示改为 private owner，不再直接保存公开的 `LLVMContextRef` positional field。
+- [x] `Context::new` 创建 Context owner；IR 包内部统一通过 package-private borrow helper 取得 raw handle。
+- [x] 更新 Context 自身以及其他文件中直接读取 `ctx.0` 的调用点。
+- [x] 暂时保留现有 `Context::drop`，其行为仍直接调用 LLVM disposer；本 commit 不声称已经解决重复释放。
+- [x] finalizer 仍不释放 native Context。
 
 建议提交信息：`IR: wrap Context in a managed owner`
 

@@ -215,7 +215,9 @@ pub impl Constant for ConstantVector
 pub impl Value for ConstantVector
 pub impl Show for ConstantVector
 
-pub struct Context(@unsafe.LLVMContextRef) derive(Eq)
+pub struct Context {
+  // private fields
+}
 pub fn Context::addModule(Self, String) -> Module raise StringError
 pub fn Context::createBuilder(Self) -> IRBuilder
 pub fn Context::drop(Self) -> Unit
@@ -261,6 +263,7 @@ pub fn Context::getTokenTy(Self) -> TokenType
 pub fn Context::getUndef(Self, &Type) -> UndefValue
 pub fn Context::getVoidTy(Self) -> VoidType
 pub fn Context::new() -> Self
+pub impl Eq for Context
 
 pub struct DataLayout(@unsafe.LLVMTargetDataRef)
 pub fn DataLayout::getTypeAlignment(Self, &Type) -> Int

@@ -22,7 +22,7 @@ pub fn Module::addFunction(
 ///|
 pub fn Module::getContext(self : Self) -> Context {
   let ctxref = @unsafe.llvm_get_module_context(self.0)
-  Context(ctxref)
+  Context::from_borrowed_raw(ctxref)
 }
 
 ///|
