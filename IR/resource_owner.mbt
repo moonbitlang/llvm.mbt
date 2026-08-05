@@ -43,7 +43,6 @@ extern "C" fn ModuleOwner::context(self : ModuleOwner) -> ContextOwner = "llvm_m
 
 ///|
 #borrow(context)
-#warnings("-unused_value")
 extern "C" fn BuilderOwner::new(
   raw : @unsafe.LLVMBuilderRef,
   context : ContextOwner,
@@ -51,7 +50,6 @@ extern "C" fn BuilderOwner::new(
 
 ///|
 #borrow(self)
-#warnings("-unused_value")
 extern "C" fn BuilderOwner::raw(self : BuilderOwner) -> @unsafe.LLVMBuilderRef = "llvm_mbt_ir_builder_owner_raw"
 
 ///|
@@ -63,5 +61,4 @@ extern "C" fn BuilderOwner::set_module(
 
 ///|
 #borrow(self)
-#warnings("-unused_value")
 extern "C" fn BuilderOwner::context(self : BuilderOwner) -> ContextOwner = "llvm_mbt_ir_builder_owner_context"

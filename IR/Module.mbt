@@ -9,7 +9,6 @@ fn Module::from_raw(raw : @unsafe.LLVMModuleRef, context : Context) -> Module {
 }
 
 ///|
-#warnings("-unused_value")
 fn Module::get_owner(self : Module) -> ModuleOwner {
   self.owner
 }

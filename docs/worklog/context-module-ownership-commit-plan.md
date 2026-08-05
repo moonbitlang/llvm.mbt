@@ -1,6 +1,6 @@
 # Context、Module 与派生对象所有权迁移的 commit 划分
 
-> 状态：计划中
+> 状态：已完成
 > 日期：2026-08-05
 
 本轮按照 [Q-07](../discussion/Q-07-context-module-reclamation.md) 和 [Q-08](../discussion/Q-08-derived-handle-owner-anchors.md) 已采用的方案实施：安全 `IR` API 不公开 `close/drop`，最终由 C finalizer 回收 `Context`、`Module` 和 `IRBuilder`；borrowed wrapper 按 provenance 强持有真正的 owner。
@@ -126,7 +126,7 @@
 - [x] 增加 package-private/白盒测试，检查 Context、Module、Function、BasicBlock、Instruction、Type、Constant 和 DataLayout 之间保存的是预期 owner。
 - [x] 覆盖原始局部 Context/Module binding 已离开最后使用位置、但派生对象仍可通过保存的 owner 继续工作的场景。
 - [x] 审计所有具体 wrapper constructor、factory、getter、iterator 和动态初始化函数，清除安全 IR 路径中的 raw-only 临时构造入口。
-- [x] 增加可重复运行的静态审计方式，防止后续代码重新引入不带 owner 的安全 wrapper 构造路径；审计范围只覆盖本轮对象。
+- [x] 对本轮 wrapper 做一次静态构造路径审计；不保留专用审计脚本，后续主要依靠 private owner 字段、构造函数签名和白盒测试防止 raw-only 表示回归。
 - [x] 此时测试主要验证 owner 身份和传播；exact-once disposal 与析构顺序留到 finalizer commit 验证。
 
 建议提交信息：`test(IR): audit resource owner propagation`
@@ -161,11 +161,11 @@
 
 ## Commit 12：清理迁移设施并完成生产检查
 
-- [ ] 删除只为 inactive-finalizer 迁移期保留的 helper、分支和注释。
-- [ ] 检查 doc test 和教程中不再调用 `Context::drop`，并更新受公开表示变化影响的说明。
-- [ ] 运行 owner 构造路径审计，确认安全 IR 路径没有重新包装 borrowed Context/Module raw pointer。
-- [ ] 检查生成 `.mbti`：预期不再公开 Context/Module/Builder 的 raw positional field 和 `Context::drop`，不混入本轮以外的 API 清理。
-- [ ] 运行最终全量 native check/test，并记录测试数量与结果。
+- [x] 删除只为 inactive-finalizer 迁移期保留的 helper、分支和注释。
+- [x] 检查 doc test 和教程中不再调用 `Context::drop`，并更新受公开表示变化影响的说明。
+- [x] 运行 owner 构造路径审计，确认安全 IR 路径没有重新包装 borrowed Context/Module raw pointer。
+- [x] 检查生成 `.mbti`：不再公开 Context/Module/Builder 的 raw positional field 和 `Context::drop`，且未混入本轮以外的 API 清理。
+- [x] 运行最终全量 native check/test：`moon check --target native` 为 0 errors（保留 `unsafe/Types.mbt` 的 6 个既有 deprecated warnings），`moon test --target native` 为 186/186 通过。
 
 建议提交信息：`IR: complete resource ownership migration`
 
