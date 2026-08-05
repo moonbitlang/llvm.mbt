@@ -131,34 +131,30 @@
 
 建议提交信息：`test(IR): audit resource owner propagation`
 
-## 检查点三：先解决 Interpreter 的 ownership transfer
+## 检查点三：暂缓 Interpreter ownership transfer
 
-在启用 Module finalizer 前必须暂停讨论 `Module::createInterpreter`：`LLVMCreateInterpreterForModule` 会把 Module 的释放责任交给 execution engine，而当前 `Interpreter` 本身也没有可靠的 disposer。若 Module owner 仍认为自己拥有 `LLVMModuleRef`，它与 execution engine 会重复释放；若只是跳过 Module finalizer，又会留下 Interpreter 和转移后 alias 的生命周期问题。
+当前安全 `IR` 包已经公开 `Module::createInterpreter`、`Interpreter` 和 `GenericValue`，但这组 binding 尚未形成完整的 ownership 模型：`LLVMCreateInterpreterForModule` 会接管传入的 Module，`Interpreter` 和 `GenericValue` 又都没有可靠的 managed owner 与 disposer。若直接启用 Module finalizer，会在 execution engine 与 Module owner 之间产生重复释放风险。
 
-这里不在计划中预设 `Moved` 状态、共享 owner 改为持有 execution engine，或调整公开 API 中的任一方案。开始 Commit 10 前，应在 `docs/discussion` 新建独立 Q，明确：
+本轮不为尚未完成的 Interpreter binding 引入 transferred/moved/invalid 状态，也不扩大 Context/Module 回收任务的范围。检查点三采用的范围决策是：先从安全 `IR` 包删除这组未完成接口，使本轮安全 API 中不再存在转移 Module ownership 的路径；`unsafe` 包中的原始 LLVM binding 保留。未来重新实现 Interpreter 时，另行讨论 execution engine owner、Module transfer、失败语义、既有 alias 和 GenericValue disposer。
 
-- 创建成功和失败时，Module ownership 分别属于谁；
-- 已存在的 Module/Function alias 在成功后是否仍可使用；
-- execution engine 由谁以及何时调用 `LLVMDisposeExecutionEngine`；
-- 该决定是否需要公开的 moved/invalid 错误模型。
+## Commit 10：删除未完成的 Interpreter 安全接口
 
-## Commit 10：实现已采用的 Interpreter transfer 方案
+- [ ] 删除 `Module::createInterpreter`，使安全 `Module` API 不再触发 execution engine ownership transfer。
+- [ ] 删除安全 `IR` 包中的 `InterpreterError`、`Interpreter`、`GenericValue` 及其相关方法；同步更新生成接口。
+- [ ] 保留 `unsafe` 包中的 execution engine 和 GenericValue 原始 binding，不在本 commit 清理 unsafe public surface。
+- [ ] 确认安全 `IR` 包中不再调用 `llvm_create_interpreter_for_module`，也不再公开 `LLVMExecutionEngineRef` 或 `LLVMGenericValueRef`。
+- [ ] 将完整 Interpreter binding 明确留给后续独立任务；本 commit 不预设未来采用 transfer、clone 或其他 API 方案。
 
-- [ ] 本 commit 的具体代码范围在检查点三的 Q 得出结论后回填，未回填前不得开始实现。
-- [ ] 创建失败必须保留 Module 原有 ownership；创建成功必须只留下一个 native disposer 责任方。
-- [ ] Interpreter、Module 及既有派生 alias 的存活关系必须符合采用方案，不允许依靠用户手动 `ignore` 保活。
-- [ ] 为 execution engine 的释放责任增加对应 native 测试。
-
-建议提交信息：在检查点三确定方案后填写。
+建议提交信息：`IR: defer unfinished Interpreter bindings`
 
 ## Commit 11：启用 Context、Module 与 Builder finalizer
 
-- [ ] 将此前 inactive 的 C finalizer 接入 `LLVMContextDispose`、`LLVMDisposeModule` 和 `LLVMDisposeBuilder`；若 Module ownership 已转移，则遵守 Commit 10 确定的唯一 disposer 规则。
+- [ ] 将此前 inactive 的 C finalizer 接入 `LLVMContextDispose`、`LLVMDisposeModule` 和 `LLVMDisposeBuilder`；安全 `IR` 包此时不存在转移 Module ownership 的路径。
 - [ ] 让 owner 的 native disposal 统一经过内部 `take_raw`/`dispose_once` 路径；若同一个仍存活的 owner 已交出 raw reference，则向 `stderr` 输出醒目的错误信息并调用 `abort()`，不得继续第二次析构。
 - [ ] 删除公开 `Context::drop`，不新增公开 `close/drop` 替代入口。
 - [ ] 增加最小 C 测试探针和白盒测试，验证 alias 只触发一次 native disposal。
 - [ ] 验证仅保留 Function/Instruction/DataLayout 时 Module 不会提前析构，仅保留 Type/Constant 时 Context 不会提前析构。
-- [ ] 验证 Builder、Module 和 execution engine 等 child 的 native resource 先于 Context 析构。
+- [ ] 验证 Builder 和 Module 等 child 的 native resource 先于 Context 析构。
 - [ ] 测试探针不得成为公开 `IR` API，也不得改变 release 路径的正常语义。
 
 建议提交信息：`IR: finalize managed LLVM resources`
@@ -177,7 +173,7 @@
 
 完成 Commit 10—12 后暂停，重点检查：
 
-- Module transfer 与普通 Module finalizer 是否严格只有一个 disposer。
+- 安全 `IR` 包是否已经不存在 Module ownership transfer 路径。
 - Module 和 Builder 是否都能阻止 Context 提前析构。
 - derived wrapper 是否既不会制造资源环，也不需要用户手动保活 root binding。
 - `Context::drop` 是否已经从源码、文档和生成接口中消失。
