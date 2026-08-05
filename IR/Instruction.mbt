@@ -23,7 +23,7 @@ fn AllocaInst::get_module(self : AllocaInst) -> Module {
 ///|
 pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
   let typeref = @unsafe.llvm_get_allocated_type(self.getValueRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_module().getContext())
 }
 
 ///|
@@ -564,7 +564,7 @@ pub fn GetElementPtrInst::getSourceElementType(
   self : GetElementPtrInst,
 ) -> &Type {
   let typeref = @unsafe.llvm_get_gep_source_element_type(self.getValueRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_module().getContext())
 }
 
 ///|

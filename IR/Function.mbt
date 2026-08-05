@@ -103,7 +103,7 @@ pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
 /// ```
 pub fn Function::getType(self : Self) -> FunctionType {
   let typeref = @unsafe.llvm_global_get_value_type(self.getValueRef())
-  FunctionType(typeref)
+  FunctionType::from_raw(typeref, self.get_module().getContext())
 }
 
 ///|

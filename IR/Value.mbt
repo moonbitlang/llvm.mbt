@@ -78,12 +78,44 @@ pub trait Value: Show {
 ///|
 impl Value with fn getType(self) {
   let typeref = @unsafe.llvm_type_of(self.getValueRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.getContext())
 }
 
 ///|
 impl Value with fn getContext(self) {
-  self.getType().getContext()
+  match self.asValueEnum() {
+    Function(value) => value.get_module().getContext()
+    GlobalVariable(value) => value.get_module().getContext()
+    GlobalConstant(value) => value.get_module().getContext()
+    ConstantInt(value) => value.getContext()
+    ConstantFP(value) => value.getContext()
+    ConstantPointerNull(value) => value.getContext()
+    ConstantArray(value) => value.getContext()
+    ConstantVector(value) => value.getContext()
+    ConstantStruct(value) => value.getContext()
+    ConstantExpr(value) => value.getContext()
+    UndefValue(value) => value.getContext()
+    PoisonValue(value) => value.getContext()
+    Argument(value) => value.get_module().getContext()
+    BasicBlock(value) => value.get_module().getContext()
+    AllocaInst(value) => value.get_module().getContext()
+    LoadInst(value) => value.get_module().getContext()
+    StoreInst(value) => value.get_module().getContext()
+    CastInst(value) => value.get_module().getContext()
+    UnaryInst(value) => value.get_module().getContext()
+    BinaryInst(value) => value.get_module().getContext()
+    ICmpInst(value) => value.get_module().getContext()
+    FCmpInst(value) => value.get_module().getContext()
+    GetElementPtrInst(value) => value.get_module().getContext()
+    SelectInst(value) => value.get_module().getContext()
+    ExtractValueInst(value) => value.get_module().getContext()
+    InsertValueInst(value) => value.get_module().getContext()
+    PHINode(value) => value.get_module().getContext()
+    ReturnInst(value) => value.get_module().getContext()
+    BranchInst(value) => value.get_module().getContext()
+    SwitchInst(value) => value.get_module().getContext()
+    CallInst(value) => value.get_module().getContext()
+  }
 }
 
 ///|

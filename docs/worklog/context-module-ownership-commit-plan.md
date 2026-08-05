@@ -93,11 +93,11 @@
 
 ## Commit 7：迁移 Type family
 
-- [ ] 让所有具体 Type wrapper 持有 Context，包括 primitive、FunctionType、StructType、ArrayType、VectorType、ScalableVectorType 和 PointerType。
-- [ ] 修改 `initAbstractType`/`initAbstractType_err`，要求调用者显式提供 Context owner。
-- [ ] 更新 Context factory、Type 派生 getter、`Value::getType`、Function/Instruction 的专用 type getter，保证动态包装时传播已有 owner。
-- [ ] `Type::getContext` 返回保存的 Context，不再通过 `LLVMGetTypeContext` 构造新的 owner。
-- [ ] 从 Function 等 Module-owned Value 得到 Type 时，只保留其 Context，不无谓延长整个 Module 生命周期。
+- [x] 让所有具体 Type wrapper 持有 Context，包括 primitive、FunctionType、StructType、ArrayType、VectorType、ScalableVectorType 和 PointerType。
+- [x] 修改 `initAbstractType`/`initAbstractType_err`，要求调用者显式提供 Context owner。
+- [x] 更新 Context factory、Type 派生 getter、`Value::getType`、Function/Instruction 的专用 type getter，保证动态包装时传播已有 owner。
+- [x] `Type::getContext` 返回保存的 Context，不再通过 `LLVMGetTypeContext` 构造新的 owner。
+- [x] 从 Function 等 Module-owned Value 得到 Type 时，只保留其 Context，不无谓延长整个 Module 生命周期。
 
 建议提交信息：`IR: anchor types to Context`
 

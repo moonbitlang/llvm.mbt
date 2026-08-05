@@ -26,7 +26,11 @@ pub fn Module::addFunction(
   name : String,
   linkage? : Linkage,
 ) -> Function raise StringError {
-  let valueref = @unsafe.llvm_add_function(self.get_unsafe_ref(), name, fty.0) catch {
+  let valueref = @unsafe.llvm_add_function(
+    self.get_unsafe_ref(),
+    name,
+    fty.getTypeRef(),
+  ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
   let fval = Function::from_raw(valueref, self)

@@ -12,7 +12,6 @@ fn GlobalVariable::from_raw(
 }
 
 ///|
-#warnings("-unused_value")
 fn GlobalVariable::get_module(self : GlobalVariable) -> Module {
   self.value.get_module()
 }
@@ -54,7 +53,6 @@ fn GlobalConstant::from_raw(
 }
 
 ///|
-#warnings("-unused_value")
 fn GlobalConstant::get_module(self : GlobalConstant) -> Module {
   self.value.get_module()
 }

@@ -150,39 +150,39 @@ pub suberror InValidTypeError {
 ///|
 fn initAbstractType_err(
   typeref : @unsafe.LLVMTypeRef,
+  context : Context,
 ) -> &Type raise InValidTypeError {
   let kind = @unsafe.llvm_get_type_kind(typeref)
   match kind {
-    LLVMVoidTypeKind => VoidType::VoidType(typeref) as &Type
-    LLVMHalfTypeKind => HalfType::HalfType(typeref)
-    LLVMBFloatTypeKind => BFloatType::BFloatType(typeref)
-    LLVMFloatTypeKind => FloatType::FloatType(typeref)
-    LLVMDoubleTypeKind => DoubleType::DoubleType(typeref)
-    LLVMFP128TypeKind => FP128Type::FP128Type(typeref)
-    LLVMPointerTypeKind => PointerType::PointerType(typeref)
-    LLVMStructTypeKind => StructType::StructType(typeref)
-    LLVMArrayTypeKind => ArrayType::ArrayType(typeref)
-    LLVMVectorTypeKind => VectorType::VectorType(typeref)
-    LLVMScalableVectorTypeKind =>
-      ScalableVectorType::ScalableVectorType(typeref)
+    LLVMVoidTypeKind => VoidType::from_raw(typeref, context) as &Type
+    LLVMHalfTypeKind => HalfType::from_raw(typeref, context)
+    LLVMBFloatTypeKind => BFloatType::from_raw(typeref, context)
+    LLVMFloatTypeKind => FloatType::from_raw(typeref, context)
+    LLVMDoubleTypeKind => DoubleType::from_raw(typeref, context)
+    LLVMFP128TypeKind => FP128Type::from_raw(typeref, context)
+    LLVMPointerTypeKind => PointerType::from_raw(typeref, context)
+    LLVMStructTypeKind => StructType::from_raw(typeref, context)
+    LLVMArrayTypeKind => ArrayType::from_raw(typeref, context)
+    LLVMVectorTypeKind => VectorType::from_raw(typeref, context)
+    LLVMScalableVectorTypeKind => ScalableVectorType::from_raw(typeref, context)
     LLVMIntegerTypeKind => {
       let bitwidth = @unsafe.llvm_get_int_type_width(typeref)
       match bitwidth {
-        1 => Int1Type::Int1Type(typeref) as &Type
-        8 => Int8Type::Int8Type(typeref)
-        16 => Int16Type::Int16Type(typeref)
-        32 => Int32Type::Int32Type(typeref)
-        64 => Int64Type::Int64Type(typeref)
+        1 => Int1Type::from_raw(typeref, context) as &Type
+        8 => Int8Type::from_raw(typeref, context)
+        16 => Int16Type::from_raw(typeref, context)
+        32 => Int32Type::from_raw(typeref, context)
+        64 => Int64Type::from_raw(typeref, context)
         _ =>
           raise InValidTypeError(
             "Invalid integer type with bitwidth: \{bitwidth}",
           )
       }
     }
-    LLVMLabelTypeKind => LabelType::LabelType(typeref)
-    LLVMMetadataTypeKind => MetadataType::MetadataType(typeref)
-    LLVMTokenTypeKind => TokenType::TokenType(typeref)
-    LLVMFunctionTypeKind => FunctionType::FunctionType(typeref)
+    LLVMLabelTypeKind => LabelType::from_raw(typeref, context)
+    LLVMMetadataTypeKind => MetadataType::from_raw(typeref, context)
+    LLVMTokenTypeKind => TokenType::from_raw(typeref, context)
+    LLVMFunctionTypeKind => FunctionType::from_raw(typeref, context)
     LLVMPPC_FP128TypeKind =>
       raise InValidTypeError("PPC FP128 type is not supported")
     LLVMX86_FP80TypeKind =>
@@ -192,8 +192,8 @@ fn initAbstractType_err(
 }
 
 ///|
-fn initAbstractType(typeref : @unsafe.LLVMTypeRef) -> &Type {
-  initAbstractType_err(typeref) catch {
+fn initAbstractType(typeref : @unsafe.LLVMTypeRef, context : Context) -> &Type {
+  initAbstractType_err(typeref, context) catch {
     _ => {
       println("ICE: Invalid Type kind")
       panic()
@@ -208,7 +208,28 @@ impl Eq for &Type with fn equal(self, other) {
 
 ///|
 impl Type with fn getContext(self) -> Context {
-  Context::from_borrowed_raw(@unsafe.llvm_get_type_context(self.getTypeRef()))
+  match self.asTypeEnum() {
+    HalfType(ty) => ty.get_context()
+    BFloatType(ty) => ty.get_context()
+    FloatType(ty) => ty.get_context()
+    DoubleType(ty) => ty.get_context()
+    FP128Type(ty) => ty.get_context()
+    Int1Type(ty) => ty.get_context()
+    Int8Type(ty) => ty.get_context()
+    Int16Type(ty) => ty.get_context()
+    Int32Type(ty) => ty.get_context()
+    Int64Type(ty) => ty.get_context()
+    VoidType(ty) => ty.get_context()
+    LabelType(ty) => ty.get_context()
+    MetadataType(ty) => ty.get_context()
+    TokenType(ty) => ty.get_context()
+    FunctionType(ty) => ty.get_context()
+    StructType(ty) => ty.get_context()
+    ArrayType(ty) => ty.get_context()
+    VectorType(ty) => ty.get_context()
+    ScalableVectorType(ty) => ty.get_context()
+    PointerType(ty) => ty.get_context()
+  }
 }
 
 ///|
@@ -715,7 +736,22 @@ pub enum AbstractTypeEnum {
 // ====================================================================
 
 ///|
-pub struct HalfType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct HalfType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn HalfType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> HalfType {
+  HalfType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn HalfType::get_context(self : HalfType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for HalfType with fn output(self, logger) {
@@ -729,7 +765,7 @@ pub impl Type for HalfType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for HalfType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -757,7 +793,22 @@ pub extend HalfType with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 /// BFloatType
-pub struct BFloatType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct BFloatType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn BFloatType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> BFloatType {
+  BFloatType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn BFloatType::get_context(self : BFloatType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for BFloatType with fn output(self, logger : &Logger) {
@@ -771,7 +822,7 @@ pub impl Type for BFloatType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for BFloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -799,7 +850,22 @@ pub extend BFloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 /// FloatType
-pub struct FloatType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct FloatType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn FloatType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> FloatType {
+  FloatType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn FloatType::get_context(self : FloatType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for FloatType with fn output(self, logger : &Logger) {
@@ -813,7 +879,7 @@ pub impl Type for FloatType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -841,7 +907,22 @@ pub extend FloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 /// DoubleType
-pub struct DoubleType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct DoubleType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn DoubleType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> DoubleType {
+  DoubleType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn DoubleType::get_context(self : DoubleType) -> Context {
+  self.value.get_context()
+}
 
 ///| Create a DoubleType
 //fn DoubleType::new(typeref : @unsafe.LLVMTypeRef) -> DoubleType {
@@ -860,7 +941,7 @@ pub impl Type for DoubleType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for DoubleType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -888,7 +969,22 @@ pub extend DoubleType with PrimitiveType::{asPrimitiveTypeEnum}
 
 ///|
 /// FP128Ty
-pub struct FP128Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct FP128Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn FP128Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> FP128Type {
+  FP128Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn FP128Type::get_context(self : FP128Type) -> Context {
+  self.value.get_context()
+}
 //pub struct FP128Type {
 //  priv typeref : @unsafe.LLVMTypeRef
 //} derive(Eq)
@@ -910,7 +1006,7 @@ pub impl Type for FP128Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FP128Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -937,7 +1033,22 @@ pub extend FP128Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct Int1Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct Int1Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn Int1Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> Int1Type {
+  Int1Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn Int1Type::get_context(self : Int1Type) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for Int1Type with fn output(self, logger : &Logger) {
@@ -951,7 +1062,7 @@ pub impl Type for Int1Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int1Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -978,7 +1089,22 @@ pub extend Int1Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct Int8Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct Int8Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn Int8Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> Int8Type {
+  Int8Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn Int8Type::get_context(self : Int8Type) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for Int8Type with fn output(self, logger : &Logger) {
@@ -992,7 +1118,7 @@ pub impl Type for Int8Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int8Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1019,7 +1145,22 @@ pub extend Int8Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct Int16Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct Int16Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn Int16Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> Int16Type {
+  Int16Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn Int16Type::get_context(self : Int16Type) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for Int16Type with fn output(self, logger : &Logger) {
@@ -1033,7 +1174,7 @@ pub impl Type for Int16Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int16Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1060,7 +1201,22 @@ pub extend Int16Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct Int32Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct Int32Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn Int32Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> Int32Type {
+  Int32Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn Int32Type::get_context(self : Int32Type) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for Int32Type with fn output(self, logger : &Logger) {
@@ -1074,7 +1230,7 @@ pub impl Type for Int32Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int32Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1101,7 +1257,22 @@ pub extend Int32Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct Int64Type(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct Int64Type {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn Int64Type::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> Int64Type {
+  Int64Type::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn Int64Type::get_context(self : Int64Type) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for Int64Type with fn output(self, logger : &Logger) {
@@ -1115,7 +1286,7 @@ pub impl Type for Int64Type with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for Int64Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1142,7 +1313,22 @@ pub extend Int64Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-pub struct VoidType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct VoidType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn VoidType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> VoidType {
+  VoidType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn VoidType::get_context(self : VoidType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for VoidType with fn output(self, logger : &Logger) {
@@ -1151,7 +1337,7 @@ pub impl Show for VoidType with fn output(self, logger : &Logger) {
 
 ///|
 pub impl Type for VoidType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1176,7 +1362,22 @@ pub extend VoidType with AbstractType::{asAbstractTypeEnum}
 
 ///|
 /// LabelTy
-pub struct LabelType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct LabelType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn LabelType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> LabelType {
+  LabelType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn LabelType::get_context(self : LabelType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for LabelType with fn output(self, logger : &Logger) {
@@ -1190,7 +1391,7 @@ pub impl Type for LabelType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for LabelType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1209,7 +1410,22 @@ pub extend LabelType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
-pub struct MetadataType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct MetadataType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn MetadataType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> MetadataType {
+  MetadataType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn MetadataType::get_context(self : MetadataType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for MetadataType with fn output(self, logger : &Logger) {
@@ -1223,7 +1439,7 @@ pub impl Type for MetadataType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for MetadataType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1243,7 +1459,22 @@ pub extend MetadataType with AbstractType::{asAbstractTypeEnum}
 
 ///|
 /// TokenTy
-pub struct TokenType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct TokenType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn TokenType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> TokenType {
+  TokenType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn TokenType::get_context(self : TokenType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub impl Show for TokenType with fn output(self, logger : &Logger) {
@@ -1257,7 +1488,7 @@ pub impl Type for TokenType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for TokenType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1276,7 +1507,22 @@ pub extend TokenType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
-pub struct FunctionType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct FunctionType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn FunctionType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> FunctionType {
+  FunctionType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn FunctionType::get_context(self : FunctionType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
@@ -1287,7 +1533,7 @@ pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
 /// Get the return type of the function.
 pub fn FunctionType::getReturnType(self : FunctionType) -> &Type {
   let typeref = @unsafe.llvm_get_return_type(self.getTypeRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_context())
 }
 
 ///|
@@ -1301,7 +1547,7 @@ pub fn FunctionType::numOfParams(self : FunctionType) -> Int {
 /// - See LLVM: `FunctionType::params`.
 pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
-  param_types.map(typeref => initAbstractType(typeref))
+  param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
 ///|
@@ -1310,7 +1556,7 @@ pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
 /// - See LLVM: `FunctionType::params`.
 pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
-  param_types.map(typeref => initAbstractType(typeref))
+  param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
 ///|
@@ -1328,7 +1574,7 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   guard idx >= 0 && idx < param_types.length() else { return None }
   let typeref = param_types[idx]
-  try initAbstractType_err(typeref) catch {
+  try initAbstractType_err(typeref, self.get_context()) catch {
     _ => None
   } noraise {
     ty => Some(ty)
@@ -1347,7 +1593,7 @@ pub impl Type for FunctionType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for FunctionType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1366,7 +1612,22 @@ pub extend FunctionType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
-pub struct StructType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct StructType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn StructType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> StructType {
+  StructType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn StructType::get_context(self : StructType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 /// Check struct is a literal type.
@@ -1440,7 +1701,7 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
     self.getTypeRef(),
     idx.reinterpret_as_uint(),
   )
-  try initAbstractType_err(typeref) catch {
+  try initAbstractType_err(typeref, self.get_context()) catch {
     _ => None
   } noraise {
     ty => Some(ty)
@@ -1502,7 +1763,7 @@ pub impl Type for StructType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for StructType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1521,7 +1782,22 @@ pub extend StructType with AggregateType::{asAggregateTypeEnum}
 // ====================================================================
 
 ///|
-pub struct ArrayType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct ArrayType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn ArrayType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> ArrayType {
+  ArrayType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn ArrayType::get_context(self : ArrayType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
@@ -1531,7 +1807,7 @@ pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
 ///|
 pub fn ArrayType::getElementType(self : ArrayType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_context())
 }
 
 ///|
@@ -1546,7 +1822,7 @@ pub impl Type for ArrayType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ArrayType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1565,13 +1841,28 @@ pub extend ArrayType with AggregateType::{asAggregateTypeEnum}
 // ====================================================================
 
 ///|
-pub struct VectorType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct VectorType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn VectorType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> VectorType {
+  VectorType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn VectorType::get_context(self : VectorType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 /// Get the element type of the vector.
 pub fn VectorType::getElementType(self : VectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_context())
 }
 
 ///|
@@ -1592,7 +1883,7 @@ pub impl Type for VectorType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1611,13 +1902,28 @@ pub extend VectorType with AggregateType::{asAggregateTypeEnum}
 // ====================================================================
 
 ///|
-pub struct ScalableVectorType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct ScalableVectorType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn ScalableVectorType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> ScalableVectorType {
+  ScalableVectorType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn ScalableVectorType::get_context(self : ScalableVectorType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 /// Get the element type of the vector.
 pub fn ScalableVectorType::getElementType(self : ScalableVectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
-  initAbstractType(typeref)
+  initAbstractType(typeref, self.get_context())
 }
 
 ///|
@@ -1638,7 +1944,7 @@ pub impl Type for ScalableVectorType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
@@ -1666,7 +1972,22 @@ pub fn AddressSpace::new(v : UInt) -> AddressSpace {
 }
 
 ///|
-pub struct PointerType(@unsafe.LLVMTypeRef) derive(Eq)
+pub struct PointerType {
+  priv value : ContextOwnedType
+} derive(Eq)
+
+///|
+fn PointerType::from_raw(
+  type_ref : @unsafe.LLVMTypeRef,
+  context : Context,
+) -> PointerType {
+  PointerType::{ value: ContextOwnedType::new(type_ref, context) }
+}
+
+///|
+fn PointerType::get_context(self : PointerType) -> Context {
+  self.value.get_context()
+}
 
 ///|
 pub fn PointerType::getAddressSpace(self : PointerType) -> AddressSpace {
@@ -1702,7 +2023,7 @@ pub impl Type for PointerType with fn asTypeEnum(self) -> TypeEnum {
 
 ///|
 pub impl Type for PointerType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.0
+  self.value.get_unsafe_ref()
 }
 
 ///|
