@@ -139,11 +139,11 @@
 
 ## Commit 10：删除未完成的 Interpreter 安全接口
 
-- [ ] 删除 `Module::createInterpreter`，使安全 `Module` API 不再触发 execution engine ownership transfer。
-- [ ] 删除安全 `IR` 包中的 `InterpreterError`、`Interpreter`、`GenericValue` 及其相关方法；同步更新生成接口。
-- [ ] 保留 `unsafe` 包中的 execution engine 和 GenericValue 原始 binding，不在本 commit 清理 unsafe public surface。
-- [ ] 确认安全 `IR` 包中不再调用 `llvm_create_interpreter_for_module`，也不再公开 `LLVMExecutionEngineRef` 或 `LLVMGenericValueRef`。
-- [ ] 将完整 Interpreter binding 明确留给后续独立任务；本 commit 不预设未来采用 transfer、clone 或其他 API 方案。
+- [x] 删除 `Module::createInterpreter`，使安全 `Module` API 不再触发 execution engine ownership transfer。
+- [x] 删除安全 `IR` 包中的 `InterpreterError`、`Interpreter`、`GenericValue` 及其相关方法；同步更新生成接口。
+- [x] 保留 `unsafe` 包中的 execution engine 和 GenericValue 原始 binding，不在本 commit 清理 unsafe public surface。
+- [x] 确认安全 `IR` 包中不再调用 `llvm_create_interpreter_for_module`，也不再公开 `LLVMExecutionEngineRef` 或 `LLVMGenericValueRef`。
+- [x] 将完整 Interpreter binding 明确留给后续独立任务；本 commit 不预设未来采用 transfer、clone 或其他 API 方案。
 
 建议提交信息：`IR: defer unfinished Interpreter bindings`
 

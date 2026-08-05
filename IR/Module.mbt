@@ -257,19 +257,6 @@ pub fn Module::writeBitCodeToFile(
 }
 
 ///|
-pub fn Module::createInterpreter(self : Module) -> Interpreter raise {
-  let (engref, err) = @unsafe.llvm_create_interpreter_for_module(
-    self.get_unsafe_ref(),
-  )
-  let engref = match engref {
-    Some(e) => e
-    None => raise CreateInterpreterFailed(err)
-  }
-  let ctx = self.getContext()
-  Interpreter::construct(engref, self, ctx)
-}
-
-///|
 pub fn Module::dump(self : Module) -> Unit {
   @unsafe.llvm_dump_module(self.get_unsafe_ref())
 }

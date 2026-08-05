@@ -33,10 +33,6 @@ pub suberror IndexOutOfBounds {
   IndexOutOfBounds(String)
 }
 
-pub suberror InterpreterError {
-  CreateInterpreterFailed(String)
-}
-
 pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
 }
@@ -452,12 +448,6 @@ pub impl AbstractType for FunctionType
 pub impl Type for FunctionType
 pub impl Show for FunctionType
 
-pub struct GenericValue(@unsafe.LLVMGenericValueRef)
-pub fn GenericValue::toInt(Self) -> Int
-pub fn GenericValue::toInt64(Self) -> Int64
-pub fn GenericValue::toUInt(Self) -> UInt
-pub fn GenericValue::toUInt64(Self) -> UInt64
-
 pub struct GetElementPtrInst {
   // private fields
 }
@@ -794,20 +784,6 @@ pub enum IntegerTypeEnum {
 pub fn IntegerTypeEnum::asTypeClass(Self) -> &Type
 pub fn IntegerTypeEnum::getBitWidth(Self) -> UInt
 
-pub struct Interpreter {
-  engine : @unsafe.LLVMExecutionEngineRef
-  mod : Module
-  ctx : Context
-}
-pub fn Interpreter::createGenericValueDouble(Self, Double) -> GenericValue
-pub fn Interpreter::createGenericValueFloat(Self, Float) -> GenericValue
-pub fn Interpreter::createGenericValueInt(Self, Int) -> GenericValue
-pub fn Interpreter::createGenericValueInt64(Self, Int64) -> GenericValue
-pub fn Interpreter::createGenericValueUInt(Self, UInt) -> GenericValue
-pub fn Interpreter::createGenericValueUInt64(Self, UInt64) -> GenericValue
-pub fn Interpreter::inner(Self) -> @unsafe.LLVMExecutionEngineRef
-pub fn Interpreter::runFunction(Self, Function, Array[GenericValue]) -> GenericValue
-
 pub struct LabelType {
   // private fields
 } derive(Eq)
@@ -862,7 +838,6 @@ pub struct Module {
 pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise StringError
 pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise StringError
 pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise StringError
-pub fn Module::createInterpreter(Self) -> Interpreter raise
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
 pub fn Module::getDataLayout(Self) -> DataLayout
