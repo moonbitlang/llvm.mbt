@@ -251,7 +251,6 @@ pub struct Context {
 }
 pub fn Context::addModule(Self, String) -> Module raise StringError
 pub fn Context::createBuilder(Self) -> IRBuilder
-pub fn Context::drop(Self) -> Unit
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
 pub fn Context::getBFloatTy(Self) -> BFloatType
 pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray

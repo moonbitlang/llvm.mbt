@@ -1,7 +1,6 @@
 ///|
 // Verifies that Module::getContext reuses the exact ContextOwner instead of
-// creating a second owner for the same borrowed LLVMContextRef. This does not
-// test native disposal.
+// creating a second owner for the same borrowed LLVMContextRef.
 test "Module returns its original Context owner" {
   let context = Context::new()
   let mod = context.addModule("owner_identity")
@@ -10,20 +9,14 @@ test "Module returns its original Context owner" {
     physical_equal(context.get_owner(), module_context.get_owner()),
     content="true",
   )
-  @unsafe.llvm_dispose_module(mod.get_unsafe_ref())
-  context.drop()
 }
 
 ///|
-// Exercises the real temporary-Context path as a liveness smoke test. Because
-// native finalizers are still inactive, this does not prove exact reference
-// counts, exact-once disposal, or native destruction order.
+// Exercises the real temporary-Context path after native finalizers are active.
 test "Module retains a temporary Context owner" {
   let mod = Context::new().addModule("owner_lifetime")
   let context = mod.getContext()
   inspect(context.getInt32Ty(), content="i32")
-  @unsafe.llvm_dispose_module(mod.get_unsafe_ref())
-  context.drop()
 }
 
 ///|
@@ -148,9 +141,6 @@ test "derived IR wrappers retain their provenance owners" {
       #|]
     ),
   )
-  @unsafe.llvm_dispose_builder(builder.get_unsafe_ref())
-  @unsafe.llvm_dispose_module(mod.get_unsafe_ref())
-  context.drop()
 }
 
 ///|
@@ -178,14 +168,11 @@ fn make_temporary_owner_views() -> TemporaryOwnerViews raise {
   builder.setInsertPoint(block)
   let instruction = builder.createRet(argument)
   let data_layout = mod.getDataLayout()
-  @unsafe.llvm_dispose_builder(builder.get_unsafe_ref())
   { function, instruction, value_type, constant, data_layout }
 }
 
 ///|
-// This is a last-use smoke test during the inactive-finalizer migration. The
-// identity test above proves the owner edges; exact native liveness and disposal
-// order remain deferred until the finalizers are enabled.
+// The returned views are the only references that keep their native roots alive.
 test "derived views remain usable after root bindings leave scope" {
   let views = make_temporary_owner_views()
   debug_inspect(
@@ -218,8 +205,56 @@ test "derived views remain usable after root bindings leave scope" {
       #|4
     ),
   )
-  let retained_module = views.function.get_module()
-  let retained_context = views.value_type.get_context()
-  @unsafe.llvm_dispose_module(retained_module.get_unsafe_ref())
-  retained_context.drop()
+}
+
+///|
+#borrow(context, mod, builder)
+extern "C" fn owner_test_watch(
+  context : ContextOwner,
+  mod : ModuleOwner,
+  builder : BuilderOwner,
+) = "llvm_mbt_ir_owner_test_watch"
+
+///|
+extern "C" fn owner_test_take_trace() -> UInt64 = "llvm_mbt_ir_owner_test_take_trace"
+
+///|
+fn exercise_owner_finalizers() -> Unit raise {
+  let context = Context::new()
+  let mod = context.addModule("owner_finalizer_trace")
+  let builder = context.createBuilder()
+  owner_test_watch(context.get_owner(), mod.get_owner(), builder.owner)
+  let value_type = context.getInt32Ty()
+  let constant = context.getConstInt32(7)
+  let function_type = context.getFunctionType(value_type, [value_type])
+  let function = mod.addFunction(function_type, "identity")
+  guard function.getArg(0) is Some(argument) else {
+    fail("expected one function argument")
+  }
+  let block = function.addBasicBlock(name="entry")
+  let data_layout = mod.getDataLayout()
+  builder.setInsertPoint(block)
+  let instruction = builder.createRet(argument)
+  inspect(
+    instruction,
+    content=(
+      #|  ret i32 %0
+    ),
+  )
+  inspect(data_layout.getTypeStoreSize(value_type), content="4")
+  inspect(
+    constant,
+    content=(
+      #|i32 7
+    ),
+  )
+}
+
+///|
+// The watched objects come from the real public construction path. The trace
+// records events after native disposal, so 321 means Builder, then Module, then
+// Context, exactly once each despite all aliases created above.
+test "native owners finalize exactly once in child-first order" {
+  exercise_owner_finalizers()
+  inspect(owner_test_take_trace(), content="321")
 }

@@ -29,11 +29,6 @@ pub impl Eq for Context with fn equal(self, other) {
 }
 
 ///|
-pub fn Context::drop(self : Context) -> Unit {
-  @unsafe.llvm_context_dispose(self.get_unsafe_ref())
-}
-
-///|
 pub fn Context::new() -> Context {
   Context::from_raw(@unsafe.llvm_context_create())
 }

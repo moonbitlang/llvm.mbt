@@ -149,13 +149,13 @@
 
 ## Commit 11：启用 Context、Module 与 Builder finalizer
 
-- [ ] 将此前 inactive 的 C finalizer 接入 `LLVMContextDispose`、`LLVMDisposeModule` 和 `LLVMDisposeBuilder`；安全 `IR` 包此时不存在转移 Module ownership 的路径。
-- [ ] 让 owner 的 native disposal 统一经过内部 `take_raw`/`dispose_once` 路径；若同一个仍存活的 owner 已交出 raw reference，则向 `stderr` 输出醒目的错误信息并调用 `abort()`，不得继续第二次析构。
-- [ ] 删除公开 `Context::drop`，不新增公开 `close/drop` 替代入口。
-- [ ] 增加最小 C 测试探针和白盒测试，验证 alias 只触发一次 native disposal。
-- [ ] 验证仅保留 Function/Instruction/DataLayout 时 Module 不会提前析构，仅保留 Type/Constant 时 Context 不会提前析构。
-- [ ] 验证 Builder 和 Module 等 child 的 native resource 先于 Context 析构。
-- [ ] 测试探针不得成为公开 `IR` API，也不得改变 release 路径的正常语义。
+- [x] 将此前 inactive 的 C finalizer 接入 `LLVMContextDispose`、`LLVMDisposeModule` 和 `LLVMDisposeBuilder`；安全 `IR` 包此时不存在转移 Module ownership 的路径。
+- [x] 让 owner 的 native disposal 统一经过内部 `take_raw`/`dispose_once` 路径；若同一个仍存活的 owner 已交出 raw reference，则向 `stderr` 输出醒目的错误信息并调用 `abort()`，不得继续第二次析构。
+- [x] 删除公开 `Context::drop`，不新增公开 `close/drop` 替代入口。
+- [x] 增加最小 C 测试探针和白盒测试，验证 alias 只触发一次 native disposal。
+- [x] 验证仅保留 Function/Instruction/DataLayout 时 Module 不会提前析构，仅保留 Type/Constant 时 Context 不会提前析构。
+- [x] 验证 Builder 和 Module 等 child 的 native resource 先于 Context 析构。
+- [x] 测试探针不得成为公开 `IR` API，也不得改变 release 路径的正常语义。
 
 建议提交信息：`IR: finalize managed LLVM resources`
 

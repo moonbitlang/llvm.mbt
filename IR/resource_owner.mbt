@@ -1,21 +1,22 @@
 ///|
 /// A MoonBit-managed owner for an LLVM context.
 ///
-/// Its finalizer is intentionally inactive until all borrowed IR wrappers
-/// retain their native owner.
+/// Its finalizer releases the native LLVM context.
 priv type ContextOwner
 
 ///|
 /// A MoonBit-managed owner for an LLVM module.
 ///
-/// The C payload retains the module's ContextOwner.
+/// The C payload retains the module's ContextOwner and releases the native LLVM
+/// module before dropping that parent reference.
 priv type ModuleOwner
 
 ///|
 /// A MoonBit-managed owner for an LLVM builder.
 ///
 /// The C payload retains the builder's ContextOwner and, while positioned, the
-/// ModuleOwner containing its insertion point.
+/// ModuleOwner containing its insertion point. Its finalizer releases the
+/// native LLVM builder before dropping those parent references.
 priv type BuilderOwner
 
 ///|
