@@ -8,7 +8,7 @@ import {
 
 options(
   "is-main": false,
-  "native-stub": [ "resource_owner.c" ],
+  "native-stub": [ "resource_owner.c", "resource_owner_test.c" ],
   link: {
     "native": {
       "stub-cc": "cc",

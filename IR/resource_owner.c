@@ -20,14 +20,7 @@ struct llvm_mbt_builder_owner {
   struct llvm_mbt_module_owner *module;
 };
 
-struct llvm_mbt_owner_test_trace {
-  struct llvm_mbt_context_owner *context;
-  struct llvm_mbt_module_owner *module;
-  struct llvm_mbt_builder_owner *builder;
-  uint64_t events;
-};
-
-static struct llvm_mbt_owner_test_trace llvm_mbt_test_trace;
+void llvm_mbt_ir_owner_test_record(void *owner, uint64_t event);
 
 static void llvm_mbt_owner_disposal_error(const char *kind) {
   fprintf(stderr,
@@ -68,35 +61,22 @@ static LLVMBuilderRef llvm_mbt_builder_owner_take_raw(
   return raw;
 }
 
-static void llvm_mbt_owner_test_record(uint64_t event) {
-  llvm_mbt_test_trace.events = llvm_mbt_test_trace.events * 10 + event;
-}
-
 static void llvm_mbt_context_owner_dispose_once(
   struct llvm_mbt_context_owner *owner) {
   LLVMContextDispose(llvm_mbt_context_owner_take_raw(owner));
-  if (owner == llvm_mbt_test_trace.context) {
-    llvm_mbt_owner_test_record(1);
-    llvm_mbt_test_trace.context = NULL;
-  }
+  llvm_mbt_ir_owner_test_record(owner, 1);
 }
 
 static void llvm_mbt_module_owner_dispose_once(
   struct llvm_mbt_module_owner *owner) {
   LLVMDisposeModule(llvm_mbt_module_owner_take_raw(owner));
-  if (owner == llvm_mbt_test_trace.module) {
-    llvm_mbt_owner_test_record(2);
-    llvm_mbt_test_trace.module = NULL;
-  }
+  llvm_mbt_ir_owner_test_record(owner, 2);
 }
 
 static void llvm_mbt_builder_owner_dispose_once(
   struct llvm_mbt_builder_owner *owner) {
   LLVMDisposeBuilder(llvm_mbt_builder_owner_take_raw(owner));
-  if (owner == llvm_mbt_test_trace.builder) {
-    llvm_mbt_owner_test_record(3);
-    llvm_mbt_test_trace.builder = NULL;
-  }
+  llvm_mbt_ir_owner_test_record(owner, 3);
 }
 
 static void llvm_mbt_finalize_context_owner(void *payload) {
@@ -195,23 +175,4 @@ void *llvm_mbt_ir_builder_owner_context(
     struct llvm_mbt_builder_owner *owner) {
   moonbit_incref(owner->context);
   return owner->context;
-}
-
-void llvm_mbt_ir_owner_test_watch(
-    struct llvm_mbt_context_owner *context,
-    struct llvm_mbt_module_owner *module,
-    struct llvm_mbt_builder_owner *builder) {
-  llvm_mbt_test_trace.context = context;
-  llvm_mbt_test_trace.module = module;
-  llvm_mbt_test_trace.builder = builder;
-  llvm_mbt_test_trace.events = 0;
-}
-
-uint64_t llvm_mbt_ir_owner_test_take_trace(void) {
-  uint64_t events = llvm_mbt_test_trace.events;
-  llvm_mbt_test_trace.context = NULL;
-  llvm_mbt_test_trace.module = NULL;
-  llvm_mbt_test_trace.builder = NULL;
-  llvm_mbt_test_trace.events = 0;
-  return events;
 }
