@@ -61,11 +61,11 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 3：覆盖 Type 枚举与子类分类
 
-- [ ] 在已有最小回归上扩充 `test/type_test.mbt`。
-- [ ] 通过 Context 公开 factory 构造全部 20 个 `TypeEnum` 变体，验证 `asTypeEnum`、`TypeEnum::asTypeClass`、Eq、Context 与稳定 Show 输出。
-- [ ] 遍历 5 个 `IntegerTypeEnum`，检查 enum/class 往返、1/8/16/32/64 bit width 与 `getExtendedType` 的 Some/None 边界。
-- [ ] 遍历 5 个 `FPTypeEnum`，检查 enum/class 往返、primitive bit width 与 11/8/24/53/113 mantissa width。
-- [ ] 验证 Primitive、Aggregate、Abstract 的 positive/negative downcast 及 enum 转换，覆盖所有公开构造器，而不是只抽样一个成功分支。
+- [x] 在已有最小回归上扩充 `test/type_test.mbt`。
+- [x] 通过 Context 公开 factory 构造全部 20 个 `TypeEnum` 变体，验证 `asTypeEnum`、`TypeEnum::asTypeClass`、Eq、Context 与稳定 Show 输出。
+- [x] 遍历 5 个 `IntegerTypeEnum`，检查 enum/class 往返、1/8/16/32/64 bit width 与 `getExtendedType` 的 Some/None 边界。
+- [x] 遍历 5 个 `FPTypeEnum`，检查 enum/class 往返、primitive bit width 与 11/8/24/53/113 mantissa width。
+- [x] 验证 Primitive、Aggregate、Abstract 的 positive/negative downcast 及 enum 转换，覆盖所有公开构造器，而不是只抽样一个成功分支。
 
 建议提交信息：`test(IR): cover type classification`
 
