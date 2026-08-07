@@ -50,12 +50,12 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 2：覆盖 Value 的分类、名称与正常 RAUW
 
-- [ ] 新增 `test/value_test.mbt`。
-- [ ] 对 Function、GlobalValue、Constant、Argument、BasicBlock 和代表性 Instruction 检查 `getType`、`getContext` 与 `asValueEnum`；不同 owner 来源至少各有一个实例。
-- [ ] 构造全部 9 个 `ConstantEnum` 变体，验证 `tryAsConstant` 与 `tryAsConstantEnum` 的 positive 分支；用 Function、Argument 或 Instruction 验证 negative 分支返回 `None`。
-- [ ] 验证未命名 Value 返回 `None`、Unicode 名称读写 round-trip，以及 embedded NUL 精确报告 `StringError::ContainsNul`。
-- [ ] 使用同类型 Function Argument 验证 `replaceAllUsesWith` 更新全部 uses 和稳定 IR；source Argument 仍由 Function 持有，不构造会触发 uniqued Constant 删除的场景。
-- [ ] 不执行不同类型 RAUW：当前接口没有错误通道，LLVM assertion 不能作为进程内反向测试。若需要支持该错误，另行收敛 API 契约。
+- [x] 新增 `test/value_test.mbt`。
+- [x] 对 Function、GlobalValue、Constant、Argument、BasicBlock 和代表性 Instruction 检查 `getType`、`getContext` 与 `asValueEnum`；不同 owner 来源至少各有一个实例。
+- [x] 构造全部 9 个 `ConstantEnum` 变体，验证 `tryAsConstant` 与 `tryAsConstantEnum` 的 positive 分支；用 Function、Argument 或 Instruction 验证 negative 分支返回 `None`。
+- [x] 验证未命名 Value 返回 `None`、Unicode 名称读写 round-trip，以及 embedded NUL 精确报告 `StringError::ContainsNul`。
+- [x] 使用同类型 Function Argument 验证 `replaceAllUsesWith` 更新全部 uses 和稳定 IR；source Argument 仍由 Function 持有，不构造会触发 uniqued Constant 删除的场景。
+- [x] 不执行不同类型 RAUW：当前接口没有错误通道，LLVM assertion 不能作为进程内反向测试。若需要支持该错误，另行收敛 API 契约。
 
 建议提交信息：`test(IR): cover core value behavior`
 
