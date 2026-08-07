@@ -1,5 +1,13 @@
 ///|
-using @IR {type TypeEnum, trait FPType, trait IntegerType, trait Type}
+using @IR {
+  type AddressSpace,
+  type PointerType,
+  type SetBodyForNonOpaqueStruct,
+  type TypeEnum,
+  trait FPType,
+  trait IntegerType,
+  trait Type,
+}
 
 ///|
 fn type_enum_index(ty : TypeEnum) -> Int {
@@ -238,6 +246,225 @@ test "Type subclass downcasts cover positive and negative cases" {
   assert_true(pointer_type.tryAsAggregateTypeEnum() is None)
   assert_true(pointer_type.tryAsAbstractType() is None)
   assert_true(pointer_type.tryAsAbstractTypeEnum() is None)
+}
+
+///|
+test "Type predicates distinguish scalar aggregate and abstract types" {
+  let context = Context::new()
+  let i32_type = context.getInt32Ty()
+  let float_type = context.getFloatTy()
+  let pointer_type = context.getPtrTy()
+  let fixed_vector_type = context.getFixedVectorType(i32_type, 4)
+  let scalable_vector_type = context.getScalableVectorType(i32_type, 4)
+  let array_type = context.getArrayType(i32_type, 2)
+  let struct_type = context.getStructType([i32_type])
+  let empty_struct_type = context.getStructType([], name="EmptyPredicate")
+  let function_type = context.getFunctionType(context.getVoidTy(), [])
+  let void_type = context.getVoidTy()
+  let types : Array[&Type] = [
+    i32_type, float_type, pointer_type, fixed_vector_type, scalable_vector_type,
+    array_type, struct_type, empty_struct_type, function_type, void_type,
+  ]
+  let expected_first_class = [
+    true, true, true, true, true, true, true, true, false, false,
+  ]
+  let expected_aggregate = [
+    false, false, false, false, false, true, true, true, false, false,
+  ]
+  let expected_sized = [
+    true, true, true, true, true, true, true, true, false, false,
+  ]
+  let expected_empty = [
+    false, false, false, false, false, false, false, true, false, false,
+  ]
+  let expected_valid_gep = [
+    true, true, true, true, true, true, true, true, false, false,
+  ]
+  for index, ty in types {
+    assert_eq(ty.isFirstClassType(), expected_first_class[index])
+    assert_eq(ty.isAggregateType(), expected_aggregate[index])
+    assert_eq(ty.isSized(), expected_sized[index])
+    assert_eq(ty.isEmptyTy(), expected_empty[index])
+    assert_eq(ty.isValidGEPType(), expected_valid_gep[index])
+  }
+  let single_value_types : Array[&Type] = [
+    i32_type, float_type, pointer_type, fixed_vector_type,
+  ]
+  for ty in single_value_types {
+    assert_true(ty.isSingleValueType())
+  }
+  assert_false(array_type.isSingleValueType())
+  assert_false(struct_type.isSingleValueType())
+  assert_false(function_type.isSingleValueType())
+  assert_false(void_type.isSingleValueType())
+  assert_true(context.getHalfTy().is16bitFPTy())
+  assert_true(context.getBFloatTy().is16bitFPTy())
+  assert_false(float_type.is16bitFPTy())
+  assert_true(float_type.isIEEELikeFPTy())
+  assert_true(float_type.isFloatingPointTy())
+  assert_true(context.getFixedVectorType(float_type, 2).isFPOrFPVectorTy())
+  assert_true(fixed_vector_type.isIntOrIntVectorTy())
+  assert_true(i32_type.isIntOrPtrTy())
+  assert_true(pointer_type.isIntOrPtrTy())
+  assert_true(context.getFixedVectorType(pointer_type, 2).isPtrOrPtrVectorTy())
+  assert_eq(fixed_vector_type.getScalarType().to_string(), "i32")
+  assert_eq(i32_type.getScalarType().to_string(), "i32")
+}
+
+///|
+test "sized Type produces an observable size expression" {
+  let context = Context::new()
+  let i32_type = context.getInt32Ty()
+  guard i32_type.sizeOf() is Some(size_expression) else {
+    fail("expected sized type to produce size expression")
+  }
+  assert_true(size_expression.asValueEnum() is ConstantExpr(_))
+  inspect(
+    size_expression,
+    content="i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)",
+  )
+}
+
+///|
+test "FunctionType exposes parameters varargs and bounds" {
+  let context = Context::new()
+  let i8_type = context.getInt8Ty()
+  let i32_type = context.getInt32Ty()
+  let pointer_type = context.getPtrTy()
+  let function_type = context.getFunctionType(
+    i32_type,
+    [i8_type, pointer_type],
+    isVarArg=true,
+  )
+  assert_true(function_type.isVarArg())
+  assert_true(
+    function_type.getReturnType().asTypeEnum() == i32_type.asTypeEnum(),
+  )
+  assert_eq(function_type.numOfParams(), 2)
+  assert_eq(function_type.getNumParams(), 2)
+  debug_inspect(
+    function_type.params().map(ty => ty.to_string()),
+    content=(
+      #|["i8", "ptr"]
+    ),
+  )
+  assert_true(function_type.getParamType(-1) is None)
+  assert_eq(function_type.getParamType(0).map(ty => ty.to_string()), Some("i8"))
+  assert_eq(
+    function_type.getParamType(1).map(ty => ty.to_string()),
+    Some("ptr"),
+  )
+  assert_true(function_type.getParamType(2) is None)
+  let fixed_type = context.getFunctionType(context.getVoidTy(), [])
+  assert_false(fixed_type.isVarArg())
+}
+
+///|
+test "StructType exposes shape lookup and setBody errors" {
+  let context = Context::new()
+  let i8_type = context.getInt8Ty()
+  let i32_type = context.getInt32Ty()
+  let literal = context.getStructType([i8_type, i32_type])
+  let packed = context.getStructType([i8_type, i32_type], isPacked=true)
+  let named = context.getStructType([i32_type], name="NamedShape")
+  let empty_named = context.getStructType([], name="EmptyShape")
+  assert_true(literal.isLiteral())
+  assert_false(literal.isOpaque())
+  assert_false(literal.isPacked())
+  assert_true(packed.isLiteral())
+  assert_true(packed.isPacked())
+  assert_false(named.isLiteral())
+  assert_false(named.isOpaque())
+  assert_false(empty_named.isOpaque())
+  assert_true(empty_named.isEmptyTy())
+  assert_eq(literal.numOfElements(), 2)
+  assert_true(literal.getElementType(-1) is None)
+  assert_eq(literal.getElementType(0).map(ty => ty.to_string()), Some("i8"))
+  assert_eq(literal.getElementType(1).map(ty => ty.to_string()), Some("i32"))
+  assert_true(literal.getElementType(2) is None)
+  debug_inspect(
+    literal.elements().map(ty => ty.to_string()),
+    content=(
+      #|["i8", "i32"]
+    ),
+  )
+  guard context.getStructTypeByName("NamedShape") is Some(found) else {
+    fail("expected named struct lookup")
+  }
+  assert_true(found == named)
+  assert_true(context.getStructTypeByName("MissingShape") is None)
+  inspect(literal, content="{ i8, i32 }")
+  inspect(packed, content="<{ i8, i32 }>")
+  inspect(named, content="%NamedShape = type { i32 }")
+  try literal.setBody([i32_type]) catch {
+    SetBodyForNonOpaqueStruct::SetBodyForNonOpaqueStruct(message) =>
+      assert_eq(message, "Cannot set body for non-opaque struct")
+    _ => fail("expected SetBodyForNonOpaqueStruct")
+  } noraise {
+    _ => fail("expected non-opaque setBody to fail")
+  }
+}
+
+///|
+test "Array and vector types expose their element shape" {
+  let context = Context::new()
+  let i16_type = context.getInt16Ty()
+  let array_type = context.getArrayType(i16_type, 3)
+  let vector_type = context.getFixedVectorType(i16_type, 4)
+  let scalable_type = context.getScalableVectorType(i16_type, 5)
+  assert_eq(array_type.getElementCount(), 3)
+  assert_true(array_type.getElementType().asTypeEnum() is Int16Type(_))
+  assert_eq(vector_type.getElementCount(), 4)
+  assert_true(vector_type.getElementType().asTypeEnum() is Int16Type(_))
+  assert_eq(scalable_type.getElementCount(), 5)
+  assert_true(scalable_type.getElementType().asTypeEnum() is Int16Type(_))
+  guard array_type.tryAsAggregateType() is Some(aggregate_array) else {
+    fail("expected ArrayType to implement AggregateType")
+  }
+  assert_eq(
+    aggregate_array.getElementType(0).map(ty => ty.to_string()),
+    Some("i16"),
+  )
+  let struct_type = context.getStructType([i16_type, vector_type])
+  guard struct_type.tryAsAggregateType() is Some(aggregate_struct) else {
+    fail("expected StructType to implement AggregateType")
+  }
+  assert_eq(
+    aggregate_struct.getElementType(0).map(ty => ty.to_string()),
+    Some("i16"),
+  )
+  assert_eq(
+    aggregate_struct.getElementType(1).map(ty => ty.to_string()),
+    Some("<4 x i16>"),
+  )
+  assert_true(aggregate_struct.getElementType(-1) is None)
+  assert_true(aggregate_struct.getElementType(2) is None)
+}
+
+///|
+test "PointerType exposes address spaces and loadable element rules" {
+  let context = Context::new()
+  let default_pointer = context.getPtrTy()
+  let address_space = AddressSpace::new(3)
+  let custom_pointer = context.getPtrTy(addressSpace=address_space)
+  assert_true(default_pointer.getAddressSpace() == AddressSpace::default())
+  assert_true(custom_pointer.getAddressSpace() == address_space)
+  assert_true(PointerType::isLoadableOrStorableType(context.getInt32Ty()))
+  assert_true(PointerType::isLoadableOrStorableType(default_pointer))
+  assert_true(
+    PointerType::isLoadableOrStorableType(
+      context.getArrayType(context.getInt8Ty(), 2),
+    ),
+  )
+  assert_false(
+    PointerType::isLoadableOrStorableType(
+      context.getFunctionType(context.getVoidTy(), []),
+    ),
+  )
+  assert_false(PointerType::isLoadableOrStorableType(context.getVoidTy()))
+  assert_false(PointerType::isLoadableOrStorableType(context.getLabelTy()))
+  assert_false(PointerType::isLoadableOrStorableType(context.getMetadataTy()))
+  assert_false(PointerType::isLoadableOrStorableType(context.getTokenTy()))
 }
 
 ///|

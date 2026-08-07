@@ -71,12 +71,14 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 4：覆盖 Type predicate、复合类型与边界
 
-- [ ] 用整数、浮点、pointer、fixed vector、scalable vector、array、literal/opaque struct、function 与 void 建立 predicate 表，覆盖 first-class、single-value、aggregate、sized、empty、GEP-valid 和 scalar 分类的 true/false 分支。
-- [ ] 验证 sized type 的 `sizeOf` 返回可观察的 ConstantExpr，unsized type 返回 `None`。
-- [ ] 验证 FunctionType 的 return type、vararg、参数数组、参数数量，以及首尾、负数和越界参数查询。
-- [ ] 验证 literal、named opaque、packed/unpacked StructType 的状态、elements 与 `setBody`；重复设置非 opaque body 时匹配具体错误。
-- [ ] 验证 Array、Vector、ScalableVector 的具体 element/count API，以及只包含 Struct/Array 的 AggregateType 合法和越界 element 查询。
-- [ ] 验证 PointerType 默认和非默认 AddressSpace，以及 `isLoadableOrStorableType` 的典型 true/false 分支。
+实施中确认四处公开契约缺口：ScalableVector 的 single-value/scalar 系列 predicate 没有遵循 LLVM；unsized type 的 `sizeOf` 没有返回 `None`；当前没有创建 named opaque struct 的公开安全入口；AggregateType 的 Array 分支不检查索引边界。以下测试不把这些行为固化为正确结果，剩余点在最终实际结果中归类。
+
+- [x] 用整数、浮点、pointer、fixed vector、scalable vector、array、literal struct、function 与 void 建立 predicate 表；ScalableVector 只纳入当前与 LLVM 一致的 first-class、aggregate、sized、empty 和 GEP-valid 分支。
+- [x] 验证 sized type 的 `sizeOf` 返回可观察的 ConstantExpr；不把 unsized type 当前返回表达式的行为固化为契约。
+- [x] 验证 FunctionType 的 return type、vararg、参数数组、参数数量，以及首尾、负数和越界参数查询。
+- [x] 验证 literal、named、packed/unpacked StructType 的状态、elements，以及非 opaque `setBody` 的具体错误；opaque positive 分支等待公开 factory。
+- [x] 验证 Array、Vector、ScalableVector 的具体 element/count API，以及 AggregateType 的 Struct 合法和越界查询、Array 合法查询；Array 越界等待实现修复。
+- [x] 验证 PointerType 默认和非默认 AddressSpace，以及 `isLoadableOrStorableType` 的典型 true/false 分支。
 
 建议提交信息：`test(IR): cover composite type behavior`
 
