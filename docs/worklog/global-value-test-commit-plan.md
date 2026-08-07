@@ -41,12 +41,12 @@ Linkage 与 UnnamedAddr 的多组输入位于循环中，每轮期望值不同�
 
 ## Commit 2：覆盖 GlobalVariable 与 GlobalConstant 的基本行为
 
-- [ ] 新增 `test/global_value_test.mbt`。
-- [ ] 使用一个最小 Context、Module 和整数常量 fixture 构造 GlobalVariable 与 GlobalConstant；helper 只消除 setup 重复，不隐藏被验证行为。
-- [ ] 验证 initializer、global constant 标记和稳定 IR 文本。
-- [ ] 验证 `asValueEnum` 与 `asGlobalEnum` 返回正确的具体分类。
-- [ ] 验证两类对象的名称、默认 linkage、默认 unnamed address 和正常 Show 输出。
-- [ ] 不在本 commit 枚举全部 linkage/unnamed-address 分支。
+- [x] 新增 `test/global_value_test.mbt`。
+- [x] 使用一个最小 Context、Module 和整数常量 fixture 构造 GlobalVariable 与 GlobalConstant；helper 只消除 setup 重复，不隐藏被验证行为。
+- [x] 验证 initializer、global constant 标记和稳定 IR 文本。
+- [x] 验证 `asValueEnum` 与 `asGlobalEnum` 返回正确的具体分类。
+- [x] 验证两类对象的名称、默认 linkage、默认 unnamed address 和正常 Show 输出。
+- [x] 不在本 commit 枚举全部 linkage/unnamed-address 分支。
 
 建议提交信息：`test(IR): cover global value construction`
 
