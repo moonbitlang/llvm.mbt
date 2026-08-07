@@ -329,7 +329,6 @@ impl Type with fn isSingleValueType(self) -> Bool {
 impl Type with fn isAggregateType(self) -> Bool {
   match self.asTypeEnum() {
     StructType(_) | ArrayType(_) => true
-    VectorType(_) | ScalableVectorType(_) => true
     _ => false
   }
 }
@@ -420,6 +419,11 @@ impl Type with fn tryAsPrimitiveType(self) -> &PrimitiveType? {
     FloatType(float) => Some(float)
     DoubleType(double) => Some(double)
     FP128Type(fp128) => Some(fp128)
+    Int1Type(int1) => Some(int1)
+    Int8Type(int8) => Some(int8)
+    Int16Type(int16) => Some(int16)
+    Int32Type(int32) => Some(int32)
+    Int64Type(int64) => Some(int64)
     _ => None
   }
 }
@@ -432,6 +436,11 @@ impl Type with fn tryAsPrimitiveTypeEnum(self) -> PrimitiveTypeEnum? {
     FloatType(float) => Some(FloatType(float))
     DoubleType(double) => Some(DoubleType(double))
     FP128Type(fp128) => Some(FP128Type(fp128))
+    Int1Type(int1) => Some(Int1Type(int1))
+    Int8Type(int8) => Some(Int8Type(int8))
+    Int16Type(int16) => Some(Int16Type(int16))
+    Int32Type(int32) => Some(Int32Type(int32))
+    Int64Type(int64) => Some(Int64Type(int64))
     _ => None
   }
 }
@@ -441,8 +450,6 @@ impl Type with fn tryAsAggregateType(self) -> &AggregateType? {
   match self.asTypeEnum() {
     StructType(sty) => Some(sty)
     ArrayType(arr) => Some(arr)
-    VectorType(vec) => Some(vec)
-    ScalableVectorType(vec) => Some(vec)
     _ => None
   }
 }
@@ -452,8 +459,6 @@ impl Type with fn tryAsAggregateTypeEnum(self) -> AggregateTypeEnum? {
   match self.asTypeEnum() {
     StructType(sty) => Some(StructType(sty))
     ArrayType(arr) => Some(ArrayType(arr))
-    VectorType(vec) => Some(VectorType(vec))
-    ScalableVectorType(vec) => Some(ScalableVectorType(vec))
     _ => None
   }
 }
@@ -680,8 +685,6 @@ impl AggregateType with fn getElementType(self, idx : Int) -> &Type? {
   match self.asAggregateTypeEnum() {
     StructType(sty) => sty.getElementType(idx)
     ArrayType(arr) => arr.getElementType() |> Some
-    VectorType(vec) => vec.getElementType() |> Some
-    ScalableVectorType(vec) => vec.getElementType() |> Some
   }
 }
 
@@ -689,8 +692,6 @@ impl AggregateType with fn getElementType(self, idx : Int) -> &Type? {
 pub enum AggregateTypeEnum {
   StructType(StructType)
   ArrayType(ArrayType)
-  VectorType(VectorType)
-  ScalableVectorType(ScalableVectorType)
 } derive(Eq)
 
 ///|
@@ -698,8 +699,6 @@ pub fn AggregateTypeEnum::toTypeEnum(self : AggregateTypeEnum) -> TypeEnum {
   match self {
     StructType(sty) => StructType(sty)
     ArrayType(arr) => ArrayType(arr)
-    VectorType(vec) => VectorType(vec)
-    ScalableVectorType(vec) => ScalableVectorType(vec)
   }
 }
 
@@ -708,8 +707,6 @@ pub fn AggregateTypeEnum::asTypeClass(self : Self) -> &Type {
   match self {
     StructType(sty) => (sty : &Type)
     ArrayType(arr) => arr
-    VectorType(vec) => vec
-    ScalableVectorType(vec) => vec
   }
 }
 
@@ -1889,14 +1886,6 @@ pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
 ///|
 pub extend VectorType with Type::{asTypeEnum, getTypeRef}
 
-///|
-pub impl AggregateType for VectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
-  VectorType(self)
-}
-
-///|
-pub extend VectorType with AggregateType::{asAggregateTypeEnum}
-
 // ====================================================================
 // ScalableVectorType
 // ====================================================================
@@ -1949,14 +1938,6 @@ pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTyp
 
 ///|
 pub extend ScalableVectorType with Type::{asTypeEnum, getTypeRef}
-
-///|
-pub impl AggregateType for ScalableVectorType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
-  ScalableVectorType(self)
-}
-
-///|
-pub extend ScalableVectorType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
 // PointerType

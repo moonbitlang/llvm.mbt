@@ -18,7 +18,6 @@ pub suberror BuilderError {
   InValidInsertPoint(String)
   BitwidthError(String)
   InValidArgument(String)
-  UnImplemented(String)
 }
 
 pub suberror InValidOperation {
@@ -65,8 +64,6 @@ pub fn AddressSpace::new(UInt) -> Self
 pub enum AggregateTypeEnum {
   StructType(StructType)
   ArrayType(ArrayType)
-  VectorType(VectorType)
-  ScalableVectorType(ScalableVectorType)
 } derive(Eq)
 pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
 pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
@@ -920,12 +917,10 @@ pub impl Show for ReturnInst
 pub struct ScalableVectorType {
   // private fields
 } derive(Eq)
-pub fn ScalableVectorType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
 pub fn ScalableVectorType::asTypeEnum(Self) -> TypeEnum
 pub fn ScalableVectorType::getElementCount(Self) -> Int
 pub fn ScalableVectorType::getElementType(Self) -> &Type
 pub fn ScalableVectorType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
-pub impl AggregateType for ScalableVectorType
 pub impl Type for ScalableVectorType
 pub impl Show for ScalableVectorType
 
@@ -1075,12 +1070,10 @@ pub enum ValueEnum {
 pub struct VectorType {
   // private fields
 } derive(Eq)
-pub fn VectorType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
 pub fn VectorType::asTypeEnum(Self) -> TypeEnum
 pub fn VectorType::getElementCount(Self) -> Int
 pub fn VectorType::getElementType(Self) -> &Type
 pub fn VectorType::getTypeRef(Self) -> @unsafe.LLVMTypeRef
-pub impl AggregateType for VectorType
 pub impl Type for VectorType
 pub impl Show for VectorType
 

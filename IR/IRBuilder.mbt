@@ -15,7 +15,6 @@ pub suberror BuilderError {
   InValidInsertPoint(String)
   BitwidthError(String)
   InValidArgument(String)
-  UnImplemented(String)
 }
 
 ///|
@@ -4128,8 +4127,6 @@ pub fn IRBuilder::createInsertValue(
           ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
         ArrayType(_) =>
           ConstantArray::from_raw(res_valueref, self.get_context())
-        VectorType(_) =>
-          ConstantVector::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             "Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}",
@@ -4205,20 +4202,6 @@ pub fn IRBuilder::createExtractValue(
         )
       }
     }
-    VectorType(vty) => {
-      guard index >= 0 && index < vty.getElementCount() else {
-        raise InValidArgument(
-          (
-            $| loc: \{loc}:
-            $| Misuse `IRBuilder::createExtractValue`, index out of bounds for vector type",
-          ),
-        )
-      }
-    }
-    ScalableVectorType(_) =>
-      raise UnImplemented(
-        "Misuse `IRBuilder::createExtractValue`, cannot extract from scalable vector types",
-      )
   }
   let aggregate_ref = aggregate.getValueRef()
   let res_valueref = @unsafe.llvm_build_extract_value(
@@ -4245,8 +4228,6 @@ pub fn IRBuilder::createExtractValue(
           ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
         ArrayType(_) =>
           ConstantArray::from_raw(res_valueref, self.get_context())
-        VectorType(_) =>
-          ConstantVector::from_raw(res_valueref, self.get_context())
         _ =>
           raise ValueTypeError(
             "Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}",
