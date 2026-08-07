@@ -1,6 +1,6 @@
 # safe IR 核心对象测试补全的 commit 划分
 
-> 状态：计划中
+> 状态：已完成（4 个既有契约缺口未固化为测试期望）
 > 日期：2026-08-07
 
 本轮按照 [Q-10](../discussion/Q-10-layered-coverage-metrics.md) 与 [Q-11](../discussion/Q-11-test-expansion-order.md) 已采用的方案实施 M2，依次补充 `Value`、`Type`、`Instruction` 与 `DataLayout` 的黑盒测试。coverage 仍只用于本地分析和增量记录；本轮不修改 CI，不设置覆盖率门槛，也不提前进入 M3 的 raw 文件与工具链互操作测试。
@@ -105,24 +105,24 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 7：覆盖 DataLayout 并记录 M2 增量
 
-- [ ] 新增 `test/data_layout_test.mbt`，为 Module 设置固定且显式的 data-layout string。
-- [ ] 对整数、数组、packed struct 和带 padding 的 unpacked struct 检查 size-in-bits、store size、alloc size 与 ABI alignment，确保至少一个样例能区分 store/alloc 或 packed/unpacked 行为。
-- [ ] 复用已有 owner 白盒证据，不为访问 private target-data ref 增加测试入口。
-- [ ] 完成全部验收命令，并在本文档“实际结果”中记录测试数量、全仓、`IR` 包及四个目标文件的 coverage 新值和增量。
-- [ ] 使用 caret 报告逐项归类四个目标文件的剩余未覆盖点；说明公共正常路径、错误路径、LLVM assertion 前置条件、private/raw-only 分支和 Q-09 暂缓分支。
+- [x] 新增 `test/data_layout_test.mbt`，为 Module 设置固定且显式的 data-layout string。
+- [x] 对整数、数组、packed struct 和带 padding 的 unpacked struct 检查 size-in-bits、store size、alloc size 与 ABI alignment；3×i16 vector 明确区分 6-byte store size 与 8-byte alloc size。
+- [x] 复用已有 owner 白盒证据，不为访问 private target-data ref 增加测试入口。
+- [x] 完成全部验收命令，并在本文档“实际结果”中记录测试数量、全仓、`IR` 包及四个目标文件的 coverage 新值和增量。
+- [x] 使用 caret 报告逐项归类四个目标文件的剩余未覆盖点；说明公共正常路径、错误路径、LLVM assertion 前置条件、private/raw-only 分支和 Q-09 暂缓分支。
 
 建议提交信息：`test(IR): cover data layout queries`
 
 ## 完成验收
 
-- [ ] 每个测试 commit 至少运行 `moon fmt`、`moon check --target native` 与 `moon test --target native -p test`。
-- [ ] 最终运行 `moon info`；本轮只新增黑盒测试，预期所有 `.mbti` 均无变化。
-- [ ] 最终运行 `moon test --target native`。
-- [ ] 最终运行 `moon coverage analyze -- -f summary`。
-- [ ] 最终运行 `moon coverage report -p Kaida-Amethyst/llvm/IR -f summary`。
-- [ ] 分别使用 caret 报告检查 `IR/Value.mbt`、`IR/Type.mbt`、`IR/Instruction.mbt` 与 `IR/DataLayout.mbt`。
-- [ ] 不修改 CI，不用单一百分比或测试数量代替行为与剩余分支说明。
-- [ ] `git diff --check` 通过，工作区只包含计划内文件；每个 commit 可独立通过测试和 review。
+- [x] 每个测试 commit 至少运行 `moon fmt`、`moon check --target native` 与 `moon test --target native -p test`。
+- [x] 最终运行 `moon info`；所有 `.mbti` 均无变化。
+- [x] 最终运行 `moon test --target native`。
+- [x] 最终运行 `moon coverage analyze -- -f summary`。
+- [x] 最终运行 `moon coverage report -p Kaida-Amethyst/llvm/IR -f summary`。
+- [x] 分别使用 caret 报告检查 `IR/Value.mbt`、`IR/Type.mbt`、`IR/Instruction.mbt` 与 `IR/DataLayout.mbt`。
+- [x] 不修改 CI，不用单一百分比或测试数量代替行为与剩余分支说明。
+- [x] `git diff --check` 通过，工作区只包含计划内文件；每个 commit 可独立通过测试和 review。
 
 ## 发现实现问题时的边界
 
@@ -133,4 +133,22 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## 实际结果
 
-待实施后填写。
+M2 新增 24 个全量测试，最终结果为 220/220；其中 `test` 包为 53/53。`moon info` 未产生 `.mbti` 变化，`moon check --target native` 仅保留 `unsafe/Types.mbt` 原有的 6 个 deprecated warning。
+
+| 范围 | M2 前 | M2 后 | 增量 |
+|---|---:|---:|---:|
+| 全部 MoonBit 覆盖点 | 2563/6109 | 3299/6109（54.0%） | +736 |
+| `IR` 包 | 2230/3283 | 2878/3283（87.7%） | +648 |
+| `IR/Value.mbt` | 100/251 | 224/251（89.2%） | +124 |
+| `IR/Type.mbt` | 320/689 | 640/689（92.9%） | +320 |
+| `IR/Instruction.mbt` | 211/388 | 367/388（94.6%） | +156 |
+| `IR/DataLayout.mbt` | 12/22 | 22/22（100%） | +10 |
+
+caret 报告中的剩余点按性质归类如下：
+
+- `Value.mbt`：Constant 的部分 `getContext` 分派和少量公开正常路径仍可继续补测；malformed UTF-8、未知 instruction opcode 属于 safe API 无法构造的 raw/防御分支；detached parent、`removeFromParent` 等生命周期路径继续由 Q-09 暂缓。
+- `Type.mbt`：部分 `initAbstractType` getter 路径、Aggregate/Abstract enum 转换仍是可追加的公开正常路径；非 1/8/16/32/64 integer、PPC FP128、x86 FP80、未知 kind 和 defensive catch 属于 private/raw-only；internal scalable-target 分支尚未实现。opaque struct positive `setBody`、unsized `sizeOf -> None`、ScalableVector 的 single-value/scalar predicate 与 Array aggregate 越界是本轮确认的既有契约缺口，未用错误期望换取覆盖率。
+- `Instruction.mbt`：剩余主要是各 wrapper 的 `InsertPoint` 转换和未纳入本轮职责的 `FastMathFlags`；非 Call 的 `getNumArgOperands` 受 LLVM call-site assertion 前置条件限制，没有在默认测试进程内调用。
+- `DataLayout.mbt`：22/22，caret 无剩余报告；unsized/无效 type 查询仍按 LLVM assertion 前置条件排除。
+
+本轮未修改 CI、生产实现、公开 API 或 Q-09 的 RAUW/UAF 回归。
