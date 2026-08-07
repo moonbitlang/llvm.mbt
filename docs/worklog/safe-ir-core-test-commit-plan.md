@@ -84,11 +84,11 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 5：覆盖 Instruction 分类、parent 与相邻遍历
 
-- [ ] 新增 `test/instruction_test.mbt`，构造包含全部 17 个 `InstructionEnum` 变体的最小函数集合；fixture 可以按内存、算术、控制流分组，不要求把不相容的指令硬塞进一个 BasicBlock。
-- [ ] 从 `BasicBlock::getFirstInst`、`getLastInst` 及 Instruction 的 `getNextInst`、`getPrevInst` 公开入口遍历，验证恢复的具体 wrapper 分类与顺序。
-- [ ] 对每个具体 wrapper 检查 `asValueEnum`、`asInstEnum`、`getType`、`getParentBasicBlock` 和正常 Show；避免只验证 builder 的静态返回类型。
-- [ ] 验证空 BasicBlock、首条 prev、末条 next 和越界/不存在结果返回 `None`。
-- [ ] 不调用 `removeFromParent` 或 `eraseFromParent` 制造 detached/stale handle，也不扩展 `test/rauw_uaf_test.mbt`。
+- [x] 新增 `test/instruction_test.mbt`，构造包含全部 17 个 `InstructionEnum` 变体的最小函数集合；fixture 可以按内存、算术、控制流分组，不要求把不相容的指令硬塞进一个 BasicBlock。
+- [x] 从 `BasicBlock::getFirstInst`、`getLastInst` 及 Instruction 的 `getNextInst`、`getPrevInst` 公开入口遍历，验证恢复的具体 wrapper 分类与顺序。
+- [x] 对每个具体 wrapper 检查 `asValueEnum`、`asInstEnum`、`getType`、`getParentBasicBlock` 和正常 Show；避免只验证 builder 的静态返回类型。
+- [x] 验证空 BasicBlock、首条 prev、末条 next 和越界/不存在结果返回 `None`。
+- [x] 不调用 `removeFromParent` 或 `eraseFromParent` 制造 detached/stale handle，也不扩展 `test/rauw_uaf_test.mbt`。
 
 建议提交信息：`test(IR): cover instruction traversal`
 
