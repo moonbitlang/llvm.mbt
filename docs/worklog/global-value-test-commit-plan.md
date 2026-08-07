@@ -1,6 +1,6 @@
 # GlobalValue 测试补全的 commit 划分
 
-> 状态：计划中
+> 状态：已完成
 > 日期：2026-08-07
 
 本轮按照 [Q-10](../discussion/Q-10-layered-coverage-metrics.md) 与 [Q-11](../discussion/Q-11-test-expansion-order.md) 已采用的方案实施 M1，只补充 `GlobalValue` 相关黑盒测试。coverage 仅作为本地分析和增量记录工具；本轮不修改 CI，不设置自动覆盖率门槛，也不提前进入 M2 的 `Value`、`Type`、`Instruction` 与 `DataLayout` 系统性补测。
@@ -52,25 +52,25 @@ Linkage 与 UnnamedAddr 的多组输入位于循环中，每轮期望值不同�
 
 ## Commit 3：覆盖 GlobalValue 属性往返和名称错误
 
-- [ ] 在同一测试文件中遍历全部 17 个 `Linkage` 构造器，验证 `setLinkage`/`getLinkage` 往返。
-- [ ] 遍历 3 个 `UnnamedAddr` 构造器，验证 set/get，并单独验证 `removeUnnamedAddr`。
-- [ ] 验证 `setValueName`/`getValueName` 的正常往返。
-- [ ] 分别验证 `addGlobalVariable`、`addGlobalConstant` 和一个 GlobalValue 名称 setter 对 embedded NUL 报告 `StringError::ContainsNul`。
-- [ ] 如果 LLVM 对某个属性进行规范化，不把当前输出直接写成错误快照；先确认上游契约，再决定是调整测试还是单独记录实现问题。
+- [x] 在同一测试文件中遍历全部 17 个 `Linkage` 构造器，验证 11 个当前有效取值的 `setLinkage`/`getLinkage` 往返，以及 6 个兼容取值的 LLVM 规范化结果。
+- [x] 遍历 3 个 `UnnamedAddr` 构造器，验证 set/get，并单独验证 `removeUnnamedAddr`。
+- [x] 验证 `setValueName`/`getValueName` 的正常往返。
+- [x] 分别验证 `addGlobalVariable`、`addGlobalConstant` 和一个 GlobalValue 名称 setter 对 embedded NUL 报告 `StringError::ContainsNul`。
+- [x] 确认 LLVM 对 6 个兼容 linkage 取值进行规范化，并使用明确断言记录结果，没有把规范化结果写成错误快照。
 
 建议提交信息：`test(IR): cover global value properties`
 
 ## 完成验收
 
-- [ ] 运行 `moon fmt`。
-- [ ] 运行 `moon info`；本轮只新增黑盒测试，预期所有 `.mbti` 均无变化。
-- [ ] 运行 `moon check --target native`。
-- [ ] 运行 `moon test --target native -p test`。
-- [ ] 运行 `moon test --target native`。
-- [ ] 运行 `moon coverage analyze -- -f summary`。
-- [ ] 运行 `moon coverage report -p Kaida-Amethyst/llvm/IR -f summary`。
-- [ ] 在本文档的“实际结果”中记录测试数量、全仓、`IR` 包和 `IR/GlobalValue.mbt` 的新覆盖点；不修改 CI。
-- [ ] 使用 caret 或 HTML 报告检查 `IR/GlobalValue.mbt` 的剩余未覆盖点，并逐项说明是公共正常路径、错误路径还是当前公开 API 无法稳定触发的分支，不以追求 100% 为由伪造测试。
+- [x] 运行 `moon fmt`。
+- [x] 运行 `moon info`；所有 `.mbti` 均无变化。
+- [x] 运行 `moon check --target native`。
+- [x] 运行 `moon test --target native -p test`。
+- [x] 运行 `moon test --target native`。
+- [x] 运行 `moon coverage analyze -- -f summary`。
+- [x] 运行 `moon coverage report -p Kaida-Amethyst/llvm/IR -f summary`。
+- [x] 在本文档的“实际结果”中记录测试数量、全仓、`IR` 包和 `IR/GlobalValue.mbt` 的新覆盖点；未修改 CI。
+- [x] 使用 caret 报告检查 `IR/GlobalValue.mbt` 的剩余未覆盖点，并逐项分类；没有为追求 100% 伪造测试。
 
 ## 发现实现问题时的边界
 
@@ -81,4 +81,10 @@ Linkage 与 UnnamedAddr 的多组输入位于循环中，每轮期望值不同�
 
 ## 实际结果
 
-待实施后填写。
+- 新增 6 个黑盒测试；`test` 包 26/26 通过，全部测试由 187 个增至 193 个，193/193 通过。
+- 全部 MoonBit 覆盖点由 2433/6123 增至 2531/6123，增加 98 点。
+- `IR` 包覆盖点由 2118/3297 增至 2199/3297，增加 81 点。
+- `IR/GlobalValue.mbt` 由 8/74 增至 66/74，增加 58 点。
+- 17 个 linkage 输入中有 11 个严格往返；LLVM 将 `LinkOnceODRAutoHideLinkage` 规范化为 `LinkOnceODRLinkage`，将 `GhostLinkage` 规范化为 `ExternalWeakLinkage`，并将 `DLLImportLinkage`、`DLLExportLinkage`、`LinkerPrivateLinkage`、`LinkerPrivateWeakLinkage` 规范化为 `PrivateLinkage`。
+- caret 报告显示剩余 8 个未覆盖点：`GlobalVariable` 与 `GlobalConstant` 的 Show 打印失败兜底各 1 点，属于当前公开安全 API 无法稳定构造的错误路径；其余 6 点是上述兼容 linkage 在 `getLinkage` 中的返回分支，LLVM 已在 setter 层将输入规范化，当前公开安全 API 也不允许注入 raw handle，因此无法稳定触发。
+- `moon info` 未产生接口变化；本轮没有修改生产实现、公开 API 或 CI。验收命令均通过，仅保留 `unsafe/Types.mbt` 中既有的 6 条 deprecated warning。
