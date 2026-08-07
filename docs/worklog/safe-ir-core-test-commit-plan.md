@@ -94,12 +94,12 @@ Q-11 列出的正向、nullable、错误参数、名称编码、类型不匹配�
 
 ## Commit 6：覆盖 Instruction 专用属性和错误路径
 
-- [ ] 验证 Alloca allocated type 与 GEP source element type；对 GEP 的 inbounds 执行 set/get/remove round-trip。
-- [ ] 遍历全部 10 个 `IntPredicate` 与 16 个 `FloatPredicate`，创建比较指令并验证 getter 返回相同构造器。
-- [ ] 验证 conditional/unconditional Branch 的分类、successor 数量、首尾/越界 getter，以及 `setCondition`、`setSuccessor` 的正常和具体错误分支。
-- [ ] 验证 Switch 默认与 case successor 的数量、顺序、替换和越界错误；复用现有非整数 case 错误证据，不重复 builder 测试。
-- [ ] 遍历 4 个 `TailCallKind`，验证 Call getter/setter round-trip，并单独验证 `setTailCall`/`removeTailCall`。
-- [ ] 对普通 Call 与非 Call 指令验证 `getNumArgOperands` 的适用行为；若 LLVM C API 对非 Call 有 assertion 前置条件，则只测试 Call 并在实际结果中记录限制。
+- [x] 验证 Alloca allocated type 与 GEP source element type；对 GEP 的 inbounds 执行 set/get/remove round-trip。
+- [x] 遍历全部 10 个 `IntPredicate` 与 16 个 `FloatPredicate`，创建比较指令并验证 getter 返回相同构造器。
+- [x] 验证 conditional/unconditional Branch 的分类、successor 数量、首尾/越界 getter，以及 `setCondition`、`setSuccessor` 的正常和具体错误分支。
+- [x] 验证 Switch 默认与 case successor 的数量、顺序、替换和越界错误；复用现有非整数 case 错误证据，不重复 builder 测试。
+- [x] 遍历 4 个 `TailCallKind`，验证 Call getter/setter round-trip，并单独验证 `setTailCall`/`removeTailCall`。
+- [x] 普通 Call 的 `getNumArgOperands` 返回参数数量；LLVM C API 将该查询限定为 call-site，未对非 Call 指令执行可能触发 assertion 的调用。
 
 建议提交信息：`test(IR): cover instruction properties`
 
