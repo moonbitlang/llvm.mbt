@@ -288,7 +288,7 @@ test "Type predicates distinguish scalar aggregate and abstract types" {
     assert_eq(ty.isValidGEPType(), expected_valid_gep[index])
   }
   let single_value_types : Array[&Type] = [
-    i32_type, float_type, pointer_type, fixed_vector_type,
+    i32_type, float_type, pointer_type, fixed_vector_type, scalable_vector_type,
   ]
   for ty in single_value_types {
     assert_true(ty.isSingleValueType())
@@ -303,16 +303,22 @@ test "Type predicates distinguish scalar aggregate and abstract types" {
   assert_true(float_type.isIEEELikeFPTy())
   assert_true(float_type.isFloatingPointTy())
   assert_true(context.getFixedVectorType(float_type, 2).isFPOrFPVectorTy())
+  assert_true(context.getScalableVectorType(float_type, 2).isFPOrFPVectorTy())
   assert_true(fixed_vector_type.isIntOrIntVectorTy())
+  assert_true(scalable_vector_type.isIntOrIntVectorTy())
   assert_true(i32_type.isIntOrPtrTy())
   assert_true(pointer_type.isIntOrPtrTy())
   assert_true(context.getFixedVectorType(pointer_type, 2).isPtrOrPtrVectorTy())
+  assert_true(
+    context.getScalableVectorType(pointer_type, 2).isPtrOrPtrVectorTy(),
+  )
   assert_eq(fixed_vector_type.getScalarType().to_string(), "i32")
+  assert_eq(scalable_vector_type.getScalarType().to_string(), "i32")
   assert_eq(i32_type.getScalarType().to_string(), "i32")
 }
 
 ///|
-test "sized Type produces an observable size expression" {
+test "Type sizeOf distinguishes sized and unsized types" {
   let context = Context::new()
   let i32_type = context.getInt32Ty()
   guard i32_type.sizeOf() is Some(size_expression) else {
@@ -323,6 +329,10 @@ test "sized Type produces an observable size expression" {
     size_expression,
     content="i64 ptrtoint (ptr getelementptr (i32, ptr null, i32 1) to i64)",
   )
+  assert_true(context.getArrayType(i32_type, 4).sizeOf() is Some(_))
+  assert_true(context.getStructType([i32_type]).sizeOf() is Some(_))
+  assert_true(context.getVoidTy().sizeOf() is None)
+  assert_true(context.getFunctionType(context.getVoidTy(), []).sizeOf() is None)
 }
 
 ///|
@@ -406,6 +416,37 @@ test "StructType exposes shape lookup and setBody errors" {
 }
 
 ///|
+test "opaque StructType completes its body once" {
+  let context = Context::new()
+  let i8_type = context.getInt8Ty()
+  let i32_type = context.getInt32Ty()
+  let opaque_type = context.getOpaqueStructType("OpaqueShape")
+  assert_false(opaque_type.isLiteral())
+  assert_true(opaque_type.isOpaque())
+  assert_false(opaque_type.isSized())
+  assert_true(opaque_type.sizeOf() is None)
+  inspect(opaque_type, content="%OpaqueShape = type opaque")
+  guard context.getStructTypeByName("OpaqueShape") is Some(found) else {
+    fail("expected opaque named struct lookup")
+  }
+  assert_true(found == opaque_type)
+  opaque_type.setBody([i8_type, i32_type], isPacked=true)
+  assert_false(opaque_type.isOpaque())
+  assert_true(opaque_type.isPacked())
+  assert_true(opaque_type.isSized())
+  assert_eq(opaque_type.numOfElements(), 2)
+  inspect(opaque_type, content="%OpaqueShape = type <{ i8, i32 }>")
+  try opaque_type.setBody([i32_type]) catch {
+    SetBodyForNonOpaqueStruct::SetBodyForNonOpaqueStruct(message) =>
+      assert_eq(message, "Cannot set body for non-opaque struct")
+    _ => fail("expected SetBodyForNonOpaqueStruct")
+  } noraise {
+    _ => fail("expected a second setBody to fail")
+  }
+  assert_contains_nul(() => context.getOpaqueStructType("invalid\u{0000}name"))
+}
+
+///|
 test "Array and vector types expose their element shape" {
   let context = Context::new()
   let i16_type = context.getInt16Ty()
@@ -425,6 +466,12 @@ test "Array and vector types expose their element shape" {
     aggregate_array.getElementType(0).map(ty => ty.to_string()),
     Some("i16"),
   )
+  assert_eq(
+    aggregate_array.getElementType(2).map(ty => ty.to_string()),
+    Some("i16"),
+  )
+  assert_true(aggregate_array.getElementType(-1) is None)
+  assert_true(aggregate_array.getElementType(3) is None)
   let struct_type = context.getStructType([i16_type, vector_type])
   guard struct_type.tryAsAggregateType() is Some(aggregate_struct) else {
     fail("expected StructType to implement AggregateType")
@@ -507,5 +554,32 @@ test "insertvalue and extractvalue reject vector operands" {
   })
   assert_builder_error(() => builder.createInsertValue(vector, element, 0), error => {
     error is BuilderError::ValueTypeError(_)
+  })
+}
+
+///|
+test "insertvalue rejects Array aggregate bounds" {
+  let context = Context::new()
+  let mod = context.addModule("array_aggregate_bounds")
+  let builder = context.createBuilder()
+  let i32_type = context.getInt32Ty()
+  let array_type = context.getArrayType(i32_type, 2)
+  let function_type = context.getFunctionType(context.getVoidTy(), [
+    array_type, i32_type,
+  ])
+  let function = mod.addFunction(function_type, "reject_array_bounds")
+  let block = function.addBasicBlock(name="entry")
+  guard function.getArg(0) is Some(array) else {
+    fail("expected array argument")
+  }
+  guard function.getArg(1) is Some(element) else {
+    fail("expected element argument")
+  }
+  builder.setInsertPoint(block)
+  assert_builder_error(() => builder.createInsertValue(array, element, -1), error => {
+    error is BuilderError::InValidArgument(_)
+  })
+  assert_builder_error(() => builder.createInsertValue(array, element, 2), error => {
+    error is BuilderError::InValidArgument(_)
   })
 }

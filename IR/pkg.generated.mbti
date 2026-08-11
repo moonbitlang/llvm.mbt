@@ -281,6 +281,7 @@ pub fn Context::getInt64Ty(Self) -> Int64Type
 pub fn Context::getInt8Ty(Self) -> Int8Type
 pub fn Context::getLabelTy(Self) -> LabelType
 pub fn Context::getMetadataTy(Self) -> MetadataType
+pub fn Context::getOpaqueStructType(Self, String) -> StructType raise StringError
 pub fn Context::getPoision(Self, &Type) -> PoisonValue
 pub fn Context::getPtrTy(Self, addressSpace? : AddressSpace) -> PointerType
 pub fn Context::getScalableVectorType(Self, &Type, UInt) -> ScalableVectorType

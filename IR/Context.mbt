@@ -398,6 +398,33 @@ pub fn Context::getStructType(
 }
 
 ///|
+/// Create an opaque named struct type in the context.
+///
+/// The body can be defined later with `StructType::setBody`.
+/// An empty struct created by `Context::getStructType([], name=...)` is not
+/// opaque: it has a known body containing zero elements.
+///
+/// - See LLVM: `StructType::create`.
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let opaque_type = ctx.getOpaqueStructType("Node")
+///   assert_true(opaque_type.isOpaque())
+///   inspect(opaque_type, content="%Node = type opaque")
+/// }
+/// ```
+pub fn Context::getOpaqueStructType(
+  self : Context,
+  name : String,
+) -> StructType raise StringError {
+  let typeref = @unsafe.llvm_struct_create_named(self.get_unsafe_ref(), name) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
+  StructType::from_raw(typeref, self)
+}
+
+///|
 /// Search a named struct type in the context.
 ///
 /// LLVM Cpp version has no this method, since llvm-cpp allow duplicated struct type names.

@@ -934,7 +934,10 @@ extern "C" fn __llvm_append_module_inline_asm(
 ) = "LLVMAppendModuleInlineAsm"
 
 ///|
-pub fn llvm_append_module_inline_asm(m : LLVMModuleRef, asm_str : String) -> Unit {
+pub fn llvm_append_module_inline_asm(
+  m : LLVMModuleRef,
+  asm_str : String,
+) -> Unit {
   let asm_str = @utf8.encode(asm_str)
   __llvm_append_module_inline_asm(m, asm_str, asm_str.length().to_uint64())
 }

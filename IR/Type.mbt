@@ -320,7 +320,7 @@ impl Type with fn isSingleValueType(self) -> Bool {
     Int1Type(_) | Int8Type(_) | Int16Type(_) | Int32Type(_) | Int64Type(_) =>
       true
     PointerType(_) => true
-    VectorType(_) => true
+    VectorType(_) | ScalableVectorType(_) => true
     _ => false
   }
 }
@@ -340,6 +340,7 @@ impl Type with fn isSized(self) -> Bool {
 
 ///|
 impl Type with fn sizeOf(self) -> &Value? {
+  guard self.isSized() else { return None }
   let valueref = @unsafe.llvm_size_of(self.getTypeRef())
   if @unsafe.llvm_value_ref_is_null(valueref) {
     None
@@ -356,10 +357,10 @@ impl Type with fn isValidGEPType(self) -> Bool {
 
 ///|
 impl Type with fn getScalarType(self) {
-  if self.asTypeEnum() is VectorType(vec) {
-    vec.getElementType()
-  } else {
-    self
+  match self.asTypeEnum() {
+    VectorType(vec) => vec.getElementType()
+    ScalableVectorType(vec) => vec.getElementType()
+    _ => self
   }
 }
 
@@ -684,7 +685,10 @@ pub trait AggregateType: Type {
 impl AggregateType with fn getElementType(self, idx : Int) -> &Type? {
   match self.asAggregateTypeEnum() {
     StructType(sty) => sty.getElementType(idx)
-    ArrayType(arr) => arr.getElementType() |> Some
+    ArrayType(arr) => {
+      guard idx >= 0 && idx < arr.getElementCount() else { return None }
+      Some(arr.getElementType())
+    }
   }
 }
 
