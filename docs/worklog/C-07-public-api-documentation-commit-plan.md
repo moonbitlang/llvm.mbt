@@ -197,10 +197,10 @@
 | --- | --- |
 | `IR/TargetMachine.mbt` | `TargetTriple`、`TargetRegistryError`、`TargetRegistry`、`Target`；`CodeGenOptimizationLevel`、`RelocationMode`、`CodeModel`；`TargetMachineOptions`/`Default`；`TargetMachineError`、`TargetMachine`；lookup、host/create、配置、查询与 object emission 全部公开方法 |
 
-- [ ] 把 C-06 已冻结的 process-global registry、registry-owned Target 和 managed TargetMachine ownership 写成正式 Lifecycle/Thread safety 契约。
-- [ ] 说明显式 native 初始化与 host convenience、generic CPU/features 默认值、host-only 与 cross-target 边界。
-- [ ] 逐项说明 codegen enum constructor，并明确 `configureModule -> verify -> emitObjectToFile` 三阶段及各自副作用和错误。
-- [ ] 标准 doc test 展示安全层最小配置/emission 调用；链接和执行继续只存在于 `native_emission_test`，不进入 doc test。
+- [x] 把 C-06 已冻结的 process-global registry、registry-owned Target 和 managed TargetMachine ownership 写成正式 Lifecycle/Thread safety 契约。
+- [x] 说明显式 native 初始化与 host convenience、generic CPU/features 默认值、host-only 与 cross-target 边界。
+- [x] 逐项说明 codegen enum constructor，并明确 `configureModule -> verify -> emitObjectToFile` 三阶段及各自副作用和错误。
+- [x] 标准 doc test 展示安全层最小配置/emission 调用；链接和执行继续只存在于 `native_emission_test`，不进入 doc test。
 
 建议提交信息：`docs(IR): document native code generation APIs`
 
