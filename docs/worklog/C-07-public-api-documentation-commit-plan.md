@@ -173,9 +173,9 @@
 | `IR/BasicBlock.mbt` | `BasicBlock`、`BasicBlockHasNoParentError`；parent/previous/next、instruction/terminator 查询；`moveBefore`、`moveAfter`、`removeFromParent`、`eraseFromParent`、Context/name 方法；`Value`/`Show` impl |
 | `IR/Instruction.mbt` | `AllocaInst`、`LoadInst`、`StoreInst`、`CastInst`、`UnaryInst`、`BinaryInst`；`FastMathFlags`/`to_llvm`；`IntPredicate`/`ICmpInst`；`FloatPredicate`/`FCmpInst`；`GetElementPtrInst`；相应 getter、flag mutation 和全部 `Value`/`Instruction`/`InsertPoint`/`Show` impl |
 
-- [ ] 明确 BasicBlock 的 Module anchor、parent nullable 语义、移动/摘除/删除的副作用和 handle 失效风险。
-- [ ] 为全部 predicate/flag constructor 写准确语义，说明 GEP `inbounds` 不是普通性能提示。
-- [ ] 常规 wrapper impl 简述分类与打印行为；生命周期说明集中放在 wrapper 与 mutation API，避免重复。
+- [x] 明确 BasicBlock 的 Module anchor、parent nullable 语义、移动/摘除/删除的副作用和 handle 失效风险。
+- [x] 为全部 predicate/flag constructor 写准确语义，说明 GEP `inbounds` 不是普通性能提示。
+- [x] 常规 wrapper impl 简述分类与打印行为；生命周期说明集中放在 wrapper 与 mutation API，避免重复。
 
 建议提交信息：`docs(IR): document blocks and data instructions`
 

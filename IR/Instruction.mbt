@@ -3,6 +3,13 @@
 // =======================================================
 
 ///|
+/// Module-anchored stack-allocation instruction.
+///
+/// The allocation produces a pointer in the target's alloca address space and
+/// is valid only while its enclosing function invocation is active.
+///
+/// **Lifecycle:** The wrapper retains its module but becomes dangling if the
+/// instruction or containing block is erased.
 pub struct AllocaInst {
   priv value : ModuleAnchoredValue
 }
@@ -21,32 +28,40 @@ fn AllocaInst::get_module(self : AllocaInst) -> Module {
 }
 
 ///|
+/// Returns the type of each allocated element.
+///
+/// **Lifecycle:** The returned type is owned by the module's context.
 pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
   let typeref = @unsafe.llvm_get_allocated_type(self.getValueRef())
   initAbstractType(typeref, self.get_module().getContext())
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for AllocaInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::AllocaInst`.
 pub impl Value for AllocaInst with fn asValueEnum(self) -> ValueEnum {
   AllocaInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::AllocaInst`.
 pub impl Instruction for AllocaInst with fn asInstEnum(self) -> InstructionEnum {
   AllocaInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for AllocaInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this allocation instruction using LLVM syntax.
 pub impl Show for AllocaInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -56,6 +71,12 @@ pub impl Show for AllocaInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction that reads a typed value from memory.
+///
+/// Volatility, atomic ordering, and alignment are properties of the underlying
+/// instruction; this wrapper currently exposes only common instruction APIs.
+///
+/// **Lifecycle:** Erasing the instruction or its block invalidates the wrapper.
 pub struct LoadInst {
   priv value : ModuleAnchoredValue
 }
@@ -71,26 +92,31 @@ fn LoadInst::get_module(self : LoadInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for LoadInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::LoadInst`.
 pub impl Value for LoadInst with fn asValueEnum(self) -> ValueEnum {
   LoadInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::LoadInst`.
 pub impl Instruction for LoadInst with fn asInstEnum(self) -> InstructionEnum {
   LoadInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for LoadInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this load instruction using LLVM syntax.
 pub impl Show for LoadInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -100,6 +126,11 @@ pub impl Show for LoadInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction that writes a typed value to memory.
+///
+/// Store instructions have LLVM `void` type and produce no SSA result.
+///
+/// **Lifecycle:** Erasing the instruction or its block invalidates the wrapper.
 pub struct StoreInst {
   priv value : ModuleAnchoredValue
 }
@@ -118,26 +149,31 @@ fn StoreInst::get_module(self : StoreInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for StoreInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::StoreInst`.
 pub impl Value for StoreInst with fn asValueEnum(self) -> ValueEnum {
   StoreInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::StoreInst`.
 pub impl Instruction for StoreInst with fn asInstEnum(self) -> InstructionEnum {
   StoreInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for StoreInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this store instruction using LLVM syntax.
 pub impl Show for StoreInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -147,6 +183,10 @@ pub impl Show for StoreInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction that converts a value between LLVM types.
+///
+/// The concrete opcode determines whether the conversion changes width,
+/// signed interpretation, floating representation, or pointer/integer form.
 pub struct CastInst {
   priv value : ModuleAnchoredValue
 }
@@ -162,26 +202,31 @@ fn CastInst::get_module(self : CastInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for CastInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::CastInst`.
 pub impl Value for CastInst with fn asValueEnum(self) -> ValueEnum {
   CastInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::CastInst`.
 pub impl Instruction for CastInst with fn asInstEnum(self) -> InstructionEnum {
   CastInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for CastInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this conversion instruction using LLVM syntax.
 pub impl Show for CastInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -191,6 +236,9 @@ pub impl Show for CastInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored unary arithmetic instruction.
+///
+/// This safe hierarchy currently uses it for floating-point negation.
 pub struct UnaryInst {
   priv value : ModuleAnchoredValue
 }
@@ -209,26 +257,31 @@ fn UnaryInst::get_module(self : UnaryInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for UnaryInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::UnaryInst`.
 pub impl Value for UnaryInst with fn asValueEnum(self) -> ValueEnum {
   UnaryInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::UnaryInst`.
 pub impl Instruction for UnaryInst with fn asInstEnum(self) -> InstructionEnum {
   UnaryInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for UnaryInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this unary instruction using LLVM syntax.
 pub impl Show for UnaryInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -238,6 +291,10 @@ pub impl Show for UnaryInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored binary arithmetic or bitwise instruction.
+///
+/// Integer overflow/exactness and floating fast-math flags are semantic
+/// promises, not merely optimization preferences.
 pub struct BinaryInst {
   priv value : ModuleAnchoredValue
 }
@@ -256,42 +313,59 @@ fn BinaryInst::get_module(self : BinaryInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for BinaryInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::BinaryInst`.
 pub impl Value for BinaryInst with fn asValueEnum(self) -> ValueEnum {
   BinaryInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::BinaryInst`.
 pub impl Instruction for BinaryInst with fn asInstEnum(self) -> InstructionEnum {
   BinaryInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for BinaryInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this binary instruction using LLVM syntax.
 pub impl Show for BinaryInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
 
 ///|
+/// Individual LLVM fast-math promises for floating-point operations.
+///
+/// Violating a selected promise can permit transformations that change program
+/// results. These flags are stronger than ordinary optimization hints.
 pub(all) enum FastMathFlags {
+  /// Permits reassociation of floating-point expressions.
   AllowReassoc
+  /// Promises operands and results are never NaN.
   NoNaNs
+  /// Promises operands and results are never positive or negative infinity.
   NoInfs
+  /// Permits treating positive and negative zero as interchangeable.
   NoSignedZeros
+  /// Permits reciprocal-based transformations that may reduce precision.
   AllowReciprocal
+  /// Permits contraction such as forming a fused multiply-add.
   AllowContract
+  /// Permits substituting approximate implementations of math functions.
   ApproxFunc
 }
 
 ///|
+/// Converts a safe fast-math flag to the corresponding LLVM-C bit flag.
 pub fn FastMathFlags::to_llvm(
   self : FastMathFlags,
 ) -> @unsafe.LLVMFastMathFlags {
@@ -311,16 +385,30 @@ pub fn FastMathFlags::to_llvm(
 // =======================================================
 
 ///|
+/// Integer comparison predicates.
+///
+/// Equality predicates ignore signedness. Relational predicates explicitly use
+/// signed (`S*`) or unsigned (`U*`) integer interpretation.
 pub(all) enum IntPredicate {
+  /// Equal bit patterns.
   EQ
+  /// Unequal bit patterns.
   NE
+  /// Signed greater than.
   SGT
+  /// Signed greater than or equal.
   SGE
+  /// Signed less than.
   SLT
+  /// Signed less than or equal.
   SLE
+  /// Unsigned greater than.
   UGT
+  /// Unsigned greater than or equal.
   UGE
+  /// Unsigned less than.
   ULT
+  /// Unsigned less than or equal.
   ULE
 }
 
@@ -359,6 +447,8 @@ fn IntPredicate::from_llvm_int_predicate(
 }
 
 ///|
+/// Module-anchored integer comparison instruction producing `i1` or an `i1`
+/// vector.
 pub struct ICmpInst {
   priv value : ModuleAnchoredValue
 }
@@ -374,32 +464,38 @@ fn ICmpInst::get_module(self : ICmpInst) -> Module {
 }
 
 ///|
+/// Returns the comparison's signed, unsigned, or equality predicate.
 pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
   @unsafe.llvm_get_icmp_predicate(self.getValueRef())
   |> IntPredicate::from_llvm_int_predicate
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for ICmpInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::ICmpInst`.
 pub impl Value for ICmpInst with fn asValueEnum(self) -> ValueEnum {
   ICmpInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::ICmpInst`.
 pub impl Instruction for ICmpInst with fn asInstEnum(self) -> InstructionEnum {
   ICmpInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for ICmpInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this integer comparison using LLVM syntax.
 pub impl Show for ICmpInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -409,22 +505,42 @@ pub impl Show for ICmpInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Floating-point comparison predicates with explicit NaN behavior.
+///
+/// Ordered predicates (`O*`) are false if either operand is NaN. Unordered
+/// predicates (`U*`) are true if either operand is NaN.
 pub(all) enum FloatPredicate {
+  /// Ordered and equal.
   OEQ
+  /// Ordered and greater than.
   OGT
+  /// Ordered and greater than or equal.
   OGE
+  /// Ordered and less than.
   OLT
+  /// Ordered and less than or equal.
   OLE
+  /// Ordered and not equal.
   ONE
+  /// Ordered: neither operand is NaN.
   ORD
+  /// Unordered or equal.
   UEQ
+  /// Unordered or greater than.
   UGT
+  /// Unordered or greater than or equal.
   UGE
+  /// Unordered or less than.
   ULT
+  /// Unordered or less than or equal.
   ULE
+  /// Unordered or not equal.
   UNE
+  /// Unordered: at least one operand is NaN.
   UNO
+  /// Always true, including for NaN operands.
   True
+  /// Always false, including for NaN operands.
   False
 }
 
@@ -477,6 +593,8 @@ fn FloatPredicate::from_llvm_float_predicate(
 }
 
 ///|
+/// Module-anchored floating comparison instruction producing `i1` or an `i1`
+/// vector.
 pub struct FCmpInst {
   priv value : ModuleAnchoredValue
 }
@@ -492,32 +610,38 @@ fn FCmpInst::get_module(self : FCmpInst) -> Module {
 }
 
 ///|
+/// Returns the predicate, including its ordered/unordered NaN behavior.
 pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
   @unsafe.llvm_get_fcmp_predicate(self.getValueRef())
   |> FloatPredicate::from_llvm_float_predicate
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for FCmpInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::FCmpInst`.
 pub impl Value for FCmpInst with fn asValueEnum(self) -> ValueEnum {
   FCmpInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::FCmpInst`.
 pub impl Instruction for FCmpInst with fn asInstEnum(self) -> InstructionEnum {
   FCmpInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for FCmpInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this floating comparison using LLVM syntax.
 pub impl Show for FCmpInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -527,6 +651,11 @@ pub impl Show for FCmpInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored get-element-pointer instruction.
+///
+/// GEP computes an address by traversing a source element type; it does not
+/// access memory. LLVM 19 pointers remain opaque, so the source element type is
+/// stored on the instruction rather than recovered from the pointer type.
 pub struct GetElementPtrInst {
   priv value : ModuleAnchoredValue
 }
@@ -547,21 +676,36 @@ fn GetElementPtrInst::get_module(self : GetElementPtrInst) -> Module {
 }
 
 ///|
+/// Returns whether this GEP carries LLVM's `inbounds` promise.
 pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
   @unsafe.llvm_is_in_bounds(self.getValueRef())
 }
 
 ///|
+/// Adds LLVM's `inbounds` promise to this GEP.
+///
+/// **Preconditions:** The pointer arithmetic must satisfy LLVM's complete
+/// `inbounds` rules for every execution. Violations can produce poison and lead
+/// to undefined behavior; this is not merely an optimization hint.
+///
+/// **Side Effects:** Mutates the instruction's semantic flags.
 pub fn GetElementPtrInst::setInBounds(self : GetElementPtrInst) -> Unit {
   @unsafe.llvm_set_is_in_bounds(self.getValueRef(), true)
 }
 
 ///|
+/// Removes the `inbounds` promise from this GEP.
+///
+/// **Side Effects:** Mutates the instruction and prevents optimizations from
+/// assuming the stronger in-bounds contract.
 pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
   @unsafe.llvm_set_is_in_bounds(self.getValueRef(), false)
 }
 
 ///|
+/// Returns the explicit source element type traversed by this GEP.
+///
+/// **Lifecycle:** The returned type is owned by the module's context.
 pub fn GetElementPtrInst::getSourceElementType(
   self : GetElementPtrInst,
 ) -> &Type {
@@ -570,26 +714,31 @@ pub fn GetElementPtrInst::getSourceElementType(
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for GetElementPtrInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::GetElementPtrInst`.
 pub impl Value for GetElementPtrInst with fn asValueEnum(self) -> ValueEnum {
   GetElementPtrInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::GetElementPtrInst`.
 pub impl Instruction for GetElementPtrInst with fn asInstEnum(self) -> InstructionEnum {
   GetElementPtrInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this instruction.
 pub impl InsertPoint for GetElementPtrInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this GEP instruction using LLVM syntax.
 pub impl Show for GetElementPtrInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }

@@ -3,6 +3,14 @@
 // ==================================================
 
 ///|
+/// Module-anchored LLVM basic block.
+///
+/// A block may be attached to a function or temporarily detached. Its
+/// instructions and CFG edges remain native LLVM objects whose validity is not
+/// fully tracked by the safe type system.
+///
+/// **Lifecycle:** The wrapper retains its module. `eraseFromParent` destroys the
+/// native block and invalidates this wrapper plus aliases to its instructions.
 pub struct BasicBlock {
   priv block_ref : @unsafe.LLVMBasicBlockRef
   priv owner_module : Module
@@ -27,17 +35,23 @@ fn BasicBlock::get_module(self : BasicBlock) -> Module {
 }
 
 ///|
+/// Exposes the block as a borrowed LLVM value handle.
 pub impl Value for BasicBlock with fn getValueRef(self) -> ValueRef {
   @unsafe.llvm_basic_block_as_value(self.get_unsafe_ref())
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::BasicBlock`.
 pub impl Value for BasicBlock with fn asValueEnum(self) -> ValueEnum {
   BasicBlock(self)
 }
 
 ///|
-/// Get the Function that this BasicBlock belongs to.
+/// Returns the function currently containing this block.
+///
+/// **Returns:** `None` when the block has been detached.
+///
+/// **Lifecycle:** A returned function retains the same module.
 ///
 /// ```mbt check
 /// test {
@@ -64,7 +78,9 @@ pub fn BasicBlock::getParent(self : Self) -> Function? {
 }
 
 ///|
-/// Get the previous BasicBlock in the Function.
+/// Returns the previous block in the parent function's current order.
+///
+/// **Returns:** `None` for the first block or a detached block.
 ///
 /// ```mbt check
 /// test {
@@ -92,7 +108,9 @@ pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
 }
 
 ///|
-/// Get the next BasicBlock in the Function.
+/// Returns the next block in the parent function's current order.
+///
+/// **Returns:** `None` for the last block or a detached block.
 ///
 /// ```mbt check
 /// test {
@@ -120,14 +138,25 @@ pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
 }
 
 ///|
+/// Error raised when a block operation requires an attached parent function.
 pub suberror BasicBlockHasNoParentError {
+  /// Contains a diagnostic naming the invalid block operation.
   BasicBlockHasNoParentError(String)
 }
 
 // REVIEW: Should we check basic block must have parent?
 
 ///|
-/// Move the BasicBlock before another BasicBlock.
+/// Moves this block immediately before `other`.
+///
+/// **Preconditions:** Both blocks must be attached and must belong to compatible
+/// functions/modules. Only attachment is checked by the safe layer.
+///
+/// **Errors:** Raises `BasicBlockHasNoParentError` if either block is detached.
+///
+/// **Side Effects:** Reorders the block list. Existing branch targets are not
+/// rewritten; block layout and fall-through-sensitive code generation may
+/// change.
 ///
 /// ```mbt check
 /// test {
@@ -207,7 +236,14 @@ pub fn BasicBlock::moveBefore(self : Self, other : BasicBlock) -> Unit raise {
 }
 
 ///|
-/// Move the BasicBlock after another BasicBlock.
+/// Moves this block immediately after `other`.
+///
+/// **Preconditions:** Both blocks must be attached and must belong to compatible
+/// functions/modules. Only attachment is checked by the safe layer.
+///
+/// **Errors:** Raises `BasicBlockHasNoParentError` if either block is detached.
+///
+/// **Side Effects:** Reorders the block list without rewriting CFG edges.
 ///
 /// ```mbt check
 /// test {
@@ -287,7 +323,10 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
 }
 
 ///|
-/// Get the first Instruction in this BasicBlock.
+/// Returns the first instruction, or `None` when the block is empty.
+///
+/// **Lifecycle:** The returned instruction retains the block's module but may be
+/// invalidated by instruction or block erasure.
 ///
 /// ```mbt check
 /// test {
@@ -319,7 +358,10 @@ pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
 }
 
 ///|
-/// Get the last Instruction in this BasicBlock.
+/// Returns the last instruction, or `None` when the block is empty.
+///
+/// **Lifecycle:** The returned instruction retains the block's module but may be
+/// invalidated by instruction or block erasure.
 ///
 /// ```mbt check
 /// test {
@@ -351,7 +393,10 @@ pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
 }
 
 ///|
-/// Get the terminator Instruction of this BasicBlock.
+/// Returns the block terminator, or `None` if the block is unterminated.
+///
+/// **Lifecycle:** The returned instruction retains the module but may be
+/// invalidated by later IR mutation.
 ///
 /// ```mbt check
 /// test {
@@ -383,7 +428,16 @@ pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
 }
 
 ///|
-/// Remove this BasicBlock from its parent Function.
+/// Detaches this block from its parent function without destroying it.
+///
+/// **Errors:** Raises `BasicBlockHasNoParentError` when already detached.
+///
+/// **Side Effects:** Removes the block from the function's block list. Existing
+/// branches to it are not repaired, so the surrounding module may become
+/// invalid until the caller updates the CFG.
+///
+/// **Lifecycle:** This block and its instructions still exist, but the safe
+/// layer offers no ownership state that prevents invalid detached-block usage.
 ///
 /// ```mbt check
 /// test {
@@ -438,7 +492,16 @@ pub fn BasicBlock::removeFromParent(self : Self) -> Unit raise {
 }
 
 ///|
-/// Erase this BasicBlock from its parent Function.
+/// Removes and destroys this block and its contained instructions.
+///
+/// **Errors:** Raises `BasicBlockHasNoParentError` when already detached.
+///
+/// **Side Effects:** Mutates the function and destroys the native block. CFG
+/// users are not automatically repaired and must be removed or redirected.
+///
+/// **Lifecycle:** This wrapper, all aliases to the block, and wrappers for its
+/// instructions become dangling immediately. They must not be used again; the
+/// type system cannot currently enforce this Q-09 restriction.
 ///
 /// ```mbt check
 /// test {
@@ -497,12 +560,16 @@ pub fn BasicBlock::eraseFromParent(self : Self) -> Unit raise {
 }
 
 ///|
+/// Returns the context retained by the block's owning module.
 pub fn BasicBlock::getContext(self : Self) -> Context {
   self.get_module().getContext()
 }
 
 ///|
-/// Get the name of this BasicBlock.
+/// Returns the optional block name.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
 ///
 /// ```mbt check
 /// test {
@@ -524,7 +591,11 @@ pub fn BasicBlock::getName(self : Self) -> String? raise StringError {
 }
 
 ///|
-/// Set the name of this BasicBlock.
+/// Sets the block name.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL byte.
+///
+/// **Side Effects:** Changes the label printed in LLVM IR.
 ///
 /// ```mbt check
 /// test {
@@ -563,6 +634,7 @@ pub fn BasicBlock::setName(
 //}
 
 ///|
+/// Writes this block as LLVM textual IR.
 pub impl Show for BasicBlock with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(
     @unsafe.llvm_basic_block_as_value(self.get_unsafe_ref()),
