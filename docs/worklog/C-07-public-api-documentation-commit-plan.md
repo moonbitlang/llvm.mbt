@@ -105,9 +105,9 @@
 | --- | --- |
 | `IR/Type.mbt` | `HalfType`、`BFloatType`、`FloatType`、`DoubleType`、`FP128Type`；`Int1Type`、`Int8Type`、`Int16Type`、`Int32Type`、`Int64Type`；`VoidType`、`LabelType`、`MetadataType`、`TokenType`；每类的 `Show`、`Type`、`FPType`/`IntegerType`/`PrimitiveType`/`AbstractType` impl 与 public extend |
 
-- [ ] 说明每个 wrapper 的 LLVM 语义、固定宽度、Context ownership 和各分类转换。
-- [ ] 常规 trait impl 使用简短摘要，不为同类固定宽度类型复制大段生命周期说明。
-- [ ] 用一个 representative scalar-type 示例覆盖获取、分类和打印，其余同族类型通过 `See also` 或简短说明关联。
+- [x] 说明每个 wrapper 的 LLVM 语义、固定宽度、Context ownership 和各分类转换。
+- [x] 常规 trait impl 使用简短摘要，不为同类固定宽度类型复制大段生命周期说明。
+- [x] 用一个 representative scalar-type 示例覆盖获取、分类和打印，其余同族类型通过 `See also` 或简短说明关联。
 
 建议提交信息：`docs(IR): document concrete scalar types`
 

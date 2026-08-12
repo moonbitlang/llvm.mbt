@@ -916,6 +916,10 @@ pub enum AbstractTypeEnum {
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's 16-bit IEEE `half` type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct HalfType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -934,37 +938,45 @@ fn HalfType::get_context(self : HalfType) -> Context {
 }
 
 ///|
+/// Writes `half` using LLVM's textual type syntax.
 pub impl Show for HalfType with fn output(self, logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::HalfType`.
 pub impl Type for HalfType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::HalfType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for HalfType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend HalfType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `FPTypeEnum::HalfType`.
 pub impl FPType for HalfType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FPTypeEnum::HalfType(self)
 }
 
 ///|
+/// Exposes floating-point classification on `HalfType`.
 pub extend HalfType with FPType::{asFPTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::HalfType`.
 pub impl PrimitiveType for HalfType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   PrimitiveTypeEnum::HalfType(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `HalfType`.
 pub extend HalfType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -972,7 +984,10 @@ pub extend HalfType with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-/// BFloatType
+/// Context-owned wrapper for LLVM's 16-bit `bfloat` type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct BFloatType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -991,37 +1006,45 @@ fn BFloatType::get_context(self : BFloatType) -> Context {
 }
 
 ///|
+/// Writes `bfloat` using LLVM's textual type syntax.
 pub impl Show for BFloatType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::BFloatType`.
 pub impl Type for BFloatType with fn asTypeEnum(self) -> TypeEnum {
   BFloatType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for BFloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend BFloatType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `FPTypeEnum::BFloatType`.
 pub impl FPType for BFloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   BFloatType(self)
 }
 
 ///|
+/// Exposes floating-point classification on `BFloatType`.
 pub extend BFloatType with FPType::{asFPTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::BFloatType`.
 pub impl PrimitiveType for BFloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   BFloatType(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `BFloatType`.
 pub extend BFloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1029,7 +1052,10 @@ pub extend BFloatType with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-/// FloatType
+/// Context-owned wrapper for LLVM's 32-bit IEEE `float` type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct FloatType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1048,37 +1074,45 @@ fn FloatType::get_context(self : FloatType) -> Context {
 }
 
 ///|
+/// Writes `float` using LLVM's textual type syntax.
 pub impl Show for FloatType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::FloatType`.
 pub impl Type for FloatType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::FloatType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for FloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend FloatType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `FPTypeEnum::FloatType`.
 pub impl FPType for FloatType with fn asFPTypeEnum(self) -> FPTypeEnum {
   FloatType(self)
 }
 
 ///|
+/// Exposes floating-point classification on `FloatType`.
 pub extend FloatType with FPType::{asFPTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::FloatType`.
 pub impl PrimitiveType for FloatType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FloatType(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `FloatType`.
 pub extend FloatType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1086,7 +1120,10 @@ pub extend FloatType with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-/// DoubleType
+/// Context-owned wrapper for LLVM's 64-bit IEEE `double` type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct DoubleType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1110,37 +1147,45 @@ fn DoubleType::get_context(self : DoubleType) -> Context {
 //}
 
 ///|
+/// Writes `double` using LLVM's textual type syntax.
 pub impl Show for DoubleType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::DoubleType`.
 pub impl Type for DoubleType with fn asTypeEnum(self) -> TypeEnum {
   DoubleType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for DoubleType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend DoubleType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `FPTypeEnum::DoubleType`.
 pub impl FPType for DoubleType with fn asFPTypeEnum(self) -> FPTypeEnum {
   DoubleType(self)
 }
 
 ///|
+/// Exposes floating-point classification on `DoubleType`.
 pub extend DoubleType with FPType::{asFPTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::DoubleType`.
 pub impl PrimitiveType for DoubleType with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   DoubleType(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `DoubleType`.
 pub extend DoubleType with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1148,7 +1193,10 @@ pub extend DoubleType with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
-/// FP128Ty
+/// Context-owned wrapper for LLVM's 128-bit IEEE `fp128` type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct FP128Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1175,37 +1223,45 @@ fn FP128Type::get_context(self : FP128Type) -> Context {
 //}
 
 ///|
+/// Writes `fp128` using LLVM's textual type syntax.
 pub impl Show for FP128Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::FP128Type`.
 pub impl Type for FP128Type with fn asTypeEnum(self) -> TypeEnum {
   FP128Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for FP128Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend FP128Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `FPTypeEnum::FP128Type`.
 pub impl FPType for FP128Type with fn asFPTypeEnum(self) -> FPTypeEnum {
   FP128Type(self)
 }
 
 ///|
+/// Exposes floating-point classification on `FP128Type`.
 pub extend FP128Type with FPType::{asFPTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::FP128Type`.
 pub impl PrimitiveType for FP128Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   FP128Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `FP128Type`.
 pub extend FP128Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1213,6 +1269,11 @@ pub extend FP128Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's one-bit integer type, conventionally used
+/// for boolean values.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct Int1Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1231,37 +1292,45 @@ fn Int1Type::get_context(self : Int1Type) -> Context {
 }
 
 ///|
+/// Writes `i1` using LLVM's textual type syntax.
 pub impl Show for Int1Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::Int1Type`.
 pub impl Type for Int1Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int1Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for Int1Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend Int1Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `IntegerTypeEnum::Int1Type`.
 pub impl IntegerType for Int1Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int1Type(self)
 }
 
 ///|
+/// Exposes integer-type classification on `Int1Type`.
 pub extend Int1Type with IntegerType::{asIntegerTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::Int1Type`.
 pub impl PrimitiveType for Int1Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int1Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `Int1Type`.
 pub extend Int1Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1269,6 +1338,10 @@ pub extend Int1Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's eight-bit integer type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct Int8Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1287,37 +1360,45 @@ fn Int8Type::get_context(self : Int8Type) -> Context {
 }
 
 ///|
+/// Writes `i8` using LLVM's textual type syntax.
 pub impl Show for Int8Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::Int8Type`.
 pub impl Type for Int8Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int8Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for Int8Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend Int8Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `IntegerTypeEnum::Int8Type`.
 pub impl IntegerType for Int8Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int8Type(self)
 }
 
 ///|
+/// Exposes integer-type classification on `Int8Type`.
 pub extend Int8Type with IntegerType::{asIntegerTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::Int8Type`.
 pub impl PrimitiveType for Int8Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int8Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `Int8Type`.
 pub extend Int8Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1325,6 +1406,10 @@ pub extend Int8Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's 16-bit integer type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct Int16Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1343,37 +1428,45 @@ fn Int16Type::get_context(self : Int16Type) -> Context {
 }
 
 ///|
+/// Writes `i16` using LLVM's textual type syntax.
 pub impl Show for Int16Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::Int16Type`.
 pub impl Type for Int16Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int16Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for Int16Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend Int16Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `IntegerTypeEnum::Int16Type`.
 pub impl IntegerType for Int16Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int16Type(self)
 }
 
 ///|
+/// Exposes integer-type classification on `Int16Type`.
 pub extend Int16Type with IntegerType::{asIntegerTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::Int16Type`.
 pub impl PrimitiveType for Int16Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int16Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `Int16Type`.
 pub extend Int16Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1381,6 +1474,20 @@ pub extend Int16Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's 32-bit integer type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let i32ty = ctx.getInt32Ty()
+///   inspect(i32ty, content="i32")
+///   inspect(i32ty.getBitWidth(), content="32")
+///   guard! i32ty.asIntegerTypeEnum() is Int32Type(_)
+/// }
+/// ```
 pub struct Int32Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1399,37 +1506,45 @@ fn Int32Type::get_context(self : Int32Type) -> Context {
 }
 
 ///|
+/// Writes `i32` using LLVM's textual type syntax.
 pub impl Show for Int32Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::Int32Type`.
 pub impl Type for Int32Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int32Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for Int32Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend Int32Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `IntegerTypeEnum::Int32Type`.
 pub impl IntegerType for Int32Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int32Type(self)
 }
 
 ///|
+/// Exposes integer-type classification on `Int32Type`.
 pub extend Int32Type with IntegerType::{asIntegerTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::Int32Type`.
 pub impl PrimitiveType for Int32Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int32Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `Int32Type`.
 pub extend Int32Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1437,6 +1552,10 @@ pub extend Int32Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's 64-bit integer type.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct Int64Type {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1455,37 +1574,45 @@ fn Int64Type::get_context(self : Int64Type) -> Context {
 }
 
 ///|
+/// Writes `i64` using LLVM's textual type syntax.
 pub impl Show for Int64Type with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::Int64Type`.
 pub impl Type for Int64Type with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::Int64Type(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for Int64Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend Int64Type with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `IntegerTypeEnum::Int64Type`.
 pub impl IntegerType for Int64Type with fn asIntegerTypeEnum(self) -> IntegerTypeEnum {
   Int64Type(self)
 }
 
 ///|
+/// Exposes integer-type classification on `Int64Type`.
 pub extend Int64Type with IntegerType::{asIntegerTypeEnum}
 
 ///|
+/// Classifies this wrapper as `PrimitiveTypeEnum::Int64Type`.
 pub impl PrimitiveType for Int64Type with fn asPrimitiveTypeEnum(self) -> PrimitiveTypeEnum {
   Int64Type(self)
 }
 
 ///|
+/// Exposes primitive-type classification on `Int64Type`.
 pub extend Int64Type with PrimitiveType::{asPrimitiveTypeEnum}
 
 // ====================================================================
@@ -1493,6 +1620,12 @@ pub extend Int64Type with PrimitiveType::{asPrimitiveTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's `void` type.
+///
+/// `void` is valid as a function return type but is not a first-class value
+/// type and is not sized.
+///
+/// **Lifecycle:** The wrapper must not outlive its owning context.
 pub struct VoidType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1511,29 +1644,35 @@ fn VoidType::get_context(self : VoidType) -> Context {
 }
 
 ///|
+/// Writes `void` using LLVM's textual type syntax.
 pub impl Show for VoidType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for VoidType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::VoidType`.
 pub impl Type for VoidType with fn asTypeEnum(self) -> TypeEnum {
   VoidType(self)
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend VoidType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AbstractTypeEnum::VoidType`.
 pub impl AbstractType for VoidType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   VoidType(self)
 }
 
 ///|
+/// Exposes abstract-type classification on `VoidType`.
 pub extend VoidType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
@@ -1541,7 +1680,9 @@ pub extend VoidType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
-/// LabelTy
+/// Context-owned wrapper for LLVM's basic-block `label` type.
+///
+/// **Lifecycle:** The wrapper must not outlive its owning context.
 pub struct LabelType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1560,29 +1701,35 @@ fn LabelType::get_context(self : LabelType) -> Context {
 }
 
 ///|
+/// Writes `label` using LLVM's textual type syntax.
 pub impl Show for LabelType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::LabelType`.
 pub impl Type for LabelType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::LabelType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for LabelType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend LabelType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AbstractTypeEnum::LabelType`.
 pub impl AbstractType for LabelType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   LabelType(self)
 }
 
 ///|
+/// Exposes abstract-type classification on `LabelType`.
 pub extend LabelType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
@@ -1590,6 +1737,12 @@ pub extend LabelType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for LLVM's special `metadata` type.
+///
+/// This is the type of metadata values accepted by metadata-specific LLVM
+/// operations; it is not an ordinary data value type.
+///
+/// **Lifecycle:** The wrapper must not outlive its owning context.
 pub struct MetadataType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1608,29 +1761,35 @@ fn MetadataType::get_context(self : MetadataType) -> Context {
 }
 
 ///|
+/// Writes `metadata` using LLVM's textual type syntax.
 pub impl Show for MetadataType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::MetadataType`.
 pub impl Type for MetadataType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::MetadataType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for MetadataType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend MetadataType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AbstractTypeEnum::MetadataType`.
 pub impl AbstractType for MetadataType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   MetadataType(self)
 }
 
 ///|
+/// Exposes abstract-type classification on `MetadataType`.
 pub extend MetadataType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
@@ -1638,7 +1797,12 @@ pub extend MetadataType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
-/// TokenTy
+/// Context-owned wrapper for LLVM's special `token` type.
+///
+/// Tokens model ordering or dependency values for selected LLVM intrinsics and
+/// are not ordinary loadable data.
+///
+/// **Lifecycle:** The wrapper must not outlive its owning context.
 pub struct TokenType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1657,29 +1821,35 @@ fn TokenType::get_context(self : TokenType) -> Context {
 }
 
 ///|
+/// Writes `token` using LLVM's textual type syntax.
 pub impl Show for TokenType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::TokenType`.
 pub impl Type for TokenType with fn asTypeEnum(self) -> TypeEnum {
   TokenType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for TokenType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend TokenType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AbstractTypeEnum::TokenType`.
 pub impl AbstractType for TokenType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   TokenType(self)
 }
 
 ///|
+/// Exposes abstract-type classification on `TokenType`.
 pub extend TokenType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
