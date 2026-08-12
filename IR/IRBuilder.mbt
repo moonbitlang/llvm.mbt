@@ -9,11 +9,19 @@ enum PositionState {
 }
 
 ///|
+/// Errors raised while constructing LLVM IR.
 pub suberror BuilderError {
+  /// No insertion point has been selected for an instruction-producing call.
   UnsetPosition
+  /// An operand has an incompatible LLVM type; the payload contains a
+  /// call-site-aware diagnostic.
   ValueTypeError(String)
+  /// The selected instruction cannot serve as an insertion point, normally
+  /// because it has no parent block.
   InValidInsertPoint(String)
+  /// Integer or floating operands have incompatible bit widths.
   BitwidthError(String)
+  /// A non-type argument violates a builder-specific constraint.
   InValidArgument(String)
 }
 
@@ -29,12 +37,22 @@ priv enum InsertPointEnum {
 }
 
 ///|
+/// Uses the end of this block as a builder insertion point.
 pub impl InsertPoint for BasicBlock with fn asInsertPtEnum(self) {
   BasicBlock(self)
 }
 
 ///|
-/// IRBuilder
+/// Managed LLVM instruction builder created by a `Context`.
+///
+/// A new builder has no insertion point. After `setInsertPoint`, it retains the
+/// selected block's module so returned instruction wrappers remain correctly
+/// module-anchored. Repositioning replaces that module anchor.
+///
+/// **Lifecycle:** The builder owns its native LLVM builder and retains its
+/// context. It borrows insertion-point IR; erasing the selected block or
+/// instruction can leave LLVM's native insertion point invalid, so reposition
+/// the builder before further construction.
 pub struct IRBuilder {
   priv owner : BuilderOwner
   priv mut positioned : PositionState
@@ -59,6 +77,10 @@ fn IRBuilder::get_insert_module(self : Self) -> Module raise BuilderError {
 }
 
 ///|
+/// Returns the block containing the current insertion point.
+///
+/// **Returns:** `None` before positioning or when LLVM reports no current block.
+/// A returned block retains the module recorded by `setInsertPoint`.
 pub fn IRBuilder::getInsertBlock(self : Self) -> BasicBlock? {
   let bb_ref = @unsafe.llvm_get_insert_block(self.get_unsafe_ref())
   match (self.positioned, @unsafe.llvm_bb_is_null(bb_ref)) {
@@ -69,6 +91,19 @@ pub fn IRBuilder::getInsertBlock(self : Self) -> BasicBlock? {
 }
 
 ///|
+/// Positions the builder at the end of a block or immediately before an
+/// instruction.
+///
+/// **Parameters:** `insertPt` is either a `BasicBlock` or an instruction wrapper
+/// implementing the internal insertion-point contract.
+///
+/// **Errors:** Raises `InValidInsertPoint` when an instruction is detached.
+///
+/// **Side Effects:** Replaces LLVM's current insertion point and the builder's
+/// retained module anchor. Later create methods insert into that module.
+///
+/// **Lifecycle:** Do not erase the selected block/instruction and then reuse the
+/// builder without setting a new valid insertion point.
 pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   self : Self,
   insertPt : T,
@@ -102,11 +137,15 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
 }
 
 ///|
-/// Create a Return Instruction
+/// Creates a return terminator carrying `value`.
 ///
-/// **Note:**
-/// 
-/// `IRBuilder::createRet` could not return void. use `IRBuilder::createRetVoid` for that purpose.
+/// **Preconditions:** The builder must be positioned in a function whose return
+/// type exactly matches `value.getType()`. Use `createRetVoid` for `void`.
+///
+/// **Errors:** Raises `UnsetPosition` when the builder is unpositioned.
+///
+/// **Side Effects:** Inserts a terminator; inserting further instructions after
+/// it without repositioning would produce invalid IR.
 ///
 /// ```mbt check
 /// test {
@@ -136,11 +175,13 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 }
 
 ///|
-/// Create a Return Instruction with no return value (void)
+/// Creates a `ret void` terminator.
 ///
-/// **Note:**
+/// **Preconditions:** The containing function must return `void`.
 ///
-/// If you want to return a value, use `IRBuilder::createRet` instead.
+/// **Errors:** Raises `UnsetPosition` when the builder is unpositioned.
+///
+/// **Side Effects:** Inserts a terminator.
 ///
 /// ```mbt check
 /// test {
@@ -169,11 +210,18 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
 }
 
 ///|
-/// Create an Alloca Instruction
+/// Creates a stack allocation for one value of `data_ty`.
 ///
-/// **Note:**
-/// 
-/// This allocates memory on the stack for a value of the specified type.
+/// **Parameters:** `name` is the optional SSA result name.
+///
+/// **Preconditions:** The builder must be positioned, `data_ty` must be sized
+/// and belong to the builder's context, and the insertion point must be valid in
+/// a function. This API does not force entry-block placement.
+///
+/// **Errors:** Raises `UnsetPosition` or `StringError::ContainsNul`.
+///
+/// **Notes:** LLVM assigns alignment from the current target data layout; this
+/// method does not expose an explicit alignment parameter.
 ///
 /// ```mbt check
 /// test {
@@ -210,11 +258,19 @@ pub fn IRBuilder::createAlloca(
 }
 
 ///|
-/// Create a Load Instruction
+/// Creates a typed load from `ptr`.
 ///
-/// **Note:**
-/// 
-/// This loads a value from memory at the specified pointer.
+/// **Parameters:** `load_ty` is explicit because LLVM 19 pointers are opaque.
+///
+/// **Preconditions:** The builder must be positioned; `ptr` must be a pointer;
+/// `load_ty` must be sized, loadable, and belong to the compatible context. The
+/// caller must ensure the address contains a value compatible with `load_ty`.
+///
+/// **Errors:** Raises `UnsetPosition` or `StringError::ContainsNul`. Pointer/type
+/// compatibility is currently deferred to LLVM verification.
+///
+/// **Notes:** Alignment is inferred by LLVM; volatility and atomic ordering are
+/// not exposed by this constructor.
 ///
 /// ```mbt check
 /// test {
@@ -254,11 +310,17 @@ pub fn IRBuilder::createLoad(
 }
 
 ///|
-/// Create a Store Instruction
+/// Creates a store of `value` through `ptr`.
 ///
-/// **Note:**
-/// 
-/// This stores a value into memory at the specified pointer.
+/// **Preconditions:** The builder must be positioned; `ptr` must address storage
+/// compatible with `value.getType()` in the same context/module. LLVM 19 opaque
+/// pointers do not encode this relationship.
+///
+/// **Errors:** Raises `UnsetPosition` or `ValueTypeError` when `ptr` is not a
+/// pointer.
+///
+/// **Notes:** Alignment is inferred by LLVM; volatility and atomic ordering are
+/// not exposed by this constructor.
 ///
 /// ```mbt check
 /// test {
@@ -441,7 +503,10 @@ pub fn IRBuilder::createAdd(
 ///
 /// **Note:**
 /// 
-/// This creates an integer addition instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
+/// Creates integer addition with LLVM's no-signed-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If signed addition
+/// overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -500,7 +565,10 @@ pub fn IRBuilder::createNSWAdd(
 ///
 /// **Note:**
 /// 
-/// This creates an integer addition instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
+/// Creates integer addition with LLVM's no-unsigned-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If unsigned addition
+/// overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -618,7 +686,10 @@ pub fn IRBuilder::createSub(
 ///
 /// **Note:**
 /// 
-/// This creates an integer subtraction instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
+/// Creates integer subtraction with LLVM's no-signed-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If signed
+/// subtraction overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -677,7 +748,10 @@ pub fn IRBuilder::createNSWSub(
 ///
 /// **Note:**
 /// 
-/// This creates an integer subtraction instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
+/// Creates integer subtraction with LLVM's no-unsigned-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If unsigned
+/// subtraction overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -795,7 +869,10 @@ pub fn IRBuilder::createMul(
 ///
 /// **Note:**
 /// 
-/// This creates an integer multiplication instruction with No Signed Wrap (NSW) flag. If signed overflow occurs, the result is undefined.
+/// Creates integer multiplication with LLVM's no-signed-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If signed
+/// multiplication overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -854,7 +931,10 @@ pub fn IRBuilder::createNSWMul(
 ///
 /// **Note:**
 /// 
-/// This creates an integer multiplication instruction with No Unsigned Wrap (NUW) flag. If unsigned overflow occurs, the result is undefined.
+/// Creates integer multiplication with LLVM's no-unsigned-wrap promise.
+///
+/// **Preconditions:** Operands must be same-width integers. If unsigned
+/// multiplication overflows, the result is poison.
 ///
 /// ```mbt check
 /// test {
@@ -1035,7 +1115,8 @@ pub fn IRBuilder::createSDiv(
 /// 
 /// This creates an exact unsigned integer division instruction.
 /// Both operands must be integer types with the same bitwidth.
-/// The exact flag indicates that the division is expected to be exact (no remainder).
+/// The `exact` promise requires a zero remainder; violating it yields poison.
+/// Division by zero also yields poison.
 ///
 /// ```mbt check
 /// test {
@@ -1095,7 +1176,8 @@ pub fn IRBuilder::createExactUDiv(
 /// **Note:**
 /// 
 /// This creates an exact signed integer division instruction. Both operands must be integer types with the same bitwidth.
-/// The exact flag indicates that the division is expected to be exact (no remainder).
+/// The `exact` promise requires a zero remainder; violating it yields poison.
+/// Division by zero and signed minimum divided by `-1` also yield poison.
 ///
 /// ```mbt check
 /// test {
@@ -1935,7 +2017,9 @@ pub fn IRBuilder::createNot(
 ///
 /// **Note:**
 /// 
-/// This creates a left shift instruction. Both operands must be integer types with the same bitwidth.
+/// Creates an integer left shift. Operands must be same-width integers and the
+/// shift amount must be less than the bit width; an oversized amount yields
+/// poison.
 ///
 /// ```mbt check
 /// test {
@@ -1994,7 +2078,9 @@ pub fn IRBuilder::createShl(
 ///
 /// **Note:**
 /// 
-/// This creates a logical right shift instruction. Both operands must be integer types with the same bitwidth.
+/// Creates a zero-filling logical right shift. Operands must be same-width
+/// integers and the shift amount must be less than the bit width; an oversized
+/// amount yields poison.
 ///
 /// ```mbt check
 /// test {
@@ -2053,7 +2139,9 @@ pub fn IRBuilder::createLShr(
 ///
 /// **Note:**
 /// 
-/// This creates an arithmetic right shift instruction. Both operands must be integer types with the same bitwidth.
+/// Creates a sign-filling arithmetic right shift. Operands must be same-width
+/// integers and the shift amount must be less than the bit width; an oversized
+/// amount yields poison.
 ///
 /// ```mbt check
 /// test {
@@ -2112,9 +2200,13 @@ pub fn IRBuilder::createAShr(
 ///
 /// **Note:**
 /// 
-/// This creates a pointer difference instruction that calculates the difference between two pointers
-/// in terms of elements of the specified type. Both operands must be pointer types.
-/// The result is the number of elements of type elemTy between the two pointers.
+/// Computes the signed distance from `rhs` to `lhs` in units of `elemTy`.
+///
+/// **Preconditions:** Both operands must be pointers in a compatible address
+/// space, `elemTy` must be sized, and the byte difference must be exactly
+/// divisible by its target allocation size. Meaningful pointer subtraction also
+/// requires addresses within a compatible allocated object. The module must
+/// carry the intended target data layout.
 ///
 /// ```mbt check
 /// test {

@@ -221,9 +221,9 @@
 | --- | --- |
 | `IR/IRBuilder.mbt` | `BuilderError`、`InsertPoint for BasicBlock`、`IRBuilder`、`getInsertBlock`、`setInsertPoint`；`createRet`、`createRetVoid`、`createAlloca`、`createLoad`、`createStore`；整数/浮点 add/sub/mul/div/rem；`createFNeg`；bitwise and/or/xor/not、shift、`createPtrDiff` |
 
-- [ ] 统一已有早期文档格式，说明 insertion point 状态、Module anchor 和 `BuilderError` 各 constructor。
-- [ ] 对 arithmetic flags（NSW/NUW/exact）、shift、load/store alignment/type 等非显然约束写 Parameters/Preconditions。
-- [ ] 每个 builder family 保留一个代表性 Example，不重复相同的 Context/Module/Function setup。
+- [x] 统一已有早期文档格式，说明 insertion point 状态、Module anchor 和 `BuilderError` 各 constructor。
+- [x] 对 arithmetic flags（NSW/NUW/exact）、shift、load/store alignment/type 等非显然约束写 Parameters/Preconditions。
+- [x] 每个 builder family 保留一个代表性 Example，不重复相同的 Context/Module/Function setup。
 
 建议提交信息：`docs(IR): document builder arithmetic and memory APIs`
 
