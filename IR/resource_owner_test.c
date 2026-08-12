@@ -12,14 +12,15 @@ struct llvm_mbt_owner_test_trace {
   void *context;
   void *module;
   void *builder;
+  void *target_machine;
   uint64_t events;
 };
 
 static struct llvm_mbt_owner_test_trace llvm_mbt_test_trace;
 
 /*
- * C test hook called after a native disposer returns. Event values 1, 2, and 3
- * denote Context, Module, and Builder respectively.
+ * C test hook called after a native disposer returns. Event values 1, 2, 3,
+ * and 4 denote Context, Module, Builder, and TargetMachine respectively.
  */
 void llvm_mbt_ir_owner_test_record(void *owner, uint64_t event) {
   void **watched = NULL;
@@ -32,6 +33,9 @@ void llvm_mbt_ir_owner_test_record(void *owner, uint64_t event) {
     break;
   case 3:
     watched = &llvm_mbt_test_trace.builder;
+    break;
+  case 4:
+    watched = &llvm_mbt_test_trace.target_machine;
     break;
   default:
     return;
@@ -50,6 +54,7 @@ void llvm_mbt_ir_owner_test_watch(void *context, void *module, void *builder) {
   llvm_mbt_test_trace.context = context;
   llvm_mbt_test_trace.module = module;
   llvm_mbt_test_trace.builder = builder;
+  llvm_mbt_test_trace.target_machine = NULL;
   llvm_mbt_test_trace.events = 0;
 }
 
@@ -63,6 +68,20 @@ uint64_t llvm_mbt_ir_owner_test_take_trace(void) {
   llvm_mbt_test_trace.context = NULL;
   llvm_mbt_test_trace.module = NULL;
   llvm_mbt_test_trace.builder = NULL;
+  llvm_mbt_test_trace.target_machine = NULL;
   llvm_mbt_test_trace.events = 0;
   return events;
+}
+
+/*
+ * MoonBit wbtest extern: target_machine_owner_test_watch
+ * (IR/target_machine_wbtest.mbt). Records one unretained owner identity; the
+ * hook does not keep the target machine alive and is not thread-safe.
+ */
+void llvm_mbt_ir_target_machine_owner_test_watch(void *target_machine) {
+  llvm_mbt_test_trace.context = NULL;
+  llvm_mbt_test_trace.module = NULL;
+  llvm_mbt_test_trace.builder = NULL;
+  llvm_mbt_test_trace.target_machine = target_machine;
+  llvm_mbt_test_trace.events = 0;
 }

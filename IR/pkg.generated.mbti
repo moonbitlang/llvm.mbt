@@ -3,6 +3,7 @@ package "Kaida-Amethyst/llvm/IR"
 
 import {
   "Kaida-Amethyst/llvm/unsafe",
+  "moonbitlang/core/debug",
 }
 
 // Values
@@ -43,6 +44,16 @@ pub suberror StringError {
 
 pub suberror SwitchInstError {
   InValidSwitchCaseValue(String)
+}
+
+pub suberror TargetMachineError {
+  CreationFailed
+}
+
+pub suberror TargetRegistryError {
+  NativeTargetUnavailable
+  NativeAsmPrinterUnavailable
+  TargetNotFound(String)
 }
 
 pub suberror WriteBitCodeToFileFailed {
@@ -177,6 +188,23 @@ pub impl InsertPoint for CastInst
 pub impl Instruction for CastInst
 pub impl Value for CastInst
 pub impl Show for CastInst
+
+pub(all) enum CodeGenOptimizationLevel {
+  None
+  Less
+  Default
+  Aggressive
+}
+
+pub(all) enum CodeModel {
+  Default
+  JitDefault
+  Tiny
+  Small
+  Kernel
+  Medium
+  Large
+}
 
 pub struct ConstantArray {
   // private fields
@@ -902,6 +930,16 @@ pub enum PrimitiveTypeEnum {
   Int64Type(Int64Type)
 } derive(Eq)
 
+pub(all) enum RelocationMode {
+  Default
+  Static
+  Pic
+  DynamicNoPic
+  Ropi
+  Rwpi
+  RopiRwpi
+}
+
 pub(all) enum RetAttr {
   NoAlias
   NonNull
@@ -979,6 +1017,40 @@ pub(all) enum TailCallKind {
   MustTail
   NoTail
 }
+
+pub struct Target {
+  // private fields
+}
+pub fn Target::createTargetMachine(Self, TargetTriple, TargetMachineOptions) -> TargetMachine raise
+pub fn Target::getDescription(Self) -> String raise StringError
+pub fn Target::getName(Self) -> String raise StringError
+
+pub struct TargetMachine {
+  // private fields
+}
+pub fn TargetMachine::getABI(Self) -> String?
+pub fn TargetMachine::getCPU(Self) -> String
+pub fn TargetMachine::getFeatures(Self) -> String
+pub fn TargetMachine::getTriple(Self) -> TargetTriple
+pub fn TargetMachine::host(TargetMachineOptions) -> Self raise
+
+pub struct TargetMachineOptions {
+  // private fields
+}
+pub fn TargetMachineOptions::new(cpu? : String, features? : String, abi? : String, optimizationLevel? : CodeGenOptimizationLevel, relocationMode? : RelocationMode, codeModel? : CodeModel) -> Self raise StringError
+pub impl Default for TargetMachineOptions
+
+pub type TargetRegistry
+pub fn TargetRegistry::initializeNativeCodegen() -> Unit raise TargetRegistryError
+pub fn TargetRegistry::lookupTarget(TargetTriple) -> Target raise TargetRegistryError
+
+pub struct TargetTriple {
+  // private fields
+} derive(Eq, @debug.Debug)
+pub fn TargetTriple::host() -> Self raise StringError
+pub fn TargetTriple::new(String) -> Self raise StringError
+pub fn TargetTriple::toString(Self) -> String
+pub impl Show for TargetTriple
 
 pub struct TokenType {
   // private fields

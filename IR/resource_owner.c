@@ -5,6 +5,7 @@
  */
 
 #include <llvm-c/Core.h>
+#include <llvm-c/TargetMachine.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,6 +26,10 @@ struct llvm_mbt_builder_owner {
   LLVMBuilderRef raw;
   struct llvm_mbt_context_owner *context;
   struct llvm_mbt_module_owner *module;
+};
+
+struct llvm_mbt_target_machine_owner {
+  LLVMTargetMachineRef raw;
 };
 
 /* C test hook implemented by resource_owner_test.c; it never retains owners. */
@@ -75,6 +80,16 @@ static LLVMBuilderRef llvm_mbt_builder_owner_take_raw(
   return raw;
 }
 
+static LLVMTargetMachineRef llvm_mbt_target_machine_owner_take_raw(
+    struct llvm_mbt_target_machine_owner *owner) {
+  LLVMTargetMachineRef raw = owner->raw;
+  if (raw == NULL) {
+    llvm_mbt_owner_disposal_error("TargetMachine");
+  }
+  owner->raw = NULL;
+  return raw;
+}
+
 /* Dispose the native handle, then notify the non-owning test observer. */
 static void llvm_mbt_context_owner_dispose_once(
   struct llvm_mbt_context_owner *owner) {
@@ -92,6 +107,12 @@ static void llvm_mbt_builder_owner_dispose_once(
   struct llvm_mbt_builder_owner *owner) {
   LLVMDisposeBuilder(llvm_mbt_builder_owner_take_raw(owner));
   llvm_mbt_ir_owner_test_record(owner, 3);
+}
+
+static void llvm_mbt_target_machine_owner_dispose_once(
+    struct llvm_mbt_target_machine_owner *owner) {
+  LLVMDisposeTargetMachine(llvm_mbt_target_machine_owner_take_raw(owner));
+  llvm_mbt_ir_owner_test_record(owner, 4);
 }
 
 /* Finalize the only native resource owned by a ContextOwner. */
@@ -127,6 +148,11 @@ static void llvm_mbt_finalize_builder_owner(void *payload) {
   if (context != NULL) {
     moonbit_decref(context);
   }
+}
+
+/* Finalize the only native resource owned by a TargetMachineOwner. */
+static void llvm_mbt_finalize_target_machine_owner(void *payload) {
+  llvm_mbt_target_machine_owner_dispose_once(payload);
 }
 
 /*
@@ -170,6 +196,19 @@ void *llvm_mbt_ir_builder_owner_new(
   owner->context = context;
   owner->module = NULL;
   moonbit_incref(context);
+  return owner;
+}
+
+/*
+ * MoonBit extern: TargetMachineOwner::new (IR/resource_owner.mbt).
+ * Assumes ownership of one non-NULL target machine; the returned external
+ * object has no parent and disposes that handle exactly once.
+ */
+void *llvm_mbt_ir_target_machine_owner_new(LLVMTargetMachineRef raw) {
+  struct llvm_mbt_target_machine_owner *owner = moonbit_make_external_object(
+      llvm_mbt_finalize_target_machine_owner,
+      (uint32_t)sizeof(struct llvm_mbt_target_machine_owner));
+  owner->raw = raw;
   return owner;
 }
 

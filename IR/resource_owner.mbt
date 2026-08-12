@@ -20,6 +20,12 @@ priv type ModuleOwner
 priv type BuilderOwner
 
 ///|
+/// A MoonBit-managed owner for an LLVM target machine.
+///
+/// Its payload owns exactly one target machine and has no parent resource.
+priv type TargetMachineOwner
+
+///|
 extern "C" fn ContextOwner::new(raw : @unsafe.LLVMContextRef) -> ContextOwner = "llvm_mbt_ir_context_owner_new"
 
 ///|
@@ -62,3 +68,8 @@ extern "C" fn BuilderOwner::set_module(
 ///|
 #borrow(self)
 extern "C" fn BuilderOwner::context(self : BuilderOwner) -> ContextOwner = "llvm_mbt_ir_builder_owner_context"
+
+///|
+extern "C" fn TargetMachineOwner::new(
+  raw : @unsafe.LLVMTargetMachineRef,
+) -> TargetMachineOwner = "llvm_mbt_ir_target_machine_owner_new"
