@@ -245,9 +245,9 @@
 | --- | --- |
 | `IR/IRBuilder.mbt` | `createBr`、`createCondBr`、`createSelect`、`createSwitch`、`createPHI`；`createCall`、`createCallPtr`；`createInsertValue`、`createExtractValue`；`createMalloc`、`createFree`、`createMemCpy`、`createMemSet`、`createMemMove`、`createGlobalString` |
 
-- [ ] 说明 CFG target、PHI incoming 后续步骤、callee/function type 匹配和 pointer-call 契约。
-- [ ] 说明 aggregate indices、memory intrinsic length/alignment/overlap、malloc/free 和 global string 对 Module 的副作用。
-- [ ] 以一个最小函数构造示例覆盖 builder 标准工作流；长程序继续留在 tutorial。
+- [x] 说明 CFG target、PHI incoming 后续步骤、callee/function type 匹配和 pointer-call 契约。
+- [x] 说明 aggregate indices、memory intrinsic length/alignment/overlap、malloc/free 和 global string 对 Module 的副作用。
+- [x] 以一个最小函数构造示例覆盖 builder 标准工作流；长程序继续留在 tutorial。
 
 建议提交信息：`docs(IR): document builder control-flow and runtime APIs`
 

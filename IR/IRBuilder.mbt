@@ -3697,12 +3697,12 @@ pub fn IRBuilder::createGEP(
 }
 
 ///|
-/// Create an Unconditional Branch Instruction
+/// Creates an unconditional branch to `dest`.
 ///
-/// **Note:**
-/// 
-/// This creates an unconditional branch instruction that transfers control to the specified basic block.
-/// The destination must be a valid basic block.
+/// **Preconditions:** The builder's insertion block and `dest` must belong to the
+/// same function. The insertion block must not already have a terminator.
+///
+/// **Side effects:** Terminates the current block and adds a CFG edge to `dest`.
 ///
 /// ```mbt check
 /// test {
@@ -3731,12 +3731,16 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 }
 
 ///|
-/// Create a Conditional Branch Instruction
+/// Creates a conditional branch to `trueDest` or `falseDest`.
 ///
-/// **Note:**
-/// 
-/// This creates a conditional branch instruction that transfers control to one of two basic blocks based on a boolean condition.
-/// The condition must be an i1 (boolean) type, and both destinations must be valid basic blocks.
+/// **Preconditions:** `cond` must be `i1`. Both destinations and the builder's
+/// insertion block must belong to the same function, and the insertion block
+/// must not already have a terminator.
+///
+/// **Errors:** Raises `ValueTypeError` when `cond` is not `i1`, or
+/// `UnsetPosition` when the builder is unpositioned.
+///
+/// **Side effects:** Terminates the current block and adds two CFG edges.
 ///
 /// ```mbt check
 /// test {
@@ -3793,12 +3797,14 @@ pub fn IRBuilder::createCondBr(
 }
 
 ///|
-/// Create a Select Instruction
+/// Selects `trueVal` when `cond` is true and `falseVal` otherwise.
 ///
-/// **Note:**
-/// 
-/// This creates a select instruction that chooses between two values based on a boolean condition.
-/// The condition must be an i1 (boolean) type, and both values must have the same type.
+/// **Preconditions:** `trueVal` and `falseVal` must have the same first-class
+/// type and share a Context with `cond` and the insertion point.
+///
+/// **Errors:** Raises `ValueTypeError` when `cond` is not `i1`, when LLVM folds
+/// to a constant kind unsupported by the safe wrapper, or `UnsetPosition` when
+/// the builder is unpositioned. An embedded NUL in `name` raises `ContainsNul`.
 ///
 /// ```mbt check
 /// test {
@@ -3879,13 +3885,19 @@ pub fn IRBuilder::createSelect(
 }
 
 ///|
-/// Create a Switch Instruction
+/// Creates a switch terminator with `defaultDest` as its initial successor.
 ///
-/// **Note:**
-/// 
-/// This creates a switch instruction that transfers control to one of many basic blocks based on an integer value.
-/// The value must be an integer type, and numCases specifies the expected number of cases.
-/// Use `SwitchInst::addCase` to add individual cases after creation.
+/// Add integer case values and their destinations afterward with
+/// `SwitchInst::addCase`.
+///
+/// **Preconditions:** `defaultDest` and the insertion block must belong to the
+/// same function, whose current block must not already have a terminator.
+///
+/// **Errors:** Raises `ValueTypeError` when `value` is not an integer, or
+/// `UnsetPosition` when the builder is unpositioned.
+///
+/// **Side effects:** Terminates the current block and initially adds the default
+/// CFG edge; later `addCase` calls mutate the switch and its CFG edges.
 ///
 /// ```mbt check
 /// test {
@@ -3945,13 +3957,15 @@ pub fn IRBuilder::createSwitch(
 }
 
 ///|
-/// Create a PHI Instruction
+/// Creates an initially empty PHI node with result type `type_`.
 ///
-/// **Note:**
-/// 
-/// This creates a PHI node instruction that selects a value based on the predecessor basic block.
-/// The type specifies the type of the PHI node's result value.
-/// Use `PHINode::addIncoming` to add incoming values and their corresponding basic blocks.
+/// Add predecessor/value pairs afterward with `PHINode::addIncoming`.
+///
+/// **Preconditions:** Position the builder before non-PHI instructions in the
+/// destination block. Every incoming value must have `type_`, and every incoming
+/// block must be a predecessor in the same function.
+///
+/// **Side effects:** Inserts a PHI node; later `addIncoming` calls mutate it.
 ///
 /// ```mbt check
 /// test {
@@ -4001,12 +4015,16 @@ fn format_type_list(types : Array[&Type]) -> String {
 }
 
 ///|
-/// Create a Call Instruction
+/// Calls `func` with `args`.
 ///
-/// **Note:**
-/// 
-/// This creates a call instruction that invokes a function with the specified arguments.
-/// The function must be a valid Function object, and the arguments must match the function's parameter types.
+/// **Preconditions:** `func`, every argument, and the insertion point must share
+/// a Context. For non-variadic functions, argument types must exactly equal all
+/// parameter types. For variadic functions, `args` must contain at least all
+/// fixed parameters, and those prefix types must match.
+///
+/// **Errors:** Raises `InValidArgument` for a checked parameter mismatch,
+/// `UnsetPosition` when unpositioned, or `ContainsNul` for an embedded NUL in
+/// `name`.
 ///
 /// ```mbt check
 /// test {
@@ -4089,13 +4107,19 @@ pub fn IRBuilder::createCall(
 }
 
 ///|
-/// Create a Call Instruction via Function Pointer
+/// Calls `funcPtr` using the explicit signature `funcType`.
 ///
-/// **Note:**
-/// 
-/// This creates a call instruction that invokes a function through a function pointer.
-/// The function pointer must be a pointer type, and the function type must match the pointed-to function's signature.
-/// The arguments must match the function's parameter types.
+/// Opaque LLVM pointers do not encode a function signature, so `funcType` is a
+/// required caller-supplied contract.
+///
+/// **Preconditions:** `funcType` must describe the function actually addressed
+/// by `funcPtr`; fixed argument types and count must match, and variadic calls
+/// must include the fixed prefix. All values, types, and the insertion point must
+/// share a Context. This wrapper checks only that `funcPtr` is a pointer.
+///
+/// **Errors:** Raises `ValueTypeError` when `funcPtr` is not a pointer,
+/// `UnsetPosition` when unpositioned, or `ContainsNul` for an embedded NUL in
+/// `name`.
 ///
 /// ```mbt check
 /// test {
@@ -4134,7 +4158,6 @@ pub fn IRBuilder::createCallPtr(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> CallInst raise {
-  // REVIEW: Check if it is correct.
   guard self.positioned is Set(_) else { raise UnsetPosition }
   guard funcPtr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
@@ -4160,12 +4183,15 @@ pub fn IRBuilder::createCallPtr(
 }
 
 ///|
-/// Create an InsertValue Instruction
+/// Replaces the immediate aggregate element at `index` with `value`.
 ///
-/// **Note:**
-/// 
-/// This creates an insertvalue instruction that inserts a value into an aggregate (struct or array) at the specified index.
-/// The aggregate must be an aggregate type, and the value type must match the element type at the given index.
+/// This one-index convenience API addresses a direct struct field or array
+/// element, not a nested index path.
+///
+/// **Errors:** Raises `ValueTypeError` unless `aggregate` is a supported
+/// aggregate and `value` has the selected element type; raises
+/// `InValidArgument` when `index` is out of bounds. It also reports an unset
+/// insertion point, an embedded NUL in `name`, or an unsupported folded constant.
 ///
 /// ```mbt check
 /// test {
@@ -4255,12 +4281,15 @@ pub fn IRBuilder::createInsertValue(
 }
 
 ///|
-/// Create an ExtractValue Instruction
+/// Extracts the immediate aggregate element at `index`.
 ///
-/// **Note:**
-/// 
-/// This creates an extractvalue instruction that extracts a value from an aggregate (struct or array) at the specified index.
-/// The aggregate must be an aggregate type, and the index must be valid for the aggregate type.
+/// This one-index convenience API addresses a direct struct field or array
+/// element, not a nested index path.
+///
+/// **Errors:** Raises `ValueTypeError` unless `aggregate` is a supported
+/// aggregate; raises `InValidArgument` when `index` is out of bounds. It also
+/// reports an unset insertion point, an embedded NUL in `name`, or an unsupported
+/// folded constant.
 ///
 /// ```mbt check
 /// test {
@@ -4356,12 +4385,18 @@ pub fn IRBuilder::createExtractValue(
 }
 
 ///|
-/// Create a Malloc Instruction
+/// Allocates enough heap storage for one value of `ty` by calling `malloc`.
 ///
-/// **Note:**
-/// 
-/// This creates a malloc instruction that allocates memory for a single instance of the specified type.
-/// The type must not be an abstract type. The result is a pointer to the allocated memory.
+/// **Returns:** A call instruction whose value is the allocated opaque pointer.
+/// The runtime may return null when allocation fails.
+///
+/// **Preconditions:** `ty` must be sized and share the builder's Context. This
+/// wrapper rejects abstract types but does not independently reject every
+/// unsized composite type.
+///
+/// **Side effects:** Inserts a `malloc` call and may add or reuse a `malloc`
+/// declaration in the current Module. Executing the generated call allocates
+/// storage that must eventually be released, normally with `createFree`.
 ///
 /// ```mbt check
 /// test {
@@ -4413,12 +4448,13 @@ pub fn IRBuilder::createMalloc(
 }
 
 ///|
-/// Create a Free Instruction
+/// Releases heap storage by calling `free(ptr)`.
 ///
-/// **Note:**
-/// 
-/// This creates a free instruction that deallocates memory previously allocated by malloc.
-/// The pointer must be a pointer type and should point to memory allocated by malloc.
+/// **Preconditions:** `ptr` must be null or a still-live allocation accepted by
+/// the target C runtime's `free`; it must not be freed again afterward.
+///
+/// **Side effects:** Inserts a `free` call and may add or reuse its declaration.
+/// Executing the generated call ends the allocation's lifetime.
 ///
 /// ```mbt check
 /// test {
@@ -4461,13 +4497,17 @@ pub fn IRBuilder::createFree(
 }
 
 ///|
-/// Create a Memory Copy Instruction
+/// Copies `size` bytes from `src` to `dst` using LLVM's `memcpy` intrinsic.
 ///
-/// **Note:**
-/// 
-/// This creates a memcpy instruction that copies bytes from source to destination.
-/// Both dst and src must be pointer types, and size must be an integer type.
-/// The dst_align and src_align parameters specify the alignment requirements.
+/// **Parameters:** `dst_align` and `src_align` are byte-alignment promises; each
+/// must be zero (unknown) or a power of two. `size` is an integer byte count.
+///
+/// **Preconditions:** The two memory ranges must be valid for `size` bytes and
+/// must not overlap. The stated alignments must hold at runtime. Use
+/// `createMemMove` when overlap is possible.
+///
+/// **Side effects:** Inserts a non-volatile `llvm.memcpy` intrinsic call that
+/// writes the destination range when executed.
 ///
 /// ```mbt check
 /// test {
@@ -4547,13 +4587,17 @@ pub fn IRBuilder::createMemCpy(
 }
 
 ///|
-/// Create a Memory Set Instruction
+/// Fills `size` bytes at `dst` with the low byte supplied by `value`.
 ///
-/// **Note:**
-/// 
-/// This creates a memset instruction that sets bytes in memory to a specific value.
-/// The dst must be a pointer type, value must be an integer type (typically i8), 
-/// and size must be an integer type. The align parameter specifies the alignment.
+/// **Parameters:** `value` must be `i8`; `size` is an integer byte count; `align`
+/// is a byte-alignment promise and must be zero (unknown) or a power of two.
+///
+/// **Preconditions:** The destination range must be writable for `size` bytes,
+/// and its runtime alignment must satisfy `align`. The wrapper checks only that
+/// `value` is some integer, so callers must enforce the `i8` requirement.
+///
+/// **Side effects:** Inserts a non-volatile `llvm.memset` intrinsic call that
+/// writes the destination range when executed.
 ///
 /// ```mbt check
 /// test {
@@ -4631,14 +4675,16 @@ pub fn IRBuilder::createMemSet(
 }
 
 ///|
-/// Create a Memory Move Instruction
+/// Copies `size` bytes from `src` to `dst`, permitting overlapping ranges.
 ///
-/// **Note:**
-/// 
-/// This creates a memmove instruction that copies bytes from source to destination.
-/// Unlike memcpy, memmove handles overlapping memory regions correctly.
-/// Both dst and src must be pointer types, and size must be an integer type.
-/// The dst_align and src_align parameters specify the alignment requirements.
+/// **Parameters:** `dst_align` and `src_align` are byte-alignment promises; each
+/// must be zero (unknown) or a power of two. `size` is an integer byte count.
+///
+/// **Preconditions:** Both memory ranges must be valid for `size` bytes and the
+/// stated alignments must hold at runtime. Overlap is allowed.
+///
+/// **Side effects:** Inserts a non-volatile `llvm.memmove` intrinsic call that
+/// writes the destination range when executed.
 ///
 /// ```mbt check
 /// test {
@@ -4718,6 +4764,19 @@ pub fn IRBuilder::createMemMove(
 }
 
 ///|
+/// Adds a private, null-terminated UTF-8 string constant to the current Module.
+///
+/// **Parameters:** `string` supplies the bytes before the trailing NUL; `name`
+/// is an optional LLVM global name. Neither may contain an embedded NUL.
+///
+/// **Errors:** Raises `UnsetPosition` when the builder has no current Module, or
+/// `ContainsNul` when either string cannot cross the C-string boundary.
+///
+/// **Side effects:** Creates a new global constant in the Module associated with
+/// the insertion point. It does not insert an instruction into the current block.
+///
+/// **Lifecycle:** The returned wrapper is owned by that Module and becomes
+/// invalid when the Module is disposed.
 pub fn IRBuilder::createGlobalString(
   self : Self,
   string : String,
