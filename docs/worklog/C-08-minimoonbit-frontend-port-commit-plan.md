@@ -195,11 +195,11 @@ frontend_test -> lexer + parser + typecheck + knf
 
 以上路径均位于 `examples/minimoonbit/`。
 
-- [ ] 保持原 parser AST 的 struct/enum shape、`to_string(color?)` 与 `Show` 行为。
-- [ ] 保持操作符优先级和结合性、token consumption、剩余 `ArrayView` 与错误定位。
-- [ ] 保持 `Either` 在 AST 中的原有表示，不在移植时替换成新的本地 enum。
-- [ ] 为公开 AST type、constructor/field、parse function 和 public impl 补齐文档，但不借机重命名或收窄 visibility。
-- [ ] 本 commit 不加入 `parse_test.mbt`，以便把 AST/解析实现与测试迁移分开审核。
+- [x] 保持原 parser AST 的 struct/enum shape、`to_string(color?)` 与 `Show` 行为。
+- [x] 保持操作符优先级和结合性、token consumption、剩余 `ArrayView` 与错误定位。
+- [x] 保持 `Either` 在 AST 中的原有表示，不在移植时替换成新的本地 enum。
+- [x] 为公开 AST type、constructor/field、parse function 和 public impl 补齐文档，但不借机重命名或收窄 visibility。
+- [x] 本 commit 不加入 `parse_test.mbt`，以便把 AST/解析实现与测试迁移分开审核。
 
 建议提交信息：`examples(minimoonbit): port the parser`
 
