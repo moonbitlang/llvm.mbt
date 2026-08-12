@@ -11,16 +11,30 @@ struct LLVMBool(Int) derive(Eq)
 pub(all) struct LLVMAttributeIndex(UInt) derive(Eq)
 
 ///|
-//pub(all) type LLVMFastMathFlags UInt derive(Eq)
+/// Fast-math bit values accepted by LLVM-C instruction flag APIs.
+///
+/// Individual constructors are powers of two and may be combined only by APIs
+/// that operate on the underlying mask; this enum itself represents one listed
+/// value. These promises permit transformations that are invalid for strict IEEE
+/// arithmetic.
 pub(all) enum LLVMFastMathFlags {
+  /// Permits reassociation of floating-point expressions.
   AllowReassoc = 1
+  /// Promises that arguments and results are not NaN.
   NoNaNs = 2
+  /// Promises that arguments and results are not infinite.
   NoInfs = 4
+  /// Permits treating positive and negative zero as equivalent.
   NoSignedZeros = 8
+  /// Permits reciprocal-based transformations instead of strict division.
   AllowReciprocal = 16
+  /// Permits contraction, such as forming fused multiply-add operations.
   AllowContract = 32
+  /// Permits approximate implementations of floating-point functions.
   ApproxFunc = 64
+  /// Enables no fast-math promises.
   None = 0
+  /// Enables every fast-math promise represented by LLVM 19's mask.
   All = 127
 }
 
@@ -434,83 +448,156 @@ pub fn LLVMMetadataKind::into(self : LLVMMetadataKind) -> UInt {
 // enums
 
 ///|
-/// Instruction opcodes
+/// LLVM 19 instruction and constant-expression opcode categories.
+///
+/// The integer conversion uses this binding's dense FFI index, which is
+/// translated to LLVM-C in the native adapter; it is not LLVM's public numeric
+/// opcode value.
 pub(all) enum LLVMOpcode {
+  /// Return terminator.
   LLVMRet
+  /// Unconditional or conditional branch terminator.
   LLVMBr
+  /// Multi-way integer switch terminator.
   LLVMSwitch
+  /// Indirect branch through a block address.
   LLVMIndirectBr
+  /// Call that transfers to normal or exception destinations.
   LLVMInvoke
+  /// Terminator marking control flow as unreachable.
   LLVMUnreachable
+  /// Call whose inline assembly can branch to listed labels.
   LLVMCallBr
+  /// Floating-point negation.
   LLVMFNeg
+  /// Integer addition.
   LLVMAdd
+  /// Floating-point addition.
   LLVMFAdd
+  /// Integer subtraction.
   LLVMSub
+  /// Floating-point subtraction.
   LLVMFSub
+  /// Integer multiplication.
   LLVMMul
+  /// Floating-point multiplication.
   LLVMFMul
+  /// Unsigned integer division.
   LLVMUDiv
+  /// Signed integer division.
   LLVMSDiv
+  /// Floating-point division.
   LLVMFDiv
+  /// Unsigned integer remainder.
   LLVMURem
+  /// Signed integer remainder.
   LLVMSRem
+  /// Floating-point remainder.
   LLVMFRem
+  /// Integer left shift.
   LLVMShl
+  /// Logical right shift.
   LLVMLShr
+  /// Arithmetic right shift.
   LLVMAShr
+  /// Bitwise AND.
   LLVMAnd
+  /// Bitwise OR.
   LLVMOr
+  /// Bitwise exclusive OR.
   LLVMXor
+  /// Stack allocation.
   LLVMAlloca
+  /// Memory load.
   LLVMLoad
+  /// Memory store.
   LLVMStore
+  /// Get-element-pointer address calculation.
   LLVMGetElementPtr
+  /// Integer truncation.
   LLVMTrunc
+  /// Zero extension of an integer.
   LLVMZExt
+  /// Sign extension of an integer.
   LLVMSExt
+  /// Floating-point to unsigned-integer conversion.
   LLVMFPToUI
+  /// Floating-point to signed-integer conversion.
   LLVMFPToSI
+  /// Unsigned-integer to floating-point conversion.
   LLVMUIToFP
+  /// Signed-integer to floating-point conversion.
   LLVMSIToFP
+  /// Floating-point truncation.
   LLVMFPTrunc
+  /// Floating-point extension.
   LLVMFPExt
+  /// Pointer-to-integer conversion.
   LLVMPtrToInt
+  /// Integer-to-pointer conversion.
   LLVMIntToPtr
+  /// Same-size bit reinterpretation.
   LLVMBitCast
+  /// Pointer address-space conversion.
   LLVMAddrSpaceCast
+  /// Integer comparison.
   LLVMICmp
+  /// Floating-point comparison.
   LLVMFCmp
+  /// Static single-assignment PHI node.
   LLVMPHI
+  /// Function or function-pointer call.
   LLVMCall
+  /// Conditional value selection.
   LLVMSelect
+  /// LLVM reserved user opcode 1.
   LLVMUserOp1
+  /// LLVM reserved user opcode 2.
   LLVMUserOp2
+  /// Variadic argument extraction.
   LLVMVAArg
+  /// Vector element extraction.
   LLVMExtractElement
+  /// Vector element insertion.
   LLVMInsertElement
+  /// Vector lane shuffle.
   LLVMShuffleVector
+  /// Aggregate value extraction.
   LLVMExtractValue
+  /// Aggregate value insertion.
   LLVMInsertValue
+  /// Converts poison or undef to a stable but arbitrary value.
   LLVMFreeze
+  /// Atomic memory fence.
   LLVMFence
+  /// Atomic compare-and-exchange.
   LLVMAtomicCmpXchg
+  /// Atomic read-modify-write.
   LLVMAtomicRMW
+  /// Resumes propagation of an exception.
   LLVMResume
+  /// Landing pad for legacy exception handling.
   LLVMLandingPad
+  /// Exits a cleanup pad.
   LLVMCleanupRet
+  /// Exits a catch pad.
   LLVMCatchRet
+  /// Begins a catch handler pad.
   LLVMCatchPad
+  /// Begins a cleanup handler pad.
   LLVMCleanupPad
+  /// Dispatches among exception catch handlers.
   LLVMCatchSwitch
 }
 
 ///|
+/// Prints the binding's dense FFI opcode index.
 pub impl Show for LLVMOpcode with fn output(self, logger) {
   self.to_int().output(logger)
 }
 
 ///|
+/// Returns the binding's dense FFI index for this opcode.
 pub fn LLVMOpcode::to_int(self : LLVMOpcode) -> Int {
   match self {
     LLVMRet => 0
@@ -584,6 +671,10 @@ pub fn LLVMOpcode::to_int(self : LLVMOpcode) -> Int {
 }
 
 ///|
+/// Decodes the binding's dense FFI opcode index.
+///
+/// **Panics:** Aborts for an unknown index; this is not a checked parser for
+/// arbitrary or future LLVM values.
 pub fn LLVMOpcode::from_int(idx : Int) -> LLVMOpcode {
   match idx {
     0 => LLVMRet
@@ -658,36 +749,60 @@ pub fn LLVMOpcode::from_int(idx : Int) -> LLVMOpcode {
 }
 
 ///|
+/// LLVM 19 type categories returned by `LLVMGetTypeKind`.
 pub(all) enum LLVMTypeKind {
+  /// Unsized `void` type.
   LLVMVoidTypeKind
+  /// IEEE binary16 floating-point type.
   LLVMHalfTypeKind
+  /// IEEE binary32 floating-point type.
   LLVMFloatTypeKind
+  /// IEEE binary64 floating-point type.
   LLVMDoubleTypeKind
+  /// x87 80-bit floating-point type.
   LLVMX86_FP80TypeKind
+  /// IEEE-style 128-bit floating-point type with a 112-bit fraction.
   LLVMFP128TypeKind
+  /// PowerPC double-double 128-bit floating-point type.
   LLVMPPC_FP128TypeKind
+  /// Basic-block label type.
   LLVMLabelTypeKind
+  /// Arbitrary-width integer type.
   LLVMIntegerTypeKind
+  /// Function signature type.
   LLVMFunctionTypeKind
+  /// Structure aggregate type.
   LLVMStructTypeKind
+  /// Array aggregate type.
   LLVMArrayTypeKind
+  /// Opaque pointer type.
   LLVMPointerTypeKind
+  /// Fixed-width SIMD vector type.
   LLVMVectorTypeKind
+  /// Metadata pseudo-type.
   LLVMMetadataTypeKind
+  /// Legacy x86 MMX type; unsupported by part of this binding's native adapter.
   LLVMX86_MMXTypeKind
+  /// Token pseudo-type.
   LLVMTokenTypeKind
+  /// Scalable SIMD vector type.
   LLVMScalableVectorTypeKind
+  /// Brain floating-point 16-bit type.
   LLVMBFloatTypeKind
+  /// x86 AMX tile type.
   LLVMX86_AMXTypeKind
+  /// Target-defined extension type.
   LLVMTargetExtTypeKind
 } derive(Eq)
 
 ///|
+/// Prints the binding's dense FFI type-kind index.
 pub impl Show for LLVMTypeKind with fn output(self, logger) {
   self.to_int().output(logger)
 }
 
 ///|
+/// Returns the binding's dense FFI index for this type category.
 pub fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
   match self {
     LLVMVoidTypeKind => 0
@@ -715,6 +830,10 @@ pub fn LLVMTypeKind::to_int(self : LLVMTypeKind) -> Int {
 }
 
 ///|
+/// Decodes the binding's dense FFI type-kind index.
+///
+/// **Panics:** Aborts for an unknown index. Although index 15 maps to the legacy
+/// MMX constructor here, the current native adapter does not translate that kind.
 pub fn LLVMTypeKind::from_int(idx : Int) -> LLVMTypeKind {
   match idx {
     0 => LLVMVoidTypeKind
@@ -743,27 +862,46 @@ pub fn LLVMTypeKind::from_int(idx : Int) -> LLVMTypeKind {
 }
 
 ///|
+/// Linker visibility and coalescing policy for an LLVM global value.
 pub(all) enum LLVMLinkage {
+  /// Ordinary externally visible declaration or definition.
   LLVMExternalLinkage
+  /// Definition available only for optimization and omitted from emitted code.
   LLVMAvailableExternallyLinkage
+  /// Linker may keep any one definition.
   LLVMLinkOnceAnyLinkage
+  /// Linker may keep one equivalent ODR definition.
   LLVMLinkOnceODRLinkage
+  /// Obsolete auto-hide variant retained for LLVM-C compatibility.
   LLVMLinkOnceODRAutoHideLinkage
+  /// Weak definition for which the linker may keep any copy.
   LLVMWeakAnyLinkage
+  /// Weak definition whose copies must be ODR-equivalent.
   LLVMWeakODRLinkage
+  /// Concatenates global arrays during linking.
   LLVMAppendingLinkage
+  /// Module-local symbol analogous to a source-level `static` definition.
   LLVMInternalLinkage
+  /// Module-local definition omitted from the object symbol table when possible.
   LLVMPrivateLinkage
+  /// Obsolete DLL-import linkage retained for compatibility.
   LLVMDLLImportLinkage
+  /// Obsolete DLL-export linkage retained for compatibility.
   LLVMDLLExportLinkage
+  /// External reference that resolves to zero when no definition exists.
   LLVMExternalWeakLinkage
+  /// Obsolete ghost linkage retained for compatibility.
   LLVMGhostLinkage
+  /// Tentative common definition merged by the linker.
   LLVMCommonLinkage
+  /// Linker-private symbol removed by the linker.
   LLVMLinkerPrivateLinkage
+  /// Weak linker-private symbol.
   LLVMLinkerPrivateWeakLinkage
 }
 
 ///|
+/// Returns the binding's dense FFI index for this linkage.
 pub fn LLVMLinkage::to_int(self : LLVMLinkage) -> Int {
   match self {
     LLVMExternalLinkage => 0
@@ -811,13 +949,18 @@ fn LLVMLinkage::from_int(idx : Int) -> LLVMLinkage {
 }
 
 ///|
+/// Symbol visibility policy for an LLVM global value.
 pub(all) enum LLVMVisibility {
+  /// Visibility follows the target's ordinary default rules.
   LLVMDefaultVisibility
+  /// Symbol is not preemptable or externally visible outside the linked unit.
   LLVMHiddenVisibility
+  /// Symbol is externally visible but cannot be preempted within the defining unit.
   LLVMProtectedVisibility
 }
 
 ///|
+/// Returns the binding's dense FFI index for this visibility.
 pub fn LLVMVisibility::to_int(self : LLVMVisibility) -> Int {
   match self {
     LLVMDefaultVisibility => 0
@@ -827,6 +970,9 @@ pub fn LLVMVisibility::to_int(self : LLVMVisibility) -> Int {
 }
 
 ///|
+/// Decodes a dense visibility index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMVisibility::from_int(idx : Int) -> LLVMVisibility {
   match idx {
     0 => LLVMDefaultVisibility
@@ -837,18 +983,24 @@ pub fn LLVMVisibility::from_int(idx : Int) -> LLVMVisibility {
 }
 
 ///|
+/// Whether a global's address is semantically significant.
 pub(all) enum LLVMUnnamedAddr {
+  /// Address identity is significant.
   LLVMNoUnnamedAddr
+  /// Address identity is insignificant within the current module.
   LLVMLocalUnnamedAddr
+  /// Address identity is insignificant across modules.
   LLVMGlobalUnnamedAddr
 } derive(Eq)
 
 ///|
+/// Prints the binding's dense unnamed-address index.
 pub impl Show for LLVMUnnamedAddr with fn output(self, logger) {
   self.to_int().output(logger)
 }
 
 ///|
+/// Returns the binding's dense FFI index for this unnamed-address state.
 pub fn LLVMUnnamedAddr::to_int(self : LLVMUnnamedAddr) -> Int {
   match self {
     LLVMNoUnnamedAddr => 0
@@ -858,6 +1010,9 @@ pub fn LLVMUnnamedAddr::to_int(self : LLVMUnnamedAddr) -> Int {
 }
 
 ///|
+/// Decodes a dense unnamed-address index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMUnnamedAddr::from_int(idx : Int) -> LLVMUnnamedAddr {
   match idx {
     0 => LLVMNoUnnamedAddr
@@ -868,13 +1023,18 @@ pub fn LLVMUnnamedAddr::from_int(idx : Int) -> LLVMUnnamedAddr {
 }
 
 ///|
+/// DLL import/export storage annotation for a global value.
 pub(all) enum LLVMDLLStorageClass {
+  /// No DLL storage annotation.
   LLVMDefaultStorageClass
+  /// Symbol is imported from a DLL.
   LLVMDLLImportStorageClass
+  /// Symbol is exported from a DLL.
   LLVMDLLExportStorageClass
 }
 
 ///|
+/// Returns the binding's dense FFI index for this DLL storage class.
 pub fn LLVMDLLStorageClass::to_int(self : LLVMDLLStorageClass) -> Int {
   match self {
     LLVMDefaultStorageClass => 0
@@ -884,6 +1044,9 @@ pub fn LLVMDLLStorageClass::to_int(self : LLVMDLLStorageClass) -> Int {
 }
 
 ///|
+/// Decodes a dense DLL storage-class index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMDLLStorageClass::from_int(idx : Int) -> LLVMDLLStorageClass {
   match idx {
     0 => LLVMDefaultStorageClass
@@ -897,51 +1060,97 @@ pub fn LLVMDLLStorageClass::from_int(idx : Int) -> LLVMDLLStorageClass {
 }
 
 ///|
+/// Calling conventions exposed by LLVM 19's C API.
+///
+/// Many constructors are target-specific; using one with an incompatible target
+/// or mismatching caller/callee convention can make generated code invalid.
 pub(all) enum LLVMCallConv {
+  /// Target's ordinary C calling convention.
   LLVMCCallConv
+  /// LLVM `fastcc`, optimized for local calls rather than ABI compatibility.
   LLVMFastCallConv
+  /// LLVM `coldcc`, optimized for rarely executed calls.
   LLVMColdCallConv
+  /// Calling convention used by the Glasgow Haskell Compiler.
   LLVMGHCCallConv
+  /// Legacy HiPE/Erlang calling convention.
   LLVMHiPECallConv
+  /// LLVM `anyregcc`, allowing arguments in arbitrary registers.
   LLVMAnyRegCallConv
+  /// Preserves most registers across the call.
   LLVMPreserveMostCallConv
+  /// Preserves all registers except those required for the return value.
   LLVMPreserveAllCallConv
+  /// Swift language calling convention.
   LLVMSwiftCallConv
+  /// C++ fast thread-local-storage access convention.
   LLVMCXXFASTTLSCallConv
+  /// 32-bit x86 `stdcall` convention.
   LLVMX86StdcallCallConv
+  /// 32-bit x86 `fastcall` convention.
   LLVMX86FastcallCallConv
+  /// ARM Procedure Call Standard convention.
   LLVMARMAPCSCallConv
+  /// ARM Architecture Procedure Call Standard convention.
   LLVMARMAAPCSCallConv
+  /// ARM AAPCS variant using VFP registers.
   LLVMARMAAPCSVFPCallConv
+  /// MSP430 interrupt-handler convention.
   LLVMMSP430INTRCallConv
+  /// 32-bit x86 C++ `thiscall` convention.
   LLVMX86ThisCallCallConv
+  /// PTX kernel entry convention.
   LLVMPTXKernelCallConv
+  /// PTX device-function convention.
   LLVMPTXDeviceCallConv
+  /// SPIR device-function convention.
   LLVMSPIRFUNCCallConv
+  /// SPIR kernel entry convention.
   LLVMSPIRKERNELCallConv
+  /// Intel OpenCL built-in convention.
   LLVMIntelOCLBICallConv
+  /// x86-64 System V ABI convention.
   LLVMX8664SysVCallConv
+  /// Microsoft x64 ABI convention.
   LLVMWin64CallConv
+  /// x86 vector-call convention.
   LLVMX86VectorCallCallConv
+  /// HHVM internal convention.
   LLVMHHVMCallConv
+  /// HHVM C-compatible convention.
   LLVMHHVMCCallConv
+  /// x86 interrupt-handler convention.
   LLVMX86INTRCallConv
+  /// AVR interrupt-handler convention.
   LLVMAVRINTRCallConv
+  /// AVR signal-handler convention.
   LLVMAVRSIGNALCallConv
+  /// AVR built-in function convention.
   LLVMAVRBUILTINCallConv
+  /// AMDGPU vertex-shader convention.
   LLVMAMDGPUVSCallConv
+  /// AMDGPU geometry-shader convention.
   LLVMAMDGPUGSCallConv
+  /// AMDGPU pixel-shader convention.
   LLVMAMDGPUPSCallConv
+  /// AMDGPU compute-shader convention.
   LLVMAMDGPUCSCallConv
+  /// AMDGPU kernel entry convention.
   LLVMAMDGPUKERNELCallConv
+  /// x86 register-call convention.
   LLVMX86RegCallCallConv
+  /// AMDGPU hull-shader convention.
   LLVMAMDGPUHSCallConv
+  /// MSP430 built-in function convention.
   LLVMMSP430BUILTINCallConv
+  /// AMDGPU local-shader convention.
   LLVMAMDGPULSCallConv
+  /// AMDGPU export-shader convention.
   LLVMAMDGPUESCallConv
 }
 
 ///|
+/// Returns the binding's dense FFI index for this calling convention.
 pub fn LLVMCallConv::to_int(self : LLVMCallConv) -> Int {
   match self {
     LLVMCCallConv => 0
@@ -989,6 +1198,10 @@ pub fn LLVMCallConv::to_int(self : LLVMCallConv) -> Int {
 }
 
 ///|
+/// Decodes a dense calling-convention index.
+///
+/// **Panics:** Aborts for an unknown index; this does not accept LLVM's public
+/// numeric calling-convention IDs directly.
 pub fn LLVMCallConv::from_int(i : Int) -> LLVMCallConv {
   match i {
     0 => LLVMCCallConv
@@ -1037,37 +1250,66 @@ pub fn LLVMCallConv::from_int(i : Int) -> LLVMCallConv {
 }
 
 ///|
+/// Runtime class categories returned by `LLVMGetValueKind`.
 pub(all) enum LLVMValueKind {
+  /// Function argument value.
   LLVMArgumentValueKind
+  /// Basic block represented as a value.
   LLVMBasicBlockValueKind
+  /// MemorySSA use node.
   LLVMMemoryUseValueKind
+  /// MemorySSA definition node.
   LLVMMemoryDefValueKind
+  /// MemorySSA PHI node.
   LLVMMemoryPhiValueKind
+  /// Function global value.
   LLVMFunctionValueKind
+  /// Global alias.
   LLVMGlobalAliasValueKind
+  /// Indirect function (IFUNC) global value.
   LLVMGlobalIFuncValueKind
+  /// Global variable.
   LLVMGlobalVariableValueKind
+  /// Constant address of a basic block.
   LLVMBlockAddressValueKind
+  /// Constant expression.
   LLVMConstantExprValueKind
+  /// Constant array aggregate.
   LLVMConstantArrayValueKind
+  /// Constant structure aggregate.
   LLVMConstantStructValueKind
+  /// Constant vector aggregate.
   LLVMConstantVectorValueKind
+  /// Undefined value.
   LLVMUndefValueValueKind
+  /// All-zero aggregate constant.
   LLVMConstantAggregateZeroValueKind
+  /// Packed constant-data array.
   LLVMConstantDataArrayValueKind
+  /// Packed constant-data vector.
   LLVMConstantDataVectorValueKind
+  /// Integer constant.
   LLVMConstantIntValueKind
+  /// Floating-point constant.
   LLVMConstantFPValueKind
+  /// Null pointer constant.
   LLVMConstantPointerNullValueKind
+  /// `token none` constant.
   LLVMConstantTokenNoneValueKind
+  /// Metadata wrapped as a value.
   LLVMMetadataAsValueValueKind
+  /// Inline-assembly value.
   LLVMInlineAsmValueKind
+  /// Any instruction value; inspect its opcode for a more specific class.
   LLVMInstructionValueKind
+  /// Poison value.
   LLVMPoisonValueValueKind
+  /// Target-specific `none` constant.
   LLVMConstantTargetNoneValueKind
 }
 
 ///|
+/// Returns the binding's dense FFI index for this value category.
 pub fn LLVMValueKind::to_int(self : LLVMValueKind) -> Int {
   match self {
     LLVMArgumentValueKind => 0
@@ -1101,6 +1343,9 @@ pub fn LLVMValueKind::to_int(self : LLVMValueKind) -> Int {
 }
 
 ///|
+/// Decodes a dense value-kind index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMValueKind::from_int(idx : Int) -> LLVMValueKind {
   match idx {
     0 => LLVMArgumentValueKind
@@ -1135,20 +1380,35 @@ pub fn LLVMValueKind::from_int(idx : Int) -> LLVMValueKind {
 }
 
 ///|
+/// Integer comparison predicates.
+///
+/// Equality ignores signedness; ordered predicates explicitly select unsigned
+/// (`U*`) or two's-complement signed (`S*`) interpretation.
 pub(all) enum LLVMIntPredicate {
+  /// Equal.
   LLVMIntEQ
+  /// Not equal.
   LLVMIntNE
+  /// Unsigned greater than.
   LLVMIntUGT
+  /// Unsigned greater than or equal.
   LLVMIntUGE
+  /// Unsigned less than.
   LLVMIntULT
+  /// Unsigned less than or equal.
   LLVMIntULE
+  /// Signed greater than.
   LLVMIntSGT
+  /// Signed greater than or equal.
   LLVMIntSGE
+  /// Signed less than.
   LLVMIntSLT
+  /// Signed less than or equal.
   LLVMIntSLE
 }
 
 ///|
+/// Returns the binding's dense FFI index for this integer predicate.
 pub fn LLVMIntPredicate::to_int(self : LLVMIntPredicate) -> Int {
   match self {
     LLVMIntEQ => 0
@@ -1165,6 +1425,9 @@ pub fn LLVMIntPredicate::to_int(self : LLVMIntPredicate) -> Int {
 }
 
 ///|
+/// Decodes a dense integer-predicate index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMIntPredicate::from_int(idx : Int) -> LLVMIntPredicate {
   match idx {
     0 => LLVMIntEQ
@@ -1183,26 +1446,47 @@ pub fn LLVMIntPredicate::from_int(idx : Int) -> LLVMIntPredicate {
 }
 
 ///|
+/// Floating-point comparison predicates with explicit NaN behavior.
+///
+/// Ordered predicates are false if either operand is NaN; unordered predicates
+/// are true in that case.
 pub(all) enum LLVMRealPredicate {
+  /// Always false.
   LLVMRealPredicateFalse
+  /// Ordered and equal.
   LLVMRealOEQ
+  /// Ordered and greater than.
   LLVMRealOGT
+  /// Ordered and greater than or equal.
   LLVMRealOGE
+  /// Ordered and less than.
   LLVMRealOLT
+  /// Ordered and less than or equal.
   LLVMRealOLE
+  /// Ordered and not equal.
   LLVMRealONE
+  /// Ordered: neither operand is NaN.
   LLVMRealORD
+  /// Unordered: at least one operand is NaN.
   LLVMRealUNO
+  /// Unordered or equal.
   LLVMRealUEQ
+  /// Unordered or greater than.
   LLVMRealUGT
+  /// Unordered or greater than or equal.
   LLVMRealUGE
+  /// Unordered or less than.
   LLVMRealULT
+  /// Unordered or less than or equal.
   LLVMRealULE
+  /// Unordered or not equal.
   LLVMRealUNE
+  /// Always true.
   LLVMRealPredicateTrue
 }
 
 ///|
+/// Returns the binding's dense FFI index for this real predicate.
 pub fn LLVMRealPredicate::to_int(self : LLVMRealPredicate) -> Int {
   match self {
     LLVMRealPredicateFalse => 0
@@ -1225,6 +1509,9 @@ pub fn LLVMRealPredicate::to_int(self : LLVMRealPredicate) -> Int {
 }
 
 ///|
+/// Decodes a dense real-predicate index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMRealPredicate::from_int(idx : Int) -> LLVMRealPredicate {
   match idx {
     0 => LLVMRealPredicateFalse
@@ -1249,12 +1536,16 @@ pub fn LLVMRealPredicate::from_int(idx : Int) -> LLVMRealPredicate {
 }
 
 ///|
+/// Kind of clause attached to a legacy landing-pad instruction.
 pub(all) enum LLVMLandingPadClauseTy {
+  /// Catches values matching one type-info constant.
   LLVMLandingPadCatch
+  /// Filters out exceptions matching an array of type-info constants.
   LLVMLandingPadFilter
 }
 
 ///|
+/// Returns the binding's dense FFI index for this landing-pad clause kind.
 pub fn LLVMLandingPadClauseTy::to_int(self : LLVMLandingPadClauseTy) -> Int {
   match self {
     LLVMLandingPadCatch => 0
@@ -1263,6 +1554,9 @@ pub fn LLVMLandingPadClauseTy::to_int(self : LLVMLandingPadClauseTy) -> Int {
 }
 
 ///|
+/// Decodes a dense landing-pad clause index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMLandingPadClauseTy::from_int(idx : Int) -> LLVMLandingPadClauseTy {
   match idx {
     0 => LLVMLandingPadCatch
@@ -1275,15 +1569,25 @@ pub fn LLVMLandingPadClauseTy::from_int(idx : Int) -> LLVMLandingPadClauseTy {
 }
 
 ///|
+/// Thread-local-storage model for an LLVM global variable.
+///
+/// The non-default models are target/linkage promises whose validity depends on
+/// how the final object is linked and loaded.
 pub(all) enum LLVMThreadLocalMode {
+  /// The global is not thread-local.
   LLVMNotThreadLocal
+  /// General-dynamic TLS model, valid for the broadest linkage/loading cases.
   LLVMGeneralDynamicTLSModel
+  /// Local-dynamic TLS model for symbols in the current module.
   LLVMLocalDynamicTLSModel
+  /// Initial-exec TLS model, requiring availability at process startup.
   LLVMInitialExecTLSModel
+  /// Local-exec TLS model for non-preemptable symbols in the main executable.
   LLVMLocalExecTLSModel
 }
 
 ///|
+/// Returns the binding's dense FFI index for this TLS model.
 pub fn LLVMThreadLocalMode::to_int(self : LLVMThreadLocalMode) -> Int {
   match self {
     LLVMNotThreadLocal => 0
@@ -1295,6 +1599,9 @@ pub fn LLVMThreadLocalMode::to_int(self : LLVMThreadLocalMode) -> Int {
 }
 
 ///|
+/// Decodes a dense TLS-model index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMThreadLocalMode::from_int(idx : Int) -> LLVMThreadLocalMode {
   match idx {
     0 => LLVMNotThreadLocal
@@ -1310,17 +1617,29 @@ pub fn LLVMThreadLocalMode::from_int(idx : Int) -> LLVMThreadLocalMode {
 }
 
 ///|
+/// LLVM atomic memory ordering, from weakest to strongest.
+///
+/// Not every ordering is legal for every load, store, fence, compare-exchange,
+/// or atomic-RMW operation; callers must obey the consuming API's restrictions.
 pub(all) enum LLVMAtomicOrdering {
+  /// Operation is not atomic.
   LLVMAtomicOrderingNotAtomic
+  /// Atomicity only, with no synchronization ordering.
   LLVMAtomicOrderingUnordered
+  /// Per-location modification order without acquire/release synchronization.
   LLVMAtomicOrderingMonotonic
+  /// Acquire ordering for later memory operations.
   LLVMAtomicOrderingAcquire
+  /// Release ordering for earlier memory operations.
   LLVMAtomicOrderingRelease
+  /// Both acquire and release ordering.
   LLVMAtomicOrderingAcquireRelease
+  /// Sequential consistency in addition to acquire/release effects.
   LLVMAtomicOrderingSequentiallyConsistent
 }
 
 ///|
+/// Returns the binding's dense FFI index for this atomic ordering.
 pub fn LLVMAtomicOrdering::to_int(self : LLVMAtomicOrdering) -> Int {
   match self {
     LLVMAtomicOrderingNotAtomic => 0
@@ -1334,6 +1653,9 @@ pub fn LLVMAtomicOrdering::to_int(self : LLVMAtomicOrdering) -> Int {
 }
 
 ///|
+/// Decodes a dense atomic-ordering index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMAtomicOrdering::from_int(idx : Int) -> LLVMAtomicOrdering {
   match idx {
     0 => LLVMAtomicOrderingNotAtomic
@@ -1351,27 +1673,46 @@ pub fn LLVMAtomicOrdering::from_int(idx : Int) -> LLVMAtomicOrdering {
 }
 
 ///|
+/// Operation performed by an LLVM atomic read-modify-write instruction.
 pub(all) enum LLVMAtomicRMWBinOp {
+  /// Exchanges the old value with the operand.
   LLVMAtomicRMWBinOpXchg
+  /// Integer wrapping addition.
   LLVMAtomicRMWBinOpAdd
+  /// Integer wrapping subtraction.
   LLVMAtomicRMWBinOpSub
+  /// Bitwise AND.
   LLVMAtomicRMWBinOpAnd
+  /// Bitwise NAND.
   LLVMAtomicRMWBinOpNand
+  /// Bitwise OR.
   LLVMAtomicRMWBinOpOr
+  /// Bitwise exclusive OR.
   LLVMAtomicRMWBinOpXor
+  /// Signed integer maximum.
   LLVMAtomicRMWBinOpMax
+  /// Signed integer minimum.
   LLVMAtomicRMWBinOpMin
+  /// Unsigned integer maximum.
   LLVMAtomicRMWBinOpUMax
+  /// Unsigned integer minimum.
   LLVMAtomicRMWBinOpUMin
+  /// Floating-point addition.
   LLVMAtomicRMWBinOpFAdd
+  /// Floating-point subtraction.
   LLVMAtomicRMWBinOpFSub
+  /// Floating-point maximum.
   LLVMAtomicRMWBinOpFMax
+  /// Floating-point minimum.
   LLVMAtomicRMWBinOpFMin
+  /// Unsigned increment that wraps to zero at the supplied limit.
   LLVMAtomicRMWBinOpUIncWrap
+  /// Unsigned decrement that wraps to the supplied limit at zero.
   LLVMAtomicRMWBinOpUDecWrap
 }
 
 ///|
+/// Returns the binding's dense FFI index for this atomic-RMW operation.
 pub fn LLVMAtomicRMWBinOp::to_int(self : LLVMAtomicRMWBinOp) -> Int {
   match self {
     LLVMAtomicRMWBinOpXchg => 0
@@ -1395,6 +1736,9 @@ pub fn LLVMAtomicRMWBinOp::to_int(self : LLVMAtomicRMWBinOp) -> Int {
 }
 
 ///|
+/// Decodes a dense atomic-RMW operation index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMAtomicRMWBinOp::from_int(idx : Int) -> LLVMAtomicRMWBinOp {
   match idx {
     0 => LLVMAtomicRMWBinOpXchg

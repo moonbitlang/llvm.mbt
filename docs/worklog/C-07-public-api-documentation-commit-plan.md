@@ -282,9 +282,9 @@
 | --- | --- |
 | `unsafe/Types.mbt` | `LLVMFastMathFlags`；`LLVMOpcode`、`LLVMTypeKind`、`LLVMLinkage`、`LLVMVisibility`、`LLVMUnnamedAddr`、`LLVMDLLStorageClass`、`LLVMCallConv`、`LLVMValueKind`、`LLVMIntPredicate`、`LLVMRealPredicate`、`LLVMLandingPadClauseTy`、`LLVMThreadLocalMode`、`LLVMAtomicOrdering`、`LLVMAtomicRMWBinOp`；全部 constructor、`to_int`/`from_int` 与相关 Show impl |
 
-- [ ] 按 LLVM 19 语义逐项说明 enum constructor，保留 deprecated/compatibility value 的状态。
-- [ ] 说明 `from_int` 对未知值的行为，不把内部 `unreachable` 或默认映射包装成安全解析保证。
-- [ ] 将大量机械转换方法保持简短，但不得省略 enum 本身和 constructor 的含义。
+- [x] 按 LLVM 19 语义逐项说明 enum constructor，保留 deprecated/compatibility value 的状态。
+- [x] 说明 `from_int` 对未知值的行为，不把内部 `unreachable` 或默认映射包装成安全解析保证。
+- [x] 将大量机械转换方法保持简短，但不得省略 enum 本身和 constructor 的含义。
 
 建议提交信息：`docs(unsafe): document core LLVM enums`
 
