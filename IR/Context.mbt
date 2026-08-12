@@ -44,9 +44,7 @@ pub fn Context::addModule(
   ) catch {
     @unsafe.EmbeddedNul => raise ContainsNul
   }
-  let mod = Module::from_raw(module_ref, self)
-  mod.setDefaultDataLayout()
-  mod
+  Module::from_raw(module_ref, self)
 }
 
 ///|

@@ -614,7 +614,9 @@ extern "C" fn __llvm_get_data_layout_str(m : LLVMModuleRef) -> Bytes = "llvm_mbt
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-pub fn llvm_get_data_layout_str(m : LLVMModuleRef) -> String raise {
+pub fn llvm_get_data_layout_str(
+  m : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   __llvm_get_data_layout_str(m) |> @utf8.decode
 }
 
@@ -627,7 +629,9 @@ pub fn llvm_get_data_layout_str(m : LLVMModuleRef) -> String raise {
 /// but match the name of another method on the module. Prefer the use
 /// of LLVMGetDataLayoutStr, which is not ambiguous.
 /// 
-pub fn LLVMModuleRef::get_data_layout_str(self : LLVMModuleRef) -> String raise {
+pub fn LLVMModuleRef::get_data_layout_str(
+  self : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   llvm_get_data_layout_str(self)
 }
 
@@ -637,13 +641,15 @@ extern "C" fn __llvm_get_data_layout(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get
 
 ///|
 /// Get the data layout for a module.
-pub fn llvm_get_data_layout(m : LLVMModuleRef) -> String raise {
+pub fn llvm_get_data_layout(m : LLVMModuleRef) -> String raise @utf8.Malformed {
   __llvm_get_data_layout(m) |> @utf8.decode
 }
 
 ///|
 /// Get the data layout for a module.
-pub fn LLVMModuleRef::get_data_layout(self : LLVMModuleRef) -> String raise {
+pub fn LLVMModuleRef::get_data_layout(
+  self : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   llvm_get_data_layout(self)
 }
 
@@ -695,7 +701,7 @@ extern "C" fn __llvm_get_target(m : LLVMModuleRef) -> Bytes = "llvm_mbt_get_modu
 /// 
 /// - see Module::getTargetTriple()
 /// 
-pub fn llvm_get_target(m : LLVMModuleRef) -> String raise {
+pub fn llvm_get_target(m : LLVMModuleRef) -> String raise @utf8.Malformed {
   __llvm_get_target(m) |> @utf8.decode
 }
 
@@ -704,7 +710,9 @@ pub fn llvm_get_target(m : LLVMModuleRef) -> String raise {
 /// 
 /// - see Module::getTargetTriple()
 /// 
-pub fn LLVMModuleRef::get_target(self : LLVMModuleRef) -> String raise {
+pub fn LLVMModuleRef::get_target(
+  self : LLVMModuleRef,
+) -> String raise @utf8.Malformed {
   llvm_get_target(self)
 }
 

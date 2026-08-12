@@ -74,7 +74,6 @@ test {
   let expect =
     #|; ModuleID = 'stack_struct_demo'
     #|source_filename = "stack_struct_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|%Rational = type { i32, i32 }
     #|
@@ -320,7 +319,6 @@ test {
   let expect =
     #|; ModuleID = 'rational_demo'
     #|source_filename = "rational_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|%Rational = type { i32, i32 }
     #|

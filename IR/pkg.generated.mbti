@@ -838,14 +838,15 @@ pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, 
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
 pub fn Module::getDataLayout(Self) -> DataLayout
+pub fn Module::getDataLayoutStr(Self) -> String raise StringError
 pub fn Module::getFirstFunction(Self) -> Function?
 pub fn Module::getFunction(Self, String) -> Function?
 pub fn Module::getFunctions(Self) -> Array[Function]
 pub fn Module::getLastFunction(Self) -> Function?
 pub fn Module::getName(Self) -> String raise StringError
 pub fn Module::getSourceFileName(Self) -> String raise StringError
+pub fn Module::getTargetTriple(Self) -> String raise StringError
 pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
-pub fn Module::setDefaultDataLayout(Self) -> Unit
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
 pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise

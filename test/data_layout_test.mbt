@@ -17,6 +17,16 @@ fn assert_layout_metrics(
 }
 
 ///|
+test "new Module leaves target unspecified" {
+  let context = Context::new()
+  let mod = context.addModule("target_unspecified")
+  inspect(mod.getTargetTriple(), content="")
+  inspect(mod.getDataLayoutStr(), content="")
+  mod.setDataLayout("e-p:64:64-i64:64-n8:16:32:64")
+  inspect(mod.getDataLayoutStr(), content="e-p:64:64-i64:64-n8:16:32:64")
+}
+
+///|
 test "DataLayout reports integer and array metrics" {
   let context = Context::new()
   let mod = context.addModule("data_layout_scalars")

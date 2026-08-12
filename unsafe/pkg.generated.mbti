@@ -668,9 +668,9 @@ pub fn llvm_get_current_debug_location(LLVMBuilderRef) -> LLVMValueRef
 
 pub fn llvm_get_current_debug_location2(LLVMBuilderRef) -> LLVMMetadataRef
 
-pub fn llvm_get_data_layout(LLVMModuleRef) -> String raise
+pub fn llvm_get_data_layout(LLVMModuleRef) -> String raise @utf8.Malformed
 
-pub fn llvm_get_data_layout_str(LLVMModuleRef) -> String raise
+pub fn llvm_get_data_layout_str(LLVMModuleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_debug_loc_column(LLVMValueRef) -> UInt
 
@@ -980,7 +980,7 @@ pub fn llvm_get_switch_default_dest(LLVMValueRef) -> LLVMBasicBlockRef
 
 pub fn llvm_get_tail_call_kind(LLVMValueRef) -> LLVMTailCallKind
 
-pub fn llvm_get_target(LLVMModuleRef) -> String raise
+pub fn llvm_get_target(LLVMModuleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_target_description(LLVMTargetRef) -> String raise @utf8.Malformed
 
@@ -2388,8 +2388,8 @@ pub fn LLVMModuleRef::create_function_pass_manager(Self) -> LLVMPassManagerRef
 pub fn LLVMModuleRef::dispose(Self) -> Unit
 pub fn LLVMModuleRef::dump(Self) -> Unit
 pub fn LLVMModuleRef::get_context(Self) -> LLVMContextRef
-pub fn LLVMModuleRef::get_data_layout(Self) -> String raise
-pub fn LLVMModuleRef::get_data_layout_str(Self) -> String raise
+pub fn LLVMModuleRef::get_data_layout(Self) -> String raise @utf8.Malformed
+pub fn LLVMModuleRef::get_data_layout_str(Self) -> String raise @utf8.Malformed
 pub fn LLVMModuleRef::get_first_function(Self) -> LLVMValueRef
 pub fn LLVMModuleRef::get_first_global_alias(Self) -> LLVMValueRef
 pub fn LLVMModuleRef::get_first_global_ifunc(Self) -> LLVMValueRef
@@ -2402,7 +2402,7 @@ pub fn LLVMModuleRef::get_named_global_ifunc(Self, String) -> LLVMValueRef
 pub fn LLVMModuleRef::get_named_metadata(Self, String) -> Array[LLVMValueRef]
 pub fn LLVMModuleRef::get_named_metadata_num_operands(Self, String) -> UInt
 pub fn LLVMModuleRef::get_or_insert_comdat(Self, String) -> LLVMComdatRef raise CStringError
-pub fn LLVMModuleRef::get_target(Self) -> String raise
+pub fn LLVMModuleRef::get_target(Self) -> String raise @utf8.Malformed
 pub fn LLVMModuleRef::get_type_by_name(Self, String) -> LLVMTypeRef
 pub fn LLVMModuleRef::is_new_dbg_info_format(Self) -> Bool
 pub fn LLVMModuleRef::print_to_string(Self) -> String raise

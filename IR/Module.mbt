@@ -168,14 +168,6 @@ pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
 }
 
 ///|
-pub fn Module::setDefaultDataLayout(self : Module) -> Unit {
-  let layout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
-  @unsafe.llvm_set_data_layout(self.get_unsafe_ref(), layout) catch {
-    @unsafe.EmbeddedNul => ()
-  }
-}
-
-///|
 pub fn Module::setDataLayout(
   self : Module,
   layout : String,
@@ -186,11 +178,25 @@ pub fn Module::setDataLayout(
 }
 
 ///|
+pub fn Module::getDataLayoutStr(self : Module) -> String raise StringError {
+  @unsafe.llvm_get_data_layout_str(self.get_unsafe_ref()) catch {
+    @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
+  }
+}
+
+///|
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
   let target_data_ref = @unsafe.llvm_get_module_data_layout(
     self.get_unsafe_ref(),
   )
   DataLayout::from_raw(target_data_ref, self)
+}
+
+///|
+pub fn Module::getTargetTriple(self : Module) -> String raise StringError {
+  @unsafe.llvm_get_target(self.get_unsafe_ref()) catch {
+    @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
+  }
 }
 
 ///|

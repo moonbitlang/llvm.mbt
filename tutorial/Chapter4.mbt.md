@@ -71,7 +71,6 @@ test {
   let expect =
     #|; ModuleID = 'function_call_demo'
     #|source_filename = "function_call_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|declare i32 @print_int(i32)
     #|
@@ -197,7 +196,6 @@ test {
   let expect =
     #|; ModuleID = 'function_pointer_demo'
     #|source_filename = "function_pointer_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|define i32 @double_value(i32 %0) {
     #|entry:

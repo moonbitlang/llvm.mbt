@@ -78,7 +78,6 @@ test {
   let expect =
     #|; ModuleID = 'stack_array_demo'
     #|source_filename = "stack_array_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|declare void @fill_array(ptr, i32, i32)
     #|
@@ -403,7 +402,6 @@ test {
   let expect =
     #|; ModuleID = 'complete_array_demo'
     #|source_filename = "complete_array_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|declare void @print_array(ptr, i32)
     #|

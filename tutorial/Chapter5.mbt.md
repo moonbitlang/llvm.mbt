@@ -135,7 +135,6 @@ test {
   let expect =
     #|; ModuleID = 'heap_memory_demo'
     #|source_filename = "heap_memory_demo"
-    #|target datalayout = "e-m:e-i64:64-f80:128-n8:16:32:64-S128"
     #|
     #|declare void @print_int(i32)
     #|
