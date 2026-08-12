@@ -92,10 +92,10 @@
 | --- | --- |
 | `IR/Type.mbt` | `TypeEnum`/`asTypeClass`；`Type` 及全部 trait method/default method；`InValidTypeError`；`IntegerType`/`IntegerTypeEnum`；`FPType`/`FPTypeEnum`；`PrimitiveType`/`PrimitiveTypeEnum`；`AggregateType`/`AggregateTypeEnum`；`AbstractType`/`AbstractTypeEnum`；这些 trait object 的 public extend；`AddressSpace`/`AddressSpace::new` |
 
-- [ ] 为每个公开 enum constructor 说明它代表的具体 LLVM type category。
-- [ ] 为各 trait 写清 implementor contract、分类转换、borrowed raw ref 与 Context 生命周期。
-- [ ] 区分 `isSized`、`isSingleValueType`、`isAggregateType` 等容易混淆的 predicate，不只把方法名改写成句子。
-- [ ] 说明 downcast/enum conversion 的 `None` 语义，以及 `sizeOf` 等结果的所有权和不可用条件。
+- [x] 为每个公开 enum constructor 说明它代表的具体 LLVM type category。
+- [x] 为各 trait 写清 implementor contract、分类转换、borrowed raw ref 与 Context 生命周期。
+- [x] 区分 `isSized`、`isSingleValueType`、`isAggregateType` 等容易混淆的 predicate，不只把方法名改写成句子。
+- [x] 说明 downcast/enum conversion 的 `None` 语义，以及 `sizeOf` 等结果的所有权和不可用条件。
 
 建议提交信息：`docs(IR): document type hierarchy contracts`
 

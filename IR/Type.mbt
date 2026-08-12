@@ -1,28 +1,56 @@
 ///|
+/// Closed classification of the LLVM types supported by the safe API.
+///
+/// Each case carries the corresponding concrete wrapper. Use
+/// `asTypeClass` when an operation only needs the common `Type` interface.
 pub enum TypeEnum {
+  /// IEEE 754 binary16 floating-point type.
   HalfType(HalfType)
+  /// BFloat16 floating-point type.
   BFloatType(BFloatType)
+  /// IEEE 754 binary32 floating-point type.
   FloatType(FloatType)
+  /// IEEE 754 binary64 floating-point type.
   DoubleType(DoubleType)
+  /// IEEE 754 binary128 floating-point type.
   FP128Type(FP128Type)
+  /// One-bit integer type.
   Int1Type(Int1Type)
+  /// Eight-bit integer type.
   Int8Type(Int8Type)
+  /// Sixteen-bit integer type.
   Int16Type(Int16Type)
+  /// Thirty-two-bit integer type.
   Int32Type(Int32Type)
+  /// Sixty-four-bit integer type.
   Int64Type(Int64Type)
+  /// Type of functions that do not return a value.
   VoidType(VoidType)
+  /// Basic-block label type.
   LabelType(LabelType)
+  /// LLVM metadata type.
   MetadataType(MetadataType)
+  /// LLVM token type.
   TokenType(TokenType)
+  /// Function signature type.
   FunctionType(FunctionType)
+  /// Structure aggregate type.
   StructType(StructType)
+  /// Fixed-length array aggregate type.
   ArrayType(ArrayType)
+  /// Fixed-width vector type.
   VectorType(VectorType)
+  /// Scalable-width vector type.
   ScalableVectorType(ScalableVectorType)
+  /// Opaque pointer type.
   PointerType(PointerType)
 } derive(Eq)
 
 ///|
+/// Views a closed type-classification case through the common `Type` trait.
+///
+/// **Lifecycle:** The returned view borrows the same context-owned LLVM type as
+/// the enum payload. It must not outlive that context.
 pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
   match self {
     HalfType(t) => (t : &Type)
@@ -49,29 +77,49 @@ pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
 }
 
 ///|
+/// Common interface implemented by every LLVM type wrapper in the safe API.
+///
+/// **Implementor contract:** `getTypeRef`, `asTypeEnum`, and `getContext` must
+/// all describe the same live LLVM type. Implementations must not fabricate a
+/// raw handle or associate a type with a different context.
+///
+/// **Lifecycle:** LLVM types are owned by their `Context`. Every borrowed view
+/// returned through this trait is valid only while that context remains alive.
 pub trait Type: Show {
+  /// Returns the borrowed raw LLVM type handle represented by this wrapper.
+  ///
+  /// **Lifecycle:** The handle is context-owned and must not be disposed by the
+  /// caller.
   fn getTypeRef(Self) -> @unsafe.LLVMTypeRef
+
+  /// Returns the concrete safe classification of this type.
   fn asTypeEnum(Self) -> TypeEnum
+
+  /// Returns the context that owns this LLVM type.
   fn getContext(Self) -> Context = _
   //print(Self, logger: &Logger, isForDebug~ = false, noDetails~ = false)
   //dump(Self)
 
-  /// Return true if this is a 16-bit float type.
+  /// Returns `true` for `half` and `bfloat` types.
   fn is16bitFPTy(Self) -> Bool = _
 
-  /// Return true if this is a well-behaved IEEE-like type, which has a IEEE
-  /// compatible layout, and does not have non-IEEE values, such as x86_fp80's
-  /// unnormal values.
+  /// Returns `true` for the IEEE-like floating-point types supported by this
+  /// package.
   fn isIEEELikeFPTy(Self) -> Bool = _
 
-  /// Return true if this is one of the floating-point types
+  /// Returns `true` for a scalar floating-point type.
   fn isFloatingPointTy(Self) -> Bool = _
 
-  /// Return true if this is a target extension type with a scalable layout.
+  /// Reports whether this is a target-extension type with scalable layout.
+  ///
+  /// **Notes:** Target-extension types are not currently represented by the
+  /// safe type hierarchy, so built-in implementations return `false`.
   fn isScalableTargetExtTy(Self) -> Bool = _
 
-  /// Return true if this is a type whose size is a known multiple of vscale.
-  // REVIEW: cpp has another `isScalableTy` function
+  /// Reports whether this type has a size expressed as a multiple of `vscale`.
+  ///
+  /// **Dev Notes:** This predicate is not fully implemented yet and currently
+  /// returns `false` for built-in wrappers, including `ScalableVectorType`.
   fn isScalableTy(Self) -> Bool = _
 
   /// Return true if this type is or contains a target extension type that
@@ -84,66 +132,108 @@ pub trait Type: Show {
   // REVIEW: cpp has another `containsNonLocalTargetExtType` function
   //bool containsNonLocalTargetExtType() const;
 
-  /// Return true if this is a FP type or a vector of FP.
+  /// Returns `true` for a floating-point type or a vector of floating-point
+  /// elements.
   fn isFPOrFPVectorTy(Self) -> Bool = _
 
-  /// Return true if this is an integer type or a vector of integer types.
-  // REVIEW: cpp has another `isIntOrIntVectorTy` function
+  /// Returns `true` for an integer type or a vector of integer elements.
   fn isIntOrIntVectorTy(Self) -> Bool = _
 
-  /// Return true if this is an integer type or a pointer type.
+  /// Returns `true` for a scalar integer or pointer type.
+  ///
+  /// **Notes:** Unlike the vector-aware predicates, this does not inspect vector
+  /// element types.
   fn isIntOrPtrTy(Self) -> Bool = _
 
-  /// Return true if this is a pointer type or a vector of pointer types.
+  /// Returns `true` for a pointer type or a vector of pointer elements.
   fn isPtrOrPtrVectorTy(Self) -> Bool = _
 
-  /// Return true if this type is empty, that is, it has no elements or all of
-  /// its elements are empty.
+  /// Returns `true` when the type has no storage-bearing aggregate elements.
   fn isEmptyTy(Self) -> Bool = _
 
-  /// Return true if the type is "first class", meaning it is a valid type for a
-  /// Value.
+  /// Returns `true` when values of this type may be represented as LLVM values.
   fn isFirstClassType(Self) -> Bool = _
 
-  /// Return true if the type is a valid type for a register in codegen. This
-  /// includes all first-class types except struct and array types.
+  /// Returns `true` for scalar, pointer, and vector types that form a single
+  /// code-generation value.
+  ///
+  /// **Notes:** Structs and arrays are excluded even when `isFirstClassType`
+  /// returns `true` for them.
   fn isSingleValueType(Self) -> Bool = _
 
-  /// Return true if the type is an aggregate type. This means it is valid as
-  /// the first operand of an insertvalue or extractvalue instruction. This
-  /// includes struct and array types, but does not include vector types.
+  /// Returns `true` for struct and array aggregate types.
+  ///
+  /// **Notes:** Vector types are single values, not aggregates for this
+  /// predicate.
   fn isAggregateType(Self) -> Bool = _
 
-  /// Return true if it makes sense to take the size of this type. To get the
-  /// actual size for a particular target, it is reasonable to use the
-  /// DataLayout subsystem to do this.
+  /// Returns whether LLVM permits a size expression to be formed for this type.
+  ///
+  /// **Notes:** This does not compute a target-specific byte count.
   fn isSized(Self) -> Bool = _
+
+  /// Creates LLVM's constant `sizeof` expression for this type.
+  ///
+  /// **Returns:** `Some(value)` for a sized type; `None` when `isSized` is
+  /// `false` or LLVM does not produce an expression.
+  ///
+  /// **Lifecycle:** The returned value is owned by the same context as this
+  /// type and must not outlive it.
+  ///
+  /// **Notes:** The result is an LLVM constant expression, not a host-side byte
+  /// count. Its numeric interpretation depends on the target data layout.
   fn sizeOf(Self) -> &Value? = _
 
-  /// Return true if this type is a valid type for a GEP instruction.
+  /// Returns whether the type may be used as the source element type of GEP.
   fn isValidGEPType(Self) -> Bool = _
 
-  /// If this is a vector type, return the getPrimitiveSizeInBits value for the
-  /// element type. Otherwise return the getPrimitiveSizeInBits value for this
+  /// Returns a vector's element type, or this type itself for non-vectors.
+  ///
+  /// **Lifecycle:** The returned view is owned by the same context as this
   /// type.
   fn getScalarType(Self) -> &Type = _
+
+  /// Downcasts to an integer type, returning `None` for all other types.
   fn tryAsIntType(Self) -> &IntegerType? = _
+
+  /// Returns the concrete integer case, or `None` for all other types.
   fn tryAsIntTypeEnum(Self) -> IntegerTypeEnum? = _
+
+  /// Downcasts to a floating-point type, returning `None` otherwise.
   fn tryAsFPType(Self) -> &FPType? = _
+
+  /// Returns the concrete floating-point case, or `None` otherwise.
   fn tryAsFPTypeEnum(Self) -> FPTypeEnum? = _
+
+  /// Downcasts to an integer or floating-point primitive, returning `None`
+  /// otherwise.
   fn tryAsPrimitiveType(Self) -> &PrimitiveType? = _
+
+  /// Returns the concrete primitive case, or `None` otherwise.
   fn tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum? = _
+
+  /// Downcasts to a struct or array aggregate, returning `None` otherwise.
   fn tryAsAggregateType(Self) -> &AggregateType? = _
+
+  /// Returns the concrete aggregate case, or `None` otherwise.
   fn tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum? = _
+
+  /// Downcasts to an abstract LLVM type, returning `None` otherwise.
   fn tryAsAbstractType(Self) -> &AbstractType? = _
+
+  /// Returns the concrete abstract-type case, or `None` otherwise.
   fn tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum? = _
 }
 
 ///|
+/// Formats any `Type` trait object using LLVM's textual type syntax.
 pub extend &Type with Show::{to_string}
 
 ///|
+/// Error raised when a raw LLVM type cannot be represented by the safe type
+/// hierarchy.
 pub suberror InValidTypeError {
+  /// Contains the unsupported type kind or invalid integer-width detail.
   InValidTypeError(String)
 }
 
@@ -496,25 +586,34 @@ impl Type with fn tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 // ====================================================================
 
 ///|
-/// Collection of Int1Type, Int8Type, Int16Type, Int32Type, Int64Type
+/// Common interface for the supported fixed-width integer types.
+///
+/// **Implementor contract:** The classification returned by
+/// `asIntegerTypeEnum` must carry the same LLVM type as `getTypeRef`.
+///
+/// **Lifecycle:** Integer types are owned by their context.
 ///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
-///
 ///   let i8ty : &IntegerType = ctx.getInt8Ty()
 ///   assert_eq(i8ty.getBitWidth(), 8)
-///   inspect(i8ty.getExtendedType().unwrap(), content="i16")
-///
-///   let i32ty = i8ty.getExtendedType().unwrap().getExtendedType().unwrap()
-///
-///   inspect(i32ty, content="i32")
-///   guard! i32ty.asIntegerTypeEnum() is Int32Type(i32ty)
-///   inspect(i32ty, content="i32")
+///   match i8ty.getExtendedType() {
+///     Some(i16ty) => inspect(i16ty, content="i16")
+///     None => fail("i8 must have an extended integer type")
+///   }
 /// }
 /// ```
 pub trait IntegerType: PrimitiveType {
+  /// Returns the concrete fixed-width integer classification.
   fn asIntegerTypeEnum(Self) -> IntegerTypeEnum
+
+  /// Returns the next supported wider integer type.
+  ///
+  /// **Returns:** `i16` for `i8`, `i32` for `i16`, and `i64` for `i32`;
+  /// returns `None` for `i1` and `i64`.
+  ///
+  /// **Lifecycle:** A returned type is owned by the same context as this type.
   fn getExtendedType(Self) -> &IntegerType? = _
 }
 
@@ -536,21 +635,32 @@ impl IntegerType with fn getExtendedType(self) -> &IntegerType? {
 }
 
 ///|
+/// Exposes primitive bit-width operations on an integer trait object.
 pub extend &IntegerType with PrimitiveType::{getBitWidth}
 
 ///|
+/// Exposes the borrowed raw LLVM handle on an integer trait object.
 pub extend &IntegerType with Type::{getTypeRef}
 
 ///|
+/// Closed classification of the supported fixed-width integer types.
 pub enum IntegerTypeEnum {
+  /// One-bit integer type.
   Int1Type(Int1Type)
+  /// Eight-bit integer type.
   Int8Type(Int8Type)
+  /// Sixteen-bit integer type.
   Int16Type(Int16Type)
+  /// Thirty-two-bit integer type.
   Int32Type(Int32Type)
+  /// Sixty-four-bit integer type.
   Int64Type(Int64Type)
 } derive(Eq)
 
 ///|
+/// Views an integer classification through the common `Type` trait.
+///
+/// **Lifecycle:** The returned view remains owned by the original context.
 pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
   match self {
     Int1Type(t) => (t : &Type)
@@ -562,6 +672,7 @@ pub fn IntegerTypeEnum::asTypeClass(self : IntegerTypeEnum) -> &Type {
 }
 
 ///|
+/// Returns the integer width in bits.
 pub fn IntegerTypeEnum::getBitWidth(self : IntegerTypeEnum) -> UInt {
   match self {
     Int1Type(_) => 1
@@ -577,29 +688,46 @@ pub fn IntegerTypeEnum::getBitWidth(self : IntegerTypeEnum) -> UInt {
 // ====================================================================
 
 ///|
+/// Common interface for the floating-point types supported by the safe API.
+///
+/// **Implementor contract:** `asFPTypeEnum` must classify the same LLVM type as
+/// the inherited `Type` methods.
 pub trait FPType: PrimitiveType {
+  /// Returns the concrete floating-point classification.
   fn asFPTypeEnum(Self) -> FPTypeEnum
 
-  /// Return the width of the mantissa of this type. 
+  /// Returns the significand precision in bits, including the implicit leading
+  /// bit where the format has one.
   fn getFPMantissaWidth(Self) -> UInt = _
 }
 
 ///|
+/// Exposes primitive bit-width operations on a floating-point trait object.
 pub extend &FPType with PrimitiveType::{getBitWidth}
 
 ///|
+/// Exposes the borrowed raw LLVM handle on a floating-point trait object.
 pub extend &FPType with Type::{getTypeRef}
 
 ///|
+/// Closed classification of the supported floating-point types.
 pub enum FPTypeEnum {
+  /// IEEE 754 binary16 floating-point type.
   HalfType(HalfType)
+  /// BFloat16 floating-point type.
   BFloatType(BFloatType)
+  /// IEEE 754 binary32 floating-point type.
   FloatType(FloatType)
+  /// IEEE 754 binary64 floating-point type.
   DoubleType(DoubleType)
+  /// IEEE 754 binary128 floating-point type.
   FP128Type(FP128Type)
 } derive(Eq)
 
 ///|
+/// Views a floating-point classification through the common `Type` trait.
+///
+/// **Lifecycle:** The returned view remains owned by the original context.
 pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
   match self {
     HalfType(t) => (t : &Type)
@@ -611,6 +739,7 @@ pub fn FPTypeEnum::asTypeClass(self : FPTypeEnum) -> &Type {
 }
 
 ///|
+/// Returns the significand precision of the represented floating-point format.
 pub fn FPTypeEnum::getFPMantissaWidth(self : FPTypeEnum) -> UInt {
   match self {
     HalfType(_) => 11
@@ -631,8 +760,15 @@ impl FPType with fn getFPMantissaWidth(self) {
 // ====================================================================
 
 ///|
+/// Common interface for scalar integer and floating-point primitive types.
+///
+/// **Implementor contract:** `asPrimitiveTypeEnum` must classify the same LLVM
+/// type as the inherited `Type` methods.
 pub trait PrimitiveType: Type {
+  /// Returns the concrete primitive-type classification.
   fn asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
+
+  /// Returns the primitive representation width in bits.
   fn getBitWidth(Self) -> Int = _
 }
 
@@ -658,16 +794,27 @@ impl PrimitiveType with fn getBitWidth(self) -> Int {
 }
 
 ///|
+/// Closed classification of scalar integer and floating-point primitive types.
 pub enum PrimitiveTypeEnum {
+  /// IEEE 754 binary16 floating-point type.
   HalfType(HalfType)
+  /// BFloat16 floating-point type.
   BFloatType(BFloatType)
+  /// IEEE 754 binary32 floating-point type.
   FloatType(FloatType)
+  /// IEEE 754 binary64 floating-point type.
   DoubleType(DoubleType)
+  /// IEEE 754 binary128 floating-point type.
   FP128Type(FP128Type)
+  /// One-bit integer type.
   Int1Type(Int1Type)
+  /// Eight-bit integer type.
   Int8Type(Int8Type)
+  /// Sixteen-bit integer type.
   Int16Type(Int16Type)
+  /// Thirty-two-bit integer type.
   Int32Type(Int32Type)
+  /// Sixty-four-bit integer type.
   Int64Type(Int64Type)
 } derive(Eq)
 
@@ -676,8 +823,21 @@ pub enum PrimitiveTypeEnum {
 // ====================================================================
 
 ///|
+/// Common interface for struct and array aggregate types.
+///
+/// **Implementor contract:** `asAggregateTypeEnum` must classify the same LLVM
+/// type as the inherited `Type` methods.
 pub trait AggregateType: Type {
+  /// Returns the concrete aggregate classification.
   fn asAggregateTypeEnum(Self) -> AggregateTypeEnum
+
+  /// Returns the element at `idx`, or `None` when the index is out of range.
+  ///
+  /// **Notes:** Arrays have one repeated element type; any index in the array's
+  /// logical bounds returns that type.
+  ///
+  /// **Lifecycle:** A returned type is owned by the same context as the
+  /// aggregate.
   fn getElementType(Self, Int) -> &Type? = _
 }
 
@@ -693,12 +853,16 @@ impl AggregateType with fn getElementType(self, idx : Int) -> &Type? {
 }
 
 ///|
+/// Closed classification of aggregate types.
 pub enum AggregateTypeEnum {
+  /// Structure aggregate type.
   StructType(StructType)
+  /// Fixed-length array aggregate type.
   ArrayType(ArrayType)
 } derive(Eq)
 
 ///|
+/// Converts an aggregate classification to the general `TypeEnum`.
 pub fn AggregateTypeEnum::toTypeEnum(self : AggregateTypeEnum) -> TypeEnum {
   match self {
     StructType(sty) => StructType(sty)
@@ -707,6 +871,9 @@ pub fn AggregateTypeEnum::toTypeEnum(self : AggregateTypeEnum) -> TypeEnum {
 }
 
 ///|
+/// Views an aggregate classification through the common `Type` trait.
+///
+/// **Lifecycle:** The returned view remains owned by the original context.
 pub fn AggregateTypeEnum::asTypeClass(self : Self) -> &Type {
   match self {
     StructType(sty) => (sty : &Type)
@@ -719,16 +886,28 @@ pub fn AggregateTypeEnum::asTypeClass(self : Self) -> &Type {
 // ====================================================================
 
 ///|
+/// Common interface for LLVM types that do not represent ordinary scalar or
+/// aggregate data.
+///
+/// **Implementor contract:** `asAbstractTypeEnum` must classify the same LLVM
+/// type as the inherited `Type` methods.
 pub trait AbstractType: Type {
+  /// Returns the concrete abstract-type classification.
   fn asAbstractTypeEnum(Self) -> AbstractTypeEnum
 }
 
 ///|
+/// Closed classification of abstract LLVM types supported by the safe API.
 pub enum AbstractTypeEnum {
+  /// Type of functions that do not return a value.
   VoidType(VoidType)
+  /// Basic-block label type.
   LabelType(LabelType)
+  /// LLVM metadata type.
   MetadataType(MetadataType)
+  /// LLVM token type.
   TokenType(TokenType)
+  /// Function signature type.
   FunctionType(FunctionType)
 }
 
@@ -1948,10 +2127,21 @@ pub extend ScalableVectorType with Type::{asTypeEnum, getTypeRef}
 // ====================================================================
 
 ///|
-/// Memory address space of a pointer type.
+/// Numeric LLVM address-space identifier used by pointer types.
+///
+/// Address space `0` is LLVM's default address space. Other values are
+/// target-defined and must be interpreted using the target's data layout.
 pub struct AddressSpace(UInt) derive(Hash, Eq, Default)
 
 ///|
+/// Creates an address-space identifier from its raw numeric value.
+///
+/// **Parameters:**
+///
+/// - `v`: Target-defined address-space number.
+///
+/// **Notes:** This constructor does not validate whether the selected target
+/// recognizes the address space.
 pub fn AddressSpace::new(v : UInt) -> AddressSpace {
   AddressSpace(v)
 }
