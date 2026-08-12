@@ -337,7 +337,7 @@ pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
 ///|
 /// Writes the numeric target address in decimal form.
 pub impl Show for LLVMOrcJITTargetAddress with fn output(self, logger) {
-  self.0.output(logger)
+  logger.write_object(self.0)
 }
 
 ///|
@@ -347,7 +347,7 @@ pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Eq, Default)
 ///|
 /// Writes the numeric executor address in decimal form.
 pub impl Show for LLVMOrcExecutorAddress with fn output(self, logger) {
-  self.0.output(logger)
+  logger.write_object(self.0)
 }
 
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
@@ -362,7 +362,7 @@ pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq)
 ///|
 /// Writes the numeric target-specific flag mask in decimal form.
 pub impl Show for LLVMJITSymbolTargetFlags with fn output(self, logger) {
-  self.0.output(logger)
+  logger.write_object(self.0)
 }
 
 ///|
@@ -593,7 +593,7 @@ pub(all) enum LLVMOpcode {
 ///|
 /// Prints the binding's dense FFI opcode index.
 pub impl Show for LLVMOpcode with fn output(self, logger) {
-  self.to_int().output(logger)
+  logger.write_object(self.to_int())
 }
 
 ///|
@@ -798,7 +798,7 @@ pub(all) enum LLVMTypeKind {
 ///|
 /// Prints the binding's dense FFI type-kind index.
 pub impl Show for LLVMTypeKind with fn output(self, logger) {
-  self.to_int().output(logger)
+  logger.write_object(self.to_int())
 }
 
 ///|
@@ -996,7 +996,7 @@ pub(all) enum LLVMUnnamedAddr {
 ///|
 /// Prints the binding's dense unnamed-address index.
 pub impl Show for LLVMUnnamedAddr with fn output(self, logger) {
-  self.to_int().output(logger)
+  logger.write_object(self.to_int())
 }
 
 ///|
