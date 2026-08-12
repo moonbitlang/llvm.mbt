@@ -18,7 +18,7 @@
 
 ## 公开 API 的文档注释
 
-所有会成为公开接口的声明都必须有文档注释，包括公开的 type、struct、enum、error、trait、fn、method、impl、字段、枚举构造器及常量。每个公开声明至少要有一句能够脱离函数名和类型签名单独理解的摘要；trait 的公开方法、enum 和 error 的公开构造器、struct 的公开字段也必须分别说明，不能只依赖外层类型的总说明。
+除下文明确排除的 `unsafe` package 外，所有会成为公开接口的声明都必须有文档注释，包括公开的 type、struct、enum、error、trait、fn、method、impl、字段、枚举构造器及常量。每个公开声明至少要有一句能够脱离函数名和类型签名单独理解的摘要；trait 的公开方法、enum 和 error 的公开构造器、struct 的公开字段也必须分别说明，不能只依赖外层类型的总说明。
 
 文档注释采用“摘要必填、其余章节按契约条件必填”的方式。没有内容的章节必须整体省略，禁止为了满足模板而保留空标题或复述签名。简单 getter 或语义完全常规的 impl 可以只有一句摘要；涉及 native resource、borrowed view、FFI 安全边界或调用顺序的接口必须完整说明相应契约。
 
@@ -43,7 +43,7 @@
 | `**Side effects:**` | 操作并非纯查询 | 说明被修改的 IR、LLVM 全局状态、文件系统、诊断输出等可观察状态 |
 | `**Thread safety:**` | 涉及共享对象、LLVM 全局状态或并发限制 | 说明可否并发调用、可否跨线程使用及外部同步要求 |
 | `**Platform support:**` | 行为受 host、target 或平台能力限制 | 说明 native-only、host-only、cross-target 等限制 |
-| `**LLVM API:**` | 直接 LLVM-C binding，或上游映射有助于理解 | 给出对应 LLVM-C 符号，并说明 MoonBit 包装对参数、返回值或错误模型做出的差异；`unsafe` 层的直接绑定原则上必须填写 |
+| `**LLVM API:**` | 直接 LLVM-C binding，或上游映射有助于理解 | 给出对应 LLVM-C 符号，并说明 MoonBit 包装对参数、返回值或错误模型做出的差异；为 `unsafe` 接口编写文档时按需使用 |
 | `**Notes:**` | 可选 | 记录性能、兼容性等非核心补充信息；关键契约不得只放在这里 |
 | `**See also:**` | 可选 | 列出相关构造器、反向操作或推荐的后续 API |
 | `**Examples:**` | 符合下文示例标准 | 给出最小、可运行且只使用公开 API 的示例 |
@@ -56,6 +56,14 @@
 
 不要在公开文档中设置 `Dev Notes`。仅与当前实现有关的信息应写成普通 `//` 注释或放入开发文档；如果某项实现信息会限制用户的调用方式，则应提升为 `Preconditions`、`Lifecycle`、`Safety` 或其他对应的公开契约。
 
+### `unsafe` package 例外
+
+`unsafe` package 是安全 `IR` 层的低层实现基础，强烈不建议库用户直接使用。该 package 中的公开声明不适用“每个公开声明都必须有文档注释”的要求；机械性的 LLVM-C binding、raw enum constructor、整数转换和常规 impl 可以不提供文档，也不以消除 `missing_doc` 为目标。
+
+本例外不要求删除已经存在的注释。现有注释仅描述 raw binding，不表示接口安全、稳定或受到推荐。是否为 `unsafe` 中的特定接口强制记录 ownership、nullability、释放配对及其他 FFI 契约，应通过单独的设计讨论确定；在该策略确定前，本指南不强制逐接口补齐。
+
+如果选择为某个 `unsafe` 接口编写文档，内容仍必须准确，并按本节的标准章节表达适用的 `Safety`、`Lifecycle`、`LLVM API` 等契约。此例外只放宽 MoonBit 公开声明的文档覆盖要求，不放宽前文对 C 文件、FFI 入口和非显然实现边界注释的要求，也不允许安全 `IR` 层把自身契约留给 `unsafe` 层或 LLVM 上游文档解释。
+
 ### 不同声明的补充要求
 
 - `pub struct` 和 opaque `pub type` 必须说明其代表的 LLVM 概念、构造入口，以及它是 owner、borrowed view 还是纯 MoonBit 值。存在 native 生命周期时，还必须说明能否长期保存以及 owner 失效后的行为。公开字段需要逐字段注释，私有字段不在公开文档中逐项解释。
@@ -64,7 +72,7 @@
 - `pub trait` 必须说明其抽象能力、预期实现者和实现者必须维持的语义约束。面向第三方实现且存在非显然约束时，增加 `**Implementor contract:**`；每个公开 trait method 仍需独立文档。
 - `pub fn` 和公开方法必须说明实际动作。参数名或返回类型不足以表达 ownership、借用、特殊布尔值、错误状态及 mutation 时，必须使用对应章节补充。
 - `pub impl` 至少要有一句行为摘要。常规 impl 不需要重复 trait 的全部说明；非显然的相等性、哈希或格式化语义必须说明，例如比较的是句柄身份还是结构内容，以及 `Show` 输出的是完整 IR 还是调试摘要。
-- `pub extern \"C\"` 和 `unsafe` 层接口必须特别检查 nullability、`LLVMBool` 约定、字符串编码和释放方式、handle ownership、parent 生命周期、调用顺序、LLVM assertion、全局状态与线程安全。低层接口不能因为是一对一绑定而省略这些契约。
+- 为 `pub extern \"C\"` 或其他 `unsafe` 层接口编写文档时，应特别检查 nullability、`LLVMBool` 约定、字符串编码和释放方式、handle ownership、parent 生命周期、调用顺序、LLVM assertion、全局状态与线程安全；是否要求该接口必须具有文档，遵循上面的 `unsafe` package 例外。
 - 公开常量必须说明单位、特殊值、有效范围以及它与 LLVM 上游常量的对应关系；名称和类型已经完整表达语义时，一句摘要即可。
 
 ### Example 标准
@@ -80,7 +88,7 @@
 - 修改结果无法从名称直接推断的 API；
 - 错误处理本身是主要使用场景的 API。
 
-明显的 getter、单个 enum 或 error 构造器、普通 `Eq`/`Show` impl、已被同族主示例完整覆盖的辅助方法，以及不推荐直接使用的机械性 raw binding 可以省略 Example。raw binding 的契约文档仍不可省略。
+明显的 getter、单个 enum 或 error 构造器、普通 `Eq`/`Show` impl、已被同族主示例完整覆盖的辅助方法，以及不推荐直接使用的机械性 raw binding 可以省略 Example。`unsafe` package 的文档覆盖范围遵循上面的例外。
 
 示例必须满足以下要求：
 
