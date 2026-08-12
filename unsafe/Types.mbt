@@ -4,6 +4,10 @@
 struct LLVMBool(Int) derive(Eq)
 
 ///|
+/// Numeric attribute position used by LLVM-C attribute APIs.
+///
+/// Function, return, and parameter positions use LLVM's special index constants
+/// and one-based parameter numbering; this wrapper performs no range validation.
 pub(all) struct LLVMAttributeIndex(UInt) derive(Eq)
 
 ///|
@@ -21,14 +25,22 @@ pub(all) enum LLVMFastMathFlags {
 }
 
 ///|
+/// Raw DWARF base-type encoding number (`DW_ATE_*`).
+///
+/// The value is an unsigned metadata code, not a byte count or a type width.
 pub(all) struct LLVMDWARFTypeEncoding(UInt) derive(Eq)
 
 ///|
+/// Raw LLVM metadata-kind identifier returned by metadata kind lookup APIs.
+///
+/// Kind IDs are Context-specific numeric tags and must not be invented unless
+/// the consuming LLVM API explicitly permits it.
 pub(all) struct LLVMMetadataKind(UInt) derive(Eq)
 
 // Dummy function just for eliminating the warning
 
 ///|
+/// Wraps an LLVM attribute position without validating it.
 pub fn LLVMAttributeIndex::new(idx : UInt) -> LLVMAttributeIndex {
   LLVMAttributeIndex(idx)
 }
@@ -37,6 +49,7 @@ pub fn LLVMAttributeIndex::new(idx : UInt) -> LLVMAttributeIndex {
 // Dummy function just for eliminating the warning
 
 ///|
+/// Wraps a raw DWARF type-encoding number without validation.
 pub fn LLVMDWARFTypeEncoding::new(idx : UInt) -> LLVMDWARFTypeEncoding {
   LLVMDWARFTypeEncoding(idx)
 }
@@ -44,180 +57,281 @@ pub fn LLVMDWARFTypeEncoding::new(idx : UInt) -> LLVMDWARFTypeEncoding {
 // Dummy function just for eliminating the warning
 
 ///|
+/// Wraps a raw metadata-kind identifier without validation.
 pub fn LLVMMetadataKind::new(idx : UInt) -> LLVMMetadataKind {
   LLVMMetadataKind(idx)
 }
 
 ///|
-/// llvm memory buffer
+/// Opaque pointer identity for an LLVM memory buffer.
+///
+/// This type alone conveys no ownership; follow the allocator/disposer contract
+/// of the LLVM-C function that produced or consumes the handle.
 #external
 pub type LLVMMemoryBufferRef
 
 ///|
-/// llvm context
+/// Opaque pointer identity for an LLVM context.
+///
+/// The handle does not own or retain the context; its creating/disposal API
+/// determines lifetime, and all child handles become invalid after disposal.
 #external
 pub type LLVMContextRef
 
 ///|
-/// llvm module
+/// Opaque pointer identity for an LLVM module.
+///
+/// This type does not encode whether ownership is borrowed or transferred.
+/// Follow the producing and consuming LLVM-C functions' lifetime contracts.
 #external
 pub type LLVMModuleRef
 
 ///|
-/// llvm BasicBlock
+/// Opaque pointer identity for an LLVM basic block.
+///
+/// It is normally a borrowed view into parent IR and may be invalidated by IR
+/// mutation or disposal of its owning module/context.
 #external
 pub type LLVMBasicBlockRef
 
 ///|
-/// llvm metadata
+/// Opaque pointer identity for LLVM metadata.
+///
+/// It is normally Context-owned; the handle itself does not retain its Context.
 #external
 pub type LLVMMetadataRef
 
 ///|
-/// llvm md node
+/// Opaque pointer identity for a named metadata node in a module.
+///
+/// It is a borrowed module child and becomes invalid with its parent module.
 #external
 pub type LLVMNamedMDNodeRef
 
 ///|
+/// Opaque pointer identity for an entry in an LLVM value-metadata array.
+///
+/// The allocating API defines the array's lifetime and required disposal.
 #external
 pub type LLVMValueMetadataEntry
 
 ///|
-/// llvm builder
+/// Opaque pointer identity for an LLVM IR builder.
+///
+/// This handle does not imply ownership; builder creation APIs generally return
+/// an owned resource that must be disposed by the paired LLVM-C function.
 #external
 pub type LLVMBuilderRef
 
 ///|
+/// Opaque pointer identity for an LLVM debug-information builder.
+///
+/// Its creating API defines ownership and the required finalize/dispose order.
 #external
 pub type LLVMDIBuilderRef
 
 ///|
-/// llvm module provider
+/// Opaque pointer identity for the legacy LLVM module-provider abstraction.
+///
+/// Ownership may transfer through legacy execution-engine APIs; consult the
+/// specific producer/consumer rather than inferring it from this type.
 #external
 pub type LLVMModuleProviderRef
 
 ///|
-/// llvm pass manager
+/// Opaque pointer identity for an LLVM legacy pass manager.
+///
+/// Its constructor/disposer pair determines ownership; the handle is not a
+/// managed reference.
 #external
 pub type LLVMPassManagerRef
 
 ///|
+/// Opaque pointer identity for LLVM's process-global pass registry.
+///
+/// Registry lifetime and initialization are controlled by LLVM; this handle
+/// does not represent independently owned storage.
 #external
 pub type LLVMPassRegistryRef
 
 ///|
-/// A set of options passed which are attached to the Pass Manager upon run.
-/// 
-/// This corresponds to an llvm::LLVMPassBuilderOptions instance
-/// 
-/// The details for how the different properties of this structure are used can
-/// be found in the source for LLVMRunPasses
-/// 
+/// Opaque pointer identity for options consumed by `LLVMRunPasses`.
+///
+/// Creation returns an owned options object that must be disposed by the paired
+/// API; this raw type itself neither owns nor retains it.
 #external
 pub type LLVMPassBuilderOptionsRef
 
 ///|
+/// Opaque pointer identity for the deprecated pass-manager builder.
+///
+/// The matching LLVM-C constructor/disposer functions define its ownership.
 #external
 pub type LLVMPassManagerBuilderRef
 
 ///|
-/// llvm use
+/// Opaque pointer identity for one use edge of an LLVM value.
+///
+/// It is a borrowed IR view and may become invalid when operands or parent IR
+/// are mutated or disposed.
 #external
 pub type LLVMUseRef
 
 ///|
-/// llvm values
+/// Opaque pointer identity for an LLVM value.
+///
+/// It is usually borrowed from Context- or Module-owned IR. This type conveys no
+/// ownership and does not prevent deletion or parent disposal.
 #external
 pub type LLVMValueRef
 
 ///|
-/// llvm types
+/// Opaque pointer identity for an LLVM type.
+///
+/// LLVM types are Context-owned and uniqued; the raw handle does not retain the
+/// Context or provide structural ownership.
 #external
 pub type LLVMTypeRef
 
 ///|
-/// llvm operand bundles
+/// Opaque pointer identity for an LLVM operand bundle.
+///
+/// The creating and consuming LLVM-C calls define whether the handle is owned,
+/// borrowed, or transferred.
 #external
 pub type LLVMOperandBundleRef
 
 ///|
-/// llvm attributes
+/// Opaque pointer identity for an LLVM attribute.
+///
+/// Attributes are Context-owned/uniqued values; the handle itself conveys no
+/// ownership and is invalid after its Context is disposed.
 #external
 pub type LLVMAttributeRef
 
 ///|
-/// llvm diagnostic info
+/// Opaque pointer identity for LLVM diagnostic information.
+///
+/// Diagnostic handlers normally receive a callback-scoped borrowed handle; do
+/// not retain it beyond the callback unless the producing API says otherwise.
 #external
 pub type LLVMDiagnosticInfoRef
 
 ///|
+/// Opaque pointer identity for a module-owned LLVM COMDAT.
+///
+/// It is a borrowed view and becomes invalid with its parent module.
 #external
 pub type LLVMComdatRef
 
 ///|
+/// Opaque pointer identity for an entry in an allocated module-flag array.
+///
+/// The array-producing API specifies element validity and the required disposer.
 #external
 pub type LLVMModuleFlagEntry
 
 ///|
+/// Opaque pointer identity for an LLVM JIT event listener.
+///
+/// Ownership and registration lifetime depend on the listener/engine APIs that
+/// create and consume it.
 #external
 pub type LLVMJITEventListenerRef
 
 ///|
+/// Opaque pointer identity for an LLVM binary object view.
+///
+/// Creation typically returns an owned binary handle; its source memory buffer
+/// and paired disposer define the complete lifetime contract.
 #external
 pub type LLVMBinaryRef
 
 ///|
+/// Opaque pointer identity for an LLVM target descriptor.
+///
+/// Targets are registry-owned static objects; callers must not dispose them.
 #external
 pub type LLVMTargetRef
 
 ///|
+/// Opaque pointer identity for mutable LLVM target-machine options.
+///
+/// The creating call returns a resource consumed or disposed according to its
+/// paired LLVM-C APIs; this type does not manage it.
 #external
 pub type LLVMTargetMachineOptionsRef
 
 ///|
+/// Opaque pointer identity for an LLVM target machine.
+///
+/// Its creating API returns an owned native resource that normally requires
+/// `LLVMDisposeTargetMachine`; the raw handle does not automate disposal.
 #external
 pub type LLVMTargetMachineRef
 
 ///|
-/// llvm debug record refs
+/// Opaque pointer identity for an LLVM debug record attached to IR.
+///
+/// It is a borrowed view whose validity follows its parent instruction/module.
 #external
 pub type LLVMDbgRecordRef
 
 ///|
+/// Opaque pointer identity for an LLVM generic execution value.
+///
+/// Its creating/disposal APIs determine ownership; it is not retained by this
+/// raw handle type.
 #external
 pub type LLVMGenericValueRef
 
 ///|
+/// Opaque pointer identity for an LLVM execution engine.
+///
+/// Creation APIs may take ownership of modules and return an owned engine; obey
+/// their transfer and disposal contracts exactly.
 #external
 pub type LVMExecutionEngineRef
 
 ///|
+/// Opaque pointer identity for an MCJIT memory manager.
+///
+/// Ownership is commonly transferred to an execution engine; consult the
+/// consuming API before disposing or reusing the handle.
 #external
 pub type LVMMCJITMemoryManagerRef
 
 ///|
+/// Opaque pointer identity for a string exposed by LLVM's remark API.
+///
+/// It is generally borrowed from a parent remark object and must not outlive it.
 #external
 pub type LLVMRemarkStringRef
 
 ///|
-/// Opaque reference to an error instance. Null serves as the 'success' value.
+/// Opaque pointer identity for a consumable LLVM error.
+///
+/// Null is the success sentinel. A non-null error has linear ownership and must
+/// be consumed by an LLVM error-handling API exactly once.
 #external
 pub type LLVMErrorRef
 
 ///|
-/// Represents an address in the executor process.
+/// Byte address in the executor process, represented as an unsigned 64-bit value.
 pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
 
 ///|
+/// Writes the numeric target address in decimal form.
 pub impl Show for LLVMOrcJITTargetAddress with fn output(self, logger) {
   self.0.output(logger)
 }
 
 ///|
-/// Represents an address in the executor process.
+/// Byte address in the ORC executor process, represented as an unsigned 64-bit value.
 pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Eq, Default)
 
 ///|
+/// Writes the numeric executor address in decimal form.
 pub impl Show for LLVMOrcExecutorAddress with fn output(self, logger) {
   self.0.output(logger)
 }
@@ -225,29 +339,41 @@ pub impl Show for LLVMOrcExecutorAddress with fn output(self, logger) {
 // NOTE: It different with real, the real LLVMJITSymbolTargetFlags is uint8
 
 ///|
+/// ORC target-specific symbol flags stored as a bit mask.
+///
+/// LLVM's ABI uses the low eight bits; this wrapper uses `UInt` for FFI
+/// convenience and performs no masking or validation.
 pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq)
 
 ///|
+/// Writes the numeric target-specific flag mask in decimal form.
 pub impl Show for LLVMJITSymbolTargetFlags with fn output(self, logger) {
   self.0.output(logger)
 }
 
 ///|
-/// A reference to an orc::ExecutionSession instance.
+/// Opaque pointer identity for an ORC execution session.
+///
+/// It is normally borrowed from an ORC JIT owner and must not outlive that owner.
 #external
 pub type LLVMOrcExecutionSessionRef
 
 ///|
-/// A reference to an orc::SymbolStringPool.
+/// Opaque pointer identity for an ORC symbol-string pool.
+///
+/// It is normally borrowed from an execution session and shares its lifetime.
 #external
 pub type LLVMOrcSymbolStringPoolRef
 
 ///|
-/// A reference to an orc::SymbolStringPool table entry.
+/// Opaque pointer identity for a reference-counted ORC symbol-pool entry.
+///
+/// Retain/release APIs, not this type, control the entry's reference count.
 #external
 pub type LLVMOrcSymbolStringPoolEntryRef
 
 ///|
+/// Compares LLVM type handles by native pointer identity, not structure.
 pub impl Eq for LLVMTypeRef with fn equal(
   self : LLVMTypeRef,
   other : LLVMTypeRef,
@@ -256,6 +382,7 @@ pub impl Eq for LLVMTypeRef with fn equal(
 }
 
 ///|
+/// Compares LLVM value handles by native pointer identity, not IR equality.
 pub impl Eq for LLVMValueRef with fn equal(
   self : LLVMValueRef,
   other : LLVMValueRef,
@@ -264,6 +391,7 @@ pub impl Eq for LLVMValueRef with fn equal(
 }
 
 ///|
+/// Compares LLVM context handles by native pointer identity.
 pub impl Eq for LLVMContextRef with fn equal(
   self : LLVMContextRef,
   other : LLVMContextRef,
@@ -272,6 +400,7 @@ pub impl Eq for LLVMContextRef with fn equal(
 }
 
 ///|
+/// Compares LLVM attribute handles by native pointer identity.
 pub impl Eq for LLVMAttributeRef with fn equal(
   self : LLVMAttributeRef,
   other : LLVMAttributeRef,
@@ -280,6 +409,7 @@ pub impl Eq for LLVMAttributeRef with fn equal(
 }
 
 ///|
+/// Compares LLVM basic-block handles by native pointer identity.
 pub impl Eq for LLVMBasicBlockRef with fn equal(
   self : LLVMBasicBlockRef,
   other : LLVMBasicBlockRef,
@@ -288,12 +418,14 @@ pub impl Eq for LLVMBasicBlockRef with fn equal(
 }
 
 ///|
+/// Returns the wrapped raw DWARF type-encoding number.
 pub fn LLVMDWARFTypeEncoding::into(self : LLVMDWARFTypeEncoding) -> UInt {
   guard self is LLVMDWARFTypeEncoding(val)
   val
 }
 
 ///|
+/// Returns the wrapped raw metadata-kind identifier.
 pub fn LLVMMetadataKind::into(self : LLVMMetadataKind) -> UInt {
   guard self is LLVMMetadataKind(val)
   val

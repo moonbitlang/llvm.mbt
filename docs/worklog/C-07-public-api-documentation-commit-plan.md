@@ -270,9 +270,9 @@
 | `unsafe/utils.mbt` | Type/Value/Use/BasicBlock/Attribute/Comdat raw ref 的 `is_null`/`is_not_null` 与 `Show` impl，以及对应 public helper extern |
 | `unsafe/string_boundary.mbt` | `CStringError::EmbeddedNul` |
 
-- [ ] 每个 raw handle 说明它是 opaque pointer identity，不单独暗示 ownership；具体 allocator/disposer 责任留给产生和消费它的函数。
-- [ ] 明确 null sentinel、pointer identity Eq、Show 输出用途，以及 address/flag wrapper 的单位和转换语义。
-- [ ] raw handle 文档不提供鼓励绕过安全 `IR` 层的 Example。
+- [x] 每个 raw handle 说明它是 opaque pointer identity，不单独暗示 ownership；具体 allocator/disposer 责任留给产生和消费它的函数。
+- [x] 明确 null sentinel、pointer identity Eq、Show 输出用途，以及 address/flag wrapper 的单位和转换语义。
+- [x] raw handle 文档不提供鼓励绕过安全 `IR` 层的 Example。
 
 建议提交信息：`docs(unsafe): document raw handles and helpers`
 

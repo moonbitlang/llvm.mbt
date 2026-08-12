@@ -1,6 +1,7 @@
 ///|
 /// A NUL-terminated UTF-8 input contains an embedded NUL code unit.
 pub suberror CStringError {
+  /// The input cannot be represented as one C string without truncation.
   EmbeddedNul
 }
 
