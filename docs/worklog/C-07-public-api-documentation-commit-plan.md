@@ -66,9 +66,9 @@
 | --- | --- |
 | `IR/Context.mbt` | `Context`、`Eq for Context`、`Context::new`、`addModule`、`createBuilder`；全部 primitive/abstract type getter；`getPtrTy`、`getFunctionType`、`getStructType`、`getOpaqueStructType`、`getStructTypeByName`、`getArrayType`、`getFixedVectorType`、`getScalableVectorType` |
 
-- [ ] 说明 `Context` 是 native LLVM context 的 managed owner，以及 Module、Builder、Type 与 Constant 从 Context 派生时的 owner anchor。
-- [ ] 说明 Context 相等性比较的含义、named/opaque/literal struct 的差异、同一 Context 前置条件和各 type factory 的关键参数。
-- [ ] 在主要构造路径保留或补充一个代表性黑盒 doc test，不为每个 primitive getter 复制示例。
+- [x] 说明 `Context` 是 native LLVM context 的 managed owner，以及 Module、Builder、Type 与 Constant 从 Context 派生时的 owner anchor。
+- [x] 说明 Context 相等性比较的含义、named/opaque/literal struct 的差异、同一 Context 前置条件和各 type factory 的关键参数。
+- [x] 在主要构造路径保留或补充一个代表性黑盒 doc test，不为每个 primitive getter 复制示例。
 
 建议提交信息：`docs(IR): document context and type factories`
 

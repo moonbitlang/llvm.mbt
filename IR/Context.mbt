@@ -1,4 +1,13 @@
 ///|
+/// Owns an LLVM context and the uniqued types and constants created in it.
+///
+/// Values derived from a `Context` retain the same managed context owner, so
+/// they remain usable after the original `Context` binding leaves scope.
+///
+/// **Lifecycle:**
+///
+/// The underlying LLVM context is released automatically after the context and
+/// every dependent Module, Builder, Type, and Constant become unreachable.
 pub struct Context {
   priv owner : ContextOwner
 }
@@ -24,16 +33,37 @@ fn Context::get_unsafe_ref(self : Context) -> @unsafe.LLVMContextRef {
 }
 
 ///|
+/// Compares whether two values refer to the same underlying LLVM context.
 pub impl Eq for Context with fn equal(self, other) {
   self.get_unsafe_ref() == other.get_unsafe_ref()
 }
 
 ///|
+/// Creates an independent managed LLVM context.
+///
+/// **Lifecycle:**
+///
+/// The context is released automatically after its last dependent object becomes
+/// unreachable; callers do not dispose it explicitly.
 pub fn Context::new() -> Context {
   Context::from_raw(@unsafe.llvm_context_create())
 }
 
 ///|
+/// Creates an empty Module owned by this context.
+///
+/// **Parameters:**
+///
+/// - `name`: The module identifier. It may be empty but must not contain an
+///   embedded NUL byte.
+///
+/// **Errors:**
+///
+/// - `StringError::ContainsNul` if `name` contains an embedded NUL byte.
+///
+/// **Lifecycle:**
+///
+/// The returned Module retains this context and manages its own native module.
 pub fn Context::addModule(
   self : Self,
   name : String,
@@ -48,6 +78,17 @@ pub fn Context::addModule(
 }
 
 ///|
+/// Creates an IRBuilder associated with this context and with no insertion point.
+///
+/// **Lifecycle:**
+///
+/// The builder retains this context. After an insertion point is set, it also
+/// retains the Module containing that point.
+///
+/// **Notes:**
+///
+/// Instruction creation fails with `BuilderError::UnsetPosition` until an
+/// insertion point is selected.
 pub fn Context::createBuilder(self : Self) -> IRBuilder {
   IRBuilder::{
     owner: BuilderOwner::new(
@@ -59,7 +100,7 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
 }
 
 ///|
-/// Get the half type from context.
+/// Returns the IEEE 754 binary16 type uniqued in this context.
 ///
 /// - See LLVM: `Type::getHalfTy`.
 ///
@@ -76,7 +117,7 @@ pub fn Context::getHalfTy(self : Context) -> HalfType {
 }
 
 ///|
-/// Get the bfloat type from context.
+/// Returns the 16-bit brain floating-point type uniqued in this context.
 ///
 /// - See LLVM: `Type::getBFloatTy`.
 ///
@@ -93,7 +134,7 @@ pub fn Context::getBFloatTy(self : Context) -> BFloatType {
 }
 
 ///|
-/// Get the float type from context.
+/// Returns the IEEE 754 binary32 type uniqued in this context.
 ///
 /// - See LLVM: `Type::getFloatTy`.
 ///
@@ -110,7 +151,7 @@ pub fn Context::getFloatTy(self : Context) -> FloatType {
 }
 
 ///|
-/// Get the double type from context.
+/// Returns the IEEE 754 binary64 type uniqued in this context.
 ///
 /// - See LLVM: `Type::getDoubleTy`.
 ///
@@ -127,7 +168,7 @@ pub fn Context::getDoubleTy(self : Context) -> DoubleType {
 }
 
 ///|
-/// Get the fp128 type from context.
+/// Returns the IEEE 754 binary128 type uniqued in this context.
 ///
 /// - See LLVM: `Type::getFP128Ty`.
 ///
@@ -144,7 +185,7 @@ pub fn Context::getFP128Ty(self : Context) -> FP128Type {
 }
 
 ///|
-/// Get the void type from context.
+/// Returns the void type uniqued in this context.
 ///
 /// - See LLVM: `Type::getVoidTy`.
 ///
@@ -161,21 +202,21 @@ pub fn Context::getVoidTy(self : Context) -> VoidType {
 }
 
 ///|
-/// Get the label type from context.
+/// Returns the basic-block label type uniqued in this context.
 pub fn Context::getLabelTy(self : Context) -> LabelType {
   let typeref = @unsafe.llvm_label_type_in_context(self.get_unsafe_ref())
   LabelType::from_raw(typeref, self)
 }
 
 ///|
-/// Get the metadata type from context.
+/// Returns the metadata type uniqued in this context.
 pub fn Context::getMetadataTy(self : Context) -> MetadataType {
   let typeref = @unsafe.llvm_metadata_type_in_context(self.get_unsafe_ref())
   MetadataType::from_raw(typeref, self)
 }
 
 ///|
-/// Get the token type from context.
+/// Returns the token type uniqued in this context.
 ///
 /// - See LLVM: `Type::getTokenTy`.
 ///
@@ -192,7 +233,7 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
 }
 
 ///|
-/// Get the integer type with 1 bit from context.
+/// Returns the one-bit integer type uniqued in this context.
 ///
 /// ```mbt check
 /// test {
@@ -209,7 +250,7 @@ pub fn Context::getInt1Ty(self : Context) -> Int1Type {
 }
 
 ///|
-/// Get the integer type with 8 bits from context.
+/// Returns the eight-bit integer type uniqued in this context.
 ///
 /// ```mbt check
 /// test {
@@ -226,7 +267,7 @@ pub fn Context::getInt8Ty(self : Context) -> Int8Type {
 }
 
 ///|
-/// Get the integer type with 16 bits from context.
+/// Returns the 16-bit integer type uniqued in this context.
 ///
 /// ```mbt check
 /// test {
@@ -243,7 +284,7 @@ pub fn Context::getInt16Ty(self : Context) -> Int16Type {
 }
 
 ///|
-/// Get the integer type with 32 bits from context.
+/// Returns the 32-bit integer type uniqued in this context.
 ///
 /// ```mbt check
 /// test {
@@ -260,7 +301,7 @@ pub fn Context::getInt32Ty(self : Context) -> Int32Type {
 }
 
 ///|
-/// Get the integer type with 64 bits from context.
+/// Returns the 64-bit integer type uniqued in this context.
 ///
 /// ```mbt check
 /// test {
@@ -277,14 +318,21 @@ pub fn Context::getInt64Ty(self : Context) -> Int64Type {
 }
 
 ///|
-/// Get the Pointer type from context.
+/// Returns an opaque pointer type in this context.
 ///
-/// - See LLVM: `PointerType::get`.
+/// **Parameters:**
 ///
-/// **Note**:
-/// 
-///   After LLVM17, typed pointer has been deprecated. Therefore in 
-///   Moonbit Aether framework, all pointer type is opaque.
+/// - `addressSpace`: The target-specific address-space number. The default is
+///   address space zero.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
+///
+/// **Notes:**
+///
+/// LLVM 19 uses opaque pointers, so this API does not accept or preserve a
+/// pointee type.
 ///
 /// ```mbt check
 /// test {
@@ -308,14 +356,22 @@ pub fn Context::getPtrTy(
 }
 
 ///|
-/// Create a function type.
+/// Returns a function type with the given signature.
 ///
-/// This is different with the method of creating function type in LLVM.
-/// In LLVM, usually use `FunctionType::get` to create a function type.
+/// **Parameters:**
 ///
-/// In Moonbit Aether framework, we use `Context::getFunctionType` to create a function type.
+/// - `returnType`: The function result type.
+/// - `paramTypes`: The fixed parameters in source order.
+/// - `isVarArg`: Whether calls may supply additional variadic arguments.
 ///
-/// - See LLVM: `FunctionType::get`.
+/// **Preconditions:**
+///
+/// `returnType` and every member of `paramTypes` must belong to this context and
+/// must be valid in an LLVM function signature.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -341,14 +397,33 @@ pub fn Context::getFunctionType(
 }
 
 ///|
-/// Create a struct type in the context.
+/// Creates a struct type with a complete body in this context.
 ///
-/// This is different with the method of creating struct type in LLVM.
-/// In LLVM, usually use `StructType::create` to create a struct type.
+/// An empty body is distinct from an opaque struct. Use
+/// `Context::getOpaqueStructType` when the body will be defined later.
 ///
-/// In Moonbit Aether framework, we use `Context::getStructType` to create a struct type.
+/// **Parameters:**
 ///
-/// - See LLVM: `StructType::create`.
+/// - `elements`: Field types in layout order.
+/// - `isPacked`: Whether LLVM may omit ABI padding between fields.
+/// - `name`: An optional identified-struct name. An unnamed struct is literal.
+///
+/// **Errors:**
+///
+/// - `StringError::ContainsNul` if `name` contains an embedded NUL byte.
+///
+/// **Preconditions:**
+///
+/// Every element type must belong to this context. An unnamed empty struct is
+/// not accepted by this API; give it a name or use an opaque struct.
+///
+/// **Panics:**
+///
+/// Panics when both `name` and `elements` are empty.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -402,7 +477,18 @@ pub fn Context::getStructType(
 /// An empty struct created by `Context::getStructType([], name=...)` is not
 /// opaque: it has a known body containing zero elements.
 ///
-/// - See LLVM: `StructType::create`.
+/// **Parameters:**
+///
+/// - `name`: The identified-struct name. It must not contain an embedded NUL
+///   byte.
+///
+/// **Errors:**
+///
+/// - `StringError::ContainsNul` if `name` contains an embedded NUL byte.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -423,9 +509,17 @@ pub fn Context::getOpaqueStructType(
 }
 
 ///|
-/// Search a named struct type in the context.
+/// Finds an identified struct type registered in this context.
 ///
-/// LLVM Cpp version has no this method, since llvm-cpp allow duplicated struct type names.
+/// **Returns:**
+///
+/// The context-owned struct type, or `None` if no type with that name is
+/// registered. A name containing an embedded NUL also produces `None` because
+/// this nullable lookup has no error channel.
+///
+/// **Lifecycle:**
+///
+/// A returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -435,9 +529,10 @@ pub fn Context::getOpaqueStructType(
 ///
 ///   let _ = ctx.getStructType([i32ty, f32ty], name="foo")
 ///
-///   let sty = ctx.getStructTypeByName("foo").unwrap()
-///
-///   inspect(sty, content="%foo = type { i32, float }")
+///   match ctx.getStructTypeByName("foo") {
+///     Some(sty) => inspect(sty, content="%foo = type { i32, float }")
+///     None => fail("expected the named struct type")
+///   }
 /// }
 /// ```
 pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
@@ -446,14 +541,22 @@ pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
 }
 
 ///|
-/// Create an array type in the context.
+/// Returns a fixed-length array type in this context.
 ///
-/// This is different with the method of creating array type in LLVM.
-/// In LLVM, usually use `ArrayType::get` to create an array type.
+/// **Parameters:**
 ///
-/// In Moonbit Aether framework, we use `Context::getArrayType` to create an array type.
+/// - `elementType`: The repeated element type.
+/// - `numElements`: The fixed number of elements.
 ///
-/// - See LLVM: `ArrayType::get`.
+/// **Preconditions:**
+///
+/// `elementType` must belong to this context and `numElements` must be
+/// non-negative. This API does not currently validate the count before passing
+/// it to LLVM.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -480,9 +583,21 @@ pub fn Context::getArrayType(
 }
 
 ///|
-/// Create a fixed length vector type in the context.
+/// Returns a fixed-length vector type in this context.
 ///
-/// - See LLVM: `FixedVectorType::get`.
+/// **Parameters:**
+///
+/// - `elementType`: A type valid as an LLVM vector element.
+/// - `elementQuantity`: The exact lane count.
+///
+/// **Preconditions:**
+///
+/// `elementType` must belong to this context and `elementQuantity` must be a
+/// positive count accepted by LLVM. This API does not currently validate it.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
@@ -508,9 +623,24 @@ pub fn[T : Type] Context::getFixedVectorType(
 }
 
 ///|
-/// Create a scalable vector type in the context.
+/// Returns a scalable vector type in this context.
 ///
-/// - See LLVM: `ScalableVectorType::get`.
+/// Its runtime lane count is a target-dependent multiple of
+/// `elementQuantity`, written by LLVM as `vscale x elementQuantity`.
+///
+/// **Parameters:**
+///
+/// - `elementType`: A type valid as an LLVM vector element.
+/// - `elementQuantity`: The known minimum lane count.
+///
+/// **Preconditions:**
+///
+/// `elementType` must belong to this context and `elementQuantity` must be a
+/// positive count accepted by LLVM. This API does not currently validate it.
+///
+/// **Lifecycle:**
+///
+/// The returned type retains this context.
 ///
 /// ```mbt check
 /// test {
