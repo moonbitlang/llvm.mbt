@@ -121,9 +121,9 @@ frontend_test -> lexer + parser + typecheck + knf
 | --- | --- |
 | `docs/worklog/C-08-minimoonbit-frontend-port-commit-plan.md` | 范围、目录、依赖、commit 边界、测试基线和审核停点 |
 
-- [ ] 提交本文档，固定本轮只做到 KNF，不包含 main 或 codegen。
-- [ ] 记录原项目 91 个 active test 的基线。
-- [ ] 不包含 MoonBit 源码、依赖、生成接口或测试改动。
+- [x] 提交本文档，固定本轮只做到 KNF，不包含 main 或 codegen。
+- [x] 记录原项目 91 个 active test 的基线。
+- [x] 不包含 MoonBit 源码、依赖、生成接口或测试改动。
 
 建议提交信息：`docs: plan MiniMoonBit frontend port`
 
@@ -139,10 +139,10 @@ frontend_test -> lexer + parser + typecheck + knf
 | `examples/minimoonbit/color/print.mbt` | `Color`、`taint`、`strip_color`、`strip_object_color` |
 | `examples/minimoonbit/color/pkg.generated.mbti` | 由 `moon info` 生成的新接口 |
 
-- [ ] 保留原有颜色语义，不把终端探测、全局开关或 IO 引入 color package。
-- [ ] 为公开 enum、constructor 和函数补充简洁文档；示例内部 package 仍须遵守公开 API 文档规则。
-- [ ] README 明确这些 package 用于示范和集成测试，当前公开 shape 不承诺成为 llvm.mbt 的稳定核心 API。
-- [ ] 确认本 commit 不引入 ArgParser、`moonbitlang/x`、MoonLLVM 或新的 async/fs 依赖。
+- [x] 保留原有颜色语义，不把终端探测、全局开关或 IO 引入 color package。
+- [x] 为公开 enum、constructor 和函数补充简洁文档；示例内部 package 仍须遵守公开 API 文档规则。
+- [x] README 明确这些 package 用于示范和集成测试，当前公开 shape 不承诺成为 llvm.mbt 的稳定核心 API。
+- [x] 确认本 commit 不引入 ArgParser、`moonbitlang/x`、MoonLLVM 或新的 async/fs 依赖。
 
 建议提交信息：`examples: scaffold MiniMoonBit frontend port`
 

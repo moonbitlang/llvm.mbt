@@ -1,0 +1,24 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm/examples/minimoonbit/color"
+
+// Values
+pub fn strip_color(String) -> String
+
+pub fn[T : Show] strip_object_color(T) -> String
+
+pub fn taint(String, Color) -> String
+
+// Errors
+
+// Types and methods
+pub(all) enum Color {
+  Red
+  Yellow
+  Magenta
+  Green
+  Blue
+}
+
+// Type aliases
+
+// Traits
