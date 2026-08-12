@@ -3,6 +3,11 @@ import {
   "Kaida-Amethyst/either",
 }
 
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+} for "test"
+
 options(
   "is-main": false,
 )

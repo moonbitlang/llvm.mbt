@@ -286,10 +286,10 @@ frontend_test -> lexer + parser + typecheck + knf
 | `examples/minimoonbit/knf/knf_test.mbt` | 原项目全部 19 个 KNF 测试 |
 | `examples/minimoonbit/knf/moon.pkg` | 增加 lexer/parser 的 test-only import |
 
-- [ ] 保留全部 19 个 active test，沿用原来的完整前置路径生成 typed AST。
-- [ ] 重点检查 deterministic naming、closure capture、branch/match 和 loop 输出；不得用宽松字符串包含测试代替原结构验证。
-- [ ] 若格式化导致 snapshot 变化，先确认名字分配和语句顺序完全一致。
-- [ ] 单独运行 KNF package 测试，再运行全部 MiniMoonBit package 和全仓库测试。
+- [x] 保留全部 19 个 active test，沿用原来的完整前置路径生成 typed AST。
+- [x] 重点检查 deterministic naming、closure capture、branch/match 和 loop 输出；不得用宽松字符串包含测试代替原结构验证。
+- [x] 若格式化导致 snapshot 变化，先确认名字分配和语句顺序完全一致。
+- [x] 单独运行 KNF package 测试，再运行全部 MiniMoonBit package 和全仓库测试。
 
 建议提交信息：`test(minimoonbit): port KNF coverage`
 
