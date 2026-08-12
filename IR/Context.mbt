@@ -665,7 +665,11 @@ pub fn Context::getScalableVectorType(
 }
 
 ///|
-/// Create a constant integer `true`, the type is `i1`.
+/// Returns the `i1 true` constant owned by this context.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -695,7 +699,11 @@ pub fn Context::getConstTrue(self : Self) -> ConstantInt {
 }
 
 ///|
-/// Create a constant integer `false`, the type is `i1`.
+/// Returns the `i1 false` constant owned by this context.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -723,7 +731,11 @@ pub fn Context::getConstFalse(self : Self) -> ConstantInt {
 }
 
 ///|
-/// Create a constant signed 8-bit integer value.
+/// Returns an `i8` constant from the low eight bits of `val`.
+///
+/// Values outside the signed eight-bit range are truncated modulo 2^8. The
+/// signed designation controls sign extension of the input to LLVM, not the
+/// bit pattern stored in the constant.
 ///
 /// ```mbt check
 /// test {
@@ -756,7 +768,10 @@ pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
 }
 
 ///|
-/// Create a constant unsigned 8-bit integer value.
+/// Returns an `i8` constant from the low eight bits of `val`.
+///
+/// Values outside the unsigned eight-bit range are truncated modulo 2^8. LLVM
+/// integers are signless; “unsigned” describes how the input is interpreted.
 ///
 /// ```mbt check
 /// test {
@@ -789,7 +804,10 @@ pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
 }
 
 ///|
-/// Create a constant signed 16-bit integer value.
+/// Returns an `i16` constant from the low 16 bits of `val`.
+///
+/// Values outside the signed 16-bit range are truncated modulo 2^16. The
+/// signed designation controls sign extension of the input to LLVM.
 ///
 /// ```mbt check
 /// test {
@@ -822,7 +840,10 @@ pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
 }
 
 ///|
-/// Create a constant unsigned 16-bit integer value.
+/// Returns an `i16` constant with the bit pattern of `val`.
+///
+/// LLVM integers are signless; “unsigned” describes how the input is
+/// interpreted by this constructor.
 ///
 /// ```mbt check
 /// test {
@@ -855,7 +876,7 @@ pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
 }
 
 ///|
-/// Create a constant signed 32-bit integer value.
+/// Returns an `i32` constant with the 32-bit two's-complement pattern of `val`.
 ///
 /// ```mbt check
 /// test {
@@ -888,7 +909,10 @@ pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
 }
 
 ///|
-/// Create a constant unsigned 32-bit integer value.
+/// Returns an `i32` constant with the bit pattern of `val`.
+///
+/// LLVM integers are signless; “unsigned” describes how the input is
+/// interpreted by this constructor.
 ///
 /// ```mbt check
 /// test {
@@ -921,7 +945,7 @@ pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
 }
 
 ///|
-/// Create a constant signed 64-bit integer value.
+/// Returns an `i64` constant with the 64-bit two's-complement pattern of `val`.
 ///
 /// ```mbt check
 /// test {
@@ -954,7 +978,10 @@ pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
 }
 
 ///|
-/// Create a constant unsigned 64-bit integer value.
+/// Returns an `i64` constant with the bit pattern of `val`.
+///
+/// LLVM integers are signless; “unsigned” describes how the input is
+/// interpreted by this constructor.
 ///
 /// ```mbt check
 /// test {
@@ -987,7 +1014,10 @@ pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
 }
 
 ///|
-/// Create a constant 32-bit floating-point value.
+/// Returns a binary32 floating-point constant from `val`.
+///
+/// The MoonBit `Float` value is converted to `Double` only for the LLVM-C call;
+/// LLVM rounds the result to the destination binary32 semantics.
 ///
 /// ```mbt check
 /// test {
@@ -1019,13 +1049,11 @@ pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
 }
 
 ///|
-/// Create a constant zero with float type.
+/// Returns positive or negative zero with binary32 type.
 ///
-/// - See LLVM: `ConstantFP::getZero`.
+/// **Parameters:**
 ///
-/// **Parameter**:
-///
-///  - `isNegative`: If true, create a negative zero constant.
+/// - `isNegative`: Whether to set the IEEE 754 sign bit.
 ///
 /// ```mbt check
 /// test {
@@ -1052,7 +1080,7 @@ pub fn Context::getConstZeroFloat(
 }
 
 ///|
-/// Create a constant 64-bit floating-point value.
+/// Returns a binary64 floating-point constant with value `val`.
 ///
 /// ```mbt check
 /// test {
@@ -1081,13 +1109,11 @@ pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
 }
 
 ///|
-/// Create a constant zero with double type.
+/// Returns positive or negative zero with binary64 type.
 ///
-/// - See LLVM: `ConstantFP::getZero`.
+/// **Parameters:**
 ///
-/// **Parameter**:
-///
-/// - `isNegative`: If true, create a negative zero constant.
+/// - `isNegative`: Whether to set the IEEE 754 sign bit.
 ///
 /// ```mbt check
 /// test {
@@ -1115,10 +1141,23 @@ pub fn Context::getConstZeroDouble(
 }
 
 ///|
-/// Create a constant array from an array of constant elements.
+/// Returns an array constant containing `elements` in source order.
 ///
-/// **Note:** 
-/// All elements must be of the same type and must be constant values.
+/// **Parameters:**
+///
+/// - `elementType`: The declared element type of the resulting array.
+/// - `elements`: The constant elements in source order; the array length is
+///   inferred from this collection.
+///
+/// **Preconditions:**
+///
+/// `elementType` and every element must belong to this context, and every
+/// element must have `elementType`. Violating these conditions may trigger an
+/// LLVM assertion.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -1154,13 +1193,23 @@ pub fn Context::getConstArray(
   ConstantArray::from_raw(valueref, self)
 }
 
-// REVIEW: Check if this is correct.
-
 ///|
-/// Create a constant vector from an array of scalar constant values.
+/// Returns a fixed-vector constant containing the supplied scalar values.
 ///
-/// **Note:** 
-/// All scalar values must be of the same type and must be constant values.
+/// **Parameters:**
+///
+/// - `scalar_constant_vals`: The lanes in source order. Their common type and
+///   the array length determine the resulting vector type.
+///
+/// **Preconditions:**
+///
+/// The array must be non-empty. Every lane must be a constant of the same valid
+/// vector-element type and must belong to this context. Violating these
+/// conditions may trigger an LLVM assertion.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -1194,13 +1243,23 @@ pub fn Context::getConstVector(
 }
 
 ///|
-/// Create a constant struct from an array of constant element values.
+/// Returns a literal struct constant whose fields are inferred from `elements`.
 ///
-/// **Note:** 
-/// Element types and count must match the struct type being created.
-/// When `isPacked` is true, struct fields are packed without padding.
+/// **Parameters:**
 ///
-/// - See LLVM: `ConstantStruct::get`.
+/// - `elements`: Field constants in layout order.
+/// - `isPacked`: Whether the inferred literal struct type omits ABI padding
+///   between fields.
+///
+/// **Preconditions:**
+///
+/// Every element must belong to this context. This function creates a literal
+/// struct constant; it does not construct a value of an existing named struct
+/// type.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -1241,13 +1300,18 @@ pub fn Context::getConstStruct(
 }
 
 ///|
-/// Create an undefined value of the specified type.
+/// Returns the LLVM `undef` constant for `ty`.
 ///
-/// **Note:**
-/// Undefined values represent values that are not defined. They can be used
-/// when the value is not important, and LLVM may optimize them in various ways.
+/// Each use of `undef` may independently observe an arbitrary value of `ty`;
+/// it must not be treated as a stable but unknown value.
 ///
-/// - See LLVM: `UndefValue::get`.
+/// **Preconditions:**
+///
+/// `ty` must belong to this context.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -1275,14 +1339,19 @@ pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
 }
 
 ///|
-/// Create a poison value of the specified type.
+/// Returns the LLVM `poison` constant for `ty`.
 ///
-/// **Note:**
-/// Poison values represent undefined behavior. Any operation on a poison value
-/// produces poison, and using poison in a control-dependent manner causes
-/// undefined behavior. They are more restrictive than undef values.
+/// Poison generally propagates through instructions until it reaches an
+/// operation for which poison is immediately undefined behavior; `freeze` and
+/// instruction-specific rules may stop or alter that propagation.
 ///
-/// - See LLVM: `PoisonValue::get`.
+/// **Preconditions:**
+///
+/// `ty` must belong to this context.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {
@@ -1310,13 +1379,16 @@ pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
 }
 
 ///|
-/// Create a constant null pointer of the specified pointer type.
+/// Returns the null pointer constant of pointer type `ty`.
 ///
-/// **Note:**
-/// The type must be a pointer type. The null pointer represents an invalid
-/// memory address and is typically used to indicate the absence of a valid pointer.
+/// **Preconditions:**
 ///
-/// - See LLVM: `ConstantPointerNull::get`.
+/// `ty` must be a PointerType belonging to this context. This API accepts the
+/// broader `&Type` trait and does not validate the kind before calling LLVM.
+///
+/// **Lifecycle:**
+///
+/// The returned constant retains this context and is not owned by a Module.
 ///
 /// ```mbt check
 /// test {

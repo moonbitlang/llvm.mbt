@@ -80,9 +80,9 @@
 | `IR/StringError.mbt` | `StringError` 及 `ContainsNul`、`MalformedUtf8` |
 | `IR/Errors.mbt` | `IndexOutOfBounds` 及其 payload |
 
-- [ ] 说明整数截断/扩展、浮点输入、aggregate 元素类型和 Context 一致性等非显然语义。
-- [ ] 明确 Constant 由 Context 保活，不归属于某个 Module。
-- [ ] 对每个公开 error constructor 说明触发条件和 payload 含义。
+- [x] 说明整数截断/扩展、浮点输入、aggregate 元素类型和 Context 一致性等非显然语义。
+- [x] 明确 Constant 由 Context 保活，不归属于某个 Module。
+- [x] 对每个公开 error constructor 说明触发条件和 payload 含义。
 
 建议提交信息：`docs(IR): document constant factories and shared errors`
 
