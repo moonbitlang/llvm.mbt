@@ -748,6 +748,11 @@ pub impl Show for GetElementPtrInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction selecting one of two same-typed values according
+/// to an `i1` condition.
+///
+/// Select does not branch or change the CFG; both value operands are ordinary
+/// SSA inputs.
 pub struct SelectInst {
   priv value : ModuleAnchoredValue
 }
@@ -766,21 +771,25 @@ fn SelectInst::get_module(self : SelectInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for SelectInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::SelectInst`.
 pub impl Value for SelectInst with fn asValueEnum(self) -> ValueEnum {
   SelectInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::SelectInst`.
 pub impl Instruction for SelectInst with fn asInstEnum(self) -> InstructionEnum {
   SelectInst(self)
 }
 
 ///|
+/// Writes this select instruction using LLVM syntax.
 pub impl Show for SelectInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -790,6 +799,11 @@ pub impl Show for SelectInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction extracting a value along a constant index path
+/// through an aggregate.
+///
+/// Index validity is established when the instruction is built; this wrapper
+/// currently exposes only common instruction operations.
 pub struct ExtractValueInst {
   priv value : ModuleAnchoredValue
 }
@@ -808,31 +822,37 @@ fn ExtractValueInst::get_module(self : ExtractValueInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for ExtractValueInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::ExtractValueInst`.
 pub impl Value for ExtractValueInst with fn asValueEnum(self) -> ValueEnum {
   ExtractValueInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::ExtractValueInst`.
 pub impl Instruction for ExtractValueInst with fn asInstEnum(self) -> InstructionEnum {
   ExtractValueInst(self)
 }
 
 ///|
+/// Allows insertion immediately before a select instruction.
 pub impl InsertPoint for SelectInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Allows insertion immediately before this extraction instruction.
 pub impl InsertPoint for ExtractValueInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this aggregate extraction using LLVM syntax.
 pub impl Show for ExtractValueInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -842,6 +862,11 @@ pub impl Show for ExtractValueInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored instruction producing an aggregate with one nested element
+/// replaced along a constant index path.
+///
+/// The input aggregate is not mutated; the instruction produces a new SSA
+/// aggregate value.
 pub struct InsertValueInst {
   priv value : ModuleAnchoredValue
 }
@@ -860,26 +885,31 @@ fn InsertValueInst::get_module(self : InsertValueInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for InsertValueInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::InsertValueInst`.
 pub impl Value for InsertValueInst with fn asValueEnum(self) -> ValueEnum {
   InsertValueInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::InsertValueInst`.
 pub impl Instruction for InsertValueInst with fn asInstEnum(self) -> InstructionEnum {
   InsertValueInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this insertion instruction.
 pub impl InsertPoint for InsertValueInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this aggregate insertion using LLVM syntax.
 pub impl Show for InsertValueInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -889,6 +919,10 @@ pub impl Show for InsertValueInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored phi node merging values from predecessor blocks.
+///
+/// Every incoming value must have the phi's type. Each incoming block denotes
+/// the CFG edge on which its paired value is selected.
 pub struct PHINode {
   priv value : ModuleAnchoredValue
 }
@@ -904,6 +938,14 @@ fn PHINode::get_module(self : PHINode) -> Module {
 }
 
 ///|
+/// Adds one incoming value/block pair.
+///
+/// **Preconditions:** `value` must have the phi's type; `block` must be a
+/// predecessor in the same function/module; and the caller must avoid duplicate
+/// or otherwise invalid incoming edges. These conditions are not pre-validated.
+///
+/// **Side Effects:** Mutates the phi node's incoming list and therefore the SSA
+/// interpretation of the containing block.
 pub fn PHINode::addIncoming(
   self : PHINode,
   value : &Value,
@@ -915,6 +957,7 @@ pub fn PHINode::addIncoming(
 }
 
 ///|
+/// Returns the number of incoming value/block pairs.
 pub fn PHINode::countIncoming(self : PHINode) -> Int {
   @unsafe.llvm_count_incoming(self.getValueRef()).reinterpret_as_int()
 }
@@ -931,6 +974,11 @@ pub fn PHINode::countIncoming(self : PHINode) -> Int {
 //}
 
 ///|
+/// Returns the incoming block at a zero-based index.
+///
+/// **Returns:** `None` for a negative or out-of-range index.
+///
+/// **Lifecycle:** A returned block retains the same module as the phi node.
 pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.countIncoming(), () => {
     BasicBlock::from_raw(
@@ -944,26 +992,31 @@ pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for PHINode with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::PHINode`.
 pub impl Value for PHINode with fn asValueEnum(self) -> ValueEnum {
   PHINode(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::PHINode`.
 pub impl Instruction for PHINode with fn asInstEnum(self) -> InstructionEnum {
   PHINode(self)
 }
 
 ///|
+/// Allows insertion immediately before this phi node.
 pub impl InsertPoint for PHINode with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this phi node using LLVM syntax.
 pub impl Show for PHINode with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -973,6 +1026,10 @@ pub impl Show for PHINode with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored function-return terminator.
+///
+/// It either returns `void` or a value matching the containing function's
+/// return type.
 pub struct ReturnInst {
   priv value : ModuleAnchoredValue
 }
@@ -991,26 +1048,31 @@ fn ReturnInst::get_module(self : ReturnInst) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for ReturnInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::ReturnInst`.
 pub impl Value for ReturnInst with fn asValueEnum(self) -> ValueEnum {
   ReturnInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::ReturnInst`.
 pub impl Instruction for ReturnInst with fn asInstEnum(self) -> InstructionEnum {
   ReturnInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this terminator.
 pub impl InsertPoint for ReturnInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this return terminator using LLVM syntax.
 pub impl Show for ReturnInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -1020,6 +1082,10 @@ pub impl Show for ReturnInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Module-anchored conditional or unconditional branch terminator.
+///
+/// An unconditional branch has one successor. A conditional branch has an `i1`
+/// condition and two successors in LLVM's true/false operand order.
 pub struct BranchInst {
   priv value : ModuleAnchoredValue
 }
@@ -1038,16 +1104,27 @@ fn BranchInst::get_module(self : BranchInst) -> Module {
 }
 
 ///|
+/// Returns whether this branch has a condition and two successors.
 pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
   @unsafe.llvm_is_conditional(self.getValueRef())
 }
 
 ///|
+/// Error raised when an operation is not valid for an instruction's current
+/// form.
 pub suberror InValidOperation {
+  /// Contains a call-site-aware diagnostic describing the invalid operation.
   InValidOperation(String)
 }
 
 ///|
+/// Replaces the condition of a conditional branch.
+///
+/// **Preconditions:** `cond` must be an `i1` value in the same function/module.
+///
+/// **Errors:** Raises `InValidOperation` if this is an unconditional branch.
+///
+/// **Side Effects:** Mutates the condition that chooses the outgoing CFG edge.
 #callsite(autofill(loc))
 pub fn BranchInst::setCondition(
   self : BranchInst,
@@ -1064,11 +1141,15 @@ pub fn BranchInst::setCondition(
 }
 
 ///|
+/// Returns one for an unconditional branch and two for a conditional branch.
 pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
   @unsafe.llvm_get_num_successors(self.getValueRef()).reinterpret_as_int()
 }
 
 ///|
+/// Returns a successor by zero-based index.
+///
+/// **Returns:** `None` for a negative or out-of-range index.
 pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => {
     BasicBlock::from_raw(
@@ -1079,6 +1160,15 @@ pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
 }
 
 ///|
+/// Replaces a successor block by zero-based index.
+///
+/// **Preconditions:** `block` must belong to the same function/module. The safe
+/// layer does not validate this relationship.
+///
+/// **Errors:** Raises `IndexOutOfBounds` for an invalid index.
+///
+/// **Side Effects:** Rewires one outgoing CFG edge. Phi nodes and other
+/// predecessor-sensitive IR are not automatically repaired.
 #callsite(autofill(loc))
 pub fn BranchInst::setSuccessor(
   self : BranchInst,
@@ -1100,26 +1190,31 @@ pub fn BranchInst::setSuccessor(
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for BranchInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::BranchInst`.
 pub impl Value for BranchInst with fn asValueEnum(self) -> ValueEnum {
   BranchInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::BranchInst`.
 pub impl Instruction for BranchInst with fn asInstEnum(self) -> InstructionEnum {
   BranchInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this terminator.
 pub impl InsertPoint for BranchInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this branch terminator using LLVM syntax.
 pub impl Show for BranchInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -1129,11 +1224,17 @@ pub impl Show for BranchInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// Error raised when a switch case value is not an LLVM integer value.
 pub suberror SwitchInstError {
+  /// Contains the invalid case type and operation context.
   InValidSwitchCaseValue(String)
 }
 
 ///|
+/// Module-anchored multi-way integer switch terminator.
+///
+/// Successor index zero is the default destination. Later successors correspond
+/// to added cases in LLVM operand order.
 pub struct SwitchInst {
   priv value : ModuleAnchoredValue
 }
@@ -1152,6 +1253,16 @@ fn SwitchInst::get_module(self : SwitchInst) -> Module {
 }
 
 ///|
+/// Adds an integer case and destination.
+///
+/// **Preconditions:** `on_val` must be a constant integer matching the switch
+/// condition type, and `dest` must be in the same function/module. The safe
+/// layer currently checks only that the value has an integer type.
+///
+/// **Errors:** Raises `InValidSwitchCaseValue` for a non-integer value.
+///
+/// **Side Effects:** Adds a CFG edge and case mapping. Phi nodes in `dest` are
+/// not updated automatically.
 pub fn SwitchInst::addCase(
   self : Self,
   on_val : &Value,
@@ -1170,11 +1281,16 @@ pub fn SwitchInst::addCase(
 }
 
 ///|
+/// Returns the number of successors, including the default destination.
 pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
   @unsafe.llvm_get_num_successors(self.getValueRef()).reinterpret_as_int()
 }
 
 ///|
+/// Returns a successor by zero-based index.
+///
+/// **Returns:** `None` for a negative or out-of-range index. Index zero is the
+/// default destination.
 pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => {
     BasicBlock::from_raw(
@@ -1185,6 +1301,13 @@ pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
 }
 
 ///|
+/// Replaces a successor by zero-based index.
+///
+/// **Preconditions:** `block` must belong to the same function/module.
+///
+/// **Errors:** Raises `IndexOutOfBounds` for an invalid index.
+///
+/// **Side Effects:** Rewires a switch CFG edge without repairing phi nodes.
 #callsite(autofill(loc))
 pub fn SwitchInst::setSuccessor(
   self : Self,
@@ -1206,26 +1329,31 @@ pub fn SwitchInst::setSuccessor(
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for SwitchInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::SwitchInst`.
 pub impl Value for SwitchInst with fn asValueEnum(self) -> ValueEnum {
   SwitchInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::SwitchInst`.
 pub impl Instruction for SwitchInst with fn asInstEnum(self) -> InstructionEnum {
   SwitchInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this terminator.
 pub impl InsertPoint for SwitchInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this switch terminator using LLVM syntax.
 pub impl Show for SwitchInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }
@@ -1235,10 +1363,16 @@ pub impl Show for SwitchInst with fn output(self, logger) {
 // =======================================================
 
 ///|
+/// LLVM tail-call marker attached to a call instruction.
 pub(all) enum TailCallKind {
+  /// No explicit tail-call marker; ordinary calling semantics apply.
   None
+  /// Requests tail-call optimization when legal but does not require it.
   Tail
+  /// Requires LLVM's strict `musttail` lowering and signature/ABI constraints.
+  /// A verifier error results if those constraints are not satisfied.
   MustTail
+  /// Explicitly forbids tail-call optimization for this call.
   NoTail
 }
 
@@ -1263,6 +1397,10 @@ fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
 }
 
 ///|
+/// Module-anchored LLVM function-call instruction.
+///
+/// The callee signature, arguments, calling convention, and tail-call marker
+/// must satisfy LLVM verifier and target ABI rules.
 pub struct CallInst {
   priv value : ModuleAnchoredValue
 }
@@ -1278,51 +1416,75 @@ fn CallInst::get_module(self : CallInst) -> Module {
 }
 
 ///|
+/// Returns whether this call has either `tail` or `musttail` semantics according
+/// to LLVM's boolean tail-call query.
 pub fn CallInst::isTailCall(self : CallInst) -> Bool {
   @unsafe.llvm_is_tail_call(self.getValueRef())
 }
 
 ///|
+/// Marks this call as an optional `tail` call.
+///
+/// **Side Effects:** Replaces the current tail-call kind with LLVM's ordinary
+/// `tail` marker. Optimization remains optional.
 pub fn CallInst::setTailCall(self : CallInst) -> Unit {
   @unsafe.llvm_set_tail_call(self.getValueRef(), true)
 }
 
 ///|
+/// Clears the boolean tail-call marker.
+///
+/// **Side Effects:** Sets the call to the unmarked `None` kind rather than the
+/// explicit `NoTail` prohibition.
 pub fn CallInst::removeTailCall(self : CallInst) -> Unit {
   @unsafe.llvm_set_tail_call(self.getValueRef(), false)
 }
 
 ///|
+/// Returns the complete tail-call marker, distinguishing `musttail`, optional
+/// `tail`, explicit `notail`, and no marker.
 pub fn CallInst::getTailCallKind(self : CallInst) -> TailCallKind {
   @unsafe.llvm_get_tail_call_kind(self.getValueRef()) |> TailCallKind::from_llvm
 }
 
 ///|
+/// Sets the complete LLVM tail-call marker.
+///
+/// **Preconditions:** `MustTail` imposes strict signature, calling convention,
+/// and placement rules checked by LLVM verification. `NoTail` is an explicit
+/// prohibition and is not equivalent to `None`.
+///
+/// **Side Effects:** Mutates call lowering semantics.
 pub fn CallInst::setTailCallKind(self : CallInst, kind : TailCallKind) -> Unit {
   @unsafe.llvm_set_tail_call_kind(self.getValueRef(), kind.to_llvm())
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for CallInst with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::CallInst`.
 pub impl Value for CallInst with fn asValueEnum(self) -> ValueEnum {
   CallInst(self)
 }
 
 ///|
+/// Classifies this wrapper as `InstructionEnum::CallInst`.
 pub impl Instruction for CallInst with fn asInstEnum(self) -> InstructionEnum {
   CallInst(self)
 }
 
 ///|
+/// Allows insertion immediately before this call instruction.
 pub impl InsertPoint for CallInst with fn asInsertPtEnum(self) {
   Instruction(self as &Instruction)
 }
 
 ///|
+/// Writes this call instruction using LLVM syntax.
 pub impl Show for CallInst with fn output(self, logger) {
   self.getValueRef().output(logger)
 }

@@ -185,9 +185,9 @@
 | --- | --- |
 | `IR/Instruction.mbt` | `SelectInst`、`ExtractValueInst`、`InsertValueInst`、`PHINode`；`ReturnInst`；`BranchInst`、`InValidOperation` 及 condition/successor API；`SwitchInst`、`SwitchInstError` 及 case/successor API；`TailCallKind`、`CallInst` 及 tail-call API；全部相关 `Value`/`Instruction`/`InsertPoint`/`Show` impl |
 
-- [ ] 为 PHI incoming、aggregate index、branch/switch successor 等索引与类型条件写明 `None`、error 和 precondition 的区别。
-- [ ] 说明 CFG mutation、副作用、BasicBlock/Module 一致性和已有 wrapper 的生命周期。
-- [ ] 为 TailCallKind 每个 constructor 说明 LLVM 语义，避免把 `musttail`、`tail`、`notail` 写成同义状态。
+- [x] 为 PHI incoming、aggregate index、branch/switch successor 等索引与类型条件写明 `None`、error 和 precondition 的区别。
+- [x] 说明 CFG mutation、副作用、BasicBlock/Module 一致性和已有 wrapper 的生命周期。
+- [x] 为 TailCallKind 每个 constructor 说明 LLVM 语义，避免把 `musttail`、`tail`、`notail` 写成同义状态。
 
 建议提交信息：`docs(IR): document control-flow instructions`
 
