@@ -269,11 +269,11 @@ frontend_test -> lexer + parser + typecheck + knf
 
 以上路径均位于 `examples/minimoonbit/`。
 
-- [ ] 保持临时名字生成顺序、lexical scope、变量捕获集合和 closure 表示。
-- [ ] 保持 tuple/array/struct/enum、apply、assignment、if/match/loop 的 KNF 形状。
-- [ ] 保持 `knf_transform` 的输入、输出和错误模型；不在本轮为将来的 LLVM codegen 改造 KNF。
-- [ ] 先保留原 manifest 的直接 `either` 依赖；只有编译与 `.mbti` 都证明不需要时，才可在本 commit 移除并说明。
-- [ ] 为所有公开 KNF type、constructor/field、Context method、转换函数和 public impl 补齐文档。
+- [x] 保持临时名字生成顺序、lexical scope、变量捕获集合和 closure 表示。
+- [x] 保持 tuple/array/struct/enum、apply、assignment、if/match/loop 的 KNF 形状。
+- [x] 保持 `knf_transform` 的输入、输出和错误模型；不在本轮为将来的 LLVM codegen 改造 KNF。
+- [x] 先保留原 manifest 的直接 `either` 依赖；只有编译与 `.mbti` 都证明不需要时，才可在本 commit 移除并说明。
+- [x] 为所有公开 KNF type、constructor/field、Context method、转换函数和 public impl 补齐文档。
 
 建议提交信息：`examples(minimoonbit): port KNF lowering`
 

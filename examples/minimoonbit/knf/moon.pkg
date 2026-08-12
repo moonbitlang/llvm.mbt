@@ -1,0 +1,8 @@
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck",
+  "Kaida-Amethyst/either",
+}
+
+options(
+  "is-main": false,
+)

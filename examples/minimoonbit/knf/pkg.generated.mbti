@@ -1,0 +1,238 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm/examples/minimoonbit/knf"
+
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck",
+}
+
+// Values
+pub fn binop_to_knf(@typecheck.BinaryOp) -> BinaryOp
+
+pub fn knf_transform(@typecheck.Program) -> KnfProgram raise KnfTransformError
+
+// Errors
+pub(all) suberror KnfTransformError {
+  KnfTransformError(String)
+} derive(Show)
+
+// Types and methods
+pub(all) enum BinaryOp {
+  Add
+  Sub
+  Mul
+  Div
+  Mod
+  ShiftLeft
+  ShiftRight
+  Eq
+  NE
+  LT
+  GT
+  LE
+  GE
+  And
+  Or
+  BitAnd
+  BitOr
+} derive(Eq)
+pub impl Show for BinaryOp
+
+pub(all) struct Context {
+  mut name_env : Env
+  capture : Array[Name]
+  global_stmts : Array[KnfStmt]
+  globals : Map[String, Type]
+  unions : Map[String, Array[String]]
+  struct_defs : Map[String, KnfStructDef]
+}
+pub fn Context::add_new_name(Self, String, Type, mutable? : Bool) -> Name
+pub fn Context::add_temp(Self, Type) -> Name
+pub fn Context::apply_expr_to_knf(Self, @typecheck.ApplyExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::assign_stmt_to_knf(Self, @typecheck.AssignStmt) -> Array[KnfStmt] raise KnfTransformError
+pub fn Context::atom_expr_to_knf(Self, @typecheck.AtomExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::block_expr_to_knf(Self, @typecheck.BlockExpr) -> KnfBlock raise KnfTransformError
+pub fn Context::enter_scope(Self) -> Unit
+pub fn Context::enum_to_knf(Self, @typecheck.EnumDef) -> KnfUnion raise KnfTransformError
+pub fn Context::exit_scope(Self) -> Unit
+pub fn Context::expr_to_knf(Self, @typecheck.Expr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::extern_to_knf(Self, @typecheck.ExternFunction) -> KnfExtern raise KnfTransformError
+pub fn Context::for_stmt_to_knf(Self, @typecheck.ForStmt) -> Array[KnfStmt] raise KnfTransformError
+pub fn Context::if_expr_to_knf(Self, @typecheck.IfExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::left_value_to_knf(Self, @typecheck.LeftValue) -> (Array[KnfStmt], KnfLeftValue) raise KnfTransformError
+pub fn Context::let_mut_stmt_to_knf(Self, @typecheck.LetMutStmt) -> Array[KnfStmt] raise KnfTransformError
+pub fn Context::let_stmt_to_knf(Self, @typecheck.LetStmt) -> Array[KnfStmt] raise KnfTransformError
+pub fn Context::local_function_to_knf(Self, @typecheck.LocalFunction) -> KnfClosure raise KnfTransformError
+pub fn Context::lookup_name(Self, String) -> (Name, Type)?
+pub fn Context::match_bool_expr_to_knf(Self, @typecheck.MatchExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::match_enum_expr_to_knf(Self, @typecheck.MatchExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::match_expr_to_knf(Self, @typecheck.MatchExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::match_int_expr_to_knf(Self, @typecheck.MatchExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::match_tuple_expr_to_knf(Self, @typecheck.MatchExpr) -> (Array[KnfStmt], KnfExpr) raise KnfTransformError
+pub fn Context::new() -> Self
+pub fn Context::program_to_knf(Self, @typecheck.Program) -> KnfProgram raise KnfTransformError
+pub fn Context::stmt_to_knf(Self, @typecheck.Stmt) -> Array[KnfStmt] raise KnfTransformError
+pub fn Context::struct_def_to_knf(Self, @typecheck.StructDef) -> KnfStructDef raise KnfTransformError
+pub fn Context::top_function_to_knf(Self, @typecheck.TopFunction) -> KnfFunction raise KnfTransformError
+pub fn Context::top_let_to_knf(Self, @typecheck.TopLet) -> KnfTopLet raise KnfTransformError
+pub fn Context::type_to_knf(Self, @typecheck.Type) -> Type raise KnfTransformError
+pub fn Context::typekind_to_knf(Self, @typecheck.TypeKind) -> Type raise KnfTransformError
+pub fn Context::while_stmt_to_knf(Self, @typecheck.WhileStmt) -> Array[KnfStmt] raise KnfTransformError
+
+pub(all) struct Env {
+  local_ : Map[String, (Name, Type, Bool)]
+  capture : Map[Name, (Type, Bool)]
+  parent : Env?
+}
+pub fn Env::get(Self, String) -> Name?
+pub fn Env::get_and_capture(Self, String) -> (Name, Type, Bool)?
+pub fn Env::get_name_type(Self, Name) -> Type?
+pub fn Env::new(parent? : Self?) -> Self
+pub fn Env::set(Self, String, Name, Type, Bool) -> Unit
+
+pub(all) struct KnfBlock {
+  stmts : Array[KnfStmt]
+  ty : Type
+}
+pub fn KnfBlock::nested_to_string(Self) -> String
+pub fn KnfBlock::to_string(Self, Int) -> String
+pub impl Show for KnfBlock
+
+pub(all) struct KnfClosure {
+  name : Name
+  params : Array[(Name, Type)]
+  ret_ty : Type
+  body : KnfBlock
+  captured_vars : Map[Name, (Type, Bool)]
+}
+pub fn KnfClosure::to_string(Self, ident? : Int) -> String
+
+pub(all) enum KnfExpr {
+  Unit
+  Int(Int)
+  Int64(Int64)
+  UInt(UInt)
+  UInt64(UInt64)
+  Bool(Bool)
+  Double(Double)
+  Float(Double)
+  Char(Char)
+  String(String)
+  Ident(Name)
+  Not(Name)
+  Neg(Name)
+  Binary(BinaryOp, Name, Name)
+  If(KnfExpr, KnfBlock, KnfBlock)
+  Block(KnfBlock)
+  Call(Name, Array[Name])
+  ArrayAccess(Name, Name)
+  FieldAccess(Name, String)
+  TupleAccess(Name, Int)
+  CreateStruct(String, Array[(String, Name)])
+  ArrayLiteral(Type, Array[Name])
+  ArrayMake(Name, Name)
+  TupleLiteral(Array[Name])
+  Cast(Type, Name)
+  BitCast(Type, Name)
+  GetUnionTag(Name)
+  ReInterpretUnion(String, Name)
+  Switch(Name, Array[(Int, KnfBlock)], KnfBlock)
+}
+pub fn KnfExpr::to_string(Self, ident? : Int) -> String
+pub impl Show for KnfExpr
+
+pub(all) struct KnfExtern {
+  name : String
+  ret_ty : Type
+  params : Array[Type]
+  ffi_name : String
+}
+
+pub(all) struct KnfFunction {
+  name : String
+  ret_ty : Type
+  params : Array[(Name, Type)]
+  body : KnfBlock
+}
+pub impl Show for KnfFunction
+
+pub(all) enum KnfLeftValue {
+  Ident(Name)
+  ArrayAcc(Name, Name)
+  FieldAcc(Name, String)
+}
+pub fn KnfLeftValue::to_knf_expr(Self) -> KnfExpr
+
+pub(all) struct KnfProgram {
+  source_file : String
+  struct_defs : Map[String, KnfStructDef]
+  unions : Map[String, KnfUnion]
+  global_stmts : Array[KnfStmt]
+  top_lets : Map[String, KnfTopLet]
+  functions : Map[String, KnfFunction]
+  externs : Map[String, KnfExtern]
+}
+pub impl Show for KnfProgram
+
+pub(all) enum KnfStmt {
+  Let(Name, Type, KnfExpr)
+  LetMut(Name, Type, KnfExpr)
+  Assign(Name, KnfExpr)
+  ArrayPut(Name, Name, KnfExpr)
+  StructFieldSet(Name, String, Name)
+  While(KnfBlock, KnfBlock)
+  ExprStmt(KnfExpr)
+  Return(KnfExpr)
+  ReturnUnit
+  ClosureDef(KnfClosure)
+}
+pub fn KnfStmt::to_string(Self, ident? : Int) -> String
+pub impl Show for KnfStmt
+
+pub(all) struct KnfStructDef {
+  name : String
+  fields : Array[(String, Bool, Type)]
+}
+pub fn KnfStructDef::get_field_index(Self, String) -> Int?
+pub impl Show for KnfStructDef
+
+pub(all) struct KnfTopLet {
+  name : Name
+  ty : Type
+  expr : KnfExpr
+}
+pub impl Show for KnfTopLet
+
+pub(all) struct KnfUnion {
+  name : String
+  variants : Array[KnfStructDef]
+}
+
+pub(all) struct Name {
+  id : String
+  slot : Int
+} derive(Eq, Hash)
+pub fn Name::wildcard() -> Self
+pub impl Show for Name
+
+pub(all) enum Type {
+  Unit
+  Int
+  Int64
+  UInt
+  UInt64
+  Bool
+  Double
+  Float
+  Char
+  String
+  Array(Type)
+  Struct(String)
+  Union(String)
+  Tuple(Array[Type])
+  Function(Array[Type], Type)
+}
+pub impl Show for Type
+
+// Type aliases
+
+// Traits
