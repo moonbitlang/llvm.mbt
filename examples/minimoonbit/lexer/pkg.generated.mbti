@@ -1,0 +1,100 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm/examples/minimoonbit/lexer"
+
+// Values
+pub fn throw_(Token, String, ThrowLevel) -> Unit
+
+pub fn tokenize(String, source_file? : String) -> Array[Token] raise TokenizeError
+
+// Errors
+pub suberror TokenizeError {
+  TokenizeError(String)
+} derive(Show)
+
+// Types and methods
+pub(all) enum AssignOp {
+  Assign
+  PlusAssign
+  MinusAssign
+  MultAssign
+  DivAssign
+  ModAssign
+} derive(Eq, Show, ToJson)
+
+pub(all) enum BinaryOp {
+  Add
+  Sub
+  Mul
+  Div
+  Mod
+  ShiftLeft
+  ShiftRight
+  Eq
+  NE
+  LT
+  GT
+  LE
+  GE
+  And
+  Or
+  BitAnd
+  BitOr
+} derive(Eq)
+pub impl Show for BinaryOp
+
+pub(all) enum Keyword {
+  Fn
+  Struct
+  Let
+  Mut
+  If
+  Else
+  While
+  For
+  Return
+  Extern
+  Enum
+  Match
+} derive(Eq, Show)
+
+pub(all) enum ThrowLevel {
+  Error
+  Warning
+} derive(Show)
+
+pub struct Token {
+  kind : TokenKind
+  line : Int
+  col : Int
+  idx : Int
+  code : String
+  file : String
+} derive(Eq)
+pub fn Token::new(TokenKind, Int, Int, Int, String, String) -> Self
+pub impl Show for Token
+
+pub(all) enum TokenKind {
+  Bool(Bool)
+  Int(Int)
+  Int64(Int64)
+  UInt(UInt)
+  UInt64(UInt64)
+  Double(Double)
+  Float(Double)
+  Char(Char)
+  String(String)
+  Keyword(Keyword)
+  Upper(String)
+  Lower(String)
+  BinaryOp(BinaryOp)
+  AssignOp(AssignOp)
+  Not
+  Bracket(Char)
+  Symbol(String)
+  Wildcard
+  EOF
+} derive(Eq, Show)
+
+// Type aliases
+
+// Traits

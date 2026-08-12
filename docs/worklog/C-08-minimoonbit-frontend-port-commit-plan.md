@@ -157,11 +157,11 @@ frontend_test -> lexer + parser + typecheck + knf
 | `examples/minimoonbit/lexer/throw.mbt` | `ThrowLevel`、`throw_` 和源码诊断格式化 |
 | `examples/minimoonbit/lexer/pkg.generated.mbti` | 由 `moon info` 生成的新接口 |
 
-- [ ] 保持 token 分类、操作符映射、关键字集合、注释和字面量扫描行为。
-- [ ] 重点核对 offset/line/column、EOF、错误 token 和诊断片段，不因语法适配改变 source span。
-- [ ] 保持 `tokenize` 的输入/文件名参数和错误契约；不在本轮重做 lexer API。
-- [ ] 为所有仍公开的 type、constructor、field、function 和 public impl 补充必要文档。
-- [ ] 本 commit 只要求实现 package 能 check；原测试在下一个 commit 单独迁入。
+- [x] 保持 token 分类、操作符映射、关键字集合、注释和字面量扫描行为。
+- [x] 重点核对 offset/line/column、EOF、错误 token 和诊断片段，不因语法适配改变 source span。
+- [x] 保持 `tokenize` 的输入/文件名参数和错误契约；不在本轮重做 lexer API。
+- [x] 为所有仍公开的 type、constructor、field、function 和 public impl 补充必要文档。
+- [x] 本 commit 只要求实现 package 能 check；原测试在下一个 commit 单独迁入。
 
 建议提交信息：`examples(minimoonbit): port the lexer`
 

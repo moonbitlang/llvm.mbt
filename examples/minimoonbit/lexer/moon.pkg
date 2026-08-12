@@ -1,0 +1,8 @@
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/color",
+  "moonbitlang/core/string",
+}
+
+options(
+  "is-main": false,
+)
