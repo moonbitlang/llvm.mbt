@@ -41,44 +41,44 @@ machine.emitObjectToFile(program, object_path)
 
 ## Commit 2：让新 Module 保持 target 未指定
 
-- [ ] 从 `Context::addModule` 删除隐式 `setDefaultDataLayout()` 调用。
-- [ ] 删除公开 `Module::setDefaultDataLayout()`；保留 `Module::setDataLayout()`，并补充读取 target triple 与 DataLayout string 所需的安全 accessor。
-- [ ] 增加测试，确认新 Module 的 triple/layout 为空，显式 `setDataLayout` 仍能 round-trip。
-- [ ] 更新 Chapter 4～7 中依赖硬编码 x86 layout 的 doc-test 快照；只移除不再存在的 `target datalayout` 行，不改写教程 IR 的其他内容。
-- [ ] 检查 `.mbti` 只包含上述公开删除和 accessor 增加。
+- [x] 从 `Context::addModule` 删除隐式 `setDefaultDataLayout()` 调用。
+- [x] 删除公开 `Module::setDefaultDataLayout()`；保留 `Module::setDataLayout()`，并补充读取 target triple 与 DataLayout string 所需的安全 accessor。
+- [x] 增加测试，确认新 Module 的 triple/layout 为空，显式 `setDataLayout` 仍能 round-trip。
+- [x] 更新 Chapter 4～7 中依赖硬编码 x86 layout 的 doc-test 快照；只移除不再存在的 `target datalayout` 行，不改写教程 IR 的其他内容。
+- [x] 检查 `.mbti` 只包含上述公开删除和 accessor 增加。
 
 建议提交信息：`IR: leave new modules target-unspecified`
 
 ## Commit 3：接通 native registry 与 TargetMachine 构造的 raw 边界
 
-- [ ] 为 `LLVMInitializeNativeTarget` 和 `LLVMInitializeNativeAsmPrinter` 增加可链接的 C adapter；不初始化 asm parser 或 disassembler。
-- [ ] 接通 `LLVMGetDefaultTargetTriple`、`LLVMGetHostCPUName` 与 `LLVMGetHostCPUFeatures`，在 C 边界复制结果并配对 `LLVMDisposeMessage`。
-- [ ] 整理 `LLVMGetTargetFromTriple` 的返回模型，保留 lookup 诊断并明确成功/失败，不向 MoonBit 暴露 `char **`。
-- [ ] 接通 TargetMachine options、`LLVMCreateTargetMachineWithOptions` 与 `LLVMDisposeTargetMachine`；NULL 创建结果必须转为可观察失败。
-- [ ] 增加 unsafe 白盒测试，覆盖重复 native 初始化、host 信息非空、host target lookup、options 构造/释放、TargetMachine 创建/释放与无效 triple 诊断。
-- [ ] C adapter 按 `docs/style-guide.md` 标注对应 MoonBit extern、消息所有权、NULL 和全局初始化契约。
+- [x] 为 `LLVMInitializeNativeTarget` 和 `LLVMInitializeNativeAsmPrinter` 增加可链接的 C adapter；不初始化 asm parser 或 disassembler。
+- [x] 接通 `LLVMGetDefaultTargetTriple`、`LLVMGetHostCPUName` 与 `LLVMGetHostCPUFeatures`，在 C 边界复制结果并配对 `LLVMDisposeMessage`。
+- [x] 整理 `LLVMGetTargetFromTriple` 的返回模型，保留 lookup 诊断并明确成功/失败，不向 MoonBit 暴露 `char **`。
+- [x] 接通 TargetMachine options、`LLVMCreateTargetMachineWithOptions` 与 `LLVMDisposeTargetMachine`；NULL 创建结果必须转为可观察失败。
+- [x] 增加 unsafe 白盒测试，覆盖重复 native 初始化、host 信息非空、host target lookup、options 构造/释放、TargetMachine 创建/释放与无效 triple 诊断。
+- [x] C adapter 按 `docs/style-guide.md` 标注对应 MoonBit extern、消息所有权、NULL 和全局初始化契约。
 
 建议提交信息：`unsafe: bind native target machine construction`
 
 ## Commit 4：接通 configure、verify 与 object emission 的 raw 边界
 
-- [ ] 接通 `LLVMCreateTargetDataLayout`、`LLVMSetModuleDataLayout` 与 `LLVMDisposeTargetData`，保证临时 TargetData 只在配置调用内存活。
-- [ ] 为 `LLVMVerifyModule` 增加 adapter，固定使用 `LLVMReturnStatusAction`；复制并释放成功或失败时可能返回的 message。
-- [ ] 为 `LLVMTargetMachineEmitToFile` 增加 adapter，固定使用 `LLVMObjectFile`；filename 使用现有 `Utf8Z` 输入边界，错误 message 在同一次 C 调用中复制并释放。
-- [ ] 删除 `unsafe/Analysis.mbt` 中指向不存在 `__llvm_verify_module` 的悬空声明，改用真实 adapter。
-- [ ] 增加 unsafe 白盒测试，分别覆盖 Module target/layout 配置、合法与非法 Module verification、object emission 成功和不可写路径的错误诊断。
-- [ ] 测试产生的 object 使用隔离路径并在测试结束时清理；本 commit 不调用 linker 或运行生成物。
+- [x] 接通 `LLVMCreateTargetDataLayout`、`LLVMSetModuleDataLayout` 与 `LLVMDisposeTargetData`，保证临时 TargetData 只在配置调用内存活。
+- [x] 为 `LLVMVerifyModule` 增加 adapter，固定使用 `LLVMReturnStatusAction`；复制并释放成功或失败时可能返回的 message。
+- [x] 为 `LLVMTargetMachineEmitToFile` 增加 adapter，固定使用 `LLVMObjectFile`；filename 使用现有 `Utf8Z` 输入边界，错误 message 在同一次 C 调用中复制并释放。
+- [x] 删除 `unsafe/Analysis.mbt` 中指向不存在 `__llvm_verify_module` 的悬空声明，改用真实 adapter。
+- [x] 增加 unsafe 白盒测试，分别覆盖 Module target/layout 配置、合法与非法 Module verification、object emission 成功和不可写路径的错误诊断。
+- [x] 测试产生的 object 使用隔离路径并在测试结束时清理；本 commit 不调用 linker 或运行生成物。
 
 建议提交信息：`unsafe: bind module verification and object emission`
 
 ## Commit 5：建立安全 Target 与 TargetMachine 资源模型
 
-- [ ] 在 `IR` 包增加 `TargetTriple`、`TargetRegistry`、borrowed `Target`、安全层 codegen enum、`TargetMachineOptions` 和 managed `TargetMachine`。
-- [ ] `TargetRegistry::initializeNativeCodegen()` 与 `TargetMachine::host()` 复用同一个幂等实现；显式初始化后再次调用 host 路径仍然成功。
-- [ ] `TargetRegistry::lookupTarget` 暴露长期通用查找原语；`Target::createTargetMachine` 实现 generic/空 features 默认值，`TargetMachine::host` 只为缺省项补 host CPU/features。
-- [ ] TargetMachine owner 的 C payload 只拥有一个 `LLVMTargetMachineRef`，不保存 Module/Context parent；finalizer 通过 take-and-dispose 路径精确调用一次 disposer。
-- [ ] 增加 owner 白盒测试和公开 API 测试，验证 Target 无 disposer、TargetMachine alias 只释放一次、显式/自动初始化可组合，以及 host/generic options 默认值与显式覆盖。
-- [ ] `.mbti` 不公开 raw ref、raw options handle、owner control block 或 `close/drop`。
+- [x] 在 `IR` 包增加 `TargetTriple`、`TargetRegistry`、borrowed `Target`、安全层 codegen enum、`TargetMachineOptions` 和 managed `TargetMachine`。
+- [x] `TargetRegistry::initializeNativeCodegen()` 与 `TargetMachine::host()` 复用同一个幂等实现；显式初始化后再次调用 host 路径仍然成功。
+- [x] `TargetRegistry::lookupTarget` 暴露长期通用查找原语；`Target::createTargetMachine` 实现 generic/空 features 默认值，`TargetMachine::host` 只为缺省项补 host CPU/features。
+- [x] TargetMachine owner 的 C payload 只拥有一个 `LLVMTargetMachineRef`，不保存 Module/Context parent；finalizer 通过 take-and-dispose 路径精确调用一次 disposer。
+- [x] 增加 owner 白盒测试和公开 API 测试，验证 Target 无 disposer、TargetMachine alias 只释放一次、显式/自动初始化可组合，以及 host/generic options 默认值与显式覆盖。
+- [x] `.mbti` 不公开 raw ref、raw options handle、owner control block 或 `close/drop`。
 
 建议提交信息：`IR: add managed target machine APIs`
 
