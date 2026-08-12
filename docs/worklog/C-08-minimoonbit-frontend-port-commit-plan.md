@@ -232,11 +232,11 @@ frontend_test -> lexer + parser + typecheck + knf
 
 以上路径均位于 `examples/minimoonbit/`。
 
-- [ ] 保持 typed AST shape、类型变量生成、scope push/pop、名称查找和 top-level 收集顺序。
-- [ ] 保持函数/闭包、tuple/array、struct/enum、pattern match、loop 和赋值的类型规则。
-- [ ] 重点核对 `is_type_compatible`、推导结果、错误传播与 source token，不用新的默认值掩盖失败。
-- [ ] 为所有公开 typed AST、type enum、Context method、field/constructor 和 public impl 补齐文档。
-- [ ] 本 commit 不加入 `typecheck_test.mbt`，避免实现审查被大段 expected 输出淹没。
+- [x] 保持 typed AST shape、类型变量生成、scope push/pop、名称查找和 top-level 收集顺序。
+- [x] 保持函数/闭包、tuple/array、struct/enum、pattern match、loop 和赋值的类型规则。
+- [x] 重点核对 `is_type_compatible`、推导结果、错误传播与 source token，不用新的默认值掩盖失败。
+- [x] 为所有公开 typed AST、type enum、Context method、field/constructor 和 public impl 补齐文档。
+- [x] 本 commit 不加入 `typecheck_test.mbt`，避免实现审查被大段 expected 输出淹没。
 
 建议提交信息：`examples(minimoonbit): port the type checker`
 

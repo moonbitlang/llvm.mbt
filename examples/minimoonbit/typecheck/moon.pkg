@@ -1,0 +1,11 @@
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/color",
+  "Kaida-Amethyst/either",
+  "moonbitlang/core/hashset",
+}
+
+options(
+  "is-main": false,
+)
