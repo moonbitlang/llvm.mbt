@@ -1,4 +1,12 @@
 ///|
+/// Module-owned LLVM function declaration or definition.
+///
+/// A function begins as a declaration and becomes a definition as basic blocks
+/// are added. Its signature is context-owned; arguments and blocks are anchored
+/// to the same module as the function.
+///
+/// **Lifecycle:** The wrapper retains its owning module. Unsafe removal or
+/// deletion of the function can still invalidate this and derived wrappers.
 pub struct Function {
   priv value : ModuleAnchoredValue
 }
@@ -14,16 +22,19 @@ fn Function::get_module(self : Function) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for Function with fn getValueRef(self) -> ValueRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::Function`.
 pub impl Value for Function with fn asValueEnum(self) {
   Function(self)
 }
 
 ///|
+/// Classifies this wrapper as `GlobalEnum::Function`.
 pub impl GlobalValue for Function with fn asGlobalEnum(self) {
   Function(self)
 }
@@ -45,7 +56,10 @@ fn Function::getNextFunction(self : Self) -> Function? {
 //}
 
 ///|
-/// Get Function Name.
+/// Returns the optional function name.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
 ///
 /// ```mbt check
 /// test {
@@ -64,8 +78,11 @@ pub fn Function::getName(self : Self) -> String? raise StringError {
 }
 
 ///|
-/// Set Function Name.
+/// Sets the function name.
 ///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL byte.
+///
+/// **Side Effects:** Changes symbol lookup and the name printed in LLVM IR.
 ///
 /// ```mbt check
 /// test {
@@ -87,7 +104,9 @@ pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
 }
 
 ///|
-/// Get Function Type.
+/// Returns this function's signature type.
+///
+/// **Lifecycle:** The returned type is owned by the module's context.
 ///
 /// ```mbt check
 /// test {
@@ -107,7 +126,10 @@ pub fn Function::getType(self : Self) -> FunctionType {
 }
 
 ///|
-/// Get Number of Function Arguments.
+/// Returns the number of fixed function arguments.
+///
+/// Variadic arguments at call sites are not part of a function definition's
+/// argument list.
 ///
 /// ```mbt check
 /// test {
@@ -130,7 +152,11 @@ pub fn Function::getNumArgs(self : Self) -> Int {
 }
 
 ///|
-/// Get Function Parameter.
+/// Returns a fixed argument by zero-based index.
+///
+/// **Returns:** `None` for a negative or out-of-range index.
+///
+/// **Lifecycle:** A returned argument retains this function's module.
 ///
 /// ```mbt check
 /// test {
@@ -158,7 +184,9 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 }
 
 ///|
-/// Get Function Parameters.
+/// Returns all fixed arguments in signature order.
+///
+/// **Lifecycle:** Each returned argument retains this function's module.
 ///
 /// ```mbt check
 /// test {
@@ -183,7 +211,21 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 }
 
 ///|
-/// Add a Basic Block to the Function.
+/// Adds a basic block to this function.
+///
+/// **Parameters:**
+///
+/// - `name`: Optional block name.
+/// - `before`: When present, inserts immediately before that block; otherwise
+///   appends to the function.
+///
+/// **Preconditions:** `before` must belong to this function and module. The
+/// implementation does not validate this relationship before calling LLVM.
+///
+/// **Errors:** Raises `StringError::ContainsNul` if `name` contains an embedded
+/// NUL byte.
+///
+/// **Side Effects:** Mutates the function's block list.
 ///
 /// ```mbt check
 /// test {
@@ -221,7 +263,7 @@ pub fn Function::addBasicBlock(
 }
 
 ///|
-/// Get number of Basic Blocks in the Function.
+/// Returns the number of basic blocks currently attached to the function.
 ///
 /// ```moonbit skip for duplicate test.
 /// let ctx = Context::new()
@@ -243,7 +285,9 @@ pub fn Function::getNumBasicBlocks(self : Self) -> Int {
 }
 
 ///|
-/// Collect all Basic Blocks in the Function.
+/// Returns all currently attached basic blocks in function order.
+///
+/// **Lifecycle:** Each returned block retains this function's module.
 ///
 /// ```moonbit skip for duplicate test.
 /// let ctx = Context::new()
@@ -267,7 +311,13 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 }
 
 ///|
-/// Add Function Attribute.
+/// Adds or replaces a supported function attribute.
+///
+/// **Preconditions:** The attribute must be valid for this signature and target
+/// ABI; complete validation is deferred to LLVM's verifier.
+///
+/// **Side Effects:** Mutates function attributes and may affect optimization or
+/// code generation.
 ///
 /// ```mbt check
 /// test {
@@ -311,7 +361,9 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 }
 
 ///|
-/// Remove Function Attribute.
+/// Removes the selected function-attribute kind if present.
+///
+/// **Side Effects:** Mutates function attributes.
 ///
 /// ```mbt check
 /// test {
@@ -368,7 +420,7 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 }
 
 ///|
-/// Count Function Attributes.
+/// Returns the number of function-level attributes currently attached.
 ///
 /// ```mbt check
 /// test {
@@ -403,7 +455,12 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 }
 
 ///|
-/// Add an Attribute for the Return Value of the Function.
+/// Adds or replaces a supported return-value attribute.
+///
+/// **Preconditions:** The attribute must be valid for the return type and target
+/// ABI; complete validation is deferred to LLVM's verifier.
+///
+/// **Side Effects:** Mutates return attributes.
 ///
 /// ```mbt check
 /// test {
@@ -442,8 +499,9 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 }
 
 ///|
-/// Remove the Attribute for the Return Value of the Function.
+/// Removes the selected return-attribute kind if present.
 ///
+/// **Side Effects:** Mutates return attributes.
 ///
 /// ```mbt check
 /// test {
@@ -496,6 +554,7 @@ pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
 }
 
 ///|
+/// Writes the complete LLVM function declaration or definition.
 pub impl Show for Function with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
     error => "<LLVM function text unavailable: \{error}>"
@@ -508,6 +567,12 @@ pub impl Show for Function with fn output(self, logger) {
 // ==================================================
 
 ///|
+/// Module-anchored view of one fixed function argument.
+///
+/// The wrapper records the argument's zero-based index for attribute APIs.
+///
+/// **Lifecycle:** It retains the function's module. If the function is erased
+/// through an unsafe API, this wrapper becomes invalid.
 pub struct Argument {
   priv value_ref : ValueRef
   priv idx : Int
@@ -534,17 +599,22 @@ fn Argument::get_module(self : Argument) -> Module {
 }
 
 ///|
+/// Exposes the borrowed LLVM value handle.
 pub impl Value for Argument with fn getValueRef(self) -> ValueRef {
   self.inner()
 }
 
 ///|
+/// Classifies this wrapper as `ValueEnum::Argument`.
 pub impl Value for Argument with fn asValueEnum(self) {
   Argument(self)
 }
 
 ///|
-/// Get Argument Name.
+/// Returns the optional argument name.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
 ///
 /// ```mbt check
 /// test {
@@ -567,7 +637,11 @@ pub fn Argument::getName(self : Self) -> String? raise StringError {
 }
 
 ///|
-/// Set Argument Name.
+/// Sets the argument name.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL byte.
+///
+/// **Side Effects:** Changes the name printed in the containing function.
 ///
 /// ```moonbit skip due to duplicate test.
 /// let ctx = Context::new()
@@ -588,13 +662,21 @@ pub fn Argument::setName(self : Self, name : String) -> Unit raise StringError {
 }
 
 ///|
+/// Returns the function that owns this argument.
+///
+/// **Lifecycle:** The returned wrapper retains the same module.
 pub fn Argument::getFunction(self : Self) -> Function {
   let func_ref = @unsafe.llvm_get_param_parent(self.getValueRef())
   Function::from_raw(func_ref, self.get_module())
 }
 
 ///|
-/// Add an Attribute to the Argument.
+/// Adds or replaces a supported parameter attribute.
+///
+/// **Preconditions:** The attribute must be valid for this argument's type and
+/// target ABI; complete validation is deferred to LLVM's verifier.
+///
+/// **Side Effects:** Mutates the corresponding function parameter attributes.
 ///
 /// ```mbt check
 /// test {
@@ -638,7 +720,9 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 }
 
 ///|
-/// Remove the Attribute of the Argument.
+/// Removes the selected parameter-attribute kind if present.
+///
+/// **Side Effects:** Mutates the corresponding function parameter attributes.
 ///
 /// ```mbt check
 /// test {
@@ -695,6 +779,7 @@ pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
 }
 
 ///|
+/// Writes this typed argument using LLVM syntax.
 pub impl Show for Argument with fn output(self, logger) {
   let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
     error => "<LLVM argument text unavailable: \{error}>"

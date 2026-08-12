@@ -159,10 +159,10 @@
 | `IR/Attributes.mbt` | `Attribute`、`FnAttr`、`ParamAttr`、`RetAttr` 及全部公开 constructor |
 | `IR/DataLayout.mbt` | `DataLayout` 及 size/store/alloc/alignment 查询 |
 
-- [ ] 说明 `Module` 的 managed ownership、派生对象保活关系、verify/emission 前的 target 状态，以及 dump/bitcode 文件副作用。
-- [ ] 说明 Function/Argument/GlobalValue 对 Module 的 anchor，nullable 查询与 mutation 的可观察结果。
-- [ ] 为所有 Linkage、UnnamedAddr 和 attribute constructor 说明 LLVM 语义及 target/ABI 相关限制。
-- [ ] 明确 DataLayout 是 Module-borrowed view，并区分 bit size、store size、alloc size 与 ABI alignment。
+- [x] 说明 `Module` 的 managed ownership、派生对象保活关系、verify/emission 前的 target 状态，以及 dump/bitcode 文件副作用。
+- [x] 说明 Function/Argument/GlobalValue 对 Module 的 anchor，nullable 查询与 mutation 的可观察结果。
+- [x] 为所有 Linkage、UnnamedAddr 和 attribute constructor 说明 LLVM 语义及 target/ABI 相关限制。
+- [x] 明确 DataLayout 是 Module-borrowed view，并区分 bit size、store size、alloc size 与 ABI alignment。
 
 建议提交信息：`docs(IR): document modules and global values`
 

@@ -1,4 +1,12 @@
 ///|
+/// Borrowed view of an LLVM module's current target data layout.
+///
+/// The layout interprets type sizes and alignments according to the module's
+/// configured target ABI. It is not an independently owned target-data object.
+///
+/// **Lifecycle:** This wrapper retains its owning module. Do not dispose the raw
+/// target-data reference or assume a view obtained before `Module::setDataLayout`
+/// remains a snapshot independent of later module mutation.
 pub struct DataLayout {
   priv target_data_ref : @unsafe.LLVMTargetDataRef
   priv owner_module : Module
@@ -20,7 +28,13 @@ fn DataLayout::get_unsafe_ref(self : DataLayout) -> @unsafe.LLVMTargetDataRef {
 }
 
 ///|
-/// Get Type Size in Bits.
+/// Returns the logical size of `ty` in bits under this target layout.
+///
+/// This is the bit width of the value representation. It may not be a whole
+/// number of bytes and is distinct from store size and allocation size.
+///
+/// **Preconditions:** `ty` must be sized and belong to a context compatible
+/// with the owning module.
 ///
 /// ```mbt check
 /// test {
@@ -46,7 +60,12 @@ pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
 }
 
 ///|
-/// Get Type Store Size.
+/// Returns the minimum number of bytes required to store `ty`.
+///
+/// Store size rounds the bit size up to whole bytes but excludes trailing ABI
+/// padding that may be included in allocation size.
+///
+/// **Preconditions:** `ty` must be sized and compatible with this layout.
 ///
 /// ```mbt check
 /// test {
@@ -79,6 +98,12 @@ pub fn DataLayout::getTypeStoreSize(self : DataLayout, ty : &Type) -> Int {
 }
 
 ///|
+/// Returns the ABI allocation size of `ty` in bytes.
+///
+/// Allocation size includes padding needed so consecutive objects are properly
+/// aligned and is therefore greater than or equal to store size.
+///
+/// **Preconditions:** `ty` must be sized and compatible with this layout.
 pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
   let size = @unsafe.llvm_abi_size_of_type(
     self.get_unsafe_ref(),
@@ -88,6 +113,12 @@ pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
 }
 
 ///|
+/// Returns the ABI-required alignment of `ty` in bytes.
+///
+/// **Notes:** This is the target ABI alignment, not a preferred alignment and
+/// not the alignment explicitly attached to a particular instruction/global.
+///
+/// **Preconditions:** `ty` must be sized and compatible with this layout.
 pub fn DataLayout::getTypeAlignment(self : DataLayout, ty : &Type) -> Int {
   let align = @unsafe.llvm_abi_alignment_of_type(
     self.get_unsafe_ref(),

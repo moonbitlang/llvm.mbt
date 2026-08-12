@@ -1,4 +1,13 @@
 ///|
+/// Managed owner of an LLVM module and its module-level IR objects.
+///
+/// Functions, globals, arguments, basic blocks, and instructions returned from
+/// a module retain the same underlying module owner. Types and ordinary
+/// constants remain owned by the module's `Context` instead.
+///
+/// **Lifecycle:** The native module is disposed when the last `Module` or
+/// module-anchored wrapper is released. Do not independently dispose raw LLVM
+/// handles obtained from these objects.
 pub struct Module {
   priv owner : ModuleOwner
 }
@@ -19,6 +28,15 @@ fn Module::get_unsafe_ref(self : Module) -> @unsafe.LLVMModuleRef {
 }
 
 ///|
+/// Adds a function declaration with the given signature and name.
+///
+/// **Preconditions:** `fty` must belong to this module's context.
+///
+/// **Errors:** Raises `StringError::ContainsNul` when `name` contains an
+/// embedded NUL byte.
+///
+/// **Side Effects:** Inserts a module-owned function and optionally sets its
+/// linkage.
 pub fn Module::addFunction(
   self : Self,
   fty : FunctionType,
@@ -41,11 +59,13 @@ pub fn Module::addFunction(
 }
 
 ///|
+/// Returns the context retained by this module.
 pub fn Module::getContext(self : Self) -> Context {
   Context::from_owner(self.owner.context())
 }
 
 ///|
+/// Returns the first function in module order, or `None` when there are none.
 pub fn Module::getFirstFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_first_function(self.get_unsafe_ref())
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
@@ -54,6 +74,7 @@ pub fn Module::getFirstFunction(self : Self) -> Function? {
 }
 
 ///|
+/// Returns the last function in module order, or `None` when there are none.
 pub fn Module::getLastFunction(self : Self) -> Function? {
   let valueref = @unsafe.llvm_get_last_function(self.get_unsafe_ref())
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
@@ -62,6 +83,8 @@ pub fn Module::getLastFunction(self : Self) -> Function? {
 }
 
 ///|
+/// Finds a function by name, returning `None` when it is absent or the name
+/// cannot be passed to LLVM.
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
   let valueref = @unsafe.llvm_get_named_function(self.get_unsafe_ref(), name)
   unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
@@ -70,6 +93,7 @@ pub fn Module::getFunction(self : Self, name : String) -> Function? {
 }
 
 ///|
+/// Returns all functions in their current module order.
 pub fn Module::getFunctions(self : Self) -> Array[Function] {
   let funcs : Array[Function] = Array::new()
   for func = self.getFirstFunction() {
@@ -84,9 +108,10 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 }
 
 ///|
-/// Gets the name of this `llvm_module`.
+/// Returns the module identifier.
 ///
-/// ## Example
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
 ///
 /// ```mbt check
 /// test {
@@ -103,9 +128,10 @@ pub fn Module::getName(self : Self) -> String raise StringError {
 }
 
 ///|
-/// Assigns the name of this `llvm_module`.
+/// Sets the module identifier.
 ///
-/// ## Example (Not Tested)
+/// **Side Effects:** Changes the identifier printed in LLVM IR; it does not
+/// change the independent source filename.
 ///
 /// ```mbt check
 /// test {
@@ -122,9 +148,10 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 }
 
 ///|
-/// Gets the source file name. It defaults to the llvm_module identifier but is separate from it.
+/// Returns the source filename recorded in the module.
 ///
-/// ## Example
+/// It initially defaults to the module identifier but is stored independently.
+/// Raises `StringError::MalformedUtf8` if LLVM returns invalid UTF-8.
 ///
 /// ```mbt check
 /// test {
@@ -146,9 +173,9 @@ pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
 }
 
 ///|
-/// Sets the source file name. It defaults to the llvm_module identifier but is separate from it.
+/// Sets the source filename independently of the module identifier.
 ///
-/// ## Example
+/// **Side Effects:** Changes source metadata printed in the module.
 ///
 /// ```mbt check
 /// test {
@@ -168,6 +195,13 @@ pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
 }
 
 ///|
+/// Sets the module's target data-layout string.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL byte.
+///
+/// **Side Effects:** Replaces the layout used by later ABI size/alignment
+/// queries and code generation. The caller is responsible for supplying a
+/// layout compatible with the intended target.
 pub fn Module::setDataLayout(
   self : Module,
   layout : String,
@@ -178,6 +212,10 @@ pub fn Module::setDataLayout(
 }
 
 ///|
+/// Returns the module's target data-layout string.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
 pub fn Module::getDataLayoutStr(self : Module) -> String raise StringError {
   @unsafe.llvm_get_data_layout_str(self.get_unsafe_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
@@ -185,6 +223,10 @@ pub fn Module::getDataLayoutStr(self : Module) -> String raise StringError {
 }
 
 ///|
+/// Returns a borrowed view of the module's current data layout.
+///
+/// **Lifecycle:** The view retains this module and must not be treated as an
+/// independently owned `LLVMTargetDataRef`.
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
   let target_data_ref = @unsafe.llvm_get_module_data_layout(
     self.get_unsafe_ref(),
@@ -193,6 +235,13 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
 }
 
 ///|
+/// Returns the target triple currently recorded on the module.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
+/// UTF-8.
+///
+/// **Notes:** A newly created module may have an empty triple. Configure it for
+/// the intended target before target-dependent verification or emission.
 pub fn Module::getTargetTriple(self : Module) -> String raise StringError {
   @unsafe.llvm_get_target(self.get_unsafe_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
@@ -202,17 +251,33 @@ pub fn Module::getTargetTriple(self : Module) -> String raise StringError {
 ///|
 /// LLVM verifier rejected a module and returned this diagnostic.
 pub suberror VerificationError {
+  /// Contains LLVM's verifier diagnostic.
   VerificationError(String)
 }
 
 ///|
 /// Verifies this module without printing diagnostics or aborting the process.
+///
+/// **Errors:** Raises `VerificationError` with LLVM's diagnostic when the IR is
+/// invalid.
+///
+/// **Notes:** Target-dependent workflows should configure the module's target
+/// triple and data layout before verification.
 pub fn Module::verify(self : Module) -> Unit raise VerificationError {
   let (failed, message) = @unsafe.llvm_verify_module(self.get_unsafe_ref())
   guard !failed else { raise VerificationError(message) }
 }
 
 ///|
+/// Adds a mutable global variable.
+///
+/// **Preconditions:** `ty` and any `initializer` must belong to this module's
+/// context, and the initializer must have type `ty`.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in `name`.
+///
+/// **Side Effects:** Inserts a module-owned global and applies the optional
+/// initializer and linkage.
 pub fn Module::addGlobalVariable(
   self : Self,
   ty : &Type,
@@ -237,6 +302,14 @@ pub fn Module::addGlobalVariable(
 }
 
 ///|
+/// Adds a constant global definition initialized by `value`.
+///
+/// **Preconditions:** `ty` and `value` must belong to this module's context, and
+/// `value` must have type `ty`.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in `name`.
+///
+/// **Side Effects:** Inserts a module-owned global marked constant.
 pub fn Module::addGlobalConstant(
   self : Self,
   ty : &Type,
@@ -260,11 +333,20 @@ pub fn Module::addGlobalConstant(
 }
 
 ///|
+/// Error raised when LLVM cannot write a module as bitcode.
 pub suberror WriteBitCodeToFileFailed {
+  /// Contains the requested output filename.
   WriteBitCodeToFileFailed(String)
 }
 
 ///|
+/// Serializes this module as LLVM bitcode at `filename`.
+///
+/// **Errors:** Raises `WriteBitCodeToFileFailed` when LLVM reports a write
+/// failure.
+///
+/// **Side Effects:** Creates or overwrites the requested file. This emits LLVM
+/// bitcode, not a native object file.
 pub fn Module::writeBitCodeToFile(
   self : Module,
   filename : String,
@@ -275,11 +357,18 @@ pub fn Module::writeBitCodeToFile(
 }
 
 ///|
+/// Prints the module through LLVM's diagnostic dump facility.
+///
+/// **Side Effects:** Writes to LLVM's diagnostic stream, normally standard
+/// error. Use `Show` when the text should be captured instead.
 pub fn Module::dump(self : Module) -> Unit {
   @unsafe.llvm_dump_module(self.get_unsafe_ref())
 }
 
 ///|
+/// Writes the complete LLVM textual IR for this module.
+///
+/// If LLVM cannot produce text, a diagnostic placeholder is written instead.
 pub impl Show for Module with fn output(self, logger) {
   let s = @unsafe.llvm_print_module_to_string(self.get_unsafe_ref()) catch {
     error => "<LLVM module text unavailable: \{error}>"
