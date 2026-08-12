@@ -142,10 +142,10 @@
 | `IR/Value.mbt` | `ValueRef`、`ValueEnum`、`Value`；`Constant`/`ConstantEnum`；`Instruction`/`InstructionEnum`；`GlobalValue`/`GlobalEnum`；全部 trait method、enum constructor 和 public extend |
 | `IR/Constants.mbt` | `ConstantInt`、`ConstantFP`、`ConstantPointerNull`、`ConstantArray`、`ConstantStruct`、`ConstantVector`、`ConstantExpr`、`UndefValue`、`PoisonValue`；整数读取方法及全部 `Value`/`Constant`/`Show` impl |
 
-- [ ] 说明各 Value category、dynamic classification、trait-object conversion 与 raw `ValueRef` 的危险边界。
-- [ ] 明确 `replaceAllUsesWith` 的 mutation、类型前置条件，以及 `removeFromParent`/`eraseFromParent` 的生命周期风险；不得掩盖 Q-09 已知问题。
-- [ ] 区分 ConstantInt 的 signed/unsigned 读取语义，并说明各种 Constant 的 Context anchor。
-- [ ] 使用一个 representative Value/Constant 分类示例，不给每个 wrapper 重复相同示例。
+- [x] 说明各 Value category、dynamic classification、trait-object conversion 与 raw `ValueRef` 的危险边界。
+- [x] 明确 `replaceAllUsesWith` 的 mutation、类型前置条件，以及 `removeFromParent`/`eraseFromParent` 的生命周期风险；不得掩盖 Q-09 已知问题。
+- [x] 区分 ConstantInt 的 signed/unsigned 读取语义，并说明各种 Constant 的 Context anchor。
+- [x] 使用一个 representative Value/Constant 分类示例，不给每个 wrapper 重复相同示例。
 
 建议提交信息：`docs(IR): document values and constants`
 

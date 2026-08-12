@@ -3,6 +3,12 @@
 // =======================================================
 
 ///|
+/// Raw borrowed LLVM value handle exposed for unsafe interoperation.
+///
+/// **Lifecycle:** Ownership depends on the value category. Never dispose this
+/// handle directly through LLVM-C. Module-owned handles become invalid when
+/// their module is disposed; context-owned constants become invalid when their
+/// context is disposed. Erasing an IR object may invalidate the handle earlier.
 pub type ValueRef = @unsafe.LLVMValueRef
 
 // =======================================================
@@ -10,9 +16,13 @@ pub type ValueRef = @unsafe.LLVMValueRef
 // =======================================================
 
 ///|
+/// Closed dynamic classification of values supported by the safe API.
 pub enum ValueEnum {
+  /// Module-owned function definition or declaration.
   Function(Function)
+  /// Module-owned mutable global variable.
   GlobalVariable(GlobalVariable)
+  /// Module-owned constant global definition.
   GlobalConstant(GlobalConstant)
   /// Base class for constants with no operands.
   ///
@@ -23,55 +33,122 @@ pub enum ValueEnum {
   /// These do not have use lists. It is illegal to inspect the uses. These behave
   /// as if they have no uses (i.e. use_empty() is always true).
   ConstantInt(ConstantInt)
+  /// Context-owned floating-point constant.
   ConstantFP(ConstantFP)
+  /// Context-owned null pointer constant.
   ConstantPointerNull(ConstantPointerNull)
+  /// Context-owned array aggregate constant.
   ConstantArray(ConstantArray)
+  /// Context-owned vector constant.
   ConstantVector(ConstantVector)
+  /// Context-owned struct aggregate constant.
   ConstantStruct(ConstantStruct)
+  /// Context-owned LLVM constant expression.
   ConstantExpr(ConstantExpr)
+  /// Context-owned undefined-value constant.
   UndefValue(UndefValue)
+  /// Context-owned poison-value constant.
   PoisonValue(PoisonValue)
   //
   //BlockAddress(BlockAddress)
 
+  /// Module-anchored function argument.
   Argument(Argument)
+  /// Module-anchored basic block.
   BasicBlock(BasicBlock)
   //
+  /// Stack-allocation instruction.
   AllocaInst(AllocaInst)
+  /// Memory-load instruction.
   LoadInst(LoadInst)
+  /// Memory-store instruction.
   StoreInst(StoreInst)
+  /// Value-conversion instruction.
   CastInst(CastInst)
+  /// Unary arithmetic instruction.
   UnaryInst(UnaryInst)
+  /// Binary arithmetic or bitwise instruction.
   BinaryInst(BinaryInst)
+  /// Integer comparison instruction.
   ICmpInst(ICmpInst)
+  /// Floating-point comparison instruction.
   FCmpInst(FCmpInst)
+  /// Get-element-pointer instruction.
   GetElementPtrInst(GetElementPtrInst)
+  /// Conditional value-selection instruction.
   SelectInst(SelectInst)
+  /// Aggregate element-extraction instruction.
   ExtractValueInst(ExtractValueInst)
+  /// Aggregate element-insertion instruction.
   InsertValueInst(InsertValueInst)
+  /// Static single-assignment phi node.
   PHINode(PHINode)
+  /// Function-return terminator.
   ReturnInst(ReturnInst)
+  /// Conditional or unconditional branch terminator.
   BranchInst(BranchInst)
+  /// Multi-way switch terminator.
   SwitchInst(SwitchInst)
+  /// Function-call instruction.
   CallInst(CallInst)
 }
 
 ///|
+/// Common interface for LLVM values represented by the safe API.
+///
+/// **Implementor contract:** `getValueRef`, `asValueEnum`, `getType`, and
+/// `getContext` must all describe the same live LLVM value. Implementations
+/// must preserve the correct context or module ownership anchor.
+///
+/// **Lifecycle:** Constants are anchored directly to a context. Functions,
+/// globals, arguments, basic blocks, and instructions are anchored to a module.
+/// Mutation APIs that erase IR can invalidate wrappers before their anchor is
+/// disposed.
 pub trait Value: Show {
+  /// Returns the borrowed raw LLVM value handle.
+  ///
+  /// **Lifecycle:** The caller must not dispose it or retain it beyond the
+  /// wrapper's category-specific lifetime.
   fn getValueRef(Self) -> ValueRef
+
+  /// Returns the concrete dynamic classification of this value.
   fn asValueEnum(Self) -> ValueEnum
 
-  // All values are typed, get the type of this value.
+  /// Returns this value's context-owned LLVM type.
   fn getType(Self) -> &Type = _
 
-  // All values hold a context through their type.
+  /// Returns the context associated with this value or its owning module.
   fn getContext(Self) -> Context = _
+
+  /// Returns the optional LLVM value name.
+  ///
+  /// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns a name that
+  /// is not valid UTF-8.
   fn getValueName(Self) -> String? raise StringError = _
+
+  /// Sets the LLVM value name.
+  ///
+  /// **Errors:** Raises `StringError::ContainsNul` when the name contains an
+  /// embedded NUL byte.
+  ///
+  /// **Side Effects:** Mutates the name observed by all wrappers of this value
+  /// and by textual IR output.
   fn setValueName(Self, String) -> Unit raise StringError = _
 
-  //
+  /// Replaces every use of this value with `other`.
+  ///
+  /// **Preconditions:** Both values must have exactly the same LLVM type and
+  /// belong to a compatible context/module. The safe layer does not validate
+  /// these conditions before calling LLVM.
+  ///
+  /// **Side Effects:** Mutates every current use site; it does not erase this
+  /// value itself.
   fn replaceAllUsesWith(Self, other : &Value) -> Unit = _
+
+  /// Downcasts to the constant trait, returning `None` for non-constants.
   fn tryAsConstant(Self) -> &Constant? = _
+
+  /// Returns a concrete constant classification, or `None` for non-constants.
   fn tryAsConstantEnum(Self) -> ConstantEnum? = _
 }
 
@@ -174,23 +251,39 @@ impl Value with fn tryAsConstantEnum(self) {
 // ==================================================
 
 ///|
+/// Common interface for LLVM constants supported by the safe API.
+///
+/// **Implementor contract:** `asConstantEnum` must classify the same value as
+/// the inherited `Value` methods.
 pub trait Constant: Value {
+  /// Returns the concrete constant classification.
   fn asConstantEnum(Self) -> ConstantEnum
 }
 
 ///|
+/// Exposes the borrowed raw value handle on a constant trait object.
 pub extend &Constant with Value::{getValueRef}
 
 ///|
+/// Closed classification of constants supported by the safe API.
 pub enum ConstantEnum {
+  /// Integer constant.
   ConstantInt(ConstantInt)
+  /// Floating-point constant.
   ConstantFP(ConstantFP)
+  /// Null pointer constant.
   ConstantPointerNull(ConstantPointerNull)
+  /// Array aggregate constant.
   ConstantArray(ConstantArray)
+  /// Struct aggregate constant.
   ConstantStruct(ConstantStruct)
+  /// Vector constant.
   ConstantVector(ConstantVector)
+  /// LLVM constant expression.
   ConstantExpr(ConstantExpr)
+  /// Undefined-value constant.
   UndefValue(UndefValue)
+  /// Poison-value constant.
   PoisonValue(PoisonValue)
 }
 
@@ -199,17 +292,59 @@ pub enum ConstantEnum {
 // =======================================================
 
 ///|
+/// Common interface for module-owned LLVM instructions supported by this API.
+///
+/// **Implementor contract:** `asInstEnum` must classify the same instruction as
+/// the inherited `Value` methods, and the wrapper must retain its owning module.
+///
+/// **Lifecycle:** `removeFromParent` detaches an instruction without destroying
+/// it. `eraseFromParent` destroys the underlying LLVM instruction immediately;
+/// the current safe layer cannot invalidate copied wrappers, so all aliases must
+/// be treated as dangling after erasure.
 pub trait Instruction: Value {
+  /// Returns the concrete instruction classification.
   fn asInstEnum(Self) -> InstructionEnum
+
+  /// Returns the current parent block, or `None` when detached.
   fn getParentBasicBlock(Self) -> BasicBlock? = _
+
+  /// Returns the following instruction in the parent block, or `None` at the
+  /// end or when detached.
   fn getNextInst(Self) -> &Instruction? = _
+
+  /// Returns the preceding instruction in the parent block, or `None` at the
+  /// beginning or when detached.
   fn getPrevInst(Self) -> &Instruction? = _
+
+  /// Detaches this instruction from its parent block without destroying it.
+  ///
+  /// **Side Effects:** The block's instruction list and CFG may change. The
+  /// instruction has no parent afterward.
+  ///
+  /// **Lifecycle:** Existing wrappers remain usable only for operations LLVM
+  /// permits on detached instructions; the module anchor keeps the module alive
+  /// but does not reinsert the instruction.
   fn removeFromParent(Self) -> Unit = _
+
+  /// Removes and destroys this instruction.
+  ///
+  /// **Side Effects:** Mutates the parent block and destroys the native LLVM
+  /// instruction.
+  ///
+  /// **Lifecycle:** This wrapper and every alias become dangling immediately.
+  /// They must not be used again. The type system cannot currently enforce this
+  /// restriction; see the Q-09 lifecycle limitation.
   fn eraseFromParent(Self) -> Unit = _
+
+  /// Returns the number of call-argument operands for call-like instructions.
+  ///
+  /// **Preconditions:** LLVM defines this query only for applicable instruction
+  /// kinds; the safe layer does not validate the dynamic kind.
   fn getNumArgOperands(Self) -> Int = _
 }
 
 ///|
+/// Exposes the borrowed raw value handle on an instruction trait object.
 pub extend &Instruction with Value::{getValueRef}
 
 ///|
@@ -332,9 +467,6 @@ impl Instruction with fn getPrevInst(self) {
 }
 
 ///|
-///
-/// After `remove` the instruction is no longer in the parent basic block.
-/// But it is still in the module, so it can be reused.
 impl Instruction with fn removeFromParent(self) {
   @unsafe.llvm_instruction_remove_from_parent(Value::getValueRef(self))
 }
@@ -350,23 +482,41 @@ impl Instruction with fn getNumArgOperands(self) {
 }
 
 ///|
+/// Closed dynamic classification of supported LLVM instructions.
 pub enum InstructionEnum {
+  /// Stack-allocation instruction.
   AllocaInst(AllocaInst)
+  /// Memory-load instruction.
   LoadInst(LoadInst)
+  /// Memory-store instruction.
   StoreInst(StoreInst)
+  /// Value-conversion instruction.
   CastInst(CastInst)
+  /// Unary arithmetic instruction.
   UnaryInst(UnaryInst)
+  /// Binary arithmetic or bitwise instruction.
   BinaryInst(BinaryInst)
+  /// Integer comparison instruction.
   ICmpInst(ICmpInst)
+  /// Floating-point comparison instruction.
   FCmpInst(FCmpInst)
+  /// Get-element-pointer instruction.
   GetElementPtrInst(GetElementPtrInst)
+  /// Conditional value-selection instruction.
   SelectInst(SelectInst)
+  /// Aggregate extraction instruction.
   ExtractValueInst(ExtractValueInst)
+  /// Aggregate insertion instruction.
   InsertValueInst(InsertValueInst)
+  /// Static single-assignment phi node.
   PHINode(PHINode)
+  /// Function-return terminator.
   ReturnInst(ReturnInst)
+  /// Conditional or unconditional branch terminator.
   BranchInst(BranchInst)
+  /// Multi-way switch terminator.
   SwitchInst(SwitchInst)
+  /// Function-call instruction.
   CallInst(CallInst)
 }
 
@@ -375,22 +525,45 @@ pub enum InstructionEnum {
 // =======================================================
 
 ///|
+/// Common interface for module-level functions and global definitions.
+///
+/// **Implementor contract:** `asGlobalEnum` must classify the same value as the
+/// inherited `Value` methods, and the wrapper must retain its owning module.
 pub trait GlobalValue: Value {
+  /// Returns the concrete global-value classification.
   fn asGlobalEnum(Self) -> GlobalEnum
+
+  /// Returns this definition's LLVM linkage.
   fn getLinkage(Self) -> Linkage = _
+
+  /// Sets this definition's LLVM linkage.
+  ///
+  /// **Side Effects:** Changes symbol visibility and linker resolution
+  /// semantics in emitted IR or object files.
   fn setLinkage(Self, Linkage) -> Unit = _
+
+  /// Returns the current unnamed-address guarantee.
   fn getUnnamedAddr(Self) -> UnnamedAddr = _
+
+  /// Sets an unnamed-address guarantee used by LLVM optimization.
   fn setUnnamedAddr(Self, UnnamedAddr) -> Unit = _
+
+  /// Clears the unnamed-address guarantee.
   fn removeUnnamedAddr(Self) -> Unit = _
 }
 
 ///|
+/// Exposes the borrowed raw value handle on a global-value trait object.
 pub extend &GlobalValue with Value::{getValueRef}
 
 ///|
+/// Closed classification of module-level global values.
 pub enum GlobalEnum {
+  /// Function definition or declaration.
   Function(Function)
+  /// Mutable global variable.
   GlobalVariable(GlobalVariable)
+  /// Constant global definition.
   GlobalConstant(GlobalConstant)
 }
 
