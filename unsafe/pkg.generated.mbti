@@ -1674,6 +1674,8 @@ pub fn llvm_target_has_jit(LLVMTargetRef) -> LLVMBool
 
 pub fn llvm_target_has_target_machine(LLVMTargetRef) -> Bool
 
+pub fn llvm_target_machine_emit_object_to_file(LLVMTargetMachineRef, LLVMModuleRef, String) -> (Bool, String) raise CStringError
+
 pub fn llvm_target_machine_options_set_abi(LLVMTargetMachineOptionsRef, String) -> Unit raise CStringError
 
 pub fn llvm_target_machine_options_set_code_model(LLVMTargetMachineOptionsRef, LLVMCodeModel) -> Unit
@@ -1685,6 +1687,8 @@ pub fn llvm_target_machine_options_set_cpu(LLVMTargetMachineOptionsRef, String) 
 pub fn llvm_target_machine_options_set_features(LLVMTargetMachineOptionsRef, String) -> Unit raise CStringError
 
 pub fn llvm_target_machine_options_set_reloc_mode(LLVMTargetMachineOptionsRef, LLVMRelocMode) -> Unit
+
+pub fn llvm_target_machine_set_module_data_layout(LLVMTargetMachineRef, LLVMModuleRef) -> Unit
 
 pub fn llvm_token_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
@@ -1710,7 +1714,7 @@ pub fn llvm_vector_type(LLVMTypeRef, UInt) -> LLVMTypeRef
 
 pub fn llvm_verify_function(LLVMValueRef, LLVMVerifierFailureAction) -> LLVMBool
 
-pub fn llvm_verify_module(LLVMModuleRef, LLVMVerifierFailureAction) -> (LLVMBool, String)
+pub fn llvm_verify_module(LLVMModuleRef) -> (Bool, String)
 
 pub fn llvm_view_function_cfg(LLVMValueRef) -> Unit
 
