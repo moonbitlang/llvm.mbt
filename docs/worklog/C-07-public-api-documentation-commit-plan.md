@@ -233,9 +233,9 @@
 | --- | --- |
 | `IR/IRBuilder.mbt` | `createICmp` 及全部 ICmp convenience；`createFCmp` 及全部 FCmp convenience；`createTrunc`、`createZExt`、`createSExt`、`createFPTrunc`、`createFPExt`、FP/int 双向转换、`createBitCast`、`createIntToPtr`、`createPtrToInt`；`createGEP` |
 
-- [ ] 说明 signed/unsigned、ordered/unordered predicate 的差异；convenience 方法引用共同契约而不复制大段文字。
-- [ ] 对 cast 的 source/destination type 约束和 GEP source element type、indices、inbounds 语义写明错误与前置条件。
-- [ ] 审核已有 Example 是否真正验证所描述的 instruction，而不是只检查一段无关 Module 文本。
+- [x] 说明 signed/unsigned、ordered/unordered predicate 的差异；convenience 方法引用共同契约而不复制大段文字。
+- [x] 对 cast 的 source/destination type 约束和 GEP source element type、indices、inbounds 语义写明错误与前置条件。
+- [x] 审核已有 Example 是否真正验证所描述的 instruction，而不是只检查一段无关 Module 文本。
 
 建议提交信息：`docs(IR): document builder comparisons and casts`
 

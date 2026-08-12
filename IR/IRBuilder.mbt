@@ -2274,12 +2274,23 @@ pub fn IRBuilder::createPtrDiff(
 }
 
 ///|
-/// Create an Integer Compare Instruction.
+/// Creates an integer comparison using `pred`.
 ///
-/// **Note:**
+/// **Parameters:**
 ///
-/// 1. `lhs` and `rhs` must be integer types with the same bitwidth.
-/// 2. Allowed predicates: EQ, NE, SGT, SGE, SLT, SLE, UGT, UGE, ULT, ULE.
+/// - `pred`: Selects equality, signed ordering, or unsigned ordering.
+/// - `lhs`, `rhs`: Same-width integer operands.
+/// - `name`: Optional LLVM instruction name; it must not contain NUL.
+///
+/// **Returns:**
+///
+/// A constant `i1` when LLVM folds constant operands, otherwise an `ICmpInst`.
+///
+/// **Notes:**
+///
+/// Signed predicates (`SGT`, `SGE`, `SLT`, `SLE`) interpret the high bit as a
+/// sign bit. Unsigned predicates (`UGT`, `UGE`, `ULT`, `ULE`) do not. Equality
+/// predicates have no signedness. The builder must have an insertion point.
 ///
 /// ```mbt check
 /// test {
@@ -2514,12 +2525,24 @@ pub fn IRBuilder::createICmpULE(
 }
 
 ///|
-/// Create a Float Compare Instruction.
+/// Creates a floating-point comparison using `pred`.
 ///
-/// **Note:**
+/// **Parameters:**
 ///
-/// 1. `lhs` and `rhs` must be floating-point types with the same bitwidth.
-/// 2. Allowed predicates: OEQ, OGT, OGE, OLT, OLE, ONE, ORD, UEQ, UGT, UGE, ULT, ULE, UNE.
+/// - `pred`: Selects an ordered or unordered floating-point relation.
+/// - `lhs`, `rhs`: Same-width floating-point operands.
+/// - `name`: Optional LLVM instruction name; it must not contain NUL.
+///
+/// **Returns:**
+///
+/// A constant `i1` when LLVM folds constant operands, otherwise an `FCmpInst`.
+///
+/// **Notes:**
+///
+/// An ordered predicate is false if either operand is NaN. An unordered
+/// predicate is true if either operand is NaN. `ORD` tests that neither operand
+/// is NaN, while `UNO` is available through `createFCmp` and tests the opposite.
+/// The builder must have an insertion point.
 ///
 /// ```mbt check
 /// test {
@@ -2618,7 +2641,7 @@ pub fn IRBuilder::createFCmp(
 }
 
 ///|
-/// Create a Float Compare for Equality Instruction.
+/// Compares equal when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OEQ, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2633,7 +2656,7 @@ pub fn IRBuilder::createFCmpOEQ(
 }
 
 ///|
-/// Create a Float Compare for Greater Than Instruction.
+/// Compares greater-than when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OGT, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2648,7 +2671,7 @@ pub fn IRBuilder::createFCmpOGT(
 }
 
 ///|
-/// Create a Float Compare for Greater Than or Equal Instruction.
+/// Compares greater-than-or-equal when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OGE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2663,7 +2686,7 @@ pub fn IRBuilder::createFCmpOGE(
 }
 
 ///|
-/// Create a Float Compare for Less Than Instruction.
+/// Compares less-than when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OLT, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2678,7 +2701,7 @@ pub fn IRBuilder::createFCmpOLT(
 }
 
 ///|
-/// Create a Float Compare for Less Than or Equal Instruction.
+/// Compares less-than-or-equal when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(OLE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2693,7 +2716,7 @@ pub fn IRBuilder::createFCmpOLE(
 }
 
 ///|
-/// Create a Float Compare for Non-Equality Instruction.
+/// Compares not-equal when both operands are ordered (not NaN).
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ONE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2708,7 +2731,7 @@ pub fn IRBuilder::createFCmpONE(
 }
 
 ///|
-/// Create a Float Compare for Ordered Instruction.
+/// Tests whether neither operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ORD, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2723,7 +2746,7 @@ pub fn IRBuilder::createFCmpORD(
 }
 
 ///|
-/// Create a Float Compare for Unordered Equals Instruction.
+/// Compares equal, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UEQ, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2738,7 +2761,7 @@ pub fn IRBuilder::createFCmpUEQ(
 }
 
 ///|
-/// Create a Float Compare for Unsigned Greater Than Instruction.
+/// Compares greater-than, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UGT, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2753,7 +2776,7 @@ pub fn IRBuilder::createFCmpUGT(
 }
 
 ///|
-/// Create a Float Compare for Unsigned Greater Than or Equal Instruction.
+/// Compares greater-than-or-equal, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UGE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2768,7 +2791,7 @@ pub fn IRBuilder::createFCmpUGE(
 }
 
 ///|
-/// Create a Float Compare for Unsigned Less Than Instruction.
+/// Compares less-than, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ULT, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2783,7 +2806,7 @@ pub fn IRBuilder::createFCmpULT(
 }
 
 ///|
-/// Create a Float Compare for Unsigned Less Than or Equal Instruction.
+/// Compares less-than-or-equal, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(ULE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2798,7 +2821,7 @@ pub fn IRBuilder::createFCmpULE(
 }
 
 ///|
-/// Create a Float Compare for Unordered Not Equal Instruction.
+/// Compares not-equal, or succeeds when either operand is NaN.
 ///
 /// It's equivalent to `IRBuilder::createFCmp(UNE, lhs, rhs)`
 #callsite(autofill(loc))
@@ -2812,15 +2835,12 @@ pub fn IRBuilder::createFCmpUNE(
   self.createFCmp(UNE, lhs, rhs, name~, loc~)
 }
 
-// REVIEW: What will happened if `from` type is equal to `to` type?
-
 ///|
-/// Create a Trunc Instruction
+/// Truncates an integer by discarding its high-order bits.
 ///
-/// **Note:**
-/// 
-/// This creates a truncation instruction that truncates an integer value to a smaller integer type.
-/// The input value must be an integer type, and the target type must be a smaller integer type.
+/// `from` must be an integer and `to` must be a narrower integer type. This
+/// wrapper validates the source kind but relies on LLVM for the width relation.
+/// The builder must have an insertion point; `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -2881,12 +2901,11 @@ pub fn IRBuilder::createTrunc(
 }
 
 ///|
-/// Create a ZExt Instruction
+/// Zero-extends an integer by adding high-order zero bits.
 ///
-/// **Note:**
-/// 
-/// This creates a zero extension instruction that extends an integer value to a larger integer type by padding with zeros.
-/// The input value must be an integer type, and the target type must be a larger integer type.
+/// `from` must be an integer and `to` must be a wider integer type. This wrapper
+/// validates the source kind but relies on LLVM for the width relation. The
+/// builder must have an insertion point; `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -2947,12 +2966,11 @@ pub fn IRBuilder::createZExt(
 }
 
 ///|
-/// Create a SExt Instruction
+/// Sign-extends an integer by replicating its sign bit.
 ///
-/// **Note:**
-/// 
-/// This creates a sign extension instruction that extends an integer value to a larger integer type by replicating the sign bit.
-/// The input value must be an integer type, and the target type must be a larger integer type.
+/// `from` must be an integer and `to` must be a wider integer type. This wrapper
+/// validates the source kind but relies on LLVM for the width relation. The
+/// builder must have an insertion point; `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3013,12 +3031,12 @@ pub fn IRBuilder::createSExt(
 }
 
 ///|
-/// Create a FPTrunc Instruction
+/// Converts a floating-point value to a narrower floating-point type.
 ///
-/// **Note:**
-/// 
-/// This creates a floating-point truncation instruction that truncates a floating-point value to a smaller floating-point type.
-/// The input value must be a floating-point type, and the target type must be a smaller floating-point type.
+/// The result is rounded to the destination format. `from` must be floating
+/// point and `to` must be narrower. This wrapper validates the source kind but
+/// relies on LLVM for the width relation. The builder must have an insertion
+/// point; `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3078,12 +3096,11 @@ pub fn IRBuilder::createFPTrunc(
 }
 
 ///|
-/// Create a FPExt Instruction
+/// Converts a floating-point value to a wider floating-point type.
 ///
-/// **Note:**
-/// 
-/// This creates a floating-point extension instruction that extends a floating-point value to a larger floating-point type.
-/// The input value must be a floating-point type, and the target type must be a larger floating-point type.
+/// `from` must be floating point and `to` must be wider. This wrapper validates
+/// the source kind but relies on LLVM for the width relation. The builder must
+/// have an insertion point; `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3139,12 +3156,11 @@ pub fn IRBuilder::createFPExt(
 }
 
 ///|
-/// Create a FPToSI Instruction
+/// Converts a floating-point value to a signed integer, rounding toward zero.
 ///
-/// **Note:**
-/// 
-/// This creates a floating-point to signed integer conversion instruction that converts a floating-point value to a signed integer.
-/// The input value must be a floating-point type, and the target type must be an integer type.
+/// A NaN or a value outside the destination's representable range produces
+/// poison according to LLVM semantics. The builder must have an insertion point;
+/// `from` must be floating point and `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3200,12 +3216,11 @@ pub fn IRBuilder::createFPToSI(
 }
 
 ///|
-/// Create a FPToUI Instruction
+/// Converts a floating-point value to an unsigned integer, rounding toward zero.
 ///
-/// **Note:**
-/// 
-/// This creates a floating-point to unsigned integer conversion instruction that converts a floating-point value to an unsigned integer.
-/// The input value must be a floating-point type, and the target type must be an integer type.
+/// A NaN or a value outside the destination's representable range produces
+/// poison according to LLVM semantics. The builder must have an insertion point;
+/// `from` must be floating point and `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3266,12 +3281,11 @@ pub fn IRBuilder::createFPToUI(
 }
 
 ///|
-/// Create a SIToFP Instruction
+/// Converts a signed integer to a floating-point value.
 ///
-/// **Note:**
-/// 
-/// This creates a signed integer to floating-point conversion instruction that converts a signed integer value to a floating-point value.
-/// The input value must be an integer type, and the target type must be a floating-point type.
+/// The conversion rounds when the destination format cannot represent the exact
+/// integer. The builder must have an insertion point; `from` must be an integer
+/// and `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3327,12 +3341,11 @@ pub fn IRBuilder::createSIToFP(
 }
 
 ///|
-/// Create a UIToFP Instruction
+/// Converts an unsigned integer to a floating-point value.
 ///
-/// **Note:**
-/// 
-/// This creates an unsigned integer to floating-point conversion instruction that converts an unsigned integer value to a floating-point value.
-/// The input value must be an integer type, and the target type must be a floating-point type.
+/// The conversion rounds when the destination format cannot represent the exact
+/// integer. The builder must have an insertion point; `from` must be an integer
+/// and `name` must not contain NUL.
 ///
 /// ```mbt check
 /// test {
@@ -3392,12 +3405,17 @@ pub fn IRBuilder::createUIToFP(
 }
 
 ///|
-/// Create a BitCast Instruction
+/// Reinterprets a value's bits without changing those bits.
 ///
-/// **Note:**
-/// 
-/// This creates a bitcast instruction that converts a value from one type to another without changing the bit representation.
-/// The source and destination types must have the same bit width.
+/// Source and destination must be non-aggregate first-class types of the same
+/// bit size, or pointers in the same address space. This wrapper relies on LLVM
+/// for those constraints. The builder must have an insertion point; `name` must
+/// not contain NUL.
+///
+/// **Errors:**
+///
+/// Constant-folded results whose type has no supported high-level constant
+/// wrapper raise `ValueTypeError`.
 ///
 /// ```mbt check
 /// test {
@@ -3465,12 +3483,11 @@ pub fn IRBuilder::createBitCast(
 }
 
 ///|
-/// Create an IntToPtr Instruction
+/// Converts an integer into a pointer in the context's default address space.
 ///
-/// **Note:**
-/// 
-/// This creates an integer to pointer conversion instruction that converts an integer value to a pointer.
-/// The input value must be an integer type, and the target type must be a pointer type.
+/// The builder must have an insertion point, `from` must be an integer, and
+/// `name` must not contain NUL. The integer width need not equal the target
+/// pointer width: LLVM zero-extends or truncates it as necessary.
 ///
 /// ```mbt check
 /// test {
@@ -3519,12 +3536,11 @@ pub fn IRBuilder::createIntToPtr(
 }
 
 ///|
-/// Create a PtrToInt Instruction
+/// Converts a pointer into an integer of type `to`.
 ///
-/// **Note:**
-/// 
-/// This creates a pointer to integer conversion instruction that converts a pointer value to an integer.
-/// The input value must be a pointer type, and the target type must be an integer type.
+/// The builder must have an insertion point, `from` must be a pointer, and
+/// `name` must not contain NUL. The result is zero-extended or truncated when
+/// `to` differs from the target's pointer width.
 ///
 /// ```mbt check
 /// test {
@@ -3577,13 +3593,23 @@ pub fn IRBuilder::createPtrToInt(
 }
 
 ///|
-/// Create a GetElementPtr Instruction
+/// Computes the address of a subobject without dereferencing `ptr`.
 ///
-/// **Note:**
-/// 
-/// This creates a getelementptr instruction that calculates the address of a sub-element of an aggregate object.
-/// The pointer must be a pointer type, and all indices must be integer values.
-/// When inbounds is true, the result is undefined if the computed address is outside the bounds of the allocated object.
+/// **Parameters:**
+///
+/// - `ptr`: Base pointer. Its opaque pointer type does not encode the pointee.
+/// - `pointeeType`: Source element type used to interpret the first index.
+/// - `indices`: Integer indices describing the aggregate path.
+/// - `name`: Optional LLVM instruction name; it must not contain NUL.
+/// - `inbounds`: Adds LLVM's `inbounds` promise to the GEP.
+///
+/// **Notes:**
+///
+/// `pointeeType` and every index must describe a valid LLVM GEP path. This
+/// wrapper checks only that `ptr` is a pointer and each index is an integer; LLVM
+/// validates the remaining type relationship. Violating an `inbounds` promise
+/// produces poison rather than a checked bounds error. The builder must have an
+/// insertion point.
 ///
 /// ```mbt check
 /// test {
