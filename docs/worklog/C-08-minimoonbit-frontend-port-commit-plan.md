@@ -211,10 +211,10 @@ frontend_test -> lexer + parser + typecheck + knf
 | --- | --- |
 | `examples/minimoonbit/parser/parse_test.mbt` | 原项目全部 32 个 parser 测试 |
 
-- [ ] 保留全部 32 个 active test，覆盖 top-level、type、statement、expression、pattern、struct/enum 和错误输入。
-- [ ] 优先保留原 source snippet 与 expected AST 文本，以便对照原项目，而不是重新设计 fixtures。
-- [ ] 所有 snapshot 更新都要能由 package/import/格式化适配解释；语法或 AST 行为变化应先暂停讨论。
-- [ ] 单独运行 parser package 测试，再运行 lexer+parser 和全仓库测试。
+- [x] 保留全部 32 个 active test，覆盖 top-level、type、statement、expression、pattern、struct/enum 和错误输入。
+- [x] 优先保留原 source snippet 与 expected AST 文本，以便对照原项目，而不是重新设计 fixtures。
+- [x] 所有 snapshot 更新都要能由 package/import/格式化适配解释；语法或 AST 行为变化应先暂停讨论。
+- [x] 单独运行 parser package 测试，再运行 lexer+parser 和全仓库测试。
 
 建议提交信息：`test(minimoonbit): port parser coverage`
 
