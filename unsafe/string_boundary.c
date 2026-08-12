@@ -346,6 +346,40 @@ moonbit_bytes_t llvm_mbt_get_target_description(LLVMTargetRef target) {
   return llvm_mbt_copy_z(LLVMGetTargetDescription(target));
 }
 
+/*
+ * MoonBit extern: __llvm_get_default_target_triple
+ * (unsafe/TargetMachine.mbt).
+ * Copies the owned LLVM message before disposing it.
+ */
+moonbit_bytes_t llvm_mbt_get_default_target_triple(void) {
+  char *message = LLVMGetDefaultTargetTriple();
+  moonbit_bytes_t result = llvm_mbt_copy_z(message);
+  LLVMDisposeMessage(message);
+  return result;
+}
+
+/*
+ * MoonBit extern: __llvm_get_host_cpu_name (unsafe/TargetMachine.mbt).
+ * Copies the owned LLVM message before disposing it.
+ */
+moonbit_bytes_t llvm_mbt_get_host_cpu_name(void) {
+  char *message = LLVMGetHostCPUName();
+  moonbit_bytes_t result = llvm_mbt_copy_z(message);
+  LLVMDisposeMessage(message);
+  return result;
+}
+
+/*
+ * MoonBit extern: __llvm_get_host_cpu_features (unsafe/TargetMachine.mbt).
+ * Copies the owned LLVM message before disposing it.
+ */
+moonbit_bytes_t llvm_mbt_get_host_cpu_features(void) {
+  char *message = LLVMGetHostCPUFeatures();
+  moonbit_bytes_t result = llvm_mbt_copy_z(message);
+  LLVMDisposeMessage(message);
+  return result;
+}
+
 /* MoonBit extern: __llvm_remark_string_get_data (unsafe/Remarks.mbt). */
 moonbit_bytes_t llvm_mbt_remark_string_get_data(LLVMRemarkStringRef string) {
   const char *data = LLVMRemarkStringGetData(string);

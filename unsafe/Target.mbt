@@ -146,6 +146,11 @@ pub type LLVMTargetDataRef
 //   return 1;
 // #endif
 // }
+
+///|
+/// Initialize the native TargetInfo, Target, and TargetMC registries.
+/// Returns false on success.
+pub extern "C" fn llvm_initialize_native_target() -> Bool = "llvm_mbt_initialize_native_target"
 //
 // /** LLVMInitializeNativeTargetAsmParser - The main program should call this
 //     function to initialize the parser for the native target corresponding to
@@ -170,6 +175,11 @@ pub type LLVMTargetDataRef
 //   return 1;
 // #endif
 // }
+
+///|
+/// Initialize the native target assembly printer.
+/// Returns false on success.
+pub extern "C" fn llvm_initialize_native_asm_printer() -> Bool = "llvm_mbt_initialize_native_asm_printer"
 //
 // /** LLVMInitializeNativeTargetDisassembler - The main program should call
 // this

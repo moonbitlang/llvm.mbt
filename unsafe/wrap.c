@@ -1288,7 +1288,13 @@ LLVMModuleFlagBehavior llvm_module_flag_behavior_from_int(int i) {
   }
 }
 
-/* MoonBit extern: llvm_error_is_null (unsafe/utils.mbt). */
+/*
+ * MoonBit externs: llvm_error_is_null (unsafe/utils.mbt),
+ * llvm_target_ref_is_null, llvm_target_machine_options_ref_is_null, and
+ * llvm_target_machine_ref_is_null (unsafe/TargetMachine.mbt).
+ * Shared NULL check for opaque pointer handles; it never dereferences or
+ * retains the borrowed handle.
+ */
 int ref_is_null(void *ref) {
   return ref == NULL ? 1 : 0;
 }

@@ -554,6 +554,8 @@ pub fn llvm_dispose_pass_builder_options(LLVMPassBuilderOptionsRef) -> Unit
 
 pub fn llvm_dispose_pass_manager(LLVMPassManagerRef) -> Unit
 
+pub fn llvm_dispose_target_machine(LLVMTargetMachineRef) -> Unit
+
 pub fn llvm_dispose_target_machine_options(LLVMTargetMachineOptionsRef) -> Unit
 
 pub fn llvm_dispose_temporary_md_node(LLVMMetadataRef) -> Unit
@@ -680,6 +682,8 @@ pub fn llvm_get_debug_loc_filename(LLVMValueRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_debug_loc_line(LLVMValueRef) -> UInt
 
+pub fn llvm_get_default_target_triple() -> String raise @utf8.Malformed
+
 pub fn llvm_get_di_node_tag(LLVMMetadataRef) -> UInt16
 
 pub fn llvm_get_diag_info_description(LLVMDiagnosticInfoRef) -> String raise
@@ -743,6 +747,10 @@ pub fn llvm_get_global_ifunc_resolver(LLVMValueRef) -> LLVMValueRef
 pub fn llvm_get_global_parent(LLVMValueRef) -> LLVMModuleRef
 
 pub fn llvm_get_handlers(LLVMValueRef) -> Array[LLVMBasicBlockRef]
+
+pub fn llvm_get_host_cpu_features() -> String raise @utf8.Malformed
+
+pub fn llvm_get_host_cpu_name() -> String raise @utf8.Malformed
 
 pub fn llvm_get_icmp_predicate(LLVMValueRef) -> LLVMIntPredicate
 
@@ -1073,6 +1081,10 @@ pub fn llvm_initialize_inst_combine(LLVMPassRegistryRef) -> Unit
 pub fn llvm_initialize_ipa(LLVMPassRegistryRef) -> Unit
 
 pub fn llvm_initialize_ipo(LLVMPassRegistryRef) -> Unit
+
+pub fn llvm_initialize_native_asm_printer() -> Bool
+
+pub fn llvm_initialize_native_target() -> Bool
 
 pub fn llvm_initialize_scalar_opts(LLVMPassRegistryRef) -> Unit
 
@@ -2602,12 +2614,15 @@ pub type LLVMTargetDataRef
 
 #external
 pub type LLVMTargetMachineOptionsRef
+pub fn LLVMTargetMachineOptionsRef::is_null(Self) -> Bool
 
 #external
 pub type LLVMTargetMachineRef
+pub fn LLVMTargetMachineRef::is_null(Self) -> Bool
 
 #external
 pub type LLVMTargetRef
+pub fn LLVMTargetRef::is_null(Self) -> Bool
 
 pub(all) enum LLVMThreadLocalMode {
   LLVMNotThreadLocal
