@@ -248,10 +248,10 @@ frontend_test -> lexer + parser + typecheck + knf
 | --- | --- |
 | `examples/minimoonbit/typecheck/typecheck_test.mbt` | 原项目全部 23 个 typecheck 测试 |
 
-- [ ] 保留全部 23 个 active test，包含成功与失败的类型检查路径。
-- [ ] 保留原 source snippet 和 typed AST/error expected，确认没有将 parser 失败误归为 typecheck 通过。
-- [ ] 对错误消息的必要格式适配与类型规则变化分开判断；后者不得作为普通 snapshot update 混入。
-- [ ] 单独运行 typecheck package 测试，再运行前三级和全仓库测试。
+- [x] 保留全部 23 个 active test，包含成功与失败的类型检查路径。
+- [x] 保留原 source snippet 和 typed AST/error expected，确认没有将 parser 失败误归为 typecheck 通过。
+- [x] 对错误消息的必要格式适配与类型规则变化分开判断；后者不得作为普通 snapshot update 混入。
+- [x] 单独运行 typecheck package 测试，再运行前三级和全仓库测试。
 
 建议提交信息：`test(minimoonbit): port type checker coverage`
 
