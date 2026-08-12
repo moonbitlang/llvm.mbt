@@ -211,7 +211,13 @@ function validateHostCompatibility(artifact) {
 }
 
 function cachePaths(moonHome, artifact) {
-  const cacheRoot = path.join(moonHome, 'cache', 'lib', 'llvm.mbt');
+  const cacheRoot = path.join(
+    moonHome,
+    'cache',
+    'lib',
+    'Kaida-Amethyst',
+    'llvm.mbt',
+  );
   const versionRoot = path.join(
     cacheRoot,
     `${artifact.llvmVersion}-${artifact.revision}`,
@@ -751,7 +757,7 @@ function formatTopLevelError(error) {
     return (
       `Not enough disk space. ${sizeHint}` +
       'Free space on the volume containing ' +
-      '$MOON_HOME/cache/lib/llvm.mbt and try again.'
+      '$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt and try again.'
     );
   }
   if (error && error.code === 'EACCES') {
