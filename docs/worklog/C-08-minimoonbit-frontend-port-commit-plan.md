@@ -1,6 +1,6 @@
 # MiniMoonBit 前端移植的 commit 划分
 
-> 状态：计划中
+> 状态：已完成
 > 日期：2026-08-12
 > 上游源码：`~/Projects/Moonbit/MiniMoonbit`
 
@@ -303,11 +303,11 @@ frontend_test -> lexer + parser + typecheck + knf
 | `examples/minimoonbit/frontend_test/frontend_test.mbt` | 直接组合四阶段的黑盒集成测试 |
 | `examples/minimoonbit/README.md` | 补充实际测试命令、已完成阶段和下一步 codegen 边界 |
 
-- [ ] 使用内联的代表性 MiniMoonBit source 完成 `tokenize -> parse -> typecheck -> knf_transform`。
-- [ ] source 至少经过函数、局部绑定和一种控制流；必要时再加入 closure 或 struct/enum，但保持单个测试足够短、失败易定位。
-- [ ] 检查稳定的阶段结果或 KNF 结构，不读取外部 fixture，不引入 fs、process、async 或 CLI。
-- [ ] 确认 91 个原测试仍全部存在并通过，另有至少 1 个新集成测试。
-- [ ] README 明确下一轮才开始 port codegen；届时碰到 llvm.mbt 缺失 API，再按实际调用点逐项补齐。
+- [x] 使用内联的代表性 MiniMoonBit source 完成 `tokenize -> parse -> typecheck -> knf_transform`。
+- [x] source 至少经过函数、局部绑定和一种控制流；必要时再加入 closure 或 struct/enum，但保持单个测试足够短、失败易定位。
+- [x] 检查稳定的阶段结果或 KNF 结构，不读取外部 fixture，不引入 fs、process、async 或 CLI。
+- [x] 确认 91 个原测试仍全部存在并通过，另有至少 1 个新集成测试。
+- [x] README 明确下一轮才开始 port codegen；届时碰到 llvm.mbt 缺失 API，再按实际调用点逐项补齐。
 
 建议提交信息：`test(minimoonbit): verify the frontend pipeline`
 
@@ -315,17 +315,17 @@ frontend_test -> lexer + parser + typecheck + knf
 
 Commit 1 仅修改本文档：
 
-- [ ] `git diff --check` 通过。
-- [ ] 不包含代码、测试、依赖或生成接口改动。
+- [x] `git diff --check` 通过。
+- [x] 不包含代码、测试、依赖或生成接口改动。
 
 Commit 2—11 每次提交前：
 
-- [ ] 运行 `moon info && moon fmt`，生成文件不手工修改。
-- [ ] 审核新 package 的 `.mbti`；现有 `IR`、`unsafe` 等 package 的公开接口不应变化。
-- [ ] 运行 `moon check --target native`。
-- [ ] 运行当前 commit 对应的最小 package 测试，再运行 `moon test --target native`。
-- [ ] 运行 `git diff --check`，确认没有 `_build`、旧 `.mooncakes`、临时 snapshot 或原项目生成物进入提交。
-- [ ] 对照原文件核查：除 package/toolchain/doc 适配外，不应出现无法解释的算法 diff。
-- [ ] 新增或保留的公开声明符合 `docs/style-guide.md`；示例不要求每个声明都带 doc test。
+- [x] 运行 `moon info && moon fmt`，生成文件不手工修改。
+- [x] 审核新 package 的 `.mbti`；现有 `IR`、`unsafe` 等 package 的公开接口不应变化。
+- [x] 运行 `moon check --target native`。
+- [x] 运行当前 commit 对应的最小 package 测试，再运行 `moon test --target native`。
+- [x] 运行 `git diff --check`，确认没有 `_build`、旧 `.mooncakes`、临时 snapshot 或原项目生成物进入提交。
+- [x] 对照原文件核查：除 package/toolchain/doc 适配外，不应出现无法解释的算法 diff。
+- [x] 新增或保留的公开声明符合 `docs/style-guide.md`；示例不要求每个声明都带 doc test。
 
 如果某个 source commit 无法在不加临时 stub 的情况下独立通过 check，应调整该 commit 的文件边界，但不得提交占位实现。若测试发现原 MiniMoonBit 本身的缺陷，应先把“忠实迁移”和“行为修复”拆成两个 commit；行为修复是否纳入本轮由人工 review 决定。

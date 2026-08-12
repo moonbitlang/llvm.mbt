@@ -14,6 +14,23 @@ The packages intentionally follow the original compiler boundaries: `color`,
 `lexer`, `parser`, `typecheck`, and `knf`. They are example-facing APIs rather
 than stable core APIs of `llvm.mbt`.
 
+The original frontend test suites have been retained: 17 lexer tests, 32 parser
+tests, 23 type-checker tests, and 19 KNF tests. A separate black-box integration
+test also composes all four frontend stages on one in-memory source program.
+
+Run the MiniMoonBit frontend integration test with:
+
+```sh
+moon test --target native -p examples/minimoonbit/frontend_test
+```
+
+Run all MiniMoonBit package tests with:
+
+```sh
+moon test --target native -p examples/minimoonbit
+```
+
 There is no command-line driver in this directory yet. Code generation, native
-object emission, linking, and execution will be added in a later phase, while
-porting the original code generator against `Kaida-Amethyst/llvm/IR`.
+object emission, linking, and execution belong to the next porting phase. That
+phase will adapt the original code generator against `Kaida-Amethyst/llvm/IR`
+and fill missing llvm.mbt APIs only when its actual call sites require them.
