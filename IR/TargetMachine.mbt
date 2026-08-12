@@ -202,6 +202,7 @@ pub impl Default for TargetMachineOptions with fn default() {
 /// Failure while constructing an LLVM target machine.
 pub suberror TargetMachineError {
   CreationFailed
+  ObjectEmissionFailed(String)
 }
 
 ///|
@@ -229,6 +230,13 @@ fn TargetMachine::from_raw(
     features,
     abi,
   }
+}
+
+///|
+fn TargetMachine::get_unsafe_ref(
+  self : TargetMachine,
+) -> @unsafe.LLVMTargetMachineRef {
+  self.owner.raw()
 }
 
 ///|
@@ -350,4 +358,38 @@ pub fn TargetMachine::getFeatures(self : TargetMachine) -> String {
 ///|
 pub fn TargetMachine::getABI(self : TargetMachine) -> String? {
   self.abi
+}
+
+///|
+/// Writes this machine's target triple and DataLayout into a module.
+/// The module keeps copied target state and does not retain this machine.
+pub fn TargetMachine::configureModule(
+  self : TargetMachine,
+  mod : Module,
+) -> Unit raise StringError {
+  @unsafe.llvm_set_target(mod.get_unsafe_ref(), self.triple.toString()) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
+  @unsafe.llvm_target_machine_set_module_data_layout(
+    self.get_unsafe_ref(),
+    mod.get_unsafe_ref(),
+  )
+}
+
+///|
+/// Emits the module to a native object file without configuring or verifying
+/// it. LLVM diagnostics are preserved in ObjectEmissionFailed.
+pub fn TargetMachine::emitObjectToFile(
+  self : TargetMachine,
+  mod : Module,
+  filename : String,
+) -> Unit raise {
+  let (failed, message) = @unsafe.llvm_target_machine_emit_object_to_file(
+    self.get_unsafe_ref(),
+    mod.get_unsafe_ref(),
+    filename,
+  ) catch {
+    @unsafe.EmbeddedNul => raise ContainsNul
+  }
+  guard !failed else { raise ObjectEmissionFailed(message) }
 }

@@ -48,12 +48,17 @@ pub suberror SwitchInstError {
 
 pub suberror TargetMachineError {
   CreationFailed
+  ObjectEmissionFailed(String)
 }
 
 pub suberror TargetRegistryError {
   NativeTargetUnavailable
   NativeAsmPrinterUnavailable
   TargetNotFound(String)
+}
+
+pub suberror VerificationError {
+  VerificationError(String)
 }
 
 pub suberror WriteBitCodeToFileFailed {
@@ -877,6 +882,7 @@ pub fn Module::getTargetTriple(Self) -> String raise StringError
 pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
+pub fn Module::verify(Self) -> Unit raise VerificationError
 pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise
 pub impl Show for Module
 
@@ -1028,6 +1034,8 @@ pub fn Target::getName(Self) -> String raise StringError
 pub struct TargetMachine {
   // private fields
 }
+pub fn TargetMachine::configureModule(Self, Module) -> Unit raise StringError
+pub fn TargetMachine::emitObjectToFile(Self, Module, String) -> Unit raise
 pub fn TargetMachine::getABI(Self) -> String?
 pub fn TargetMachine::getCPU(Self) -> String
 pub fn TargetMachine::getFeatures(Self) -> String

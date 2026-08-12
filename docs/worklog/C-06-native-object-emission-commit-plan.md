@@ -94,11 +94,11 @@ machine.emitObjectToFile(program, object_path)
 
 ## Commit 6：公开显式 configure、verify、emit 三阶段
 
-- [ ] 实现 `TargetMachine::configureModule`，同时写入 machine 的 triple 与临时 TargetData；调用结束后 Module 不依赖 TargetMachine 或 TargetData 存活。
-- [ ] 实现 `Module::verify`，固定返回状态模式并把 LLVM verifier message 映射为带诊断文本的 `VerificationError`。
-- [ ] 实现 `TargetMachine::emitObjectToFile`，只 borrow machine 与 Module，不调用 configure 或 verify；embedded NUL 与 LLVM emission failure 保持可区分。
-- [ ] 增加测试确认 configure 前后 triple/layout 的变化、TargetMachine 离开作用域后 Module 配置仍有效、合法 Module verify 成功、非法 Module 得到 typed error，以及 emission 错误保留 LLVM 诊断。
-- [ ] 文档示例始终展示 `configure -> verify -> emit` 标准顺序；不新增隐式一键 emission API。
+- [x] 实现 `TargetMachine::configureModule`，同时写入 machine 的 triple 与临时 TargetData；调用结束后 Module 不依赖 TargetMachine 或 TargetData 存活。
+- [x] 实现 `Module::verify`，固定返回状态模式并把 LLVM verifier message 映射为带诊断文本的 `VerificationError`。
+- [x] 实现 `TargetMachine::emitObjectToFile`，只 borrow machine 与 Module，不调用 configure 或 verify；embedded NUL 与 LLVM emission failure 保持可区分。
+- [x] 增加测试确认 configure 前后 triple/layout 的变化、TargetMachine 离开作用域后 Module 配置仍有效、合法 Module verify 成功、非法 Module 得到 typed error，以及 emission 错误保留 LLVM 诊断。
+- [x] 文档示例始终展示 `configure -> verify -> emit` 标准顺序；不新增隐式一键 emission API。
 
 建议提交信息：`IR: expose explicit object emission stages`
 

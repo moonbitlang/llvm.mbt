@@ -213,6 +213,15 @@ void *llvm_mbt_ir_target_machine_owner_new(LLVMTargetMachineRef raw) {
 }
 
 /*
+ * MoonBit extern: TargetMachineOwner::raw (IR/resource_owner.mbt).
+ * Returns a borrowed handle valid only while `owner` remains alive.
+ */
+LLVMTargetMachineRef llvm_mbt_ir_target_machine_owner_raw(
+    struct llvm_mbt_target_machine_owner *owner) {
+  return owner->raw;
+}
+
+/*
  * MoonBit extern: ContextOwner::raw (IR/resource_owner.mbt).
  * Returns a borrowed handle valid only while `owner` remains alive.
  */

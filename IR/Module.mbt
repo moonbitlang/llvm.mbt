@@ -200,6 +200,19 @@ pub fn Module::getTargetTriple(self : Module) -> String raise StringError {
 }
 
 ///|
+/// LLVM verifier rejected a module and returned this diagnostic.
+pub suberror VerificationError {
+  VerificationError(String)
+}
+
+///|
+/// Verifies this module without printing diagnostics or aborting the process.
+pub fn Module::verify(self : Module) -> Unit raise VerificationError {
+  let (failed, message) = @unsafe.llvm_verify_module(self.get_unsafe_ref())
+  guard !failed else { raise VerificationError(message) }
+}
+
+///|
 pub fn Module::addGlobalVariable(
   self : Self,
   ty : &Type,

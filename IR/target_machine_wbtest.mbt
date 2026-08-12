@@ -51,3 +51,21 @@ test "generic and host constructors apply distinct defaults" {
   assert_true(explicit.getFeatures().is_empty())
   assert_eq(explicit.getABI(), Some(""))
 }
+
+///|
+fn configure_with_watched_temporary_machine(mod : Module) -> Unit raise {
+  let machine = TargetMachine::host(TargetMachineOptions::default())
+  target_machine_owner_test_watch(machine.owner)
+  machine.configureModule(mod)
+}
+
+///|
+test "configured module outlives its TargetMachine" {
+  let context = Context::new()
+  let mod = context.addModule("configured_owner_independence")
+  configure_with_watched_temporary_machine(mod)
+  inspect(owner_test_take_trace(), content="4")
+  assert_false(mod.getTargetTriple().is_empty())
+  assert_false(mod.getDataLayoutStr().is_empty())
+  mod.verify()
+}

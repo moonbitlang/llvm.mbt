@@ -73,3 +73,9 @@ extern "C" fn BuilderOwner::context(self : BuilderOwner) -> ContextOwner = "llvm
 extern "C" fn TargetMachineOwner::new(
   raw : @unsafe.LLVMTargetMachineRef,
 ) -> TargetMachineOwner = "llvm_mbt_ir_target_machine_owner_new"
+
+///|
+#borrow(self)
+extern "C" fn TargetMachineOwner::raw(
+  self : TargetMachineOwner,
+) -> @unsafe.LLVMTargetMachineRef = "llvm_mbt_ir_target_machine_owner_raw"
