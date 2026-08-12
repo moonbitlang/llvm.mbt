@@ -1857,6 +1857,14 @@ pub extend TokenType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for an LLVM function signature.
+///
+/// A function type records a return type, its fixed parameter types, and
+/// whether additional variadic arguments are accepted. It is a type, not a
+/// function value.
+///
+/// **Lifecycle:** The wrapper and all type views returned from it must not
+/// outlive the context that created the signature.
 pub struct FunctionType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1875,51 +1883,74 @@ fn FunctionType::get_context(self : FunctionType) -> Context {
 }
 
 ///|
+/// Returns whether calls using this signature may supply variadic arguments
+/// after the fixed parameters.
 pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
   @unsafe.llvm_is_function_var_arg(self.getTypeRef())
 }
 
 ///|
-/// Get the return type of the function.
+/// Returns the function signature's result type.
+///
+/// **Lifecycle:** The returned view is owned by the same context as this
+/// function type.
 pub fn FunctionType::getReturnType(self : FunctionType) -> &Type {
   let typeref = @unsafe.llvm_get_return_type(self.getTypeRef())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
+/// Returns the number of fixed parameters in this signature.
+///
+/// **Notes:** This is an alias of `getNumParams`; variadic arguments are not
+/// included.
 pub fn FunctionType::numOfParams(self : FunctionType) -> Int {
   @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
-/// Get the params of the function.
+/// Returns the fixed parameter types in source order.
 ///
-/// - See LLVM: `FunctionType::params`.
+/// **Lifecycle:** Array elements are context-owned borrowed type views.
+///
+/// **Notes:** This is an alias of `getParamTypes`.
 pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
 ///|
-/// Get the params of the function.
+/// Returns the fixed parameter types in source order.
 ///
-/// - See LLVM: `FunctionType::params`.
+/// **Lifecycle:** Array elements are context-owned borrowed type views.
+///
+/// **Notes:** This is an alias of `params`.
 pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
 ///|
-/// Return the number of fixed parameters this function type requires.
-/// This does not consider varargs.
+/// Returns the number of fixed parameters in this signature.
 ///
-/// - See LLVM: `FunctionType::getNumParams`.
+/// **Notes:** Variadic arguments are not included. This is an alias of
+/// `numOfParams`.
 pub fn FunctionType::getNumParams(self : FunctionType) -> Int {
   @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
-/// Get the param type by given index.
+/// Returns the fixed parameter type at a zero-based index.
+///
+/// **Parameters:**
+///
+/// - `idx`: Zero-based position among fixed parameters.
+///
+/// **Returns:** `None` for a negative or out-of-range index, or if the raw LLVM
+/// type cannot be represented by this package's safe type hierarchy.
+///
+/// **Lifecycle:** A returned type is owned by the same context as this function
+/// type.
 pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
   let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
   guard idx >= 0 && idx < param_types.length() else { return None }
@@ -1932,29 +1963,35 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
 }
 
 ///|
+/// Writes the LLVM textual function-signature syntax.
 pub impl Show for FunctionType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::FunctionType`.
 pub impl Type for FunctionType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::FunctionType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for FunctionType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend FunctionType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AbstractTypeEnum::FunctionType`.
 pub impl AbstractType for FunctionType with fn asAbstractTypeEnum(self) -> AbstractTypeEnum {
   AbstractTypeEnum::FunctionType(self)
 }
 
 ///|
+/// Exposes abstract-type classification on `FunctionType`.
 pub extend FunctionType with AbstractType::{asAbstractTypeEnum}
 
 // ====================================================================
@@ -1962,6 +1999,15 @@ pub extend FunctionType with AbstractType::{asAbstractTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for an LLVM struct type.
+///
+/// A struct may be literal (unnamed with a complete body), identified with a
+/// complete body, or identified and opaque until `setBody` is called. A
+/// complete zero-field body is an empty struct and is distinct from opaque.
+/// Packed structs omit ABI padding between their fields.
+///
+/// **Lifecycle:** The wrapper and all element views returned from it must not
+/// outlive the context that owns the struct type.
 pub struct StructType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -1980,11 +2026,8 @@ fn StructType::get_context(self : StructType) -> Context {
 }
 
 ///|
-/// Check struct is a literal type.
-///
-/// literal type means the struct only has body but has no name.
-///
-/// - See LLVM: `StructType::isLiteral`.
+/// Returns whether the struct is unnamed and identified structurally by its
+/// body.
 ///
 /// ```mbt check
 /// test {
@@ -2004,20 +2047,21 @@ pub fn StructType::isLiteral(self : StructType) -> Bool {
 }
 
 ///|
-/// Check struct is a opaque type.
-/// Return true if this is a type with an identity that has no body specified
-/// yet. These prints as 'opaque' in .ll files.
+/// Returns whether this is an identified struct whose body has not been set.
 ///
-/// - See LLVM: `StructType::isOpaque`.
+/// An opaque struct prints with an `opaque` body. It becomes non-opaque after
+/// one successful call to `setBody`, including when that body has zero fields.
 ///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
 ///   let i32ty = ctx.getInt32Ty()
-///   let f32ty = ctx.getFloatTy()
-///
-///   let bar = ctx.getStructType([i32ty, f32ty], name="bar")
-///   assert_false(bar.isOpaque())
+///   let node = ctx.getOpaqueStructType("Node")
+///   assert_true(node.isOpaque())
+///   inspect(node, content="%Node = type opaque")
+///   node.setBody([i32ty])
+///   assert_false(node.isOpaque())
+///   inspect(node, content="%Node = type { i32 }")
 /// }
 /// ```
 pub fn StructType::isOpaque(self : StructType) -> Bool {
@@ -2025,26 +2069,36 @@ pub fn StructType::isOpaque(self : StructType) -> Bool {
 }
 
 ///|
-/// Check if this is a packed struct type.
-///
-/// - See LLVM: `StructType::isPacked`.
-///
-/// Packed struct means the struct has no padding between its elements.
+/// Returns whether the struct body is packed without ABI padding between
+/// fields.
 pub fn StructType::isPacked(self : StructType) -> Bool {
   @unsafe.llvm_is_packed_struct(self.getTypeRef())
 }
 
 ///|
+/// Returns whether LLVM can form a size expression for this struct.
+///
+/// Opaque structs and structs containing unsized elements are not sized.
 pub fn StructType::isSized(self : StructType) -> Bool {
   @unsafe.llvm_type_is_sized(self.getTypeRef())
 }
 
 ///|
+/// Returns the number of fields in the current body.
+///
+/// **Notes:** Use `isOpaque` to distinguish an absent body from a complete
+/// zero-field body.
 pub fn StructType::numOfElements(self : StructType) -> Int {
   @unsafe.llvm_count_struct_element_types(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
+/// Returns a field type by zero-based index.
+///
+/// **Returns:** `None` for a negative or out-of-range index, or if the raw field
+/// type cannot be represented by the safe type hierarchy.
+///
+/// **Lifecycle:** A returned type is owned by the same context as this struct.
 pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
   guard idx >= 0 && idx < self.numOfElements() else { return None }
   let typeref = @unsafe.llvm_struct_get_type_at_index(
@@ -2059,9 +2113,12 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
 }
 
 ///|
-/// Get the elements of the struct.
+/// Returns all field types in layout order.
 ///
-/// - See LLVM: `StructType::elements`.
+/// **Lifecycle:** Array elements are context-owned borrowed type views.
+///
+/// **Notes:** Use `isOpaque` before relying on this array to distinguish an
+/// opaque struct from a complete zero-field struct.
 pub fn StructType::elements(self : StructType) -> Array[&Type] {
   let elements : Array[&Type] = Array::new()
   for i in 0..<self.numOfElements() {
@@ -2078,16 +2135,32 @@ pub fn StructType::elements(self : StructType) -> Array[&Type] {
 }
 
 ///|
+/// Error raised when attempting to replace a struct body that is already
+/// complete.
 pub suberror SetBodyForNonOpaqueStruct {
+  /// Contains a diagnostic explaining that only opaque structs accept a body.
   SetBodyForNonOpaqueStruct(String)
 }
 
 ///|
-/// Set the body of the struct.
+/// Completes an opaque identified struct with a field body.
 ///
-/// Only Opaque struct can be set body.
+/// **Parameters:**
 ///
-/// - See LLVM: `StructType::setBody`.
+/// - `elements`: Field types in layout order; an empty array creates a complete
+///   empty struct.
+/// - `isPacked`: Whether LLVM may omit ABI padding between fields.
+///
+/// **Preconditions:** Every element type must belong to the same context as
+/// this struct and must be valid as an LLVM struct element.
+///
+/// **Errors:** Raises `SetBodyForNonOpaqueStruct` unless `isOpaque` is `true`.
+///
+/// **Side Effects:** Mutates the identified LLVM type in place. All existing
+/// wrappers and uses of this named type observe the completed body.
+///
+/// **Lifecycle:** The struct remains owned by its context. A successful call
+/// does not create a separately owned type.
 pub fn StructType::setBody(
   self : StructType,
   elements : Array[&Type],
@@ -2102,29 +2175,35 @@ pub fn StructType::setBody(
 }
 
 ///|
+/// Writes the struct declaration or literal body using LLVM syntax.
 pub impl Show for StructType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::StructType`.
 pub impl Type for StructType with fn asTypeEnum(self) -> TypeEnum {
   StructType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for StructType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend StructType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AggregateTypeEnum::StructType`.
 pub impl AggregateType for StructType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   StructType(self)
 }
 
 ///|
+/// Exposes aggregate-type classification on `StructType`.
 pub extend StructType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
@@ -2132,6 +2211,13 @@ pub extend StructType with AggregateType::{asAggregateTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for a fixed-length LLVM array type.
+///
+/// Arrays are aggregates containing one repeated element type and a fixed
+/// element count, including zero.
+///
+/// **Lifecycle:** The wrapper and its element-type view must not outlive the
+/// owning context.
 pub struct ArrayType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -2150,40 +2236,50 @@ fn ArrayType::get_context(self : ArrayType) -> Context {
 }
 
 ///|
+/// Returns the fixed number of array elements.
 pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
   @unsafe.llvm_get_array_length(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
+/// Returns the repeated array element type.
+///
+/// **Lifecycle:** The returned view is owned by the same context as this array.
 pub fn ArrayType::getElementType(self : ArrayType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
+/// Writes the array using LLVM textual type syntax.
 pub impl Show for ArrayType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::ArrayType`.
 pub impl Type for ArrayType with fn asTypeEnum(self) -> TypeEnum {
   ArrayType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for ArrayType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend ArrayType with Type::{asTypeEnum, getTypeRef}
 
 ///|
+/// Classifies this wrapper as `AggregateTypeEnum::ArrayType`.
 pub impl AggregateType for ArrayType with fn asAggregateTypeEnum(self) -> AggregateTypeEnum {
   ArrayType(self)
 }
 
 ///|
+/// Exposes aggregate-type classification on `ArrayType`.
 pub extend ArrayType with AggregateType::{asAggregateTypeEnum}
 
 // ====================================================================
@@ -2191,6 +2287,12 @@ pub extend ArrayType with AggregateType::{asAggregateTypeEnum}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for a fixed-width LLVM vector type.
+///
+/// Its element count is the exact number of lanes represented at runtime.
+///
+/// **Lifecycle:** The wrapper and its element-type view must not outlive the
+/// owning context.
 pub struct VectorType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -2209,34 +2311,41 @@ fn VectorType::get_context(self : VectorType) -> Context {
 }
 
 ///|
-/// Get the element type of the vector.
+/// Returns the type shared by every vector lane.
+///
+/// **Lifecycle:** The returned view is owned by the same context as this
+/// vector.
 pub fn VectorType::getElementType(self : VectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
-/// Get the number of elements in the vector.
+/// Returns the vector's exact runtime lane count.
 pub fn VectorType::getElementCount(self : VectorType) -> Int {
   @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
+/// Writes the fixed-width vector using LLVM textual type syntax.
 pub impl Show for VectorType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::VectorType`.
 pub impl Type for VectorType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::VectorType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend VectorType with Type::{asTypeEnum, getTypeRef}
 
 // ====================================================================
@@ -2244,6 +2353,13 @@ pub extend VectorType with Type::{asTypeEnum, getTypeRef}
 // ====================================================================
 
 ///|
+/// Context-owned wrapper for a scalable LLVM vector type.
+///
+/// Its element count is the known minimum lane count. The actual runtime lane
+/// count is `vscale` multiplied by this value and is target-dependent.
+///
+/// **Lifecycle:** The wrapper and its element-type view must not outlive the
+/// owning context.
 pub struct ScalableVectorType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -2262,34 +2378,45 @@ fn ScalableVectorType::get_context(self : ScalableVectorType) -> Context {
 }
 
 ///|
-/// Get the element type of the vector.
+/// Returns the type shared by every vector lane.
+///
+/// **Lifecycle:** The returned view is owned by the same context as this
+/// vector.
 pub fn ScalableVectorType::getElementType(self : ScalableVectorType) -> &Type {
   let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
-/// Get the number of elements in the vector.
+/// Returns the known minimum lane count.
+///
+/// **Notes:** Unlike `VectorType::getElementCount`, this is not necessarily the
+/// exact runtime lane count. The actual count is this value multiplied by
+/// target-dependent `vscale`.
 pub fn ScalableVectorType::getElementCount(self : ScalableVectorType) -> Int {
   @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
 }
 
 ///|
+/// Writes the scalable vector using LLVM textual type syntax.
 pub impl Show for ScalableVectorType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::ScalableVectorType`.
 pub impl Type for ScalableVectorType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::ScalableVectorType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend ScalableVectorType with Type::{asTypeEnum, getTypeRef}
 
 // ====================================================================
@@ -2317,6 +2444,13 @@ pub fn AddressSpace::new(v : UInt) -> AddressSpace {
 }
 
 ///|
+/// Context-owned wrapper for an LLVM 19 opaque pointer type.
+///
+/// The pointer records only its address space; it does not carry a pointee type.
+/// Address-space zero is the target's default generic address space.
+///
+/// **Lifecycle:** The wrapper borrows an interned type from its `Context` and
+/// must not outlive that context.
 pub struct PointerType {
   priv value : ContextAnchoredType
 } derive(Eq)
@@ -2335,6 +2469,7 @@ fn PointerType::get_context(self : PointerType) -> Context {
 }
 
 ///|
+/// Returns the pointer's target-defined address-space identifier.
 pub fn PointerType::getAddressSpace(self : PointerType) -> AddressSpace {
   let addr_space = @unsafe.llvm_get_pointer_address_space(self.getTypeRef())
   AddressSpace(addr_space)
@@ -2349,6 +2484,12 @@ fn PointerType::isValidElementType(eleTy : &Type) -> Bool {
 }
 
 ///|
+/// Returns whether `eleTy` may represent memory loaded from or stored through a
+/// pointer.
+///
+/// Function, void, label, metadata, and token types are rejected. This
+/// predicate checks type category only; it does not validate a particular
+/// instruction, target, alignment, or address space.
 pub fn PointerType::isLoadableOrStorableType(eleTy : &Type) -> Bool {
   match eleTy.asTypeEnum() {
     FunctionType(_) => false
@@ -2357,19 +2498,23 @@ pub fn PointerType::isLoadableOrStorableType(eleTy : &Type) -> Bool {
 }
 
 ///|
+/// Writes the opaque pointer and any nonzero address space using LLVM syntax.
 pub impl Show for PointerType with fn output(self, logger : &Logger) {
   self.getTypeRef().output(logger)
 }
 
 ///|
+/// Classifies this wrapper as `TypeEnum::PointerType`.
 pub impl Type for PointerType with fn asTypeEnum(self) -> TypeEnum {
   TypeEnum::PointerType(self)
 }
 
 ///|
+/// Returns the borrowed raw LLVM handle for this type.
 pub impl Type for PointerType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
   self.value.get_unsafe_ref()
 }
 
 ///|
+/// Exposes common type classification and raw-handle operations.
 pub extend PointerType with Type::{asTypeEnum, getTypeRef}

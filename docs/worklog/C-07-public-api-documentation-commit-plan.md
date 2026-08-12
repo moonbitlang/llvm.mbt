@@ -117,10 +117,10 @@
 | --- | --- |
 | `IR/Type.mbt` | `FunctionType` 及参数/返回值查询；`StructType`、`SetBodyForNonOpaqueStruct`、`setBody` 与状态/元素查询；`ArrayType`；`VectorType`；`ScalableVectorType`；`PointerType` 及 AddressSpace/可加载性查询；上述类型的 `Show`、`Type`、`AggregateType`、`AbstractType` impl 与 public extend |
 
-- [ ] 明确 FunctionType 参数索引、vararg 与返回 borrowed Type 的生命周期。
-- [ ] 区分 literal、named、opaque、empty-body 和 packed Struct，并明确 `setBody` 的前置条件、副作用及错误。
-- [ ] 区分 fixed/scalable vector 的 element count 语义，说明 opaque pointer 与 AddressSpace。
-- [ ] 为 opaque struct 的“创建后再 set body”工作流提供本阶段的主要 doc test。
+- [x] 明确 FunctionType 参数索引、vararg 与返回 borrowed Type 的生命周期。
+- [x] 区分 literal、named、opaque、empty-body 和 packed Struct，并明确 `setBody` 的前置条件、副作用及错误。
+- [x] 区分 fixed/scalable vector 的 element count 语义，说明 opaque pointer 与 AddressSpace。
+- [x] 为 opaque struct 的“创建后再 set body”工作流提供本阶段的主要 doc test。
 
 建议提交信息：`docs(IR): document composite type contracts`
 
