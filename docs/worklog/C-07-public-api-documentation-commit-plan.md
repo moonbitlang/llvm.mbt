@@ -294,8 +294,8 @@
 | --- | --- |
 | `unsafe/Types.mbt` | `LLVMDiagnosticSeverity`、`LLVMInlineAsmDialect`、`LLVMModuleFlagBehavior`、`LLVMTailCallKind`、`LLVMComdatSelectionKind`、`LLVMLinkerMode`、`LLVMCodeGenOptLevel`、`LLVMRelocMode`、`LLVMCodeModel`、`LLVMCodeGenFileType`、`LLVMGlobalISelAbortMode`、`LLVMBinaryType`、`LLVMDIFlags`、`LLVMDWARFSourceLanguage`、`LLVMDWARFEmissionKind`、`LLVMMDNodeKind`、`LLVMVerifierFailureAction`、`LLVMRemarkType`、`LLVMJITSymbolGenericFlags`；全部 constructor、整数转换与 Show impl |
 
-- [ ] 标明 target/platform 限制、bitflag 与普通 enum 的区别、LLVM 19 对应值和 deprecated constructor。
-- [ ] 对 verifier action、linker mode、codegen file type 等有副作用含义的取值写出调用者可观察后果。
+- [x] 标明 target/platform 限制、bitflag 与普通 enum 的区别、LLVM 19 对应值和 deprecated constructor。
+- [x] 对 verifier action、linker mode、codegen file type 等有副作用含义的取值写出调用者可观察后果。
 
 建议提交信息：`docs(unsafe): document LLVM subsystem enums`
 

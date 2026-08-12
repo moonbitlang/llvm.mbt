@@ -1766,14 +1766,20 @@ pub fn LLVMAtomicRMWBinOp::from_int(idx : Int) -> LLVMAtomicRMWBinOp {
 }
 
 ///|
+/// Severity assigned to an LLVM diagnostic callback event.
 pub(all) enum LLVMDiagnosticSeverity {
+  /// Compilation error that prevents the requested operation from succeeding.
   LLVMDSError
+  /// Warning about a recoverable or suspicious condition.
   LLVMDSWarning
+  /// Optimization or compilation remark.
   LLVMDSRemark
+  /// Informational note associated with another diagnostic.
   LLVMDSNote
 }
 
 ///|
+/// Returns the binding's dense FFI index for this diagnostic severity.
 pub fn LLVMDiagnosticSeverity::to_int(self : LLVMDiagnosticSeverity) -> Int {
   match self {
     LLVMDSError => 0
@@ -1784,6 +1790,9 @@ pub fn LLVMDiagnosticSeverity::to_int(self : LLVMDiagnosticSeverity) -> Int {
 }
 
 ///|
+/// Decodes a dense diagnostic-severity index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMDiagnosticSeverity::from_int(idx : Int) -> LLVMDiagnosticSeverity {
   match idx {
     0 => LLVMDSError
@@ -1798,12 +1807,19 @@ pub fn LLVMDiagnosticSeverity::from_int(idx : Int) -> LLVMDiagnosticSeverity {
 }
 
 ///|
+/// Assembly syntax selected for inline assembly text.
+///
+/// Dialect support is target-dependent; these values primarily distinguish x86
+/// AT&T and Intel spellings.
 pub(all) enum LLVMInlineAsmDialect {
+  /// AT&T-style operand order and syntax.
   LLVMInlineAsmDialectATT
+  /// Intel-style operand order and syntax.
   LLVMInlineAsmDialectIntel
 }
 
 ///|
+/// Returns the binding's dense FFI index for this inline-assembly dialect.
 pub fn LLVMInlineAsmDialect::to_int(self : LLVMInlineAsmDialect) -> Int {
   match self {
     LLVMInlineAsmDialectATT => 0
@@ -1812,6 +1828,9 @@ pub fn LLVMInlineAsmDialect::to_int(self : LLVMInlineAsmDialect) -> Int {
 }
 
 ///|
+/// Decodes a dense inline-assembly dialect index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMInlineAsmDialect::from_int(idx : Int) -> LLVMInlineAsmDialect {
   match idx {
     0 => LLVMInlineAsmDialectATT
@@ -1824,6 +1843,7 @@ pub fn LLVMInlineAsmDialect::from_int(idx : Int) -> LLVMInlineAsmDialect {
 }
 
 ///|
+/// Conflict-resolution behavior used when linking identically named module flags.
 pub(all) enum LLVMModuleFlagBehavior {
   /// 
   /// Emits an error if two values disagree, otherwise the resulting value is
@@ -1874,6 +1894,7 @@ pub(all) enum LLVMModuleFlagBehavior {
 }
 
 ///|
+/// Returns the binding's dense FFI index for this module-flag behavior.
 pub fn LLVMModuleFlagBehavior::to_int(self : LLVMModuleFlagBehavior) -> Int {
   match self {
     LLVMModuleFlagBehaviorError => 0
@@ -1886,6 +1907,9 @@ pub fn LLVMModuleFlagBehavior::to_int(self : LLVMModuleFlagBehavior) -> Int {
 }
 
 ///|
+/// Decodes a dense module-flag behavior index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMModuleFlagBehavior::from_int(idx : Int) -> LLVMModuleFlagBehavior {
   match idx {
     0 => LLVMModuleFlagBehaviorError
@@ -1915,14 +1939,20 @@ pub fn LLVMModuleFlagBehavior::from_int(idx : Int) -> LLVMModuleFlagBehavior {
 // };
 
 ///|
+/// Tail-call marker attached to an LLVM call instruction.
 pub(all) enum LLVMTailCallKind {
+  /// No explicit tail-call marker.
   LLVMTailCallKindNone
+  /// `tail`: permits but does not require tail-call lowering.
   LLVMTailCallKindTail
+  /// `musttail`: requires tail-call lowering and LLVM's strict signature rules.
   LLVMTailCallKindMustTail
+  /// `notail`: explicitly prohibits tail-call lowering.
   LLVMTailCallKindNoTail
 } derive(Eq)
 
 ///|
+/// Returns the binding's dense FFI index for this tail-call marker.
 pub fn LLVMTailCallKind::to_int(self : LLVMTailCallKind) -> Int {
   match self {
     LLVMTailCallKindNone => 0
@@ -1933,6 +1963,9 @@ pub fn LLVMTailCallKind::to_int(self : LLVMTailCallKind) -> Int {
 }
 
 ///|
+/// Decodes a dense tail-call-kind index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMTailCallKind::from_int(idx : Int) -> LLVMTailCallKind {
   match idx {
     0 => LLVMTailCallKindNone
@@ -1945,15 +1978,24 @@ pub fn LLVMTailCallKind::from_int(idx : Int) -> LLVMTailCallKind {
 }
 
 ///|
+/// Linker selection rule for duplicate members of an LLVM COMDAT group.
+///
+/// Availability and exact object-file behavior depend on the target format.
 pub(all) enum LLVMComdatSelectionKind {
+  /// Linker may choose any one definition.
   LLVMAnyComdatSelectionKind
+  /// All definitions must have identical contents.
   LLVMExactMatchComdatSelectionKind
+  /// Linker retains the largest definition.
   LLVMLargestComdatSelectionKind
+  /// Linker retains every definition rather than deduplicating.
   LLVMNoDeduplicateComdatSelectionKind
+  /// All definitions must have the same size.
   LLVMSameSizeComdatSelectionKind
 }
 
 ///|
+/// Returns the binding's dense FFI index for this COMDAT selection rule.
 pub fn LLVMComdatSelectionKind::to_int(self : LLVMComdatSelectionKind) -> Int {
   match self {
     LLVMAnyComdatSelectionKind => 0
@@ -1965,6 +2007,9 @@ pub fn LLVMComdatSelectionKind::to_int(self : LLVMComdatSelectionKind) -> Int {
 }
 
 ///|
+/// Decodes a dense COMDAT selection-rule index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMComdatSelectionKind::from_int(idx : Int) -> LLVMComdatSelectionKind {
   match idx {
     0 => LLVMAnyComdatSelectionKind
@@ -1980,12 +2025,16 @@ pub fn LLVMComdatSelectionKind::from_int(idx : Int) -> LLVMComdatSelectionKind {
 }
 
 ///|
+/// Source-module ownership mode for LLVM's linker API.
 pub(all) enum LLVMLinkerMode {
+  /// Linking consumes and destroys the source module.
   LLVMLinkerDestroySource
+  /// Removed preserve-source mode retained only for source/ABI compatibility.
   LLVMLinkerPreserveSource_Removed
 }
 
 ///|
+/// Returns the binding's dense FFI index for this linker mode.
 pub fn LLVMLinkerMode::to_int(self : LLVMLinkerMode) -> Int {
   match self {
     LLVMLinkerDestroySource => 0
@@ -1994,6 +2043,10 @@ pub fn LLVMLinkerMode::to_int(self : LLVMLinkerMode) -> Int {
 }
 
 ///|
+/// Decodes a dense linker-mode index.
+///
+/// **Panics:** Aborts for an unknown index. The removed preserve-source value is
+/// not a promise that LLVM 19 still supports preserving the source module.
 pub fn LLVMLinkerMode::from_int(idx : Int) -> LLVMLinkerMode {
   match idx {
     0 => LLVMLinkerDestroySource
@@ -2003,14 +2056,20 @@ pub fn LLVMLinkerMode::from_int(idx : Int) -> LLVMLinkerMode {
 }
 
 ///|
+/// Target-machine optimization level used during code generation.
 pub(all) enum LLVMCodeGenOptLevel {
+  /// Disable code-generation optimization.
   LLVMCodeGenLevelNone
+  /// Favor fast compilation with limited optimization.
   LLVMCodeGenLevelLess
+  /// LLVM's normal code-generation optimization level.
   LLVMCodeGenLevelDefault
+  /// Enable aggressive code-generation optimization.
   LLVMCodeGenLevelAggressive
 }
 
 ///|
+/// Returns the binding's dense FFI index for this optimization level.
 pub fn LLVMCodeGenOptLevel::to_int(self : LLVMCodeGenOptLevel) -> Int {
   match self {
     LLVMCodeGenLevelNone => 0
@@ -2021,6 +2080,9 @@ pub fn LLVMCodeGenOptLevel::to_int(self : LLVMCodeGenOptLevel) -> Int {
 }
 
 ///|
+/// Decodes a dense code-generation optimization index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMCodeGenOptLevel::from_int(idx : Int) -> LLVMCodeGenOptLevel {
   match idx {
     0 => LLVMCodeGenLevelNone
@@ -2035,17 +2097,29 @@ pub fn LLVMCodeGenOptLevel::from_int(idx : Int) -> LLVMCodeGenOptLevel {
 }
 
 ///|
+/// Relocation strategy for target-machine code generation.
+///
+/// Target support varies; unsupported modes may make target-machine creation or
+/// emission fail.
 pub(all) enum LLVMRelocMode {
+  /// Let the target choose its default relocation strategy.
   LLVMRelocDefault
+  /// Generate non-position-independent static relocations.
   LLVMRelocStatic
+  /// Generate position-independent code.
   LLVMRelocPIC
+  /// Generate dynamically relocatable but non-PIC code where supported.
   LLVMRelocDynamicNoPic
+  /// Read-only position-independent relocation model.
   LLVMRelocROPI
+  /// Read-write position-independent relocation model.
   LLVMRelocRWPI
+  /// Combined read-only and read-write position-independent model.
   LLVMRelocROPI_RWPI
 }
 
 ///|
+/// Returns the binding's dense FFI index for this relocation mode.
 pub fn LLVMRelocMode::to_int(self : LLVMRelocMode) -> Int {
   match self {
     LLVMRelocDefault => 0
@@ -2059,6 +2133,9 @@ pub fn LLVMRelocMode::to_int(self : LLVMRelocMode) -> Int {
 }
 
 ///|
+/// Decodes a dense relocation-mode index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMRelocMode::from_int(idx : Int) -> LLVMRelocMode {
   match idx {
     0 => LLVMRelocDefault
@@ -2073,17 +2150,28 @@ pub fn LLVMRelocMode::from_int(idx : Int) -> LLVMRelocMode {
 }
 
 ///|
+/// Assumed address-range model used by target-machine code generation.
+///
+/// Exact size and placement constraints are target-specific.
 pub(all) enum LLVMCodeModel {
+  /// Let the target choose its ordinary default code model.
   LLVMCodeModelDefault
+  /// Let the target choose its JIT-oriented default model.
   LLVMCodeModelJITDefault
+  /// Tiny model with the strictest code/data placement assumptions.
   LLVMCodeModelTiny
+  /// Small model, normally assuming code and data fit limited address ranges.
   LLVMCodeModelSmall
+  /// Kernel-oriented model, commonly for high-address kernel code.
   LLVMCodeModelKernel
+  /// Medium model, generally relaxing data-placement assumptions.
   LLVMCodeModelMedium
+  /// Large model with minimal code/data placement assumptions.
   LLVMCodeModelLarge
 }
 
 ///|
+/// Returns the binding's dense FFI index for this code model.
 pub fn LLVMCodeModel::to_int(self : LLVMCodeModel) -> Int {
   match self {
     LLVMCodeModelDefault => 0
@@ -2097,6 +2185,9 @@ pub fn LLVMCodeModel::to_int(self : LLVMCodeModel) -> Int {
 }
 
 ///|
+/// Decodes a dense code-model index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMCodeModel::from_int(idx : Int) -> LLVMCodeModel {
   match idx {
     0 => LLVMCodeModelDefault
@@ -2111,12 +2202,16 @@ pub fn LLVMCodeModel::from_int(idx : Int) -> LLVMCodeModel {
 }
 
 ///|
+/// Output format requested from a target machine.
 pub(all) enum LLVMCodeGenFileType {
+  /// Emit target assembly text.
   LLVMAssemblyFile
+  /// Emit a native object-file byte stream.
   LLVMObjectFile
 }
 
 ///|
+/// Returns the binding's dense FFI index for this code-generation file type.
 pub fn LLVMCodeGenFileType::to_int(self : LLVMCodeGenFileType) -> Int {
   match self {
     LLVMAssemblyFile => 0
@@ -2125,6 +2220,10 @@ pub fn LLVMCodeGenFileType::to_int(self : LLVMCodeGenFileType) -> Int {
 }
 
 ///|
+/// Decodes a dense code-generation file-type index.
+///
+/// **Panics:** Aborts for an unknown index. The chosen value controls whether
+/// emission writes textual assembly or binary object contents.
 pub fn LLVMCodeGenFileType::from_int(idx : Int) -> LLVMCodeGenFileType {
   match idx {
     0 => LLVMAssemblyFile
@@ -2137,13 +2236,18 @@ pub fn LLVMCodeGenFileType::from_int(idx : Int) -> LLVMCodeGenFileType {
 }
 
 ///|
+/// Failure policy when GlobalISel cannot select an instruction.
 pub(all) enum LLVMGlobalISelAbortMode {
+  /// Abort compilation instead of falling back.
   LLVMGlobalISelAbortEnable
+  /// Permit fallback without requesting an extra diagnostic.
   LLVMGlobalISelAbortDisable
+  /// Permit fallback and emit a diagnostic about the selection failure.
   LLVMGlobalISelAbortDisableWithDiag
 }
 
 ///|
+/// Returns the binding's dense FFI index for this GlobalISel failure policy.
 pub fn LLVMGlobalISelAbortMode::to_int(self : LLVMGlobalISelAbortMode) -> Int {
   match self {
     LLVMGlobalISelAbortEnable => 0
@@ -2153,6 +2257,9 @@ pub fn LLVMGlobalISelAbortMode::to_int(self : LLVMGlobalISelAbortMode) -> Int {
 }
 
 ///|
+/// Decodes a dense GlobalISel failure-policy index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMGlobalISelAbortMode::from_int(idx : Int) -> LLVMGlobalISelAbortMode {
   match idx {
     0 => LLVMGlobalISelAbortEnable
@@ -2166,57 +2273,44 @@ pub fn LLVMGlobalISelAbortMode::from_int(idx : Int) -> LLVMGlobalISelAbortMode {
 }
 
 ///|
+/// File-container category recognized by LLVM's binary inspection APIs.
 pub(all) enum LLVMBinaryType {
-  // Archive file.
+  /// Archive file.
   LLVMBinaryTypeArchive
-
-  // Mach-O Universal Binary file.
+  /// Mach-O universal (fat) binary.
   LLVMBinaryTypeMachOUniversalBinary
-
-  // COFF Import file.
+  /// COFF import-library member.
   LLVMBinaryTypeCOFFImportFile
-
-  // LLVM IR.
+  /// LLVM IR bitcode or IR binary container.
   LLVMBinaryTypeIR
-
-  // Windows resource (.res) file.
+  /// Windows resource (`.res`) file.
   LLVMBinaryTypeWinRes
-
-  // COFF Object file.
+  /// COFF object file.
   LLVMBinaryTypeCOFF
-
-  // ELF 32-bit, little endian.
+  /// 32-bit little-endian ELF object.
   LLVMBinaryTypeELF32L
-
-  // ELF 32-bit, big endian.
+  /// 32-bit big-endian ELF object.
   LLVMBinaryTypeELF32B
-
-  // ELF 64-bit, little endian.
+  /// 64-bit little-endian ELF object.
   LLVMBinaryTypeELF64L
-
-  // ELF 64-bit, big endian.
+  /// 64-bit big-endian ELF object.
   LLVMBinaryTypeELF64B
-
-  // MachO 32-bit, little endian.
+  /// 32-bit little-endian Mach-O object.
   LLVMBinaryTypeMachO32L
-
-  // MachO 32-bit, big endian.
+  /// 32-bit big-endian Mach-O object.
   LLVMBinaryTypeMachO32B
-
-  // MachO 64-bit, little endian.
+  /// 64-bit little-endian Mach-O object.
   LLVMBinaryTypeMachO64L
-
-  // MachO 64-bit, big endian.
+  /// 64-bit big-endian Mach-O object.
   LLVMBinaryTypeMachO64B
-
-  // Web Assembly.
+  /// WebAssembly binary.
   LLVMBinaryTypeWasm
-
-  // Offloading fatbinary.
+  /// Heterogeneous-offloading fat binary.
   LLVMBinaryTypeOffload
 }
 
 ///|
+/// Returns the binding's dense FFI index for this binary category.
 pub fn LLVMBinaryType::to_int(self : LLVMBinaryType) -> Int {
   match self {
     LLVMBinaryTypeArchive => 0
@@ -2239,6 +2333,9 @@ pub fn LLVMBinaryType::to_int(self : LLVMBinaryType) -> Int {
 }
 
 ///|
+/// Decodes a dense binary-category index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMBinaryType::from_int(idx : Int) -> LLVMBinaryType {
   match idx {
     0 => LLVMBinaryTypeArchive
@@ -2262,45 +2359,87 @@ pub fn LLVMBinaryType::from_int(idx : Int) -> LLVMBinaryType {
 }
 
 ///|
+/// Debug-information flag or predefined flag mask from LLVM 19.
+///
+/// Most constructors represent bit flags; accessibility, pointer-to-member
+/// representation, and inheritance constructors occupy multi-bit fields or are
+/// combined masks. This enum names upstream values but does not represent an
+/// arbitrary bitwise combination directly.
 pub(all) enum LLVMDIFlags {
+  /// Empty debug-info flag mask.
   LLVMDIFlagZero
+  /// Private accessibility field value.
   LLVMDIFlagPrivate
+  /// Protected accessibility field value.
   LLVMDIFlagProtected
+  /// Public accessibility field value.
   LLVMDIFlagPublic
+  /// Declaration is a forward declaration.
   LLVMDIFlagFwdDecl
+  /// Declaration is an Apple block.
   LLVMDIFlagAppleBlock
+  /// Reserved upstream bit 4; do not assign application semantics.
   LLVMDIFlagReservedBit4
+  /// Declaration or member is virtual.
   LLVMDIFlagVirtual
+  /// Entity was generated by the compiler rather than written by the user.
   LLVMDIFlagArtificial
+  /// Constructor or conversion is explicit.
   LLVMDIFlagExplicit
+  /// Function declaration includes a prototype.
   LLVMDIFlagPrototyped
+  /// Objective-C class declaration is complete.
   LLVMDIFlagObjcClassComplete
+  /// Parameter represents the object (`this`/`self`) pointer.
   LLVMDIFlagObjectPointer
+  /// Type is a vector.
   LLVMDIFlagVector
+  /// Member is static.
   LLVMDIFlagStaticMember
+  /// Type is an lvalue reference.
   LLVMDIFlagLValueReference
+  /// Type is an rvalue reference.
   LLVMDIFlagRValueReference
+  /// Reserved upstream flag bit; do not assign application semantics.
   LLVMDIFlagReserved
+  /// Pointer-to-member representation uses single inheritance.
   LLVMDIFlagSingleInheritance
+  /// Pointer-to-member representation uses multiple inheritance.
   LLVMDIFlagMultipleInheritance
+  /// Pointer-to-member representation uses virtual inheritance.
   LLVMDIFlagVirtualInheritance
+  /// Virtual method is introduced at this declaration.
   LLVMDIFlagIntroducedVirtual
+  /// Member is a bit field.
   LLVMDIFlagBitField
+  /// Function does not return.
   LLVMDIFlagNoReturn
+  /// Type is passed by value according to the ABI.
   LLVMDIFlagTypePassByValue
+  /// Type is passed indirectly by reference according to the ABI.
   LLVMDIFlagTypePassByReference
+  /// Enumeration is a scoped enum class.
   LLVMDIFlagEnumClass
+  /// Deprecated alias of `LLVMDIFlagEnumClass` retained by LLVM 19.
   LLVMDIFlagFixedEnum
+  /// Subprogram is a thunk.
   LLVMDIFlagThunk
+  /// Type has non-trivial construction, copy, move, or destruction semantics.
   LLVMDIFlagNonTrivial
+  /// Type representation uses big-endian byte order.
   LLVMDIFlagBigEndian
+  /// Type representation uses little-endian byte order.
   LLVMDIFlagLittleEndian
+  /// Combined mask for an indirect virtual base.
   LLVMDIFlagIndirectVirtualBase
+  /// Mask covering the accessibility field.
   LLVMDIFlagAccessibility
+  /// Mask covering pointer-to-member representation values.
   LLVMDIFlagPtrToMemberRep
 }
 
 ///|
+/// Returns the binding's dense FFI index for this named flag or mask.
 pub fn LLVMDIFlags::to_int(self : LLVMDIFlags) -> Int {
   match self {
     LLVMDIFlagZero => 0
@@ -2342,6 +2481,10 @@ pub fn LLVMDIFlags::to_int(self : LLVMDIFlags) -> Int {
 }
 
 ///|
+/// Decodes a dense debug-flag index used by this binding.
+///
+/// **Panics:** Aborts for an unknown index. This is not a parser for arbitrary
+/// combined upstream flag masks.
 pub fn LLVMDIFlags::from_int(idx : Int) -> LLVMDIFlags {
   match idx {
     0 => LLVMDIFlagZero
@@ -2384,79 +2527,147 @@ pub fn LLVMDIFlags::from_int(idx : Int) -> LLVMDIFlags {
 }
 
 ///|
-/// Source languages known by DWARF.
+/// Source-language tags exposed by LLVM's DWARF debug-info API.
+///
+/// The standard/version suffix is part of the emitted debug identity. Vendor
+/// constructors map to vendor-extension tags. `Metal` is retained for newer
+/// LLVM compatibility but is not present in LLVM 19's `DebugInfo.h`.
 pub(all) enum LLVMDWARFSourceLanguage {
+  /// ISO C89.
   LLVMDWARFSourceLanguageC89
+  /// C without a more specific standard-version tag.
   LLVMDWARFSourceLanguageC
+  /// Ada 83.
   LLVMDWARFSourceLanguageAda83
+  /// C++ without a more specific standard-version tag.
   LLVMDWARFSourceLanguageC_plus_plus
+  /// COBOL 74.
   LLVMDWARFSourceLanguageCobol74
+  /// COBOL 85.
   LLVMDWARFSourceLanguageCobol85
+  /// Fortran 77.
   LLVMDWARFSourceLanguageFortran77
+  /// Fortran 90.
   LLVMDWARFSourceLanguageFortran90
+  /// Pascal 83.
   LLVMDWARFSourceLanguagePascal83
+  /// Modula-2.
   LLVMDWARFSourceLanguageModula2
   // New in DWARF v3:
+  /// Java.
   LLVMDWARFSourceLanguageJava
+  /// ISO C99.
   LLVMDWARFSourceLanguageC99
+  /// Ada 95.
   LLVMDWARFSourceLanguageAda95
+  /// Fortran 95.
   LLVMDWARFSourceLanguageFortran95
+  /// PL/I.
   LLVMDWARFSourceLanguagePLI
+  /// Objective-C.
   LLVMDWARFSourceLanguageObjC
+  /// Objective-C++.
   LLVMDWARFSourceLanguageObjC_plus_plus
+  /// Unified Parallel C.
   LLVMDWARFSourceLanguageUPC
+  /// D programming language.
   LLVMDWARFSourceLanguageD
   // New in DWARF v4:
+  /// Python.
   LLVMDWARFSourceLanguagePython
   // New in DWARF v5:
+  /// OpenCL C.
   LLVMDWARFSourceLanguageOpenCL
+  /// Go.
   LLVMDWARFSourceLanguageGo
+  /// Modula-3.
   LLVMDWARFSourceLanguageModula3
+  /// Haskell.
   LLVMDWARFSourceLanguageHaskell
+  /// ISO C++03.
   LLVMDWARFSourceLanguageC_plus_plus_03
+  /// ISO C++11.
   LLVMDWARFSourceLanguageC_plus_plus_11
+  /// OCaml.
   LLVMDWARFSourceLanguageOCaml
+  /// Rust.
   LLVMDWARFSourceLanguageRust
+  /// ISO C11.
   LLVMDWARFSourceLanguageC11
+  /// Swift.
   LLVMDWARFSourceLanguageSwift
+  /// Julia.
   LLVMDWARFSourceLanguageJulia
+  /// Dylan.
   LLVMDWARFSourceLanguageDylan
+  /// ISO C++14.
   LLVMDWARFSourceLanguageC_plus_plus_14
+  /// Fortran 2003.
   LLVMDWARFSourceLanguageFortran03
+  /// Fortran 2008.
   LLVMDWARFSourceLanguageFortran08
+  /// RenderScript.
   LLVMDWARFSourceLanguageRenderScript
+  /// BLISS.
   LLVMDWARFSourceLanguageBLISS
+  /// Kotlin.
   LLVMDWARFSourceLanguageKotlin
+  /// Zig.
   LLVMDWARFSourceLanguageZig
+  /// Crystal.
   LLVMDWARFSourceLanguageCrystal
+  /// ISO C++17.
   LLVMDWARFSourceLanguageC_plus_plus_17
+  /// ISO C++20.
   LLVMDWARFSourceLanguageC_plus_plus_20
+  /// ISO C17.
   LLVMDWARFSourceLanguageC17
+  /// Fortran 2018.
   LLVMDWARFSourceLanguageFortran18
+  /// Ada 2005.
   LLVMDWARFSourceLanguageAda2005
+  /// Ada 2012.
   LLVMDWARFSourceLanguageAda2012
+  /// HIP GPU programming language.
   LLVMDWARFSourceLanguageHIP
+  /// Assembly language.
   LLVMDWARFSourceLanguageAssembly
+  /// C#.
   LLVMDWARFSourceLanguageC_sharp
+  /// Mojo.
   LLVMDWARFSourceLanguageMojo
+  /// OpenGL Shading Language.
   LLVMDWARFSourceLanguageGLSL
+  /// OpenGL ES Shading Language.
   LLVMDWARFSourceLanguageGLSL_ES
+  /// High-Level Shading Language.
   LLVMDWARFSourceLanguageHLSL
+  /// OpenCL C++.
   LLVMDWARFSourceLanguageOpenCL_CPP
+  /// C++ for OpenCL.
   LLVMDWARFSourceLanguageCPP_for_OpenCL
+  /// SYCL.
   LLVMDWARFSourceLanguageSYCL
+  /// Ruby.
   LLVMDWARFSourceLanguageRuby
+  /// Move.
   LLVMDWARFSourceLanguageMove
+  /// Hylo.
   LLVMDWARFSourceLanguageHylo
+  /// Metal shading language; a post-LLVM-19 compatibility value here.
   LLVMDWARFSourceLanguageMetal
 
   // Vendor extensions:
+  /// MIPS assembler vendor-extension tag.
   LLVMDWARFSourceLanguageMips_Assembler
+  /// Google RenderScript vendor-extension tag.
   LLVMDWARFSourceLanguageGOOGLE_RenderScript
+  /// Borland Delphi vendor-extension tag.
   LLVMDWARFSourceLanguageBORLAND_Delphi
 }
 
 ///|
+/// Returns the binding's dense FFI index for this source-language tag.
 pub fn LLVMDWARFSourceLanguage::to_int(self : LLVMDWARFSourceLanguage) -> Int {
   match self {
     LLVMDWARFSourceLanguageC89 => 0
@@ -2531,6 +2742,10 @@ pub fn LLVMDWARFSourceLanguage::to_int(self : LLVMDWARFSourceLanguage) -> Int {
 }
 
 ///|
+/// Decodes a dense source-language index used by this binding.
+///
+/// **Panics:** Aborts for an unknown index. These dense indices are not the
+/// numeric `DW_LANG_*` encodings written into DWARF.
 pub fn LLVMDWARFSourceLanguage::from_int(i : Int) -> LLVMDWARFSourceLanguage {
   match i {
     0 => LLVMDWARFSourceLanguageC89
@@ -2606,12 +2821,16 @@ pub fn LLVMDWARFSourceLanguage::from_int(i : Int) -> LLVMDWARFSourceLanguage {
 ///|
 /// The amount of debug information to emit.
 pub(all) enum LLVMDWARFEmissionKind {
+  /// Emit no debug information.
   LLVMDWARFEmissionNone
+  /// Emit full debug information.
   LLVMDWARFEmissionFull
+  /// Emit line tables without full variable/type debug information.
   LLVMDWARFEmissionLineTablesOnly
 }
 
 ///|
+/// Returns the binding's dense FFI index for this debug-emission level.
 pub fn LLVMDWARFEmissionKind::to_int(self : LLVMDWARFEmissionKind) -> Int {
   match self {
     LLVMDWARFEmissionNone => 0
@@ -2621,6 +2840,9 @@ pub fn LLVMDWARFEmissionKind::to_int(self : LLVMDWARFEmissionKind) -> Int {
 }
 
 ///|
+/// Decodes a dense debug-emission index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMDWARFEmissionKind::from_int(idx : Int) -> LLVMDWARFEmissionKind {
   match idx {
     0 => LLVMDWARFEmissionNone
@@ -2634,47 +2856,84 @@ pub fn LLVMDWARFEmissionKind::from_int(idx : Int) -> LLVMDWARFEmissionKind {
 }
 
 ///|
-/// The kind of metadata nodes.
+/// Runtime metadata-node categories exposed by LLVM 19.
 pub(all) enum LLVMMDNodeKind {
+  /// Metadata string.
   LLVMMDStringMetadataKind
+  /// Constant value wrapped as metadata.
   LLVMConstantAsMetadataMetadataKind
+  /// Local SSA value wrapped as metadata.
   LLVMLocalAsMetadataMetadataKind
+  /// Temporary placeholder used while constructing distinct metadata operands.
   LLVMDistinctMDOperandPlaceholderMetadataKind
+  /// Generic metadata tuple.
   LLVMMDTupleMetadataKind
+  /// Source location metadata.
   LLVMDILocationMetadataKind
+  /// Debug expression metadata.
   LLVMDIExpressionMetadataKind
+  /// Global-variable plus expression metadata.
   LLVMDIGlobalVariableExpressionMetadataKind
+  /// Generic debug-information node.
   LLVMGenericDINodeMetadataKind
+  /// Array/vector subrange metadata.
   LLVMDISubrangeMetadataKind
+  /// Enumeration member metadata.
   LLVMDIEnumeratorMetadataKind
+  /// Basic debug type metadata.
   LLVMDIBasicTypeMetadataKind
+  /// Derived debug type metadata.
   LLVMDIDerivedTypeMetadataKind
+  /// Composite debug type metadata.
   LLVMDICompositeTypeMetadataKind
+  /// Subroutine signature metadata.
   LLVMDISubroutineTypeMetadataKind
+  /// Source file metadata.
   LLVMDIFileMetadataKind
+  /// Compile-unit metadata.
   LLVMDICompileUnitMetadataKind
+  /// Subprogram metadata.
   LLVMDISubprogramMetadataKind
+  /// Lexical-block metadata.
   LLVMDILexicalBlockMetadataKind
+  /// Lexical block with a distinct source file/discriminator.
   LLVMDILexicalBlockFileMetadataKind
+  /// Namespace metadata.
   LLVMDINamespaceMetadataKind
+  /// Imported or nested source module metadata.
   LLVMDIModuleMetadataKind
+  /// Template type-parameter metadata.
   LLVMDITemplateTypeParameterMetadataKind
+  /// Template value-parameter metadata.
   LLVMDITemplateValueParameterMetadataKind
+  /// Global-variable declaration metadata.
   LLVMDIGlobalVariableMetadataKind
+  /// Local-variable or parameter metadata.
   LLVMDILocalVariableMetadataKind
+  /// Source label metadata.
   LLVMDILabelMetadataKind
+  /// Objective-C property metadata.
   LLVMDIObjCPropertyMetadataKind
+  /// Imported declaration/entity metadata.
   LLVMDIImportedEntityMetadataKind
+  /// Macro definition/undefinition metadata.
   LLVMDIMacroMetadataKind
+  /// Macro file/include metadata.
   LLVMDIMacroFileMetadataKind
+  /// Fortran common-block metadata.
   LLVMDICommonBlockMetadataKind
+  /// String type metadata.
   LLVMDIStringTypeMetadataKind
+  /// Generic subrange whose bounds may be metadata expressions.
   LLVMDIGenericSubrangeMetadataKind
+  /// Debug intrinsic argument-list metadata.
   LLVMDIArgListMetadataKind
+  /// Assignment-tracking identity metadata.
   LLVMDIAssignIDMetadataKind
 }
 
 ///|
+/// Returns the binding's dense FFI index for this metadata category.
 pub fn LLVMMDNodeKind::to_int(self : LLVMMDNodeKind) -> Int {
   match self {
     LLVMMDStringMetadataKind => 0
@@ -2717,6 +2976,9 @@ pub fn LLVMMDNodeKind::to_int(self : LLVMMDNodeKind) -> Int {
 }
 
 ///|
+/// Decodes a dense metadata-kind index.
+///
+/// **Panics:** Aborts for an unknown or newer LLVM metadata category.
 pub fn LLVMMDNodeKind::from_int(i : Int) -> LLVMMDNodeKind {
   match i {
     0 => LLVMMDStringMetadataKind
@@ -2760,13 +3022,18 @@ pub fn LLVMMDNodeKind::from_int(i : Int) -> LLVMMDNodeKind {
 }
 
 ///|
+/// Observable response requested when LLVM IR verification fails.
 pub(all) enum LLVMVerifierFailureAction {
+  /// Print verification diagnostics and abort the process.
   LLVMAbortProcessAction
+  /// Print verification diagnostics and return failure status.
   LLVMPrintMessageAction
+  /// Return failure status without requiring LLVM to print the diagnostic.
   LLVMReturnStatusAction
 }
 
 ///|
+/// Returns the binding's dense FFI index for this verifier action.
 pub fn LLVMVerifierFailureAction::to_int(
   self : LLVMVerifierFailureAction,
 ) -> Int {
@@ -2778,6 +3045,11 @@ pub fn LLVMVerifierFailureAction::to_int(
 }
 
 ///|
+/// Decodes a dense verifier-action index.
+///
+/// **Panics:** Aborts for an unknown index. Independently, selecting
+/// `LLVMAbortProcessAction` makes the verifier terminate the process on invalid
+/// IR rather than returning control.
 pub fn LLVMVerifierFailureAction::from_int(
   idx : Int,
 ) -> LLVMVerifierFailureAction {
@@ -2793,17 +3065,26 @@ pub fn LLVMVerifierFailureAction::from_int(
 }
 
 ///|
+/// Category assigned to an LLVM optimization remark.
 pub(all) enum LLVMRemarkType {
+  /// Unclassified or unknown remark.
   LLVMRemarkTypeUnknown
+  /// Optimization was successfully applied.
   LLVMRemarkTypePassed
+  /// Optimization was considered but not applied.
   LLVMRemarkTypeMissed
+  /// General analysis information explaining an optimization decision.
   LLVMRemarkTypeAnalysis
+  /// Analysis remark about floating-point operation commuting.
   LLVMRemarkTypeAnalysisFPCommute
+  /// Analysis remark about aliasing constraints.
   LLVMRemarkTypeAnalysisAliasing
+  /// Optimization pipeline failure remark.
   LLVMRemarkTypeFailure
 }
 
 ///|
+/// Returns the binding's dense FFI index for this remark category.
 pub fn LLVMRemarkType::to_int(self : LLVMRemarkType) -> Int {
   match self {
     LLVMRemarkTypeUnknown => 0
@@ -2817,6 +3098,9 @@ pub fn LLVMRemarkType::to_int(self : LLVMRemarkType) -> Int {
 }
 
 ///|
+/// Decodes a dense remark-category index.
+///
+/// **Panics:** Aborts for an unknown index.
 pub fn LLVMRemarkType::from_int(idx : Int) -> LLVMRemarkType {
   match idx {
     0 => LLVMRemarkTypeUnknown
@@ -2831,15 +3115,25 @@ pub fn LLVMRemarkType::from_int(idx : Int) -> LLVMRemarkType {
 }
 
 ///|
+/// Generic ORC JIT symbol flag or empty flag mask.
+///
+/// Nonzero constructors are independent bit flags. This enum represents one
+/// named value, not arbitrary bitwise combinations.
 pub(all) enum LLVMJITSymbolGenericFlags {
+  /// No generic symbol flags.
   LLVMJITSymbolGenericFlagsNone
+  /// Symbol is visible outside its JITDylib or linkage unit.
   LLVMJITSymbolGenericFlagsExported
+  /// Symbol has weak linkage and may be replaced.
   LLVMJITSymbolGenericFlagsWeak
+  /// Symbol denotes callable code.
   LLVMJITSymbolGenericFlagsCallable
+  /// Materialization exists only for side effects and defines no addressable symbol.
   LLVMJITSymbolGenericFlagsMaterializationSideEffectsOnly
 }
 
 ///|
+/// Returns the upstream bit value for this single named ORC symbol flag.
 pub fn LLVMJITSymbolGenericFlags::to_int(
   self : LLVMJITSymbolGenericFlags,
 ) -> Int {
@@ -2853,6 +3147,10 @@ pub fn LLVMJITSymbolGenericFlags::to_int(
 }
 
 ///|
+/// Decodes one exact named ORC generic-symbol flag value.
+///
+/// **Panics:** Aborts for an unknown value or a bitwise combination; this is not
+/// a general flag-mask parser.
 pub fn LLVMJITSymbolGenericFlags::from_int(
   idx : Int,
 ) -> LLVMJITSymbolGenericFlags {
