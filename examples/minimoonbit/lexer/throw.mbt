@@ -13,7 +13,10 @@ pub fn throw_(tok : Token, msg : String, level : ThrowLevel) -> Unit {
   }
 
   // 第一行：文件名、行号和列号
-  let head_line = @color.taint("[\{file}:\{line}:\{col}] \{level}:", Magenta)
+  let head_line = @color.taint(
+    "[\{file}:\{line}:\{col}] \{repr(level)}:",
+    Magenta,
+  )
   str_builder.write_string("\{head_line}\n")
 
   // 第二行：空行
@@ -47,7 +50,7 @@ pub(all) enum ThrowLevel {
   Error
   /// Formats a warning diagnostic.
   Warning
-} derive(Show)
+} derive(Debug)
 
 ///|
 fn get_code_line(code : String, line : Int) -> String {

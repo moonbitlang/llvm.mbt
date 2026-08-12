@@ -26,10 +26,7 @@ pub fn BlockExpr::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.stmts.length(); i = i + 1 {
     let stmt = self.stmts[i]
     let stmt_str = stmt.to_string(color~)
-    let stmt_lines = stmt_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let stmt_lines = stmt_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.stmts.length() - 1
     let stmt_formatted = if is_last {
       format_lines(stmt_lines, head_with="└-", continue_with="  ")
@@ -52,16 +49,18 @@ pub fn parse_block_expr(
     panic()
   }
   let stmts : Array[Stmt] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket('}'), .. }, .. rest] => break rest
-    [] => {
-      println("Compiler ICE: Failed Parsing BlockExpr, Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (stmt, tokens) = parse_stmt(tokens)
-      stmts.push(stmt)
-      continue tokens
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket('}'), .. }, .. rest] => break rest
+      [] => {
+        println("Compiler ICE: Failed Parsing BlockExpr, Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (stmt, tokens) = parse_stmt(tokens)
+        stmts.push(stmt)
+        continue tokens
+      }
     }
   }
   let len = tokens.start_offset() - init_tokens.start_offset()

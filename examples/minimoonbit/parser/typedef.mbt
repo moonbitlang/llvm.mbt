@@ -104,23 +104,25 @@ fn parse_tuple_or_function_type(
     panic()
   }
   let tys : Array[TypeKind] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
-      let (ty, rest) = parse_type(tokens)
-      tys.push(ty.kind)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
+        let (ty, rest) = parse_type(tokens)
+        tys.push(ty.kind)
+        continue rest
+      }
+      [{ kind: Symbol(","), .. }, { kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
+        let (ty, rest) = parse_type(tokens[1:])
+        tys.push(ty.kind)
+        continue rest
+      }
+      [{ kind: Bracket(')'), .. }, .. rest] => break rest
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tok => raise ParseError("InValid Type Parsing, first token: \{tok[0]}")
     }
-    [{ kind: Symbol(","), .. }, { kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
-      let (ty, rest) = parse_type(tokens[1:])
-      tys.push(ty.kind)
-      continue rest
-    }
-    [{ kind: Bracket(')'), .. }, .. rest] => break rest
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tok => raise ParseError("InValid Type Parsing, \{tok}")
   }
   if tokens is [{ kind: Symbol("->"), .. }, .. tokens] {
     let (ret_ty, rest) = parse_type(tokens)

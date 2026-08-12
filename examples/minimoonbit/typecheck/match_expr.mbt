@@ -24,10 +24,7 @@ pub fn MatchExpr::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format condition
   let cond_str = self.cond.to_string(color~)
-  let cond_lines = cond_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let cond_lines = cond_str.split("\n").map(sv => sv.to_owned()).to_array()
   let cond_formatted = @parser.format_lines(
     cond_lines,
     head_with="├-cond: ",
@@ -39,10 +36,7 @@ pub fn MatchExpr::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.arms.length(); i = i + 1 {
     let arm = self.arms[i]
     let arm_str = arm.to_string(color~)
-    let arm_lines = arm_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let arm_lines = arm_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.arms.length() - 1
     let arm_formatted = if is_last {
       @parser.format_lines(arm_lines, head_with="└-", continue_with="  ")
@@ -80,7 +74,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
   let pattern_str = self.pattern.to_string(color~)
   let pattern_lines = pattern_str
     .split("\n")
-    .map(fn(sv) { sv.to_string() })
+    .map(sv => sv.to_owned())
     .to_array()
   match self.match_guard {
     None => {
@@ -90,10 +84,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
         continue_with="│          ",
       )
       let body_str = self.body.to_string(color~)
-      let body_lines = body_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
       let body_formatted = @parser.format_lines(
         body_lines,
         head_with="└-body: ",
@@ -110,7 +101,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
       let guard_str = guard_expr.to_string(color~)
       let guard_lines = guard_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let guard_formatted = @parser.format_lines(
         guard_lines,
@@ -118,10 +109,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
         continue_with="│        ",
       )
       let body_str = self.body.to_string(color~)
-      let body_lines = body_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
       let body_formatted = @parser.format_lines(
         body_lines,
         head_with="└-body: ",
@@ -169,7 +157,7 @@ pub fn Context::check_match_expr_type(
       err => {
         self.throw_(
           arm.toks[0],
-          "Failed to parse pattern in match arm: \{err}",
+          "Failed to parse pattern in match arm: \{repr(err)}",
           Error,
         )
         Pattern::{ kind: Wildcard }
@@ -182,7 +170,7 @@ pub fn Context::check_match_expr_type(
       err =>
         self.throw_(
           arm.toks[0],
-          "Pattern type binding error in match arm: \{err}",
+          "Pattern type binding error in match arm: \{repr(err)}",
           Error,
         )
     }
@@ -256,7 +244,69 @@ pub(all) enum PatternSet {
   EnumConstructor(String, String, Array[PatternSet])
   /// Represents the `TupleConstructor` typed AST form.
   TupleConstructor(Array[PatternSet])
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+/// Formats a `PatternSet` using constructor notation.
+pub impl Show for PatternSet with fn output(self, logger) {
+  match self {
+    Empty => logger.write_string("Empty")
+    Single(pattern) => {
+      logger.write_string("Single(")
+      logger.write_object(pattern)
+      logger.write_string(")")
+    }
+    Universal(ty) => {
+      logger.write_string("Universal(")
+      logger.write_object(ty)
+      logger.write_string(")")
+    }
+    NumberComplement(values) => {
+      logger.write_string("NumberComplement([")
+      for index, value in values {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(value)
+      }
+      logger.write_string("])")
+    }
+    Union(sets) => {
+      logger.write_string("Union([")
+      for index, set in sets {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(set)
+      }
+      logger.write_string("])")
+    }
+    EnumConstructor(tag, name, subsets) => {
+      logger.write_string("EnumConstructor(")
+      logger.write_object(tag)
+      logger.write_string(", ")
+      logger.write_object(name)
+      logger.write_string(", [")
+      for index, subset in subsets {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(subset)
+      }
+      logger.write_string("])")
+    }
+    TupleConstructor(subsets) => {
+      logger.write_string("TupleConstructor([")
+      for index, subset in subsets {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(subset)
+      }
+      logger.write_string("])")
+    }
+  }
+}
 
 ///|
 fn Context::full_pattern_set_of_type(
@@ -264,7 +314,7 @@ fn Context::full_pattern_set_of_type(
   ty : TypeKind,
 ) -> PatternSet raise TypeCheckError {
   // Use a set to track types being processed to detect cycles
-  let visiting : @hashset.HashSet[String] = @hashset.HashSet::new()
+  let visiting : @hashset.HashSet[String] = @hashset.HashSet([])
   self.full_pattern_set_of_type_impl(ty, visiting)
 }
 

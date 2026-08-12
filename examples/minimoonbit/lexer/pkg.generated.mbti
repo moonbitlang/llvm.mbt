@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/examples/minimoonbit/lexer"
 
+import {
+  "moonbitlang/core/debug",
+}
+
 // Values
 pub fn throw_(Token, String, ThrowLevel) -> Unit
 
@@ -9,7 +13,7 @@ pub fn tokenize(String, source_file? : String) -> Array[Token] raise TokenizeErr
 // Errors
 pub suberror TokenizeError {
   TokenizeError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Types and methods
 pub(all) enum AssignOp {
@@ -19,7 +23,8 @@ pub(all) enum AssignOp {
   MultAssign
   DivAssign
   ModAssign
-} derive(Eq, Show, ToJson)
+} derive(Eq, ToJson, @debug.Debug)
+pub impl Show for AssignOp
 
 pub(all) enum BinaryOp {
   Add
@@ -39,7 +44,7 @@ pub(all) enum BinaryOp {
   Or
   BitAnd
   BitOr
-} derive(Eq)
+} derive(Eq, @debug.Debug)
 pub impl Show for BinaryOp
 
 pub(all) enum Keyword {
@@ -55,12 +60,13 @@ pub(all) enum Keyword {
   Extern
   Enum
   Match
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
+pub impl Show for Keyword
 
 pub(all) enum ThrowLevel {
   Error
   Warning
-} derive(Show)
+} derive(@debug.Debug)
 
 pub struct Token {
   kind : TokenKind
@@ -93,7 +99,8 @@ pub(all) enum TokenKind {
   Symbol(String)
   Wildcard
   EOF
-} derive(Eq, Show)
+} derive(Eq, @debug.Debug)
+pub impl Show for TokenKind
 
 // Type aliases
 

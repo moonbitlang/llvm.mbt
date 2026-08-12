@@ -31,7 +31,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let apply_str = apply_expr.to_string(color~)
       let apply_lines = apply_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let apply_formatted = @parser.format_lines(
         apply_lines,
@@ -41,7 +41,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let index_str = index_expr.to_string(color~)
       let index_lines = index_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let index_formatted = @parser.format_lines(
         index_lines,
@@ -57,10 +57,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let ty_str = if color { @color.taint(ty_str, Green) } else { ty_str }
       let prefix_with_type = "\{prefix} .\{field} (\{ty_str})"
       let inner_str = apply_expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix_with_type}\n\{formatted}"
     }
@@ -73,7 +70,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let apply_str = apply_expr.to_string(color~)
       let apply_lines = apply_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let apply_formatted = if args.length() > 0 {
         @parser.format_lines(
@@ -88,10 +85,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       for i = 0; i < args.length(); i = i + 1 {
         let arg = args[i]
         let arg_str = arg.to_string(color~)
-        let arg_lines = arg_str
-          .split("\n")
-          .map(fn(sv) { sv.to_string() })
-          .to_array()
+        let arg_lines = arg_str.split("\n").map(sv => sv.to_owned()).to_array()
         let is_last = i == args.length() - 1
         let arg_formatted = if is_last {
           @parser.format_lines(arg_lines, head_with="└-", continue_with="  ")
@@ -120,7 +114,46 @@ pub(all) enum ApplyExprKind {
   FieldAccess(ApplyExpr, String)
   /// Represents the `Call` typed AST form.
   Call(ApplyExpr, Array[Expr])
-} derive(Show)
+}
+
+///|
+/// Formats an `ApplyExprKind` using constructor notation.
+pub impl Show for ApplyExprKind with fn output(self, logger) {
+  match self {
+    AtomExpr(expr) => {
+      logger.write_string("AtomExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    ArrayAccess(expr, index) => {
+      logger.write_string("ArrayAccess(")
+      logger.write_object(expr)
+      logger.write_string(", ")
+      logger.write_object(index)
+      logger.write_string(")")
+    }
+    FieldAccess(expr, field) => {
+      logger.write_string("FieldAccess(")
+      logger.write_object(expr)
+      logger.write_string(", ")
+      logger.write_object(field)
+      logger.write_string(")")
+    }
+    Call(expr, args) => {
+      logger.write_string("Call(")
+      logger.write_object(expr)
+      logger.write_string(", [")
+      for index, arg in args {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(arg)
+      }
+      logger.write_string("]")
+      logger.write_string(")")
+    }
+  }
+}
 
 ///|
 /// Type-checks the corresponding parser AST form through `check_apply_expr`.
@@ -918,7 +951,7 @@ test "ApplyExpr to_string Test" {
       { name: "x", ty: { kind: TypeKind::Int, mutable: false } },
       { name: "y", ty: { kind: TypeKind::Int, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   })
   let code =
     #|42 ; x ; point.x ; arr[0] ; add(1, 2)

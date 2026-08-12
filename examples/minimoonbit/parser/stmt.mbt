@@ -30,7 +30,7 @@ pub fn Stmt::to_string(self : Self, color? : Bool = true) -> String {
           let expr_str = expr.to_string(color~)
           let expr_lines = expr_str
             .split("\n")
-            .map(fn(sv) { sv.to_string() })
+            .map(sv => sv.to_owned())
             .to_array()
           let expr_formatted = format_lines(expr_lines)
           "\{prefix}\n\{expr_formatted}"
@@ -257,13 +257,15 @@ pub fn parse_stmt(tokens : ArrayView[Token]) -> (Stmt, ArrayView[Token]) {
 ///|
 fn next_stmt_check_point(tokens : ArrayView[Token]) -> ArrayView[Token] {
   let line = tokens[0].line
-  loop tokens {
-    [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
-    [tok, ..] as tokens if tok.line != line => break tokens
-    [{ kind: Bracket('}'), .. }, ..] as tokens => break tokens
-    [{ kind: Bracket('{'), .. }, ..] as tokens => break tokens
-    [] as tokens => break tokens
-    [_, .. tokens] => continue tokens
+  for current = tokens {
+    match current {
+      [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
+      [tok, ..] as tokens if tok.line != line => break tokens
+      [{ kind: Bracket('}'), .. }, ..] as tokens => break tokens
+      [{ kind: Bracket('{'), .. }, ..] as tokens => break tokens
+      [] as tokens => break tokens
+      [_, .. tokens] => continue tokens
+    }
   }
 }
 

@@ -20,10 +20,7 @@ pub fn MatchExpr::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format condition
   let cond_str = self.cond.to_string(color~)
-  let cond_lines = cond_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let cond_lines = cond_str.split("\n").map(sv => sv.to_owned()).to_array()
   let cond_formatted = format_lines(
     cond_lines,
     head_with="├-cond: ",
@@ -35,10 +32,7 @@ pub fn MatchExpr::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.arms.length(); i = i + 1 {
     let arm = self.arms[i]
     let arm_str = arm.to_string(color~)
-    let arm_lines = arm_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let arm_lines = arm_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.arms.length() - 1
     let arm_formatted = if is_last {
       format_lines(arm_lines, head_with="└-", continue_with="  ")
@@ -76,7 +70,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
   let pattern_str = self.pattern.to_string(color~)
   let pattern_lines = pattern_str
     .split("\n")
-    .map(fn(sv) { sv.to_string() })
+    .map(sv => sv.to_owned())
     .to_array()
   match self.match_guard {
     None => {
@@ -86,10 +80,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
         continue_with="│          ",
       )
       let body_str = self.body.to_string(color~)
-      let body_lines = body_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
       let body_formatted = format_lines(
         body_lines,
         head_with="└-body: ",
@@ -106,7 +97,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
       let guard_str = guard_expr.to_string(color~)
       let guard_lines = guard_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let guard_formatted = format_lines(
         guard_lines,
@@ -114,10 +105,7 @@ pub fn MatchArm::to_string(self : Self, color? : Bool = true) -> String {
         continue_with="│        ",
       )
       let body_str = self.body.to_string(color~)
-      let body_lines = body_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
       let body_formatted = format_lines(
         body_lines,
         head_with="└-body: ",
@@ -149,20 +137,22 @@ pub fn parse_match_expr(
     raise ParseError("Expected `{` after match expression")
   }
   let match_arms : Array[MatchArm] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket('}'), .. }, .. tokens] => break tokens
-    [] => {
-      @lexer.throw_(
-        tok,
-        "Parse Error: Expected `}` to close match expression",
-        Error,
-      )
-      raise ParseError("Expected `}` to close match expression")
-    }
-    tokens => {
-      let (arm, rest) = parse_match_arm(tokens)
-      match_arms.push(arm)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket('}'), .. }, .. tokens] => break tokens
+      [] => {
+        @lexer.throw_(
+          tok,
+          "Parse Error: Expected `}` to close match expression",
+          Error,
+        )
+        raise ParseError("Expected `}` to close match expression")
+      }
+      tokens => {
+        let (arm, rest) = parse_match_arm(tokens)
+        match_arms.push(arm)
+        continue rest
+      }
     }
   }
   let match_expr = MatchExpr::{ cond: expr, arms: match_arms }

@@ -37,10 +37,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
     for i = 0; i < self.inits.length(); i = i + 1 {
       let (name, expr) = self.inits[i]
       let expr_str = expr.to_string(color~)
-      let expr_lines = expr_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let is_last_init = i == self.inits.length() - 1
       let expr_formatted = if is_last_init {
         @parser.format_lines(
@@ -61,10 +58,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format condition
   let cond_str = self.cond.to_string(color~)
-  let cond_lines = cond_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let cond_lines = cond_str.split("\n").map(sv => sv.to_owned()).to_array()
   let cond_formatted = @parser.format_lines(
     cond_lines,
     head_with="├-cond: ",
@@ -92,10 +86,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
         ModAssign => "%="
       }
       let expr_str = expr.to_string(color~)
-      let expr_lines = expr_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let is_last_step = i == self.steps.length() - 1
       let expr_formatted = if is_last_step {
         @parser.format_lines(
@@ -116,10 +107,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format body
   let body_str = self.body.to_string(color~)
-  let body_lines = body_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
   let body_formatted = @parser.format_lines(
     body_lines,
     head_with="└-body: ",

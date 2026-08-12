@@ -37,9 +37,10 @@ pub fn Context::check_enum_constuct_expr(
   let enum_field = match enum_def.get_field(variant_name) {
     Some(field) => field
     None => {
+      let enum_name = tag.unwrap_or("<unknown>")
       self.throw_(
         ori_atom_expr.toks[0],
-        "Undefined variant: \{variant_name} in enum \{tag}",
+        "Undefined variant: \{variant_name} in enum " + enum_name,
         Error,
       )
       return (AtomExprKind::Unit, TypeKind::Unit)
@@ -48,15 +49,29 @@ pub fn Context::check_enum_constuct_expr(
   let enum_field_types = enum_field.types
   let checked_exprs_types = checked_exprs.map(e => e.ty)
   if enum_field_types.length() != checked_exprs_types.length() {
-    let msg = "Variant \{variant_name} in enum \{tag} expects " +
+    let enum_name = tag.unwrap_or("<unknown>")
+    let msg = "Variant \{variant_name} in enum " +
+      enum_name +
+      " expects " +
       "\{enum_field_types.length()} fields, but \{checked_exprs_types.length()} were provided"
     self.throw_(ori_atom_expr.toks[0], msg, Error)
   } else {
     for i in 0..<min(enum_field_types.length(), checked_exprs_types.length()) {
       if self.is_type_compatible(checked_exprs_types[i], enum_field_types[i])
         is false {
-        let msg = "Field \{i} of variant \{variant_name} in enum \{tag} expects type " +
-          "\{enum_field_types[i].to_string()}, but got \{checked_exprs_types[i].to_string()}"
+        let expected_type = enum_field_types[i].to_string()
+        let actual_type = checked_exprs_types[i].to_string()
+        let field_index = i.to_string()
+        let msg = "Field " +
+          field_index +
+          " of variant " +
+          variant_name +
+          " in enum " +
+          tag.unwrap_or("<unknown>") +
+          " expects type " +
+          expected_type +
+          ", but got " +
+          actual_type
         self.throw_(ori_atom_expr.toks[0], msg, Error)
       }
     }

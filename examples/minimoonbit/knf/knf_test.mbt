@@ -12,7 +12,7 @@ test "Apply Expr Knf Transformation Test" {
       { name: "x", ty: { kind: Int, mutable: false } },
       { name: "y", ty: { kind: Int, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
   typecheck_ctx.type_env.set("arr", { kind: Array(Int), mutable: false })
@@ -94,7 +94,7 @@ test "Assign Stmt Knf Transformation Test" {
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
     fields: [{ name: "x", ty: { kind: Int, mutable: true } }],
-    methods: Map::new(),
+    methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
   typecheck_ctx.type_env.set("x", { kind: Int, mutable: true })
@@ -205,7 +205,7 @@ test "Atom Expr Knf Transformation Test" {
       { name: "x", ty: { kind: Int, mutable: false } },
       { name: "y", ty: { kind: Int, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
   let knf_ctx = Context::new()
@@ -376,7 +376,7 @@ test "Expr Knf Transformation Test" {
       { name: "x", ty: { kind: Int, mutable: false } },
       { name: "y", ty: { kind: Int, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
   typecheck_ctx.type_env.set("a", { kind: Double, mutable: false })
@@ -1096,7 +1096,7 @@ test "Stmt Knf Transformation Test" {
       { name: "x", ty: { kind: Int, mutable: true } },
       { name: "y", ty: { kind: Int, mutable: true } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
 
@@ -1585,7 +1585,9 @@ test "While Stmt Knf Transformation Test" {
   // Test 1: Check that we get a While statement
   assert_true(knf_while_stmts1.length() is 1)
   assert_true(knf_while_stmts1[0] is While(_, _))
-  guard knf_while_stmts1[0] is While(cond_block, body_block)
+  guard knf_while_stmts1[0] is While(cond_block, body_block) else {
+    fail("expected while statement")
+  }
 
   // Test 1: Check condition block (should have let for 10 and the condition expression)
   // Condition block should have: let tmp = 10; and i < tmp;
@@ -1633,7 +1635,9 @@ test "While Stmt Knf Transformation Test" {
   let checked_while_stmt2 = typecheck_ctx.check_while_stmt(while_stmt2)
   let knf_while_stmts2 = knf_ctx.while_stmt_to_knf(checked_while_stmt2)
   assert_true(knf_while_stmts2.length() is 1)
-  guard knf_while_stmts2[0] is While(cond_block, body_block)
+  guard knf_while_stmts2[0] is While(cond_block, body_block) else {
+    fail("expected while statement")
+  }
 
   // Test 2: Check structure
   // Condition block: let tmp = 0; x > tmp;

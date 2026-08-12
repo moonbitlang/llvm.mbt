@@ -29,10 +29,7 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let ty_str = if color { @color.taint(ty_str, Green) } else { ty_str }
       let prefix_with_type = "\{prefix} (\{ty_str})"
       let inner_str = expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix_with_type}\n\{formatted}"
     }
@@ -43,10 +40,7 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let ty_str = if color { @color.taint(ty_str, Green) } else { ty_str }
       let prefix_with_type = "\{prefix} (\{ty_str})"
       let inner_str = expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix_with_type}\n\{formatted}"
     }
@@ -77,13 +71,10 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix_with_type = "\{prefix} (\{ty_str})"
       let left_str = left.to_string(color~)
       let right_str = right.to_string(color~)
-      let left_lines = left_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let left_lines = left_str.split("\n").map(sv => sv.to_owned()).to_array()
       let right_lines = right_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let left_formatted = @parser.format_lines(
         left_lines,
@@ -120,7 +111,53 @@ pub(all) enum ExprKind {
   IfExpr(IfExpr)
   /// Represents the `MatchExpr` typed AST form.
   MatchExpr(MatchExpr)
-} derive(Show)
+}
+
+///|
+/// Formats an `ExprKind` using constructor notation.
+pub impl Show for ExprKind with fn output(self, logger) {
+  match self {
+    ApplyExpr(expr) => {
+      logger.write_string("ApplyExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    BlockExpr(expr) => {
+      logger.write_string("BlockExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    NotExpr(expr) => {
+      logger.write_string("NotExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    NegExpr(expr) => {
+      logger.write_string("NegExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    BinaryExpr(op, left, right) => {
+      logger.write_string("BinaryExpr(")
+      logger.write_object(op)
+      logger.write_string(", ")
+      logger.write_object(left)
+      logger.write_string(", ")
+      logger.write_object(right)
+      logger.write_string(")")
+    }
+    IfExpr(expr) => {
+      logger.write_string("IfExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    MatchExpr(expr) => {
+      logger.write_string("MatchExpr(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+  }
+}
 
 ///|
 /// Enumerates the typed forms represented by `BinaryOp`.
@@ -159,7 +196,32 @@ pub(all) enum BinaryOp {
   BitAnd // &
   /// Represents the `BitOr` typed AST form.
   BitOr // |
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+/// Formats a `BinaryOp` using its constructor name.
+pub impl Show for BinaryOp with fn output(self, logger) {
+  let name = match self {
+    Add => "Add"
+    Sub => "Sub"
+    Mul => "Mul"
+    Div => "Div"
+    Mod => "Mod"
+    ShiftLeft => "ShiftLeft"
+    ShiftRight => "ShiftRight"
+    Eq => "Eq"
+    NE => "NE"
+    LT => "LT"
+    GT => "GT"
+    LE => "LE"
+    GE => "GE"
+    And => "And"
+    Or => "Or"
+    BitAnd => "BitAnd"
+    BitOr => "BitOr"
+  }
+  logger.write_string(name)
+}
 
 ///|
 fn binop_is_cmp(bin_op : BinaryOp) -> Bool {

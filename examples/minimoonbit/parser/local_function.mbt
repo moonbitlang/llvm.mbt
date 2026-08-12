@@ -66,10 +66,7 @@ pub fn LocalFunction::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format body
   let body_str = self.body.to_string(color~)
-  let body_lines = body_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
   let body_formatted = format_lines(
     body_lines,
     head_with="└-body: ",
@@ -100,36 +97,38 @@ pub fn parse_local_function(
     raise ParseError("Expect '('")
   }
   let params : Array[(String, Type?)] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
-    [{ kind: Lower(name), .. }, { kind: Symbol(":"), .. }, .. tokens] => {
-      let (ty, tokens) = parse_type(tokens)
-      params.push((name, Some(ty)))
-      continue tokens
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
+      [{ kind: Lower(name), .. }, { kind: Symbol(":"), .. }, .. tokens] => {
+        let (ty, tokens) = parse_type(tokens)
+        params.push((name, Some(ty)))
+        continue tokens
+      }
+      [
+        { kind: Symbol(","), .. },
+        { kind: Lower(name), .. },
+        { kind: Symbol(":"), .. },
+        .. tokens,
+      ] => {
+        let (ty, tokens) = parse_type(tokens)
+        params.push((name, Some(ty)))
+        continue tokens
+      }
+      [{ kind: Lower(name), .. }, .. tokens] => {
+        params.push((name, None))
+        continue tokens
+      }
+      [{ kind: Symbol(","), .. }, { kind: Lower(name), .. }, .. tokens] => {
+        params.push((name, None))
+        continue tokens
+      }
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tok => raise ParseError("InValid Param List Parsing: \{tok[0]}")
     }
-    [
-      { kind: Symbol(","), .. },
-      { kind: Lower(name), .. },
-      { kind: Symbol(":"), .. },
-      .. tokens,
-    ] => {
-      let (ty, tokens) = parse_type(tokens)
-      params.push((name, Some(ty)))
-      continue tokens
-    }
-    [{ kind: Lower(name), .. }, .. tokens] => {
-      params.push((name, None))
-      continue tokens
-    }
-    [{ kind: Symbol(","), .. }, { kind: Lower(name), .. }, .. tokens] => {
-      params.push((name, None))
-      continue tokens
-    }
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tok => raise ParseError("InValid Param List Parsing: \{tok[0]}")
   }
   let (ret_ty, tokens) = if tokens is [{ kind: Symbol("->"), .. }, .. tokens] {
     let (ty, tokens) = parse_type(tokens)

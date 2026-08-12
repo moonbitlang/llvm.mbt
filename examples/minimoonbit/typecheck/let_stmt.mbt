@@ -26,7 +26,7 @@ pub fn LetStmt::to_string(self : Self, color? : Bool = true) -> String {
   let pattern_str = self.pattern.to_string(color~)
   let pattern_lines = pattern_str
     .split("\n")
-    .map(fn(sv) { sv.to_string() })
+    .map(sv => sv.to_owned())
     .to_array()
   let pattern_formatted = @parser.format_lines(
     pattern_lines,
@@ -44,10 +44,7 @@ pub fn LetStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format expression
   let expr_str = self.expr.to_string(color~)
-  let expr_lines = expr_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
   let expr_formatted = @parser.format_lines(
     expr_lines,
     head_with="└-expr: ",
@@ -102,7 +99,7 @@ pub fn Pattern::to_string(self : Self, color? : Bool = true) -> String {
           let pattern_str = patterns[i].to_string(color~)
           let lines = pattern_str
             .split("\n")
-            .map(fn(sv) { sv.to_string() })
+            .map(sv => sv.to_owned())
             .to_array()
           let is_last = i == patterns.length() - 1
           let formatted = if is_last {
@@ -130,7 +127,7 @@ pub fn Pattern::to_string(self : Self, color? : Bool = true) -> String {
           let pattern_str = patterns[i].to_string(color~)
           let lines = pattern_str
             .split("\n")
-            .map(fn(sv) { sv.to_string() })
+            .map(sv => sv.to_owned())
             .to_array()
           let is_last = i == patterns.length() - 1
           let formatted = if is_last {

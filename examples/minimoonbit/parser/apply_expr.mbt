@@ -27,7 +27,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let apply_str = apply_expr.to_string(color~)
       let apply_lines = apply_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let apply_formatted = format_lines(
         apply_lines,
@@ -39,7 +39,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let index_str = index_expr.to_string(color~)
       let index_lines = index_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let index_formatted = format_lines(
         index_lines,
@@ -52,10 +52,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = "field access"
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let inner_str = apply_expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = format_lines(lines)
       "\{prefix} .\{field}\n\{formatted}"
     }
@@ -67,7 +64,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       let apply_str = apply_expr.to_string(color~)
       let apply_lines = apply_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let apply_formatted = if args.length() > 0 {
         format_lines(apply_lines, head_with="├-", continue_with="│ ")
@@ -80,10 +77,7 @@ pub fn ApplyExpr::to_string(self : Self, color? : Bool = true) -> String {
       for i = 0; i < args.length(); i = i + 1 {
         let arg = args[i]
         let arg_str = arg.to_string(color~)
-        let arg_lines = arg_str
-          .split("\n")
-          .map(fn(sv) { sv.to_string() })
-          .to_array()
+        let arg_lines = arg_str.split("\n").map(sv => sv.to_owned()).to_array()
         let is_last = i == args.length() - 1
         let arg_formatted = if is_last {
           format_lines(arg_lines, head_with="└-", continue_with="  ")
@@ -164,41 +158,43 @@ pub fn parse_apply_expr(
   }
   let mut last_apply_line = atom_expr.toks[atom_expr.toks.length() - 1].line
   let mut apply_expr = apply_expr
-  loop tokens {
-    [{ kind: Bracket('['), line, .. }, .. tokens] if line == last_apply_line => {
-      let (index_expr, tokens) = parse_expr(tokens)
-      guard tokens is [{ kind: Bracket(']'), .. }, .. tokens] else {
-        @lexer.throw_(tokens[0], "ParseError: Expect ']'", Error)
-        raise ParseError("Expect ']'")
+  for current = tokens {
+    match current {
+      [{ kind: Bracket('['), line, .. }, .. tokens] if line == last_apply_line => {
+        let (index_expr, tokens) = parse_expr(tokens)
+        guard tokens is [{ kind: Bracket(']'), .. }, .. tokens] else {
+          @lexer.throw_(tokens[0], "ParseError: Expect ']'", Error)
+          raise ParseError("Expect ']'")
+        }
+        apply_expr = ApplyExpr::new(
+          ArrayAccess(apply_expr, index_expr),
+          init_tokens,
+          tokens,
+        )
+        last_apply_line = tokens[0].line
+        continue tokens
       }
-      apply_expr = ApplyExpr::new(
-        ArrayAccess(apply_expr, index_expr),
-        init_tokens,
-        tokens,
-      )
-      last_apply_line = tokens[0].line
-      continue tokens
-    }
-    [{ kind: Symbol("."), line, .. }, { kind: Lower(field), .. }, .. tokens] if line ==
-      last_apply_line => {
-      apply_expr = ApplyExpr::new(
-        FieldAccess(apply_expr, field),
-        init_tokens,
-        tokens,
-      )
-      last_apply_line = tokens[0].line
-      continue tokens
-    }
-    [{ kind: Bracket('('), line, .. }, .. tokens] if line == last_apply_line => {
-      let (args, tokens) = parse_expr_list(tokens)
-      guard tokens is [{ kind: Bracket(')'), .. }, .. tokens] else {
-        @lexer.throw_(tokens[0], "ParseError: Expect ')'", Error)
-        raise ParseError("Expect ')'")
+      [{ kind: Symbol("."), line, .. }, { kind: Lower(field), .. }, .. tokens] if line ==
+        last_apply_line => {
+        apply_expr = ApplyExpr::new(
+          FieldAccess(apply_expr, field),
+          init_tokens,
+          tokens,
+        )
+        last_apply_line = tokens[0].line
+        continue tokens
       }
-      apply_expr = ApplyExpr::new(Call(apply_expr, args), init_tokens, tokens)
-      continue tokens
+      [{ kind: Bracket('('), line, .. }, .. tokens] if line == last_apply_line => {
+        let (args, tokens) = parse_expr_list(tokens)
+        guard tokens is [{ kind: Bracket(')'), .. }, .. tokens] else {
+          @lexer.throw_(tokens[0], "ParseError: Expect ')'", Error)
+          raise ParseError("Expect ')'")
+        }
+        apply_expr = ApplyExpr::new(Call(apply_expr, args), init_tokens, tokens)
+        continue tokens
+      }
+      tokens => break (apply_expr, tokens)
     }
-    tokens => break (apply_expr, tokens)
   }
 }
 

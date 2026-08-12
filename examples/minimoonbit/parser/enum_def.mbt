@@ -24,10 +24,7 @@ pub fn EnumDef::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.enum_fields.length(); i = i + 1 {
     let field = self.enum_fields[i]
     let field_str = field.to_string(color~)
-    let field_lines = field_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let field_lines = field_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.enum_fields.length() - 1
     let field_formatted = if is_last {
       format_lines(field_lines, head_with="└-", continue_with="  ")
@@ -85,23 +82,25 @@ pub fn parse_enum_field(
     }
     return (EnumField::{ name, types }, tokens)
   }
-  let rest = loop rest {
-    [{ kind: Bracket(')'), .. } as rparen_tok, .. rest] => {
-      last_tok = Some(rparen_tok)
-      break rest
-    }
-    [{ kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
-      let (ty, rest) = parse_type(tokens)
-      types.push(ty)
-      if rest is [{ kind: Symbol(","), .. }, .. rest] {
+  let rest = for current = rest {
+    match current {
+      [{ kind: Bracket(')'), .. } as rparen_tok, .. rest] => {
+        last_tok = Some(rparen_tok)
+        break rest
+      }
+      [{ kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {
+        let (ty, rest) = parse_type(tokens)
+        types.push(ty)
+        if rest is [{ kind: Symbol(","), .. }, .. rest] {
+          continue rest
+        }
         continue rest
       }
-      continue rest
-    }
-    [] => raise ParseError("Unclosed bracket in enum field types")
-    [tok, ..] => {
-      @lexer.throw_(tok, "Expected type in enum field types", Error)
-      raise ParseError("Unexpected token in enum field types")
+      [] => raise ParseError("Unclosed bracket in enum field types")
+      [tok, ..] => {
+        @lexer.throw_(tok, "Expected type in enum field types", Error)
+        raise ParseError("Unexpected token in enum field types")
+      }
     }
   }
   let enum_field = EnumField::{ name, types }
@@ -131,13 +130,15 @@ pub fn parse_enum_def(
     raise ParseError("Expected '{' after enum name")
   }
   let enum_fields : Array[EnumField] = Array::new()
-  let rest = loop rest {
-    [{ kind: Bracket('}'), .. }, .. rest] => break rest
-    [] => raise ParseError("Unclosed enum definition")
-    tokens => {
-      let (enum_field, rest) = parse_enum_field(tokens)
-      enum_fields.push(enum_field)
-      continue rest
+  let rest = for current = rest {
+    match current {
+      [{ kind: Bracket('}'), .. }, .. rest] => break rest
+      [] => raise ParseError("Unclosed enum definition")
+      tokens => {
+        let (enum_field, rest) = parse_enum_field(tokens)
+        enum_fields.push(enum_field)
+        continue rest
+      }
     }
   }
   let enum_def = EnumDef::{ name, enum_fields }

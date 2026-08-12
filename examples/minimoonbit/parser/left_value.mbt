@@ -27,7 +27,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let lvalue_str = left_value.to_string(color~)
       let lvalue_lines = lvalue_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let lvalue_formatted = format_lines(
         lvalue_lines,
@@ -37,7 +37,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let index_str = index_expr.to_string(color~)
       let index_lines = index_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let index_formatted = format_lines(
         index_lines,
@@ -50,10 +50,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = "lvalue field access"
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let inner_str = left_value.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = format_lines(lines)
       "\{prefix} .\{field}\n\{formatted}"
     }
@@ -96,24 +93,26 @@ pub fn parse_left_value(
     return (left_value, tokens)
   }
   let mut left_value = left_value
-  loop tokens {
-    [{ kind: Bracket('['), .. }, .. tokens] => {
-      let (index_expr, tokens) = parse_expr(tokens)
-      guard tokens is [{ kind: Bracket(']'), .. }, .. tokens] else {
-        raise ParseError("Expect ']'")
+  for current = tokens {
+    match current {
+      [{ kind: Bracket('['), .. }, .. tokens] => {
+        let (index_expr, tokens) = parse_expr(tokens)
+        guard tokens is [{ kind: Bracket(']'), .. }, .. tokens] else {
+          raise ParseError("Expect ']'")
+        }
+        left_value = LeftValue::{
+          kind: LeftValueKind::ArrayAccess(left_value, index_expr),
+        }
+        continue tokens
       }
-      left_value = LeftValue::{
-        kind: LeftValueKind::ArrayAccess(left_value, index_expr),
+      [{ kind: Symbol("."), .. }, { kind: Lower(field), .. }, .. tokens] => {
+        left_value = LeftValue::{
+          kind: LeftValueKind::FieldAccess(left_value, field),
+        }
+        continue tokens
       }
-      continue tokens
+      tokens => break (left_value, tokens)
     }
-    [{ kind: Symbol("."), .. }, { kind: Lower(field), .. }, .. tokens] => {
-      left_value = LeftValue::{
-        kind: LeftValueKind::FieldAccess(left_value, field),
-      }
-      continue tokens
-    }
-    tokens => break (left_value, tokens)
   }
 }
 

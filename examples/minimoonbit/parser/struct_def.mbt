@@ -24,10 +24,7 @@ pub fn StructDef::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.fields.length(); i = i + 1 {
     let field = self.fields[i]
     let field_str = field.to_string(color~)
-    let field_lines = field_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let field_lines = field_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.fields.length() - 1
     let field_formatted = if is_last {
       format_lines(field_lines, head_with="└-", continue_with="  ")
@@ -109,16 +106,18 @@ pub fn parse_struct_def(
     raise ParseError("Failed Parsing StructDef: Expect '{'")
   }
   let fields : Array[StructField] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket('}'), .. }, .. rest] => break rest
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (field, rest) = parse_struct_field(tokens)
-      fields.push(field)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket('}'), .. }, .. rest] => break rest
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (field, rest) = parse_struct_field(tokens)
+        fields.push(field)
+        continue rest
+      }
     }
   }
   let struct_def = StructDef::{ name, fields }

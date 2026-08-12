@@ -5,6 +5,7 @@ import {
   "Kaida-Amethyst/either",
   "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
   "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+  "moonbitlang/core/debug",
 }
 
 // Values
@@ -13,7 +14,7 @@ pub fn typecheck(@parser.Program) -> Program raise TypeCheckError
 // Errors
 pub(all) suberror TypeCheckError {
   TypeCheckError(String)
-} derive(Show)
+} derive(@debug.Debug)
 
 // Types and methods
 pub(all) struct ApplyExpr {
@@ -29,7 +30,8 @@ pub(all) enum ApplyExprKind {
   ArrayAccess(ApplyExpr, Expr)
   FieldAccess(ApplyExpr, String)
   Call(ApplyExpr, Array[Expr])
-} derive(Show)
+}
+pub impl Show for ApplyExprKind
 
 pub(all) enum AssignOp {
   Assign
@@ -38,7 +40,8 @@ pub(all) enum AssignOp {
   MultAssign
   DivAssign
   ModAssign
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for AssignOp
 
 pub(all) struct AssignStmt {
   left_value : LeftValue
@@ -76,7 +79,8 @@ pub(all) enum AtomExprKind {
   EnumConstruct(String, String, Array[Expr])
   Cast(TypeKind, Expr)
   BitCast(TypeKind, Expr)
-} derive(Show)
+}
+pub impl Show for AtomExprKind
 
 pub(all) enum BinaryOp {
   Add
@@ -96,7 +100,8 @@ pub(all) enum BinaryOp {
   Or
   BitAnd
   BitOr
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for BinaryOp
 
 pub(all) struct BlockExpr {
   stmts : Array[Stmt]
@@ -213,7 +218,8 @@ pub(all) enum ExprKind {
   BinaryExpr(BinaryOp, Expr, Expr)
   IfExpr(IfExpr)
   MatchExpr(MatchExpr)
-} derive(Show)
+}
+pub impl Show for ExprKind
 
 pub(all) struct ExternFunction {
   fname : String
@@ -253,7 +259,8 @@ pub(all) enum LeftValueKind {
   Ident(String)
   ArrayAccess(LeftValue, Expr)
   FieldAccess(LeftValue, String)
-} derive(Show)
+}
+pub impl Show for LeftValueKind
 
 pub(all) struct LetMutStmt {
   name : String
@@ -328,7 +335,8 @@ pub(all) enum PatternSet {
   Union(Array[PatternSet])
   EnumConstructor(String, String, Array[PatternSet])
   TupleConstructor(Array[PatternSet])
-} derive(Eq, Show)
+} derive(Eq)
+pub impl Show for PatternSet
 
 pub(all) struct Program {
   source_file : String

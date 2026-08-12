@@ -28,10 +28,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             format_lines(lines, head_with="└-", continue_with="  ")
@@ -55,10 +52,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             format_lines(lines, head_with="└-", continue_with="  ")
@@ -78,14 +72,8 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let size_str = size_expr.to_string(color~)
       let init_str = init_expr.to_string(color~)
-      let size_lines = size_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
-      let init_lines = init_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let size_lines = size_str.split("\n").map(sv => sv.to_owned()).to_array()
+      let init_lines = init_str.split("\n").map(sv => sv.to_owned()).to_array()
       let size_formatted = format_lines(
         size_lines,
         head_with="├-size: ",
@@ -111,10 +99,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix} \{tag_prefix}\{variant}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             format_lines(lines, head_with="└-", continue_with="  ")
@@ -352,23 +337,25 @@ fn parse_paren_expr(
     panic()
   }
   let exprs : Array[Expr] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket(')'), .. }, .. rest] => break rest
-    [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, .. rest] =>
-      break rest
-    [{ kind: Symbol(","), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
-    }
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket(')'), .. }, .. rest] => break rest
+      [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, .. rest] =>
+        break rest
+      [{ kind: Symbol(","), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
     }
   }
   let kind = match exprs.length() {
@@ -393,7 +380,9 @@ fn parse_array_make_expr(
       { kind: Bracket('('), .. },
       .. tokens,
     ] else {
-    println("Compiler ICE: Misuse parse_array_make_expr, \{tokens}")
+    println(
+      "Compiler ICE: Misuse parse_array_make_expr, first token: \{tokens[0]}",
+    )
     panic()
   }
   let (size_expr, tokens) = parse_expr(tokens)
@@ -432,23 +421,25 @@ fn parse_array_expr(
     panic()
   }
   let exprs : Array[Expr] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket(']'), .. }, .. rest] => break rest
-    [{ kind: Symbol(","), .. }, { kind: Bracket(']'), .. }, .. rest] =>
-      break rest
-    [{ kind: Symbol(","), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
-    }
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket(']'), .. }, .. rest] => break rest
+      [{ kind: Symbol(","), .. }, { kind: Bracket(']'), .. }, .. rest] =>
+        break rest
+      [{ kind: Symbol(","), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
     }
   }
   let atom_expr = AtomExpr::new(AtomExprKind::Array(exprs), init_tokens, tokens)
@@ -475,23 +466,25 @@ fn parse_enum_construct(
     let atom_expr = AtomExpr::new(kind, tokens, tokens)
     return (atom_expr, tokens)
   }
-  let tokens = loop tokens {
-    [{ kind: Bracket(')'), .. }, .. rest] => break rest
-    [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, .. rest] =>
-      break rest
-    [{ kind: Symbol(","), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
-    }
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket(')'), .. }, .. rest] => break rest
+      [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, .. rest] =>
+        break rest
+      [{ kind: Symbol(","), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
     }
   }
   let kind = AtomExprKind::EnumConstruct(tag, variant_name, exprs)

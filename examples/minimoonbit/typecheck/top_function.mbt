@@ -92,10 +92,7 @@ pub fn TopFunction::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format body
   let body_str = self.body.to_string(color~)
-  let body_lines = body_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
   let body_formatted = @parser.format_lines(body_lines)
   result = "\{result}\n\{body_formatted}\n"
   result

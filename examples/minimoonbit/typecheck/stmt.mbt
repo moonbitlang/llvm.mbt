@@ -28,7 +28,7 @@ pub fn Stmt::to_string(self : Self, color? : Bool = true) -> String {
           let expr_str = expr.to_string(color~)
           let expr_lines = expr_str
             .split("\n")
-            .map(fn(sv) { sv.to_string() })
+            .map(sv => sv.to_owned())
             .to_array()
           let expr_formatted = @parser.format_lines(expr_lines)
           "\{prefix}\n\{expr_formatted}"

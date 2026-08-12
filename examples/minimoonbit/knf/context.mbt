@@ -3,7 +3,7 @@
 pub(all) suberror KnfTransformError {
   /// Represents the `KnfTransformError` KNF form.
   KnfTransformError(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Represents the MiniMoonBit KNF value or lowering context `Name`.
@@ -43,7 +43,7 @@ pub(all) struct Env {
 ///|
 /// Creates a new `Env` lowering value.
 pub fn Env::new(parent? : Env? = None) -> Env {
-  Env::{ local_: Map::new(), capture: Map::new(), parent }
+  Env::{ local_: Map([]), capture: Map([]), parent }
 }
 
 ///|
@@ -127,9 +127,9 @@ pub fn Context::new() -> Context {
     name_env: Env::new(),
     capture: Array::new(),
     global_stmts: Array::new(),
-    globals: Map::new(),
-    unions: Map::new(),
-    struct_defs: Map::new(),
+    globals: Map([]),
+    unions: Map([]),
+    struct_defs: Map([]),
   }
 }
 

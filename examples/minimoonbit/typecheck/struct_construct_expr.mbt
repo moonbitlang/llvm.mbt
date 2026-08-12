@@ -37,10 +37,7 @@ pub fn StructConstructExpr::to_string(
       field_prefix
     }
     let expr_str = expr.to_string(color~)
-    let expr_lines = expr_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.fields.length() - 1
 
     // Format field name and expression
@@ -125,7 +122,7 @@ test "StructConstructExpr to_string Test - Simple" {
       { name: "x", ty: { kind: TypeKind::Int, mutable: false } },
       { name: "y", ty: { kind: TypeKind::Int, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   })
   let code =
     #|Point::{ x: 1, y: 2 }
@@ -152,11 +149,7 @@ test "StructConstructExpr to_string Test - Simple" {
 test "StructConstructExpr to_string Test - Empty" {
   let color = false
   let ctx = Context::new()
-  ctx.struct_defs.set("Point", {
-    name: "Point",
-    fields: [],
-    methods: Map::new(),
-  })
+  ctx.struct_defs.set("Point", { name: "Point", fields: [], methods: Map([]) })
   let code =
     #|Point::{}
   let tokens = @lexer.tokenize(code)
@@ -190,7 +183,7 @@ test "StructConstructExpr to_string Test - Complex Fields" {
       { name: "next", ty: { kind: TypeKind::Int, mutable: false } },
       { name: "is_valid", ty: { kind: TypeKind::Bool, mutable: false } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   })
   let code =
     #|Node::{ data: x + 1, next: get_next(), is_valid: true }

@@ -32,10 +32,7 @@ pub fn AssignStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format left value
   let lvalue_str = self.left_value.to_string(color~)
-  let lvalue_lines = lvalue_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let lvalue_lines = lvalue_str.split("\n").map(sv => sv.to_owned()).to_array()
   let lvalue_formatted = format_lines(
     lvalue_lines,
     head_with="├-lvalue: ",
@@ -44,10 +41,7 @@ pub fn AssignStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format expression
   let expr_str = self.expr.to_string(color~)
-  let expr_lines = expr_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
   let expr_formatted = format_lines(
     expr_lines,
     head_with="└-expr: ",

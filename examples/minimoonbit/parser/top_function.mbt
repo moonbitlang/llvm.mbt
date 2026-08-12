@@ -86,10 +86,7 @@ pub fn TopFunction::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format body
   let body_str = self.body.to_string(color~)
-  let body_lines = body_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
   let body_formatted = format_lines(body_lines)
   result = "\{result}\n\{body_formatted}\n"
   result
@@ -127,25 +124,27 @@ pub fn parse_param_list(
   tokens : ArrayView[Token],
 ) -> (Array[Param], ArrayView[Token]) raise ParseError {
   let params : Array[Param] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Lower(_), .. }, ..] as tokens => {
-      let (param, rest) = parse_param(tokens)
-      params.push(param)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Lower(_), .. }, ..] as tokens => {
+        let (param, rest) = parse_param(tokens)
+        params.push(param)
+        continue rest
+      }
+      [{ kind: Symbol(","), .. }, { kind: Lower(_), .. }, ..] as tokens => {
+        let (param, rest) = parse_param(tokens[1:])
+        params.push(param)
+        continue rest
+      }
+      [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, ..] as tokens =>
+        break tokens[1:]
+      [{ kind: Bracket(')'), .. }, ..] as tokens => break tokens
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tok => raise ParseError("InValid Param List Parsing: \{tok[0]}")
     }
-    [{ kind: Symbol(","), .. }, { kind: Lower(_), .. }, ..] as tokens => {
-      let (param, rest) = parse_param(tokens[1:])
-      params.push(param)
-      continue rest
-    }
-    [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, ..] as tokens =>
-      break tokens[1:]
-    [{ kind: Bracket(')'), .. }, ..] as tokens => break tokens
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tok => raise ParseError("InValid Param List Parsing: \{tok[0]}")
   }
   (params, tokens)
 }

@@ -3,7 +3,7 @@
 pub(all) suberror TypeCheckError {
   /// Carries a diagnostic describing the rejected source construct.
   TypeCheckError(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Represents the MiniMoonBit typed AST node or context `Env`.
@@ -17,7 +17,7 @@ pub(all) struct Env {
 ///|
 /// Performs the `new` operation on `Env`.
 pub fn Env::new(parent? : Env? = None) -> Env {
-  Env::{ local_: Map::new(), parent }
+  Env::{ local_: Map([]), parent }
 }
 
 ///|
@@ -62,10 +62,10 @@ pub(all) struct Context {
 pub fn Context::new() -> Context {
   let ctx = Context::{
     type_env: Env::new(),
-    type_vars: Map::new(),
-    struct_defs: Map::new(),
-    enum_defs: Map::new(),
-    func_types: Map::new(),
+    type_vars: Map([]),
+    struct_defs: Map([]),
+    enum_defs: Map([]),
+    func_types: Map([]),
     current_func_ret_ty: None,
     error_happened: false,
   }
@@ -218,11 +218,11 @@ pub fn Context::check_program(
   self.collect_struct_or_enum_names(program)
   self.collect_function_types(program)
   let source_file = program.source_file
-  let struct_defs = Map::new()
-  let top_lets = Map::new()
-  let top_functions = Map::new()
-  let extern_funcions = Map::new()
-  let enum_defs = Map::new()
+  let struct_defs = Map([])
+  let top_lets = Map([])
+  let top_functions = Map([])
+  let extern_funcions = Map([])
+  let enum_defs = Map([])
   for name, ext_func in program.extern_funcions {
     let checked_ext_func = self.check_extern_function(ext_func)
     extern_funcions.set(name, checked_ext_func)
@@ -267,7 +267,7 @@ pub fn Context::collect_struct_or_enum_names(
       let struct_def = StructDef::{
         name: struct_def.name,
         fields: Array::new(),
-        methods: Map::new(),
+        methods: Map([]),
       }
       self.struct_defs.set(struct_def.name, struct_def)
     }

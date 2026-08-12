@@ -50,45 +50,47 @@ pub fn parse(tokens : Array[Token]) -> Program raise ParseError {
     raise ParseError("Empty token array passed to parser")
   }
   let source_file = tok.file
-  let top_lets = Map::new()
-  let top_functions = Map::new()
-  let extern_funcions = Map::new()
-  let struct_defs = Map::new()
-  let enum_defs = Map::new()
-  loop tokens[:] {
-    [{ kind: Keyword(Extern), .. }, ..] as tokens => {
-      let (extern_fn, rest) = parse_extern_function(tokens)
-      extern_funcions.set(extern_fn.fname, extern_fn)
-      continue rest
+  let top_lets = Map([])
+  let top_functions = Map([])
+  let extern_funcions = Map([])
+  let struct_defs = Map([])
+  let enum_defs = Map([])
+  for current = tokens[:] {
+    match current {
+      [{ kind: Keyword(Extern), .. }, ..] as tokens => {
+        let (extern_fn, rest) = parse_extern_function(tokens)
+        extern_funcions.set(extern_fn.fname, extern_fn)
+        continue rest
+      }
+      [{ kind: Keyword(Fn), .. }, ..] as tokens => {
+        let (top_fn, rest) = parse_top_function(tokens)
+        // Use whole_name() to avoid conflicts between methods with the same name
+        // e.g., Point::new and Rect::new should be stored as different functions
+        top_functions.set(top_fn.whole_name(), top_fn)
+        continue rest
+      }
+      [{ kind: Keyword(Let), .. }, ..] as tokens => {
+        let (top_let, rest) = parse_top_let(tokens)
+        top_lets.set(top_let.name, top_let)
+        continue rest
+      }
+      [{ kind: Keyword(Struct), .. }, ..] as tokens => {
+        let (struct_def, rest) = parse_struct_def(tokens)
+        struct_defs.set(struct_def.name, struct_def)
+        continue rest
+      }
+      [{ kind: Keyword(Enum), .. }, ..] as tokens => {
+        let (enum_def, rest) = parse_enum_def(tokens)
+        enum_defs.set(enum_def.name, enum_def)
+        continue rest
+      }
+      [{ kind: EOF, .. }, ..] => break
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => raise ParseError("Unexpected token in top level: \{tokens[0]}")
     }
-    [{ kind: Keyword(Fn), .. }, ..] as tokens => {
-      let (top_fn, rest) = parse_top_function(tokens)
-      // Use whole_name() to avoid conflicts between methods with the same name
-      // e.g., Point::new and Rect::new should be stored as different functions
-      top_functions.set(top_fn.whole_name(), top_fn)
-      continue rest
-    }
-    [{ kind: Keyword(Let), .. }, ..] as tokens => {
-      let (top_let, rest) = parse_top_let(tokens)
-      top_lets.set(top_let.name, top_let)
-      continue rest
-    }
-    [{ kind: Keyword(Struct), .. }, ..] as tokens => {
-      let (struct_def, rest) = parse_struct_def(tokens)
-      struct_defs.set(struct_def.name, struct_def)
-      continue rest
-    }
-    [{ kind: Keyword(Enum), .. }, ..] as tokens => {
-      let (enum_def, rest) = parse_enum_def(tokens)
-      enum_defs.set(enum_def.name, enum_def)
-      continue rest
-    }
-    [{ kind: EOF, .. }, ..] => break
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => raise ParseError("Unexpected token in top level: \{tokens[0]}")
   }
   let prog = Program::{
     top_lets,

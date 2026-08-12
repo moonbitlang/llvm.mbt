@@ -66,10 +66,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
     for i = 0; i < self.inits.length(); i = i + 1 {
       let (name, expr) = self.inits[i]
       let expr_str = expr.to_string(color~)
-      let expr_lines = expr_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let is_last_init = i == self.inits.length() - 1
       let expr_formatted = if is_last_init {
         format_lines(expr_lines, head_with="└-\{name} = ", continue_with="  ")
@@ -88,10 +85,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
   match self.cond {
     Some(cond_expr) => {
       let cond_str = cond_expr.to_string(color~)
-      let cond_lines = cond_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let cond_lines = cond_str.split("\n").map(sv => sv.to_owned()).to_array()
       let cond_formatted = format_lines(
         cond_lines,
         head_with="├-cond: ",
@@ -122,10 +116,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
         ModAssign => "%="
       }
       let expr_str = expr.to_string(color~)
-      let expr_lines = expr_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let is_last_step = i == self.steps.length() - 1
       let expr_formatted = if is_last_step {
         format_lines(
@@ -146,10 +137,7 @@ pub fn ForStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format body
   let body_str = self.body.to_string(color~)
-  let body_lines = body_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let body_lines = body_str.split("\n").map(sv => sv.to_owned()).to_array()
   let body_formatted = format_lines(
     body_lines,
     head_with="└-body: ",
@@ -169,34 +157,36 @@ pub fn parse_for_stmt(
     panic()
   }
   let inits : Array[(String, Expr)] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Lower(name), .. }, { kind: AssignOp(Assign), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      inits.push((name, expr))
-      continue rest
-    }
-    [
-      { kind: Symbol(","), .. },
-      { kind: Lower(name), .. },
-      { kind: AssignOp(Assign), .. },
-      .. tokens,
-    ] => {
-      let (expr, rest) = parse_expr(tokens)
-      inits.push((name, expr))
-      continue rest
-    }
-    [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
-    [] => {
-      println("Compiler ICE: Incomplete for statement")
-      panic()
-    }
-    [tok, ..] => {
-      @lexer.throw_(
-        tok,
-        "Parse Error: Invalid init statement in for loop",
-        Error,
-      )
-      raise ParseError("Invalid init statement in for loop")
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Lower(name), .. }, { kind: AssignOp(Assign), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        inits.push((name, expr))
+        continue rest
+      }
+      [
+        { kind: Symbol(","), .. },
+        { kind: Lower(name), .. },
+        { kind: AssignOp(Assign), .. },
+        .. tokens,
+      ] => {
+        let (expr, rest) = parse_expr(tokens)
+        inits.push((name, expr))
+        continue rest
+      }
+      [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
+      [] => {
+        println("Compiler ICE: Incomplete for statement")
+        panic()
+      }
+      [tok, ..] => {
+        @lexer.throw_(
+          tok,
+          "Parse Error: Invalid init statement in for loop",
+          Error,
+        )
+        raise ParseError("Invalid init statement in for loop")
+      }
     }
   }
   let (cond, tokens) = if tokens is [{ kind: Symbol(";"), .. }, .. tokens] {
@@ -214,36 +204,38 @@ pub fn parse_for_stmt(
     (Some(expr), tokens)
   }
   let steps : Array[(String, AssignOp, Expr)] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Lower(name), .. }, { kind: AssignOp(op), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      let op = AssignOp::from_tok_assign_op(op)
-      steps.push((name, op, expr))
-      continue rest
-    }
-    [
-      { kind: Symbol(","), .. },
-      { kind: Lower(name), .. },
-      { kind: AssignOp(op), .. },
-      .. tokens,
-    ] => {
-      let (expr, rest) = parse_expr(tokens)
-      let op = AssignOp::from_tok_assign_op(op)
-      steps.push((name, op, expr))
-      continue rest
-    }
-    [{ kind: Bracket('{'), .. }, ..] as tokens => break tokens
-    [] => {
-      println("Compiler ICE: Incomplete for statement")
-      panic()
-    }
-    [tok, ..] => {
-      @lexer.throw_(
-        tok,
-        "Parse Error: Invalid step statement in for loop",
-        Error,
-      )
-      raise ParseError("Invalid step statement in for loop")
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Lower(name), .. }, { kind: AssignOp(op), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        let op = AssignOp::from_tok_assign_op(op)
+        steps.push((name, op, expr))
+        continue rest
+      }
+      [
+        { kind: Symbol(","), .. },
+        { kind: Lower(name), .. },
+        { kind: AssignOp(op), .. },
+        .. tokens,
+      ] => {
+        let (expr, rest) = parse_expr(tokens)
+        let op = AssignOp::from_tok_assign_op(op)
+        steps.push((name, op, expr))
+        continue rest
+      }
+      [{ kind: Bracket('{'), .. }, ..] as tokens => break tokens
+      [] => {
+        println("Compiler ICE: Incomplete for statement")
+        panic()
+      }
+      [tok, ..] => {
+        @lexer.throw_(
+          tok,
+          "Parse Error: Invalid step statement in for loop",
+          Error,
+        )
+        raise ParseError("Invalid step statement in for loop")
+      }
     }
   }
   let (body, tokens) = parse_block_expr(tokens)

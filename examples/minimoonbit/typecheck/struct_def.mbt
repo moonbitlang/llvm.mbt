@@ -28,10 +28,7 @@ pub fn StructDef::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.fields.length(); i = i + 1 {
     let field = self.fields[i]
     let field_str = field.to_string(color~)
-    let field_lines = field_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let field_lines = field_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.fields.length() - 1
     let field_formatted = if is_last {
       @parser.format_lines(field_lines, head_with="└-", continue_with="  ")
@@ -96,7 +93,7 @@ pub fn Context::check_struct_def(
   let struct_def = StructDef::{
     name: struct_def.name,
     fields,
-    methods: Map::new(),
+    methods: Map([]),
   }
   self.struct_defs.set(struct_def.name, struct_def)
   struct_def

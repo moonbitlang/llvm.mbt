@@ -24,10 +24,7 @@ pub fn EnumDef::to_string(self : Self, color? : Bool = true) -> String {
   for i = 0; i < self.enum_fields.length(); i = i + 1 {
     let field = self.enum_fields[i]
     let field_str = field.to_string(color~)
-    let field_lines = field_str
-      .split("\n")
-      .map(fn(sv) { sv.to_string() })
-      .to_array()
+    let field_lines = field_str.split("\n").map(sv => sv.to_owned()).to_array()
     let is_last = i == self.enum_fields.length() - 1
     let field_formatted = if is_last {
       @parser.format_lines(field_lines, head_with="└-", continue_with="  ")

@@ -42,10 +42,7 @@ pub fn LetMutStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format expression
   let expr_str = self.expr.to_string(color~)
-  let expr_lines = expr_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
   let expr_formatted = format_lines(
     expr_lines,
     head_with="└-expr: ",
@@ -81,12 +78,14 @@ pub fn parse_let_mut_stmt(
   guard tokens is [{ kind: AssignOp(Assign), .. }, .. tokens] else {
     @lexer.throw_(tokens[0], "Parse Error: Expect '='", Error)
     let line = tokens[0].line
-    let rest = loop tokens {
-      [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
-      [tok, ..] as tokens if tok.line != line => break tokens
-      [{ kind: Bracket('}'), .. }, ..] as tokens => break tokens
-      [] as tokens => break tokens
-      [_, .. tokens] => continue tokens
+    let rest = for current = tokens {
+      match current {
+        [{ kind: Symbol(";"), .. }, .. tokens] => break tokens
+        [tok, ..] as tokens if tok.line != line => break tokens
+        [{ kind: Bracket('}'), .. }, ..] as tokens => break tokens
+        [] as tokens => break tokens
+        [_, .. tokens] => continue tokens
+      }
     }
     let expr = Expr::unit()
     let let_mut_stmt = LetMutStmt::{ name, ty, expr }

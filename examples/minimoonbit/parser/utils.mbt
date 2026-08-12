@@ -9,7 +9,7 @@ using @either {type Either}
 pub suberror ParseError {
   /// Represents the `ParseError` parser AST form.
   ParseError(String)
-} derive(Show)
+} derive(Debug)
 
 ///|
 /// Formats `TypeKind` using MiniMoonBit source notation.

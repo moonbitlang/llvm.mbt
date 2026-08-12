@@ -49,10 +49,7 @@ pub fn Pattern::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix}\n"
         for i = 0; i < patterns.length(); i = i + 1 {
           let pat_str = patterns[i].to_string(color~)
-          let lines = pat_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = pat_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == patterns.length() - 1
           let formatted = if is_last {
             format_lines(lines, head_with="└-", continue_with="  ")
@@ -80,10 +77,7 @@ pub fn Pattern::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix} \{tag_prefix}\{variant}\n"
         for i = 0; i < patterns.length(); i = i + 1 {
           let pat_str = patterns[i].to_string(color~)
-          let lines = pat_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = pat_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == patterns.length() - 1
           let formatted = if is_last {
             format_lines(lines, head_with="└-", continue_with="  ")
@@ -189,45 +183,49 @@ pub fn parse_pattern(
         let pattern = Pattern::{ kind: patternkind }
         return (pattern, tokens)
       }
-      let tokens = loop tokens {
-        [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
-        [
-          {
-            kind: Int(_)
-            | BinaryOp(Sub)
-            | Lower(_)
-            | Wildcard
-            | Bracket('(')
-            | Upper(_)
-            | Bool(_),
+      let tokens = for current = tokens {
+        match current {
+          [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
+          [
+            {
+              kind: Int(_)
+              | BinaryOp(Sub)
+              | Lower(_)
+              | Wildcard
+              | Bracket('(')
+              | Upper(_)
+              | Bool(_),
+              ..,
+            },
             ..,
-          },
-          ..,
-        ] as tokens => {
-          let (pat, rest) = parse_pattern(tokens)
-          patterns.push(pat)
-          continue rest
-        }
-        [
-          { kind: Symbol(","), .. },
-          {
-            kind: Int(_)
-            | BinaryOp(Sub)
-            | Lower(_)
-            | Wildcard
-            | Bracket('(')
-            | Bracket(')')
-            | Upper(_)
-            | Bool(_),
+          ] as tokens => {
+            let (pat, rest) = parse_pattern(tokens)
+            patterns.push(pat)
+            continue rest
+          }
+          [
+            { kind: Symbol(","), .. },
+            {
+              kind: Int(_)
+              | BinaryOp(Sub)
+              | Lower(_)
+              | Wildcard
+              | Bracket('(')
+              | Bracket(')')
+              | Upper(_)
+              | Bool(_),
+              ..,
+            },
             ..,
-          },
-          ..,
-        ] as tokens => continue tokens[1:]
-        [] => {
-          println("Compiler ICE: Failed Parsing Pattern Empty Token ArrayView")
-          panic()
+          ] as tokens => continue tokens[1:]
+          [] => {
+            println(
+              "Compiler ICE: Failed Parsing Pattern Empty Token ArrayView",
+            )
+            panic()
+          }
+          tokens => raise ParseError("InValid Pattern: \{tokens[0]}")
         }
-        tokens => raise ParseError("InValid Pattern: \{tokens[0]}")
       }
       let kind = if patterns.length() == 0 {
         @lexer.throw_(tok, "Parse Error: InValid Pattern", Error)
@@ -240,45 +238,49 @@ pub fn parse_pattern(
     }
     [{ kind: Bracket('('), .. } as tok, .. tokens] => {
       let patterns : Array[Pattern] = Array::new()
-      let tokens = loop tokens {
-        [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
-        [
-          {
-            kind: Lower(_)
-            | Wildcard
-            | Bracket('(')
-            | Upper(_)
-            | Int(_)
-            | BinaryOp(Sub)
-            | Bool(_),
+      let tokens = for current = tokens {
+        match current {
+          [{ kind: Bracket(')'), .. }, .. tokens] => break tokens
+          [
+            {
+              kind: Lower(_)
+              | Wildcard
+              | Bracket('(')
+              | Upper(_)
+              | Int(_)
+              | BinaryOp(Sub)
+              | Bool(_),
+              ..,
+            },
             ..,
-          },
-          ..,
-        ] as tokens => {
-          let (pat, rest) = parse_pattern(tokens)
-          patterns.push(pat)
-          continue rest
-        }
-        [
-          { kind: Symbol(","), .. },
-          {
-            kind: Lower(_)
-            | Wildcard
-            | Bracket('(')
-            | Bracket(')')
-            | Upper(_)
-            | Int(_)
-            | BinaryOp(Sub)
-            | Bool(_),
+          ] as tokens => {
+            let (pat, rest) = parse_pattern(tokens)
+            patterns.push(pat)
+            continue rest
+          }
+          [
+            { kind: Symbol(","), .. },
+            {
+              kind: Lower(_)
+              | Wildcard
+              | Bracket('(')
+              | Bracket(')')
+              | Upper(_)
+              | Int(_)
+              | BinaryOp(Sub)
+              | Bool(_),
+              ..,
+            },
             ..,
-          },
-          ..,
-        ] as tokens => continue tokens[1:]
-        [] => {
-          println("Compiler ICE: Failed Parsing Pattern Empty Token ArrayView")
-          panic()
+          ] as tokens => continue tokens[1:]
+          [] => {
+            println(
+              "Compiler ICE: Failed Parsing Pattern Empty Token ArrayView",
+            )
+            panic()
+          }
+          tokens => raise ParseError("InValid Pattern: \{tokens[0]}")
         }
-        tokens => raise ParseError("InValid Pattern: \{tokens[0]}")
       }
       let kind = if patterns.length() == 0 {
         @lexer.throw_(tok, "Parse Error: InValid Pattern", Error)

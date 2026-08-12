@@ -163,7 +163,7 @@ pub fn Context::match_int_expr_to_knf(
   let cond_name = self.expr_to_knf_name(cond_expr, Int, stmts)
   let cases : Array[(Int, KnfBlock)] = []
   let default_arms : Array[@typecheck.MatchArm] = []
-  let cases_map : Map[Int, Array[@typecheck.MatchArm]] = Map::new()
+  let cases_map : Map[Int, Array[@typecheck.MatchArm]] = Map([])
   for arm in expr.arms {
     match arm.pattern.kind {
       Integer(n) =>
@@ -349,7 +349,7 @@ pub fn Context::match_enum_expr_to_knf(
   stmts.push(Let(tag_name, Int, GetUnionTag(enum_value_name)))
 
   // Group arms by variant
-  let cases_map : Map[String, Array[@typecheck.MatchArm]] = Map::new()
+  let cases_map : Map[String, Array[@typecheck.MatchArm]] = Map([])
   let default_arms : Array[@typecheck.MatchArm] = []
   for arm in expr.arms {
     match arm.pattern.kind {
@@ -385,7 +385,7 @@ pub fn Context::match_enum_expr_to_knf(
     // Extract variant name from "EnumName$VariantName"
     let parts = variant_full_name.split("$").collect()
     let variant_name = if parts.length() == 2 {
-      parts[1].to_string()
+      parts[1].to_owned()
     } else {
       raise KnfTransformError(
         "Invalid variant name format: \{variant_full_name}",
@@ -719,7 +719,7 @@ pub fn Context::match_tuple_expr_to_knf(
 
   // Extract tuple types
   let tuple_types = match expr.cond.ty {
-    Tuple(types) => types.map(fn(t) { self.typekind_to_knf(t) })
+    Tuple(types) => types.map(t => self.typekind_to_knf(t))
     _ =>
       raise KnfTransformError("Expected tuple type in match tuple expression")
   }

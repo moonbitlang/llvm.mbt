@@ -34,7 +34,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let lvalue_str = left_value.to_string(color~)
       let lvalue_lines = lvalue_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let lvalue_formatted = @parser.format_lines(
         lvalue_lines,
@@ -44,7 +44,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let index_str = index_expr.to_string(color~)
       let index_lines = index_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let index_formatted = @parser.format_lines(
         index_lines,
@@ -60,10 +60,7 @@ pub fn LeftValue::to_string(self : Self, color? : Bool = true) -> String {
       let ty_str = if color { @color.taint(ty_str, Green) } else { ty_str }
       let prefix_with_type = "\{prefix} .\{field} (\{ty_str})"
       let inner_str = left_value.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix_with_type}\n\{formatted}"
     }
@@ -79,7 +76,33 @@ pub(all) enum LeftValueKind {
   ArrayAccess(LeftValue, Expr)
   /// Represents the `FieldAccess` typed AST form.
   FieldAccess(LeftValue, String)
-} derive(Show)
+}
+
+///|
+/// Formats a `LeftValueKind` using constructor notation.
+pub impl Show for LeftValueKind with fn output(self, logger) {
+  match self {
+    Ident(name) => {
+      logger.write_string("Ident(")
+      logger.write_object(name)
+      logger.write_string(")")
+    }
+    ArrayAccess(left_value, index) => {
+      logger.write_string("ArrayAccess(")
+      logger.write_object(left_value)
+      logger.write_string(", ")
+      logger.write_object(index)
+      logger.write_string(")")
+    }
+    FieldAccess(left_value, field) => {
+      logger.write_string("FieldAccess(")
+      logger.write_object(left_value)
+      logger.write_string(", ")
+      logger.write_object(field)
+      logger.write_string(")")
+    }
+  }
+}
 
 ///|
 /// Represents the MiniMoonBit typed AST node or context `AssignStmt`.
@@ -115,10 +138,7 @@ pub fn AssignStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format left value
   let lvalue_str = self.left_value.to_string(color~)
-  let lvalue_lines = lvalue_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let lvalue_lines = lvalue_str.split("\n").map(sv => sv.to_owned()).to_array()
   let lvalue_formatted = @parser.format_lines(
     lvalue_lines,
     head_with="├-lvalue: ",
@@ -127,10 +147,7 @@ pub fn AssignStmt::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format expression
   let expr_str = self.expr.to_string(color~)
-  let expr_lines = expr_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let expr_lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
   let expr_formatted = @parser.format_lines(
     expr_lines,
     head_with="└-expr: ",
@@ -154,7 +171,21 @@ pub(all) enum AssignOp {
   DivAssign // /=
   /// Represents the `ModAssign` typed AST form.
   ModAssign // %=
-} derive(Show, Eq)
+} derive(Eq)
+
+///|
+/// Formats an `AssignOp` using its constructor name.
+pub impl Show for AssignOp with fn output(self, logger) {
+  let name = match self {
+    Assign => "Assign"
+    PlusAssign => "PlusAssign"
+    MinusAssign => "MinusAssign"
+    MultAssign => "MultAssign"
+    DivAssign => "DivAssign"
+    ModAssign => "ModAssign"
+  }
+  logger.write_string(name)
+}
 
 ///|
 fn AssignOp::from_parser_assign_op(op : @parser.AssignOp) -> AssignOp {
@@ -303,7 +334,7 @@ test "AssignStmt to_string Test - Complex" {
       { name: "x", ty: { kind: TypeKind::Int, mutable: true } },
       { name: "y", ty: { kind: TypeKind::Int, mutable: true } },
     ],
-    methods: Map::new(),
+    methods: Map([]),
   })
 
   // Test array access: arr[0] = 10

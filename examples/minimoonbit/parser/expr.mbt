@@ -23,10 +23,7 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = "unary operator !"
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let inner_str = expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = format_lines(lines)
       "\{prefix}\n\{formatted}"
     }
@@ -34,10 +31,7 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = "unary operator -"
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let inner_str = expr.to_string(color~)
-      let lines = inner_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let lines = inner_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = format_lines(lines)
       "\{prefix}\n\{formatted}"
     }
@@ -65,13 +59,10 @@ pub fn Expr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let left_str = left.to_string(color~)
       let right_str = right.to_string(color~)
-      let left_lines = left_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let left_lines = left_str.split("\n").map(sv => sv.to_owned()).to_array()
       let right_lines = right_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let left_formatted = format_lines(
         left_lines,
@@ -275,8 +266,8 @@ pub fn parse_expr(
     }
     _ => ()
   }
-  let op_stack : @deque.Deque[BinaryOp] = @deque.Deque::new()
-  let expr_stack : @deque.Deque[Expr] = @deque.Deque::new()
+  let op_stack : @deque.Deque[BinaryOp] = @deque.Deque([])
+  let expr_stack : @deque.Deque[Expr] = @deque.Deque([])
 
   // Parse unary expression (Not or Neg) or apply expression
   let (head_expr, tokens) = match tokens {
@@ -371,23 +362,25 @@ fn parse_expr_list(
   tokens : ArrayView[Token],
 ) -> (Array[Expr], ArrayView[Token]) raise ParseError {
   let exprs : Array[Expr] = Array::new()
-  let tokens = loop tokens {
-    [{ kind: Bracket(')'), .. }, ..] as tokens => break tokens
-    [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, ..] as tokens =>
-      break tokens[1:]
-    [{ kind: Symbol(","), .. }, .. tokens] => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
-    }
-    [] => {
-      println("Compiler ICE: Empty Token ArrayView")
-      panic()
-    }
-    tokens => {
-      let (expr, rest) = parse_expr(tokens)
-      exprs.push(expr)
-      continue rest
+  let tokens = for current = tokens {
+    match current {
+      [{ kind: Bracket(')'), .. }, ..] as tokens => break tokens
+      [{ kind: Symbol(","), .. }, { kind: Bracket(')'), .. }, ..] as tokens =>
+        break tokens[1:]
+      [{ kind: Symbol(","), .. }, .. tokens] => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
+      [] => {
+        println("Compiler ICE: Empty Token ArrayView")
+        panic()
+      }
+      tokens => {
+        let (expr, rest) = parse_expr(tokens)
+        exprs.push(expr)
+        continue rest
+      }
     }
   }
   (exprs, tokens)

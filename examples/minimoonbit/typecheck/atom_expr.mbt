@@ -85,10 +85,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             @parser.format_lines(lines, head_with="└-", continue_with="  ")
@@ -112,10 +109,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             @parser.format_lines(lines, head_with="└-", continue_with="  ")
@@ -135,14 +129,8 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let size_str = size_expr.to_string(color~)
       let init_str = init_expr.to_string(color~)
-      let size_lines = size_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
-      let init_lines = init_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let size_lines = size_str.split("\n").map(sv => sv.to_owned()).to_array()
+      let init_lines = init_str.split("\n").map(sv => sv.to_owned()).to_array()
       let size_formatted = @parser.format_lines(
         size_lines,
         head_with="├-size: ",
@@ -166,10 +154,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
         let mut result = "\{prefix} \{tag_prefix}\{variant}\n"
         for i = 0; i < exprs.length(); i = i + 1 {
           let expr_str = exprs[i].to_string(color~)
-          let lines = expr_str
-            .split("\n")
-            .map(fn(sv) { sv.to_string() })
-            .to_array()
+          let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
           let is_last = i == exprs.length() - 1
           let formatted = if is_last {
             @parser.format_lines(lines, head_with="└-", continue_with="  ")
@@ -189,7 +174,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let ty_str = ty.to_string()
       let expr_str = expr.to_string(color~)
-      let lines = expr_str.split("\n").map(fn(sv) { sv.to_string() }).to_array()
+      let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix} to \{ty_str}\n\{formatted}"
     }
@@ -198,7 +183,7 @@ pub fn AtomExpr::to_string(self : Self, color? : Bool = true) -> String {
       let prefix = if color { @color.taint(prefix, Magenta) } else { prefix }
       let ty_str = ty.to_string()
       let expr_str = expr.to_string(color~)
-      let lines = expr_str.split("\n").map(fn(sv) { sv.to_string() }).to_array()
+      let lines = expr_str.split("\n").map(sv => sv.to_owned()).to_array()
       let formatted = @parser.format_lines(lines)
       "\{prefix} to \{ty_str}\n\{formatted}"
     }
@@ -250,7 +235,130 @@ pub(all) enum AtomExprKind {
   Cast(TypeKind, Expr) // Type cast: e.g., n.to_int()
   /// Represents the `BitCast` typed AST form.
   BitCast(TypeKind, Expr) // Bitcast: e.g., n.reinterpret_as_float()
-} derive(Show)
+}
+
+///|
+/// Formats an `AtomExprKind` using constructor notation.
+pub impl Show for AtomExprKind with fn output(self, logger) {
+  match self {
+    Int(value) => {
+      logger.write_string("Int(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Int64(value) => {
+      logger.write_string("Int64(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    UInt(value) => {
+      logger.write_string("UInt(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    UInt64(value) => {
+      logger.write_string("UInt64(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Double(value) => {
+      logger.write_string("Double(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Float(value) => {
+      logger.write_string("Float(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Char(value) => {
+      logger.write_string("Char(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Bool(value) => {
+      logger.write_string("Bool(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    String(value) => {
+      logger.write_string("String(")
+      logger.write_object(value)
+      logger.write_string(")")
+    }
+    Ident(name) => {
+      logger.write_string("Ident(")
+      logger.write_object(name)
+      logger.write_string(")")
+    }
+    Unit => logger.write_string("Unit")
+    Paren(expr) => {
+      logger.write_string("Paren(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    Tuple(exprs) => {
+      logger.write_string("Tuple([")
+      for index, expr in exprs {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(expr)
+      }
+      logger.write_string("])")
+    }
+    Array(exprs) => {
+      logger.write_string("Array([")
+      for index, expr in exprs {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(expr)
+      }
+      logger.write_string("])")
+    }
+    ArrayMake(size, initial) => {
+      logger.write_string("ArrayMake(")
+      logger.write_object(size)
+      logger.write_string(", ")
+      logger.write_object(initial)
+      logger.write_string(")")
+    }
+    StructConstruct(expr) => {
+      logger.write_string("StructConstruct(")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    EnumConstruct(tag, variant, exprs) => {
+      logger.write_string("EnumConstruct(")
+      logger.write_object(tag)
+      logger.write_string(", ")
+      logger.write_object(variant)
+      logger.write_string(", [")
+      for index, expr in exprs {
+        if index > 0 {
+          logger.write_string(", ")
+        }
+        logger.write_object(expr)
+      }
+      logger.write_string("])")
+    }
+    Cast(ty, expr) => {
+      logger.write_string("Cast(")
+      logger.write_object(ty)
+      logger.write_string(", ")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+    BitCast(ty, expr) => {
+      logger.write_string("BitCast(")
+      logger.write_object(ty)
+      logger.write_string(", ")
+      logger.write_object(expr)
+      logger.write_string(")")
+    }
+  }
+}
 
 ///|
 /// Type-checks the corresponding parser AST form through `check_atom_expr`.

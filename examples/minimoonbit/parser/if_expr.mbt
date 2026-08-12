@@ -26,10 +26,7 @@ pub fn IfExpr::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format condition
   let cond_str = self.cond.to_string(color~)
-  let cond_lines = cond_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let cond_lines = cond_str.split("\n").map(sv => sv.to_owned()).to_array()
   let cond_formatted = format_lines(
     cond_lines,
     head_with="├-cond: ",
@@ -38,10 +35,7 @@ pub fn IfExpr::to_string(self : Self, color? : Bool = true) -> String {
 
   // Format then block
   let then_str = self.then_block.to_string(color~)
-  let then_lines = then_str
-    .split("\n")
-    .map(fn(sv) { sv.to_string() })
-    .to_array()
+  let then_lines = then_str.split("\n").map(sv => sv.to_owned()).to_array()
   match self.else_block {
     None => {
       let then_formatted = format_lines(
@@ -60,7 +54,7 @@ pub fn IfExpr::to_string(self : Self, color? : Bool = true) -> String {
       let else_if_str = else_if.to_string(color~)
       let else_if_lines = else_if_str
         .split("\n")
-        .map(fn(sv) { sv.to_string() })
+        .map(sv => sv.to_owned())
         .to_array()
       let else_if_formatted = format_lines(
         else_if_lines,
@@ -76,10 +70,7 @@ pub fn IfExpr::to_string(self : Self, color? : Bool = true) -> String {
         continue_with="│       ",
       )
       let else_str = else_block.to_string(color~)
-      let else_lines = else_str
-        .split("\n")
-        .map(fn(sv) { sv.to_string() })
-        .to_array()
+      let else_lines = else_str.split("\n").map(sv => sv.to_owned()).to_array()
       let else_formatted = format_lines(
         else_lines,
         head_with="└-else: ",

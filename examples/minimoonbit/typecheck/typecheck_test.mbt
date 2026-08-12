@@ -174,8 +174,11 @@ test "Assign Stmt Type Check" {
   assert_true(a.expr.ty is Int)
   // Type of `x += true;` should fail
   let (a, tok_view) = @parser.parse_assign_stmt(tok_view)
-  let t = try? ctx.check_assign_stmt(a)
-  assert_true(t is Err(_))
+  try ctx.check_assign_stmt(a) catch {
+    TypeCheckError(_) => ()
+  } noraise {
+    _ => fail("expected type checking to fail")
+  }
   // Type of `let mut a = xxx; a += 33;`
   ctx.type_vars.set(0, TypeVar(0))
   ctx.type_env.set("xxx", { kind: TypeVar(0), mutable: false })
@@ -412,7 +415,7 @@ test "Expr TypeCheck Test" {
   ctx.struct_defs.set("Matrix", StructDef::{
     name: "Matrix",
     fields: [{ name: "data", ty: { kind: Array(Array(Int)), mutable: false } }],
-    methods: Map::new(),
+    methods: Map([]),
   })
   ctx.type_env.set("arr", { kind: Array(Int), mutable: false })
   ctx.type_env.set("mat", { kind: Struct("Matrix"), mutable: false })
@@ -707,10 +710,9 @@ test "Let Stmt Type Check" {
   let checked_let_stmt4 = ctx.check_let_stmt(let_stmt4)
   assert_true(checked_let_stmt4.ty is Array(Array(Int)))
   assert_true(ctx.lookup_type("mat") is Some({ kind: Array(Array(Int)), .. }))
-  let zty = ctx.lookup_type("z")
   assert_true(
     ctx.lookup_type("z") is Some({ kind: Array(Int), .. }),
-    msg="Type of z is \{zty}",
+    msg="Type of z did not match Array[Int]",
   )
 }
 /// ================================================================================
@@ -914,20 +916,12 @@ test "TypeCheck Normal Type Test" {
 ///|
 test "TypeCheck Defined Type Test" {
   let ctx = Context::new()
-  ctx.struct_defs.set("Point", {
-    name: "Point",
-    fields: [],
-    methods: Map::new(),
-  })
-  ctx.struct_defs.set("Circle", {
-    name: "Circle",
-    fields: [],
-    methods: Map::new(),
-  })
+  ctx.struct_defs.set("Point", { name: "Point", fields: [], methods: Map([]) })
+  ctx.struct_defs.set("Circle", { name: "Circle", fields: [], methods: Map([]) })
   ctx.struct_defs.set("Rectangle", {
     name: "Rectangle",
     fields: [],
-    methods: Map::new(),
+    methods: Map([]),
   })
   // Note: No Triangle
   let code =
@@ -946,8 +940,11 @@ test "TypeCheck Defined Type Test" {
   let t = ctx.check_parser_type(t)
   assert_true(t.kind is Struct("Rectangle"))
   let (t, tok_view) = @parser.parse_type(tok_view)
-  let t = try? ctx.check_parser_type(t)
-  assert_true(t is Err(_)) // Triangle is not defined
+  try ctx.check_parser_type(t) catch {
+    TypeCheckError(_) => ()
+  } noraise {
+    _ => fail("expected undefined type to fail")
+  }
   let (t, tok_view) = @parser.parse_type(tok_view)
   let t = ctx.check_parser_type(t)
   assert_true(t.kind is Array(t1) && t1 is Struct("Point"))
@@ -965,8 +962,11 @@ test "TypeCheck Defined Type Test" {
     t3 is Struct("Circle"),
   )
   let (t, _) = @parser.parse_type(tok_view)
-  let t = try? ctx.check_parser_type(t)
-  assert_true(t is Err(_)) // Triangle is not defined
+  try ctx.check_parser_type(t) catch {
+    TypeCheckError(_) => ()
+  } noraise {
+    _ => fail("expected undefined type to fail")
+  }
 }
 /// ================================================================================
 /// # 倒数第二章：检查整个程序
