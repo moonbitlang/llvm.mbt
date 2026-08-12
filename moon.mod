@@ -2,6 +2,10 @@ name = "Kaida-Amethyst/llvm"
 
 version = "0.3.0"
 
+import {
+  "moonbitlang/async@0.20.5",
+}
+
 readme = "README.md"
 
 repository = "https://github.com/moonbitlang/llvm.mbt"

@@ -104,12 +104,12 @@ machine.emitObjectToFile(program, object_path)
 
 ## Commit 7：建立 host-only link-and-run 端到端测试
 
-- [ ] 在 `moon.mod` 增加 `moonbitlang/async` 依赖，并新建专用 native emission 测试包；正式 `IR` 与 `unsafe` 包不依赖 async。
-- [ ] 用公开 `IR` API 构造导出 `double average(double, double)` 的最小 Module，依次 configure、verify 并输出 object。
-- [ ] 通过 `@fs.tmpdir` 为每个用例创建独立目录，并在受取消保护的 defer 中递归清理；C harness、object 和 executable 都只写入该目录。
-- [ ] 使用 `@process.collect_output` 以 argv 直接调用 `cc` 链接，不经 shell；检查 linker exit code、stdout 和 stderr。
-- [ ] 直接运行生成的 executable，检查 exit code 为 0、stdout 为预期 `3.5`、stderr 为空，并用 `@async.with_timeout` 覆盖 link 与 run 两阶段。
-- [ ] 缺少 `cc` 或宿主 linker 时明确失败并保留诊断，不静默跳过；本测试只证明当前 host object 的 ABI 与执行语义。
+- [x] 在 `moon.mod` 增加 `moonbitlang/async` 依赖，并新建专用 native emission 测试包；正式 `IR` 与 `unsafe` 包不依赖 async。
+- [x] 用公开 `IR` API 构造导出 `double average(double, double)` 的最小 Module，依次 configure、verify 并输出 object。
+- [x] 通过 `@fs.tmpdir` 为每个用例创建独立目录，并在受取消保护的 defer 中递归清理；C harness、object 和 executable 都只写入该目录。
+- [x] 使用 `@process.collect_output` 以 argv 直接调用 `cc` 链接，不经 shell；检查 linker exit code、stdout 和 stderr。
+- [x] 直接运行生成的 executable，检查 exit code 为 0、stdout 为预期 `3.5`、stderr 为空，并用 `@async.with_timeout` 覆盖 link 与 run 两阶段。
+- [x] 缺少 `cc` 或宿主 linker 时明确失败并保留诊断，不静默跳过；本测试只证明当前 host object 的 ABI 与执行语义。
 
 建议提交信息：`test: link and run native object output`
 
