@@ -173,10 +173,10 @@ frontend_test -> lexer + parser + typecheck + knf
 | --- | --- |
 | `examples/minimoonbit/lexer/tokenize_test.mbt` | 原项目全部 17 个词法测试 |
 
-- [ ] 保留全部 17 个 active test，不合并、不注释、不以“工具链差异”为由跳过。
-- [ ] 覆盖标识符/关键字、数字与字符串字面量、操作符、标点、注释、源码位置和错误输入。
-- [ ] snapshot 若因无关的格式化或颜色转义变化需要调整，必须先确认 token 与 span 语义没有变化。
-- [ ] 单独运行 lexer package 测试，再运行全仓库测试。
+- [x] 保留全部 17 个 active test，不合并、不注释、不以“工具链差异”为由跳过。
+- [x] 覆盖标识符/关键字、数字与字符串字面量、操作符、标点、注释、源码位置和错误输入。
+- [x] snapshot 若因无关的格式化或颜色转义变化需要调整，必须先确认 token 与 span 语义没有变化。
+- [x] 单独运行 lexer package 测试，再运行全仓库测试。
 
 建议提交信息：`test(minimoonbit): port lexer coverage`
 
