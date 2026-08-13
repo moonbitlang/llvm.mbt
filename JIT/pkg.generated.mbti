@@ -1,0 +1,30 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm/JIT"
+
+// Values
+
+// Errors
+pub suberror JITError {
+  CreationFailed(String)
+  SnapshotFailed(String)
+  SubmissionFailed(String)
+  LookupFailed(String)
+  ResourceRemovalFailed(String)
+  CloseFailed(String)
+  Closed
+  ResourceTrackerRemoved
+  ResourceTrackerOwnerMismatch
+}
+
+// Types and methods
+pub struct LLJIT {
+  // private fields
+}
+pub fn LLJIT::close(Self) -> Unit raise JITError
+pub fn LLJIT::getDataLayoutStr(Self) -> String raise
+pub fn LLJIT::getTargetTriple(Self) -> String raise
+pub fn LLJIT::host() -> Self raise JITError
+
+// Type aliases
+
+// Traits

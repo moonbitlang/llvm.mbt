@@ -241,13 +241,13 @@ close()
 | `JIT/resource_owner_test.c`、`JIT/resource_owner_wbtest.mbt` | alias、显式 close 和 finalizer trace |
 | `JIT/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] `LLJIT::host()` 复用 `IR::TargetRegistry::initializeNativeCodegen()`，把初始化失败转换为 `CreationFailed` 的稳定诊断，再创建 LLVM 22.1 default host LLJIT。
-- [ ] `JITError` 精确采用本计划列出的阶段与生命周期构造器，不公开 raw error/category id。
-- [ ] 所有 LLJIT alias 共享一个 owner；首次 close 在调用 LLVM 前先 take raw 并标记 closed。
-- [ ] dispose 成功或失败后均保持 closed；重复 close 返回 `JITError::Closed`，不第二次进入 LLVM。
-- [ ] finalizer 只清理仍 open 的 owner，并消费无法上抛的 dispose error；已 close owner 不再 dispose。
-- [ ] getter 在 close 后返回 `Closed`，并在复制 LLVM 字符串后映射非法 UTF-8。
-- [ ] 所有 `.mbti` 中的 pub type、suberror、constructor 和 fn 都有符合 style guide 的文档；本 commit 不出现 ResourceTracker/JITAddress 半成品。
+- [x] `LLJIT::host()` 复用 `IR::TargetRegistry::initializeNativeCodegen()`，把初始化失败转换为 `CreationFailed` 的稳定诊断，再创建 LLVM 22.1 default host LLJIT。
+- [x] `JITError` 精确采用本计划列出的阶段与生命周期构造器，不公开 raw error/category id。
+- [x] 所有 LLJIT alias 共享一个 owner；首次 close 在调用 LLVM 前先 take raw 并标记 closed。
+- [x] dispose 成功或失败后均保持 closed；重复 close 返回 `JITError::Closed`，不第二次进入 LLVM。
+- [x] finalizer 只清理仍 open 的 owner，并消费无法上抛的 dispose error；已 close owner 不再 dispose。
+- [x] getter 在 close 后返回 `Closed`，并在复制 LLVM 字符串后映射非法 UTF-8。
+- [x] 所有 `.mbti` 中的 pub type、suberror、constructor 和 fn 都有符合 style guide 的文档；本 commit 不出现 ResourceTracker/JITAddress 半成品。
 
 建议提交信息：`JIT: add managed host LLJIT sessions`
 

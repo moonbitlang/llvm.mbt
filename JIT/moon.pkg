@@ -1,0 +1,18 @@
+supported_targets = "native"
+
+import {
+  "Kaida-Amethyst/llvm/IR",
+  "Kaida-Amethyst/llvm/internal/raw",
+  "moonbitlang/core/encoding/utf8",
+}
+
+options(
+  "is-main": false,
+  "native-stub": [ "resource_owner.c", "resource_owner_test.c" ],
+  link: {
+    "native": {
+      "stub-cc": "cc",
+      "stub-cc-flags": "${build.LLVM_MBT_STUB_CC_FLAGS}",
+    },
+  },
+)

@@ -38,8 +38,10 @@ extern "C" fn __llvm_orc_lljit_get_triple_string(
 ) -> Bytes = "llvm_mbt_orc_lljit_get_triple_string"
 
 ///|
-pub fn llvm_orc_lljit_get_triple_string(jit : LLVMOrcLLJITRef) -> String {
-  __llvm_orc_lljit_get_triple_string(jit) |> @utf8.decode_lossy
+pub fn llvm_orc_lljit_get_triple_string(
+  jit : LLVMOrcLLJITRef,
+) -> String raise @utf8.Malformed {
+  __llvm_orc_lljit_get_triple_string(jit) |> @utf8.decode
 }
 
 ///|
@@ -48,8 +50,10 @@ extern "C" fn __llvm_orc_lljit_get_data_layout_str(
 ) -> Bytes = "llvm_mbt_orc_lljit_get_data_layout_str"
 
 ///|
-pub fn llvm_orc_lljit_get_data_layout_str(jit : LLVMOrcLLJITRef) -> String {
-  __llvm_orc_lljit_get_data_layout_str(jit) |> @utf8.decode_lossy
+pub fn llvm_orc_lljit_get_data_layout_str(
+  jit : LLVMOrcLLJITRef,
+) -> String raise @utf8.Malformed {
+  __llvm_orc_lljit_get_data_layout_str(jit) |> @utf8.decode
 }
 
 ///|

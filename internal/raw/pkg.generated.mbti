@@ -1438,13 +1438,13 @@ pub fn llvm_orc_lljit_add_llvm_ir_module(LLVMOrcLLJITRef, LLVMOrcThreadSafeModul
 
 pub fn llvm_orc_lljit_add_llvm_ir_module_with_rt(LLVMOrcLLJITRef, LLVMOrcResourceTrackerRef, LLVMOrcThreadSafeModuleRef) -> (String, Bool)
 
-pub fn llvm_orc_lljit_get_data_layout_str(LLVMOrcLLJITRef) -> String
+pub fn llvm_orc_lljit_get_data_layout_str(LLVMOrcLLJITRef) -> String raise @utf8.Malformed
 
 pub fn llvm_orc_lljit_get_global_prefix(LLVMOrcLLJITRef) -> Int
 
 pub fn llvm_orc_lljit_get_main_jit_dylib(LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef
 
-pub fn llvm_orc_lljit_get_triple_string(LLVMOrcLLJITRef) -> String
+pub fn llvm_orc_lljit_get_triple_string(LLVMOrcLLJITRef) -> String raise @utf8.Malformed
 
 pub fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> (LLVMOrcExecutorAddress, String, Bool) raise CStringError
 
