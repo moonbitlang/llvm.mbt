@@ -21,9 +21,15 @@ pub struct LLJIT {
   // private fields
 }
 pub fn LLJIT::close(Self) -> Unit raise JITError
+pub fn LLJIT::createResourceTracker(Self) -> ResourceTracker raise JITError
 pub fn LLJIT::getDataLayoutStr(Self) -> String raise
 pub fn LLJIT::getTargetTriple(Self) -> String raise
 pub fn LLJIT::host() -> Self raise JITError
+
+pub struct ResourceTracker {
+  // private fields
+}
+pub fn ResourceTracker::remove(Self) -> Unit raise JITError
 
 // Type aliases
 

@@ -262,12 +262,12 @@ close()
 | `JIT/resource_owner_test.c`、`JIT/resource_owner_wbtest.mbt` | tracker alias、remove、release 和 close 顺序测试 |
 | `JIT/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] tracker control block 持有 LLJIT owner，并登记到 session 的 live tracker 集合。
-- [ ] tracker finalizer 只 release 客户端引用且不 remove；有资源但未 remove 时仍由 LLJIT 管理。
-- [ ] remove 成功后统一使 aliases 观察到 removed；重复 remove 在进入 LLVM 前返回 `ResourceTrackerRemoved`。
-- [ ] close 先集中使所有 live tracker 失效并 release 一次，再 dispose LLJIT；之后的 tracker finalizer 不重复 release。
-- [ ] close 后 create/remove 返回 `Closed`；finalizer 路径不向 stdout/stderr 打印普通诊断。
-- [ ] 测试设施只观察事件，不取得或延长生产 owner 生命周期。
+- [x] tracker control block 持有 LLJIT owner，并登记到 session 的 live tracker 集合。
+- [x] tracker finalizer 只 release 客户端引用且不 remove；有资源但未 remove 时仍由 LLJIT 管理。
+- [x] remove 成功后统一使 aliases 观察到 removed；重复 remove 在进入 LLVM 前返回 `ResourceTrackerRemoved`。
+- [x] close 先集中使所有 live tracker 失效并 release 一次，再 dispose LLJIT；之后的 tracker finalizer 不重复 release。
+- [x] close 后 create/remove 返回 `Closed`；finalizer 路径不向 stdout/stderr 打印普通诊断。
+- [x] 测试设施只观察事件，不取得或延长生产 owner 生命周期。
 
 建议提交信息：`JIT: add managed resource trackers`
 

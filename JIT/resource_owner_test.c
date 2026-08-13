@@ -7,21 +7,34 @@
 #include <stdint.h>
 
 static void *llvm_mbt_watched_jit_owner;
+static void *llvm_mbt_watched_tracker_owner;
 static uint64_t llvm_mbt_jit_owner_events;
 
-/* Called by production owner code after one native LLJIT disposal. */
+/* Called by production owner code after one native dispose/remove/release. */
 void llvm_mbt_jit_owner_test_record(void *owner, uint64_t event) {
-  if (owner == llvm_mbt_watched_jit_owner) {
+  if (owner == llvm_mbt_watched_jit_owner ||
+      owner == llvm_mbt_watched_tracker_owner) {
     llvm_mbt_jit_owner_events = llvm_mbt_jit_owner_events * 10 + event;
   }
 }
 
 /*
  * MoonBit wbtest extern: jit_owner_test_watch
- * (JIT/resource_owner_wbtest.mbt). Does not retain or dereference `owner`.
+ * (JIT/resource_owner_wbtest.mbt). Does not retain the owner.
  */
 void llvm_mbt_jit_owner_test_watch(void *owner) {
   llvm_mbt_watched_jit_owner = owner;
+  llvm_mbt_watched_tracker_owner = NULL;
+  llvm_mbt_jit_owner_events = 0;
+}
+
+/*
+ * MoonBit wbtest extern: jit_tracker_owner_test_watch
+ * (JIT/resource_owner_wbtest.mbt). Does not retain the tracker.
+ */
+void llvm_mbt_jit_tracker_owner_test_watch(void *tracker) {
+  llvm_mbt_watched_jit_owner = NULL;
+  llvm_mbt_watched_tracker_owner = tracker;
   llvm_mbt_jit_owner_events = 0;
 }
 
@@ -32,6 +45,7 @@ void llvm_mbt_jit_owner_test_watch(void *owner) {
 uint64_t llvm_mbt_jit_owner_test_take_trace(void) {
   uint64_t result = llvm_mbt_jit_owner_events;
   llvm_mbt_watched_jit_owner = NULL;
+  llvm_mbt_watched_tracker_owner = NULL;
   llvm_mbt_jit_owner_events = 0;
   return result;
 }

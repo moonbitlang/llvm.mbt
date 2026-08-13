@@ -3,6 +3,10 @@
 priv type LLJITOwner
 
 ///|
+/// Managed shared state for one client-owned ORC resource-tracker reference.
+priv type ResourceTrackerOwner
+
+///|
 extern "C" fn LLJITOwner::new(raw : @raw.LLVMOrcLLJITRef) -> LLJITOwner = "llvm_mbt_jit_owner_new"
 
 ///|
@@ -24,5 +28,43 @@ extern "C" fn LLJITOwner::closeRaw(
 fn LLJITOwner::close(self : LLJITOwner) -> (String, Bool) {
   let out_failed = Ref(false)
   let message = self.closeRaw(out_failed)
+  (@utf8.decode_lossy(message), out_failed.val)
+}
+
+///|
+#borrow(self)
+extern "C" fn LLJITOwner::newTracker(self : LLJITOwner) -> ResourceTrackerOwner = "llvm_mbt_jit_tracker_owner_new"
+
+///|
+#borrow(self)
+extern "C" fn ResourceTrackerOwner::isActive(
+  self : ResourceTrackerOwner,
+) -> Bool = "llvm_mbt_jit_tracker_owner_is_active"
+
+///|
+#warnings("-unused_value")
+#borrow(self, jit)
+extern "C" fn ResourceTrackerOwner::belongsTo(
+  self : ResourceTrackerOwner,
+  jit : LLJITOwner,
+) -> Bool = "llvm_mbt_jit_tracker_owner_belongs_to"
+
+///|
+#borrow(self)
+extern "C" fn ResourceTrackerOwner::raw(
+  self : ResourceTrackerOwner,
+) -> @raw.LLVMOrcResourceTrackerRef = "llvm_mbt_jit_tracker_owner_raw"
+
+///|
+#borrow(self, out_failed)
+extern "C" fn ResourceTrackerOwner::removeRaw(
+  self : ResourceTrackerOwner,
+  out_failed : Ref[Bool],
+) -> Bytes = "llvm_mbt_jit_tracker_owner_remove"
+
+///|
+fn ResourceTrackerOwner::remove(self : ResourceTrackerOwner) -> (String, Bool) {
+  let out_failed = Ref(false)
+  let message = self.removeRaw(out_failed)
   (@utf8.decode_lossy(message), out_failed.val)
 }
