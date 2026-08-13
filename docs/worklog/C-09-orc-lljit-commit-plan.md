@@ -336,13 +336,13 @@ close()
 | `test/jit_execution_test.mbt` | 跨 Module 调用、`sin` 宿主符号、默认/显式 tracker 和快照隔离 |
 | `JIT/README.md` | host-only 使用流程、显式 verify、unsafe 调用与 unload 顺序 |
 
-- [ ] 一个默认-tracker Module 定义永久函数，另一个 Module 调用它并实际返回预期结果。
-- [ ] JIT IR 声明并调用 `sin`，证明 LLVM 22.1 默认 `CurrentProcess` 在 macOS ARM64/Linux x86_64 可用。
-- [ ] 提交后修改原 Module 不影响既有 JIT 快照；销毁原 Module/Context 也不影响 JIT 代码。
-- [ ] 未显式配置 DataLayout 的普通 Module 可提交，原 Module 仍保持默认 layout；显式不兼容 layout 得到提交错误。
-- [ ] 一个 tracker 管理多次提交并整体 remove；默认 tracker 的函数在其他临时 tracker remove 后仍可查找。
-- [ ] tracker remove 后相关符号 lookup 失败；测试不会在 remove 后调用旧 FuncRef。
-- [ ] README 不把 unsafe conversion 描述为类型安全调用，也不承诺 sandbox 或 arbitrary callback。
+- [x] 一个默认-tracker Module 定义永久函数，另一个 Module 调用它并实际返回预期结果。
+- [x] JIT IR 声明并调用 `sin`，证明 LLVM 22.1 默认 `CurrentProcess` 在 macOS ARM64/Linux x86_64 可用。
+- [x] 提交后修改原 Module 不影响既有 JIT 快照；销毁原 Module/Context 也不影响 JIT 代码。
+- [x] 未显式配置 DataLayout 的普通 Module 可提交，原 Module 仍保持默认 layout；显式不兼容 layout 得到提交错误。
+- [x] 一个 tracker 管理多次提交并整体 remove；默认 tracker 的函数在其他临时 tracker remove 后仍可查找。
+- [x] tracker remove 后相关符号 lookup 失败；测试不会在 remove 后调用旧 FuncRef。
+- [x] README 不把 unsafe conversion 描述为类型安全调用，也不承诺 sandbox 或 arbitrary callback。
 
 建议提交信息：`test: cover JIT execution and snapshot isolation`
 
