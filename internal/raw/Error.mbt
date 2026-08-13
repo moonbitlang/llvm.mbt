@@ -62,6 +62,15 @@ pub fn llvm_get_error_message(
 }
 
 ///|
+extern "C" fn __llvm_take_error_message(err : LLVMErrorRef) -> Bytes = "llvm_mbt_take_error_message"
+
+///|
+/// Consumes a non-null LLVM error and returns an independent diagnostic.
+pub fn llvm_take_error_message(err : LLVMErrorRef) -> String {
+  __llvm_take_error_message(err) |> @utf8.decode_lossy
+}
+
+///|
 extern "C" fn __llvm_get_error_message(err : LLVMErrorRef) -> LLVMErrorMessage = "llvm_mbt_get_error_message"
 
 ///|

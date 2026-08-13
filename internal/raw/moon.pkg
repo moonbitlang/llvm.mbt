@@ -11,6 +11,7 @@ options(
     "string_boundary.c",
     "target_machine.c",
     "bitcode.c",
+    "orc.c",
   ],
   link: {
     "native": {

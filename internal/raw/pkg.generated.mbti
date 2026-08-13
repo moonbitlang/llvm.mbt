@@ -1418,25 +1418,25 @@ pub fn llvm_move_basic_block_after(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
 pub fn llvm_move_basic_block_before(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
-pub fn llvm_orc_create_lljit() -> LLVMOrcLLJITRef
-
-pub fn llvm_orc_create_lljit_builder() -> LLVMOrcLLJITBuilderRef
+pub fn llvm_orc_create_lljit() -> (LLVMOrcLLJITRef, String, Bool)
 
 pub fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef
 
 pub fn llvm_orc_create_new_thread_safe_module(LLVMModuleRef, LLVMOrcThreadSafeContextRef) -> LLVMOrcThreadSafeModuleRef
 
-pub fn llvm_orc_dispose_lljit(LLVMOrcLLJITRef) -> LLVMErrorRef
-
-pub fn llvm_orc_dispose_lljit_builder(LLVMOrcLLJITBuilderRef) -> Unit
+pub fn llvm_orc_dispose_lljit(LLVMOrcLLJITRef) -> (String, Bool)
 
 pub fn llvm_orc_dispose_thread_safe_context(LLVMOrcThreadSafeContextRef) -> Unit
 
-pub fn llvm_orc_lljit_add_llvm_ir_module(LLVMOrcLLJITRef, LLVMOrcJITDylibRef, LLVMOrcThreadSafeModuleRef) -> LLVMErrorRef
+pub fn llvm_orc_lljit_get_data_layout_str(LLVMOrcLLJITRef) -> String
+
+pub fn llvm_orc_lljit_get_global_prefix(LLVMOrcLLJITRef) -> Int
 
 pub fn llvm_orc_lljit_get_main_jit_dylib(LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef
 
-pub fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> LLVMOrcExecutorAddress?
+pub fn llvm_orc_lljit_get_triple_string(LLVMOrcLLJITRef) -> String
+
+pub fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> (LLVMOrcExecutorAddress, String, Bool) raise CStringError
 
 pub fn llvm_parse_bitcode2(LLVMMemoryBufferRef) -> LLVMModuleRef?
 
@@ -1667,6 +1667,8 @@ pub fn llvm_struct_set_body(LLVMTypeRef, Array[LLVMTypeRef], Bool) -> Unit
 pub fn llvm_struct_type(Array[LLVMTypeRef], Bool) -> LLVMTypeRef
 
 pub fn llvm_struct_type_in_context(LLVMContextRef, Array[LLVMTypeRef], Bool) -> LLVMTypeRef
+
+pub fn llvm_take_error_message(LLVMErrorRef) -> String
 
 pub fn llvm_target_has_asm_backend(LLVMTargetRef) -> Bool
 

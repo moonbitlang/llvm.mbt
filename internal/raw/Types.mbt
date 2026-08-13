@@ -331,6 +331,21 @@ pub type LLVMRemarkStringRef
 pub type LLVMErrorRef
 
 ///|
+/// Opaque handle to an ORC LLJIT builder.
+#external
+pub type LLVMOrcLLJITBuilderRef
+
+///|
+/// Opaque handle to an ORC LLJIT session.
+#external
+pub type LLVMOrcLLJITRef
+
+///|
+/// Borrowed handle to an ORC JITDylib owned by an LLJIT session.
+#external
+pub type LLVMOrcJITDylibRef
+
+///|
 /// Byte address in the executor process, represented as an unsigned 64-bit value.
 pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
 

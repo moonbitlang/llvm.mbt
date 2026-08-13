@@ -187,12 +187,12 @@ close()
 | `internal/raw/orc_wbtest.mbt` | 创建/查询/lookup/error 消费白盒测试 |
 | `internal/raw/moon.pkg`、`internal/raw/pkg.generated.mbti` | native stub 与生成接口 |
 
-- [ ] 删除旧草稿中打印后 panic、把 lookup error 压成 `None`、拼错 C symbol 或不完整的 helper。
-- [ ] `LLVMOrcCreateLLJIT` 的 builder ownership、out result 与 error 三者在成功/失败路径都准确。
-- [ ] target triple、DataLayout 和 global prefix 在 owner 有效期间复制，不向上层返回 borrowed C pointer。
-- [ ] lookup 保留完整 executor address；非空 error 由单一 adapter 调用 `LLVMGetErrorMessage` 消费，再配对 `LLVMDisposeErrorMessage`。
-- [ ] raw 测试覆盖 host LLJIT 创建/销毁、查询值、未知符号诊断、`StringError` 人工 error 的一次性消费和重复 session。
-- [ ] 本 commit 仍不增加安全 `JIT` package。
+- [x] 删除旧草稿中打印后 panic、把 lookup error 压成 `None`、拼错 C symbol 或不完整的 helper。
+- [x] `LLVMOrcCreateLLJIT` 的 builder ownership、out result 与 error 三者在成功/失败路径都准确。
+- [x] target triple、DataLayout 和 global prefix 在 owner 有效期间复制，不向上层返回 borrowed C pointer。
+- [x] lookup 保留完整 executor address；非空 error 由单一 adapter 调用 `LLVMGetErrorMessage` 消费，再配对 `LLVMDisposeErrorMessage`。
+- [x] raw 测试覆盖 host LLJIT 创建/销毁、查询值、未知符号诊断、`StringError` 人工 error 的一次性消费和重复 session。
+- [x] 本 commit 仍不增加安全 `JIT` package。
 
 建议提交信息：`raw: rebuild LLJIT and ORC error bindings`
 

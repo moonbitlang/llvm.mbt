@@ -62,6 +62,9 @@ extern "C" fn LLVMBasicBlockRef::null() -> LLVMBasicBlockRef = "__llvm_new_null"
 extern "C" fn LLVMTargetRef::null() -> LLVMTargetRef = "__llvm_new_null"
 
 ///|
+extern "C" fn LLVMOrcLLJITRef::null() -> LLVMOrcLLJITRef = "__llvm_new_null"
+
+///|
 extern "C" fn llvm_same_type_ref(
   ty1 : LLVMTypeRef,
   ty2 : LLVMTypeRef,
@@ -158,9 +161,6 @@ pub extern "C" fn llvm_value_is_null(ty : LLVMValueRef) -> LLVMBool = "LLVMIsNul
 /// **LLVM API:** Binding helper `__llvm_value_ref_is_null`. This is distinct
 /// from `LLVMIsNull`, which inspects a valid LLVM value.
 pub extern "C" fn llvm_value_ref_is_null(ty : LLVMValueRef) -> Bool = "__llvm_value_ref_is_null"
-
-///|
-extern "C" fn llvm_error_is_null(ty : LLVMErrorRef) -> Bool = "ref_is_null"
 
 ///|
 /// Returns true when this raw value handle is the null pointer sentinel.
