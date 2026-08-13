@@ -1,0 +1,14 @@
+supported_targets = "native"
+
+import {
+  "Kaida-Amethyst/llvm/IR",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/codegen",
+  "moonbitlang/async",
+  "moonbitlang/async/fs",
+  "moonbitlang/async/process",
+} for "test"
+
+options(
+  "is-main": false,
+  "max-concurrent-tests": 1,
+)
