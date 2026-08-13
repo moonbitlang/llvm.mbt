@@ -9,6 +9,7 @@
 static void *llvm_mbt_watched_jit_owner;
 static void *llvm_mbt_watched_tracker_owner;
 static uint64_t llvm_mbt_jit_owner_events;
+static uint64_t llvm_mbt_injected_failure;
 
 /* Called by production owner code after one native dispose/remove/release. */
 void llvm_mbt_jit_owner_test_record(void *owner, uint64_t event) {
@@ -48,4 +49,22 @@ uint64_t llvm_mbt_jit_owner_test_take_trace(void) {
   llvm_mbt_watched_tracker_owner = NULL;
   llvm_mbt_jit_owner_events = 0;
   return result;
+}
+
+/*
+ * MoonBit wbtest extern: jit_owner_test_inject_failure
+ * (JIT/resource_owner_wbtest.mbt). The next matching owner operation consumes
+ * this one-shot request. 1 means close; 2 means tracker removal.
+ */
+void llvm_mbt_jit_owner_test_inject_failure(uint64_t operation) {
+  llvm_mbt_injected_failure = operation;
+}
+
+/* Called only by resource_owner.c at the corresponding operation boundary. */
+int32_t llvm_mbt_jit_owner_test_take_failure(uint64_t operation) {
+  if (llvm_mbt_injected_failure != operation) {
+    return 0;
+  }
+  llvm_mbt_injected_failure = 0;
+  return 1;
 }

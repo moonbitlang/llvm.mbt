@@ -36,15 +36,17 @@ typedef void (*llvm_mbt_jit_opaque_func_t)(void);
 
 llvm_mbt_jit_opaque_func_t llvm_mbt_jit_executor_address_to_func_ref(
     uint64_t address) {
-  union {
-    uintptr_t address;
-    llvm_mbt_jit_opaque_func_t function;
-  } conversion = {.address = (uintptr_t)address};
-  return conversion.function;
+  _Static_assert(sizeof(llvm_mbt_jit_opaque_func_t) == sizeof(uintptr_t),
+                 "native function pointers must fit in uintptr_t");
+  uintptr_t raw_address = (uintptr_t)address;
+  llvm_mbt_jit_opaque_func_t function;
+  memcpy(&function, &raw_address, sizeof(function));
+  return function;
 }
 
 /* Test observer implemented by resource_owner_test.c; it retains nothing. */
 void llvm_mbt_jit_owner_test_record(void *owner, uint64_t event);
+int32_t llvm_mbt_jit_owner_test_take_failure(uint64_t operation);
 
 static moonbit_bytes_t llvm_mbt_jit_copy_z(const char *text) {
   size_t length = text == NULL ? 0 : strlen(text);
@@ -56,6 +58,15 @@ static moonbit_bytes_t llvm_mbt_jit_copy_z(const char *text) {
   if (length != 0) {
     memcpy(result, text, length);
   }
+  return result;
+}
+
+static moonbit_bytes_t llvm_mbt_jit_consume_error(LLVMErrorRef error,
+                                                   void *observed_owner) {
+  char *message = LLVMGetErrorMessage(error);
+  moonbit_bytes_t result = llvm_mbt_jit_copy_z(message);
+  LLVMDisposeErrorMessage(message);
+  llvm_mbt_jit_owner_test_record(observed_owner, 4);
   return result;
 }
 
@@ -109,15 +120,17 @@ static moonbit_bytes_t llvm_mbt_jit_owner_dispose(
     return llvm_mbt_jit_copy_z("LLJIT session is already closed");
   }
   llvm_mbt_jit_owner_invalidate_trackers(owner);
+  int32_t inject_failure = llvm_mbt_jit_owner_test_take_failure(1);
   LLVMErrorRef error = LLVMOrcDisposeLLJIT(raw);
   llvm_mbt_jit_owner_test_record(owner, 1);
+  if (error == LLVMErrorSuccess && inject_failure) {
+    error = LLVMCreateStringError("injected LLJIT close failure");
+  }
   if (error == LLVMErrorSuccess) {
     *out_failed = 0;
     return moonbit_make_bytes(0, 0);
   }
-  char *message = LLVMGetErrorMessage(error);
-  moonbit_bytes_t result = llvm_mbt_jit_copy_z(message);
-  LLVMDisposeErrorMessage(message);
+  moonbit_bytes_t result = llvm_mbt_jit_consume_error(error, owner);
   *out_failed = 1;
   return result;
 }
@@ -233,11 +246,14 @@ LLVMOrcResourceTrackerRef llvm_mbt_jit_tracker_owner_raw(
  */
 moonbit_bytes_t llvm_mbt_jit_tracker_owner_remove(
     struct llvm_mbt_jit_tracker_owner *tracker, int32_t *out_failed) {
-  LLVMErrorRef error = LLVMOrcResourceTrackerRemove(tracker->raw);
+  LLVMErrorRef error;
+  if (llvm_mbt_jit_owner_test_take_failure(2)) {
+    error = LLVMCreateStringError("injected resource removal failure");
+  } else {
+    error = LLVMOrcResourceTrackerRemove(tracker->raw);
+  }
   if (error != LLVMErrorSuccess) {
-    char *message = LLVMGetErrorMessage(error);
-    moonbit_bytes_t result = llvm_mbt_jit_copy_z(message);
-    LLVMDisposeErrorMessage(message);
+    moonbit_bytes_t result = llvm_mbt_jit_consume_error(error, tracker);
     *out_failed = 1;
     return result;
   }

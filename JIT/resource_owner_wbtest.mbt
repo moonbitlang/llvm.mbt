@@ -6,6 +6,9 @@ extern "C" fn jit_owner_test_watch(owner : LLJITOwner) -> Unit = "llvm_mbt_jit_o
 extern "C" fn jit_owner_test_take_trace() -> UInt64 = "llvm_mbt_jit_owner_test_take_trace"
 
 ///|
+extern "C" fn jit_owner_test_inject_failure(operation : UInt64) -> Unit = "llvm_mbt_jit_owner_test_inject_failure"
+
+///|
 #borrow(owner)
 extern "C" fn jit_tracker_owner_test_watch(
   owner : ResourceTrackerOwner,
@@ -77,4 +80,50 @@ test "session close invalidates and releases live trackers" {
     _ => false
   }
   inspect(closed, content="true")
+}
+
+///|
+test "close failure is consumed once and remains closed" {
+  let jit = LLJIT::host()
+  jit_owner_test_watch(jit.getOwnerForTest())
+  jit_owner_test_inject_failure(1)
+  let failed = try {
+    jit.close()
+    false
+  } catch {
+    CloseFailed(message) => message == "injected LLJIT close failure"
+    _ => false
+  }
+  inspect(failed, content="true")
+  inspect(jit_owner_test_take_trace(), content="14")
+  let closed = try {
+    jit.close()
+    false
+  } catch {
+    Closed => true
+    _ => false
+  }
+  inspect(closed, content="true")
+}
+
+///|
+test "remove failure is consumed once and can be retried" {
+  let jit = LLJIT::host()
+  let tracker = jit.createResourceTracker()
+  jit_tracker_owner_test_watch(tracker.getOwner())
+  jit_owner_test_inject_failure(2)
+  let failed = try {
+    tracker.remove()
+    false
+  } catch {
+    ResourceRemovalFailed(message) =>
+      message == "injected resource removal failure"
+    _ => false
+  }
+  inspect(failed, content="true")
+  inspect(jit_owner_test_take_trace(), content="4")
+  jit_tracker_owner_test_watch(tracker.getOwner())
+  tracker.remove()
+  inspect(jit_owner_test_take_trace(), content="32")
+  jit.close()
 }

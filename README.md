@@ -15,15 +15,18 @@ link against an arbitrary LLVM installation from the user's system.
 - A typed IR-building API for contexts, modules, types, values, functions,
   basic blocks, instructions, attributes, data layouts, bitcode, and the LLVM
   interpreter.
-- Low-level bindings for broader `llvm-c` functionality, including analysis,
-  bitcode and IR readers/writers, execution engines, ORC/LLJIT, linking,
-  targets, target machines, and transforms.
+- A managed, host-only ORC LLJIT API that snapshots IR modules, resolves host
+  symbols, executes generated code, and explicitly unloads resource groups.
+- Module-private low-level bindings for broader `llvm-c` functionality,
+  including analysis, bitcode and IR readers/writers, execution engines,
+  linking, targets, target machines, and transforms.
 - Upstream LLVM code generation targets bundled into each distributed
   artifact.
 - A reproducible native dependency: the archive URL, file size, and SHA-256
   digests are fixed in `build.js`.
-- A shared cache under `$MOON_HOME/cache/lib/llvm.mbt`, so MoonBit projects
-  using the same artifact do not download separate LLVM copies.
+- A shared cache under `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt`, so
+  MoonBit projects using the same artifact do not download separate LLVM
+  copies.
 
 ## Requirements and supported hosts
 
@@ -85,7 +88,8 @@ Before a native build, Moon runs this module's `build.js`. The script:
 
 1. selects the artifact matching the host;
 2. checks
-   `$MOON_HOME/cache/lib/llvm.mbt/22.1.0-r1/<platform>/sha256-<digest>`;
+   `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt/22.1.0-r1/<platform>/`
+   `sha256-<digest>`;
 3. downloads the archive from the
    [LLVM 22.1.0 Release](https://github.com/moonbitlang/llvm.mbt/releases/tag/llvm-22.1.0)
    when the cache is absent;
@@ -140,6 +144,18 @@ Use `Kaida-Amethyst/llvm/IR` as the supported public API. The direct LLVM-C
 bindings live in the module-private `internal/raw` package and cannot be
 imported by downstream modules.
 
+## JIT execution
+
+Import `Kaida-Amethyst/llvm/JIT` to run generated code in the current process.
+The host-only flow supports independent Module snapshots, cross-Module symbol
+resolution, current-process symbols such as `sin`, and explicit resource-group
+unloading. See [JIT/README.md](JIT/README.md) for the usage and unsafe calling
+contract.
+
+The JIT execution, lookup, ownership, and unload tests establish the runtime
+foundation needed to start an `examples/kaleidoscope` implementation. The
+example itself, its parser, codegen, and REPL remain separate follow-up work.
+
 ## Developing llvm.mbt
 
 ```bash
@@ -174,12 +190,14 @@ This project is licensed under the Apache License 2.0.
 
 - 提供带类型的 IR 构造 API，覆盖上下文、模块、类型、值、函数、基本块、指令、
   属性、数据布局、bitcode 和 LLVM 解释器。
-- 提供范围更广的底层 `llvm-c` 绑定，包括分析、bitcode 与 IR 读写、
-  执行引擎、ORC/LLJIT、链接、Target、TargetMachine 和变换接口。
+- 提供受管理的 host-only ORC LLJIT API，支持 Module 快照、宿主符号解析、
+  生成代码执行和资源组显式卸载。
+- 模块私有的底层 `llvm-c` binding 覆盖分析、bitcode 与 IR 读写、执行引擎、
+  链接、Target、TargetMachine 和变换接口。
 - 每个平台的分发产物都包含上游 LLVM 代码生成目标。
 - 原生依赖可复现：`build.js` 中固定了压缩包 URL、文件大小和 SHA-256。
-- 使用 `$MOON_HOME/cache/lib/llvm.mbt` 作为共享缓存；同一台机器上的多个
-  MoonBit 项目不需要分别下载同一份 LLVM。
+- 使用 `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt` 作为共享缓存；同一台
+  机器上的多个 MoonBit 项目不需要分别下载同一份 LLVM。
 
 ## 环境要求与支持平台
 
@@ -239,7 +257,8 @@ native 构建开始前，Moon 会运行本模块的 `build.js`。该脚本会：
 
 1. 根据宿主平台选择对应产物；
 2. 检查
-   `$MOON_HOME/cache/lib/llvm.mbt/22.1.0-r1/<platform>/sha256-<digest>`；
+   `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt/22.1.0-r1/<platform>/`
+   `sha256-<digest>`；
 3. 缓存不存在时，从
    [LLVM 22.1.0 Release](https://github.com/moonbitlang/llvm.mbt/releases/tag/llvm-22.1.0)
    下载压缩包；
@@ -291,6 +310,17 @@ test "构造整数加法函数" {
 
 `Kaida-Amethyst/llvm/IR` 是受支持的公开 API。直接 LLVM-C binding 位于模块
 私有的 `internal/raw` package，下游模块无法导入。
+
+## JIT 执行
+
+导入 `Kaida-Amethyst/llvm/JIT` 可以在当前进程内运行生成的代码。首期
+host-only 闭环支持独立 Module 快照、跨 Module 符号解析、`sin` 等当前进程
+符号，以及资源组显式卸载。使用流程和 unsafe 调用契约见
+[JIT/README.md](JIT/README.md)。
+
+JIT 的执行、lookup、owner 和卸载测试已经建立了开始
+`examples/kaleidoscope` 所需的运行时基础；示例本身及其 parser、codegen 和
+REPL 留待后续任务实现。
 
 ## 开发 llvm.mbt
 

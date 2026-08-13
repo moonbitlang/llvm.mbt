@@ -1,6 +1,6 @@
 # ORC LLJIT host 执行闭环的 commit 划分
 
-> 状态：计划中
+> 状态：已完成（双平台 CI 待 push 后验证）
 > 日期：2026-08-13
 
 本轮按照 [T-07](../discussion/T-07-orc-lljit-kaleidoscope-execution.md) 与
@@ -357,13 +357,13 @@ close()
 | `test/jit_lifecycle_test.mbt` | public alias、重复操作、wrong owner、重复 session |
 | `README.md` | 增加 JIT package 入口与 Kaleidoscope 前置能力说明 |
 
-- [ ] 覆盖 LLJIT alias close、close-after-close、tracker alias remove、remove-after-remove、add-after-remove 和 add-with-foreign-tracker。
-- [ ] 覆盖先丢 tracker、先 close LLJIT、地址仍存活、owner 以不同顺序离开作用域，确认无 double-free/use-after-free。
-- [ ] 覆盖 close 后 lookup/add/create-tracker/unsafe conversion 都报告 `Closed`。
-- [ ] 用仅测试可见的注入或 observer 覆盖 close/remove error 的消费和 typed mapping；生产 API 不增加测试开关。
-- [ ] 同一进程反复创建、提交、执行、remove、close 多个 session，确认 process-global 初始化可重复组合。
-- [ ] 非法或无法 materialize 的 Module 在正确阶段返回诊断，且每个 `LLVMErrorRef` 只消费一次。
-- [ ] README 明确这些测试通过后可以开始 `examples/kaleidoscope`，但本 commit 不创建该示例。
+- [x] 覆盖 LLJIT alias close、close-after-close、tracker alias remove、remove-after-remove、add-after-remove 和 add-with-foreign-tracker。
+- [x] 覆盖先丢 tracker、先 close LLJIT、地址仍存活、owner 以不同顺序离开作用域，确认无 double-free/use-after-free。
+- [x] 覆盖 close 后 lookup/add/create-tracker/unsafe conversion 都报告 `Closed`。
+- [x] 用仅测试可见的注入或 observer 覆盖 close/remove error 的消费和 typed mapping；生产 API 不增加测试开关。
+- [x] 同一进程反复创建、提交、执行、remove、close 多个 session，确认 process-global 初始化可重复组合。
+- [x] 非法或无法 materialize 的 Module 在正确阶段返回诊断，且每个 `LLVMErrorRef` 只消费一次。
+- [x] README 明确这些测试通过后可以开始 `examples/kaleidoscope`，但本 commit 不创建该示例。
 
 建议提交信息：`test: harden JIT lifecycle and errors`
 
@@ -387,22 +387,22 @@ Commit 1 仅修改本文档：
 
 Commit 2～10 每次提交前：
 
-- [ ] 运行 `moon info && moon fmt`，生成文件不手工修改。
-- [ ] 审核所有 `.mbti`；只允许出现当前 commit 明确列出的公开对象变化。
-- [ ] 运行 `moon check --target native`。
-- [ ] 运行当前 commit 对应的最小 package 测试，再运行 `moon test --target native`。
-- [ ] 运行 `git diff --check`，确认没有临时 bitcode、object、可执行文件、core dump 或测试目录进入提交。
-- [ ] 检查每个 C FFI 入口的对应 MoonBit extern 注释，以及 NULL、borrow、take、ref-count、error 和 finalizer 契约。
-- [ ] 检查所有 JIT public struct、suberror、constructor、fn 和 impl 都有文档；raw package 仍遵循 style-guide 例外。
-- [ ] JIT 测试保持同步，不引入 async、process 或外部编译器。
+- [x] 运行 `moon info && moon fmt`，生成文件不手工修改。
+- [x] 审核所有 `.mbti`；只允许出现当前 commit 明确列出的公开对象变化。
+- [x] 运行 `moon check --target native`。
+- [x] 运行当前 commit 对应的最小 package 测试，再运行 `moon test --target native`。
+- [x] 运行 `git diff --check`，确认没有临时 bitcode、object、可执行文件、core dump 或测试目录进入提交。
+- [x] 检查每个 C FFI 入口的对应 MoonBit extern 注释，以及 NULL、borrow、take、ref-count、error 和 finalizer 契约。
+- [x] 检查所有 JIT public struct、suberror、constructor、fn 和 impl 都有文档；raw package 仍遵循 style-guide 例外。
+- [x] JIT 测试保持同步，不引入 async、process 或外部编译器。
 
 最终验收：
 
-- [ ] `moon info && moon fmt`。
-- [ ] `moon check --target native`。
-- [ ] `moon test --target native -p internal/raw`。
-- [ ] `moon test --target native -p test`。
-- [ ] `moon test --target native`。
+- [x] `moon info && moon fmt`。
+- [x] `moon check --target native`。
+- [x] `moon test --target native -p internal/raw`。
+- [x] `moon test --target native -p test`。
+- [x] `moon test --target native`。
 - [ ] 现有 CI 在 macOS ARM64 与 Linux x86_64 上实际通过 JIT 执行测试。
 
 如果实现中发现 LLVM 22.1 实际 ownership 与本文/Q 文档不一致、MoonBit 无法表达泛型 FuncRef 转换、close 无法在 live tracker 存在时安全失效，或 Linux 默认 CurrentProcess 无法解析 `sin`，应停止对应 commit 并回到 discussion。不得通过泄漏 raw handle、跳过平台测试、自动忽略 close/remove 错误或改成固定签名 API 来绕过契约。
