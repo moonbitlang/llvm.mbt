@@ -1,0 +1,49 @@
+=== UInt Arithmetic ===
+300
+250
+50
+20
+0
+2
+=== UInt64 Arithmetic ===
+3000
+2500
+5000
+20
+3
+=== UInt Comparison ===
+100 < 200: true
+200 > 100: true
+100 == 100: true
+100 != 200: true
+100 <= 100: true
+200 >= 100: true
+=== UInt64 Comparison ===
+1000 < 2000: true
+2000 > 1000: true
+1000 == 1000: true
+1000 != 2000: true
+1000 <= 1000: true
+2000 >= 1000: true
+=== UInt Shift Operations ===
+16
+32
+32
+16
+16
+2
+=== UInt64 Shift Operations ===
+32
+128
+64
+16
+1024
+32
+=== UInt Wraparound Test ===
+4294967295
+4
+4294967291
+=== UInt64 Large Numbers ===
+3000000000
+6000000000
+6000

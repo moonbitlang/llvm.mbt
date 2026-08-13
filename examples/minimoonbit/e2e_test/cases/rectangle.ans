@@ -1,0 +1,9 @@
+Rectangle 1: x=0, y=0, width=10, height=5
+Area of rect1: 50
+Perimeter of rect1: 30
+Center of rect1: (5, 2.5)
+rect1 contains point (5, 2.5)
+rect1 does not contain point (15, 10)
+rect1 and rect2 intersect
+rect1 and rect3 do not intersect
+Expanded rect1: x=-2, y=-2, width=14, height=9

@@ -1,0 +1,95 @@
+=== Testing log10 (Base 10 Logarithm) ===
+
+--- Negative values (should be NaN) ---
+log10(-0.8) = NaN (is_nan: true)
+log10(-3.14159265) = NaN (is_nan: true)
+log10(-1.57079633) = NaN (is_nan: true)
+log10(-0.785398163) = NaN (is_nan: true)
+log10(-1) = NaN (is_nan: true)
+log10(-1.542) = NaN (is_nan: true)
+
+--- Zero (should be -infinity) ---
+log10(0) = negative infinity (is_inf: true)
+log10(-0) = negative infinity (is_inf: true)
+
+--- Positive infinity ---
+log10(inf) = positive infinity (is_inf: true)
+
+--- NaN input ---
+log10(nan) = NaN (is_nan: true)
+
+--- Powers of 10 ---
+log10(0.01) = -2 (expected: -2)
+log10(0.1) = -1 (expected: -1)
+log10(1) = 0 (expected: 0)
+log10(10) = 1 (expected: 1)
+log10(100) = 2 (expected: 2)
+log10(1000) = 3 (expected: 3)
+log10(10000) = 4 (expected: 4)
+log10(100000) = 5 (expected: 5)
+log10(1000000) = 6 (expected: 6)
+
+--- Fractional values ---
+log10(0.2) = -0.698970004 (expected: -0.698970004)
+log10(0.3) = -0.522878745 (expected: -0.522878745)
+log10(0.4) = -0.397940009 (expected: -0.397940009)
+log10(0.5) = -0.301029996 (expected: -0.301029996)
+log10(0.6) = -0.22184875 (expected: -0.22184875)
+log10(0.7) = -0.15490196 (expected: -0.15490196)
+log10(0.8) = -0.096910013 (expected: -0.096910013)
+log10(0.9) = -0.0457574906 (expected: -0.0457574906)
+
+--- Integer values ---
+log10(1) = 0 (expected: 0)
+log10(2) = 0.301029996 (expected: 0.301029996)
+log10(3) = 0.477121255 (expected: 0.477121255)
+log10(4) = 0.602059991 (expected: 0.602059991)
+log10(5) = 0.698970004 (expected: 0.698970004)
+log10(6) = 0.77815125 (expected: 0.77815125)
+log10(7) = 0.84509804 (expected: 0.84509804)
+log10(8) = 0.903089987 (expected: 0.903089987)
+log10(9) = 0.954242509 (expected: 0.954242509)
+log10(11) = 1.04139269 (expected: 1.04139269)
+log10(12) = 1.07918125 (expected: 1.07918125)
+log10(13) = 1.11394335 (expected: 1.11394335)
+log10(14) = 1.14612804 (expected: 1.14612804)
+log10(15) = 1.17609126 (expected: 1.17609126)
+log10(16) = 1.20411998 (expected: 1.20411998)
+log10(17) = 1.23044892 (expected: 1.23044892)
+log10(18) = 1.25527251 (expected: 1.25527251)
+log10(19) = 1.2787536 (expected: 1.2787536)
+log10(20) = 1.30103 (expected: 1.30103)
+log10(21) = 1.32221929 (expected: 1.32221929)
+log10(22) = 1.34242268 (expected: 1.34242268)
+log10(23) = 1.36172784 (expected: 1.36172784)
+log10(24) = 1.38021124 (expected: 1.38021124)
+log10(25) = 1.39794001 (expected: 1.39794001)
+
+--- Decimal values ---
+log10(2.5) = 0.397940009 (expected: 0.397940009)
+log10(3.4) = 0.531478917 (expected: 0.531478917)
+log10(5.3) = 0.72427587 (expected: 0.72427587)
+log10(6.2) = 0.792391689 (expected: 0.792391689)
+log10(7.1) = 0.851258349 (expected: 0.851258349)
+log10(8.9) = 0.949390007 (expected: 0.949390007)
+log10(9.8) = 0.991226076 (expected: 0.991226076)
+log10(10.7) = 1.02938378 (expected: 1.02938378)
+log10(101.6) = 2.00689371 (expected: 2.00689371)
+
+--- More decimal values ---
+log10(1.542) = 0.188084374 (expected: 0.188084374)
+log10(2.846) = 0.454234896 (expected: 0.454234896)
+log10(7.881) = 0.896581328 (expected: 0.896581328)
+log10(3.772) = 0.576571684 (expected: 0.576571684)
+
+--- Pi-related values ---
+log10(3.14159265) = 0.497149873 (expected: 0.497149873)
+log10(1.57079633) = 0.196119877 (expected: 0.196119877)
+log10(0.785398163) = -0.104910119 (expected: -0.104910119)
+
+--- More complex values ---
+log10(242.587113) = 2.38486773 (expected: 2.38486773)
+log10(21456.7744) = 4.33156444 (expected: 4.33156444)
+log10(1123.55822) = 3.05059558 (expected: 3.05059558)
+
+=== All tests completed ===

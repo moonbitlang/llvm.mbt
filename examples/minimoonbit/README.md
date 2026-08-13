@@ -24,7 +24,7 @@ Run the MiniMoonBit frontend integration test with:
 moon test --target native -p examples/minimoonbit/frontend_test
 ```
 
-Run the representative native end-to-end programs with:
+Run the 124 native end-to-end programs with:
 
 ```sh
 moon test --target native -p examples/minimoonbit/e2e_test
@@ -38,6 +38,8 @@ moon test --target native -p examples/minimoonbit
 
 There is no command-line driver in this directory yet. The code generator
 produces a host-configured LLVM module and declares the original MiniMoonBit
-runtime ABI. The native-only end-to-end test package emits objects, links them
+runtime ABI. The native-only end-to-end test package organizes the original 124
+regular MiniMoonBit programs into semantic groups. It emits objects, links them
 with the test runtime through the host C compiler, executes the resulting
-programs, and compares their output with checked-in answers.
+programs, and compares their output with checked-in answers. The original
+benchmark programs remain outside this test suite.
