@@ -673,13 +673,11 @@ async function ensureArtifact(moonHome, artifact) {
 
   if (await pathExists(paths.installRoot)) {
     try {
-      report(`Found LLVM shared cache; validating ${paths.installRoot}`);
       const validated = await validateInstalledArtifact(
         paths.installRoot,
         artifact,
         true,
       );
-      report('LLVM shared cache validation passed');
       return validated;
     } catch (error) {
       if (!(error instanceof CacheValidationError)) {
