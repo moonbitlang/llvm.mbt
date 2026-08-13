@@ -26,22 +26,22 @@ priv type BuilderOwner
 priv type TargetMachineOwner
 
 ///|
-extern "C" fn ContextOwner::new(raw : @unsafe.LLVMContextRef) -> ContextOwner = "llvm_mbt_ir_context_owner_new"
+extern "C" fn ContextOwner::new(raw : @raw.LLVMContextRef) -> ContextOwner = "llvm_mbt_ir_context_owner_new"
 
 ///|
 #borrow(self)
-extern "C" fn ContextOwner::raw(self : ContextOwner) -> @unsafe.LLVMContextRef = "llvm_mbt_ir_context_owner_raw"
+extern "C" fn ContextOwner::raw(self : ContextOwner) -> @raw.LLVMContextRef = "llvm_mbt_ir_context_owner_raw"
 
 ///|
 #borrow(context)
 extern "C" fn ModuleOwner::new(
-  raw : @unsafe.LLVMModuleRef,
+  raw : @raw.LLVMModuleRef,
   context : ContextOwner,
 ) -> ModuleOwner = "llvm_mbt_ir_module_owner_new"
 
 ///|
 #borrow(self)
-extern "C" fn ModuleOwner::raw(self : ModuleOwner) -> @unsafe.LLVMModuleRef = "llvm_mbt_ir_module_owner_raw"
+extern "C" fn ModuleOwner::raw(self : ModuleOwner) -> @raw.LLVMModuleRef = "llvm_mbt_ir_module_owner_raw"
 
 ///|
 #borrow(self)
@@ -50,13 +50,13 @@ extern "C" fn ModuleOwner::context(self : ModuleOwner) -> ContextOwner = "llvm_m
 ///|
 #borrow(context)
 extern "C" fn BuilderOwner::new(
-  raw : @unsafe.LLVMBuilderRef,
+  raw : @raw.LLVMBuilderRef,
   context : ContextOwner,
 ) -> BuilderOwner = "llvm_mbt_ir_builder_owner_new"
 
 ///|
 #borrow(self)
-extern "C" fn BuilderOwner::raw(self : BuilderOwner) -> @unsafe.LLVMBuilderRef = "llvm_mbt_ir_builder_owner_raw"
+extern "C" fn BuilderOwner::raw(self : BuilderOwner) -> @raw.LLVMBuilderRef = "llvm_mbt_ir_builder_owner_raw"
 
 ///|
 #borrow(self, owner_module)
@@ -71,11 +71,11 @@ extern "C" fn BuilderOwner::context(self : BuilderOwner) -> ContextOwner = "llvm
 
 ///|
 extern "C" fn TargetMachineOwner::new(
-  raw : @unsafe.LLVMTargetMachineRef,
+  raw : @raw.LLVMTargetMachineRef,
 ) -> TargetMachineOwner = "llvm_mbt_ir_target_machine_owner_new"
 
 ///|
 #borrow(self)
 extern "C" fn TargetMachineOwner::raw(
   self : TargetMachineOwner,
-) -> @unsafe.LLVMTargetMachineRef = "llvm_mbt_ir_target_machine_owner_raw"
+) -> @raw.LLVMTargetMachineRef = "llvm_mbt_ir_target_machine_owner_raw"

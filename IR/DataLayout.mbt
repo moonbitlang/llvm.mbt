@@ -8,20 +8,20 @@
 /// target-data reference or assume a view obtained before `Module::setDataLayout`
 /// remains a snapshot independent of later module mutation.
 pub struct DataLayout {
-  priv target_data_ref : @unsafe.LLVMTargetDataRef
+  priv target_data_ref : @raw.LLVMTargetDataRef
   priv owner_module : Module
 }
 
 ///|
 fn DataLayout::from_raw(
-  target_data_ref : @unsafe.LLVMTargetDataRef,
+  target_data_ref : @raw.LLVMTargetDataRef,
   owner_module : Module,
 ) -> DataLayout {
   { target_data_ref, owner_module }
 }
 
 ///|
-fn DataLayout::get_unsafe_ref(self : DataLayout) -> @unsafe.LLVMTargetDataRef {
+fn DataLayout::get_raw_ref(self : DataLayout) -> @raw.LLVMTargetDataRef {
   // Borrowing the raw view must also keep its owning Module alive.
   ignore(self.owner_module)
   self.target_data_ref
@@ -52,9 +52,9 @@ fn DataLayout::get_unsafe_ref(self : DataLayout) -> @unsafe.LLVMTargetDataRef {
 /// }
 /// ```
 pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_size_of_type_in_bits(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let size = @raw.llvm_size_of_type_in_bits(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
   )
   size.to_int()
 }
@@ -90,9 +90,9 @@ pub fn DataLayout::getTypeSizeInBits(self : DataLayout, ty : &Type) -> Int {
 /// }
 /// ```
 pub fn DataLayout::getTypeStoreSize(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_store_size_of_type(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let size = @raw.llvm_store_size_of_type(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
   )
   size.to_int()
 }
@@ -105,9 +105,9 @@ pub fn DataLayout::getTypeStoreSize(self : DataLayout, ty : &Type) -> Int {
 ///
 /// **Preconditions:** `ty` must be sized and compatible with this layout.
 pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
-  let size = @unsafe.llvm_abi_size_of_type(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let size = @raw.llvm_abi_size_of_type(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
   )
   size.to_int()
 }
@@ -120,9 +120,9 @@ pub fn DataLayout::getTypeAllocSize(self : DataLayout, ty : &Type) -> Int {
 ///
 /// **Preconditions:** `ty` must be sized and compatible with this layout.
 pub fn DataLayout::getTypeAlignment(self : DataLayout, ty : &Type) -> Int {
-  let align = @unsafe.llvm_abi_alignment_of_type(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let align = @raw.llvm_abi_alignment_of_type(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
   )
   align.reinterpret_as_int()
 }

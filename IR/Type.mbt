@@ -79,19 +79,12 @@ pub fn TypeEnum::asTypeClass(self : TypeEnum) -> &Type {
 ///|
 /// Common interface implemented by every LLVM type wrapper in the safe API.
 ///
-/// **Implementor contract:** `getTypeRef`, `asTypeEnum`, and `getContext` must
-/// all describe the same live LLVM type. Implementations must not fabricate a
-/// raw handle or associate a type with a different context.
+/// **Implementor contract:** `asTypeEnum` and `getContext` must describe the
+/// same live LLVM type and owning context.
 ///
 /// **Lifecycle:** LLVM types are owned by their `Context`. Every borrowed view
 /// returned through this trait is valid only while that context remains alive.
 pub trait Type: Show {
-  /// Returns the borrowed raw LLVM type handle represented by this wrapper.
-  ///
-  /// **Lifecycle:** The handle is context-owned and must not be disposed by the
-  /// caller.
-  fn getTypeRef(Self) -> @unsafe.LLVMTypeRef
-
   /// Returns the concrete safe classification of this type.
   fn asTypeEnum(Self) -> TypeEnum
 
@@ -226,6 +219,32 @@ pub trait Type: Show {
 }
 
 ///|
+fn &Type::get_raw_type_ref(self : &Type) -> @raw.LLVMTypeRef {
+  match self.asTypeEnum() {
+    HalfType(ty) => ty.get_raw_type_ref()
+    BFloatType(ty) => ty.get_raw_type_ref()
+    FloatType(ty) => ty.get_raw_type_ref()
+    DoubleType(ty) => ty.get_raw_type_ref()
+    FP128Type(ty) => ty.get_raw_type_ref()
+    Int1Type(ty) => ty.get_raw_type_ref()
+    Int8Type(ty) => ty.get_raw_type_ref()
+    Int16Type(ty) => ty.get_raw_type_ref()
+    Int32Type(ty) => ty.get_raw_type_ref()
+    Int64Type(ty) => ty.get_raw_type_ref()
+    VoidType(ty) => ty.get_raw_type_ref()
+    LabelType(ty) => ty.get_raw_type_ref()
+    MetadataType(ty) => ty.get_raw_type_ref()
+    TokenType(ty) => ty.get_raw_type_ref()
+    FunctionType(ty) => ty.get_raw_type_ref()
+    StructType(ty) => ty.get_raw_type_ref()
+    ArrayType(ty) => ty.get_raw_type_ref()
+    VectorType(ty) => ty.get_raw_type_ref()
+    ScalableVectorType(ty) => ty.get_raw_type_ref()
+    PointerType(ty) => ty.get_raw_type_ref()
+  }
+}
+
+///|
 /// Formats any `Type` trait object using LLVM's textual type syntax.
 pub extend &Type with Show::{to_string}
 
@@ -239,10 +258,10 @@ pub suberror InValidTypeError {
 
 ///|
 fn initAbstractType_err(
-  typeref : @unsafe.LLVMTypeRef,
+  typeref : @raw.LLVMTypeRef,
   context : Context,
 ) -> &Type raise InValidTypeError {
-  let kind = @unsafe.llvm_get_type_kind(typeref)
+  let kind = @raw.llvm_get_type_kind(typeref)
   match kind {
     LLVMVoidTypeKind => VoidType::from_raw(typeref, context) as &Type
     LLVMHalfTypeKind => HalfType::from_raw(typeref, context)
@@ -256,7 +275,7 @@ fn initAbstractType_err(
     LLVMVectorTypeKind => VectorType::from_raw(typeref, context)
     LLVMScalableVectorTypeKind => ScalableVectorType::from_raw(typeref, context)
     LLVMIntegerTypeKind => {
-      let bitwidth = @unsafe.llvm_get_int_type_width(typeref)
+      let bitwidth = @raw.llvm_get_int_type_width(typeref)
       match bitwidth {
         1 => Int1Type::from_raw(typeref, context) as &Type
         8 => Int8Type::from_raw(typeref, context)
@@ -282,7 +301,7 @@ fn initAbstractType_err(
 }
 
 ///|
-fn initAbstractType(typeref : @unsafe.LLVMTypeRef, context : Context) -> &Type {
+fn initAbstractType(typeref : @raw.LLVMTypeRef, context : Context) -> &Type {
   initAbstractType_err(typeref, context) catch {
     _ => {
       println("ICE: Invalid Type kind")
@@ -425,14 +444,14 @@ impl Type with fn isAggregateType(self) -> Bool {
 
 ///|
 impl Type with fn isSized(self) -> Bool {
-  @unsafe.llvm_type_is_sized(self.getTypeRef())
+  @raw.llvm_type_is_sized((self : &Type).get_raw_type_ref())
 }
 
 ///|
 impl Type with fn sizeOf(self) -> &Value? {
   guard self.isSized() else { return None }
-  let valueref = @unsafe.llvm_size_of(self.getTypeRef())
-  if @unsafe.llvm_value_ref_is_null(valueref) {
+  let valueref = @raw.llvm_size_of((self : &Type).get_raw_type_ref())
+  if @raw.llvm_value_ref_is_null(valueref) {
     None
   } else {
     let value = ConstantExpr::from_raw(valueref, self.getContext())
@@ -589,7 +608,7 @@ impl Type with fn tryAsAbstractTypeEnum(self) -> AbstractTypeEnum? {
 /// Common interface for the supported fixed-width integer types.
 ///
 /// **Implementor contract:** The classification returned by
-/// `asIntegerTypeEnum` must carry the same LLVM type as `getTypeRef`.
+/// `asIntegerTypeEnum` must carry the same underlying LLVM type.
 ///
 /// **Lifecycle:** Integer types are owned by their context.
 ///
@@ -619,7 +638,7 @@ pub trait IntegerType: PrimitiveType {
 
 /////|
 //impl IntegerType with getBitWidth(self) -> UInt {
-//  @unsafe.llvm_get_int_type_width(self.getTypeRef())
+//  @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref())
 //}
 
 ///|
@@ -637,10 +656,6 @@ impl IntegerType with fn getExtendedType(self) -> &IntegerType? {
 ///|
 /// Exposes primitive bit-width operations on an integer trait object.
 pub extend &IntegerType with PrimitiveType::{getBitWidth}
-
-///|
-/// Exposes the borrowed raw LLVM handle on an integer trait object.
-pub extend &IntegerType with Type::{getTypeRef}
 
 ///|
 /// Closed classification of the supported fixed-width integer types.
@@ -704,10 +719,6 @@ pub trait FPType: PrimitiveType {
 ///|
 /// Exposes primitive bit-width operations on a floating-point trait object.
 pub extend &FPType with PrimitiveType::{getBitWidth}
-
-///|
-/// Exposes the borrowed raw LLVM handle on a floating-point trait object.
-pub extend &FPType with Type::{getTypeRef}
 
 ///|
 /// Closed classification of the supported floating-point types.
@@ -781,15 +792,15 @@ impl PrimitiveType with fn getBitWidth(self) -> Int {
     DoubleType(_) => 64
     FP128Type(_) => 128
     Int1Type(_) =>
-      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
+      @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref()).reinterpret_as_int()
     Int8Type(_) =>
-      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
+      @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref()).reinterpret_as_int()
     Int16Type(_) =>
-      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
+      @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref()).reinterpret_as_int()
     Int32Type(_) =>
-      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
+      @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref()).reinterpret_as_int()
     Int64Type(_) =>
-      @unsafe.llvm_get_int_type_width(Type::getTypeRef(self)).reinterpret_as_int()
+      @raw.llvm_get_int_type_width((self : &Type).get_raw_type_ref()).reinterpret_as_int()
   }
 }
 
@@ -926,7 +937,7 @@ pub struct HalfType {
 
 ///|
 fn HalfType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> HalfType {
   HalfType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -940,7 +951,7 @@ fn HalfType::get_context(self : HalfType) -> Context {
 ///|
 /// Writes `half` using LLVM's textual type syntax.
 pub impl Show for HalfType with fn output(self, logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -950,14 +961,14 @@ pub impl Type for HalfType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for HalfType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn HalfType::get_raw_type_ref(self : HalfType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend HalfType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend HalfType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `FPTypeEnum::HalfType`.
@@ -994,7 +1005,7 @@ pub struct BFloatType {
 
 ///|
 fn BFloatType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> BFloatType {
   BFloatType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1008,7 +1019,7 @@ fn BFloatType::get_context(self : BFloatType) -> Context {
 ///|
 /// Writes `bfloat` using LLVM's textual type syntax.
 pub impl Show for BFloatType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1018,14 +1029,14 @@ pub impl Type for BFloatType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for BFloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn BFloatType::get_raw_type_ref(self : BFloatType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend BFloatType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend BFloatType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `FPTypeEnum::BFloatType`.
@@ -1062,7 +1073,7 @@ pub struct FloatType {
 
 ///|
 fn FloatType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FloatType {
   FloatType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1076,7 +1087,7 @@ fn FloatType::get_context(self : FloatType) -> Context {
 ///|
 /// Writes `float` using LLVM's textual type syntax.
 pub impl Show for FloatType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1086,14 +1097,14 @@ pub impl Type for FloatType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for FloatType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn FloatType::get_raw_type_ref(self : FloatType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend FloatType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend FloatType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `FPTypeEnum::FloatType`.
@@ -1130,7 +1141,7 @@ pub struct DoubleType {
 
 ///|
 fn DoubleType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> DoubleType {
   DoubleType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1142,14 +1153,14 @@ fn DoubleType::get_context(self : DoubleType) -> Context {
 }
 
 ///| Create a DoubleType
-//fn DoubleType::new(typeref : @unsafe.LLVMTypeRef) -> DoubleType {
+//fn DoubleType::new(typeref : @raw.LLVMTypeRef) -> DoubleType {
 //  DoubleType::{ typeref, }
 //}
 
 ///|
 /// Writes `double` using LLVM's textual type syntax.
 pub impl Show for DoubleType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1159,14 +1170,14 @@ pub impl Type for DoubleType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for DoubleType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn DoubleType::get_raw_type_ref(self : DoubleType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend DoubleType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend DoubleType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `FPTypeEnum::DoubleType`.
@@ -1203,7 +1214,7 @@ pub struct FP128Type {
 
 ///|
 fn FP128Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FP128Type {
   FP128Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1214,18 +1225,18 @@ fn FP128Type::get_context(self : FP128Type) -> Context {
   self.value.get_context()
 }
 //pub struct FP128Type {
-//  priv typeref : @unsafe.LLVMTypeRef
+//  priv typeref : @raw.LLVMTypeRef
 //} derive(Eq)
 
 ///| Create a FP128Ty.
-//fn FP128Type::new(typeref : @unsafe.LLVMTypeRef) -> FP128Type {
+//fn FP128Type::new(typeref : @raw.LLVMTypeRef) -> FP128Type {
 //  FP128Type::{ typeref, }
 //}
 
 ///|
 /// Writes `fp128` using LLVM's textual type syntax.
 pub impl Show for FP128Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1235,14 +1246,14 @@ pub impl Type for FP128Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for FP128Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn FP128Type::get_raw_type_ref(self : FP128Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend FP128Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend FP128Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `FPTypeEnum::FP128Type`.
@@ -1280,7 +1291,7 @@ pub struct Int1Type {
 
 ///|
 fn Int1Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int1Type {
   Int1Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1294,7 +1305,7 @@ fn Int1Type::get_context(self : Int1Type) -> Context {
 ///|
 /// Writes `i1` using LLVM's textual type syntax.
 pub impl Show for Int1Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1304,14 +1315,14 @@ pub impl Type for Int1Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for Int1Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn Int1Type::get_raw_type_ref(self : Int1Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend Int1Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend Int1Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `IntegerTypeEnum::Int1Type`.
@@ -1348,7 +1359,7 @@ pub struct Int8Type {
 
 ///|
 fn Int8Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int8Type {
   Int8Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1362,7 +1373,7 @@ fn Int8Type::get_context(self : Int8Type) -> Context {
 ///|
 /// Writes `i8` using LLVM's textual type syntax.
 pub impl Show for Int8Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1372,14 +1383,14 @@ pub impl Type for Int8Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for Int8Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn Int8Type::get_raw_type_ref(self : Int8Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend Int8Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend Int8Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `IntegerTypeEnum::Int8Type`.
@@ -1416,7 +1427,7 @@ pub struct Int16Type {
 
 ///|
 fn Int16Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int16Type {
   Int16Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1430,7 +1441,7 @@ fn Int16Type::get_context(self : Int16Type) -> Context {
 ///|
 /// Writes `i16` using LLVM's textual type syntax.
 pub impl Show for Int16Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1440,14 +1451,14 @@ pub impl Type for Int16Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for Int16Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn Int16Type::get_raw_type_ref(self : Int16Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend Int16Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend Int16Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `IntegerTypeEnum::Int16Type`.
@@ -1494,7 +1505,7 @@ pub struct Int32Type {
 
 ///|
 fn Int32Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int32Type {
   Int32Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1508,7 +1519,7 @@ fn Int32Type::get_context(self : Int32Type) -> Context {
 ///|
 /// Writes `i32` using LLVM's textual type syntax.
 pub impl Show for Int32Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1518,14 +1529,14 @@ pub impl Type for Int32Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for Int32Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn Int32Type::get_raw_type_ref(self : Int32Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend Int32Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend Int32Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `IntegerTypeEnum::Int32Type`.
@@ -1562,7 +1573,7 @@ pub struct Int64Type {
 
 ///|
 fn Int64Type::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int64Type {
   Int64Type::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1576,7 +1587,7 @@ fn Int64Type::get_context(self : Int64Type) -> Context {
 ///|
 /// Writes `i64` using LLVM's textual type syntax.
 pub impl Show for Int64Type with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1586,14 +1597,14 @@ pub impl Type for Int64Type with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for Int64Type with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn Int64Type::get_raw_type_ref(self : Int64Type) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend Int64Type with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend Int64Type with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `IntegerTypeEnum::Int64Type`.
@@ -1632,7 +1643,7 @@ pub struct VoidType {
 
 ///|
 fn VoidType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> VoidType {
   VoidType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1646,13 +1657,13 @@ fn VoidType::get_context(self : VoidType) -> Context {
 ///|
 /// Writes `void` using LLVM's textual type syntax.
 pub impl Show for VoidType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for VoidType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn VoidType::get_raw_type_ref(self : VoidType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1662,8 +1673,8 @@ pub impl Type for VoidType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend VoidType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend VoidType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AbstractTypeEnum::VoidType`.
@@ -1689,7 +1700,7 @@ pub struct LabelType {
 
 ///|
 fn LabelType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> LabelType {
   LabelType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1703,7 +1714,7 @@ fn LabelType::get_context(self : LabelType) -> Context {
 ///|
 /// Writes `label` using LLVM's textual type syntax.
 pub impl Show for LabelType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1713,14 +1724,14 @@ pub impl Type for LabelType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for LabelType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn LabelType::get_raw_type_ref(self : LabelType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend LabelType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend LabelType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AbstractTypeEnum::LabelType`.
@@ -1749,7 +1760,7 @@ pub struct MetadataType {
 
 ///|
 fn MetadataType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> MetadataType {
   MetadataType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1763,7 +1774,7 @@ fn MetadataType::get_context(self : MetadataType) -> Context {
 ///|
 /// Writes `metadata` using LLVM's textual type syntax.
 pub impl Show for MetadataType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1773,14 +1784,14 @@ pub impl Type for MetadataType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for MetadataType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn MetadataType::get_raw_type_ref(self : MetadataType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend MetadataType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend MetadataType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AbstractTypeEnum::MetadataType`.
@@ -1809,7 +1820,7 @@ pub struct TokenType {
 
 ///|
 fn TokenType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> TokenType {
   TokenType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1823,7 +1834,7 @@ fn TokenType::get_context(self : TokenType) -> Context {
 ///|
 /// Writes `token` using LLVM's textual type syntax.
 pub impl Show for TokenType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1833,14 +1844,14 @@ pub impl Type for TokenType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for TokenType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn TokenType::get_raw_type_ref(self : TokenType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend TokenType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend TokenType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AbstractTypeEnum::TokenType`.
@@ -1871,7 +1882,7 @@ pub struct FunctionType {
 
 ///|
 fn FunctionType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FunctionType {
   FunctionType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -1886,7 +1897,7 @@ fn FunctionType::get_context(self : FunctionType) -> Context {
 /// Returns whether calls using this signature may supply variadic arguments
 /// after the fixed parameters.
 pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
-  @unsafe.llvm_is_function_var_arg(self.getTypeRef())
+  @raw.llvm_is_function_var_arg((self : &Type).get_raw_type_ref())
 }
 
 ///|
@@ -1895,7 +1906,7 @@ pub fn FunctionType::isVarArg(self : FunctionType) -> Bool {
 /// **Lifecycle:** The returned view is owned by the same context as this
 /// function type.
 pub fn FunctionType::getReturnType(self : FunctionType) -> &Type {
-  let typeref = @unsafe.llvm_get_return_type(self.getTypeRef())
+  let typeref = @raw.llvm_get_return_type((self : &Type).get_raw_type_ref())
   initAbstractType(typeref, self.get_context())
 }
 
@@ -1905,7 +1916,7 @@ pub fn FunctionType::getReturnType(self : FunctionType) -> &Type {
 /// **Notes:** This is an alias of `getNumParams`; variadic arguments are not
 /// included.
 pub fn FunctionType::numOfParams(self : FunctionType) -> Int {
-  @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_count_param_types((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -1915,7 +1926,7 @@ pub fn FunctionType::numOfParams(self : FunctionType) -> Int {
 ///
 /// **Notes:** This is an alias of `getParamTypes`.
 pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
-  let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
+  let param_types = @raw.llvm_get_param_types((self : &Type).get_raw_type_ref())
   param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
@@ -1926,7 +1937,7 @@ pub fn FunctionType::params(self : FunctionType) -> Array[&Type] {
 ///
 /// **Notes:** This is an alias of `params`.
 pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
-  let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
+  let param_types = @raw.llvm_get_param_types((self : &Type).get_raw_type_ref())
   param_types.map(typeref => initAbstractType(typeref, self.get_context()))
 }
 
@@ -1936,7 +1947,7 @@ pub fn FunctionType::getParamTypes(self : FunctionType) -> Array[&Type] {
 /// **Notes:** Variadic arguments are not included. This is an alias of
 /// `numOfParams`.
 pub fn FunctionType::getNumParams(self : FunctionType) -> Int {
-  @unsafe.llvm_count_param_types(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_count_param_types((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -1952,7 +1963,7 @@ pub fn FunctionType::getNumParams(self : FunctionType) -> Int {
 /// **Lifecycle:** A returned type is owned by the same context as this function
 /// type.
 pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
-  let param_types = @unsafe.llvm_get_param_types(self.getTypeRef())
+  let param_types = @raw.llvm_get_param_types((self : &Type).get_raw_type_ref())
   guard idx >= 0 && idx < param_types.length() else { return None }
   let typeref = param_types[idx]
   try initAbstractType_err(typeref, self.get_context()) catch {
@@ -1965,7 +1976,7 @@ pub fn FunctionType::getParamType(self : FunctionType, idx : Int) -> &Type? {
 ///|
 /// Writes the LLVM textual function-signature syntax.
 pub impl Show for FunctionType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -1975,14 +1986,14 @@ pub impl Type for FunctionType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for FunctionType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn FunctionType::get_raw_type_ref(self : FunctionType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend FunctionType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend FunctionType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AbstractTypeEnum::FunctionType`.
@@ -2014,7 +2025,7 @@ pub struct StructType {
 
 ///|
 fn StructType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> StructType {
   StructType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -2043,7 +2054,7 @@ fn StructType::get_context(self : StructType) -> Context {
 /// }
 /// ```
 pub fn StructType::isLiteral(self : StructType) -> Bool {
-  @unsafe.llvm_is_literal_struct(self.getTypeRef())
+  @raw.llvm_is_literal_struct((self : &Type).get_raw_type_ref())
 }
 
 ///|
@@ -2065,14 +2076,14 @@ pub fn StructType::isLiteral(self : StructType) -> Bool {
 /// }
 /// ```
 pub fn StructType::isOpaque(self : StructType) -> Bool {
-  @unsafe.llvm_is_opaque_struct(self.getTypeRef())
+  @raw.llvm_is_opaque_struct((self : &Type).get_raw_type_ref())
 }
 
 ///|
 /// Returns whether the struct body is packed without ABI padding between
 /// fields.
 pub fn StructType::isPacked(self : StructType) -> Bool {
-  @unsafe.llvm_is_packed_struct(self.getTypeRef())
+  @raw.llvm_is_packed_struct((self : &Type).get_raw_type_ref())
 }
 
 ///|
@@ -2080,7 +2091,7 @@ pub fn StructType::isPacked(self : StructType) -> Bool {
 ///
 /// Opaque structs and structs containing unsized elements are not sized.
 pub fn StructType::isSized(self : StructType) -> Bool {
-  @unsafe.llvm_type_is_sized(self.getTypeRef())
+  @raw.llvm_type_is_sized((self : &Type).get_raw_type_ref())
 }
 
 ///|
@@ -2089,7 +2100,7 @@ pub fn StructType::isSized(self : StructType) -> Bool {
 /// **Notes:** Use `isOpaque` to distinguish an absent body from a complete
 /// zero-field body.
 pub fn StructType::numOfElements(self : StructType) -> Int {
-  @unsafe.llvm_count_struct_element_types(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_count_struct_element_types((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -2101,8 +2112,8 @@ pub fn StructType::numOfElements(self : StructType) -> Int {
 /// **Lifecycle:** A returned type is owned by the same context as this struct.
 pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
   guard idx >= 0 && idx < self.numOfElements() else { return None }
-  let typeref = @unsafe.llvm_struct_get_type_at_index(
-    self.getTypeRef(),
+  let typeref = @raw.llvm_struct_get_type_at_index(
+    (self : &Type).get_raw_type_ref(),
     idx.reinterpret_as_uint(),
   )
   try initAbstractType_err(typeref, self.get_context()) catch {
@@ -2170,14 +2181,18 @@ pub fn StructType::setBody(
   guard self.isOpaque() else {
     raise SetBodyForNonOpaqueStruct("Cannot set body for non-opaque struct")
   }
-  let field_types = elements.map(t => t.getTypeRef())
-  @unsafe.llvm_struct_set_body(self.getTypeRef(), field_types, isPacked)
+  let field_types = elements.map(t => t.get_raw_type_ref())
+  @raw.llvm_struct_set_body(
+    (self : &Type).get_raw_type_ref(),
+    field_types,
+    isPacked,
+  )
 }
 
 ///|
 /// Writes the struct declaration or literal body using LLVM syntax.
 pub impl Show for StructType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -2187,14 +2202,14 @@ pub impl Type for StructType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for StructType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn StructType::get_raw_type_ref(self : StructType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend StructType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend StructType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AggregateTypeEnum::StructType`.
@@ -2224,7 +2239,7 @@ pub struct ArrayType {
 
 ///|
 fn ArrayType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ArrayType {
   ArrayType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -2238,7 +2253,7 @@ fn ArrayType::get_context(self : ArrayType) -> Context {
 ///|
 /// Returns the fixed number of array elements.
 pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
-  @unsafe.llvm_get_array_length(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_get_array_length((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -2246,14 +2261,14 @@ pub fn ArrayType::getElementCount(self : ArrayType) -> Int {
 ///
 /// **Lifecycle:** The returned view is owned by the same context as this array.
 pub fn ArrayType::getElementType(self : ArrayType) -> &Type {
-  let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
+  let typeref = @raw.llvm_get_element_type((self : &Type).get_raw_type_ref())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
 /// Writes the array using LLVM textual type syntax.
 pub impl Show for ArrayType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -2263,14 +2278,14 @@ pub impl Type for ArrayType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for ArrayType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn ArrayType::get_raw_type_ref(self : ArrayType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend ArrayType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend ArrayType with Type::{asTypeEnum}
 
 ///|
 /// Classifies this wrapper as `AggregateTypeEnum::ArrayType`.
@@ -2299,7 +2314,7 @@ pub struct VectorType {
 
 ///|
 fn VectorType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> VectorType {
   VectorType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -2316,20 +2331,20 @@ fn VectorType::get_context(self : VectorType) -> Context {
 /// **Lifecycle:** The returned view is owned by the same context as this
 /// vector.
 pub fn VectorType::getElementType(self : VectorType) -> &Type {
-  let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
+  let typeref = @raw.llvm_get_element_type((self : &Type).get_raw_type_ref())
   initAbstractType(typeref, self.get_context())
 }
 
 ///|
 /// Returns the vector's exact runtime lane count.
 pub fn VectorType::getElementCount(self : VectorType) -> Int {
-  @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_get_vector_size((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
 /// Writes the fixed-width vector using LLVM textual type syntax.
 pub impl Show for VectorType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -2339,14 +2354,14 @@ pub impl Type for VectorType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for VectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn VectorType::get_raw_type_ref(self : VectorType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend VectorType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend VectorType with Type::{asTypeEnum}
 
 // ====================================================================
 // ScalableVectorType
@@ -2366,7 +2381,7 @@ pub struct ScalableVectorType {
 
 ///|
 fn ScalableVectorType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ScalableVectorType {
   ScalableVectorType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -2383,7 +2398,7 @@ fn ScalableVectorType::get_context(self : ScalableVectorType) -> Context {
 /// **Lifecycle:** The returned view is owned by the same context as this
 /// vector.
 pub fn ScalableVectorType::getElementType(self : ScalableVectorType) -> &Type {
-  let typeref = @unsafe.llvm_get_element_type(self.getTypeRef())
+  let typeref = @raw.llvm_get_element_type((self : &Type).get_raw_type_ref())
   initAbstractType(typeref, self.get_context())
 }
 
@@ -2394,13 +2409,13 @@ pub fn ScalableVectorType::getElementType(self : ScalableVectorType) -> &Type {
 /// exact runtime lane count. The actual count is this value multiplied by
 /// target-dependent `vscale`.
 pub fn ScalableVectorType::getElementCount(self : ScalableVectorType) -> Int {
-  @unsafe.llvm_get_vector_size(self.getTypeRef()).reinterpret_as_int()
+  @raw.llvm_get_vector_size((self : &Type).get_raw_type_ref()).reinterpret_as_int()
 }
 
 ///|
 /// Writes the scalable vector using LLVM textual type syntax.
 pub impl Show for ScalableVectorType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -2410,14 +2425,16 @@ pub impl Type for ScalableVectorType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for ScalableVectorType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn ScalableVectorType::get_raw_type_ref(
+  self : ScalableVectorType,
+) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend ScalableVectorType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend ScalableVectorType with Type::{asTypeEnum}
 
 // ====================================================================
 // PointerType
@@ -2457,7 +2474,7 @@ pub struct PointerType {
 
 ///|
 fn PointerType::from_raw(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> PointerType {
   PointerType::{ value: ContextAnchoredType::new(type_ref, context) }
@@ -2471,7 +2488,9 @@ fn PointerType::get_context(self : PointerType) -> Context {
 ///|
 /// Returns the pointer's target-defined address-space identifier.
 pub fn PointerType::getAddressSpace(self : PointerType) -> AddressSpace {
-  let addr_space = @unsafe.llvm_get_pointer_address_space(self.getTypeRef())
+  let addr_space = @raw.llvm_get_pointer_address_space(
+    (self : &Type).get_raw_type_ref(),
+  )
   AddressSpace(addr_space)
 }
 
@@ -2500,7 +2519,7 @@ pub fn PointerType::isLoadableOrStorableType(eleTy : &Type) -> Bool {
 ///|
 /// Writes the opaque pointer and any nonzero address space using LLVM syntax.
 pub impl Show for PointerType with fn output(self, logger : &Logger) {
-  self.getTypeRef().output(logger)
+  (self : &Type).get_raw_type_ref().output(logger)
 }
 
 ///|
@@ -2510,11 +2529,11 @@ pub impl Type for PointerType with fn asTypeEnum(self) -> TypeEnum {
 }
 
 ///|
-/// Returns the borrowed raw LLVM handle for this type.
-pub impl Type for PointerType with fn getTypeRef(self) -> @unsafe.LLVMTypeRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM type handle.
+fn PointerType::get_raw_type_ref(self : PointerType) -> @raw.LLVMTypeRef {
+  self.value.get_raw_ref()
 }
 
 ///|
-/// Exposes common type classification and raw-handle operations.
-pub extend PointerType with Type::{asTypeEnum, getTypeRef}
+/// Exposes common type classification on this concrete type.
+pub extend PointerType with Type::{asTypeEnum}

@@ -21,5 +21,5 @@ preferred_target = "native"
 
 options(
   "--moonbit-unstable-prebuild": "build.js",
-  exclude = [ "examples", "docs" ]
+  exclude: [ "examples", "docs" ],
 )

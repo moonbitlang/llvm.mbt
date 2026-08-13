@@ -1,5 +1,6 @@
 /*
- * Legacy ABI adapters and LLVM-enum translations for the unsafe native stub.
+ * Legacy ABI adapters and LLVM-enum translations for the internal raw native
+ * stub.
  * String ownership and current byte-oriented text bridges live in
  * string_boundary.c; the deferred adapters below must not be reused for them.
  */
@@ -31,7 +32,7 @@
  * input allocation intentionally retains the legacy lifetime/leak until that
  * separate boundary is redesigned. Do not reuse these for ordinary strings.
  */
-/* MoonBit extern: DeferredMemoryBufferInput::from_string (unsafe/utils.mbt). */
+/* MoonBit extern: DeferredMemoryBufferInput::from_string (internal/raw/utils.mbt). */
 void *llvm_mbt_deferred_memory_buffer_input(moonbit_string_t value) {
   int32_t length = Moonbit_array_length(value);
   char *result = malloc((size_t)length + 1);
@@ -45,7 +46,7 @@ void *llvm_mbt_deferred_memory_buffer_input(moonbit_string_t value) {
   return result;
 }
 
-/* MoonBit extern: DeferredBorrowedBytes::to_string (unsafe/utils.mbt). */
+/* MoonBit extern: DeferredBorrowedBytes::to_string (internal/raw/utils.mbt). */
 moonbit_string_t llvm_mbt_deferred_borrowed_bytes_to_string(void *ptr) {
   char *bytes = ptr;
   int32_t length = (int32_t)strlen(bytes);
@@ -58,7 +59,7 @@ moonbit_string_t llvm_mbt_deferred_borrowed_bytes_to_string(void *ptr) {
 
 /*
  * MoonBit extern: DeferredBorrowedBytes::to_string_with_length
- * (unsafe/utils.mbt).
+ * (internal/raw/utils.mbt).
  */
 moonbit_string_t llvm_mbt_deferred_borrowed_bytes_to_string_with_length(
     void *ptr, unsigned length) {
@@ -1289,9 +1290,9 @@ LLVMModuleFlagBehavior llvm_module_flag_behavior_from_int(int i) {
 }
 
 /*
- * MoonBit externs: llvm_error_is_null (unsafe/utils.mbt),
+ * MoonBit externs: llvm_error_is_null (internal/raw/utils.mbt),
  * llvm_target_ref_is_null, llvm_target_machine_options_ref_is_null, and
- * llvm_target_machine_ref_is_null (unsafe/TargetMachine.mbt).
+ * llvm_target_machine_ref_is_null (internal/raw/TargetMachine.mbt).
  * Shared NULL check for opaque pointer handles; it never dereferences or
  * retains the borrowed handle.
  */
@@ -1299,51 +1300,51 @@ int ref_is_null(void *ref) {
   return ref == NULL ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_value_ref_is_null (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_value_ref_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_value_ref_is_null(void *val) { return val == NULL ? 1 : 0; }
 
-/* MoonBit extern: llvm_type_is_null (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_type_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_type_is_null(void *type_ref) {
   return type_ref == NULL ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_use_is_null (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_use_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
 
-/* MoonBit extern: llvm_bb_is_null (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_bb_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 
-/* MoonBit extern: llvm_comdat_is_null (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_comdat_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_comdat_is_null(void *comdat) { return comdat == NULL ? 1 : 0; }
 
 /*
  * MoonBit extern: LLVMTypeRef::null, LLVMValueRef::null,
  * LLVMModuleRef::null, LLVMBasicBlockRef::null, and LLVMTargetRef::null
- * (unsafe/utils.mbt).
+ * (internal/raw/utils.mbt).
  */
 void *__llvm_new_null() { return (void *)NULL; }
 
-/* MoonBit extern: llvm_same_type_ref (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_same_type_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_type_ref(void *ty1, void *ty2) {
   return ty1 == ty2 ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_same_value_ref (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_same_value_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_value_ref(void *val1, void *val2) {
   return val1 == val2 ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_same_ctx_ref (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_same_ctx_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_ctx_ref(void *ctx1, void *ctx2) {
   return ctx1 == ctx2 ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_same_attr_ref (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_same_attr_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_attr_ref(void *attr1, void *attr2) {
   return attr1 == attr2 ? 1 : 0;
 }
 
-/* MoonBit extern: llvm_same_bb_ref (unsafe/utils.mbt). */
+/* MoonBit extern: llvm_same_bb_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_bb_ref(void *bb1, void *bb2) { return bb1 == bb2 ? 1 : 0; }
 
 /* Legacy C bridge with no active MoonBit extern. */
@@ -1351,13 +1352,13 @@ LLVMBool __llvm_same_global_value_ref(void *gv1, void *gv2) {
   return gv1 == gv2 ? 1 : 0;
 }
 
-/* Legacy C bridge; unsafe/Core.mbt now binds LLVMGetVersion directly. */
+/* Legacy C bridge; internal/raw/Core.mbt now binds LLVMGetVersion directly. */
 void __llvm_get_version(unsigned *major, unsigned *minor, unsigned *patch) {
   LLVMGetVersion(major, minor, patch);
 }
 
 /*
- * Inactive C bridge retained for the commented-out extern in unsafe/Core.mbt.
+ * Inactive C bridge retained for the commented-out extern in internal/raw/Core.mbt.
  */
 void __llvm_context_set_diagnostic_handler(void *context, void *handler,
                                            void *diagnostic_context) {
@@ -1366,7 +1367,7 @@ void __llvm_context_set_diagnostic_handler(void *context, void *handler,
                                   diagnostic_context);
 }
 
-/* MoonBit extern: __llvm_get_diag_info_severity (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_diag_info_severity (internal/raw/Core.mbt). */
 int __llvm_get_diag_info_severity(void *di) {
   LLVMDiagnosticSeverity s = LLVMGetDiagInfoSeverity((LLVMDiagnosticInfoRef)di);
   return llvm_diagnostic_severity_to_int(s);
@@ -1379,7 +1380,7 @@ int __llvm_get_diag_info_severity(void *di) {
 // }
 
 /*
- * MoonBit extern: __llvm_add_module_flag (unsafe/Core.mbt).
+ * MoonBit extern: __llvm_add_module_flag (internal/raw/Core.mbt).
  * `key` is borrowed for the call and interpreted with its explicit byte length.
  */
 void __llvm_add_module_flag(void *m, LLVMModuleFlagBehavior b, void *key,
@@ -1390,7 +1391,7 @@ void __llvm_add_module_flag(void *m, LLVMModuleFlagBehavior b, void *key,
 }
 
 /*
- * Inactive C bridge retained for the commented-out extern in unsafe/Core.mbt.
+ * Inactive C bridge retained for the commented-out extern in internal/raw/Core.mbt.
  */
 LLVMBool __llvm_print_module_to_file(void *m, void *filename,
                                      void **error_message) {
@@ -1398,26 +1399,26 @@ LLVMBool __llvm_print_module_to_file(void *m, void *filename,
                                (char **)error_message);
 }
 
-/* MoonBit extern: __llvm_get_inline_asm_dialect (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_inline_asm_dialect (internal/raw/Core.mbt). */
 int __llvm_get_inline_asm_dialect(void *inline_asm_val) {
   LLVMInlineAsmDialect i =
       LLVMGetInlineAsmDialect((LLVMValueRef)inline_asm_val);
   return llvm_inline_asm_dialect_to_int(i);
 }
 
-/* MoonBit extern: __llvm_get_type_kind (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_type_kind (internal/raw/Core.mbt). */
 int32_t __llvm_get_type_kind(void *ty) {
   LLVMTypeKind k = LLVMGetTypeKind((LLVMTypeRef)ty);
   return llvm_type_kind_to_int(k);
 }
 
-/* MoonBit extern: __llvm_get_value_kind (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_value_kind (internal/raw/Core.mbt). */
 int __llvm_get_value_kind(void *val) {
   LLVMValueKind k = LLVMGetValueKind((LLVMValueRef)val);
   return llvm_value_kind_to_int(k);
 }
 
-/* MoonBit extern: __llvm_get_const_opcode (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_const_opcode (internal/raw/Core.mbt). */
 int __llvm_get_const_opcode(void *constant_val) {
   LLVMOpcode code = LLVMGetConstOpcode((LLVMValueRef)constant_val);
   return llvm_opcode_to_int(code);
@@ -1427,31 +1428,31 @@ int __llvm_get_const_opcode(void *constant_val) {
 //   return (LLVMValueRef)LLVMConstNUWNeg((LLVMValueRef)constant_val);
 // }
 
-/* MoonBit extern: __llvm_get_linkage (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_linkage (internal/raw/Core.mbt). */
 int __llvm_get_linkage(void *global) {
   LLVMLinkage linkage = LLVMGetLinkage((LLVMValueRef)global);
   return llvm_linkage_to_int(linkage);
 }
 
-/* MoonBit extern: llvm_set_linkage (unsafe/Core.mbt). */
+/* MoonBit extern: llvm_set_linkage (internal/raw/Core.mbt). */
 void __llvm_set_linkage(void *global, int link) {
   LLVMLinkage linkage = llvm_linkage_from_int(link);
   LLVMSetLinkage((LLVMValueRef)global, linkage);
 }
 
-/* MoonBit extern: __llvm_get_visibility (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_visibility (internal/raw/Core.mbt). */
 int __llvm_get_visibility(void *global) {
   LLVMVisibility v = LLVMGetVisibility((LLVMValueRef)global);
   return llvm_visibility_to_int(v);
 }
 
-/* MoonBit extern: llvm_set_visibility (unsafe/Core.mbt). */
+/* MoonBit extern: llvm_set_visibility (internal/raw/Core.mbt). */
 void __llvm_set_visibility(void *global, int iviz) {
   LLVMVisibility viz = llvm_visibility_from_int(iviz);
   LLVMSetVisibility((LLVMValueRef)global, viz);
 }
 
-/* MoonBit extern: __llvm_get_dll_storage_class (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_dll_storage_class (internal/raw/Core.mbt). */
 int __llvm_get_dll_storage_class(void *global) {
   LLVMDLLStorageClass d = LLVMGetDLLStorageClass((LLVMValueRef)global);
   return llvm_dll_storage_class_to_int(d);
@@ -1511,19 +1512,19 @@ void *__llvm_intrinsic_copy_overloaded_name2(void *mod, unsigned id,
 //                                                      num_entries);
 // }
 
-/* MoonBit extern: __llvm_get_instruction_opcode (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_instruction_opcode (internal/raw/Core.mbt). */
 int __llvm_get_instruction_opcode(void *inst) {
   LLVMOpcode opcode = LLVMGetInstructionOpcode((LLVMValueRef)inst);
   return llvm_opcode_to_int(opcode);
 }
 
-/* MoonBit extern: __llvm_get_icmp_predicate (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_icmp_predicate (internal/raw/Core.mbt). */
 int __llvm_get_icmp_predicate(void *inst) {
   LLVMIntPredicate p = LLVMGetICmpPredicate((LLVMValueRef)inst);
   return llvm_int_predicate_to_int(p);
 }
 
-/* MoonBit extern: __llvm_get_fcmp_predicate (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_fcmp_predicate (internal/raw/Core.mbt). */
 int __llvm_get_fcmp_predicate(void *inst) {
   LLVMRealPredicate p = LLVMGetFCmpPredicate((LLVMValueRef)inst);
   return llvm_real_predicate_to_int(p);
@@ -1535,13 +1536,13 @@ int __llvm_get_fcmp_predicate(void *inst) {
 //   LLVMGetCallSiteAttributes((LLVMValueRef)c, idx, (LLVMAttributeRef *)attrs);
 // }
 
-/* MoonBit extern: __llvm_get_tail_call_kind (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_tail_call_kind (internal/raw/Core.mbt). */
 int __llvm_get_tail_call_kind(void *call_inst) {
   LLVMTailCallKind k = LLVMGetTailCallKind((LLVMValueRef)call_inst);
   return llvm_tail_call_kind_to_int(k);
 }
 
-/* MoonBit extern: __llvm_set_tail_call_kind (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_set_tail_call_kind (internal/raw/Core.mbt). */
 void __llvm_set_tail_call_kind(void *call_inst, int ikind) {
   LLVMTailCallKind kind = llvm_tail_call_kind_from_int(ikind);
   LLVMSetTailCallKind((LLVMValueRef)call_inst, kind);
@@ -1552,7 +1553,7 @@ void __llvm_set_tail_call_kind(void *call_inst, int ikind) {
 //   return LLVMGetIndices((LLVMValueRef)inst);
 // }
 
-/* MoonBit extern: __llvm_build_bin_op (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_build_bin_op (internal/raw/Core.mbt). */
 void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                           void *name) {
   LLVMOpcode op = llvm_opcode_from_int(op_code);
@@ -1561,33 +1562,33 @@ void *__llvm_build_bin_op(void *builder, int op_code, void *lhs, void *rhs,
                                       (const char *)name);
 }
 
-/* MoonBit extern: __llvm_get_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_ordering (internal/raw/Core.mbt). */
 int __llvm_get_ordering(void *memory_access_inst) {
   LLVMAtomicOrdering ordering =
       LLVMGetOrdering((LLVMValueRef)memory_access_inst);
   return llvm_atomic_ordering_to_int(ordering);
 }
 
-/* MoonBit extern: __llvm_set_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_set_ordering (internal/raw/Core.mbt). */
 void __llvm_set_ordering(void *memory_access_inst, int ordering) {
   LLVMAtomicOrdering order = llvm_atomic_ordering_from_int(ordering);
   LLVMSetOrdering((LLVMValueRef)memory_access_inst, order);
 }
 
-/* MoonBit extern: __llvm_get_atomic_rmw_bin_op (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_atomic_rmw_bin_op (internal/raw/Core.mbt). */
 int __llvm_get_atomic_rmw_bin_op(void *atomic_rmw_inst) {
   LLVMAtomicRMWBinOp bin_op =
       LLVMGetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst);
   return llvm_atomic_rmw_bin_op_to_int(bin_op);
 }
 
-/* MoonBit extern: __llvm_set_atomic_rmw_bin_op (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_set_atomic_rmw_bin_op (internal/raw/Core.mbt). */
 void __llvm_set_atomic_rmw_bin_op(void *atomic_rmw_inst, int bin_op) {
   LLVMAtomicRMWBinOp op = llvm_atomic_rmw_bin_op_from_int(bin_op);
   LLVMSetAtomicRMWBinOp((LLVMValueRef)atomic_rmw_inst, op);
 }
 
-/* MoonBit extern: __llvm_build_cast (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_build_cast (internal/raw/Core.mbt). */
 void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                         void *name) {
   LLVMOpcode op = llvm_opcode_from_int(op_code);
@@ -1596,7 +1597,7 @@ void *__llvm_build_cast(void *builder, int op_code, void *val, void *dest_ty,
                                      (const char *)name);
 }
 
-/* MoonBit extern: __llvm_get_cast_opcode (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_cast_opcode (internal/raw/Core.mbt). */
 int __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed, void *dest_ty,
                            LLVMBool dest_is_signed) {
   LLVMOpcode code = LLVMGetCastOpcode((LLVMValueRef)src, src_is_signed,
@@ -1604,7 +1605,7 @@ int __llvm_get_cast_opcode(void *src, LLVMBool src_is_signed, void *dest_ty,
   return llvm_opcode_to_int(code);
 }
 
-/* MoonBit extern: __llvm_build_icmp (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_build_icmp (internal/raw/Core.mbt). */
 void *__llvm_build_icmp(void *builder, int op, void *lhs, void *rhs,
                         void *name) {
   LLVMIntPredicate real_op = llvm_int_predicate_from_int(op);
@@ -1613,7 +1614,7 @@ void *__llvm_build_icmp(void *builder, int op, void *lhs, void *rhs,
                                      (const char *)name);
 }
 
-/* MoonBit extern: __llvm_build_fcmp (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_build_fcmp (internal/raw/Core.mbt). */
 void *__llvm_build_fcmp(void *builder, int op, void *lhs, void *rhs,
                         void *name) {
   LLVMRealPredicate real_op = llvm_real_predicate_from_int(op);
@@ -1623,7 +1624,7 @@ void *__llvm_build_fcmp(void *builder, int op, void *lhs, void *rhs,
 }
 
 /*
- * Legacy C bridge; unsafe/Core.mbt now binds LLVMBuildAtomicCmpXchg directly.
+ * Legacy C bridge; internal/raw/Core.mbt now binds LLVMBuildAtomicCmpXchg directly.
  */
 void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
                                    void *_new, int so, int fo,
@@ -1635,27 +1636,27 @@ void *__llvm_build_atomic_cmp_xchg(void *builder, void *ptr, void *cmp,
       (LLVMValueRef)_new, success_ordering, failure_ordering, single_thread);
 }
 
-/* MoonBit extern: __llvm_get_cmp_xchg_success_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_cmp_xchg_success_ordering (internal/raw/Core.mbt). */
 int __llvm_get_cmp_xchg_success_ordering(void *cmp_xchg_inst) {
   LLVMAtomicOrdering o =
       LLVMGetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst);
   return llvm_atomic_ordering_to_int(o);
 }
 
-/* MoonBit extern: __llvm_set_cmp_xchg_success_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_set_cmp_xchg_success_ordering (internal/raw/Core.mbt). */
 void __llvm_set_cmp_xchg_success_ordering(void *cmp_xchg_inst, int o) {
   LLVMAtomicOrdering ordering = llvm_atomic_ordering_from_int(o);
   LLVMSetCmpXchgSuccessOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
 }
 
-/* MoonBit extern: __llvm_get_cmp_xchg_failure_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_get_cmp_xchg_failure_ordering (internal/raw/Core.mbt). */
 int __llvm_get_cmp_xchg_failure_ordering(void *cmp_xchg_inst) {
   LLVMAtomicOrdering o =
       LLVMGetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst);
   return llvm_atomic_ordering_to_int(o);
 }
 
-/* MoonBit extern: __llvm_set_cmp_xchg_failure_ordering (unsafe/Core.mbt). */
+/* MoonBit extern: __llvm_set_cmp_xchg_failure_ordering (internal/raw/Core.mbt). */
 void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst, int o) {
   LLVMAtomicOrdering ordering = llvm_atomic_ordering_from_int(o);
   LLVMSetCmpXchgFailureOrdering((LLVMValueRef)cmp_xchg_inst, ordering);
@@ -1682,7 +1683,7 @@ void __llvm_set_cmp_xchg_failure_ordering(void *cmp_xchg_inst, int o) {
 // ExecutionEngine
 // ================================================
 
-/* MoonBit extern: __llvm_new_execution_engine (unsafe/ExecutionEngine.mbt). */
+/* MoonBit extern: __llvm_new_execution_engine (internal/raw/ExecutionEngine.mbt). */
 LLVMExecutionEngineRef llvm_new_execution_engine() {
   return (LLVMExecutionEngineRef)NULL;
 }

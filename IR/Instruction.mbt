@@ -32,14 +32,14 @@ fn AllocaInst::get_module(self : AllocaInst) -> Module {
 ///
 /// **Lifecycle:** The returned type is owned by the module's context.
 pub fn AllocaInst::getAllocatedType(self : AllocaInst) -> &Type {
-  let typeref = @unsafe.llvm_get_allocated_type(self.getValueRef())
+  let typeref = @raw.llvm_get_allocated_type(self.get_raw_value_ref())
   initAbstractType(typeref, self.get_module().getContext())
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for AllocaInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn AllocaInst::get_raw_value_ref(self : AllocaInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -63,7 +63,7 @@ pub impl InsertPoint for AllocaInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this allocation instruction using LLVM syntax.
 pub impl Show for AllocaInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -92,9 +92,9 @@ fn LoadInst::get_module(self : LoadInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for LoadInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn LoadInst::get_raw_value_ref(self : LoadInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -118,7 +118,7 @@ pub impl InsertPoint for LoadInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this load instruction using LLVM syntax.
 pub impl Show for LoadInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -149,9 +149,9 @@ fn StoreInst::get_module(self : StoreInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for StoreInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn StoreInst::get_raw_value_ref(self : StoreInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -175,7 +175,7 @@ pub impl InsertPoint for StoreInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this store instruction using LLVM syntax.
 pub impl Show for StoreInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -202,9 +202,9 @@ fn CastInst::get_module(self : CastInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for CastInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn CastInst::get_raw_value_ref(self : CastInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -228,7 +228,7 @@ pub impl InsertPoint for CastInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this conversion instruction using LLVM syntax.
 pub impl Show for CastInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -257,9 +257,9 @@ fn UnaryInst::get_module(self : UnaryInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for UnaryInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn UnaryInst::get_raw_value_ref(self : UnaryInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -283,7 +283,7 @@ pub impl InsertPoint for UnaryInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this unary instruction using LLVM syntax.
 pub impl Show for UnaryInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -313,9 +313,9 @@ fn BinaryInst::get_module(self : BinaryInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for BinaryInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn BinaryInst::get_raw_value_ref(self : BinaryInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -339,7 +339,7 @@ pub impl InsertPoint for BinaryInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this binary instruction using LLVM syntax.
 pub impl Show for BinaryInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 ///|
@@ -365,18 +365,16 @@ pub(all) enum FastMathFlags {
 }
 
 ///|
-/// Converts a safe fast-math flag to the corresponding LLVM-C bit flag.
-pub fn FastMathFlags::to_llvm(
-  self : FastMathFlags,
-) -> @unsafe.LLVMFastMathFlags {
+/// Converts a fast-math flag to its internal LLVM-C representation.
+fn FastMathFlags::to_llvm(self : FastMathFlags) -> @raw.LLVMFastMathFlags {
   match self {
-    AllowReassoc => @unsafe.LLVMFastMathFlags::AllowReassoc
-    NoNaNs => @unsafe.LLVMFastMathFlags::NoNaNs
-    NoInfs => @unsafe.LLVMFastMathFlags::NoInfs
-    NoSignedZeros => @unsafe.LLVMFastMathFlags::NoSignedZeros
-    AllowReciprocal => @unsafe.LLVMFastMathFlags::AllowReciprocal
-    AllowContract => @unsafe.LLVMFastMathFlags::AllowContract
-    ApproxFunc => @unsafe.LLVMFastMathFlags::ApproxFunc
+    AllowReassoc => @raw.LLVMFastMathFlags::AllowReassoc
+    NoNaNs => @raw.LLVMFastMathFlags::NoNaNs
+    NoInfs => @raw.LLVMFastMathFlags::NoInfs
+    NoSignedZeros => @raw.LLVMFastMathFlags::NoSignedZeros
+    AllowReciprocal => @raw.LLVMFastMathFlags::AllowReciprocal
+    AllowContract => @raw.LLVMFastMathFlags::AllowContract
+    ApproxFunc => @raw.LLVMFastMathFlags::ApproxFunc
   }
 }
 
@@ -413,7 +411,7 @@ pub(all) enum IntPredicate {
 }
 
 ///|
-fn IntPredicate::to_llvm_int_predicate(self : Self) -> @unsafe.LLVMIntPredicate {
+fn IntPredicate::to_llvm_int_predicate(self : Self) -> @raw.LLVMIntPredicate {
   match self {
     EQ => LLVMIntEQ
     NE => LLVMIntNE
@@ -430,7 +428,7 @@ fn IntPredicate::to_llvm_int_predicate(self : Self) -> @unsafe.LLVMIntPredicate 
 
 ///|
 fn IntPredicate::from_llvm_int_predicate(
-  pred : @unsafe.LLVMIntPredicate,
+  pred : @raw.LLVMIntPredicate,
 ) -> IntPredicate {
   match pred {
     LLVMIntEQ => EQ
@@ -466,14 +464,14 @@ fn ICmpInst::get_module(self : ICmpInst) -> Module {
 ///|
 /// Returns the comparison's signed, unsigned, or equality predicate.
 pub fn ICmpInst::getPredicate(self : Self) -> IntPredicate {
-  @unsafe.llvm_get_icmp_predicate(self.getValueRef())
+  @raw.llvm_get_icmp_predicate(self.get_raw_value_ref())
   |> IntPredicate::from_llvm_int_predicate
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ICmpInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ICmpInst::get_raw_value_ref(self : ICmpInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -497,7 +495,7 @@ pub impl InsertPoint for ICmpInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this integer comparison using LLVM syntax.
 pub impl Show for ICmpInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -547,7 +545,7 @@ pub(all) enum FloatPredicate {
 ///|
 fn FloatPredicate::to_llvm_float_predicate(
   self : Self,
-) -> @unsafe.LLVMRealPredicate {
+) -> @raw.LLVMRealPredicate {
   match self {
     OEQ => LLVMRealOEQ
     OGT => LLVMRealOGT
@@ -570,7 +568,7 @@ fn FloatPredicate::to_llvm_float_predicate(
 
 ///|
 fn FloatPredicate::from_llvm_float_predicate(
-  pred : @unsafe.LLVMRealPredicate,
+  pred : @raw.LLVMRealPredicate,
 ) -> FloatPredicate {
   match pred {
     LLVMRealOEQ => OEQ
@@ -612,14 +610,14 @@ fn FCmpInst::get_module(self : FCmpInst) -> Module {
 ///|
 /// Returns the predicate, including its ordered/unordered NaN behavior.
 pub fn FCmpInst::getPredicate(self : Self) -> FloatPredicate {
-  @unsafe.llvm_get_fcmp_predicate(self.getValueRef())
+  @raw.llvm_get_fcmp_predicate(self.get_raw_value_ref())
   |> FloatPredicate::from_llvm_float_predicate
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for FCmpInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn FCmpInst::get_raw_value_ref(self : FCmpInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -643,7 +641,7 @@ pub impl InsertPoint for FCmpInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this floating comparison using LLVM syntax.
 pub impl Show for FCmpInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -678,7 +676,7 @@ fn GetElementPtrInst::get_module(self : GetElementPtrInst) -> Module {
 ///|
 /// Returns whether this GEP carries LLVM's `inbounds` promise.
 pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
-  @unsafe.llvm_is_in_bounds(self.getValueRef())
+  @raw.llvm_is_in_bounds(self.get_raw_value_ref())
 }
 
 ///|
@@ -690,7 +688,7 @@ pub fn GetElementPtrInst::isInBounds(self : GetElementPtrInst) -> Bool {
 ///
 /// **Side Effects:** Mutates the instruction's semantic flags.
 pub fn GetElementPtrInst::setInBounds(self : GetElementPtrInst) -> Unit {
-  @unsafe.llvm_set_is_in_bounds(self.getValueRef(), true)
+  @raw.llvm_set_is_in_bounds(self.get_raw_value_ref(), true)
 }
 
 ///|
@@ -699,7 +697,7 @@ pub fn GetElementPtrInst::setInBounds(self : GetElementPtrInst) -> Unit {
 /// **Side Effects:** Mutates the instruction and prevents optimizations from
 /// assuming the stronger in-bounds contract.
 pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
-  @unsafe.llvm_set_is_in_bounds(self.getValueRef(), false)
+  @raw.llvm_set_is_in_bounds(self.get_raw_value_ref(), false)
 }
 
 ///|
@@ -709,14 +707,14 @@ pub fn GetElementPtrInst::removeInBounds(self : GetElementPtrInst) -> Unit {
 pub fn GetElementPtrInst::getSourceElementType(
   self : GetElementPtrInst,
 ) -> &Type {
-  let typeref = @unsafe.llvm_get_gep_source_element_type(self.getValueRef())
+  let typeref = @raw.llvm_get_gep_source_element_type(self.get_raw_value_ref())
   initAbstractType(typeref, self.get_module().getContext())
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for GetElementPtrInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn GetElementPtrInst::get_raw_value_ref(self : GetElementPtrInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -740,7 +738,7 @@ pub impl InsertPoint for GetElementPtrInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this GEP instruction using LLVM syntax.
 pub impl Show for GetElementPtrInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -771,9 +769,9 @@ fn SelectInst::get_module(self : SelectInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for SelectInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn SelectInst::get_raw_value_ref(self : SelectInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -791,7 +789,7 @@ pub impl Instruction for SelectInst with fn asInstEnum(self) -> InstructionEnum 
 ///|
 /// Writes this select instruction using LLVM syntax.
 pub impl Show for SelectInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -822,9 +820,9 @@ fn ExtractValueInst::get_module(self : ExtractValueInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ExtractValueInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ExtractValueInst::get_raw_value_ref(self : ExtractValueInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -854,7 +852,7 @@ pub impl InsertPoint for ExtractValueInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this aggregate extraction using LLVM syntax.
 pub impl Show for ExtractValueInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -885,9 +883,9 @@ fn InsertValueInst::get_module(self : InsertValueInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for InsertValueInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn InsertValueInst::get_raw_value_ref(self : InsertValueInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -911,7 +909,7 @@ pub impl InsertPoint for InsertValueInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this aggregate insertion using LLVM syntax.
 pub impl Show for InsertValueInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -951,15 +949,17 @@ pub fn PHINode::addIncoming(
   value : &Value,
   block : BasicBlock,
 ) -> Unit {
-  @unsafe.llvm_add_incoming(self.getValueRef(), [value.getValueRef()], [
-    block.get_unsafe_ref(),
-  ])
+  @raw.llvm_add_incoming(
+    self.get_raw_value_ref(),
+    [value.get_raw_value_ref()],
+    [block.get_raw_ref()],
+  )
 }
 
 ///|
 /// Returns the number of incoming value/block pairs.
 pub fn PHINode::countIncoming(self : PHINode) -> Int {
-  @unsafe.llvm_count_incoming(self.getValueRef()).reinterpret_as_int()
+  @raw.llvm_count_incoming(self.get_raw_value_ref()).reinterpret_as_int()
 }
 
 // TODO:
@@ -969,7 +969,7 @@ pub fn PHINode::countIncoming(self : PHINode) -> Int {
 //) -> &Value? {
 //  when(
 //    idx >= 0 && idx < self.countIncoming(),
-//    () => { @unsafe.llvm_get_incoming_value(self.getValueRef(), idx.reinterpret_as_uint())) }
+//    () => { @raw.llvm_get_incoming_value(self.get_raw_value_ref(), idx.reinterpret_as_uint())) }
 //  )
 //}
 
@@ -982,8 +982,8 @@ pub fn PHINode::countIncoming(self : PHINode) -> Int {
 pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.countIncoming(), () => {
     BasicBlock::from_raw(
-      @unsafe.llvm_get_incoming_block(
-        self.getValueRef(),
+      @raw.llvm_get_incoming_block(
+        self.get_raw_value_ref(),
         idx.reinterpret_as_uint(),
       ),
       self.get_module(),
@@ -992,9 +992,9 @@ pub fn PHINode::getIncomingBlock(self : PHINode, idx : Int) -> BasicBlock? {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for PHINode with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn PHINode::get_raw_value_ref(self : PHINode) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1018,7 +1018,7 @@ pub impl InsertPoint for PHINode with fn asInsertPtEnum(self) {
 ///|
 /// Writes this phi node using LLVM syntax.
 pub impl Show for PHINode with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -1048,9 +1048,9 @@ fn ReturnInst::get_module(self : ReturnInst) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ReturnInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ReturnInst::get_raw_value_ref(self : ReturnInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1074,7 +1074,7 @@ pub impl InsertPoint for ReturnInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this return terminator using LLVM syntax.
 pub impl Show for ReturnInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -1106,7 +1106,7 @@ fn BranchInst::get_module(self : BranchInst) -> Module {
 ///|
 /// Returns whether this branch has a condition and two successors.
 pub fn BranchInst::isConditional(self : BranchInst) -> Bool {
-  @unsafe.llvm_is_conditional(self.getValueRef())
+  @raw.llvm_is_conditional(self.get_raw_value_ref())
 }
 
 ///|
@@ -1137,13 +1137,13 @@ pub fn BranchInst::setCondition(
       $| Misuse `BranchInst::setCondition`, Instruction is not conditional.
     raise InValidOperation(msg)
   }
-  @unsafe.llvm_set_condition(self.getValueRef(), cond.getValueRef())
+  @raw.llvm_set_condition(self.get_raw_value_ref(), cond.get_raw_value_ref())
 }
 
 ///|
 /// Returns one for an unconditional branch and two for a conditional branch.
 pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
-  @unsafe.llvm_get_num_successors(self.getValueRef()).reinterpret_as_int()
+  @raw.llvm_get_num_successors(self.get_raw_value_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -1153,7 +1153,10 @@ pub fn BranchInst::getNumSuccessors(self : BranchInst) -> Int {
 pub fn BranchInst::getSuccessor(self : BranchInst, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => {
     BasicBlock::from_raw(
-      @unsafe.llvm_get_successor(self.getValueRef(), idx.reinterpret_as_uint()),
+      @raw.llvm_get_successor(
+        self.get_raw_value_ref(),
+        idx.reinterpret_as_uint(),
+      ),
       self.get_module(),
     )
   })
@@ -1182,17 +1185,17 @@ pub fn BranchInst::setSuccessor(
       $| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
-  @unsafe.llvm_set_successor(
-    self.getValueRef(),
+  @raw.llvm_set_successor(
+    self.get_raw_value_ref(),
     idx.reinterpret_as_uint(),
-    block.get_unsafe_ref(),
+    block.get_raw_ref(),
   )
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for BranchInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn BranchInst::get_raw_value_ref(self : BranchInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1216,7 +1219,7 @@ pub impl InsertPoint for BranchInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this branch terminator using LLVM syntax.
 pub impl Show for BranchInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -1273,17 +1276,17 @@ pub fn SwitchInst::addCase(
       "Misuse `SwitchInst::addCase`: Expected an integer type for case value, got: \{on_val.getType()}",
     )
   }
-  @unsafe.llvm_add_case(
-    self.getValueRef(),
-    on_val.getValueRef(),
-    dest.get_unsafe_ref(),
+  @raw.llvm_add_case(
+    self.get_raw_value_ref(),
+    on_val.get_raw_value_ref(),
+    dest.get_raw_ref(),
   )
 }
 
 ///|
 /// Returns the number of successors, including the default destination.
 pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
-  @unsafe.llvm_get_num_successors(self.getValueRef()).reinterpret_as_int()
+  @raw.llvm_get_num_successors(self.get_raw_value_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -1294,7 +1297,10 @@ pub fn SwitchInst::getNumSuccessors(self : Self) -> Int {
 pub fn SwitchInst::getSuccessor(self : Self, idx : Int) -> BasicBlock? {
   when(idx >= 0 && idx < self.getNumSuccessors(), () => {
     BasicBlock::from_raw(
-      @unsafe.llvm_get_successor(self.getValueRef(), idx.reinterpret_as_uint()),
+      @raw.llvm_get_successor(
+        self.get_raw_value_ref(),
+        idx.reinterpret_as_uint(),
+      ),
       self.get_module(),
     )
   })
@@ -1321,17 +1327,17 @@ pub fn SwitchInst::setSuccessor(
       $| Misuse `BranchInst::setSuccessor`, Index out of bounds.
     raise IndexOutOfBounds(msg)
   }
-  @unsafe.llvm_set_successor(
-    self.getValueRef(),
+  @raw.llvm_set_successor(
+    self.get_raw_value_ref(),
     idx.reinterpret_as_uint(),
-    block.get_unsafe_ref(),
+    block.get_raw_ref(),
   )
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for SwitchInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn SwitchInst::get_raw_value_ref(self : SwitchInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1355,7 +1361,7 @@ pub impl InsertPoint for SwitchInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this switch terminator using LLVM syntax.
 pub impl Show for SwitchInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // =======================================================
@@ -1377,7 +1383,7 @@ pub(all) enum TailCallKind {
 }
 
 ///|
-fn TailCallKind::to_llvm(self : TailCallKind) -> @unsafe.LLVMTailCallKind {
+fn TailCallKind::to_llvm(self : TailCallKind) -> @raw.LLVMTailCallKind {
   match self {
     None => LLVMTailCallKindNone
     Tail => LLVMTailCallKindTail
@@ -1387,7 +1393,7 @@ fn TailCallKind::to_llvm(self : TailCallKind) -> @unsafe.LLVMTailCallKind {
 }
 
 ///|
-fn TailCallKind::from_llvm(kind : @unsafe.LLVMTailCallKind) -> TailCallKind {
+fn TailCallKind::from_llvm(kind : @raw.LLVMTailCallKind) -> TailCallKind {
   match kind {
     LLVMTailCallKindNone => None
     LLVMTailCallKindTail => Tail
@@ -1419,7 +1425,7 @@ fn CallInst::get_module(self : CallInst) -> Module {
 /// Returns whether this call has either `tail` or `musttail` semantics according
 /// to LLVM's boolean tail-call query.
 pub fn CallInst::isTailCall(self : CallInst) -> Bool {
-  @unsafe.llvm_is_tail_call(self.getValueRef())
+  @raw.llvm_is_tail_call(self.get_raw_value_ref())
 }
 
 ///|
@@ -1428,7 +1434,7 @@ pub fn CallInst::isTailCall(self : CallInst) -> Bool {
 /// **Side Effects:** Replaces the current tail-call kind with LLVM's ordinary
 /// `tail` marker. Optimization remains optional.
 pub fn CallInst::setTailCall(self : CallInst) -> Unit {
-  @unsafe.llvm_set_tail_call(self.getValueRef(), true)
+  @raw.llvm_set_tail_call(self.get_raw_value_ref(), true)
 }
 
 ///|
@@ -1437,14 +1443,15 @@ pub fn CallInst::setTailCall(self : CallInst) -> Unit {
 /// **Side Effects:** Sets the call to the unmarked `None` kind rather than the
 /// explicit `NoTail` prohibition.
 pub fn CallInst::removeTailCall(self : CallInst) -> Unit {
-  @unsafe.llvm_set_tail_call(self.getValueRef(), false)
+  @raw.llvm_set_tail_call(self.get_raw_value_ref(), false)
 }
 
 ///|
 /// Returns the complete tail-call marker, distinguishing `musttail`, optional
 /// `tail`, explicit `notail`, and no marker.
 pub fn CallInst::getTailCallKind(self : CallInst) -> TailCallKind {
-  @unsafe.llvm_get_tail_call_kind(self.getValueRef()) |> TailCallKind::from_llvm
+  @raw.llvm_get_tail_call_kind(self.get_raw_value_ref())
+  |> TailCallKind::from_llvm
 }
 
 ///|
@@ -1456,13 +1463,13 @@ pub fn CallInst::getTailCallKind(self : CallInst) -> TailCallKind {
 ///
 /// **Side Effects:** Mutates call lowering semantics.
 pub fn CallInst::setTailCallKind(self : CallInst, kind : TailCallKind) -> Unit {
-  @unsafe.llvm_set_tail_call_kind(self.getValueRef(), kind.to_llvm())
+  @raw.llvm_set_tail_call_kind(self.get_raw_value_ref(), kind.to_llvm())
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for CallInst with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn CallInst::get_raw_value_ref(self : CallInst) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -1486,5 +1493,5 @@ pub impl InsertPoint for CallInst with fn asInsertPtEnum(self) {
 ///|
 /// Writes this call instruction using LLVM syntax.
 pub impl Show for CallInst with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }

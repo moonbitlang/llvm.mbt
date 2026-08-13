@@ -1,13 +1,13 @@
 ///|
 /// Borrowed LLVM attribute handle used internally by the safe wrappers.
-type AttributeRef = @unsafe.LLVMAttributeRef
+type AttributeRef = @raw.LLVMAttributeRef
 
 ///|
 /// Context-owned LLVM attribute value.
 ///
 /// Public APIs normally accept the higher-level `FnAttr`, `ParamAttr`, and
 /// `RetAttr` enums and construct this wrapper internally.
-pub struct Attribute(AttributeRef)
+priv struct Attribute(AttributeRef)
 
 ///|
 /// Supported function-level LLVM attributes.
@@ -96,9 +96,9 @@ fn FnAttr::attr_value(self : FnAttr) -> UInt64 {
 
 ///|
 fn FnAttr::to_llvm_attr(self : FnAttr, ctx : Context) -> Attribute {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.get_unsafe_ref(), kind_n, value)
+  @raw.llvm_create_enum_attribute(ctx.get_raw_ref(), kind_n, value)
 }
 
 ///|
@@ -141,9 +141,9 @@ fn ParamAttr::attr_value(self : ParamAttr) -> UInt64 {
 
 ///|
 fn ParamAttr::to_llvm_attr(self : ParamAttr, ctx : Context) -> Attribute {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.get_unsafe_ref(), kind_n, value)
+  @raw.llvm_create_enum_attribute(ctx.get_raw_ref(), kind_n, value)
 }
 
 ///|
@@ -177,7 +177,7 @@ fn RetAttr::attr_value(self : RetAttr) -> UInt64 {
 
 ///|
 fn RetAttr::to_llvm_attr(self : RetAttr, ctx : Context) -> Attribute {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(self.attr_name())
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(self.attr_name())
   let value = self.attr_value()
-  @unsafe.llvm_create_enum_attribute(ctx.get_unsafe_ref(), kind_n, value)
+  @raw.llvm_create_enum_attribute(ctx.get_raw_ref(), kind_n, value)
 }

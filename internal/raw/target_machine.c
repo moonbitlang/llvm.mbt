@@ -1,8 +1,8 @@
 /*
- * Native target and code-generation adapters for the unsafe package's native
- * stub boundary. This file exports LLVM-C static-inline initialization helpers
- * as linkable symbols and will host the operation adapters whose error and
- * temporary-resource contracts cannot be expressed directly by MoonBit FFI.
+ * Native target and code-generation adapters for the internal raw package's
+ * native stub boundary. This file exports LLVM-C static-inline initialization
+ * helpers as linkable symbols and will host the operation adapters whose error
+ * and temporary-resource contracts cannot be expressed directly by MoonBit FFI.
  */
 
 #include <llvm-c/Analysis.h>
@@ -39,7 +39,7 @@ static moonbit_bytes_t llvm_mbt_copy_and_dispose_message(char *message) {
 }
 
 /*
- * MoonBit extern: llvm_initialize_native_target (unsafe/Target.mbt).
+ * MoonBit extern: llvm_initialize_native_target (internal/raw/Target.mbt).
  * Mutates LLVM's process-global target registry. LLVM defines repeated native
  * initialization as safe; false means success and true means unavailable.
  */
@@ -48,7 +48,7 @@ LLVMBool llvm_mbt_initialize_native_target(void) {
 }
 
 /*
- * MoonBit extern: llvm_initialize_native_asm_printer (unsafe/Target.mbt).
+ * MoonBit extern: llvm_initialize_native_asm_printer (internal/raw/Target.mbt).
  * Mutates LLVM's process-global target registry. LLVM defines repeated native
  * initialization as safe; false means success and true means unavailable.
  */
@@ -58,7 +58,7 @@ LLVMBool llvm_mbt_initialize_native_asm_printer(void) {
 
 /*
  * MoonBit extern: llvm_target_machine_set_module_data_layout
- * (unsafe/TargetMachine.mbt).
+ * (internal/raw/TargetMachine.mbt).
  * The temporary TargetData is valid only for this call. LLVM copies its
  * DataLayout into the module before the adapter disposes the handle.
  */
@@ -70,7 +70,7 @@ void llvm_mbt_target_machine_set_module_data_layout(
 }
 
 /*
- * MoonBit extern: __llvm_verify_module (unsafe/Analysis.mbt).
+ * MoonBit extern: __llvm_verify_module (internal/raw/Analysis.mbt).
  * Always uses LLVMReturnStatusAction. Any optional LLVM-owned diagnostic is
  * copied into MoonBit Bytes and released before this call returns.
  */
@@ -84,7 +84,7 @@ moonbit_bytes_t llvm_mbt_verify_module(
 
 /*
  * MoonBit extern: __llvm_target_machine_emit_object_to_file
- * (unsafe/TargetMachine.mbt).
+ * (internal/raw/TargetMachine.mbt).
  * The filename is borrowed for this call, output is fixed to LLVMObjectFile,
  * and any LLVM-owned diagnostic is copied and released before returning.
  */
@@ -99,7 +99,7 @@ moonbit_bytes_t llvm_mbt_target_machine_emit_object_to_file(
 
 /*
  * MoonBit wbtest extern: __target_machine_test_temp_path
- * (unsafe/target_machine_wbtest.mbt).
+ * (internal/raw/target_machine_wbtest.mbt).
  * Creates a process-unique path, removes the placeholder immediately, and
  * returns an independent byte copy for an emission test.
  */
@@ -119,7 +119,7 @@ moonbit_bytes_t llvm_mbt_target_machine_test_temp_path(void) {
 
 /*
  * MoonBit wbtest extern: __target_machine_test_remove_file
- * (unsafe/target_machine_wbtest.mbt). The path is borrowed for this call.
+ * (internal/raw/target_machine_wbtest.mbt). The path is borrowed for this call.
  */
 LLVMBool llvm_mbt_target_machine_test_remove_file(const char *path) {
   return unlink(path) == 0;

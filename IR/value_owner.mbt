@@ -14,7 +14,7 @@ fn ModuleAnchoredValue::new(
 }
 
 ///|
-fn ModuleAnchoredValue::get_unsafe_ref(self : ModuleAnchoredValue) -> ValueRef {
+fn ModuleAnchoredValue::get_raw_ref(self : ModuleAnchoredValue) -> ValueRef {
   self.value_ref
 }
 
@@ -39,9 +39,7 @@ fn ContextAnchoredValue::new(
 }
 
 ///|
-fn ContextAnchoredValue::get_unsafe_ref(
-  self : ContextAnchoredValue,
-) -> ValueRef {
+fn ContextAnchoredValue::get_raw_ref(self : ContextAnchoredValue) -> ValueRef {
   self.value_ref
 }
 

@@ -733,7 +733,7 @@ function makeBuildOutput(validated, artifact) {
     },
     link_configs: [
       {
-        package: 'Kaida-Amethyst/llvm/unsafe',
+        package: 'Kaida-Amethyst/llvm/internal/raw',
         link_flags: linkFlags,
       },
     ],

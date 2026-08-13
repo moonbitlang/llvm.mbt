@@ -21,7 +21,7 @@ pub fn TargetTriple::new(value : String) -> TargetTriple raise StringError {
 /// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
 /// UTF-8.
 pub fn TargetTriple::host() -> TargetTriple raise StringError {
-  let value = @unsafe.llvm_get_default_target_triple() catch {
+  let value = @raw.llvm_get_default_target_triple() catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
   TargetTriple::{ value, }
@@ -74,10 +74,10 @@ pub type TargetRegistry
 /// **Notes:** This initializes only the native backend required for object
 /// emission, not every cross-target backend, assembly parser, or disassembler.
 pub fn TargetRegistry::initializeNativeCodegen() -> Unit raise TargetRegistryError {
-  guard !@unsafe.llvm_initialize_native_target() else {
+  guard !@raw.llvm_initialize_native_target() else {
     raise NativeTargetUnavailable
   }
-  guard !@unsafe.llvm_initialize_native_asm_printer() else {
+  guard !@raw.llvm_initialize_native_asm_printer() else {
     raise NativeAsmPrinterUnavailable
   }
 }
@@ -93,7 +93,7 @@ pub fn TargetRegistry::initializeNativeCodegen() -> Unit raise TargetRegistryErr
 pub fn TargetRegistry::lookupTarget(
   triple : TargetTriple,
 ) -> Target raise TargetRegistryError {
-  let (raw, message, failed) = @unsafe.llvm_get_target_from_triple(
+  let (raw, message, failed) = @raw.llvm_get_target_from_triple(
     triple.toString(),
   )
   guard !failed && !raw.is_null() else { raise TargetNotFound(message) }
@@ -107,7 +107,7 @@ pub fn TargetRegistry::lookupTarget(
 /// no disposer. A `TargetMachine` created from it has independent managed
 /// ownership.
 pub struct Target {
-  priv raw : @unsafe.LLVMTargetRef
+  priv raw : @raw.LLVMTargetRef
 }
 
 ///|
@@ -115,7 +115,7 @@ pub struct Target {
 ///
 /// **Errors:** Raises `StringError::MalformedUtf8` for invalid UTF-8.
 pub fn Target::getName(self : Target) -> String raise StringError {
-  @unsafe.llvm_get_target_name(self.raw) catch {
+  @raw.llvm_get_target_name(self.raw) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -125,7 +125,7 @@ pub fn Target::getName(self : Target) -> String raise StringError {
 ///
 /// **Errors:** Raises `StringError::MalformedUtf8` for invalid UTF-8.
 pub fn Target::getDescription(self : Target) -> String raise StringError {
-  @unsafe.llvm_get_target_description(self.raw) catch {
+  @raw.llvm_get_target_description(self.raw) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -147,9 +147,9 @@ pub(all) enum CodeGenOptimizationLevel {
 }
 
 ///|
-fn CodeGenOptimizationLevel::to_unsafe(
+fn CodeGenOptimizationLevel::to_raw(
   self : CodeGenOptimizationLevel,
-) -> @unsafe.LLVMCodeGenOptLevel {
+) -> @raw.LLVMCodeGenOptLevel {
   match self {
     None => LLVMCodeGenLevelNone
     Less => LLVMCodeGenLevelLess
@@ -181,7 +181,7 @@ pub(all) enum RelocationMode {
 }
 
 ///|
-fn RelocationMode::to_unsafe(self : RelocationMode) -> @unsafe.LLVMRelocMode {
+fn RelocationMode::to_raw(self : RelocationMode) -> @raw.LLVMRelocMode {
   match self {
     Default => LLVMRelocDefault
     Static => LLVMRelocStatic
@@ -215,7 +215,7 @@ pub(all) enum CodeModel {
 }
 
 ///|
-fn CodeModel::to_unsafe(self : CodeModel) -> @unsafe.LLVMCodeModel {
+fn CodeModel::to_raw(self : CodeModel) -> @raw.LLVMCodeModel {
   match self {
     Default => LLVMCodeModelDefault
     JitDefault => LLVMCodeModelJITDefault
@@ -322,7 +322,7 @@ pub struct TargetMachine {
 
 ///|
 fn TargetMachine::from_raw(
-  raw : @unsafe.LLVMTargetMachineRef,
+  raw : @raw.LLVMTargetMachineRef,
   triple : TargetTriple,
   cpu : String,
   features : String,
@@ -338,9 +338,9 @@ fn TargetMachine::from_raw(
 }
 
 ///|
-fn TargetMachine::get_unsafe_ref(
+fn TargetMachine::get_raw_ref(
   self : TargetMachine,
-) -> @unsafe.LLVMTargetMachineRef {
+) -> @raw.LLVMTargetMachineRef {
   self.owner.raw()
 }
 
@@ -380,53 +380,53 @@ fn create_target_machine(
   cpu : String,
   features : String,
 ) -> TargetMachine raise {
-  let raw_options = @unsafe.llvm_create_target_machine_options()
+  let raw_options = @raw.llvm_create_target_machine_options()
   guard !raw_options.is_null() else { raise CreationFailed }
-  @unsafe.llvm_target_machine_options_set_cpu(raw_options, cpu) catch {
-    @unsafe.EmbeddedNul => {
-      @unsafe.llvm_dispose_target_machine_options(raw_options)
+  @raw.llvm_target_machine_options_set_cpu(raw_options, cpu) catch {
+    @raw.EmbeddedNul => {
+      @raw.llvm_dispose_target_machine_options(raw_options)
       raise ContainsNul
     }
   }
-  @unsafe.llvm_target_machine_options_set_features(raw_options, features) catch {
-    @unsafe.EmbeddedNul => {
-      @unsafe.llvm_dispose_target_machine_options(raw_options)
+  @raw.llvm_target_machine_options_set_features(raw_options, features) catch {
+    @raw.EmbeddedNul => {
+      @raw.llvm_dispose_target_machine_options(raw_options)
       raise ContainsNul
     }
   }
   match options.abi {
     Some(abi) =>
-      @unsafe.llvm_target_machine_options_set_abi(raw_options, abi) catch {
-        @unsafe.EmbeddedNul => {
-          @unsafe.llvm_dispose_target_machine_options(raw_options)
+      @raw.llvm_target_machine_options_set_abi(raw_options, abi) catch {
+        @raw.EmbeddedNul => {
+          @raw.llvm_dispose_target_machine_options(raw_options)
           raise ContainsNul
         }
       }
     None => ()
   }
-  @unsafe.llvm_target_machine_options_set_codegen_opt_level(
+  @raw.llvm_target_machine_options_set_codegen_opt_level(
     raw_options,
-    options.optimizationLevel.to_unsafe(),
+    options.optimizationLevel.to_raw(),
   )
-  @unsafe.llvm_target_machine_options_set_reloc_mode(
+  @raw.llvm_target_machine_options_set_reloc_mode(
     raw_options,
-    options.relocationMode.to_unsafe(),
+    options.relocationMode.to_raw(),
   )
-  @unsafe.llvm_target_machine_options_set_code_model(
+  @raw.llvm_target_machine_options_set_code_model(
     raw_options,
-    options.codeModel.to_unsafe(),
+    options.codeModel.to_raw(),
   )
-  let raw = @unsafe.llvm_create_target_machine_with_options(
+  let raw = @raw.llvm_create_target_machine_with_options(
     target.raw,
     triple.toString(),
     raw_options,
   ) catch {
-    @unsafe.EmbeddedNul => {
-      @unsafe.llvm_dispose_target_machine_options(raw_options)
+    @raw.EmbeddedNul => {
+      @raw.llvm_dispose_target_machine_options(raw_options)
       raise ContainsNul
     }
   }
-  @unsafe.llvm_dispose_target_machine_options(raw_options)
+  @raw.llvm_dispose_target_machine_options(raw_options)
   guard !raw.is_null() else { raise CreationFailed }
   TargetMachine::from_raw(raw, triple, cpu, features, options.abi)
 }
@@ -455,14 +455,14 @@ pub fn TargetMachine::host(
   let cpu = match options.cpu {
     Some(value) => value
     None =>
-      @unsafe.llvm_get_host_cpu_name() catch {
+      @raw.llvm_get_host_cpu_name() catch {
         @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
       }
   }
   let features = match options.features {
     Some(value) => value
     None =>
-      @unsafe.llvm_get_host_cpu_features() catch {
+      @raw.llvm_get_host_cpu_features() catch {
         @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
       }
   }
@@ -513,12 +513,12 @@ pub fn TargetMachine::configureModule(
   self : TargetMachine,
   mod : Module,
 ) -> Unit raise StringError {
-  @unsafe.llvm_set_target(mod.get_unsafe_ref(), self.triple.toString()) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+  @raw.llvm_set_target(mod.get_raw_ref(), self.triple.toString()) catch {
+    @raw.EmbeddedNul => raise ContainsNul
   }
-  @unsafe.llvm_target_machine_set_module_data_layout(
-    self.get_unsafe_ref(),
-    mod.get_unsafe_ref(),
+  @raw.llvm_target_machine_set_module_data_layout(
+    self.get_raw_ref(),
+    mod.get_raw_ref(),
   )
 }
 
@@ -554,12 +554,12 @@ pub fn TargetMachine::emitObjectToFile(
   mod : Module,
   filename : String,
 ) -> Unit raise {
-  let (failed, message) = @unsafe.llvm_target_machine_emit_object_to_file(
-    self.get_unsafe_ref(),
-    mod.get_unsafe_ref(),
+  let (failed, message) = @raw.llvm_target_machine_emit_object_to_file(
+    self.get_raw_ref(),
+    mod.get_raw_ref(),
     filename,
   ) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+    @raw.EmbeddedNul => raise ContainsNul
   }
   guard !failed else { raise ObjectEmissionFailed(message) }
 }

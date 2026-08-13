@@ -136,9 +136,9 @@ test "build an integer addition function" {
 }
 ```
 
-Use `Kaida-Amethyst/llvm/IR` for the higher-level API. Use
-`Kaida-Amethyst/llvm/unsafe` only when direct `llvm-c` access is necessary;
-its handles and lifetime rules follow LLVM more closely and require more care.
+Use `Kaida-Amethyst/llvm/IR` as the supported public API. The direct LLVM-C
+bindings live in the module-private `internal/raw` package and cannot be
+imported by downstream modules.
 
 ## Developing llvm.mbt
 
@@ -150,7 +150,8 @@ moon fmt
 ```
 
 - `IR/` contains the higher-level MoonBit API.
-- `unsafe/` contains the low-level C bindings and native wrapper.
+- `internal/raw/` contains the module-private LLVM-C bindings and native
+  wrapper.
 - `build.js` manages the pinned LLVM artifact and shared cache.
 - Generated `.mbti` files describe each package's public interface.
 
@@ -288,9 +289,8 @@ test "构造整数加法函数" {
 }
 ```
 
-通常应优先使用 `Kaida-Amethyst/llvm/IR` 提供的高层 API。只有确实需要直接
-访问 `llvm-c` 时才使用 `Kaida-Amethyst/llvm/unsafe`；后者的句柄和生命
-周期规则更贴近 LLVM，使用时需要更加谨慎。
+`Kaida-Amethyst/llvm/IR` 是受支持的公开 API。直接 LLVM-C binding 位于模块
+私有的 `internal/raw` package，下游模块无法导入。
 
 ## 开发 llvm.mbt
 
@@ -302,7 +302,7 @@ moon fmt
 ```
 
 - `IR/` 存放较高层的 MoonBit API。
-- `unsafe/` 存放底层 C binding 与 native wrapper。
+- `internal/raw/` 存放模块私有的 LLVM-C binding 与 native wrapper。
 - `build.js` 管理固定版本的 LLVM 产物和共享缓存。
 - 自动生成的 `.mbti` 文件描述每个 package 的公开接口。
 

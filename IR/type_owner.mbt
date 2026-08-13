@@ -1,22 +1,22 @@
 ///|
 /// A type handle whose lifetime is bounded by its LLVM Context.
 priv struct ContextAnchoredType {
-  type_ref : @unsafe.LLVMTypeRef
+  type_ref : @raw.LLVMTypeRef
   context : Context
 }
 
 ///|
 fn ContextAnchoredType::new(
-  type_ref : @unsafe.LLVMTypeRef,
+  type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ContextAnchoredType {
   ContextAnchoredType::{ type_ref, context }
 }
 
 ///|
-fn ContextAnchoredType::get_unsafe_ref(
+fn ContextAnchoredType::get_raw_ref(
   self : ContextAnchoredType,
-) -> @unsafe.LLVMTypeRef {
+) -> @raw.LLVMTypeRef {
   self.type_ref
 }
 

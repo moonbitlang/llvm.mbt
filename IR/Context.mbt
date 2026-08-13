@@ -18,7 +18,7 @@ fn Context::from_owner(owner : ContextOwner) -> Context {
 }
 
 ///|
-fn Context::from_raw(raw : @unsafe.LLVMContextRef) -> Context {
+fn Context::from_raw(raw : @raw.LLVMContextRef) -> Context {
   Context::from_owner(ContextOwner::new(raw))
 }
 
@@ -28,14 +28,14 @@ fn Context::get_owner(self : Context) -> ContextOwner {
 }
 
 ///|
-fn Context::get_unsafe_ref(self : Context) -> @unsafe.LLVMContextRef {
+fn Context::get_raw_ref(self : Context) -> @raw.LLVMContextRef {
   self.owner.raw()
 }
 
 ///|
 /// Compares whether two values refer to the same underlying LLVM context.
 pub impl Eq for Context with fn equal(self, other) {
-  self.get_unsafe_ref() == other.get_unsafe_ref()
+  self.get_raw_ref() == other.get_raw_ref()
 }
 
 ///|
@@ -46,7 +46,7 @@ pub impl Eq for Context with fn equal(self, other) {
 /// The context is released automatically after its last dependent object becomes
 /// unreachable; callers do not dispose it explicitly.
 pub fn Context::new() -> Context {
-  Context::from_raw(@unsafe.llvm_context_create())
+  Context::from_raw(@raw.llvm_context_create())
 }
 
 ///|
@@ -68,11 +68,11 @@ pub fn Context::addModule(
   self : Self,
   name : String,
 ) -> Module raise StringError {
-  let module_ref = @unsafe.llvm_module_create_with_name_in_context(
+  let module_ref = @raw.llvm_module_create_with_name_in_context(
     name,
-    self.get_unsafe_ref(),
+    self.get_raw_ref(),
   ) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+    @raw.EmbeddedNul => raise ContainsNul
   }
   Module::from_raw(module_ref, self)
 }
@@ -92,7 +92,7 @@ pub fn Context::addModule(
 pub fn Context::createBuilder(self : Self) -> IRBuilder {
   IRBuilder::{
     owner: BuilderOwner::new(
-      @unsafe.llvm_create_builder_in_context(self.get_unsafe_ref()),
+      @raw.llvm_create_builder_in_context(self.get_raw_ref()),
       self.get_owner(),
     ),
     positioned: NotSet,
@@ -112,7 +112,7 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
 /// }
 /// ```
 pub fn Context::getHalfTy(self : Context) -> HalfType {
-  let typeref = @unsafe.llvm_half_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_half_type_in_context(self.get_raw_ref())
   HalfType::from_raw(typeref, self)
 }
 
@@ -129,7 +129,7 @@ pub fn Context::getHalfTy(self : Context) -> HalfType {
 /// }
 /// ```
 pub fn Context::getBFloatTy(self : Context) -> BFloatType {
-  let typeref = @unsafe.llvm_bfloat_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_bfloat_type_in_context(self.get_raw_ref())
   BFloatType::from_raw(typeref, self)
 }
 
@@ -146,7 +146,7 @@ pub fn Context::getBFloatTy(self : Context) -> BFloatType {
 /// }
 /// ```
 pub fn Context::getFloatTy(self : Context) -> FloatType {
-  let typeref = @unsafe.llvm_float_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_float_type_in_context(self.get_raw_ref())
   FloatType::from_raw(typeref, self)
 }
 
@@ -163,7 +163,7 @@ pub fn Context::getFloatTy(self : Context) -> FloatType {
 /// }
 /// ```
 pub fn Context::getDoubleTy(self : Context) -> DoubleType {
-  let typeref = @unsafe.llvm_double_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_double_type_in_context(self.get_raw_ref())
   DoubleType::from_raw(typeref, self)
 }
 
@@ -180,7 +180,7 @@ pub fn Context::getDoubleTy(self : Context) -> DoubleType {
 /// }
 /// ```
 pub fn Context::getFP128Ty(self : Context) -> FP128Type {
-  let typeref = @unsafe.llvm_fp128_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_fp128_type_in_context(self.get_raw_ref())
   FP128Type::from_raw(typeref, self)
 }
 
@@ -197,21 +197,21 @@ pub fn Context::getFP128Ty(self : Context) -> FP128Type {
 /// }
 /// ```
 pub fn Context::getVoidTy(self : Context) -> VoidType {
-  let typeref = @unsafe.llvm_void_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_void_type_in_context(self.get_raw_ref())
   VoidType::from_raw(typeref, self)
 }
 
 ///|
 /// Returns the basic-block label type uniqued in this context.
 pub fn Context::getLabelTy(self : Context) -> LabelType {
-  let typeref = @unsafe.llvm_label_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_label_type_in_context(self.get_raw_ref())
   LabelType::from_raw(typeref, self)
 }
 
 ///|
 /// Returns the metadata type uniqued in this context.
 pub fn Context::getMetadataTy(self : Context) -> MetadataType {
-  let typeref = @unsafe.llvm_metadata_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_metadata_type_in_context(self.get_raw_ref())
   MetadataType::from_raw(typeref, self)
 }
 
@@ -228,7 +228,7 @@ pub fn Context::getMetadataTy(self : Context) -> MetadataType {
 /// }
 /// ```
 pub fn Context::getTokenTy(self : Context) -> TokenType {
-  let typeref = @unsafe.llvm_token_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_token_type_in_context(self.get_raw_ref())
   TokenType::from_raw(typeref, self)
 }
 
@@ -245,7 +245,7 @@ pub fn Context::getTokenTy(self : Context) -> TokenType {
 /// }
 /// ```
 pub fn Context::getInt1Ty(self : Context) -> Int1Type {
-  let typeref = @unsafe.llvm_int1_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_int1_type_in_context(self.get_raw_ref())
   Int1Type::from_raw(typeref, self)
 }
 
@@ -262,7 +262,7 @@ pub fn Context::getInt1Ty(self : Context) -> Int1Type {
 /// }
 /// ```
 pub fn Context::getInt8Ty(self : Context) -> Int8Type {
-  let typeref = @unsafe.llvm_int8_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_int8_type_in_context(self.get_raw_ref())
   Int8Type::from_raw(typeref, self)
 }
 
@@ -279,7 +279,7 @@ pub fn Context::getInt8Ty(self : Context) -> Int8Type {
 /// }
 /// ```
 pub fn Context::getInt16Ty(self : Context) -> Int16Type {
-  let typeref = @unsafe.llvm_int16_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_int16_type_in_context(self.get_raw_ref())
   Int16Type::from_raw(typeref, self)
 }
 
@@ -296,7 +296,7 @@ pub fn Context::getInt16Ty(self : Context) -> Int16Type {
 /// }
 /// ```
 pub fn Context::getInt32Ty(self : Context) -> Int32Type {
-  let typeref = @unsafe.llvm_int32_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_int32_type_in_context(self.get_raw_ref())
   Int32Type::from_raw(typeref, self)
 }
 
@@ -313,7 +313,7 @@ pub fn Context::getInt32Ty(self : Context) -> Int32Type {
 /// }
 /// ```
 pub fn Context::getInt64Ty(self : Context) -> Int64Type {
-  let typeref = @unsafe.llvm_int64_type_in_context(self.get_unsafe_ref())
+  let typeref = @raw.llvm_int64_type_in_context(self.get_raw_ref())
   Int64Type::from_raw(typeref, self)
 }
 
@@ -348,8 +348,8 @@ pub fn Context::getPtrTy(
   self : Context,
   addressSpace? : AddressSpace = AddressSpace::default(),
 ) -> PointerType {
-  let typeref = @unsafe.llvm_pointer_type_in_context(
-    self.get_unsafe_ref(),
+  let typeref = @raw.llvm_pointer_type_in_context(
+    self.get_raw_ref(),
     addressSpace.0,
   )
   PointerType::from_raw(typeref, self)
@@ -390,9 +390,9 @@ pub fn Context::getFunctionType(
   paramTypes : Array[&Type],
   isVarArg? : Bool = false,
 ) -> FunctionType {
-  let ret_ty = returnType.getTypeRef()
-  let param_tyrefs = paramTypes.map(v => v.getTypeRef())
-  let fty_ref = @unsafe.llvm_function_type(ret_ty, param_tyrefs, isVarArg)
+  let ret_ty = returnType.get_raw_type_ref()
+  let param_tyrefs = paramTypes.map(v => v.get_raw_type_ref())
+  let fty_ref = @raw.llvm_function_type(ret_ty, param_tyrefs, isVarArg)
   FunctionType::from_raw(fty_ref, self)
 }
 
@@ -448,22 +448,19 @@ pub fn Context::getStructType(
     )
     panic()
   }
-  let field_types = elements.map(v => v.getTypeRef())
+  let field_types = elements.map(v => v.get_raw_type_ref())
   let typeref = match name {
     "" =>
-      @unsafe.llvm_struct_type_in_context(
-        self.get_unsafe_ref(),
+      @raw.llvm_struct_type_in_context(
+        self.get_raw_ref(),
         field_types,
         isPacked,
       )
     _ as name => {
-      let typeref = @unsafe.llvm_struct_create_named(
-        self.get_unsafe_ref(),
-        name,
-      ) catch {
-        @unsafe.EmbeddedNul => raise ContainsNul
+      let typeref = @raw.llvm_struct_create_named(self.get_raw_ref(), name) catch {
+        @raw.EmbeddedNul => raise ContainsNul
       }
-      @unsafe.llvm_struct_set_body(typeref, field_types, isPacked)
+      @raw.llvm_struct_set_body(typeref, field_types, isPacked)
       typeref
     }
   }
@@ -502,8 +499,8 @@ pub fn Context::getOpaqueStructType(
   self : Context,
   name : String,
 ) -> StructType raise StringError {
-  let typeref = @unsafe.llvm_struct_create_named(self.get_unsafe_ref(), name) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+  let typeref = @raw.llvm_struct_create_named(self.get_raw_ref(), name) catch {
+    @raw.EmbeddedNul => raise ContainsNul
   }
   StructType::from_raw(typeref, self)
 }
@@ -536,7 +533,7 @@ pub fn Context::getOpaqueStructType(
 /// }
 /// ```
 pub fn Context::getStructTypeByName(self : Self, name : String) -> StructType? {
-  let typeref = @unsafe.llvm_get_type_by_name(self.get_unsafe_ref(), name)
+  let typeref = @raw.llvm_get_type_by_name(self.get_raw_ref(), name)
   unless(typeref.is_null(), () => StructType::from_raw(typeref, self))
 }
 
@@ -575,8 +572,8 @@ pub fn Context::getArrayType(
   elementType : &Type,
   numElements : Int,
 ) -> ArrayType {
-  let typeref = @unsafe.llvm_array_type(
-    elementType.getTypeRef(),
+  let typeref = @raw.llvm_array_type(
+    (elementType : &Type).get_raw_type_ref(),
     numElements.reinterpret_as_uint(),
   )
   ArrayType::from_raw(typeref, self)
@@ -615,8 +612,8 @@ pub fn[T : Type] Context::getFixedVectorType(
   elementQuantity : Int,
 ) -> VectorType {
   //if elementQuantity <= 1 {}
-  let typeref = @unsafe.llvm_vector_type(
-    elementType.getTypeRef(),
+  let typeref = @raw.llvm_vector_type(
+    (elementType : &Type).get_raw_type_ref(),
     elementQuantity.reinterpret_as_uint(),
   )
   VectorType::from_raw(typeref, self)
@@ -657,8 +654,8 @@ pub fn Context::getScalableVectorType(
   elementType : &Type,
   elementQuantity : UInt,
 ) -> ScalableVectorType {
-  let typeref = @unsafe.llvm_scalable_vector_type(
-    elementType.getTypeRef(),
+  let typeref = @raw.llvm_scalable_vector_type(
+    (elementType : &Type).get_raw_type_ref(),
     elementQuantity,
   )
   ScalableVectorType::from_raw(typeref, self)
@@ -694,7 +691,11 @@ pub fn Context::getScalableVectorType(
 /// }
 /// ```
 pub fn Context::getConstTrue(self : Self) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(self.getInt1Ty().getTypeRef(), 1, true)
+  let valueref = @raw.llvm_const_int(
+    self.getInt1Ty().get_raw_type_ref(),
+    1,
+    true,
+  )
   ConstantInt::from_raw(valueref, self)
 }
 
@@ -726,7 +727,11 @@ pub fn Context::getConstTrue(self : Self) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstFalse(self : Self) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(self.getInt1Ty().getTypeRef(), 0, true)
+  let valueref = @raw.llvm_const_int(
+    self.getInt1Ty().get_raw_type_ref(),
+    0,
+    true,
+  )
   ConstantInt::from_raw(valueref, self)
 }
 
@@ -759,8 +764,8 @@ pub fn Context::getConstFalse(self : Self) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt8Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt8Ty().get_raw_type_ref(),
     val.to_uint64(),
     true,
   )
@@ -795,8 +800,8 @@ pub fn Context::getConstInt8(self : Self, val : Int) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt8Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt8Ty().get_raw_type_ref(),
     val.to_uint64(),
     false,
   )
@@ -831,8 +836,8 @@ pub fn Context::getConstUInt8(self : Self, val : Int) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt16Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt16Ty().get_raw_type_ref(),
     val.to_uint64(),
     true,
   )
@@ -867,8 +872,8 @@ pub fn Context::getConstInt16(self : Self, val : Int) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt16Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt16Ty().get_raw_type_ref(),
     val.to_uint64(),
     false,
   )
@@ -900,8 +905,8 @@ pub fn Context::getConstUInt16(self : Self, val : UInt16) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt32Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt32Ty().get_raw_type_ref(),
     val.to_uint64(),
     true,
   )
@@ -936,8 +941,8 @@ pub fn Context::getConstInt32(self : Self, val : Int) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt32Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt32Ty().get_raw_type_ref(),
     val.to_uint64(),
     false,
   )
@@ -969,8 +974,8 @@ pub fn Context::getConstUInt32(self : Self, val : UInt) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt64Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt64Ty().get_raw_type_ref(),
     val.reinterpret_as_uint64(),
     true,
   )
@@ -1005,8 +1010,8 @@ pub fn Context::getConstInt64(self : Self, val : Int64) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
-  let valueref = @unsafe.llvm_const_int(
-    self.getInt64Ty().getTypeRef(),
+  let valueref = @raw.llvm_const_int(
+    self.getInt64Ty().get_raw_type_ref(),
     val,
     false,
   )
@@ -1041,8 +1046,8 @@ pub fn Context::getConstUInt64(self : Self, val : UInt64) -> ConstantInt {
 /// }
 /// ```
 pub fn Context::getConstFloat(self : Self, val : Float) -> ConstantFP {
-  let valueref = @unsafe.llvm_const_real(
-    self.getFloatTy().getTypeRef(),
+  let valueref = @raw.llvm_const_real(
+    self.getFloatTy().get_raw_type_ref(),
     val.to_double(),
   )
   ConstantFP::from_raw(valueref, self)
@@ -1072,8 +1077,8 @@ pub fn Context::getConstZeroFloat(
 ) -> ConstantFP {
   let val = if isNegative { 0x8000_0000U } else { 0x0000_0000U }
   let val = Float::reinterpret_from_uint(val)
-  let valueref = @unsafe.llvm_const_real(
-    self.getFloatTy().getTypeRef(),
+  let valueref = @raw.llvm_const_real(
+    self.getFloatTy().get_raw_type_ref(),
     val.to_double(),
   )
   ConstantFP::from_raw(valueref, self)
@@ -1104,7 +1109,10 @@ pub fn Context::getConstZeroFloat(
 /// }
 /// ```
 pub fn Context::getConstDouble(self : Self, val : Double) -> ConstantFP {
-  let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
+  let valueref = @raw.llvm_const_real(
+    self.getDoubleTy().get_raw_type_ref(),
+    val,
+  )
   ConstantFP::from_raw(valueref, self)
 }
 
@@ -1136,7 +1144,10 @@ pub fn Context::getConstZeroDouble(
     0x0000_0000_0000_0000UL
   }
   let val = val.reinterpret_as_double()
-  let valueref = @unsafe.llvm_const_real(self.getDoubleTy().getTypeRef(), val)
+  let valueref = @raw.llvm_const_real(
+    self.getDoubleTy().get_raw_type_ref(),
+    val,
+  )
   ConstantFP::from_raw(valueref, self)
 }
 
@@ -1185,9 +1196,9 @@ pub fn Context::getConstArray(
   elementType : &Type,
   elements : Array[&Constant],
 ) -> ConstantArray {
-  let element_refs = elements.map(v => v.getValueRef())
-  let valueref = @unsafe.llvm_const_array2(
-    elementType.getTypeRef(),
+  let element_refs = elements.map(v => (v : &Value).get_raw_value_ref())
+  let valueref = @raw.llvm_const_array2(
+    (elementType : &Type).get_raw_type_ref(),
     element_refs,
   )
   ConstantArray::from_raw(valueref, self)
@@ -1237,8 +1248,10 @@ pub fn Context::getConstVector(
   self : Self,
   scalar_constant_vals : Array[&Constant],
 ) -> ConstantVector {
-  let scalar_refs = scalar_constant_vals.map(v => v.getValueRef())
-  let valueref = @unsafe.llvm_const_vector(scalar_refs)
+  let scalar_refs = scalar_constant_vals.map(v => {
+    (v : &Value).get_raw_value_ref()
+  })
+  let valueref = @raw.llvm_const_vector(scalar_refs)
   ConstantVector::from_raw(valueref, self)
 }
 
@@ -1290,9 +1303,9 @@ pub fn Context::getConstStruct(
   elements : Array[&Constant],
   isPacked? : Bool = false,
 ) -> ConstantStruct {
-  let element_refs = elements.map(v => v.getValueRef())
-  let valueref = @unsafe.llvm_const_struct_in_context(
-    self.get_unsafe_ref(),
+  let element_refs = elements.map(v => (v : &Value).get_raw_value_ref())
+  let valueref = @raw.llvm_const_struct_in_context(
+    self.get_raw_ref(),
     element_refs,
     isPacked,
   )
@@ -1334,7 +1347,7 @@ pub fn Context::getConstStruct(
 /// }
 /// ```
 pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
-  let valueref = @unsafe.llvm_get_undef(ty.getTypeRef())
+  let valueref = @raw.llvm_get_undef(ty.get_raw_type_ref())
   UndefValue::from_raw(valueref, self)
 }
 
@@ -1374,7 +1387,7 @@ pub fn Context::getUndef(self : Self, ty : &Type) -> UndefValue {
 /// }
 /// ```
 pub fn Context::getPoision(self : Self, ty : &Type) -> PoisonValue {
-  let valueref = @unsafe.llvm_get_poison(ty.getTypeRef())
+  let valueref = @raw.llvm_get_poison(ty.get_raw_type_ref())
   PoisonValue::from_raw(valueref, self)
 }
 
@@ -1410,6 +1423,6 @@ pub fn Context::getConstPointerNull(
   self : Self,
   ty : &Type,
 ) -> ConstantPointerNull {
-  let valueref = @unsafe.llvm_const_pointer_null(ty.getTypeRef())
+  let valueref = @raw.llvm_const_pointer_null(ty.get_raw_type_ref())
   ConstantPointerNull::from_raw(valueref, self)
 }

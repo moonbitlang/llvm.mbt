@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/unsafe"
+package "Kaida-Amethyst/llvm/internal/raw"
 
 import {
   "moonbitlang/core/encoding/utf8",

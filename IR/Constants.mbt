@@ -41,14 +41,14 @@ fn ConstantInt::from_raw(
 /// host integer conversion semantics. Prefer `getValueAsInt64` when the exact
 /// 64-bit result matters.
 pub fn ConstantInt::to_int(self : Self) -> Int {
-  let val = @unsafe.llvm_const_int_get_s_ext_value(self.getValueRef())
+  let val = @raw.llvm_const_int_get_s_ext_value(self.get_raw_value_ref())
   val.to_int()
 }
 
 ///|
 /// Returns the stored integer after sign extension to `Int64`.
 pub fn ConstantInt::getValueAsInt64(self : Self) -> Int64 {
-  let val = @unsafe.llvm_const_int_get_s_ext_value(self.getValueRef())
+  let val = @raw.llvm_const_int_get_s_ext_value(self.get_raw_value_ref())
   val
 }
 
@@ -59,7 +59,7 @@ pub fn ConstantInt::getValueAsInt64(self : Self) -> Int64 {
 /// bit pattern of all ones is `255` through this accessor and `-1` through
 /// `getValueAsInt64`.
 pub fn ConstantInt::getValueAsUInt64(self : Self) -> UInt64 {
-  let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
+  let val = @raw.llvm_const_int_get_z_ext_value(self.get_raw_value_ref())
   val
 }
 
@@ -68,14 +68,14 @@ pub fn ConstantInt::getValueAsUInt64(self : Self) -> UInt64 {
 ///
 /// **Notes:** Prefer `getValueAsUInt64` when the exact 64-bit result matters.
 pub fn ConstantInt::to_uint(self : Self) -> UInt {
-  let val = @unsafe.llvm_const_int_get_z_ext_value(self.getValueRef())
+  let val = @raw.llvm_const_int_get_z_ext_value(self.get_raw_value_ref())
   val.to_uint()
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantInt with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantInt::get_raw_value_ref(self : ConstantInt) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -99,7 +99,7 @@ pub impl Constant for ConstantInt with fn asConstantEnum(self) {
 ///|
 /// Writes the typed integer constant using LLVM syntax.
 pub impl Show for ConstantInt with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -123,9 +123,9 @@ fn ConstantFP::from_raw(value_ref : ValueRef, context : Context) -> ConstantFP {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantFP with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantFP::get_raw_value_ref(self : ConstantFP) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -149,7 +149,7 @@ pub impl Constant for ConstantFP with fn asConstantEnum(self) {
 ///|
 /// Writes the typed floating-point constant using LLVM syntax.
 pub impl Show for ConstantFP with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -175,9 +175,11 @@ fn ConstantPointerNull::from_raw(
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantPointerNull with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantPointerNull::get_raw_value_ref(
+  self : ConstantPointerNull,
+) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -201,7 +203,7 @@ pub impl Constant for ConstantPointerNull with fn asConstantEnum(self) {
 ///|
 /// Writes the typed null pointer using LLVM syntax.
 pub impl Show for ConstantPointerNull with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -227,9 +229,9 @@ fn ConstantArray::from_raw(
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantArray with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantArray::get_raw_value_ref(self : ConstantArray) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -253,7 +255,7 @@ pub impl Constant for ConstantArray with fn asConstantEnum(self) {
 ///|
 /// Writes the typed array constant using LLVM syntax.
 pub impl Show for ConstantArray with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -280,9 +282,9 @@ fn ConstantStruct::from_raw(
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantStruct with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantStruct::get_raw_value_ref(self : ConstantStruct) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -306,7 +308,7 @@ pub impl Constant for ConstantStruct with fn asConstantEnum(self) {
 ///|
 /// Writes the typed struct constant using LLVM syntax.
 pub impl Show for ConstantStruct with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -333,9 +335,9 @@ fn ConstantVector::from_raw(
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantVector with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantVector::get_raw_value_ref(self : ConstantVector) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -359,7 +361,7 @@ pub impl Constant for ConstantVector with fn asConstantEnum(self) {
 ///|
 /// Writes the typed vector constant using LLVM syntax.
 pub impl Show for ConstantVector with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -383,9 +385,9 @@ fn UndefValue::from_raw(value_ref : ValueRef, context : Context) -> UndefValue {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for UndefValue with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn UndefValue::get_raw_value_ref(self : UndefValue) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -409,7 +411,7 @@ pub impl Constant for UndefValue with fn asConstantEnum(self) {
 ///|
 /// Writes the typed `undef` constant using LLVM syntax.
 pub impl Show for UndefValue with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -442,9 +444,9 @@ pub impl Constant for PoisonValue with fn asConstantEnum(self) {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for PoisonValue with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn PoisonValue::get_raw_value_ref(self : PoisonValue) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -462,7 +464,7 @@ pub impl Value for PoisonValue with fn getContext(self) {
 ///|
 /// Writes the typed `poison` constant using LLVM syntax.
 pub impl Show for PoisonValue with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }
 
 // ==================================================
@@ -489,9 +491,9 @@ fn ConstantExpr::from_raw(
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for ConstantExpr with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn ConstantExpr::get_raw_value_ref(self : ConstantExpr) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -515,5 +517,5 @@ pub impl Constant for ConstantExpr with fn asConstantEnum(self) {
 ///|
 /// Writes the typed constant expression using LLVM syntax.
 pub impl Show for ConstantExpr with fn output(self, logger) {
-  self.getValueRef().output(logger)
+  self.get_raw_value_ref().output(logger)
 }

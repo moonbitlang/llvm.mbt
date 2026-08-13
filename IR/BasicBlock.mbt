@@ -12,20 +12,20 @@
 /// **Lifecycle:** The wrapper retains its module. `eraseFromParent` destroys the
 /// native block and invalidates this wrapper plus aliases to its instructions.
 pub struct BasicBlock {
-  priv block_ref : @unsafe.LLVMBasicBlockRef
+  priv block_ref : @raw.LLVMBasicBlockRef
   priv owner_module : Module
 }
 
 ///|
 fn BasicBlock::from_raw(
-  block_ref : @unsafe.LLVMBasicBlockRef,
+  block_ref : @raw.LLVMBasicBlockRef,
   owner_module : Module,
 ) -> BasicBlock {
   BasicBlock::{ block_ref, owner_module }
 }
 
 ///|
-fn BasicBlock::get_unsafe_ref(self : BasicBlock) -> @unsafe.LLVMBasicBlockRef {
+fn BasicBlock::get_raw_ref(self : BasicBlock) -> @raw.LLVMBasicBlockRef {
   self.block_ref
 }
 
@@ -36,8 +36,8 @@ fn BasicBlock::get_module(self : BasicBlock) -> Module {
 
 ///|
 /// Exposes the block as a borrowed LLVM value handle.
-pub impl Value for BasicBlock with fn getValueRef(self) -> ValueRef {
-  @unsafe.llvm_basic_block_as_value(self.get_unsafe_ref())
+fn BasicBlock::get_raw_value_ref(self : BasicBlock) -> ValueRef {
+  @raw.llvm_basic_block_as_value(self.get_raw_ref())
 }
 
 ///|
@@ -71,8 +71,8 @@ pub impl Value for BasicBlock with fn asValueEnum(self) -> ValueEnum {
 /// }
 /// ```
 pub fn BasicBlock::getParent(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_basic_block_parent(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_basic_block_parent(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     Function::from_raw(valueref, self.get_module())
   })
 }
@@ -101,8 +101,8 @@ pub fn BasicBlock::getParent(self : Self) -> Function? {
 /// }
 /// ```
 pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
-  let valueref = @unsafe.llvm_get_previous_basic_block(self.get_unsafe_ref())
-  unless(@unsafe.llvm_bb_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_previous_basic_block(self.get_raw_ref())
+  unless(@raw.llvm_bb_is_null(valueref), () => {
     BasicBlock::from_raw(valueref, self.get_module())
   })
 }
@@ -131,8 +131,8 @@ pub fn BasicBlock::getPreviousBasicBlock(self : Self) -> BasicBlock? {
 /// }
 /// ```
 pub fn BasicBlock::getNextBasicBlock(self : Self) -> BasicBlock? {
-  let valueref = @unsafe.llvm_get_next_basic_block(self.get_unsafe_ref())
-  unless(@unsafe.llvm_bb_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_next_basic_block(self.get_raw_ref())
+  unless(@raw.llvm_bb_is_null(valueref), () => {
     BasicBlock::from_raw(valueref, self.get_module())
   })
 }
@@ -229,10 +229,7 @@ pub fn BasicBlock::moveBefore(self : Self, other : BasicBlock) -> Unit raise {
       "Misuse BasicBlock::moveBefore, two Basic Blocks must have a parent Function",
     )
   }
-  @unsafe.llvm_move_basic_block_before(
-    self.get_unsafe_ref(),
-    other.get_unsafe_ref(),
-  )
+  @raw.llvm_move_basic_block_before(self.get_raw_ref(), other.get_raw_ref())
 }
 
 ///|
@@ -316,10 +313,7 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
       "Misuse BasicBlock::moveAfter, two Basic Blocks must have a parent Function",
     )
   }
-  @unsafe.llvm_move_basic_block_after(
-    self.get_unsafe_ref(),
-    other.get_unsafe_ref(),
-  )
+  @raw.llvm_move_basic_block_after(self.get_raw_ref(), other.get_raw_ref())
 }
 
 ///|
@@ -351,8 +345,8 @@ pub fn BasicBlock::moveAfter(self : Self, other : BasicBlock) -> Unit raise {
 /// }
 /// ```
 pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
-  let valueref = @unsafe.llvm_get_first_instruction(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_first_instruction(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     initInstruction(valueref, self.get_module())
   })
 }
@@ -386,8 +380,8 @@ pub fn BasicBlock::getFirstInst(self : Self) -> &Instruction? {
 /// }
 /// ```
 pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
-  let valueref = @unsafe.llvm_get_last_instruction(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_last_instruction(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     initInstruction(valueref, self.get_module())
   })
 }
@@ -421,8 +415,8 @@ pub fn BasicBlock::getLastInst(self : Self) -> &Instruction? {
 /// }
 /// ```
 pub fn BasicBlock::getTerminator(self : Self) -> &Instruction? {
-  let valueref = @unsafe.llvm_get_basic_block_terminator(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_basic_block_terminator(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     initInstruction(valueref, self.get_module())
   })
 }
@@ -488,7 +482,7 @@ pub fn BasicBlock::removeFromParent(self : Self) -> Unit raise {
       "Misuse BasicBlock::removeFromParent, Basic Block must have a parent Function",
     )
   }
-  @unsafe.llvm_remove_basic_block_from_parent(self.get_unsafe_ref())
+  @raw.llvm_remove_basic_block_from_parent(self.get_raw_ref())
 }
 
 ///|
@@ -556,7 +550,7 @@ pub fn BasicBlock::eraseFromParent(self : Self) -> Unit raise {
       "Misuse BasicBlock::eraseFromParent, Basic Block must have a parent Function",
     )
   }
-  @unsafe.llvm_delete_basic_block(self.get_unsafe_ref())
+  @raw.llvm_delete_basic_block(self.get_raw_ref())
 }
 
 ///|
@@ -622,9 +616,9 @@ pub fn BasicBlock::setName(
 }
 
 //pub fn BasicBlock::getFirstUser(self: Self) -> &User? {
-//  let useref = @unsafe.llvm_get_first_use(@unsafe.llvm_basic_block_as_value(self.0))
+//  let useref = @raw.llvm_get_first_use(@raw.llvm_basic_block_as_value(self.0))
 //  unless(
-//    @unsafe.llvm_value_ref_is_null(useref),
+//    @raw.llvm_value_ref_is_null(useref),
 //    () => initUser(useref)
 //  )
 //}
@@ -636,8 +630,8 @@ pub fn BasicBlock::setName(
 ///|
 /// Writes this block as LLVM textual IR.
 pub impl Show for BasicBlock with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(
-    @unsafe.llvm_basic_block_as_value(self.get_unsafe_ref()),
+  let s = @raw.llvm_print_value_to_string(
+    @raw.llvm_basic_block_as_value(self.get_raw_ref()),
   ) catch {
     error => "<LLVM basic block text unavailable: \{error}>"
   }

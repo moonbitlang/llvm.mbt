@@ -1,7 +1,7 @@
 supported_targets = "native"
 
 import {
-  "Kaida-Amethyst/llvm/unsafe",
+  "Kaida-Amethyst/llvm/internal/raw",
   "moonbitlang/core/encoding/utf8",
   "moonbitlang/core/uint",
 }

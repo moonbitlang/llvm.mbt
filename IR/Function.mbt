@@ -5,8 +5,9 @@
 /// are added. Its signature is context-owned; arguments and blocks are anchored
 /// to the same module as the function.
 ///
-/// **Lifecycle:** The wrapper retains its owning module. Unsafe removal or
-/// deletion of the function can still invalidate this and derived wrappers.
+/// **Lifecycle:** The wrapper retains its owning module. Removal or deletion of
+/// the function through the raw layer can still invalidate this and derived
+/// wrappers.
 pub struct Function {
   priv value : ModuleAnchoredValue
 }
@@ -22,9 +23,9 @@ fn Function::get_module(self : Function) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for Function with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn Function::get_raw_value_ref(self : Function) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -41,16 +42,16 @@ pub impl GlobalValue for Function with fn asGlobalEnum(self) {
 
 ///|
 fn Function::getNextFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_next_function(self.getValueRef())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_next_function(self.get_raw_value_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     Function::from_raw(valueref, self.get_module())
   })
 }
 
 //fn Function::getPreviousFunction(self: Self) -> Function? {
-//  let valueref = @unsafe.llvm_get_previous_function(self.getValueRef())
+//  let valueref = @raw.llvm_get_previous_function(self.get_raw_value_ref())
 //  @option.unless(
-//    @unsafe.llvm_value_ref_is_null(valueref),
+//    @raw.llvm_value_ref_is_null(valueref),
 //    () => Function(valueref)
 //  )
 //}
@@ -121,7 +122,7 @@ pub fn Function::setName(self : Self, name : String) -> Unit raise StringError {
 /// }
 /// ```
 pub fn Function::getType(self : Self) -> FunctionType {
-  let typeref = @unsafe.llvm_global_get_value_type(self.getValueRef())
+  let typeref = @raw.llvm_global_get_value_type(self.get_raw_value_ref())
   FunctionType::from_raw(typeref, self.get_module().getContext())
 }
 
@@ -148,7 +149,7 @@ pub fn Function::getType(self : Self) -> FunctionType {
 /// }
 /// ```
 pub fn Function::getNumArgs(self : Self) -> Int {
-  @unsafe.llvm_count_params(self.getValueRef()).reinterpret_as_int()
+  @raw.llvm_count_params(self.get_raw_value_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -175,8 +176,8 @@ pub fn Function::getNumArgs(self : Self) -> Int {
 /// ```
 pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
   when(idx >= 0 && idx < self.getNumArgs(), () => {
-    let valueref = @unsafe.llvm_get_param(
-      self.getValueRef(),
+    let valueref = @raw.llvm_get_param(
+      self.get_raw_value_ref(),
       idx.reinterpret_as_uint(),
     )
     Argument::construct(valueref, idx, self.get_module())
@@ -205,7 +206,7 @@ pub fn Function::getArg(self : Self, idx : Int) -> Argument? {
 /// }
 /// ```
 pub fn Function::getArgs(self : Self) -> Array[Argument] {
-  @unsafe.llvm_get_params(self.getValueRef()).mapi((r, i) => {
+  @raw.llvm_get_params(self.get_raw_value_ref()).mapi((r, i) => {
     Argument::construct(i, r, self.get_module())
   })
 }
@@ -251,12 +252,12 @@ pub fn Function::addBasicBlock(
 ) -> BasicBlock raise StringError {
   let blockref = match before {
     None =>
-      @unsafe.llvm_append_basic_block(self.getValueRef(), name) catch {
-        @unsafe.EmbeddedNul => raise ContainsNul
+      @raw.llvm_append_basic_block(self.get_raw_value_ref(), name) catch {
+        @raw.EmbeddedNul => raise ContainsNul
       }
     Some(bb) =>
-      @unsafe.llvm_insert_basic_block(bb.get_unsafe_ref(), name) catch {
-        @unsafe.EmbeddedNul => raise ContainsNul
+      @raw.llvm_insert_basic_block(bb.get_raw_ref(), name) catch {
+        @raw.EmbeddedNul => raise ContainsNul
       }
   }
   BasicBlock::from_raw(blockref, self.get_module())
@@ -281,7 +282,7 @@ pub fn Function::addBasicBlock(
 /// assert_eq(fval.getNumBasicBlocks(), 3)
 /// ```
 pub fn Function::getNumBasicBlocks(self : Self) -> Int {
-  @unsafe.llvm_count_basic_blocks(self.getValueRef()).reinterpret_as_int()
+  @raw.llvm_count_basic_blocks(self.get_raw_value_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -305,7 +306,7 @@ pub fn Function::getNumBasicBlocks(self : Self) -> Int {
 /// assert_eq(fval.getBasicBlocks().length(), 3)
 /// ```
 pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
-  @unsafe.llvm_get_basic_blocks(self.getValueRef()).map(r => {
+  @raw.llvm_get_basic_blocks(self.get_raw_value_ref()).map(r => {
     BasicBlock::from_raw(r, self.get_module())
   })
 }
@@ -353,8 +354,8 @@ pub fn Function::getBasicBlocks(self : Self) -> Array[BasicBlock] {
 /// ```
 pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
-  @unsafe.llvm_add_attribute_at_index(
-    self.getValueRef(),
+  @raw.llvm_add_attribute_at_index(
+    self.get_raw_value_ref(),
     @uint.MAX_VALUE,
     fn_attr.0,
   )
@@ -409,11 +410,9 @@ pub fn Function::addFnAttr(self : Self, attr : FnAttr) -> Unit {
 /// }
 /// ```
 pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(
-    fn_attr.attr_name(),
-  )
-  @unsafe.llvm_remove_enum_attribute_at_index(
-    self.getValueRef(),
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(fn_attr.attr_name())
+  @raw.llvm_remove_enum_attribute_at_index(
+    self.get_raw_value_ref(),
     @uint.MAX_VALUE,
     kind_n,
   )
@@ -451,7 +450,10 @@ pub fn Function::removeFnAttr(self : Self, fn_attr : FnAttr) -> Unit {
 /// }
 /// ```
 pub fn Function::countFnAttrs(self : Self) -> Int {
-  @unsafe.llvm_get_attribute_count_at_index(self.getValueRef(), @uint.MAX_VALUE).reinterpret_as_int()
+  @raw.llvm_get_attribute_count_at_index(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+  ).reinterpret_as_int()
 }
 
 ///|
@@ -495,7 +497,7 @@ pub fn Function::countFnAttrs(self : Self) -> Int {
 /// ```
 pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
   let fn_attr = attr.to_llvm_attr(self.getContext())
-  @unsafe.llvm_add_attribute_at_index(self.getValueRef(), 0, fn_attr.0)
+  @raw.llvm_add_attribute_at_index(self.get_raw_value_ref(), 0, fn_attr.0)
 }
 
 ///|
@@ -547,16 +549,14 @@ pub fn Function::addRetAttr(self : Self, attr : RetAttr) -> Unit {
 /// }
 /// ```
 pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(
-    ret_attr.attr_name(),
-  )
-  @unsafe.llvm_remove_enum_attribute_at_index(self.getValueRef(), 0, kind_n)
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(ret_attr.attr_name())
+  @raw.llvm_remove_enum_attribute_at_index(self.get_raw_value_ref(), 0, kind_n)
 }
 
 ///|
 /// Writes the complete LLVM function declaration or definition.
 pub impl Show for Function with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+  let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {
     error => "<LLVM function text unavailable: \{error}>"
   }
   logger.write_string(s)
@@ -572,7 +572,7 @@ pub impl Show for Function with fn output(self, logger) {
 /// The wrapper records the argument's zero-based index for attribute APIs.
 ///
 /// **Lifecycle:** It retains the function's module. If the function is erased
-/// through an unsafe API, this wrapper becomes invalid.
+/// through the raw layer, this wrapper becomes invalid.
 pub struct Argument {
   priv value_ref : ValueRef
   priv idx : Int
@@ -599,8 +599,8 @@ fn Argument::get_module(self : Argument) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for Argument with fn getValueRef(self) -> ValueRef {
+/// Returns the internal borrowed LLVM value handle.
+fn Argument::get_raw_value_ref(self : Argument) -> ValueRef {
   self.inner()
 }
 
@@ -666,7 +666,7 @@ pub fn Argument::setName(self : Self, name : String) -> Unit raise StringError {
 ///
 /// **Lifecycle:** The returned wrapper retains the same module.
 pub fn Argument::getFunction(self : Self) -> Function {
-  let func_ref = @unsafe.llvm_get_param_parent(self.getValueRef())
+  let func_ref = @raw.llvm_get_param_parent(self.get_raw_value_ref())
   Function::from_raw(func_ref, self.get_module())
 }
 
@@ -712,8 +712,8 @@ pub fn Argument::getFunction(self : Self) -> Function {
 /// ```
 pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
   let param_attr = attr.to_llvm_attr(self.getContext())
-  @unsafe.llvm_add_attribute_at_index(
-    self.getFunction().getValueRef(),
+  @raw.llvm_add_attribute_at_index(
+    self.getFunction().get_raw_value_ref(),
     self.idx.reinterpret_as_uint() + 1,
     param_attr.0,
   )
@@ -770,9 +770,9 @@ pub fn Argument::addAttr(self : Self, attr : ParamAttr) -> Unit {
 /// }
 /// ```
 pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
-  let kind_n = @unsafe.llvm_get_enum_attribute_kind_for_name(attr.attr_name())
-  @unsafe.llvm_remove_enum_attribute_at_index(
-    self.getFunction().getValueRef(),
+  let kind_n = @raw.llvm_get_enum_attribute_kind_for_name(attr.attr_name())
+  @raw.llvm_remove_enum_attribute_at_index(
+    self.getFunction().get_raw_value_ref(),
     self.idx.reinterpret_as_uint() + 1,
     kind_n,
   )
@@ -781,7 +781,7 @@ pub fn Argument::removeAttr(self : Self, attr : ParamAttr) -> Unit {
 ///|
 /// Writes this typed argument using LLVM syntax.
 pub impl Show for Argument with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+  let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {
     error => "<LLVM argument text unavailable: \{error}>"
   }
   logger.write_string(s)

@@ -1,5 +1,5 @@
 //
-//fn[T] ptr_to_func_ptr(ptr: @unsafe.LLVMOrcExecutorAddress) -> FuncRef[T] = "%identity"
+//fn[T] ptr_to_func_ptr(ptr: @raw.LLVMOrcExecutorAddress) -> FuncRef[T] = "%identity"
 //test {
 //  let ctx = @IR.Context::new()
 //  let mod = ctx.addModule("demo")
@@ -19,16 +19,16 @@
 //  let _ = builder.createRet(sum)
 //
 //  //mod.dump()
-//  let jit = @unsafe.llvm_orc_create_lljit()
-//  let tsctx = @unsafe.llvm_orc_create_new_thread_safe_context()
-//  let tsm = @unsafe.llvm_orc_create_new_thread_safe_module(mod.0, tsctx)
+//  let jit = @raw.llvm_orc_create_lljit()
+//  let tsctx = @raw.llvm_orc_create_new_thread_safe_context()
+//  let tsm = @raw.llvm_orc_create_new_thread_safe_module(mod.0, tsctx)
 //
-//  let main_jd = @unsafe.llvm_orc_lljit_get_main_jit_dylib(jit)
+//  let main_jd = @raw.llvm_orc_lljit_get_main_jit_dylib(jit)
 //
-//  let _ = @unsafe.llvm_orc_lljit_add_llvm_ir_module(jit, main_jd, tsm)
+//  let _ = @raw.llvm_orc_lljit_add_llvm_ir_module(jit, main_jd, tsm)
 //
-//  @unsafe.llvm_orc_dispose_thread_safe_context(tsctx)
-//  let addr = @unsafe.llvm_orc_lljit_lookup(jit, "add")
+//  @raw.llvm_orc_dispose_thread_safe_context(tsctx)
+//  let addr = @raw.llvm_orc_lljit_lookup(jit, "add")
 //  let func = match addr {
 //    Some(a) => {
 //      let fptr : FuncRef[(Int, Int) -> Int] = ptr_to_func_ptr(a)

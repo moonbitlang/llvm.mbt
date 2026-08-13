@@ -3,13 +3,8 @@
 // =======================================================
 
 ///|
-/// Raw borrowed LLVM value handle exposed for unsafe interoperation.
-///
-/// **Lifecycle:** Ownership depends on the value category. Never dispose this
-/// handle directly through LLVM-C. Module-owned handles become invalid when
-/// their module is disposed; context-owned constants become invalid when their
-/// context is disposed. Erasing an IR object may invalidate the handle earlier.
-pub type ValueRef = @unsafe.LLVMValueRef
+/// Raw borrowed LLVM value handle used only inside the IR implementation.
+type ValueRef = @raw.LLVMValueRef
 
 // =======================================================
 // Value
@@ -96,21 +91,15 @@ pub enum ValueEnum {
 ///|
 /// Common interface for LLVM values represented by the safe API.
 ///
-/// **Implementor contract:** `getValueRef`, `asValueEnum`, `getType`, and
-/// `getContext` must all describe the same live LLVM value. Implementations
-/// must preserve the correct context or module ownership anchor.
+/// **Implementor contract:** `asValueEnum`, `getType`, and `getContext` must all
+/// describe the same live LLVM value. Implementations must preserve the correct
+/// context or module ownership anchor.
 ///
 /// **Lifecycle:** Constants are anchored directly to a context. Functions,
 /// globals, arguments, basic blocks, and instructions are anchored to a module.
 /// Mutation APIs that erase IR can invalidate wrappers before their anchor is
 /// disposed.
 pub trait Value: Show {
-  /// Returns the borrowed raw LLVM value handle.
-  ///
-  /// **Lifecycle:** The caller must not dispose it or retain it beyond the
-  /// wrapper's category-specific lifetime.
-  fn getValueRef(Self) -> ValueRef
-
   /// Returns the concrete dynamic classification of this value.
   fn asValueEnum(Self) -> ValueEnum
 
@@ -153,8 +142,45 @@ pub trait Value: Show {
 }
 
 ///|
+fn &Value::get_raw_value_ref(self : &Value) -> ValueRef {
+  match self.asValueEnum() {
+    Function(value) => value.get_raw_value_ref()
+    GlobalVariable(value) => value.get_raw_value_ref()
+    GlobalConstant(value) => value.get_raw_value_ref()
+    ConstantInt(value) => value.get_raw_value_ref()
+    ConstantFP(value) => value.get_raw_value_ref()
+    ConstantPointerNull(value) => value.get_raw_value_ref()
+    ConstantArray(value) => value.get_raw_value_ref()
+    ConstantVector(value) => value.get_raw_value_ref()
+    ConstantStruct(value) => value.get_raw_value_ref()
+    ConstantExpr(value) => value.get_raw_value_ref()
+    UndefValue(value) => value.get_raw_value_ref()
+    PoisonValue(value) => value.get_raw_value_ref()
+    Argument(value) => value.get_raw_value_ref()
+    BasicBlock(value) => value.get_raw_value_ref()
+    AllocaInst(value) => value.get_raw_value_ref()
+    LoadInst(value) => value.get_raw_value_ref()
+    StoreInst(value) => value.get_raw_value_ref()
+    CastInst(value) => value.get_raw_value_ref()
+    UnaryInst(value) => value.get_raw_value_ref()
+    BinaryInst(value) => value.get_raw_value_ref()
+    ICmpInst(value) => value.get_raw_value_ref()
+    FCmpInst(value) => value.get_raw_value_ref()
+    GetElementPtrInst(value) => value.get_raw_value_ref()
+    SelectInst(value) => value.get_raw_value_ref()
+    ExtractValueInst(value) => value.get_raw_value_ref()
+    InsertValueInst(value) => value.get_raw_value_ref()
+    PHINode(value) => value.get_raw_value_ref()
+    ReturnInst(value) => value.get_raw_value_ref()
+    BranchInst(value) => value.get_raw_value_ref()
+    SwitchInst(value) => value.get_raw_value_ref()
+    CallInst(value) => value.get_raw_value_ref()
+  }
+}
+
+///|
 impl Value with fn getType(self) {
-  let typeref = @unsafe.llvm_type_of(self.getValueRef())
+  let typeref = @raw.llvm_type_of((self : &Value).get_raw_value_ref())
   initAbstractType(typeref, self.getContext())
 }
 
@@ -197,7 +223,7 @@ impl Value with fn getContext(self) {
 
 ///|
 impl Value with fn getValueName(self) raise StringError {
-  let name = @unsafe.llvm_get_value_name(self.getValueRef()) catch {
+  let name = @raw.llvm_get_value_name((self : &Value).get_raw_value_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
   unless(name.is_empty(), () => name)
@@ -206,12 +232,15 @@ impl Value with fn getValueName(self) raise StringError {
 ///|
 impl Value with fn setValueName(self, name : String) raise StringError {
   guard !name.contains_code_unit(0) else { raise ContainsNul }
-  @unsafe.llvm_set_value_name(self.getValueRef(), name)
+  @raw.llvm_set_value_name((self : &Value).get_raw_value_ref(), name)
 }
 
 ///|
 impl Value with fn replaceAllUsesWith(self, other : &Value) {
-  @unsafe.llvm_replace_all_uses_with(self.getValueRef(), other.getValueRef())
+  @raw.llvm_replace_all_uses_with(
+    (self : &Value).get_raw_value_ref(),
+    other.get_raw_value_ref(),
+  )
 }
 
 ///|
@@ -259,10 +288,6 @@ pub trait Constant: Value {
   /// Returns the concrete constant classification.
   fn asConstantEnum(Self) -> ConstantEnum
 }
-
-///|
-/// Exposes the borrowed raw value handle on a constant trait object.
-pub extend &Constant with Value::{getValueRef}
 
 ///|
 /// Closed classification of constants supported by the safe API.
@@ -344,14 +369,10 @@ pub trait Instruction: Value {
 }
 
 ///|
-/// Exposes the borrowed raw value handle on an instruction trait object.
-pub extend &Instruction with Value::{getValueRef}
-
-///|
 impl Instruction with fn getParentBasicBlock(self) {
-  let valuref = Value::getValueRef(self)
-  let bb_ref = @unsafe.llvm_get_instruction_parent(valuref)
-  match @unsafe.llvm_bb_is_null(bb_ref) {
+  let valuref = (self : &Value).get_raw_value_ref()
+  let bb_ref = @raw.llvm_get_instruction_parent(valuref)
+  match @raw.llvm_bb_is_null(bb_ref) {
     true => None
     false => Some(BasicBlock::from_raw(bb_ref, get_instruction_module(self)))
   }
@@ -359,7 +380,7 @@ impl Instruction with fn getParentBasicBlock(self) {
 
 ///|
 fn initInstruction(valueref : ValueRef, owner_module : Module) -> &Instruction {
-  fn is_binary_opcode(opcode : @unsafe.LLVMOpcode) -> Bool {
+  fn is_binary_opcode(opcode : @raw.LLVMOpcode) -> Bool {
     match opcode {
       LLVMAdd
       | LLVMSub
@@ -378,7 +399,7 @@ fn initInstruction(valueref : ValueRef, owner_module : Module) -> &Instruction {
     }
   }
 
-  fn is_cast_opcode(opcode : @unsafe.LLVMOpcode) -> Bool {
+  fn is_cast_opcode(opcode : @raw.LLVMOpcode) -> Bool {
     match opcode {
       LLVMBitCast
       | LLVMAddrSpaceCast
@@ -395,7 +416,7 @@ fn initInstruction(valueref : ValueRef, owner_module : Module) -> &Instruction {
     }
   }
 
-  let opcode = @unsafe.llvm_get_instruction_opcode(valueref)
+  let opcode = @raw.llvm_get_instruction_opcode(valueref)
   match opcode {
     LLVMAlloca => AllocaInst::from_raw(valueref, owner_module) as &Instruction
     LLVMLoad => LoadInst::from_raw(valueref, owner_module)
@@ -450,35 +471,35 @@ fn get_instruction_module(inst : &Instruction) -> Module {
 
 ///|
 impl Instruction with fn getNextInst(self) {
-  let valueref = Value::getValueRef(self)
-  let next_ref = @unsafe.llvm_get_next_instruction(valueref)
-  unless(@unsafe.llvm_value_ref_is_null(next_ref), () => {
+  let valueref = (self : &Value).get_raw_value_ref()
+  let next_ref = @raw.llvm_get_next_instruction(valueref)
+  unless(@raw.llvm_value_ref_is_null(next_ref), () => {
     initInstruction(next_ref, get_instruction_module(self))
   })
 }
 
 ///|
 impl Instruction with fn getPrevInst(self) {
-  let valueref = Value::getValueRef(self)
-  let prev_ref = @unsafe.llvm_get_previous_instruction(valueref)
-  unless(@unsafe.llvm_value_ref_is_null(prev_ref), () => {
+  let valueref = (self : &Value).get_raw_value_ref()
+  let prev_ref = @raw.llvm_get_previous_instruction(valueref)
+  unless(@raw.llvm_value_ref_is_null(prev_ref), () => {
     initInstruction(prev_ref, get_instruction_module(self))
   })
 }
 
 ///|
 impl Instruction with fn removeFromParent(self) {
-  @unsafe.llvm_instruction_remove_from_parent(Value::getValueRef(self))
+  @raw.llvm_instruction_remove_from_parent((self : &Value).get_raw_value_ref())
 }
 
 ///|
 impl Instruction with fn eraseFromParent(self) {
-  @unsafe.llvm_instruction_erase_from_parent(Value::getValueRef(self))
+  @raw.llvm_instruction_erase_from_parent((self : &Value).get_raw_value_ref())
 }
 
 ///|
 impl Instruction with fn getNumArgOperands(self) {
-  @unsafe.llvm_get_num_arg_operands(Value::getValueRef(self)).reinterpret_as_int()
+  @raw.llvm_get_num_arg_operands((self : &Value).get_raw_value_ref()).reinterpret_as_int()
 }
 
 ///|
@@ -553,10 +574,6 @@ pub trait GlobalValue: Value {
 }
 
 ///|
-/// Exposes the borrowed raw value handle on a global-value trait object.
-pub extend &GlobalValue with Value::{getValueRef}
-
-///|
 /// Closed classification of module-level global values.
 pub enum GlobalEnum {
   /// Function definition or declaration.
@@ -569,32 +586,32 @@ pub enum GlobalEnum {
 
 ///|
 impl GlobalValue with fn getLinkage(self) {
-  let linkage = @unsafe.llvm_get_linkage(Value::getValueRef(self))
+  let linkage = @raw.llvm_get_linkage((self : &Value).get_raw_value_ref())
   Linkage::from_llvm_linkage(linkage)
 }
 
 ///|
 impl GlobalValue with fn setLinkage(self, linkage : Linkage) {
   let llvm_linkage = linkage.to_llvm_linkage()
-  @unsafe.llvm_set_linkage(Value::getValueRef(self), llvm_linkage)
+  @raw.llvm_set_linkage((self : &Value).get_raw_value_ref(), llvm_linkage)
 }
 
 ///|
 impl GlobalValue with fn getUnnamedAddr(self) {
-  let ua = @unsafe.llvm_get_unnamed_address(Value::getValueRef(self))
+  let ua = @raw.llvm_get_unnamed_address((self : &Value).get_raw_value_ref())
   UnnamedAddr::from_llvm_unnamed_addr(ua)
 }
 
 ///|
 impl GlobalValue with fn setUnnamedAddr(self, ua : UnnamedAddr) {
   let llvm_ua = ua.to_llvm_unnamed_addr()
-  @unsafe.llvm_set_unnamed_address(Value::getValueRef(self), llvm_ua)
+  @raw.llvm_set_unnamed_address((self : &Value).get_raw_value_ref(), llvm_ua)
 }
 
 ///|
 impl GlobalValue with fn removeUnnamedAddr(self) {
-  @unsafe.llvm_set_unnamed_address(
-    Value::getValueRef(self),
-    @unsafe.LLVMNoUnnamedAddr,
+  @raw.llvm_set_unnamed_address(
+    (self : &Value).get_raw_value_ref(),
+    @raw.LLVMNoUnnamedAddr,
   )
 }

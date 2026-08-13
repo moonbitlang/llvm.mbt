@@ -13,7 +13,7 @@ pub struct Module {
 }
 
 ///|
-fn Module::from_raw(raw : @unsafe.LLVMModuleRef, context : Context) -> Module {
+fn Module::from_raw(raw : @raw.LLVMModuleRef, context : Context) -> Module {
   Module::{ owner: ModuleOwner::new(raw, context.get_owner()) }
 }
 
@@ -23,7 +23,7 @@ fn Module::get_owner(self : Module) -> ModuleOwner {
 }
 
 ///|
-fn Module::get_unsafe_ref(self : Module) -> @unsafe.LLVMModuleRef {
+fn Module::get_raw_ref(self : Module) -> @raw.LLVMModuleRef {
   self.owner.raw()
 }
 
@@ -43,16 +43,16 @@ pub fn Module::addFunction(
   name : String,
   linkage? : Linkage,
 ) -> Function raise StringError {
-  let valueref = @unsafe.llvm_add_function(
-    self.get_unsafe_ref(),
+  let valueref = @raw.llvm_add_function(
+    self.get_raw_ref(),
     name,
-    fty.getTypeRef(),
+    fty.get_raw_type_ref(),
   ) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+    @raw.EmbeddedNul => raise ContainsNul
   }
   let fval = Function::from_raw(valueref, self)
   match linkage {
-    Some(l) => @unsafe.llvm_set_linkage(valueref, l.to_llvm_linkage())
+    Some(l) => @raw.llvm_set_linkage(valueref, l.to_llvm_linkage())
     None => ()
   }
   fval
@@ -67,8 +67,8 @@ pub fn Module::getContext(self : Self) -> Context {
 ///|
 /// Returns the first function in module order, or `None` when there are none.
 pub fn Module::getFirstFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_first_function(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_first_function(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     Function::from_raw(valueref, self)
   })
 }
@@ -76,8 +76,8 @@ pub fn Module::getFirstFunction(self : Self) -> Function? {
 ///|
 /// Returns the last function in module order, or `None` when there are none.
 pub fn Module::getLastFunction(self : Self) -> Function? {
-  let valueref = @unsafe.llvm_get_last_function(self.get_unsafe_ref())
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_last_function(self.get_raw_ref())
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     Function::from_raw(valueref, self)
   })
 }
@@ -86,8 +86,8 @@ pub fn Module::getLastFunction(self : Self) -> Function? {
 /// Finds a function by name, returning `None` when it is absent or the name
 /// cannot be passed to LLVM.
 pub fn Module::getFunction(self : Self, name : String) -> Function? {
-  let valueref = @unsafe.llvm_get_named_function(self.get_unsafe_ref(), name)
-  unless(@unsafe.llvm_value_ref_is_null(valueref), () => {
+  let valueref = @raw.llvm_get_named_function(self.get_raw_ref(), name)
+  unless(@raw.llvm_value_ref_is_null(valueref), () => {
     Function::from_raw(valueref, self)
   })
 }
@@ -122,7 +122,7 @@ pub fn Module::getFunctions(self : Self) -> Array[Function] {
 /// }
 /// ```
 pub fn Module::getName(self : Self) -> String raise StringError {
-  @unsafe.llvm_get_module_identifier(self.get_unsafe_ref()) catch {
+  @raw.llvm_get_module_identifier(self.get_raw_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -144,7 +144,7 @@ pub fn Module::getName(self : Self) -> String raise StringError {
 /// }
 /// ```
 pub fn Module::setName(self : Self, name : String) -> Unit {
-  @unsafe.llvm_set_module_identifier(self.get_unsafe_ref(), name)
+  @raw.llvm_set_module_identifier(self.get_raw_ref(), name)
 }
 
 ///|
@@ -167,7 +167,7 @@ pub fn Module::setName(self : Self, name : String) -> Unit {
 /// }
 /// ```
 pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
-  @unsafe.llvm_get_source_file_name(self.get_unsafe_ref()) catch {
+  @raw.llvm_get_source_file_name(self.get_raw_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -191,7 +191,7 @@ pub fn Module::getSourceFileName(self : Self) -> String raise StringError {
 /// }
 /// ```
 pub fn Module::setSourceFileName(self : Module, name : String) -> Unit {
-  @unsafe.llvm_set_source_file_name(self.get_unsafe_ref(), name)
+  @raw.llvm_set_source_file_name(self.get_raw_ref(), name)
 }
 
 ///|
@@ -206,8 +206,8 @@ pub fn Module::setDataLayout(
   self : Module,
   layout : String,
 ) -> Unit raise StringError {
-  @unsafe.llvm_set_data_layout(self.get_unsafe_ref(), layout) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+  @raw.llvm_set_data_layout(self.get_raw_ref(), layout) catch {
+    @raw.EmbeddedNul => raise ContainsNul
   }
 }
 
@@ -217,7 +217,7 @@ pub fn Module::setDataLayout(
 /// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns invalid
 /// UTF-8.
 pub fn Module::getDataLayoutStr(self : Module) -> String raise StringError {
-  @unsafe.llvm_get_data_layout_str(self.get_unsafe_ref()) catch {
+  @raw.llvm_get_data_layout_str(self.get_raw_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -228,9 +228,7 @@ pub fn Module::getDataLayoutStr(self : Module) -> String raise StringError {
 /// **Lifecycle:** The view retains this module and must not be treated as an
 /// independently owned `LLVMTargetDataRef`.
 pub fn Module::getDataLayout(self : Module) -> DataLayout {
-  let target_data_ref = @unsafe.llvm_get_module_data_layout(
-    self.get_unsafe_ref(),
-  )
+  let target_data_ref = @raw.llvm_get_module_data_layout(self.get_raw_ref())
   DataLayout::from_raw(target_data_ref, self)
 }
 
@@ -243,7 +241,7 @@ pub fn Module::getDataLayout(self : Module) -> DataLayout {
 /// **Notes:** A newly created module may have an empty triple. Configure it for
 /// the intended target before target-dependent verification or emission.
 pub fn Module::getTargetTriple(self : Module) -> String raise StringError {
-  @unsafe.llvm_get_target(self.get_unsafe_ref()) catch {
+  @raw.llvm_get_target(self.get_raw_ref()) catch {
     @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
   }
 }
@@ -264,7 +262,7 @@ pub suberror VerificationError {
 /// **Notes:** Target-dependent workflows should configure the module's target
 /// triple and data layout before verification.
 pub fn Module::verify(self : Module) -> Unit raise VerificationError {
-  let (failed, message) = @unsafe.llvm_verify_module(self.get_unsafe_ref())
+  let (failed, message) = @raw.llvm_verify_module(self.get_raw_ref())
   guard !failed else { raise VerificationError(message) }
 }
 
@@ -285,18 +283,18 @@ pub fn Module::addGlobalVariable(
   initializer? : &Constant,
   linkage? : Linkage,
 ) -> GlobalVariable raise StringError {
-  let gv_ref = @unsafe.llvm_add_global(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let gv_ref = @raw.llvm_add_global(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
     name,
   ) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+    @raw.EmbeddedNul => raise ContainsNul
   }
   if initializer is Some(init) {
-    @unsafe.llvm_set_initializer(gv_ref, init.getValueRef())
+    @raw.llvm_set_initializer(gv_ref, (init : &Value).get_raw_value_ref())
   }
   if linkage is Some(link) {
-    @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
+    @raw.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
   }
   GlobalVariable::from_raw(gv_ref, self)
 }
@@ -317,17 +315,17 @@ pub fn Module::addGlobalConstant(
   value : &Constant,
   linkage? : Linkage,
 ) -> GlobalConstant raise StringError {
-  let gv_ref = @unsafe.llvm_add_global(
-    self.get_unsafe_ref(),
-    ty.getTypeRef(),
+  let gv_ref = @raw.llvm_add_global(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
     name,
   ) catch {
-    @unsafe.EmbeddedNul => raise ContainsNul
+    @raw.EmbeddedNul => raise ContainsNul
   }
-  @unsafe.llvm_set_global_constant(gv_ref, true)
-  @unsafe.llvm_set_initializer(gv_ref, value.getValueRef())
+  @raw.llvm_set_global_constant(gv_ref, true)
+  @raw.llvm_set_initializer(gv_ref, (value : &Value).get_raw_value_ref())
   if linkage is Some(link) {
-    @unsafe.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
+    @raw.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
   }
   GlobalConstant::from_raw(gv_ref, self)
 }
@@ -351,7 +349,7 @@ pub fn Module::writeBitCodeToFile(
   self : Module,
   filename : String,
 ) -> Unit raise {
-  if 0 != @unsafe.llvm_write_bitcode_to_file(self.get_unsafe_ref(), filename) {
+  if 0 != @raw.llvm_write_bitcode_to_file(self.get_raw_ref(), filename) {
     raise WriteBitCodeToFileFailed(filename)
   }
 }
@@ -362,7 +360,7 @@ pub fn Module::writeBitCodeToFile(
 /// **Side Effects:** Writes to LLVM's diagnostic stream, normally standard
 /// error. Use `Show` when the text should be captured instead.
 pub fn Module::dump(self : Module) -> Unit {
-  @unsafe.llvm_dump_module(self.get_unsafe_ref())
+  @raw.llvm_dump_module(self.get_raw_ref())
 }
 
 ///|
@@ -370,7 +368,7 @@ pub fn Module::dump(self : Module) -> Unit {
 ///
 /// If LLVM cannot produce text, a diagnostic placeholder is written instead.
 pub impl Show for Module with fn output(self, logger) {
-  let s = @unsafe.llvm_print_module_to_string(self.get_unsafe_ref()) catch {
+  let s = @raw.llvm_print_module_to_string(self.get_raw_ref()) catch {
     error => "<LLVM module text unavailable: \{error}>"
   }
   logger.write_string(s)

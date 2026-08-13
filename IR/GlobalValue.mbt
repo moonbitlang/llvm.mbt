@@ -5,7 +5,7 @@
 /// The declared value type and initializer type must agree.
 ///
 /// **Lifecycle:** The wrapper retains its module and must not be used after the
-/// underlying global is erased through an unsafe API.
+/// underlying global is erased through the raw layer.
 pub struct GlobalVariable {
   priv value : ModuleAnchoredValue
 }
@@ -24,9 +24,9 @@ fn GlobalVariable::get_module(self : GlobalVariable) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for GlobalVariable with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn GlobalVariable::get_raw_value_ref(self : GlobalVariable) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -44,7 +44,7 @@ pub impl GlobalValue for GlobalVariable with fn asGlobalEnum(self) -> GlobalEnum
 ///|
 /// Writes the global declaration or definition using LLVM syntax.
 pub impl Show for GlobalVariable with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+  let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {
     error => "<LLVM global variable text unavailable: \{error}>"
   }
   logger.write_string(s)
@@ -75,9 +75,9 @@ fn GlobalConstant::get_module(self : GlobalConstant) -> Module {
 }
 
 ///|
-/// Exposes the borrowed LLVM value handle.
-pub impl Value for GlobalConstant with fn getValueRef(self) -> ValueRef {
-  self.value.get_unsafe_ref()
+/// Returns the internal borrowed LLVM value handle.
+fn GlobalConstant::get_raw_value_ref(self : GlobalConstant) -> ValueRef {
+  self.value.get_raw_ref()
 }
 
 ///|
@@ -95,7 +95,7 @@ pub impl GlobalValue for GlobalConstant with fn asGlobalEnum(self) -> GlobalEnum
 ///|
 /// Writes the constant global definition using LLVM syntax.
 pub impl Show for GlobalConstant with fn output(self, logger) {
-  let s = @unsafe.llvm_print_value_to_string(self.getValueRef()) catch {
+  let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {
     error => "<LLVM global constant text unavailable: \{error}>"
   }
   logger.write_string(s)
@@ -143,7 +143,7 @@ pub(all) enum Linkage {
 }
 
 ///|
-fn Linkage::from_llvm_linkage(linkage : @unsafe.LLVMLinkage) -> Linkage {
+fn Linkage::from_llvm_linkage(linkage : @raw.LLVMLinkage) -> Linkage {
   match linkage {
     LLVMExternalLinkage => ExternalLinkage
     LLVMAvailableExternallyLinkage => AvailableExternallyLinkage
@@ -166,7 +166,7 @@ fn Linkage::from_llvm_linkage(linkage : @unsafe.LLVMLinkage) -> Linkage {
 }
 
 ///|
-fn Linkage::to_llvm_linkage(self : Self) -> @unsafe.LLVMLinkage {
+fn Linkage::to_llvm_linkage(self : Self) -> @raw.LLVMLinkage {
   match self {
     ExternalLinkage => LLVMExternalLinkage
     AvailableExternallyLinkage => LLVMAvailableExternallyLinkage
@@ -203,7 +203,7 @@ pub(all) enum UnnamedAddr {
 
 ///|
 fn UnnamedAddr::from_llvm_unnamed_addr(
-  ua : @unsafe.LLVMUnnamedAddr,
+  ua : @raw.LLVMUnnamedAddr,
 ) -> UnnamedAddr {
   match ua {
     LLVMNoUnnamedAddr => NoUnnamedAddr
@@ -213,7 +213,7 @@ fn UnnamedAddr::from_llvm_unnamed_addr(
 }
 
 ///|
-fn UnnamedAddr::to_llvm_unnamed_addr(self : Self) -> @unsafe.LLVMUnnamedAddr {
+fn UnnamedAddr::to_llvm_unnamed_addr(self : Self) -> @raw.LLVMUnnamedAddr {
   match self {
     NoUnnamedAddr => LLVMNoUnnamedAddr
     Local => LLVMLocalUnnamedAddr
