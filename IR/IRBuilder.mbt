@@ -137,6 +137,43 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
 }
 
 ///|
+/// Positions the builder immediately before `instruction`.
+///
+/// This overload accepts a dynamically typed instruction and is useful when an
+/// instruction was obtained through APIs such as `BasicBlock::getTerminator`.
+///
+/// **Errors:** Raises `InValidInsertPoint` when `instruction` is detached from
+/// any basic block.
+///
+/// **Side effects:** Replaces the builder's current insertion point and its
+/// retained module anchor. Later create methods insert before `instruction`.
+///
+/// **Lifecycle:** Do not erase `instruction` and then reuse the builder without
+/// first selecting another valid insertion point.
+///
+/// **See also:**
+///
+/// - `IRBuilder::setInsertPoint`
+pub fn IRBuilder::setInsertPointBefore(
+  self : Self,
+  instruction : &Instruction,
+) -> Unit raise BuilderError {
+  guard instruction.getParentBasicBlock() is Some(bb) else {
+    raise InValidInsertPoint(
+      "Instruction as insert point does not have a parent basic block",
+    )
+  }
+  @unsafe.llvm_position_builder(
+    self.get_unsafe_ref(),
+    bb.get_unsafe_ref(),
+    instruction.getValueRef(),
+  )
+  let owner_module = get_instruction_module(instruction)
+  self.owner.set_module(owner_module.get_owner())
+  self.positioned = Set(owner_module)
+}
+
+///|
 /// Creates a return terminator carrying `value`.
 ///
 /// **Preconditions:** The builder must be positioned in a function whose return

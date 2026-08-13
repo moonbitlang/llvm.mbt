@@ -702,6 +702,7 @@ pub fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceL
 pub fn IRBuilder::createZExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
 pub fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
 pub fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
+pub fn IRBuilder::setInsertPointBefore(Self, &Instruction) -> Unit raise BuilderError
 
 pub struct InsertValueInst {
   // private fields
