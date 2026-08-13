@@ -1,0 +1,13 @@
+import {
+  "Kaida-Amethyst/llvm/examples/minimoonbit/knf",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck",
+  "Kaida-Amethyst/llvm/IR" @llvm,
+}
+
+supported_targets = "native"
+
+options(
+  "is-main": false,
+)

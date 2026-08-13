@@ -1,18 +1,18 @@
-# MiniMoonBit frontend example
+# MiniMoonBit compiler example
 
 This directory ports the frontend of the author's MiniMoonBit compiler into
 `llvm.mbt`. It is both an example compiler and an integration-test workload for
 the binding.
 
-The current port stops after KNF lowering:
+The current port includes LLVM IR code generation:
 
 ```text
-source -> lexer -> parser -> typecheck -> KNF
+source -> lexer -> parser -> typecheck -> KNF -> LLVM IR
 ```
 
 The packages intentionally follow the original compiler boundaries: `color`,
-`lexer`, `parser`, `typecheck`, and `knf`. They are example-facing APIs rather
-than stable core APIs of `llvm.mbt`.
+`lexer`, `parser`, `typecheck`, `knf`, and `codegen`. They are example-facing
+APIs rather than stable core APIs of `llvm.mbt`.
 
 The original frontend test suites have been retained: 17 lexer tests, 32 parser
 tests, 23 type-checker tests, and 19 KNF tests. A separate black-box integration
@@ -30,7 +30,8 @@ Run all MiniMoonBit package tests with:
 moon test --target native -p examples/minimoonbit
 ```
 
-There is no command-line driver in this directory yet. Code generation, native
-object emission, linking, and execution belong to the next porting phase. That
-phase will adapt the original code generator against `Kaida-Amethyst/llvm/IR`
-and fill missing llvm.mbt APIs only when its actual call sites require them.
+There is no command-line driver in this directory yet. The code generator
+produces a host-configured LLVM module and declares the original MiniMoonBit
+runtime ABI; it does not yet package the runtime, emit an object, link an
+executable, or run the result. End-to-end execution tests therefore remain a
+separate follow-up.

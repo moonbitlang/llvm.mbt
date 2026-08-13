@@ -1,0 +1,25 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm/examples/minimoonbit/codegen"
+
+import {
+  "Kaida-Amethyst/llvm/IR",
+  "Kaida-Amethyst/llvm/examples/minimoonbit/knf",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn codegen(@knf.KnfProgram) -> @IR.Module raise
+
+#alias(codegen_all)
+pub fn compile(String, source_file? : String) -> @IR.Module raise
+
+// Errors
+pub(all) suberror CodegenError {
+  CodegenError(String)
+} derive(@debug.Debug)
+
+// Types and methods
+
+// Type aliases
+
+// Traits
