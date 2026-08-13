@@ -46,11 +46,10 @@ pub extern "C" fn llvm_write_bitcode_to_file_handle(
   handle : Int,
 ) -> Int = "__llvm_write_bitcode_to_file_handle"
 //
-// /** Writes a module to a new memory buffer and returns it. */
-// LLVMMemoryBufferRef LLVMWriteBitcodeToMemoryBuffer(LLVMModuleRef M);
-// TODO: Implement C function
 
 ///|
-pub extern "C" fn llvm_write_bitcode_to_memory_buffer(
-  mod_ref : LLVMModuleRef,
-) -> LLVMMemoryBufferRef = "__llvm_write_bitcode_to_memory_buffer"
+/// Serializes a module to an independent byte array.
+///
+/// The C adapter copies the complete binary memory buffer, including embedded
+/// NUL bytes, then disposes the LLVM-owned buffer before returning.
+pub extern "C" fn llvm_write_bitcode_to_bytes(mod_ref : LLVMModuleRef) -> Bytes = "llvm_mbt_write_bitcode_to_bytes"

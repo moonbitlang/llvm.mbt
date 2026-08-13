@@ -166,11 +166,11 @@ close()
 | `test/bitcode_test.mbt` | 仅使用公开 IR API 的快照黑盒测试 |
 | `IR/pkg.generated.mbti`、`internal/raw/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 返回的 `Bytes` 与 Module/memory buffer 完全独立，并保留 bitcode 中的任意二进制字节和 embedded NUL。
-- [ ] C adapter 使用 `LLVMGetBufferStart` + `LLVMGetBufferSize`，不把 bitcode 临时转成 `String`。
-- [ ] `LLVMWriteBitcodeToMemoryBuffer` 产生的 buffer 在同一调用内精确 dispose 一次。
-- [ ] 测试确认 bytes 非空、重复快照稳定、操作前后 Module 文本及 target 配置不变。
-- [ ] `.mbti` 只增加一个中性的 `Module` 方法，不暴露 `LLVMMemoryBufferRef`。
+- [x] 返回的 `Bytes` 与 Module/memory buffer 完全独立，并保留 bitcode 中的任意二进制字节和 embedded NUL。
+- [x] C adapter 使用 `LLVMGetBufferStart` + `LLVMGetBufferSize`，不把 bitcode 临时转成 `String`。
+- [x] `LLVMWriteBitcodeToMemoryBuffer` 产生的 buffer 在同一调用内精确 dispose 一次。
+- [x] 测试确认 bytes 非空、重复快照稳定、操作前后 Module 文本及 target 配置不变。
+- [x] `.mbti` 只增加一个中性的 `Module` 方法，不暴露 `LLVMMemoryBufferRef`。
 
 建议提交信息：`IR: add in-memory bitcode snapshots`
 

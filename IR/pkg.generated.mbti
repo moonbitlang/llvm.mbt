@@ -866,6 +866,7 @@ pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
 pub fn Module::verify(Self) -> Unit raise VerificationError
+pub fn Module::writeBitCodeToBytes(Self) -> Bytes
 pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise
 pub impl Show for Module
 

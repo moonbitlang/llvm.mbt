@@ -355,6 +355,21 @@ pub fn Module::writeBitCodeToFile(
 }
 
 ///|
+/// Serializes this module as an independent in-memory bitcode snapshot.
+///
+/// **Returns:** A new byte array containing the complete binary bitcode. The
+/// result does not borrow this module or any native memory buffer.
+///
+/// **Lifecycle:** The returned bytes remain valid after this module and its
+/// context are released.
+///
+/// **Side effects:** This does not mutate the module, its target configuration,
+/// or any derived IR object.
+pub fn Module::writeBitCodeToBytes(self : Module) -> Bytes {
+  @raw.llvm_write_bitcode_to_bytes(self.get_raw_ref())
+}
+
+///|
 /// Prints the module through LLVM's diagnostic dump facility.
 ///
 /// **Side Effects:** Writes to LLVM's diagnostic stream, normally standard

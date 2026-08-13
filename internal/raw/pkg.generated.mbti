@@ -1724,13 +1724,13 @@ pub fn llvm_void_type() -> LLVMTypeRef
 
 pub fn llvm_void_type_in_context(LLVMContextRef) -> LLVMTypeRef
 
+pub fn llvm_write_bitcode_to_bytes(LLVMModuleRef) -> Bytes
+
 pub fn llvm_write_bitcode_to_fd(LLVMModuleRef, Int, Int, Int) -> Int
 
 pub fn llvm_write_bitcode_to_file(LLVMModuleRef, String) -> Int
 
 pub fn llvm_write_bitcode_to_file_handle(LLVMModuleRef, Int) -> Int
-
-pub fn llvm_write_bitcode_to_memory_buffer(LLVMModuleRef) -> LLVMMemoryBufferRef
 
 pub fn llvm_x86_amx_type() -> LLVMTypeRef
 

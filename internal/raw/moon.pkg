@@ -6,7 +6,12 @@ import {
 
 options(
   "is-main": false,
-  "native-stub": [ "wrap.c", "string_boundary.c", "target_machine.c" ],
+  "native-stub": [
+    "wrap.c",
+    "string_boundary.c",
+    "target_machine.c",
+    "bitcode.c",
+  ],
   link: {
     "native": {
       "stub-cc": "cc",
