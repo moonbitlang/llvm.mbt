@@ -375,6 +375,14 @@ pub impl Show for LLVMOrcJITTargetAddress with fn output(self, logger) {
 pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Eq, Default)
 
 ///|
+/// Returns the numeric executor address without changing its bits.
+pub fn LLVMOrcExecutorAddress::to_uint64(
+  self : LLVMOrcExecutorAddress,
+) -> UInt64 {
+  self.0
+}
+
+///|
 /// Writes the numeric executor address in decimal form.
 pub impl Show for LLVMOrcExecutorAddress with fn output(self, logger) {
   logger.write_object(self.0)

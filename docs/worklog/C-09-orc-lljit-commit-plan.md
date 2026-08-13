@@ -312,16 +312,18 @@ close()
 | --- | --- |
 | `JIT/Address.mbt` | `pub struct JITAddress`、`unsafeToFuncRef[T]` 及完整 Safety/Lifecycle 文档 |
 | `JIT/LLJIT.mbt` | `pub fn LLJIT::lookup` |
+| `JIT/resource_owner.c` | executor address 到不透明 native function pointer 的 ABI 适配 |
+| `IR/StringError.mbt` | 允许其他安全 package 构造并传播既有 `StringError` 映射 |
 | `test/jit_test.mbt` | `double () -> 42.0` 的真实机器码调用与 unknown symbol 测试 |
-| `JIT/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
+| `IR/pkg.generated.mbti`、`JIT/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] lookup 在进入 C 前拒绝 embedded NUL，并保留为 `IR::StringError::ContainsNul`。
-- [ ] unknown symbol 与 materialization failure 返回 `LookupFailed(String)`，不转换成 `None`。
-- [ ] `JITAddress` 只保存 executor address 与 LLJIT owner；它没有 disposer，也不声称锚定具体 tracker。
-- [ ] 泛型转换只在 session open 时进行，并明确使用当前 host 的 64-bit function-pointer ABI；不新增固定签名 trampoline 集合。
-- [ ] 文档逐项说明签名/calling convention/platform ABI、owner 可达性、remove/close 后失效和普通 FuncRef 不保活。
-- [ ] 若当前 MoonBit 编译器无法把 `UInt64` executor address 泛型转换为 `FuncRef[T]`，停止本 commit 回到 discussion；不得静默改成 Q-26 已否决的固定签名 API。
-- [ ] 黑盒测试实际调用 JIT 生成的 `double ()` 机器码并得到 `42.0`，而不是只检查非零地址或 IR 文本。
+- [x] lookup 在进入 C 前拒绝 embedded NUL，并保留为 `IR::StringError::ContainsNul`。
+- [x] unknown symbol 与 materialization failure 返回 `LookupFailed(String)`，不转换成 `None`。
+- [x] `JITAddress` 只保存 executor address 与 LLJIT owner；它没有 disposer，也不声称锚定具体 tracker。
+- [x] 泛型转换只在 session open 时进行，并明确使用当前 host 的 64-bit function-pointer ABI；不新增固定签名 trampoline 集合。
+- [x] 文档逐项说明签名/calling convention/platform ABI、owner 可达性、remove/close 后失效和普通 FuncRef 不保活。
+- [x] 若当前 MoonBit 编译器无法把 `UInt64` executor address 泛型转换为 `FuncRef[T]`，停止本 commit 回到 discussion；不得静默改成 Q-26 已否决的固定签名 API。
+- [x] 黑盒测试实际调用 JIT 生成的 `double ()` 机器码并得到 `42.0`，而不是只检查非零地址或 IR 文本。
 
 建议提交信息：`JIT: look up and invoke JIT symbols`
 

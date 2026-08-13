@@ -32,6 +32,17 @@ struct llvm_mbt_jit_tracker_owner {
   struct llvm_mbt_jit_tracker_owner *next;
 };
 
+typedef void (*llvm_mbt_jit_opaque_func_t)(void);
+
+llvm_mbt_jit_opaque_func_t llvm_mbt_jit_executor_address_to_func_ref(
+    uint64_t address) {
+  union {
+    uintptr_t address;
+    llvm_mbt_jit_opaque_func_t function;
+  } conversion = {.address = (uintptr_t)address};
+  return conversion.function;
+}
+
 /* Test observer implemented by resource_owner_test.c; it retains nothing. */
 void llvm_mbt_jit_owner_test_record(void *owner, uint64_t event);
 

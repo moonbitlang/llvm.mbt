@@ -36,7 +36,7 @@ pub suberror SetBodyForNonOpaqueStruct {
   SetBodyForNonOpaqueStruct(String)
 }
 
-pub suberror StringError {
+pub(all) suberror StringError {
   ContainsNul
   MalformedUtf8(Bytes)
 }

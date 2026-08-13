@@ -51,3 +51,46 @@ test "JIT rejects removed and foreign resource trackers" {
   first.close()
   second.close()
 }
+
+///|
+test "JIT executes a looked-up double function" {
+  let context = @IR.Context::new()
+  let mod = context.addModule("execute_answer")
+  let function_type = context.getFunctionType(context.getDoubleTy(), [])
+  let function = mod.addFunction(function_type, "answer_double")
+  let entry = function.addBasicBlock(name="entry")
+  let builder = context.createBuilder()
+  builder.setInsertPoint(entry)
+  builder.createRet(context.getConstDouble(42.0)) |> ignore
+  mod.verify()
+  let jit = @JIT.LLJIT::host()
+  jit.addModule(mod)
+
+  let address = jit.lookup("answer_double")
+  let answer : FuncRef[() -> Double] = address.unsafeToFuncRef()
+  inspect(answer(), content="42")
+
+  jit.close()
+}
+
+///|
+test "JIT lookup preserves symbol diagnostics and string errors" {
+  let jit = @JIT.LLJIT::host()
+  let missing = try {
+    jit.lookup("__llvm_mbt_missing_public_symbol__") |> ignore
+    false
+  } catch {
+    @JIT.LookupFailed(message) => message.length() > 0
+    _ => false
+  }
+  inspect(missing, content="true")
+  let embedded_nul = try {
+    jit.lookup("bad\u0000symbol") |> ignore
+    false
+  } catch {
+    @IR.ContainsNul => true
+    _ => false
+  }
+  inspect(embedded_nul, content="true")
+  jit.close()
+}

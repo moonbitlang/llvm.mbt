@@ -2530,6 +2530,7 @@ pub fn LLVMOperandBundleRef::get_num_args(Self) -> UInt
 pub type LLVMOrcExecutionSessionRef
 
 pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Default, Eq)
+pub fn LLVMOrcExecutorAddress::to_uint64(Self) -> UInt64
 pub impl Show for LLVMOrcExecutorAddress
 
 #external

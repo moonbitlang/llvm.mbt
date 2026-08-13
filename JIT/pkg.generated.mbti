@@ -21,6 +21,11 @@ pub suberror JITError {
 }
 
 // Types and methods
+pub struct JITAddress {
+  // private fields
+}
+pub fn[T] JITAddress::unsafeToFuncRef(Self) -> FuncRef[T] raise JITError
+
 pub struct LLJIT {
   // private fields
 }
@@ -30,6 +35,7 @@ pub fn LLJIT::createResourceTracker(Self) -> ResourceTracker raise JITError
 pub fn LLJIT::getDataLayoutStr(Self) -> String raise
 pub fn LLJIT::getTargetTriple(Self) -> String raise
 pub fn LLJIT::host() -> Self raise JITError
+pub fn LLJIT::lookup(Self, String) -> JITAddress raise
 
 pub struct ResourceTracker {
   // private fields

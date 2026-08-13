@@ -69,8 +69,7 @@ pub fn LLJIT::host() -> LLJIT raise JITError {
 pub fn LLJIT::getTargetTriple(self : LLJIT) -> String raise {
   let raw = self.requireRaw()
   @raw.llvm_orc_lljit_get_triple_string(raw) catch {
-    @utf8.Malformed(_) =>
-      raise CreationFailed("LLVM returned a malformed target triple")
+    @utf8.Malformed(bytes) => raise @IR.MalformedUtf8(bytes.to_owned())
   }
 }
 
@@ -82,9 +81,34 @@ pub fn LLJIT::getTargetTriple(self : LLJIT) -> String raise {
 pub fn LLJIT::getDataLayoutStr(self : LLJIT) -> String raise {
   let raw = self.requireRaw()
   @raw.llvm_orc_lljit_get_data_layout_str(raw) catch {
-    @utf8.Malformed(_) =>
-      raise CreationFailed("LLVM returned a malformed data layout")
+    @utf8.Malformed(bytes) => raise @IR.MalformedUtf8(bytes.to_owned())
   }
+}
+
+///|
+/// Looks up a symbol in this session's main JITDylib.
+///
+/// **Parameters:**
+///
+/// - `name`: The unmangled symbol name. Embedded NUL bytes are rejected before
+///   entering LLVM.
+///
+/// **Returns:** An executor address that retains this session but carries no
+/// type or ABI proof.
+///
+/// **Errors:** Raises `Closed` after session close,
+/// `IR::StringError::ContainsNul` for an invalid name, or `LookupFailed` with
+/// LLVM's diagnostic for missing symbols and materialization failures.
+///
+/// **Lifecycle:** A ResourceTracker removal can invalidate a returned address
+/// even while this session remains open.
+pub fn LLJIT::lookup(self : LLJIT, name : String) -> JITAddress raise {
+  let raw = self.requireRaw()
+  let (address, message, failed) = @raw.llvm_orc_lljit_lookup(raw, name) catch {
+    @raw.EmbeddedNul => raise @IR.ContainsNul
+  }
+  guard !failed else { raise LookupFailed(message) }
+  JITAddress::fromRaw(address, self.owner)
 }
 
 ///|
