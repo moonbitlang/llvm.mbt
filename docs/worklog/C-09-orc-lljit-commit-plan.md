@@ -32,7 +32,7 @@
 - Kaleidoscope lexer、parser、AST、codegen 或 REPL；
 - async、子进程、系统 linker 或 CI workflow/coverage 门槛改动。
 
-`CurrentProcess` 首期直接使用 LLVM 22.1 默认 LLJIT builder 的行为，不重复安装 process-symbol generator。Q-27 的长期策略只体现在 owner/构造路径不封死扩展位置；本轮不会公开一个实际上只有单一可用取值的配置 enum。
+`CurrentProcess` 首期由 host 构造器安装一次 process-symbol generator。实施 raw 探针已经确认，仓库实际发布的 LLVM 22.1.0 静态产物仅使用 C default LLJIT builder 时无法在 main JITDylib lookup `sin`、`cos`、`malloc` 或 `puts`，因此不能依赖 builder 自动提供该行为。Q-27 的长期策略只体现在 owner/构造路径不封死扩展位置；本轮不会公开一个实际上只有单一可用取值的配置 enum。
 
 ## package 边界
 
@@ -208,12 +208,12 @@ close()
 | `internal/raw/orc_wbtest.mbt` | TSC/TSM 转移与 tracker 引用计数白盒测试 |
 | `internal/raw/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 只保留首期真正使用的 ORC-C 表面；大段未实现的上游 header 注释和错误旧声明不继续作为伪 binding 保留。
-- [ ] bitcode 在独立 `LLVMContextRef` 中解析，不复用或消费安全 IR 的 context/module。
-- [ ] 明确记录 `LLVMOrcCreateNewThreadSafeContextFromLLVMContext`、`LLVMOrcCreateNewThreadSafeModule` 与 add 调用的 ownership 转移点。
-- [ ] 在 add 前失败时释放 TSC/TSM；进入 add 后按 LLVM-C 契约视为已消费，错误路径不重复 dispose。
-- [ ] raw 测试覆盖 default tracker、显式 tracker、多次提交、transfer、remove、release 和不同销毁顺序。
-- [ ] 验证 LLVM 22.1 默认 builder 已能 lookup `sin` 等当前进程符号，不重复安装 generator。
+- [x] 只保留首期真正使用的 ORC-C 表面；大段未实现的上游 header 注释和错误旧声明不继续作为伪 binding 保留。
+- [x] bitcode 在独立 `LLVMContextRef` 中解析，不复用或消费安全 IR 的 context/module。
+- [x] 明确记录 `LLVMOrcCreateNewThreadSafeContextFromLLVMContext`、`LLVMOrcCreateNewThreadSafeModule` 与 add 调用的 ownership 转移点。
+- [x] 在 add 前失败时释放 TSC/TSM；进入 add 后按 LLVM-C 契约视为已消费，错误路径不重复 dispose。
+- [x] raw 测试覆盖 default tracker、显式 tracker、多次提交、transfer、remove、release 和不同销毁顺序。
+- [x] 验证 host 创建路径只安装一次 process-symbol generator，并能 lookup `sin` 等当前进程符号。
 
 建议提交信息：`raw: bind ORC module and resource ownership`
 
@@ -225,7 +225,7 @@ close()
 - bytes、memory buffer、context、module、TSC、TSM、tracker 和 `LLVMErrorRef` 的每条成功/失败路径是否都有唯一 owner。
 - TSM 是否在进入 add 后无条件视为 consumed，错误处理是否可能 double-dispose。
 - LLVM Error message 是否在同一边界完成 copy + dispose，是否仍有打印/panic/`None` 丢诊断的旧路径。
-- 当前进程符号是否依赖 LLVM 22.1 default builder，而不是被重复 generator 掩盖。
+- 当前进程符号是否只由 host 创建路径安装一次 generator，没有重复安装或把 handle 暴露到安全层。
 - 删除旧 `Orc.mbt` 草稿时，是否只删除未完成绑定，没有误伤已被其他 package 使用的 raw API。
 
 ## Commit 5：建立公开 JIT package、JITError 与 LLJIT owner

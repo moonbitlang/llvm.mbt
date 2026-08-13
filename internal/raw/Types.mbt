@@ -346,6 +346,21 @@ pub type LLVMOrcLLJITRef
 pub type LLVMOrcJITDylibRef
 
 ///|
+/// Reference-counted handle to an ORC resource tracker.
+#external
+pub type LLVMOrcResourceTrackerRef
+
+///|
+/// Shared owner of an LLVM context used by ORC.
+#external
+pub type LLVMOrcThreadSafeContextRef
+
+///|
+/// Unique ORC wrapper around a module and its thread-safe context.
+#external
+pub type LLVMOrcThreadSafeModuleRef
+
+///|
 /// Byte address in the executor process, represented as an unsigned 64-bit value.
 pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
 

@@ -1422,11 +1422,21 @@ pub fn llvm_orc_create_lljit() -> (LLVMOrcLLJITRef, String, Bool)
 
 pub fn llvm_orc_create_new_thread_safe_context() -> LLVMOrcThreadSafeContextRef
 
-pub fn llvm_orc_create_new_thread_safe_module(LLVMModuleRef, LLVMOrcThreadSafeContextRef) -> LLVMOrcThreadSafeModuleRef
+pub fn llvm_orc_create_thread_safe_module_from_bitcode(Bytes) -> (LLVMOrcThreadSafeModuleRef, String, Bool)
 
 pub fn llvm_orc_dispose_lljit(LLVMOrcLLJITRef) -> (String, Bool)
 
 pub fn llvm_orc_dispose_thread_safe_context(LLVMOrcThreadSafeContextRef) -> Unit
+
+pub fn llvm_orc_dispose_thread_safe_module(LLVMOrcThreadSafeModuleRef) -> Unit
+
+pub fn llvm_orc_jit_dylib_create_resource_tracker(LLVMOrcJITDylibRef) -> LLVMOrcResourceTrackerRef
+
+pub fn llvm_orc_jit_dylib_get_default_resource_tracker(LLVMOrcJITDylibRef) -> LLVMOrcResourceTrackerRef
+
+pub fn llvm_orc_lljit_add_llvm_ir_module(LLVMOrcLLJITRef, LLVMOrcThreadSafeModuleRef) -> (String, Bool)
+
+pub fn llvm_orc_lljit_add_llvm_ir_module_with_rt(LLVMOrcLLJITRef, LLVMOrcResourceTrackerRef, LLVMOrcThreadSafeModuleRef) -> (String, Bool)
 
 pub fn llvm_orc_lljit_get_data_layout_str(LLVMOrcLLJITRef) -> String
 
@@ -1437,6 +1447,12 @@ pub fn llvm_orc_lljit_get_main_jit_dylib(LLVMOrcLLJITRef) -> LLVMOrcJITDylibRef
 pub fn llvm_orc_lljit_get_triple_string(LLVMOrcLLJITRef) -> String
 
 pub fn llvm_orc_lljit_lookup(LLVMOrcLLJITRef, String) -> (LLVMOrcExecutorAddress, String, Bool) raise CStringError
+
+pub fn llvm_orc_release_resource_tracker(LLVMOrcResourceTrackerRef) -> Unit
+
+pub fn llvm_orc_resource_tracker_remove(LLVMOrcResourceTrackerRef) -> (String, Bool)
+
+pub fn llvm_orc_resource_tracker_transfer_to(LLVMOrcResourceTrackerRef, LLVMOrcResourceTrackerRef) -> Unit
 
 pub fn llvm_parse_bitcode2(LLVMMemoryBufferRef) -> LLVMModuleRef?
 
@@ -2527,6 +2543,9 @@ pub type LLVMOrcLLJITBuilderRef
 
 #external
 pub type LLVMOrcLLJITRef
+
+#external
+pub type LLVMOrcResourceTrackerRef
 
 #external
 pub type LLVMOrcSymbolStringPoolEntryRef

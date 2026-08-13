@@ -101,7 +101,9 @@ libc/libm 等系统符号属于首期保证范围。教程自定义 `printd/putc
 
 显式 absolute symbol 注册作为与该策略正交的能力：无论进程符号策略为何，用户都可以把少量固定 C ABI 地址按名称加入 JIT。首期不把任意 MoonBit closure 注册为 JIT callback；该能力必须单独处理 MoonBit runtime、GC root、线程进入和回调生命周期。
 
-实现分阶段进行：首期直接采用 LLVM 22.1 默认 builder 的 `CurrentProcess` 行为，使 Kaleidoscope 的 libc/libm 调用开箱可用，并避免重复安装 generator；同时在 owner 和构造路径中保留策略扩展边界。absolute symbols、`AllowList` 和 `Disabled` 在出现实际需求后加入，其中严格关闭或过滤默认 process-symbols JITDylib 需要一个很薄的 C++ LLJITBuilder shim，因为 LLVM-C 22.1 没有公开相应 builder setter。
+实现分阶段进行：首期提供 `CurrentProcess` 行为，使 Kaleidoscope 的 libc/libm 调用开箱可用；同时在 owner 和构造路径中保留策略扩展边界。absolute symbols、`AllowList` 和 `Disabled` 在出现实际需求后加入，其中严格关闭或过滤 process-symbols JITDylib 需要一个很薄的 C++ LLJITBuilder shim，因为 LLVM-C 22.1 没有公开相应 builder setter。
+
+实施 C-09 时又对仓库实际发布的 LLVM 22.1.0 静态产物进行了 raw 测试：仅使用 LLVM-C default LLJIT builder 时，main JITDylib 无法 lookup `sin`、`cos`、`malloc` 或 `puts`。因此首期 host 构造器必须显式创建一次无过滤的 `LLVMOrcCreateDynamicLibrarySearchGeneratorForProcess`，并把它转交给 main JITDylib；这仍实现同一个 `CurrentProcess` 公开策略，但不能依赖 default builder 自动安装 generator。该修正不会公开 generator handle，也不改变后续 `AllowList`、`Disabled` 和 absolute symbols 的分阶段边界。
 
 #### 优点
 

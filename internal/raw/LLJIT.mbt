@@ -81,3 +81,45 @@ pub fn llvm_orc_lljit_lookup(
     out_failed.val.to_moonbit_bool(),
   )
 }
+
+///|
+#borrow(out_failed)
+extern "C" fn __llvm_orc_lljit_add_llvm_ir_module(
+  jit : LLVMOrcLLJITRef,
+  thread_safe_module : LLVMOrcThreadSafeModuleRef,
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_orc_lljit_add_llvm_ir_module"
+
+///|
+pub fn llvm_orc_lljit_add_llvm_ir_module(
+  jit : LLVMOrcLLJITRef,
+  thread_safe_module : LLVMOrcThreadSafeModuleRef,
+) -> (String, Bool) {
+  let out_failed = Ref(to_llvm_bool(false))
+  let message = __llvm_orc_lljit_add_llvm_ir_module(
+    jit, thread_safe_module, out_failed,
+  )
+  (@utf8.decode_lossy(message), out_failed.val.to_moonbit_bool())
+}
+
+///|
+#borrow(out_failed)
+extern "C" fn __llvm_orc_lljit_add_llvm_ir_module_with_rt(
+  jit : LLVMOrcLLJITRef,
+  tracker : LLVMOrcResourceTrackerRef,
+  thread_safe_module : LLVMOrcThreadSafeModuleRef,
+  out_failed : Ref[LLVMBool],
+) -> Bytes = "llvm_mbt_orc_lljit_add_llvm_ir_module_with_rt"
+
+///|
+pub fn llvm_orc_lljit_add_llvm_ir_module_with_rt(
+  jit : LLVMOrcLLJITRef,
+  tracker : LLVMOrcResourceTrackerRef,
+  thread_safe_module : LLVMOrcThreadSafeModuleRef,
+) -> (String, Bool) {
+  let out_failed = Ref(to_llvm_bool(false))
+  let message = __llvm_orc_lljit_add_llvm_ir_module_with_rt(
+    jit, tracker, thread_safe_module, out_failed,
+  )
+  (@utf8.decode_lossy(message), out_failed.val.to_moonbit_bool())
+}

@@ -65,6 +65,9 @@ extern "C" fn LLVMTargetRef::null() -> LLVMTargetRef = "__llvm_new_null"
 extern "C" fn LLVMOrcLLJITRef::null() -> LLVMOrcLLJITRef = "__llvm_new_null"
 
 ///|
+extern "C" fn LLVMOrcThreadSafeModuleRef::null() -> LLVMOrcThreadSafeModuleRef = "__llvm_new_null"
+
+///|
 extern "C" fn llvm_same_type_ref(
   ty1 : LLVMTypeRef,
   ty2 : LLVMTypeRef,
