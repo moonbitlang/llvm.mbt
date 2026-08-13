@@ -283,12 +283,12 @@ close()
 | `test/jit_test.mbt`、`test/moon.pkg` | 只用公开 IR/JIT API 的提交黑盒测试 |
 | `JIT/pkg.generated.mbti`、`test/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] `addModule` 先验证 session、tracker state 与 owner identity，再建立 bitcode 快照。
-- [ ] 缺省 tracker 走 main JITDylib；显式 tracker 走 `AddLLVMIRModuleWithRT`，一个 tracker 可承载多次提交。
-- [ ] 另一个 session 的 tracker 返回 `ResourceTrackerOwnerMismatch`，removed tracker 返回 `ResourceTrackerRemoved`，两者都不进入 LLVM。
-- [ ] snapshot parse、DataLayout 不兼容和 ORC add error 分别映射到 `SnapshotFailed`/`SubmissionFailed`，并保留可用诊断。
-- [ ] `addModule` 不调用 verifier、不覆盖 triple；默认 DataLayout 只在 JIT 快照内部由 LLJIT 补齐。
-- [ ] 测试确认提交后原 Module、Function 和 Context 仍可使用，原 Module 的 IR/triple/layout 没有改变。
+- [x] `addModule` 先验证 session、tracker state 与 owner identity，再建立 bitcode 快照。
+- [x] 缺省 tracker 走 main JITDylib；显式 tracker 走 `AddLLVMIRModuleWithRT`，一个 tracker 可承载多次提交。
+- [x] 另一个 session 的 tracker 返回 `ResourceTrackerOwnerMismatch`，removed tracker 返回 `ResourceTrackerRemoved`，两者都不进入 LLVM。
+- [x] snapshot parse、DataLayout 不兼容和 ORC add error 分别映射到 `SnapshotFailed`/`SubmissionFailed`，并保留可用诊断。
+- [x] `addModule` 不调用 verifier、不覆盖 triple；默认 DataLayout 只在 JIT 快照内部由 LLJIT 补齐。
+- [x] 测试确认提交后原 Module、Function 和 Context 仍可使用，原 Module 的 IR/triple/layout 没有改变。
 
 建议提交信息：`JIT: submit independent IR module snapshots`
 

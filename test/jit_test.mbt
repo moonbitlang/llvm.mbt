@@ -1,45 +1,53 @@
-//
-//fn[T] ptr_to_func_ptr(ptr: @raw.LLVMOrcExecutorAddress) -> FuncRef[T] = "%identity"
-//test {
-//  let ctx = @IR.Context::new()
-//  let mod = ctx.addModule("demo")
-//  let builder = ctx.createBuilder()
-//
-//  let i32_ty = ctx.getInt32Ty()
-//  let fty = ctx.getFunctionType(i32_ty, [i32_ty, i32_ty])
-//  let fval = mod.addFunction(fty, "add")
-//
-//  let arg0 = fval.getArg(0).unwrap()
-//  let arg1 = fval.getArg(1).unwrap()
-//
-//  let entry = fval.addBasicBlock(name="entry")
-//  builder.setInsertPoint(entry)
-//
-//  let sum = builder.createAdd(arg0, arg1, name = "sum")
-//  let _ = builder.createRet(sum)
-//
-//  //mod.dump()
-//  let jit = @raw.llvm_orc_create_lljit()
-//  let tsctx = @raw.llvm_orc_create_new_thread_safe_context()
-//  let tsm = @raw.llvm_orc_create_new_thread_safe_module(mod.0, tsctx)
-//
-//  let main_jd = @raw.llvm_orc_lljit_get_main_jit_dylib(jit)
-//
-//  let _ = @raw.llvm_orc_lljit_add_llvm_ir_module(jit, main_jd, tsm)
-//
-//  @raw.llvm_orc_dispose_thread_safe_context(tsctx)
-//  let addr = @raw.llvm_orc_lljit_lookup(jit, "add")
-//  let func = match addr {
-//    Some(a) => {
-//      let fptr : FuncRef[(Int, Int) -> Int] = ptr_to_func_ptr(a)
-//      fptr
-//    }
-//    None => {
-//      println("Function 'add' not found in JIT.")
-//      panic()
-//    }
-//  }
-//
-//  //let func : (Int, Int) -> Int = func
-//  let _ = func(5, 7)
-//}
+///|
+test "JIT submission keeps the source module unchanged" {
+  let context = @IR.Context::new()
+  let mod = context.addModule("public_snapshot")
+  let function_type = context.getFunctionType(context.getInt32Ty(), [])
+  let function = mod.addFunction(function_type, "answer")
+  let entry = function.addBasicBlock(name="entry")
+  let builder = context.createBuilder()
+  builder.setInsertPoint(entry)
+  builder.createRet(context.getConstInt32(42)) |> ignore
+  mod.verify()
+  let before = "\{mod}"
+  let before_triple = mod.getTargetTriple()
+  let before_layout = mod.getDataLayoutStr()
+  let jit = @JIT.LLJIT::host()
+
+  jit.addModule(mod)
+
+  inspect(mod.getFunction("answer") is Some(_), content="true")
+  inspect("\{mod}" == before, content="true")
+  inspect(mod.getTargetTriple() == before_triple, content="true")
+  inspect(mod.getDataLayoutStr() == before_layout, content="true")
+  jit.close()
+}
+
+///|
+test "JIT rejects removed and foreign resource trackers" {
+  let context = @IR.Context::new()
+  let mod = context.addModule("tracker_errors")
+  let first = @JIT.LLJIT::host()
+  let second = @JIT.LLJIT::host()
+  let removed_tracker = first.createResourceTracker()
+  removed_tracker.remove()
+  let removed = try {
+    first.addModule(mod, tracker=removed_tracker)
+    false
+  } catch {
+    @JIT.ResourceTrackerRemoved => true
+    _ => false
+  }
+  inspect(removed, content="true")
+  let foreign_tracker = second.createResourceTracker()
+  let foreign = try {
+    first.addModule(mod, tracker=foreign_tracker)
+    false
+  } catch {
+    @JIT.ResourceTrackerOwnerMismatch => true
+    _ => false
+  }
+  inspect(foreign, content="true")
+  first.close()
+  second.close()
+}

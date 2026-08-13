@@ -1,6 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
 package "Kaida-Amethyst/llvm/JIT"
 
+import {
+  "Kaida-Amethyst/llvm/IR",
+}
+
 // Values
 
 // Errors
@@ -20,6 +24,7 @@ pub suberror JITError {
 pub struct LLJIT {
   // private fields
 }
+pub fn LLJIT::addModule(Self, @IR.Module, tracker? : ResourceTracker) -> Unit raise JITError
 pub fn LLJIT::close(Self) -> Unit raise JITError
 pub fn LLJIT::createResourceTracker(Self) -> ResourceTracker raise JITError
 pub fn LLJIT::getDataLayoutStr(Self) -> String raise

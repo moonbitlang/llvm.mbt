@@ -2,4 +2,5 @@ supported_targets = "native"
 
 import {
   "Kaida-Amethyst/llvm/IR",
+  "Kaida-Amethyst/llvm/JIT",
 } for "test"
