@@ -72,7 +72,7 @@ pub fn Context::program_to_knf(
     self.struct_defs.set(sname, knf_struct_def)
   }
 
-  // Step - 3, regiter all extern functions
+  // Step - 3, register all extern functions
   for fname, extern_func in prog.extern_funcions {
     let knf_extern = self.extern_to_knf(extern_func)
     externs.set(knf_extern.name, knf_extern)

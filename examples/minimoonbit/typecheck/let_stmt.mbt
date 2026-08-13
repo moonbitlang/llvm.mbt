@@ -226,11 +226,11 @@ pub fn Context::check_let_stmt(
 ) -> LetStmt raise TypeCheckError {
   let checked_expr = self.check_expr(let_stmt.expr)
   let type_kind = checked_expr.ty
-  if let_stmt.ty is Some(type_annote) {
-    let annoted_type = self.check_parser_typekind(type_annote.kind)
-    if !self.is_type_compatible(annoted_type, checked_expr.ty) {
+  if let_stmt.ty is Some(type_annotation) {
+    let annotated_type = self.check_parser_typekind(type_annotation.kind)
+    if !self.is_type_compatible(annotated_type, checked_expr.ty) {
       raise TypeCheckError(
-        "Type annotation does not match the expression type, annoted: \{annoted_type}, expr: \{checked_expr.ty}",
+        "Type annotation does not match the expression type, annotated: \{annotated_type}, expr: \{checked_expr.ty}",
       )
     }
   }

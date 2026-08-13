@@ -605,13 +605,13 @@ fn Context::expr_codegen(
       guard fname_knf_type is Function(arg_types, ret_ty) else {
         raise CodegenError("Expected function type for closure call")
       }
-      let arg_typs : Array[&@llvm.Type] = [ptrty] // first arg is closure struct ptr
+      let llvm_arg_types : Array[&@llvm.Type] = [ptrty] // first arg is closure struct ptr
       for t in arg_types {
         let llvm_ty = self.type_codegen_storage(t)
-        arg_typs.push(llvm_ty)
+        llvm_arg_types.push(llvm_ty)
       }
       let ret_ty = self.type_codegen_opaque(ret_ty)
-      let func_ty = self.llvm_ctx.getFunctionType(ret_ty, arg_typs)
+      let func_ty = self.llvm_ctx.getFunctionType(ret_ty, llvm_arg_types)
       let closure_struct_value = self.get_value_by_name_or_load(fname)
       let zero = self.llvm_ctx.getConstInt32(0)
       let closure_struct_ty = self.llvm_ctx.getStructType([ptrty])

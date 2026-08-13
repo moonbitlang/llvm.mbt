@@ -5,8 +5,12 @@ FLE="FLE"
 fo="fo"
 ine="ine"
 fule="fule"
+preemptable="preemptable"
+Pn="Pn"
 
 # fix below words will breaking change
 storge="storge"
 oprand="oprand"
 memove="memove"
+funcions="funcions"
+constuct="constuct"

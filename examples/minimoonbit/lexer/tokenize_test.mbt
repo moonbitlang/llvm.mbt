@@ -187,14 +187,14 @@ test "Tokenize Identifiers - 2" {
 ///|
 test "Tokenize Identifiers - 3" {
   let code =
-    #|Int Unit Bool Double DoubeList
+    #|Int Unit Bool Double DoubleList
   let tokens = tokenize(code)
   assert_true(tokens.length() is 6)
   assert_true(tokens[0].kind is Upper("Int"))
   assert_true(tokens[1].kind is Upper("Unit"))
   assert_true(tokens[2].kind is Upper("Bool"))
   assert_true(tokens[3].kind is Upper("Double"))
-  assert_true(tokens[4].kind is Upper("DoubeList"))
+  assert_true(tokens[4].kind is Upper("DoubleList"))
   assert_true(tokens[5].kind is EOF)
 }
 

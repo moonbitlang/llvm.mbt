@@ -3506,7 +3506,7 @@ pub fn IRBuilder::createBitCast(
           raise ValueTypeError(
             (
               $| loc: \{loc}:
-              $| Unanticipated cosntant type in `createBitCast`, the to type is \{to}
+              $| Unanticipated constant type in `createBitCast`, the to type is \{to}
             ),
           )
       }

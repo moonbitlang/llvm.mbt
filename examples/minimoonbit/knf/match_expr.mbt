@@ -322,7 +322,7 @@ fn Context::build_default_arms_block(
 ///
 /// for `match enum`
 ///
-/// convert to swicth-case
+/// convert to switch-case
 pub fn Context::match_enum_expr_to_knf(
   self : Context,
   expr : @typecheck.MatchExpr,

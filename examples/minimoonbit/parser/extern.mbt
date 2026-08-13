@@ -76,7 +76,7 @@ pub fn ExternFunction::to_string(self : Self, color? : Bool = true) -> String {
 ///
 ///extern_func := "extern" str "fn" lower "(" param_list ")" "->" type "=" ffi_name
 ///
-/// str can `"C"`, `"Js"` ect
+/// str can be `"C"`, `"Js"`, etc.
 /// but actually, we just parse it as a string literal here, don't care about its content.
 ///
 /// just because the original moonbit support that, we keep it.
@@ -90,10 +90,10 @@ pub fn parse_extern_function(
   guard tokens is [{ kind: String(_), .. }, .. tokens] else {
     @lexer.throw_(
       tokens[0],
-      "Expect a language string, \"c\", \"ss\", \"wasm\" ect",
+      "Expect a language string, \"c\", \"ss\", \"wasm\", etc.",
       Error,
     )
-    raise ParseError("Expect a language string, \"c\", \"ss\", \"wasm\" ect")
+    raise ParseError("Expect a language string, \"c\", \"ss\", \"wasm\", etc.")
   }
   guard tokens is [{ kind: Keyword(Fn), .. }, .. tokens] else {
     @lexer.throw_(tokens[0], "Expect 'fn'", Error)

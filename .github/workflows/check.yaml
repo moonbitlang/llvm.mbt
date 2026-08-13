@@ -54,12 +54,20 @@ jobs:
         shell: bash
         run: |
           moon_home="${MOON_HOME:-$HOME/.moon}"
-          rm -rf "$moon_home/cache/lib/llvm.mbt"
+          cache_root="$moon_home/cache/lib/Kaida-Amethyst/llvm.mbt"
+          rm -rf "$cache_root"
           node ./build.js </dev/null > "$RUNNER_TEMP/llvm-cold.json" 2> "$RUNNER_TEMP/llvm-cold.log"
+          completion_marker="$(find "$cache_root" -type f -name .complete.json -print -quit)"
+          test -n "$completion_marker"
+          cp "$completion_marker" "$RUNNER_TEMP/llvm-complete-before-hot.json"
           node ./build.js </dev/null > "$RUNNER_TEMP/llvm-hot.json" 2> "$RUNNER_TEMP/llvm-hot.log"
           cat "$RUNNER_TEMP/llvm-cold.log"
           cat "$RUNNER_TEMP/llvm-hot.log"
-          grep -F "LLVM shared cache validation passed" "$RUNNER_TEMP/llvm-hot.log"
+          if grep -Eq "Downloading |Installed LLVM into shared cache" "$RUNNER_TEMP/llvm-hot.log"; then
+            echo "The second build.js invocation did not reuse the shared cache" >&2
+            exit 1
+          fi
+          cmp "$RUNNER_TEMP/llvm-complete-before-hot.json" "$completion_marker"
           cmp "$RUNNER_TEMP/llvm-cold.json" "$RUNNER_TEMP/llvm-hot.json"
 
       - name: Moon check

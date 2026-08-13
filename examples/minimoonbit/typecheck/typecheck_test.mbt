@@ -151,7 +151,7 @@ test "Assign Stmt Type Check" {
     #|x = 5;
     #|let arr = [1, 2, 3];
     #|arr[0] = 10;
-    #|x += true;  // Shoule fail
+    #|x += true;  // Should fail
     #|let mut a = xxx;  // xxx's type is typevar
     #|a += 33;  // `a` and `xxx` should be inferred as Int
   let ctx = Context::new()

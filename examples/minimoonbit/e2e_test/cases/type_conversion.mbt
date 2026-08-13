@@ -6,12 +6,12 @@ fn test_int_conversions() -> Unit {
   // Int to other types
   let n64: Int64 = n.to_int64();
   let nf: Float = n.to_float();
-  let nd: Double = n.to_double();
+  let n_as_double: Double = n.to_double();
   
   println(n);
   println(n64);
   println(nf);
-  println(nd);
+  println(n_as_double);
 }
 
 fn test_int64_conversions() -> Unit {
@@ -20,12 +20,12 @@ fn test_int64_conversions() -> Unit {
   // Int64 to other types
   let n: Int = n64.to_int();
   let nf: Float = n64.to_float();
-  let nd: Double = n64.to_double();
+  let n_as_double: Double = n64.to_double();
   
   println(n64);
   println(n);
   println(nf);
-  println(nd);
+  println(n_as_double);
 }
 
 fn test_float_conversions() -> Unit {
@@ -146,4 +146,3 @@ fn main {
   test_uint_conversions();
   test_uint64_conversions();
 }
-

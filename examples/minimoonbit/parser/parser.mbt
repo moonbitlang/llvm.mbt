@@ -7,7 +7,7 @@ pub(all) struct Program {
   top_lets : Map[String, TopLet]
   /// Stores the `top_functions` component of this parser AST node.
   top_functions : Map[String, TopFunction]
-  /// Stores the `extern_funcions` component of this parser AST node.
+  /// Stores the external functions declared by this parser AST node.
   extern_funcions : Map[String, ExternFunction]
   /// Stores the `struct_defs` component of this parser AST node.
   struct_defs : Map[String, StructDef]

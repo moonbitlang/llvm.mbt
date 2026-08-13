@@ -1,5 +1,5 @@
 ///|
-/// Type-checks the corresponding parser AST form through `check_enum_constuct_expr`.
+/// Type-checks an enum-construction parser AST form.
 pub fn Context::check_enum_constuct_expr(
   self : Context,
   tag : String?,

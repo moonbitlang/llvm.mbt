@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#include <limits.h>
 
 typedef struct {
   int32_t length;
@@ -339,6 +340,15 @@ void print_string(MoonBitStr *str) {
 }
 
 int int_of_float(double value) {
+  if (value != value) {
+    return 0;
+  }
+  if (value >= (double)INT_MAX) {
+    return INT_MAX;
+  }
+  if (value <= (double)INT_MIN) {
+    return INT_MIN;
+  }
   return (int)value;
 }
 
@@ -541,4 +551,3 @@ int main(void) {
   moonbit_main();
   return 0;
 }
-

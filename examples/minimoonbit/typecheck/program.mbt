@@ -173,7 +173,7 @@ pub(all) struct Program {
   top_lets : Map[String, TopLet]
   /// Stores the `top_functions` component of this typed AST value.
   top_functions : Map[String, TopFunction]
-  /// Stores the `extern_funcions` component of this typed AST value.
+  /// Stores the external functions declared by this typed AST value.
   extern_funcions : Map[String, ExternFunction]
   /// Stores the `struct_defs` component of this typed AST value.
   struct_defs : Map[String, StructDef]

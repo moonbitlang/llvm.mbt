@@ -113,7 +113,9 @@ async fn run_group(
         "MiniMoonBit runtime compilation for group `\{group_name}` produced unexpected output\nstdout:\n\{runtime_stdout}\nstderr:\n\{runtime_stderr}",
       )
     }
-    let machine = @IR.TargetMachine::host(@IR.TargetMachineOptions::default())
+    let machine = @IR.TargetMachine::host(
+      @IR.TargetMachineOptions::new(relocationMode=@IR.Pic),
+    )
     let failures : Array[String] = []
     for name in names {
       let case = load_case(name)
