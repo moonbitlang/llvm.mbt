@@ -1,0 +1,56 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm-kaleidoscope/lexer"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn tokenize(String) -> Array[Token] raise LexError
+
+// Errors
+pub suberror LexError {
+  InvalidCharacter(Char, SourcePos)
+  MalformedNumber(String, SourcePos)
+} derive(@debug.Debug)
+
+// Types and methods
+pub(all) struct SourcePos {
+  offset : Int
+  line : Int
+  column : Int
+} derive(Eq, @debug.Debug)
+pub impl Show for SourcePos
+
+pub(all) struct Token {
+  kind : TokenKind
+  start : SourcePos
+  end : SourcePos
+} derive(Eq, @debug.Debug)
+pub impl Show for Token
+
+pub(all) enum TokenKind {
+  Def
+  Extern
+  If
+  Then
+  Else
+  For
+  In
+  Binary
+  Unary
+  Var
+  Identifier(String)
+  Number(Double)
+  Operator(Char)
+  LeftParen
+  RightParen
+  Comma
+  Semicolon
+  Eof
+} derive(Eq, @debug.Debug)
+pub impl Show for TokenKind
+
+// Type aliases
+
+// Traits

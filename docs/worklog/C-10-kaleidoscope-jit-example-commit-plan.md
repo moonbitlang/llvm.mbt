@@ -227,11 +227,11 @@ parse
 | `lexer/lexer_test.mbt` | 成功与失败的黑盒词法测试 |
 | `lexer/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 覆盖 identifier、floating-point number、comment、关键字、operator/punctuation 与 EOF。
-- [ ] `Token` 保留足够的 offset/line/column，以便 parser 错误指向输入位置；不加入完整 source manager。
-- [ ] 非法字符、畸形数字和 embedded NUL 产生 typed `LexError`，不 panic 或静默截断。
-- [ ] lexer 无全局 mutable state；所有测试可并行、可重复。
-- [ ] 公开 type、field、constructor、fn 和 impl 具有符合 style guide 的文档。
+- [x] 覆盖 identifier、floating-point number、comment、关键字、operator/punctuation 与 EOF。
+- [x] `Token` 保留足够的 offset/line/column，以便 parser 错误指向输入位置；不加入完整 source manager。
+- [x] 非法字符、畸形数字和 embedded NUL 产生 typed `LexError`，不 panic 或静默截断。
+- [x] lexer 无全局 mutable state；所有测试可并行、可重复。
+- [x] 公开 type、field、constructor、fn 和 impl 具有符合 style guide 的文档。
 
 建议提交信息：`examples(kaleidoscope): implement the lexer`
 
@@ -410,13 +410,13 @@ parse
 
 Commit 1：
 
-- [ ] 只提交本文档，`git diff --check` 通过。
+- [x] 只提交本文档，`git diff --check` 通过。
 
 Commit 2：
 
-- [ ] `moon check --target native` 能从 workspace 根解析两个 module。
-- [ ] 根 `moon.mod`、`IR`、`JIT` 和 llvm.mbt `.mbti` 无变化。
-- [ ] 没有提交外部 sibling path、下载缓存或 `_build`。
+- [x] `moon check --target native` 能从 workspace 根解析两个 module。
+- [x] 根 `moon.mod`、`IR`、`JIT` 和 llvm.mbt `.mbti` 无变化。
+- [x] 没有提交外部 sibling path、下载缓存或 `_build`。
 
 Commit 3～11 每次提交前：
 
