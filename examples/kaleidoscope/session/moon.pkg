@@ -1,0 +1,14 @@
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/ast",
+  "Kaida-Amethyst/llvm-kaleidoscope/codegen",
+  "Kaida-Amethyst/llvm-kaleidoscope/lexer",
+  "Kaida-Amethyst/llvm-kaleidoscope/parser",
+  "Kaida-Amethyst/llvm/IR",
+  "Kaida-Amethyst/llvm/JIT",
+}
+
+supported_targets = "native"
+
+options(
+  "is-main": false,
+)

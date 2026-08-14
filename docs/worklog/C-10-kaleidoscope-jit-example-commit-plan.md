@@ -292,13 +292,13 @@ parse
 | `session/session_test.mbt` | 实际机器码执行、跨 Module、`sin`、失败恢复和 close 测试 |
 | `session/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 普通 definition 使用 LLJIT default tracker 持久保存；extern 只在 codegen state 中登记 prototype。
-- [ ] 顶层 expression 使用唯一符号名和独立 ResourceTracker，lookup 后转换为 `() -> Double` 并真实调用。
-- [ ] `JITAddress` 和 tracker 在 FuncRef 调用期间保持可达；remove/close 后绝不再次调用既有 FuncRef。
-- [ ] anonymous tracker 在成功、lookup 失败和可恢复错误路径都按计划 remove；清理错误不能静默丢失。
-- [ ] definition/extern 只有在 parse、codegen、verify 和必要的 JIT add 全部成功后才提交 catalog 状态。
-- [ ] 测试覆盖 `1 + 2 * 3`、定义后跨 Module 调用、CurrentProcess `sin`、unknown symbol、重复定义、错误后继续求值、重复 Session 和显式 close。
-- [ ] unsafe address conversion 只出现在 session 私有实现，公开 `.mbti` 不暴露 JITAddress/FuncRef。
+- [x] 普通 definition 使用 LLJIT default tracker 持久保存；extern 只在 codegen state 中登记 prototype。
+- [x] 顶层 expression 使用唯一符号名和独立 ResourceTracker，lookup 后转换为 `() -> Double` 并真实调用。
+- [x] `JITAddress` 和 tracker 在 FuncRef 调用期间保持可达；remove/close 后绝不再次调用既有 FuncRef。
+- [x] anonymous tracker 在成功、lookup 失败和可恢复错误路径都按计划 remove；清理错误不能静默丢失。
+- [x] definition/extern 只有在 parse、codegen、verify 和必要的 JIT add 全部成功后才提交 catalog 状态。
+- [x] 测试覆盖 `1 + 2 * 3`、定义后跨 Module 调用、CurrentProcess `sin`、unknown symbol、重复定义、错误后继续求值、重复 Session 和显式 close。
+- [x] unsafe address conversion 只出现在 session 私有实现，公开 `.mbti` 不暴露 JITAddress/FuncRef。
 
 建议提交信息：`examples(kaleidoscope): evaluate expressions with LLJIT`
 

@@ -1,0 +1,43 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm-kaleidoscope/session"
+
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/codegen",
+  "Kaida-Amethyst/llvm-kaleidoscope/lexer",
+  "Kaida-Amethyst/llvm-kaleidoscope/parser",
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+pub suberror SessionError {
+  LexerFailure(@lexer.LexError)
+  ParserFailure(@parser.ParseError)
+  CodegenFailure(@codegen.CodegenError)
+  JITFailure(String)
+  IRStringFailure(String)
+  Closed
+  CleanupFailure(String, String)
+  UnexpectedFailure(String)
+} derive(@debug.Debug)
+pub fn SessionError::message(Self) -> String
+pub impl Show for SessionError
+
+// Types and methods
+pub(all) enum EvalOutcome {
+  Defined(String)
+  Extern(String)
+  Value(Double)
+} derive(Eq, @debug.Debug)
+
+pub struct Session {
+  // private fields
+}
+pub fn Session::close(Self) -> Unit raise SessionError
+pub fn Session::evaluate(Self, String) -> EvalOutcome raise SessionError
+pub fn Session::new() -> Self raise SessionError
+
+// Type aliases
+
+// Traits

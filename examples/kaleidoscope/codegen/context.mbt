@@ -15,10 +15,10 @@ fn[T] backend(action : () -> T raise) -> T raise CodegenError {
 /// **Lifecycle:** The returned Module retains its LLVM Context after this
 /// wrapper becomes unreachable. No explicit disposal is required.
 pub struct CodegenContext {
-  context : @IR.Context
-  mod : @IR.Module
-  builder : @IR.IRBuilder
-  variables : Map[String, &@IR.Value]
+  priv context : @IR.Context
+  priv mod : @IR.Module
+  priv builder : @IR.IRBuilder
+  priv variables : Map[String, &@IR.Value]
 }
 
 ///|

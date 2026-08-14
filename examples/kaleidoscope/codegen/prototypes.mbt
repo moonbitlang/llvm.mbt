@@ -48,8 +48,8 @@ fn validate_compatible(
 ///
 /// **Construction:** Use `PrototypeCatalog::new` for an empty language session.
 pub struct PrototypeCatalog {
-  prototypes : Map[String, @ast.Prototype]
-  definitions : Map[String, Bool]
+  priv prototypes : Map[String, @ast.Prototype]
+  priv definitions : Map[String, Bool]
 }
 
 ///|

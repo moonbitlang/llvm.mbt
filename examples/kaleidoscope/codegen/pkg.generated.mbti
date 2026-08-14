@@ -27,18 +27,14 @@ pub suberror CodegenError {
 
 // Types and methods
 pub struct CodegenContext {
-  context : @IR.Context
-  mod : @IR.Module
-  builder : @IR.IRBuilder
-  variables : Map[String, &@IR.Value]
+  // private fields
 }
 pub fn CodegenContext::getModule(Self) -> @IR.Module
 pub fn CodegenContext::new(module_name~ : String) -> Self raise CodegenError
 pub fn CodegenContext::verify(Self) -> Unit raise CodegenError
 
 pub struct PrototypeCatalog {
-  prototypes : Map[String, @ast.Prototype]
-  definitions : Map[String, Bool]
+  // private fields
 }
 pub fn PrototypeCatalog::commitDefinition(Self, @ast.Prototype) -> Unit raise CodegenError
 pub fn PrototypeCatalog::commitExtern(Self, @ast.Prototype) -> Unit raise CodegenError
