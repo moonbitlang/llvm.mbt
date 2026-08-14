@@ -1,65 +1,23 @@
-# llvm.mbt: LLVM 22 bindings for MoonBit
+# llvm.mbt
 
 [中文说明](#中文说明)
 
-`llvm.mbt` provides MoonBit bindings to upstream LLVM through the LLVM C API
-(`llvm-c`). It offers both a MoonBit-friendly IR construction API and direct
-access to lower-level LLVM C interfaces when needed.
+MoonBit bindings for LLVM 22.1.0. The public API follows LLVM's C++ concepts
+and naming where practical, and currently supports building LLVM IR, emitting
+native object files, and running code with ORC LLJIT.
 
-The current release is built from unmodified upstream **LLVM 22.1.0** sources
-and pinned to an exact artifact. It does not
-link against an arbitrary LLVM installation from the user's system.
-
-## Features
-
-- A typed IR-building API for contexts, modules, types, values, functions,
-  basic blocks, instructions, attributes, data layouts, bitcode, and the LLVM
-  interpreter.
-- A managed, host-only ORC LLJIT API that snapshots IR modules, resolves host
-  symbols, executes generated code, and explicitly unloads resource groups.
-- Module-private low-level bindings for broader `llvm-c` functionality,
-  including analysis, bitcode and IR readers/writers, execution engines,
-  linking, targets, target machines, and transforms.
-- Upstream LLVM code generation targets bundled into each distributed
-  artifact.
-- A reproducible native dependency: the archive URL, file size, and SHA-256
-  digests are fixed in `build.js`.
-- A shared cache under `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt`, so
-  MoonBit projects using the same artifact do not download separate LLVM
-  copies.
-
-## Requirements and supported hosts
-
-`llvm.mbt` supports the MoonBit **native backend only**.
-
-| Host | Minimum version | Artifact |
-| --- | --- | --- |
-| macOS ARM64 | macOS 11 | `llvm-22.1.0-r1-macos-arm64` |
-| Linux x86_64 | glibc 2.31 | `llvm-22.1.0-r1-linux-x86_64` |
-
-Every native build requires:
-
-- Node.js available in `PATH`, because Moon runs `build.js` with Node.js;
-- a normal native C/C++ toolchain available as `cc`.
-
-Filling the cache for the first time additionally requires:
-
-- `tar` with XZ support;
-- HTTPS access to the project's GitHub Release.
-
-Other hosts fail with an explicit unsupported-platform error. The build does
-not silently fall back to a system LLVM.
+Current release: **0.5.0** · MoonBit native backend · macOS ARM64 and Linux
+x86_64
 
 ## Installation
 
-Add the module dependency:
+Add the module:
 
 ```bash
 moon add Kaida-Amethyst/llvm
 ```
 
-Import the high-level IR package from the `moon.pkg` of the package that uses
-it:
+Import the IR package in `moon.pkg`:
 
 ```moonbit
 import {
@@ -67,45 +25,20 @@ import {
 }
 ```
 
-Set the module's preferred target in `moon.mod`:
+Select the native backend in `moon.mod`:
 
 ```moonbit
 preferred_target = "native"
 ```
 
-Then build or test for the native target:
+No `LLVM_HOME` or system LLVM installation is required. If installation fails,
+see the [installation guide](https://github.com/moonbitlang/llvm.mbt/blob/master/docs/installation.md)
+for artifact, cache, and troubleshooting details.
 
-```bash
-moon check --target native
-moon test --target native
-```
+## Example
 
-No `source env.sh`, `LLVM_HOME`, or system LLVM installation is required.
-
-## How the LLVM dependency is installed
-
-Before a native build, Moon runs this module's `build.js`. The script:
-
-1. selects the artifact matching the host;
-2. checks
-   `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt/22.1.0-r1/<platform>/`
-   `sha256-<digest>`;
-3. downloads the archive from the
-   [LLVM 22.1.0 Release](https://github.com/moonbitlang/llvm.mbt/releases/tag/llvm-22.1.0)
-   when the cache is absent;
-4. verifies the archive SHA-256, extracts it atomically, and verifies the
-   manifest and `libLLVM-mbt.a` SHA-256;
-5. supplies the include and linker flags to Moon's native build.
-
-If `MOON_HOME` is unset, Moon's usual `~/.moon` directory is used. The
-download is approximately 29.3 MiB on macOS ARM64 and 41.2 MiB on Linux
-x86_64. The static library occupies approximately 198.8 MiB and 320.4 MiB,
-respectively.
-
-## Quick start
-
-The following example builds a function equivalent to
-`fn add(lhs, rhs) { lhs + rhs }` and checks the generated LLVM IR:
+This example builds and verifies an LLVM function equivalent to
+`fn add(lhs, rhs) { lhs + rhs }`:
 
 ```mbt check
 ///|
@@ -126,6 +59,7 @@ test "build an integer addition function" {
   builder.setInsertPoint(entry)
   let sum = builder.createAdd(lhs, rhs, name="sum")
   builder.createRet(sum) |> ignore
+  mod.verify()
   inspect(
     function,
     content=(
@@ -140,95 +74,84 @@ test "build an integer addition function" {
 }
 ```
 
-Use `Kaida-Amethyst/llvm/IR` as the supported public API. The direct LLVM-C
-bindings live in the module-private `internal/raw` package and cannot be
-imported by downstream modules.
+## Packages
 
-## JIT execution
+- `Kaida-Amethyst/llvm/IR` provides types, values, modules, IR construction,
+  verification, bitcode output, target machines, and native object emission.
+- `Kaida-Amethyst/llvm/JIT` provides host-only ORC LLJIT. Its address conversion
+  and unload rules are documented in [JIT/README.md](JIT/README.md).
+- `internal/raw` contains the direct LLVM-C bindings used to implement the
+  public API. It cannot be imported by downstream modules.
 
-Import `Kaida-Amethyst/llvm/JIT` to run generated code in the current process.
-The host-only flow supports independent Module snapshots, cross-Module symbol
-resolution, current-process symbols such as `sin`, and explicit resource-group
-unloading. See [JIT/README.md](JIT/README.md) for the usage and unsafe calling
-contract.
+MoonBit objects own the corresponding LLVM resources. Operations that remove
+IR or unload JIT code have additional lifetime requirements documented on the
+relevant APIs.
 
-The JIT execution, lookup, ownership, and unload tests establish the runtime
-foundation needed to start an `examples/kaleidoscope` implementation. The
-example itself, its parser, codegen, and REPL remain separate follow-up work.
+## Examples
 
-## Developing llvm.mbt
+- [MiniMoonBit](examples/minimoonbit/README.md) is a larger compiler example.
+  Its test suite compiles 124 programs to native objects, links them, runs them,
+  and checks their output.
+- [Kaleidoscope](examples/kaleidoscope/README.md) implements the LLVM tutorial
+  language with a lexer, parser, code generator, ORC JIT, and readline REPL.
+
+Both examples are independent MoonBit modules, so their `async`, `either`, and
+`readline` dependencies are not dependencies of `Kaida-Amethyst/llvm`.
+
+## Requirements
+
+`llvm.mbt` supports the MoonBit native backend on these hosts:
+
+| Host | Minimum version |
+| --- | --- |
+| macOS ARM64 | macOS 11 |
+| Linux x86_64 | glibc 2.31 |
+
+Node.js and a native C/C++ toolchain available as `cc` must be in `PATH`.
+`build.js` downloads and verifies the LLVM artifact selected for the host, then
+caches it under `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt`. See the
+[installation guide](https://github.com/moonbitlang/llvm.mbt/blob/master/docs/installation.md)
+for details.
+
+## Project status
+
+Version 0.5.0 focuses on IR construction, native object emission, and host JIT.
+Optimization passes and debug information are not exposed yet; PassBuilder and
+DIBuilder are the next two major areas. Other LLVM APIs will be added as
+compiler projects require them.
+
+## Development
 
 ```bash
-moon check --target native
-moon test --target native
 moon info
 moon fmt
+moon check --target native
+moon test --target native
 ```
 
-- `IR/` contains the higher-level MoonBit API.
-- `internal/raw/` contains the module-private LLVM-C bindings and native
-  wrapper.
-- `build.js` manages the pinned LLVM artifact and shared cache.
-- Generated `.mbti` files describe each package's public interface.
-
-This project is licensed under the Apache License 2.0.
+llvm.mbt is licensed under the Apache License 2.0.
 
 ---
 
 # 中文说明
 
-[Back to English](#llvmbt-llvm-22-bindings-for-moonbit)
+[English](#llvmbt)
 
-`llvm.mbt` 通过 LLVM C API（`llvm-c`）为 MoonBit 提供上游 LLVM
-绑定。它既提供更符合 MoonBit 使用习惯的 IR 构造 API，也允许在需要时直接访问
-较底层的 LLVM C 接口。
+llvm.mbt 是 LLVM 22.1.0 的 MoonBit binding。公开 API 在适合的地方沿用 LLVM
+C++ 的概念和命名，目前支持构造 LLVM IR、生成 native object，以及通过 ORC
+LLJIT 运行生成的代码。
 
-当前版本使用未经修改的上游 **LLVM 22.1.0** 源码构建，并固定到确定的产物。
-它不使用 `llvm-config`，也不会链接用户系统中版本不确定的 LLVM。
-
-## 功能
-
-- 提供带类型的 IR 构造 API，覆盖上下文、模块、类型、值、函数、基本块、指令、
-  属性、数据布局、bitcode 和 LLVM 解释器。
-- 提供受管理的 host-only ORC LLJIT API，支持 Module 快照、宿主符号解析、
-  生成代码执行和资源组显式卸载。
-- 模块私有的底层 `llvm-c` binding 覆盖分析、bitcode 与 IR 读写、执行引擎、
-  链接、Target、TargetMachine 和变换接口。
-- 每个平台的分发产物都包含上游 LLVM 代码生成目标。
-- 原生依赖可复现：`build.js` 中固定了压缩包 URL、文件大小和 SHA-256。
-- 使用 `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt` 作为共享缓存；同一台
-  机器上的多个 MoonBit 项目不需要分别下载同一份 LLVM。
-
-## 环境要求与支持平台
-
-`llvm.mbt` 目前仅支持 MoonBit 的 **native 后端**。
-
-| 宿主平台 | 最低版本 | 产物 |
-| --- | --- | --- |
-| macOS ARM64 | macOS 11 | `llvm-22.1.0-r1-macos-arm64` |
-| Linux x86_64 | glibc 2.31 | `llvm-22.1.0-r1-linux-x86_64` |
-
-每次 native 构建都需要：
-
-- `PATH` 中存在 Node.js，因为 Moon 使用 Node.js 运行 `build.js`；
-- 可通过 `cc` 调用的常规原生 C/C++ 工具链。
-
-第一次填充缓存时还需要：
-
-- 支持 XZ 的 `tar`；
-- 能够通过 HTTPS 访问本项目的 GitHub Release。
-
-其他宿主平台会得到明确的不支持错误。构建过程不会静默回退到系统 LLVM。
+当前版本：**0.5.0** · MoonBit native backend · macOS ARM64 和 Linux x86_64
 
 ## 安装
 
-添加模块依赖：
+添加模块：
 
 ```bash
 moon add Kaida-Amethyst/llvm
 ```
 
-在使用它的 package 对应的 `moon.pkg` 中导入高层 IR package：
+在 `moon.pkg` 中导入 IR package：
 
 ```moonbit
 import {
@@ -236,44 +159,20 @@ import {
 }
 ```
 
-在模块的 `moon.mod` 中设置默认目标：
+在 `moon.mod` 中选择 native backend：
 
 ```moonbit
 preferred_target = "native"
 ```
 
-然后使用 native 目标构建或测试：
+不需要设置 `LLVM_HOME`，也不需要安装系统 LLVM。如果安装失败，可以查看
+[安装说明](https://github.com/moonbitlang/llvm.mbt/blob/master/docs/installation.md)，
+其中包含 LLVM 产物、缓存和排障信息。
 
-```bash
-moon check --target native
-moon test --target native
-```
+## 示例
 
-不需要执行 `source env.sh`，也不需要设置 `LLVM_HOME` 或安装系统 LLVM。
-
-## LLVM 依赖如何安装
-
-native 构建开始前，Moon 会运行本模块的 `build.js`。该脚本会：
-
-1. 根据宿主平台选择对应产物；
-2. 检查
-   `$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt/22.1.0-r1/<platform>/`
-   `sha256-<digest>`；
-3. 缓存不存在时，从
-   [LLVM 22.1.0 Release](https://github.com/moonbitlang/llvm.mbt/releases/tag/llvm-22.1.0)
-   下载压缩包；
-4. 校验压缩包 SHA-256，原子化解压，并校验清单和
-   `libLLVM-mbt.a` 的 SHA-256；
-5. 把 include 与链接参数交给 Moon 的 native 构建流程。
-
-如果没有设置 `MOON_HOME`，则使用 Moon 常规的 `~/.moon` 目录。macOS
-ARM64 的下载约为 29.3 MiB，Linux x86_64 约为 41.2 MiB；对应静态库分别约占
-198.8 MiB 和 320.4 MiB。
-
-## 快速开始
-
-下面的例子构造一个等价于 `fn add(lhs, rhs) { lhs + rhs }` 的函数，并检查
-生成的 LLVM IR：
+下面的例子构造并验证一个等价于 `fn add(lhs, rhs) { lhs + rhs }` 的 LLVM
+函数：
 
 ```mbt check
 ///|
@@ -294,6 +193,7 @@ test "构造整数加法函数" {
   builder.setInsertPoint(entry)
   let sum = builder.createAdd(lhs, rhs, name="sum")
   builder.createRet(sum) |> ignore
+  mod.verify()
   inspect(
     function,
     content=(
@@ -308,32 +208,51 @@ test "构造整数加法函数" {
 }
 ```
 
-`Kaida-Amethyst/llvm/IR` 是受支持的公开 API。直接 LLVM-C binding 位于模块
-私有的 `internal/raw` package，下游模块无法导入。
+## Packages
 
-## JIT 执行
+- `Kaida-Amethyst/llvm/IR` 提供类型、值、Module、IR 构造、验证、bitcode 输出、
+  TargetMachine 和 native object emission。
+- `Kaida-Amethyst/llvm/JIT` 提供 host-only ORC LLJIT。地址转换和卸载规则见
+  [JIT/README.md](JIT/README.md)。
+- `internal/raw` 存放实现公开 API 所使用的直接 LLVM-C binding，下游模块不能
+  导入它。
 
-导入 `Kaida-Amethyst/llvm/JIT` 可以在当前进程内运行生成的代码。首期
-host-only 闭环支持独立 Module 快照、跨 Module 符号解析、`sin` 等当前进程
-符号，以及资源组显式卸载。使用流程和 unsafe 调用契约见
-[JIT/README.md](JIT/README.md)。
+MoonBit 对象拥有对应的 LLVM 资源。删除 IR 或卸载 JIT 代码的操作还有额外的
+生命周期要求，相关 API 文档会明确说明这些要求。
 
-JIT 的执行、lookup、owner 和卸载测试已经建立了开始
-`examples/kaleidoscope` 所需的运行时基础；示例本身及其 parser、codegen 和
-REPL 留待后续任务实现。
+## 示例项目
 
-## 开发 llvm.mbt
+- [Kaleidoscope](examples/kaleidoscope/README.md) 实现了 LLVM 教程语言，包含
+  lexer、parser、codegen、ORC JIT 和 readline REPL。
+- [MiniMoonBit](examples/minimoonbit/README.md) 实现了一个MoonBit语言子集，包含函数定义，闭包，结构体，枚举类型等等，可以编译有一定复杂程度的程序，例如svd分解，光线追踪等等。
+
+## 环境要求
+
+llvm.mbt 在以下宿主平台支持 MoonBit native backend：
+
+| 宿主平台 | 最低版本 |
+| --- | --- |
+| macOS ARM64 | macOS 11 |
+| Linux x86_64 | glibc 2.31 |
+
+`PATH` 中需要存在 Node.js 和可通过 `cc` 调用的 native C/C++ 工具链。
+`build.js` 会下载并验证当前宿主平台对应的 LLVM 产物，然后将其缓存在
+`$MOON_HOME/cache/lib/Kaida-Amethyst/llvm.mbt`。详细过程见
+[安装说明](https://github.com/moonbitlang/llvm.mbt/blob/master/docs/installation.md)。
+
+## 项目状态
+
+0.5.0 主要覆盖 IR 构造、native object emission 和 host JIT。目前还没有公开
+优化 pass 和调试信息接口；PassBuilder 与 DIBuilder 是接下来的两个主要方向。
+其他 LLVM API 会根据实际编译器项目的需要逐步补充。
+
+## 开发
 
 ```bash
-moon check --target native
-moon test --target native
 moon info
 moon fmt
+moon check --target native
+moon test --target native
 ```
 
-- `IR/` 存放较高层的 MoonBit API。
-- `internal/raw/` 存放模块私有的 LLVM-C binding 与 native wrapper。
-- `build.js` 管理固定版本的 LLVM 产物和共享缓存。
-- 自动生成的 `.mbti` 文件描述每个 package 的公开接口。
-
-本项目使用 Apache License 2.0。
+llvm.mbt 使用 Apache License 2.0。
