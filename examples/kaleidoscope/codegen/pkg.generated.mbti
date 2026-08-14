@@ -1,0 +1,52 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm-kaleidoscope/codegen"
+
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/ast",
+  "Kaida-Amethyst/llvm/IR",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn compileDefinition(PrototypeCatalog, @ast.Prototype, @ast.Expr, module_name~ : String) -> @IR.Module raise CodegenError
+
+pub fn compileExpression(PrototypeCatalog, @ast.Expr, module_name~ : String, symbol_name~ : String) -> @IR.Module raise CodegenError
+
+// Errors
+pub suberror CodegenError {
+  UnknownVariable(String)
+  UnknownFunction(String)
+  DuplicateDefinition(String)
+  ConflictingPrototype(String, Int, Int)
+  ArgumentCountMismatch(String, Int, Int)
+  UnsupportedBinaryOperator(Char)
+  InvalidPrototype(String)
+  BackendFailure(String)
+  VerificationFailed(String)
+} derive(@debug.Debug)
+
+// Types and methods
+pub struct CodegenContext {
+  context : @IR.Context
+  mod : @IR.Module
+  builder : @IR.IRBuilder
+  variables : Map[String, &@IR.Value]
+}
+pub fn CodegenContext::getModule(Self) -> @IR.Module
+pub fn CodegenContext::new(module_name~ : String) -> Self raise CodegenError
+pub fn CodegenContext::verify(Self) -> Unit raise CodegenError
+
+pub struct PrototypeCatalog {
+  prototypes : Map[String, @ast.Prototype]
+  definitions : Map[String, Bool]
+}
+pub fn PrototypeCatalog::commitDefinition(Self, @ast.Prototype) -> Unit raise CodegenError
+pub fn PrototypeCatalog::commitExtern(Self, @ast.Prototype) -> Unit raise CodegenError
+pub fn PrototypeCatalog::get(Self, String) -> @ast.Prototype?
+pub fn PrototypeCatalog::isDefined(Self, String) -> Bool
+pub fn PrototypeCatalog::new() -> Self
+pub fn PrototypeCatalog::validateDefinition(Self, @ast.Prototype) -> Unit raise CodegenError
+
+// Type aliases
+
+// Traits

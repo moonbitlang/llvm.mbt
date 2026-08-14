@@ -1,0 +1,10 @@
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/ast",
+  "Kaida-Amethyst/llvm/IR",
+}
+
+supported_targets = "native"
+
+options(
+  "is-main": false,
+)

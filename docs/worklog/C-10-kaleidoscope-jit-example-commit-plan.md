@@ -270,13 +270,13 @@ parse
 | `codegen/codegen_test.mbt` | IR snapshot、verify 和反向测试 |
 | `codegen/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 每次编译建立 fresh LLVM Context/Module/IRBuilder，不缓存或跨 Module 复用 `Type`、`Value`、`Function` 或 BasicBlock。
-- [ ] 支持 `Double` constant、FAdd/FSub/FMul、ordered `<` comparison、UIToFP 和普通 call。
-- [ ] 函数参数从首期起进入 entry-block alloca 并通过 load 读取，为可变变量阶段预留一致模型；不得到 Commit 10 再大规模改写参数语义。
-- [ ] prototype catalog 只保存纯 MoonBit AST/ABI 信息，不保存某个 Module 的 `Function` handle。
-- [ ] unknown variable/function、duplicate definition、argument count mismatch 和 builder/LLVM 错误映射到稳定 `CodegenError`。
-- [ ] 每个成功 Module 都由调用方显式 verify；失败时丢弃整个 Module，不调用 `eraseFromParent` 回收半成品。
-- [ ] codegen package 不导入 JIT、readline、async 或 `internal/raw`。
+- [x] 每次编译建立 fresh LLVM Context/Module/IRBuilder，不缓存或跨 Module 复用 `Type`、`Value`、`Function` 或 BasicBlock。
+- [x] 支持 `Double` constant、FAdd/FSub/FMul、ordered `<` comparison、UIToFP 和普通 call。
+- [x] 函数参数从首期起进入 entry-block alloca 并通过 load 读取，为可变变量阶段预留一致模型；不得到 Commit 10 再大规模改写参数语义。
+- [x] prototype catalog 只保存纯 MoonBit AST/ABI 信息，不保存某个 Module 的 `Function` handle。
+- [x] unknown variable/function、duplicate definition、argument count mismatch 和 builder/LLVM 错误映射到稳定 `CodegenError`。
+- [x] 每个成功 Module 都由调用方显式 verify；失败时丢弃整个 Module，不调用 `eraseFromParent` 回收半成品。
+- [x] codegen package 不导入 JIT、readline、async 或 `internal/raw`。
 
 建议提交信息：`examples(kaleidoscope): generate verified core IR`
 
