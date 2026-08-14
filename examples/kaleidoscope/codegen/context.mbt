@@ -126,6 +126,27 @@ fn CodegenContext::currentFunction(
 }
 
 ///|
+fn CodegenContext::createEntryAlloca(
+  self : CodegenContext,
+  name : String,
+) -> &@IR.Value raise CodegenError {
+  let function = self.currentFunction()
+  guard function.getBasicBlocks() is [entry, ..] else {
+    raise BackendFailure("LLVM function has no entry block")
+  }
+  let builder = self.context.createBuilder()
+  match entry.getFirstInst() {
+    Some(instruction) =>
+      backend(() => builder.setInsertPointBefore(instruction))
+    None => backend(() => builder.setInsertPoint(entry))
+  }
+  let storage = backend(() => {
+    builder.createAlloca(self.context.getDoubleTy(), name~)
+  })
+  (storage : &@IR.Value)
+}
+
+///|
 fn CodegenContext::restoreVariable(
   self : CodegenContext,
   name : String,

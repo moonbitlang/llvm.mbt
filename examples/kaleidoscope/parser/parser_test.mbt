@@ -74,6 +74,53 @@ test "for expressions accept default and explicit steps" {
 }
 
 ///|
+test "var bindings and assignment preserve low right-associative precedence" {
+  debug_inspect(
+    parse("var x = 1, y in x = y = 2 + 3 * 4"),
+    content=(
+      #|Expression(
+      #|  Var(
+      #|    [
+      #|      { name: "x", initializer: Some(Number(1)) },
+      #|      { name: "y", initializer: None },
+      #|    ],
+      #|    Assign(
+      #|      "x",
+      #|      Assign("y", Binary('+', Number(2), Binary('*', Number(3), Number(4)))),
+      #|    ),
+      #|  ),
+      #|)
+    ),
+  )
+}
+
+///|
+test "invalid assignment and variable lists retain source positions" {
+  try parse("(x + 1) = 2") |> ignore catch {
+    ParseError::InvalidAssignmentTarget({ offset: 8, line: 1, column: 9 }) => ()
+    error => fail("unexpected assignment error: \{error}")
+  } noraise {
+    _ => fail("expected invalid assignment target")
+  }
+  try parse("var x = 1, x = 2 in x") |> ignore catch {
+    ParseError::DuplicateBinding("x", { offset: 11, line: 1, column: 12 }) => ()
+    error => fail("unexpected duplicate error: \{error}")
+  } noraise {
+    _ => fail("expected duplicate variable binding")
+  }
+  let invalid = ["var in 1", "var x = 1 x", "var x = 1, in x"]
+  for source in invalid {
+    try parse(source) |> ignore catch {
+      ParseError::UnexpectedToken(_, _) => ()
+      ParseError::UnexpectedEndOfInput(_, _) => ()
+      error => fail("unexpected error for \{source}: \{error}")
+    } noraise {
+      _ => fail("expected invalid variable list: \{source}")
+    }
+  }
+}
+
+///|
 test "empty and nested calls" {
   debug_inspect(parse("foo()"), content="Expression(Call(\"foo\", []))")
   debug_inspect(

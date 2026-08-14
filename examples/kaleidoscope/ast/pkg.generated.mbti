@@ -18,6 +18,8 @@ pub(all) enum Expr {
   Call(String, Array[Expr])
   If(Expr, Expr, Expr)
   For(String, Expr, Expr, Expr?, Expr)
+  Var(Array[VarBinding], Expr)
+  Assign(String, Expr)
 } derive(Eq, @debug.Debug)
 
 pub(all) struct Prototype {
@@ -36,6 +38,11 @@ pub(all) enum TopLevel {
   Definition(Prototype, Expr)
   Extern(Prototype)
   Expression(Expr)
+} derive(Eq, @debug.Debug)
+
+pub(all) struct VarBinding {
+  name : String
+  initializer : Expr?
 } derive(Eq, @debug.Debug)
 
 // Type aliases

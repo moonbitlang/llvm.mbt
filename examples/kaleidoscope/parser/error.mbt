@@ -11,4 +11,8 @@ pub suberror ParseError {
   DuplicateParameter(String, @lexer.SourcePos)
   /// Reports an invalid operator character, precedence, or parameter count.
   InvalidOperatorPrototype(@lexer.SourcePos, String)
+  /// Reports a repeated binding name in one `var` declaration list.
+  DuplicateBinding(String, @lexer.SourcePos)
+  /// Reports an assignment whose left-hand side is not a variable reference.
+  InvalidAssignmentTarget(@lexer.SourcePos)
 } derive(Debug)

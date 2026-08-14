@@ -64,6 +64,10 @@ pub fn SessionError::message(self : SessionError) -> String {
           "parse error at \{position}: duplicate parameter `\{name}`"
         InvalidOperatorPrototype(position, message) =>
           "parse error at \{position}: \{message}"
+        DuplicateBinding(name, position) =>
+          "parse error at \{position}: duplicate binding `\{name}`"
+        InvalidAssignmentTarget(position) =>
+          "parse error at \{position}: assignment target must be a variable"
       }
     CodegenFailure(error) =>
       match error {
@@ -75,6 +79,8 @@ pub fn SessionError::message(self : SessionError) -> String {
         ArgumentCountMismatch(name, expected, actual) =>
           "call to `\{name}` expects \{expected} arguments, received \{actual}"
         InvalidPrototype(message) => "invalid prototype: \{message}"
+        InvalidVariableBinding(message) =>
+          "invalid variable binding: \{message}"
         BackendFailure(message) => "LLVM construction failed: \{message}"
         VerificationFailed(message) => "LLVM verification failed: \{message}"
       }

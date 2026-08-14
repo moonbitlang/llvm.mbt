@@ -376,12 +376,12 @@ parse
 | parser/codegen/session 测试 | 初始化、遮蔽、赋值、循环 mutation 和反向测试 |
 | 相关 `pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 未提供 initializer 的变量默认为 `0.0`；initializer 在新 binding 进入 scope 前求值。
-- [ ] 所有变量读取统一 load alloca，赋值返回被写入的 Double 值。
-- [ ] entry-block alloca 插入不破坏当前 builder insertion point；空 entry block 和已有 instruction 两条路径都覆盖测试。
-- [ ] scope 正常退出和 codegen error 时都恢复被遮蔽的绑定，不污染后续表达式。
-- [ ] 赋值左侧不是变量、引用未知变量或重复 binding 时产生明确错误，不触发 LLVM assertion。
-- [ ] 通过 JIT 测试局部 mutation、shadowing 和 loop body 更新变量。
+- [x] 未提供 initializer 的变量默认为 `0.0`；initializer 在新 binding 进入 scope 前求值。
+- [x] 所有变量读取统一 load alloca，赋值返回被写入的 Double 值。
+- [x] entry-block alloca 插入不破坏当前 builder insertion point；空 entry block 和已有 instruction 两条路径都覆盖测试。
+- [x] scope 正常退出和 codegen error 时都恢复被遮蔽的绑定，不污染后续表达式。
+- [x] 赋值左侧不是变量、引用未知变量或重复 binding 时产生明确错误，不触发 LLVM assertion。
+- [x] 通过 JIT 测试局部 mutation、shadowing 和 loop body 更新变量。
 
 建议提交信息：`examples(kaleidoscope): add mutable variables`
 

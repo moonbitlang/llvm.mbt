@@ -28,8 +28,8 @@ test "core binary operators produce floating-point IR" {
       #|
       #|define double @operators(double %left1, double %right2) {
       #|entry:
-      #|  %left = alloca double, align 8
       #|  %right = alloca double, align 8
+      #|  %left = alloca double, align 8
       #|  store double %left1, ptr %left, align 8
       #|  store double %right2, ptr %right, align 8
       #|  %left3 = load double, ptr %left, align 8
@@ -71,8 +71,8 @@ test "function parameters use entry allocas and loads" {
       #|
       #|define double @add(double %left1, double %right2) {
       #|entry:
-      #|  %left = alloca double, align 8
       #|  %right = alloca double, align 8
+      #|  %left = alloca double, align 8
       #|  store double %left1, ptr %left, align 8
       #|  store double %right2, ptr %right, align 8
       #|  %left3 = load double, ptr %left, align 8
@@ -418,9 +418,9 @@ test "for expressions preserve their enclosing lexical binding" {
       #|
       #|define double @loop(double %i1) {
       #|entry:
+      #|  %i2 = alloca double, align 8
       #|  %i = alloca double, align 8
       #|  store double %i1, ptr %i, align 8
-      #|  %i2 = alloca double, align 8
       #|  store double 1.000000e+00, ptr %i2, align 8
       #|  br label %loop
       #|
@@ -443,6 +443,104 @@ test "for expressions preserve their enclosing lexical binding" {
       #|
     ),
   )
+}
+
+///|
+test "mutable variables use entry allocas and restore shadowed bindings" {
+  let catalog = PrototypeCatalog::new()
+  let prototype : @ast.Prototype = {
+    name: "mutable",
+    parameters: ["x"],
+    kind: @ast.Normal,
+  }
+  let mod = compileDefinition(
+    catalog,
+    prototype,
+    @ast.Var(
+      [
+        {
+          name: "x",
+          initializer: Some(
+            @ast.Binary('+', @ast.Variable("x"), @ast.Number(1.0)),
+          ),
+        },
+        { name: "y", initializer: None },
+      ],
+      @ast.Binary('+', @ast.Assign("y", @ast.Variable("x")), @ast.Variable("y")),
+    ),
+    module_name="mutable_variables",
+  )
+  inspect(
+    "\{mod}",
+    content=(
+      #|; ModuleID = 'mutable_variables'
+      #|source_filename = "mutable_variables"
+      #|
+      #|define double @mutable(double %x1) {
+      #|entry:
+      #|  %y = alloca double, align 8
+      #|  %x3 = alloca double, align 8
+      #|  %x = alloca double, align 8
+      #|  store double %x1, ptr %x, align 8
+      #|  %x2 = load double, ptr %x, align 8
+      #|  %addtmp = fadd double %x2, 1.000000e+00
+      #|  store double %addtmp, ptr %x3, align 8
+      #|  store double 0.000000e+00, ptr %y, align 8
+      #|  %x4 = load double, ptr %x3, align 8
+      #|  store double %x4, ptr %y, align 8
+      #|  %y5 = load double, ptr %y, align 8
+      #|  %addtmp6 = fadd double %x4, %y5
+      #|  ret double %addtmp6
+      #|}
+      #|
+    ),
+  )
+}
+
+///|
+test "invalid mutable AST nodes fail before unsafe backend operations" {
+  let catalog = PrototypeCatalog::new()
+  let invalid_bindings : Array[@ast.Expr] = [
+    @ast.Var([], @ast.Number(0.0)),
+    @ast.Var([{ name: "", initializer: None }], @ast.Number(0.0)),
+    @ast.Var(
+      [
+        { name: "x", initializer: None },
+        { name: "x", initializer: Some(@ast.Number(1.0)) },
+      ],
+      @ast.Variable("x"),
+    ),
+  ]
+  for index, expression in invalid_bindings {
+    try
+      compileExpression(
+        catalog,
+        expression,
+        module_name="invalid_binding_\{index}",
+        symbol_name="invalid_binding_expression_\{index}",
+      )
+      |> ignore
+    catch {
+      CodegenError::InvalidVariableBinding(_) => ()
+      error => fail("unexpected binding error: \{Repr(error)}")
+    } noraise {
+      _ => fail("expected invalid variable binding")
+    }
+  }
+  try
+    compileExpression(
+      catalog,
+      @ast.Assign("missing", @ast.Number(1.0)),
+      module_name="unknown_assignment",
+      symbol_name="unknown_assignment_expression",
+    )
+    |> ignore
+  catch {
+    CodegenError::UnknownVariable("missing") => ()
+    error => fail("unexpected assignment error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected assignment to unknown variable to fail")
+  }
 }
 
 ///|

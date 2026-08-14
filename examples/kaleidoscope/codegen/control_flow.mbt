@@ -51,10 +51,7 @@ fn CodegenContext::codegenFor(
   catalog : PrototypeCatalog,
 ) -> &@IR.Value raise CodegenError {
   let start_value = self.codegenExpr(start, catalog)
-  let storage = backend(() => {
-    self.builder.createAlloca(self.context.getDoubleTy(), name=variable)
-  })
-  let storage : &@IR.Value = storage
+  let storage = self.createEntryAlloca(variable)
   backend(() => self.builder.createStore(start_value, storage)) |> ignore
   let function = self.currentFunction()
   let loop_block = backend(() => function.addBasicBlock(name="loop"))

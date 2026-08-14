@@ -16,6 +16,8 @@ pub suberror ParseError {
   UnexpectedEndOfInput(@lexer.SourcePos, String)
   DuplicateParameter(String, @lexer.SourcePos)
   InvalidOperatorPrototype(@lexer.SourcePos, String)
+  DuplicateBinding(String, @lexer.SourcePos)
+  InvalidAssignmentTarget(@lexer.SourcePos)
 } derive(@debug.Debug)
 
 // Types and methods

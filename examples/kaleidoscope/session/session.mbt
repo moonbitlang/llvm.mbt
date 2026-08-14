@@ -44,6 +44,10 @@ fn parse_source(
       raise ParserFailure(error)
     @parser.ParseError::InvalidOperatorPrototype(_, _) as error =>
       raise ParserFailure(error)
+    @parser.ParseError::DuplicateBinding(_, _) as error =>
+      raise ParserFailure(error)
+    @parser.ParseError::InvalidAssignmentTarget(_) as error =>
+      raise ParserFailure(error)
     error => raise UnexpectedFailure(error.to_string())
   }
 }

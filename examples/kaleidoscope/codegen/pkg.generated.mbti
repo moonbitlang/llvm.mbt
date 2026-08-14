@@ -20,6 +20,7 @@ pub suberror CodegenError {
   ConflictingPrototype(String, Int, Int)
   ArgumentCountMismatch(String, Int, Int)
   InvalidPrototype(String)
+  InvalidVariableBinding(String)
   BackendFailure(String)
   VerificationFailed(String)
 } derive(@debug.Debug)

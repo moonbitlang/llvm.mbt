@@ -56,7 +56,72 @@ fn CodegenContext::codegenExpr(
       self.codegenIf(condition, then_expression, else_expression, catalog)
     For(variable, start, end, step, body) =>
       self.codegenFor(variable, start, end, step, body, catalog)
+    Var(bindings, body) => self.codegenVar(bindings, body, catalog)
+    Assign(name, value) => self.codegenAssign(name, value, catalog)
   }
+}
+
+///|
+fn CodegenContext::codegenAssign(
+  self : CodegenContext,
+  name : String,
+  expression : @ast.Expr,
+  catalog : PrototypeCatalog,
+) -> &@IR.Value raise CodegenError {
+  guard self.variables.get(name) is Some(storage) else {
+    raise UnknownVariable(name)
+  }
+  let value = self.codegenExpr(expression, catalog)
+  backend(() => self.builder.createStore(value, storage)) |> ignore
+  value
+}
+
+///|
+fn CodegenContext::codegenVarBindings(
+  self : CodegenContext,
+  bindings : Array[@ast.VarBinding],
+  index : Int,
+  body : @ast.Expr,
+  catalog : PrototypeCatalog,
+) -> &@IR.Value raise CodegenError {
+  if index == bindings.length() {
+    return self.codegenExpr(body, catalog)
+  }
+  let binding = bindings[index]
+  let initial_value = match binding.initializer {
+    Some(initializer) => self.codegenExpr(initializer, catalog)
+    None => (self.context.getConstDouble(0.0) : &@IR.Value)
+  }
+  let storage = self.createEntryAlloca(binding.name)
+  backend(() => self.builder.createStore(initial_value, storage)) |> ignore
+  self.withVariable(binding.name, storage, () => {
+    self.codegenVarBindings(bindings, index + 1, body, catalog)
+  })
+}
+
+///|
+fn CodegenContext::codegenVar(
+  self : CodegenContext,
+  bindings : Array[@ast.VarBinding],
+  body : @ast.Expr,
+  catalog : PrototypeCatalog,
+) -> &@IR.Value raise CodegenError {
+  let names : Map[String, Bool] = Map([])
+  for binding in bindings {
+    guard binding.name != "" else {
+      raise InvalidVariableBinding("variable name must not be empty")
+    }
+    guard names.get(binding.name) is None else {
+      raise InvalidVariableBinding(
+        "variable list repeats binding `\{binding.name}`",
+      )
+    }
+    names.set(binding.name, true)
+  }
+  guard bindings.length() > 0 else {
+    raise InvalidVariableBinding("variable list must not be empty")
+  }
+  self.codegenVarBindings(bindings, 0, body, catalog)
 }
 
 ///|

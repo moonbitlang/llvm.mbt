@@ -259,6 +259,47 @@ fn parse_for(
 }
 
 ///|
+fn parse_var(
+  parser : Parser,
+  keyword : @lexer.Token,
+  tokens : ArrayView[@lexer.Token],
+) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
+  let bindings : Array[@ast.VarBinding] = []
+  let names : Map[String, Bool] = Map([])
+  for tokens = tokens {
+    guard tokens is [{ kind: @lexer.Identifier(name), start, .. }, .. tokens] else {
+      match tokens {
+        [token, ..] =>
+          raise unexpected_token(token, "variable name after `var`")
+        [] =>
+          raise UnexpectedEndOfInput(keyword.end, "variable name after `var`")
+      }
+    }
+    guard names.get(name) is None else { raise DuplicateBinding(name, start) }
+    names.set(name, true)
+    let (initializer, tokens) = match tokens {
+      [{ kind: @lexer.Operator('='), .. }, .. rest] => {
+        let (initializer, rest) = parse_expression(parser, rest)
+        (Some(initializer), rest)
+      }
+      _ => (None, tokens)
+    }
+    bindings.push({ name, initializer })
+    match tokens {
+      [{ kind: @lexer.Comma, .. }, .. rest] => continue rest
+      [{ kind: @lexer.In, .. }, .. rest] => {
+        let (body, rest) = parse_expression(parser, rest)
+        break (@ast.Var(bindings, body), rest)
+      }
+      [token, ..] =>
+        raise unexpected_token(token, "`,` or `in` after variable binding")
+      [] =>
+        raise UnexpectedEndOfInput(keyword.end, "`in` after variable bindings")
+    }
+  }
+}
+
+///|
 fn parse_primary(
   parser : Parser,
   tokens : ArrayView[@lexer.Token],
@@ -273,6 +314,8 @@ fn parse_primary(
       parse_if(parser, keyword, rest)
     [{ kind: @lexer.For, .. } as keyword, .. rest] =>
       parse_for(parser, keyword, rest)
+    [{ kind: @lexer.Var, .. } as keyword, .. rest] =>
+      parse_var(parser, keyword, rest)
     [token, ..] => raise unexpected_token(token, "expression")
     [] =>
       raise UnexpectedEndOfInput(
@@ -335,7 +378,17 @@ fn parse_expression(
   tokens : ArrayView[@lexer.Token],
 ) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
   let (left, tokens) = parse_unary(parser, tokens)
-  parse_binary_rhs(parser, 0, left, tokens)
+  let (left, tokens) = parse_binary_rhs(parser, 0, left, tokens)
+  match tokens {
+    [{ kind: @lexer.Operator('='), start, .. }, .. rest] => {
+      guard left is @ast.Variable(name) else {
+        raise InvalidAssignmentTarget(start)
+      }
+      let (right, rest) = parse_expression(parser, rest)
+      (@ast.Assign(name, right), rest)
+    }
+    _ => (left, tokens)
+  }
 }
 
 ///|

@@ -11,12 +11,9 @@ fn CodegenContext::codegenDefinition(
   backend(() => self.builder.setInsertPoint(entry))
   let storage : Array[&@IR.Value] = []
   for parameter in prototype.parameters {
-    let alloca = backend(() => {
-      self.builder.createAlloca(self.context.getDoubleTy(), name=parameter)
-    })
-    let value : &@IR.Value = alloca
-    storage.push(value)
-    self.variables.set(parameter, value)
+    let alloca = self.createEntryAlloca(parameter)
+    storage.push(alloca)
+    self.variables.set(parameter, alloca)
   }
   for index, parameter in prototype.parameters {
     guard function.getArg(index) is Some(argument) else {

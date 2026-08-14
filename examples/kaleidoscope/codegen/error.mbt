@@ -14,6 +14,8 @@ pub suberror CodegenError {
   ArgumentCountMismatch(String, Int, Int)
   /// Reports a malformed prototype constructed outside the parser.
   InvalidPrototype(String)
+  /// Reports an empty or repeated local name in a manually constructed AST.
+  InvalidVariableBinding(String)
   /// Wraps a failure reported while constructing LLVM IR.
   BackendFailure(String)
   /// Wraps an LLVM verifier diagnostic for a completed module.

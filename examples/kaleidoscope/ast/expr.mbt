@@ -1,5 +1,14 @@
 ///|
-/// Represents an expression in the currently implemented Kaleidoscope core.
+/// Describes one mutable local introduced by a `var/in` expression.
+pub(all) struct VarBinding {
+  /// Stores the source-level variable name.
+  name : String
+  /// Stores the initializer, or `None` for the default value `0.0`.
+  initializer : Expr?
+} derive(Debug, Eq)
+
+///|
+/// Represents an expression in the implemented Kaleidoscope language.
 pub(all) enum Expr {
   /// Stores a double-precision numeric literal.
   Number(Double)
@@ -16,4 +25,8 @@ pub(all) enum Expr {
   /// Iterates a lexical variable from its start while the end condition is
   /// nonzero, using an optional step expression, then returns `0.0`.
   For(String, Expr, Expr, Expr?, Expr)
+  /// Introduces one or more mutable lexical bindings for a body expression.
+  Var(Array[VarBinding], Expr)
+  /// Stores a value in an existing lexical binding and returns that value.
+  Assign(String, Expr)
 } derive(Debug, Eq)

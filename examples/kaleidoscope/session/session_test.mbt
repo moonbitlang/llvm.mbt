@@ -95,6 +95,65 @@ test "failed operator definitions do not commit precedence" {
 }
 
 ///|
+test "mutable variables support defaults, initialization, and shadowing" {
+  let session = Session::new()
+  debug_inspect(session.evaluate("var x in x"), content="Value(0)")
+  debug_inspect(
+    session.evaluate("var x = 1, y = x + 1 in y"),
+    content="Value(2)",
+  )
+  debug_inspect(
+    session.evaluate("var x = 1 in (var x = 2 in x) + x"),
+    content="Value(3)",
+  )
+  session.evaluate("def initialize(x) var x = x + 1 in x") |> ignore
+  debug_inspect(session.evaluate("initialize(41)"), content="Value(42)")
+  session.close()
+}
+
+///|
+test "assignment returns values and mutates loop-visible storage" {
+  let session = Session::new()
+  debug_inspect(
+    session.evaluate("var x = 1 in (x = x + 2) * x"),
+    content="Value(9)",
+  )
+  debug_inspect(
+    session.evaluate("var x = 0, y = 0 in (x = y = 3) + x + y"),
+    content="Value(9)",
+  )
+  debug_inspect(
+    session.evaluate(
+      "var total = 0 in (for i = 1, i < 5 in total = total + i) + total",
+    ),
+    content="Value(10)",
+  )
+  session.close()
+}
+
+///|
+test "mutable-variable errors leave the session usable" {
+  let session = Session::new()
+  try session.evaluate("missing = 1") |> ignore catch {
+    SessionError::CodegenFailure(
+      @codegen.CodegenError::UnknownVariable("missing")
+    ) => ()
+    error => fail("unexpected assignment error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected unknown assignment target")
+  }
+  try session.evaluate("var x = 1, x = 2 in x") |> ignore catch {
+    SessionError::ParserFailure(@parser.ParseError::DuplicateBinding("x", _)) =>
+      ()
+    error => fail("unexpected binding error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected duplicate binding")
+  }
+  debug_inspect(session.evaluate("40 + 2"), content="Value(42)")
+  session.close()
+}
+
+///|
 test "extern declarations resolve current-process symbols" {
   let session = Session::new()
   debug_inspect(
