@@ -9,4 +9,9 @@ pub(all) enum Expr {
   Binary(Char, Expr, Expr)
   /// Calls a named function with zero or more argument expressions.
   Call(String, Array[Expr])
+  /// Selects one of two expressions using a zero/nonzero condition.
+  If(Expr, Expr, Expr)
+  /// Iterates a lexical variable from its start while the end condition is
+  /// nonzero, using an optional step expression, then returns `0.0`.
+  For(String, Expr, Expr, Expr?, Expr)
 } derive(Debug, Eq)

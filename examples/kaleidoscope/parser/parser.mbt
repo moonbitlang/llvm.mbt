@@ -122,6 +122,71 @@ fn parse_identifier(
 }
 
 ///|
+fn parse_if(
+  parser : Parser,
+  keyword : @lexer.Token,
+  tokens : ArrayView[@lexer.Token],
+) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
+  let (condition, tokens) = parse_expression(parser, tokens)
+  let tokens = match tokens {
+    [{ kind: @lexer.Then, .. }, .. rest] => rest
+    [token, ..] => raise unexpected_token(token, "`then` after condition")
+    [] => raise UnexpectedEndOfInput(keyword.end, "`then` after condition")
+  }
+  let (then_expression, tokens) = parse_expression(parser, tokens)
+  let tokens = match tokens {
+    [{ kind: @lexer.Else, .. }, .. rest] => rest
+    [token, ..] => raise unexpected_token(token, "`else` after then expression")
+    [] =>
+      raise UnexpectedEndOfInput(keyword.end, "`else` after then expression")
+  }
+  let (else_expression, tokens) = parse_expression(parser, tokens)
+  (@ast.If(condition, then_expression, else_expression), tokens)
+}
+
+///|
+fn parse_for(
+  parser : Parser,
+  keyword : @lexer.Token,
+  tokens : ArrayView[@lexer.Token],
+) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
+  guard tokens is [{ kind: @lexer.Identifier(variable), .. }, .. tokens] else {
+    match tokens {
+      [token, ..] => raise unexpected_token(token, "loop variable after `for`")
+      [] => raise UnexpectedEndOfInput(keyword.end, "loop variable after `for`")
+    }
+  }
+  guard tokens is [{ kind: @lexer.Operator('='), .. }, .. tokens] else {
+    match tokens {
+      [token, ..] => raise unexpected_token(token, "`=` after loop variable")
+      [] => raise UnexpectedEndOfInput(keyword.end, "`=` after loop variable")
+    }
+  }
+  let (start, tokens) = parse_expression(parser, tokens)
+  guard tokens is [{ kind: @lexer.Comma, .. }, .. tokens] else {
+    match tokens {
+      [token, ..] => raise unexpected_token(token, "`,` after loop start")
+      [] => raise UnexpectedEndOfInput(keyword.end, "`,` after loop start")
+    }
+  }
+  let (end, tokens) = parse_expression(parser, tokens)
+  let (step, tokens) = match tokens {
+    [{ kind: @lexer.Comma, .. }, .. rest] => {
+      let (step, rest) = parse_expression(parser, rest)
+      (Some(step), rest)
+    }
+    _ => (None, tokens)
+  }
+  let tokens = match tokens {
+    [{ kind: @lexer.In, .. }, .. rest] => rest
+    [token, ..] => raise unexpected_token(token, "`in` before loop body")
+    [] => raise UnexpectedEndOfInput(keyword.end, "`in` before loop body")
+  }
+  let (body, tokens) = parse_expression(parser, tokens)
+  (@ast.For(variable, start, end, step, body), tokens)
+}
+
+///|
 fn parse_primary(
   parser : Parser,
   tokens : ArrayView[@lexer.Token],
@@ -132,6 +197,10 @@ fn parse_primary(
       parse_identifier(parser, name, rest)
     [{ kind: @lexer.LeftParen, .. } as open, .. rest] =>
       parse_parenthesized(parser, open, rest)
+    [{ kind: @lexer.If, .. } as keyword, .. rest] =>
+      parse_if(parser, keyword, rest)
+    [{ kind: @lexer.For, .. } as keyword, .. rest] =>
+      parse_for(parser, keyword, rest)
     [token, ..] => raise unexpected_token(token, "expression")
     [] =>
       raise UnexpectedEndOfInput(

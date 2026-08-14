@@ -59,5 +59,9 @@ fn CodegenContext::codegenExpr(
       })
       (call : &@IR.Value)
     }
+    If(condition, then_expression, else_expression) =>
+      self.codegenIf(condition, then_expression, else_expression, catalog)
+    For(variable, start, end, step, body) =>
+      self.codegenFor(variable, start, end, step, body, catalog)
   }
 }

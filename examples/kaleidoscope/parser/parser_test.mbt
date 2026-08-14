@@ -32,6 +32,48 @@ test "built-in binary precedence" {
 }
 
 ///|
+test "if expressions may nest in either branch" {
+  debug_inspect(
+    parse("if 1 then if 0 then 2 else 3 else 4"),
+    content=(
+      #|Expression(If(Number(1), If(Number(0), Number(2), Number(3)), Number(4)))
+    ),
+  )
+}
+
+///|
+test "for expressions accept default and explicit steps" {
+  debug_inspect(
+    parse("for i = 1, i < 4 in i"),
+    content=(
+      #|Expression(
+      #|  For(
+      #|    "i",
+      #|    Number(1),
+      #|    Binary('<', Variable("i"), Number(4)),
+      #|    None,
+      #|    Variable("i"),
+      #|  ),
+      #|)
+    ),
+  )
+  debug_inspect(
+    parse("for i = 1, i < 4, 0.5 in if i then i else 0"),
+    content=(
+      #|Expression(
+      #|  For(
+      #|    "i",
+      #|    Number(1),
+      #|    Binary('<', Variable("i"), Number(4)),
+      #|    Some(Number(0.5)),
+      #|    If(Variable("i"), Variable("i"), Number(0)),
+      #|  ),
+      #|)
+    ),
+  )
+}
+
+///|
 test "empty and nested calls" {
   debug_inspect(parse("foo()"), content="Expression(Call(\"foo\", []))")
   debug_inspect(
@@ -150,16 +192,7 @@ test "missing delimiters report end-of-input positions" {
 }
 
 ///|
-test "unsupported tokens are not parsed as core expressions" {
-  try parse("if") |> ignore catch {
-    ParseError::UnexpectedToken(
-      { kind: @lexer.If, start: { offset: 0, line: 1, column: 1 }, .. },
-      "expression"
-    ) => ()
-    error => fail("unexpected error: \{error}")
-  } noraise {
-    _ => fail("expected unsupported keyword to fail")
-  }
+test "unsupported operators are not parsed as core expressions" {
   try parse("8 / 2") |> ignore catch {
     ParseError::UnexpectedToken(
       {
@@ -172,6 +205,23 @@ test "unsupported tokens are not parsed as core expressions" {
     error => fail("unexpected error: \{error}")
   } noraise {
     _ => fail("expected unsupported operator to fail")
+  }
+}
+
+///|
+test "control-flow delimiters are required" {
+  let invalid = [
+    "if 1 2 else 3", "if 1 then 2", "for = 1, 1 in 0", "for i 1, 1 in 0", "for i = 1 1 in 0",
+    "for i = 1, 1 0",
+  ]
+  for source in invalid {
+    try parse(source) |> ignore catch {
+      ParseError::UnexpectedToken(_, _) => ()
+      ParseError::UnexpectedEndOfInput(_, _) => ()
+      error => fail("unexpected error for \{source}: \{error}")
+    } noraise {
+      _ => fail("expected invalid control flow to fail: \{source}")
+    }
   }
 }
 

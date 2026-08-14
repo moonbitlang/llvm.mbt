@@ -104,3 +104,54 @@ fn CodegenContext::resolveFunction(
       }
   }
 }
+
+///|
+fn CodegenContext::currentBlock(
+  self : CodegenContext,
+) -> @IR.BasicBlock raise CodegenError {
+  guard self.builder.getInsertBlock() is Some(block) else {
+    raise BackendFailure("LLVM builder has no insertion block")
+  }
+  block
+}
+
+///|
+fn CodegenContext::currentFunction(
+  self : CodegenContext,
+) -> @IR.Function raise CodegenError {
+  guard self.currentBlock().getParent() is Some(function) else {
+    raise BackendFailure("LLVM insertion block has no parent function")
+  }
+  function
+}
+
+///|
+fn CodegenContext::restoreVariable(
+  self : CodegenContext,
+  name : String,
+  previous : &@IR.Value?,
+) -> Unit {
+  match previous {
+    Some(value) => self.variables.set(name, value)
+    None => self.variables.remove(name)
+  }
+}
+
+///|
+fn[T] CodegenContext::withVariable(
+  self : CodegenContext,
+  name : String,
+  storage : &@IR.Value,
+  action : () -> T raise CodegenError,
+) -> T raise CodegenError {
+  let previous = self.variables.get(name)
+  self.variables.set(name, storage)
+  let result = action() catch {
+    error => {
+      self.restoreVariable(name, previous)
+      raise error
+    }
+  }
+  self.restoreVariable(name, previous)
+  result
+}

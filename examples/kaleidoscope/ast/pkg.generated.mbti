@@ -15,6 +15,8 @@ pub(all) enum Expr {
   Variable(String)
   Binary(Char, Expr, Expr)
   Call(String, Array[Expr])
+  If(Expr, Expr, Expr)
+  For(String, Expr, Expr, Expr?, Expr)
 } derive(Eq, @debug.Debug)
 
 pub(all) struct Prototype {

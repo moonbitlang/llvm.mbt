@@ -335,11 +335,11 @@ parse
 | `session/session_test.mbt` | 条件、嵌套分支、默认/显式 step 和 loop 的真实执行 |
 | 相关 `pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] `if` 两个分支都产生 Double，并在 merge block 用 PHI 合流；condition 与 `0.0` 比较。
-- [ ] `for` 保持 loop variable 的 lexical shadowing，支持可选 step，并在 loop 后恢复旧绑定。
-- [ ] 每次 branch/body codegen 后重新读取 builder insert block，PHI incoming 不使用陈旧 BasicBlock。
-- [ ] 失败时丢弃整 Module，不尝试 erase 已插入的 block/instruction。
-- [ ] 测试真实执行 nested if、零/非零 condition、有限循环和函数内部循环。
+- [x] `if` 两个分支都产生 Double，并在 merge block 用 PHI 合流；condition 与 `0.0` 比较。
+- [x] `for` 保持 loop variable 的 lexical shadowing，支持可选 step，并在 loop 后恢复旧绑定。
+- [x] 每次 branch/body codegen 后重新读取 builder insert block，PHI incoming 不使用陈旧 BasicBlock。
+- [x] 失败时丢弃整 Module，不尝试 erase 已插入的 block/instruction。
+- [x] 测试真实执行 nested if、零/非零 condition、有限循环和函数内部循环。
 
 建议提交信息：`examples(kaleidoscope): add control-flow expressions`
 

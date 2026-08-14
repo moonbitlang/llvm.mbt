@@ -255,6 +255,114 @@ test "calls validate arity before lowering arguments" {
 }
 
 ///|
+test "if expressions merge values from nested control flow" {
+  let catalog = PrototypeCatalog::new()
+  let prototype : @ast.Prototype = { name: "choose", parameters: ["value"] }
+  let mod = compileDefinition(
+    catalog,
+    prototype,
+    @ast.If(
+      @ast.Variable("value"),
+      @ast.If(@ast.Number(0.0), @ast.Number(1.0), @ast.Number(2.0)),
+      @ast.Number(3.0),
+    ),
+    module_name="nested_if",
+  )
+  inspect(
+    "\{mod}",
+    content=(
+      #|; ModuleID = 'nested_if'
+      #|source_filename = "nested_if"
+      #|
+      #|define double @choose(double %value1) {
+      #|entry:
+      #|  %value = alloca double, align 8
+      #|  store double %value1, ptr %value, align 8
+      #|  %value2 = load double, ptr %value, align 8
+      #|  %ifcond = fcmp one double %value2, 0.000000e+00
+      #|  br i1 %ifcond, label %then, label %else
+      #|
+      #|then:                                             ; preds = %entry
+      #|  br i1 false, label %then3, label %else4
+      #|
+      #|else:                                             ; preds = %entry
+      #|  br label %ifcont
+      #|
+      #|ifcont:                                           ; preds = %else, %ifcont5
+      #|  %iftmp6 = phi double [ %iftmp, %ifcont5 ], [ 3.000000e+00, %else ]
+      #|  ret double %iftmp6
+      #|
+      #|then3:                                            ; preds = %then
+      #|  br label %ifcont5
+      #|
+      #|else4:                                            ; preds = %then
+      #|  br label %ifcont5
+      #|
+      #|ifcont5:                                          ; preds = %else4, %then3
+      #|  %iftmp = phi double [ 1.000000e+00, %then3 ], [ 2.000000e+00, %else4 ]
+      #|  br label %ifcont
+      #|}
+      #|
+    ),
+  )
+}
+
+///|
+test "for expressions preserve their enclosing lexical binding" {
+  let catalog = PrototypeCatalog::new()
+  let prototype : @ast.Prototype = { name: "loop", parameters: ["i"] }
+  let mod = compileDefinition(
+    catalog,
+    prototype,
+    @ast.Binary(
+      '+',
+      @ast.For(
+        "i",
+        @ast.Number(1.0),
+        @ast.Binary('<', @ast.Variable("i"), @ast.Number(3.0)),
+        None,
+        @ast.Variable("i"),
+      ),
+      @ast.Variable("i"),
+    ),
+    module_name="for_scope",
+  )
+  inspect(
+    "\{mod}",
+    content=(
+      #|; ModuleID = 'for_scope'
+      #|source_filename = "for_scope"
+      #|
+      #|define double @loop(double %i1) {
+      #|entry:
+      #|  %i = alloca double, align 8
+      #|  store double %i1, ptr %i, align 8
+      #|  %i2 = alloca double, align 8
+      #|  store double 1.000000e+00, ptr %i2, align 8
+      #|  br label %loop
+      #|
+      #|loop:                                             ; preds = %loop, %entry
+      #|  %i3 = load double, ptr %i2, align 8
+      #|  %i.current = load double, ptr %i2, align 8
+      #|  %i.next = fadd double %i.current, 1.000000e+00
+      #|  store double %i.next, ptr %i2, align 8
+      #|  %i4 = load double, ptr %i2, align 8
+      #|  %cmptmp = fcmp olt double %i4, 3.000000e+00
+      #|  %booltmp = uitofp i1 %cmptmp to double
+      #|  %loopcond = fcmp one double %booltmp, 0.000000e+00
+      #|  br i1 %loopcond, label %loop, label %afterloop
+      #|
+      #|afterloop:                                        ; preds = %loop
+      #|  %i5 = load double, ptr %i, align 8
+      #|  %addtmp = fadd double 0.000000e+00, %i5
+      #|  ret double %addtmp
+      #|}
+      #|
+    ),
+  )
+}
+
+///|
 test "unsupported operators and malformed prototypes are rejected" {
   let catalog = PrototypeCatalog::new()
   try

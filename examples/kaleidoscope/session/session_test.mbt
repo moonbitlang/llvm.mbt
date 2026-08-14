@@ -18,6 +18,34 @@ test "definitions persist across submitted modules" {
 }
 
 ///|
+test "if expressions use zero and nonzero truth values" {
+  let session = Session::new()
+  debug_inspect(session.evaluate("if 0 then 1 else 2"), content="Value(2)")
+  debug_inspect(session.evaluate("if 0 - 3 then 1 else 2"), content="Value(1)")
+  debug_inspect(
+    session.evaluate("if 1 then if 0 then 3 else 4 else 5"),
+    content="Value(4)",
+  )
+  session.close()
+}
+
+///|
+test "for expressions execute finite default and explicit-step loops" {
+  let session = Session::new()
+  debug_inspect(session.evaluate("for i = 1, i < 3 in i"), content="Value(0)")
+  debug_inspect(
+    session.evaluate("for i = 1, i < 3, 0.5 in if i then i else 0"),
+    content="Value(0)",
+  )
+  debug_inspect(
+    session.evaluate("def run(n) for i = 1, i < n in i"),
+    content="Defined(\"run\")",
+  )
+  debug_inspect(session.evaluate("run(4)"), content="Value(0)")
+  session.close()
+}
+
+///|
 test "extern declarations resolve current-process symbols" {
   let session = Session::new()
   debug_inspect(
