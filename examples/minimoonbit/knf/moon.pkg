@@ -1,11 +1,11 @@
 import {
-  "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck",
+  "Kaida-Amethyst/llvm-minimoonbit/typecheck",
   "Kaida-Amethyst/either",
 }
 
 import {
-  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+  "Kaida-Amethyst/llvm-minimoonbit/lexer",
+  "Kaida-Amethyst/llvm-minimoonbit/parser",
 } for "test"
 
 options(

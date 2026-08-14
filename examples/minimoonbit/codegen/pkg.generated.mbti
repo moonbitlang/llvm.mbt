@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/examples/minimoonbit/codegen"
+package "Kaida-Amethyst/llvm-minimoonbit/codegen"
 
 import {
+  "Kaida-Amethyst/llvm-minimoonbit/knf",
   "Kaida-Amethyst/llvm/IR",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/knf",
   "moonbitlang/core/debug",
 }
 

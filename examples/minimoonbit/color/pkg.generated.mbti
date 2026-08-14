@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/examples/minimoonbit/color"
+package "Kaida-Amethyst/llvm-minimoonbit/color"
 
 // Values
 pub fn strip_color(String) -> String

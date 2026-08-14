@@ -1,5 +1,5 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/examples/minimoonbit/lexer"
+package "Kaida-Amethyst/llvm-minimoonbit/lexer"
 
 import {
   "moonbitlang/core/debug",

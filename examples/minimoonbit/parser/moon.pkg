@@ -1,6 +1,6 @@
 import {
-  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/color",
+  "Kaida-Amethyst/llvm-minimoonbit/lexer",
+  "Kaida-Amethyst/llvm-minimoonbit/color",
   "Kaida-Amethyst/either",
   "moonbitlang/core/deque",
 }

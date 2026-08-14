@@ -1,4 +1,6 @@
 members = [
   ".",
   "./examples/kaleidoscope",
+  "./examples/minimoonbit",
+  "./native_emission_test",
 ]

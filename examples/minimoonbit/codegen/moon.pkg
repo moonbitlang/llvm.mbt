@@ -1,8 +1,8 @@
 import {
-  "Kaida-Amethyst/llvm/examples/minimoonbit/knf",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck",
+  "Kaida-Amethyst/llvm-minimoonbit/knf",
+  "Kaida-Amethyst/llvm-minimoonbit/lexer",
+  "Kaida-Amethyst/llvm-minimoonbit/parser",
+  "Kaida-Amethyst/llvm-minimoonbit/typecheck",
   "Kaida-Amethyst/llvm/IR" @llvm,
 }
 

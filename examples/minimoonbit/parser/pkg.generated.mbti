@@ -1,9 +1,9 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/examples/minimoonbit/parser"
+package "Kaida-Amethyst/llvm-minimoonbit/parser"
 
 import {
   "Kaida-Amethyst/either",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
+  "Kaida-Amethyst/llvm-minimoonbit/lexer",
   "moonbitlang/core/debug",
 }
 

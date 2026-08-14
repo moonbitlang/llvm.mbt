@@ -3,7 +3,7 @@ name = "Kaida-Amethyst/llvm-kaleidoscope"
 version = "0.1.0"
 
 import {
-  "Kaida-Amethyst/llvm@0.4.0",
+  "Kaida-Amethyst/llvm@0.5.0",
   "Kaida-Amethyst/readline@0.1.0",
 }
 

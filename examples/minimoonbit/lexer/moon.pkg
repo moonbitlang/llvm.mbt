@@ -1,5 +1,5 @@
 import {
-  "Kaida-Amethyst/llvm/examples/minimoonbit/color",
+  "Kaida-Amethyst/llvm-minimoonbit/color",
   "moonbitlang/core/string",
 }
 

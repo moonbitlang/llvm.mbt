@@ -1,10 +1,10 @@
 // Generated using `moon info`, DON'T EDIT IT
-package "Kaida-Amethyst/llvm/examples/minimoonbit/typecheck"
+package "Kaida-Amethyst/llvm-minimoonbit/typecheck"
 
 import {
   "Kaida-Amethyst/either",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/lexer",
-  "Kaida-Amethyst/llvm/examples/minimoonbit/parser",
+  "Kaida-Amethyst/llvm-minimoonbit/lexer",
+  "Kaida-Amethyst/llvm-minimoonbit/parser",
   "moonbitlang/core/debug",
 }
 

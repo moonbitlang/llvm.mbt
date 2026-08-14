@@ -21,19 +21,19 @@ test also composes all four frontend stages on one in-memory source program.
 Run the MiniMoonBit frontend integration test with:
 
 ```sh
-moon test --target native -p examples/minimoonbit/frontend_test
+moon test --target native -p Kaida-Amethyst/llvm-minimoonbit/frontend_test
 ```
 
 Run the 124 native end-to-end programs with:
 
 ```sh
-moon test --target native -p examples/minimoonbit/e2e_test
+moon test --target native -p Kaida-Amethyst/llvm-minimoonbit/e2e_test
 ```
 
 Run all MiniMoonBit package tests with:
 
 ```sh
-moon test --target native -p examples/minimoonbit
+moon test --target native examples/minimoonbit
 ```
 
 There is no command-line driver in this directory yet. The code generator

@@ -39,7 +39,7 @@ async fn run_process(
 
 ///|
 async fn load_case(name : String) -> Case {
-  let base = "examples/minimoonbit/e2e_test/cases/\{name}"
+  let base = "e2e_test/cases/\{name}"
   {
     name,
     source: @fs.read_file("\{base}.mbt").text(),
@@ -97,7 +97,7 @@ async fn run_group(
     group.add_defer() <| () => {
       @async.protect_from_cancel(() => @fs.rmdir(temp_dir, recursive=true))
     }
-    let runtime_source = "examples/minimoonbit/runtime/runtime.c"
+    let runtime_source = "runtime/runtime.c"
     let runtime_object = "\{temp_dir}/runtime.o"
     let (runtime_stdout, runtime_stderr) = run_process(
       "runtime/\{group_name}",
