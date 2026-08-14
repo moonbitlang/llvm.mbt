@@ -206,11 +206,11 @@ parse
 | `examples/kaleidoscope/README.md` | 示例目的、当前状态、运行入口和非目标 |
 | `examples/kaleidoscope/{lexer,ast,parser,codegen,session,main,integration_test}/` | package 目录骨架 |
 
-- [ ] 根 `moon.mod` 和 llvm.mbt 发布依赖保持不变。
-- [ ] workspace 默认使用本地 llvm.mbt，但使用 Mooncakes 的 readline；不得提交 `../readline.mbt` 路径。
-- [ ] 所有 package 均限制为 native target；只有 `main` 最终成为 executable package。
-- [ ] 骨架阶段不加入占位 public API、空实现或 warning suppression。
-- [ ] 从 workspace 根运行 `moon check --target native`，确认双 module 解析成功。
+- [x] 根 `moon.mod` 和 llvm.mbt 发布依赖保持不变。
+- [x] workspace 默认使用本地 llvm.mbt，但使用 Mooncakes 的 readline；不得提交 `../readline.mbt` 路径。
+- [x] 示例 module 固定 `preferred_target = "native"`；后续只有 `main` 成为 executable package。
+- [x] 骨架阶段不加入占位 public API、空实现或 warning suppression。
+- [x] 从 workspace 根运行 `moon check --target native`，确认双 module 解析成功。
 
 建议提交信息：`examples(kaleidoscope): scaffold the workspace module`
 
