@@ -1,6 +1,6 @@
 name = "Kaida-Amethyst/llvm"
 
-version = "0.4.0"
+version = "0.5.0"
 
 import {
   "moonbitlang/async@0.20.5",
@@ -21,5 +21,5 @@ preferred_target = "native"
 
 options(
   "--moonbit-unstable-prebuild": "build.js",
-  exclude: [ "examples", "docs" ],
+  exclude: [ "examples", "docs", "native_emission_test", "test" ],
 )
