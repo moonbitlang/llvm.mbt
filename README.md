@@ -1,5 +1,8 @@
 # llvm.mbt
 
+[![MoonCakes](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fmooncakes.io%2Fapi%2Fv0%2Fmanifest%2FKaida-Amethyst%2Fllvm&query=%24.latest_version&label=mooncakes&color=blue)](https://mooncakes.io/docs/Kaida-Amethyst/llvm)
+[![CI](https://github.com/moonbitlang/llvm.mbt/actions/workflows/check.yaml/badge.svg?branch=master)](https://github.com/moonbitlang/llvm.mbt/actions/workflows/check.yaml?query=branch%3Amaster)
+
 [中文说明](#中文说明)
 
 MoonBit bindings for LLVM 22.1.0. The public API follows LLVM's C++ concepts
@@ -76,9 +79,9 @@ test "build an integer addition function" {
 
 ## Packages
 
-- `Kaida-Amethyst/llvm/IR` provides types, values, modules, IR construction,
+- `llvm/IR` provides types, values, modules, IR construction,
   verification, bitcode output, target machines, and native object emission.
-- `Kaida-Amethyst/llvm/JIT` provides host-only ORC LLJIT. Its address conversion
+- `llvm/JIT` provides host-only ORC LLJIT. Its address conversion
   and unload rules are documented in [JIT/README.md](JIT/README.md).
 - `internal/raw` contains the direct LLVM-C bindings used to implement the
   public API. It cannot be imported by downstream modules.
@@ -210,9 +213,9 @@ test "构造整数加法函数" {
 
 ## Packages
 
-- `Kaida-Amethyst/llvm/IR` 提供类型、值、Module、IR 构造、验证、bitcode 输出、
+- `llvm/IR` 提供类型、值、Module、IR 构造、验证、bitcode 输出、
   TargetMachine 和 native object emission。
-- `Kaida-Amethyst/llvm/JIT` 提供 host-only ORC LLJIT。地址转换和卸载规则见
+- `llvm/JIT` 提供 host-only ORC LLJIT。地址转换和卸载规则见
   [JIT/README.md](JIT/README.md)。
 - `internal/raw` 存放实现公开 API 所使用的直接 LLVM-C binding，下游模块不能
   导入它。
