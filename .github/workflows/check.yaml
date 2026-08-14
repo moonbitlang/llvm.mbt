@@ -77,6 +77,14 @@ jobs:
         shell: bash
         run: |
           ulimit -s 8176
+          # readline.mbt currently ships libedit only for macOS ARM64. Moon
+          # resolves module-level dependencies before selecting test packages,
+          # so Linux must omit the whole Kaleidoscope workspace member. The
+          # example remains type-checked above on Linux and fully tested here
+          # on macOS.
+          if [[ "${{ runner.os }}" == "Linux" ]]; then
+            sed -i '\#./examples/kaleidoscope#d' moon.work
+          fi
           moon test --target native --release
 
   moon-json-format-check:
