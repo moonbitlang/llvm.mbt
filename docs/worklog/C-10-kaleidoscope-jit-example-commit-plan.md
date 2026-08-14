@@ -314,11 +314,11 @@ parse
 | `main/command_wbtest.mbt` | 命令识别和结果格式化测试 |
 | `examples/kaleidoscope/README.md` | 首个可运行命令、示例会话和依赖说明 |
 
-- [ ] `Some(line)` 才交给 Session；EOF 正常退出，Ctrl-C 丢弃当前输入并继续使用同一个 editor/Session。
-- [ ] 明确空输入、本地命令和求值失败输入的 History 策略；该策略由 REPL 层负责，不影响 Session 状态。
-- [ ] 正常退出、readline error 和未预期 Session error 都经过统一 cleanup，显式调用 `Session::close()`。
-- [ ] REPL 不自行生成 IR，不持有 Module、ResourceTracker、JITAddress 或 FuncRef。
-- [ ] 自动测试不伪造 PTY；完成后人工运行一次基本定义、调用、错误恢复、Ctrl-C 和 EOF smoke test。
+- [x] `Some(line)` 才交给 Session；EOF 正常退出，Ctrl-C 丢弃当前输入并继续使用同一个 editor/Session。
+- [x] 明确空输入、本地命令和求值失败输入的 History 策略；该策略由 REPL 层负责，不影响 Session 状态。
+- [x] 正常退出、readline error 和未预期 Session error 都经过统一 cleanup，显式调用 `Session::close()`。
+- [x] REPL 不自行生成 IR，不持有 Module、ResourceTracker、JITAddress 或 FuncRef。
+- [x] 自动测试不伪造 PTY；完成后人工运行一次基本定义、调用、错误恢复、Ctrl-C 和 EOF smoke test。
 
 建议提交信息：`examples(kaleidoscope): add the readline REPL`
 
