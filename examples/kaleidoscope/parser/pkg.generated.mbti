@@ -1,0 +1,35 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm-kaleidoscope/parser"
+
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/ast",
+  "Kaida-Amethyst/llvm-kaleidoscope/lexer",
+  "moonbitlang/core/debug",
+}
+
+// Values
+pub fn parseTopLevel(String, operators~ : OperatorTable) -> @ast.TopLevel raise
+
+// Errors
+pub suberror ParseError {
+  UnexpectedToken(@lexer.Token, String)
+  UnexpectedEndOfInput(@lexer.SourcePos, String)
+  DuplicateParameter(String, @lexer.SourcePos)
+} derive(@debug.Debug)
+
+// Types and methods
+pub struct OperatorTable {
+  precedences : Map[Char, Int]
+}
+pub fn OperatorTable::getPrecedence(Self, Char) -> Int?
+pub fn OperatorTable::new() -> Self
+
+pub struct Parser {
+  operators : OperatorTable
+}
+pub fn Parser::new(operators~ : OperatorTable) -> Self
+pub fn Parser::parseTopLevel(Self, String) -> @ast.TopLevel raise
+
+// Type aliases
+
+// Traits

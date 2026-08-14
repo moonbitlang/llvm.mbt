@@ -1,0 +1,33 @@
+// Generated using `moon info`, DON'T EDIT IT
+package "Kaida-Amethyst/llvm-kaleidoscope/ast"
+
+import {
+  "moonbitlang/core/debug",
+}
+
+// Values
+
+// Errors
+
+// Types and methods
+pub(all) enum Expr {
+  Number(Double)
+  Variable(String)
+  Binary(Char, Expr, Expr)
+  Call(String, Array[Expr])
+} derive(Eq, @debug.Debug)
+
+pub(all) struct Prototype {
+  name : String
+  parameters : Array[String]
+} derive(Eq, @debug.Debug)
+
+pub(all) enum TopLevel {
+  Definition(Prototype, Expr)
+  Extern(Prototype)
+  Expression(Expr)
+} derive(Eq, @debug.Debug)
+
+// Type aliases
+
+// Traits

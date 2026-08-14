@@ -248,11 +248,11 @@ parse
 | `parser/parser_test.mbt` | AST snapshot、precedence、trailing input 和错误测试 |
 | `ast/pkg.generated.mbti`、`parser/pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] 支持 number、parentheses、variable、call、内建 binary expression、prototype、`def`、`extern` 和顶层表达式。
-- [ ] parser 从显式 `OperatorTable` 读取 precedence，不依赖进程全局表，为后续用户运算符保留事务边界。
-- [ ] 输入必须完整消费到分号或 EOF；多余 token 不被悄悄忽略。
-- [ ] duplicate parameter、非法 prototype、缺失 delimiter 和未知 token 给出带位置的 `ParseError`。
-- [ ] 本 commit 不预先加入未实现的 if/for/operator/var AST constructor。
+- [x] 支持 number、parentheses、variable、call、内建 binary expression、prototype、`def`、`extern` 和顶层表达式。
+- [x] parser 从显式 `OperatorTable` 读取 precedence，不依赖进程全局表，为后续用户运算符保留事务边界。
+- [x] 输入必须完整消费到分号或 EOF；多余 token 不被悄悄忽略。
+- [x] duplicate parameter、非法 prototype、缺失 delimiter 和未知 token 给出带位置的 `ParseError`。
+- [x] 本 commit 不预先加入未实现的 if/for/operator/var AST constructor。
 
 建议提交信息：`examples(kaleidoscope): parse the core language`
 

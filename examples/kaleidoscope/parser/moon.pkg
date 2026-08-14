@@ -1,0 +1,10 @@
+supported_targets = "native"
+
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/ast",
+  "Kaida-Amethyst/llvm-kaleidoscope/lexer",
+}
+
+options(
+  "is-main": false,
+)
