@@ -52,6 +52,29 @@ fn ResourceTracker::requireRaw(
 /// **Lifecycle:** The returned tracker retains this session. Dropping the
 /// tracker without calling `remove` releases only its client reference; code
 /// remains managed by the JIT until session close.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let context = @IR.Context::new()
+///   let mod = context.addModule("tracked")
+///   mod.verify()
+///   let jit = LLJIT::host()
+///   let tracker = jit.createResourceTracker()
+///   jit.addModule(mod, tracker~)
+///   tracker.remove()
+///   let removed = try {
+///     tracker.remove()
+///     false
+///   } catch {
+///     JITError::ResourceTrackerRemoved => true
+///     _ => false
+///   }
+///   inspect(removed, content="true")
+///   jit.close()
+/// }
+/// ```
 pub fn LLJIT::createResourceTracker(
   self : LLJIT,
 ) -> ResourceTracker raise JITError {
@@ -69,6 +92,9 @@ pub fn LLJIT::createResourceTracker(
 /// **Lifecycle:** A successful call invalidates every alias of this tracker and
 /// all addresses or function pointers into its removed code. This operation is
 /// explicit and one-shot; the finalizer never performs it automatically.
+///
+/// **See also:** `LLJIT::createResourceTracker` provides a complete tracked
+/// submission and removal example.
 pub fn ResourceTracker::remove(self : ResourceTracker) -> Unit raise JITError {
   guard self.jitOwner.isOpen() else { raise Closed }
   guard self.owner.isActive() else { raise ResourceTrackerRemoved }

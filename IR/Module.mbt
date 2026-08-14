@@ -365,6 +365,18 @@ pub fn Module::writeBitCodeToFile(
 ///
 /// **Side effects:** This does not mutate the module, its target configuration,
 /// or any derived IR object.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let context = Context::new()
+///   let mod = context.addModule("snapshot")
+///   let bitcode = mod.writeBitCodeToBytes()
+///   inspect(bitcode.length() > 0, content="true")
+///   inspect(mod.getName(), content="snapshot")
+/// }
+/// ```
 pub fn Module::writeBitCodeToBytes(self : Module) -> Bytes {
   @raw.llvm_write_bitcode_to_bytes(self.get_raw_ref())
 }

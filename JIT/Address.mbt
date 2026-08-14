@@ -48,6 +48,9 @@ fn[T] specializeOpaqueFuncRef(function : FuncRef[() -> Unit]) -> FuncRef[T] = "%
 ///
 /// **Platform support:** Current-process native JIT addresses on supported
 /// 64-bit hosts only.
+///
+/// **See also:** `LLJIT::host` provides a complete lookup, conversion, call,
+/// owner-keepalive, and close example.
 pub fn[T] JITAddress::unsafeToFuncRef(
   self : JITAddress,
 ) -> FuncRef[T] raise JITError {

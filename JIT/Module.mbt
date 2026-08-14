@@ -35,6 +35,20 @@ fn threadSafeModuleFromBytes(
 /// **Side effects:** Adds definitions to the main JITDylib. LLVM may fill a
 /// default DataLayout on the private snapshot, but this method does not alter
 /// the source module's triple, DataLayout, or IR.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let context = @IR.Context::new()
+///   let mod = context.addModule("snapshot_source")
+///   mod.verify()
+///   let jit = LLJIT::host()
+///   jit.addModule(mod)
+///   inspect(mod.getName(), content="snapshot_source")
+///   jit.close()
+/// }
+/// ```
 pub fn LLJIT::addModule(
   self : LLJIT,
   mod : @IR.Module,

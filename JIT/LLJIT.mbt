@@ -48,6 +48,30 @@ fn LLJIT::requireRaw(self : LLJIT) -> @raw.LLVMOrcLLJITRef raise JITError {
 /// submitted without an explicit resource tracker. Call `close` when finished.
 ///
 /// **Platform support:** Native host execution only.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let context = @IR.Context::new()
+///   let mod = context.addModule("jit_example")
+///   let function_type = context.getFunctionType(context.getDoubleTy(), [])
+///   let function = mod.addFunction(function_type, "answer")
+///   let entry = function.addBasicBlock(name="entry")
+///   let builder = context.createBuilder()
+///   builder.setInsertPoint(entry)
+///   builder.createRet(context.getConstDouble(42.0)) |> ignore
+///   mod.verify()
+///   let jit = LLJIT::host()
+///   jit.addModule(mod)
+///   let address = jit.lookup("answer")
+///   let answer : FuncRef[() -> Double] = address.unsafeToFuncRef()
+///   let result = answer()
+///   let _keep_alive : FuncRef[() -> Double] = address.unsafeToFuncRef()
+///   inspect(result, content="42")
+///   jit.close()
+/// }
+/// ```
 pub fn LLJIT::host() -> LLJIT raise JITError {
   @IR.TargetRegistry::initializeNativeCodegen() catch {
     @IR.NativeTargetUnavailable =>
@@ -102,6 +126,23 @@ pub fn LLJIT::getDataLayoutStr(self : LLJIT) -> String raise {
 ///
 /// **Lifecycle:** A ResourceTracker removal can invalidate a returned address
 /// even while this session remains open.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let jit = LLJIT::host()
+///   let failed = try {
+///     jit.lookup("__llvm_mbt_missing_doc_symbol__") |> ignore
+///     false
+///   } catch {
+///     JITError::LookupFailed(message) => message.length() > 0
+///     _ => false
+///   }
+///   inspect(failed, content="true")
+///   jit.close()
+/// }
+/// ```
 pub fn LLJIT::lookup(self : LLJIT, name : String) -> JITAddress raise {
   let raw = self.requireRaw()
   let (address, message, failed) = @raw.llvm_orc_lljit_lookup(raw, name) catch {
@@ -121,6 +162,24 @@ pub fn LLJIT::lookup(self : LLJIT, name : String) -> JITAddress raise {
 /// **Lifecycle:** Closing invalidates every alias, resource tracker, JIT
 /// address, and function pointer produced by this session. Stop all JIT code
 /// calls before closing.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let jit = LLJIT::host()
+///   let other = jit
+///   jit.close()
+///   let closed = try {
+///     other.close()
+///     false
+///   } catch {
+///     JITError::Closed => true
+///     _ => false
+///   }
+///   inspect(closed, content="true")
+/// }
+/// ```
 pub fn LLJIT::close(self : LLJIT) -> Unit raise JITError {
   guard self.owner.isOpen() else { raise Closed }
   let (message, failed) = self.owner.close()
