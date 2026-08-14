@@ -29,7 +29,35 @@ extern "C" fn executorAddressToOpaqueFuncRef(
 ) -> FuncRef[() -> Unit] = "llvm_mbt_jit_executor_address_to_func_ref"
 
 ///|
-fn[T] specializeOpaqueFuncRef(function : FuncRef[() -> Unit]) -> FuncRef[T] = "%identity"
+// Keep the unchecked cast behind a non-newtype heap box. The optimized C
+// backend otherwise emits a direct assignment between two function-pointer
+// signatures, which recent Clang versions reject before the documented unsafe
+// call boundary can be exercised. The marker prevents newtype erasure.
+priv struct FunctionRefBox[T] {
+  function : FuncRef[T]
+  marker : Int
+}
+
+///|
+#inline(never)
+fn boxOpaqueFunctionRef(
+  function : FuncRef[() -> Unit],
+) -> FunctionRefBox[() -> Unit] {
+  { function, marker: 0 }
+}
+
+///|
+#inline(never)
+fn[From, To] specializeFunctionRefBox(
+  box : FunctionRefBox[From],
+) -> FunctionRefBox[To] = "%identity"
+
+///|
+#inline(never)
+fn[T] unboxFunctionRef(box : FunctionRefBox[T]) -> FuncRef[T] {
+  guard box.marker == 0 else { panic() }
+  box.function
+}
 
 ///|
 /// Converts this executor address to a native function reference of type `T`.
@@ -55,5 +83,9 @@ pub fn[T] JITAddress::unsafeToFuncRef(
   self : JITAddress,
 ) -> FuncRef[T] raise JITError {
   guard self.owner.isOpen() else { raise Closed }
-  specializeOpaqueFuncRef(executorAddressToOpaqueFuncRef(self.address))
+  let untyped = boxOpaqueFunctionRef(
+    executorAddressToOpaqueFuncRef(self.address),
+  )
+  let specialized : FunctionRefBox[T] = specializeFunctionRefBox(untyped)
+  unboxFunctionRef(specialized)
 }

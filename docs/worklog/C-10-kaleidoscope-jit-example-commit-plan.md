@@ -1,6 +1,6 @@
 # Kaleidoscope JIT 示例的 commit 划分
 
-> 状态：待实施
+> 状态：已实施；等待提交后的跨平台 CI 验证
 > 日期：2026-08-14
 
 本轮在 `examples/kaleidoscope/` 中实现一个 host-only Kaleidoscope。它的目的不是逐行翻译 LLVM 官方教程，而是作为独立下游模块，只使用 llvm.mbt 已公开的安全 `IR` 和 `JIT` 能力，验证以下完整链路：
@@ -396,13 +396,14 @@ parse
 | 各 package 测试 | 针对实现中发现的错误恢复和边界分支补强 |
 | `examples/kaleidoscope/README.md` | 语言语法、运行方式、示例会话、能力矩阵和非目标 |
 
-- [ ] 组合测试覆盖 definition、cross-module call、extern `sin`、if、for、operator、var/assignment 和匿名表达式卸载。
-- [ ] 连续执行大量匿名表达式后，同名匿名符号不会冲突，持久定义仍可调用。
-- [ ] lex/parse/codegen/verify/lookup/materialization 错误后 Session 仍可继续使用，半完成状态没有提交。
-- [ ] close 前后行为、重复 close 和清理失败映射与 llvm.mbt 的 JIT 生命周期契约一致。
-- [ ] README 明确只有 session 私有边界做 unsafe FuncRef 转换，示例不构成 sandbox，也不支持任意宿主回调。
-- [ ] README 明确优化、debug info、object driver 和热重定义为何未纳入，而不是把它们误写成 Kaleidoscope 已完成能力。
-- [ ] 从干净 workspace 按 README 命令运行 REPL，并在 macOS ARM64/Linux x86_64 CI 上运行非交互测试。
+- [x] 组合测试覆盖 definition、cross-module call、extern `sin`、if、for、operator、var/assignment 和匿名表达式卸载。
+- [x] 连续执行大量匿名表达式后，同名匿名符号不会冲突，持久定义仍可调用。
+- [x] lex/parse/codegen/verify/lookup/materialization 错误后 Session 仍可继续使用，半完成状态没有提交。
+- [x] close 前后行为、重复 close 和清理失败映射与 llvm.mbt 的 JIT 生命周期契约一致。
+- [x] README 明确只有 session 私有边界做 unsafe FuncRef 转换，示例不构成 sandbox，也不支持任意宿主回调。
+- [x] README 明确优化、debug info、object driver 和热重定义为何未纳入，而不是把它们误写成 Kaleidoscope 已完成能力。
+- [x] 从当前 workspace 按 README 命令运行 REPL，并完成 definition、call、控制流、错误恢复、Ctrl-C 和 EOF smoke test。
+- [ ] 提交并 push 后，由 macOS ARM64/Linux x86_64 CI 实际运行非交互测试。
 
 建议提交信息：`test(kaleidoscope): harden the JIT language example`
 
@@ -420,21 +421,21 @@ Commit 2：
 
 Commit 3～11 每次提交前：
 
-- [ ] 在 workspace 根运行 `moon info && moon fmt`，生成文件不手工修改。
-- [ ] 审核当前 commit 涉及 package 的 `.mbti`，只出现计划中的公开对象变化。
-- [ ] 运行当前 package 的最小 `moon check --target native` 和测试。
-- [ ] 运行 workspace 根 `moon check --target native` 与 `moon test --target native`。
-- [ ] 运行 `git diff --check`，确认没有 cache、object、临时 IR、history 文件或可执行文件进入提交。
-- [ ] 新增公开 type、field、constructor、error、fn 和 impl 都有符合 style guide 的文档；每个主要功能族至少有一个简短 doc example 或 README 示例。
-- [ ] 测试优先使用 `inspect` snapshot；循环内逐项变化等不适用 snapshot 的场景再使用 assertion。
-- [ ] Kaleidoscope package 不导入 `internal/raw`；根 llvm.mbt 的公开 `.mbti` 不应因示例实现发生变化。
+- [x] 在 workspace 根运行 `moon info && moon fmt`，生成文件不手工修改。
+- [x] 审核当前 commit 涉及 package 的 `.mbti`，只出现计划中的公开对象变化。
+- [x] 运行当前 package 的最小 `moon check --target native` 和测试。
+- [x] 运行 workspace 根 `moon check --target native` 与 `moon test --target native`。
+- [x] 运行 `git diff --check`，确认没有 cache、object、临时 IR、history 文件或可执行文件进入提交。
+- [x] 新增公开 type、field、constructor、error、fn 和 impl 都有符合 style guide 的文档；每个主要功能族至少有一个简短 doc example 或 README 示例。
+- [x] 测试优先使用 `inspect` snapshot；循环内逐项变化等不适用 snapshot 的场景再使用 assertion。
+- [x] Kaleidoscope package 不导入 `internal/raw`；根 llvm.mbt 的公开 `.mbti` 不应因示例实现发生变化。
 
 最终验收：
 
-- [ ] `moon info && moon fmt`。
-- [ ] `moon check --target native`。
-- [ ] `moon test --target native`。
-- [ ] `moon -C examples/kaleidoscope run main --target native` 完成 definition、call、error recovery、Ctrl-C 和 EOF 人工 smoke test。
+- [x] `moon info && moon fmt`。
+- [x] `moon check --target native`。
+- [x] `moon test --target native`。
+- [x] `moon -C examples/kaleidoscope run main --target native` 完成 definition、call、error recovery、Ctrl-C 和 EOF 人工 smoke test。
 - [ ] macOS ARM64 与 Linux x86_64 CI 都实际执行 Session JIT 测试。
 
 以下情况必须暂停并回到 discussion：现有安全 API 无法在不悬空引用的前提下表达某个 codegen/JIT 生命周期；需要把 raw handle 或 FuncRef 暴露到 session 外部；CurrentProcess 在支持平台无法解析计划使用的系统符号；动态 operator state 无法在失败后可靠回滚；或者实现必须改变 llvm.mbt 已采用的公开契约。普通 MoonBit API 适配、package 私有结构和不影响上述边界的实现选择可以在 commit 内自行决定。

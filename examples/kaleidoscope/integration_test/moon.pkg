@@ -1,0 +1,9 @@
+import {
+  "Kaida-Amethyst/llvm-kaleidoscope/session",
+} for "test"
+
+supported_targets = "native"
+
+options(
+  "is-main": false,
+)
