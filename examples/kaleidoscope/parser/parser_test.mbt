@@ -90,14 +90,16 @@ test "definition and extern prototype" {
     parse("def add(x y) x + y;"),
     content=(
       #|Definition(
-      #|  { name: "add", parameters: ["x", "y"] },
+      #|  { name: "add", parameters: ["x", "y"], kind: Normal },
       #|  Binary('+', Variable("x"), Variable("y")),
       #|)
     ),
   )
   debug_inspect(
     parse("extern sin(x)"),
-    content="Extern({ name: \"sin\", parameters: [\"x\"] })",
+    content=(
+      #|Extern({ name: "sin", parameters: ["x"], kind: Normal })
+    ),
   )
 }
 
@@ -122,6 +124,97 @@ test "operator table is explicit and parser is reusable" {
       #|Expression(Binary('<', Number(4), Number(5)))
     ),
   )
+}
+
+///|
+test "operator definitions use temporary and committed precedence" {
+  let parser = Parser::new(operators=OperatorTable::new())
+  let definition = parser.parseTopLevel(
+    "def binary% 50 (left right) left + right % left",
+  )
+  debug_inspect(
+    definition,
+    content=(
+      #|Definition(
+      #|  {
+      #|    name: "binary%",
+      #|    parameters: ["left", "right"],
+      #|    kind: Binary('%', 50),
+      #|  },
+      #|  Binary(
+      #|    '+',
+      #|    Variable("left"),
+      #|    Binary('%', Variable("right"), Variable("left")),
+      #|  ),
+      #|)
+    ),
+  )
+  guard definition is @ast.Definition(prototype, _) else {
+    fail("expected operator definition")
+  }
+  parser.commitPrototype(prototype)
+  debug_inspect(
+    parser.parseTopLevel("1 + 2 % 3 * 4"),
+    content=(
+      #|Expression(
+      #|  Binary(
+      #|    '+',
+      #|    Number(1),
+      #|    Binary('*', Binary('%', Number(2), Number(3)), Number(4)),
+      #|  ),
+      #|)
+    ),
+  )
+}
+
+///|
+test "unary operators associate from right to left" {
+  debug_inspect(
+    parse("def unary!(value) !!value"),
+    content=(
+      #|Definition(
+      #|  { name: "unary!", parameters: ["value"], kind: Unary('!') },
+      #|  Unary('!', Unary('!', Variable("value"))),
+      #|)
+    ),
+  )
+}
+
+///|
+test "failed operator parsing restores the precedence table" {
+  let parser = Parser::new(operators=OperatorTable::new())
+  try parser.parseTopLevel("def binary% 50 (x y) x %") |> ignore catch {
+    ParseError::UnexpectedEndOfInput(_, _) => ()
+    error => fail("unexpected definition error: \{error}")
+  } noraise {
+    _ => fail("expected incomplete operator body to fail")
+  }
+  try parser.parseTopLevel("1 % 2") |> ignore catch {
+    ParseError::UnexpectedToken(
+      { kind: @lexer.Operator('%'), .. },
+      "`;` or end of input"
+    ) => ()
+    error => fail("unexpected rollback error: \{error}")
+  } noraise {
+    _ => fail("expected uncommitted precedence to remain unavailable")
+  }
+}
+
+///|
+test "invalid operator prototypes are rejected" {
+  let invalid = [
+    "def binary+ 50 (x y) x", "def binary= 50 (x y) x", "def binary% 0 (x y) x",
+    "def binary% 101 (x y) x", "def binary% 1.5 (x y) x", "def binary% 50 (x) x",
+    "def unary!(x y) x", "def unary=(x) x",
+  ]
+  for source in invalid {
+    try parse(source) |> ignore catch {
+      ParseError::InvalidOperatorPrototype(_, _) => ()
+      error => fail("unexpected error for \{source}: \{error}")
+    } noraise {
+      _ => fail("expected invalid operator prototype: \{source}")
+    }
+  }
 }
 
 ///|

@@ -14,6 +14,7 @@ pub(all) enum Expr {
   Number(Double)
   Variable(String)
   Binary(Char, Expr, Expr)
+  Unary(Char, Expr)
   Call(String, Array[Expr])
   If(Expr, Expr, Expr)
   For(String, Expr, Expr, Expr?, Expr)
@@ -22,6 +23,13 @@ pub(all) enum Expr {
 pub(all) struct Prototype {
   name : String
   parameters : Array[String]
+  kind : PrototypeKind
+} derive(Eq, @debug.Debug)
+
+pub(all) enum PrototypeKind {
+  Normal
+  Unary(Char)
+  Binary(Char, Int)
 } derive(Eq, @debug.Debug)
 
 pub(all) enum TopLevel {

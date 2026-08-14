@@ -32,16 +32,74 @@ fn unexpected_token(token : @lexer.Token, expected : String) -> ParseError {
 fn parse_prototype(
   tokens : ArrayView[@lexer.Token],
 ) -> (@ast.Prototype, ArrayView[@lexer.Token]) raise ParseError {
-  guard tokens
-    is [{ kind: @lexer.Identifier(name), .. } as name_token, .. tokens] else {
-    match tokens {
-      [token, ..] => raise unexpected_token(token, "function name")
-      [] =>
-        raise UnexpectedEndOfInput(
-          { offset: 0, line: 1, column: 1 },
-          "function name",
+  let (name, kind, name_token, tokens) = match tokens {
+    [{ kind: @lexer.Identifier(name), .. } as token, .. rest] =>
+      (name, @ast.Normal, token, rest)
+    [{ kind: @lexer.Unary, .. } as keyword, .. rest] =>
+      match rest {
+        [{ kind: @lexer.Operator(operator), .. } as token, .. rest] => {
+          guard operator != '=' else {
+            raise InvalidOperatorPrototype(
+              token.start,
+              "`=` is reserved for assignment",
+            )
+          }
+          ("unary\{operator}", @ast.Unary(operator), token, rest)
+        }
+        [token, ..] => raise unexpected_token(token, "operator after `unary`")
+        [] => raise UnexpectedEndOfInput(keyword.end, "operator after `unary`")
+      }
+    [{ kind: @lexer.Binary, .. } as keyword, .. rest] => {
+      let (operator, operator_token, rest) = match rest {
+        [{ kind: @lexer.Operator(operator), .. } as token, .. rest] =>
+          (operator, token, rest)
+        [token, ..] => raise unexpected_token(token, "operator after `binary`")
+        [] => raise UnexpectedEndOfInput(keyword.end, "operator after `binary`")
+      }
+      guard operator != '=' else {
+        raise InvalidOperatorPrototype(
+          operator_token.start,
+          "`=` is reserved for assignment",
         )
+      }
+      guard !['<', '+', '-', '*'].contains(operator) else {
+        raise InvalidOperatorPrototype(
+          operator_token.start,
+          "built-in binary operator `\{operator}` cannot be redefined",
+        )
+      }
+      let (precedence, rest) = match rest {
+        [{ kind: @lexer.Number(value), .. } as token, .. rest] => {
+          guard value >= 1.0 && value <= 100.0 else {
+            raise InvalidOperatorPrototype(
+              token.start,
+              "binary precedence must be between 1 and 100",
+            )
+          }
+          let precedence = value.to_int()
+          guard precedence.to_double() == value else {
+            raise InvalidOperatorPrototype(
+              token.start,
+              "binary precedence must be an integer",
+            )
+          }
+          (precedence, rest)
+        }
+        _ => (30, rest)
+      }
+      (
+        "binary\{operator}",
+        @ast.Binary(operator, precedence),
+        operator_token,
+        rest,
+      )
     }
+    [token, ..] => raise unexpected_token(token, "function name or operator")
+    [] =>
+      raise UnexpectedEndOfInput(
+        { offset: 0, line: 1, column: 1 },
+        "function name or operator",
+      )
   }
   guard tokens is [{ kind: @lexer.LeftParen, .. }, .. tokens] else {
     match tokens {
@@ -65,7 +123,21 @@ fn parse_prototype(
       [] => raise UnexpectedEndOfInput(name_token.end, "`)` after parameters")
     }
   }
-  (@ast.Prototype::{ name, parameters }, tokens)
+  match kind {
+    @ast.Normal => ()
+    @ast.Unary(_) if parameters.length() != 1 =>
+      raise InvalidOperatorPrototype(
+        name_token.start,
+        "unary operator must have exactly one parameter",
+      )
+    @ast.Binary(_, _) if parameters.length() != 2 =>
+      raise InvalidOperatorPrototype(
+        name_token.start,
+        "binary operator must have exactly two parameters",
+      )
+    _ => ()
+  }
+  (@ast.Prototype::{ name, parameters, kind }, tokens)
 }
 
 ///|
@@ -224,7 +296,7 @@ fn parse_binary_rhs(
           precedence >= minimum_precedence else {
           break (left, tokens)
         }
-        let (right, rest) = parse_primary(parser, rest)
+        let (right, rest) = parse_unary(parser, rest)
         let next_precedence = match rest {
           [{ kind: @lexer.Operator(next_operator), .. }, ..] =>
             parser.operators.getPrecedence(next_operator)
@@ -244,11 +316,25 @@ fn parse_binary_rhs(
 }
 
 ///|
+fn parse_unary(
+  parser : Parser,
+  tokens : ArrayView[@lexer.Token],
+) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
+  match tokens {
+    [{ kind: @lexer.Operator(operator), .. }, .. rest] => {
+      let (operand, rest) = parse_unary(parser, rest)
+      (@ast.Unary(operator, operand), rest)
+    }
+    _ => parse_primary(parser, tokens)
+  }
+}
+
+///|
 fn parse_expression(
   parser : Parser,
   tokens : ArrayView[@lexer.Token],
 ) -> (@ast.Expr, ArrayView[@lexer.Token]) raise ParseError {
-  let (left, tokens) = parse_primary(parser, tokens)
+  let (left, tokens) = parse_unary(parser, tokens)
   parse_binary_rhs(parser, 0, left, tokens)
 }
 
@@ -279,7 +365,20 @@ fn Parser::parseTokens(
   match tokens {
     [{ kind: @lexer.Def, .. }, .. rest] => {
       let (prototype, rest) = parse_prototype(rest)
-      let (body, rest) = parse_expression(self, rest)
+      let (body, rest) = match prototype.kind {
+        @ast.Binary(operator, precedence) => {
+          let previous = self.operators.replacePrecedence(operator, precedence)
+          let parsed = parse_expression(self, rest) catch {
+            error => {
+              self.operators.restorePrecedence(operator, previous)
+              raise error
+            }
+          }
+          self.operators.restorePrecedence(operator, previous)
+          parsed
+        }
+        _ => parse_expression(self, rest)
+      }
       finish_top_level(@ast.Definition(prototype, body), rest)
     }
     [{ kind: @lexer.Extern, .. }, .. rest] => {
@@ -290,6 +389,39 @@ fn Parser::parseTokens(
       let (expression, rest) = parse_expression(self, tokens)
       finish_top_level(@ast.Expression(expression), rest)
     }
+  }
+}
+
+///|
+/// Commits the precedence declared by a successfully submitted operator
+/// prototype.
+///
+/// Normal and unary prototypes do not modify the table. A binary prototype
+/// produced by this parser becomes visible to later `parseTopLevel` calls.
+/// Call this only after the definition or extern declaration has completed all
+/// later code-generation and JIT submission steps.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let parser = @parser.Parser::new(operators=@parser.OperatorTable::new())
+///   guard parser.parseTopLevel("def binary% 50 (x y) x % y")
+///     is @ast.Definition(prototype, _) else {
+///     fail("expected operator definition")
+///   }
+///   parser.commitPrototype(prototype)
+///   parser.parseTopLevel("1 + 2 % 3") |> ignore
+/// }
+/// ```
+pub fn Parser::commitPrototype(
+  self : Parser,
+  prototype : @ast.Prototype,
+) -> Unit {
+  match prototype.kind {
+    @ast.Binary(operator, precedence) =>
+      self.operators.replacePrecedence(operator, precedence) |> ignore
+    _ => ()
   }
 }
 

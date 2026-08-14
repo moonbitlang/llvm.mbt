@@ -15,6 +15,7 @@ pub suberror ParseError {
   UnexpectedToken(@lexer.Token, String)
   UnexpectedEndOfInput(@lexer.SourcePos, String)
   DuplicateParameter(String, @lexer.SourcePos)
+  InvalidOperatorPrototype(@lexer.SourcePos, String)
 } derive(@debug.Debug)
 
 // Types and methods
@@ -27,6 +28,7 @@ pub fn OperatorTable::new() -> Self
 pub struct Parser {
   operators : OperatorTable
 }
+pub fn Parser::commitPrototype(Self, @ast.Prototype) -> Unit
 pub fn Parser::new(operators~ : OperatorTable) -> Self
 pub fn Parser::parseTopLevel(Self, String) -> @ast.TopLevel raise
 

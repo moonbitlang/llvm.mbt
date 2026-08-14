@@ -34,3 +34,26 @@ pub fn OperatorTable::getPrecedence(
 ) -> Int? {
   self.precedences.get(operator)
 }
+
+///|
+fn OperatorTable::replacePrecedence(
+  self : OperatorTable,
+  operator : Char,
+  precedence : Int,
+) -> Int? {
+  let previous = self.precedences.get(operator)
+  self.precedences.set(operator, precedence)
+  previous
+}
+
+///|
+fn OperatorTable::restorePrecedence(
+  self : OperatorTable,
+  operator : Char,
+  previous : Int?,
+) -> Unit {
+  match previous {
+    Some(precedence) => self.precedences.set(operator, precedence)
+    None => self.precedences.remove(operator)
+  }
+}

@@ -9,4 +9,6 @@ pub suberror ParseError {
   UnexpectedEndOfInput(@lexer.SourcePos, String)
   /// Reports a repeated function parameter name and the duplicate occurrence.
   DuplicateParameter(String, @lexer.SourcePos)
+  /// Reports an invalid operator character, precedence, or parameter count.
+  InvalidOperatorPrototype(@lexer.SourcePos, String)
 } derive(Debug)

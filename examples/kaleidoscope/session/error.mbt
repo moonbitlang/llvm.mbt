@@ -62,6 +62,8 @@ pub fn SessionError::message(self : SessionError) -> String {
           "parse error at \{position}: expected \{expected}, found end of input"
         DuplicateParameter(name, position) =>
           "parse error at \{position}: duplicate parameter `\{name}`"
+        InvalidOperatorPrototype(position, message) =>
+          "parse error at \{position}: \{message}"
       }
     CodegenFailure(error) =>
       match error {
@@ -72,8 +74,6 @@ pub fn SessionError::message(self : SessionError) -> String {
           "function `\{name}` has arity \{expected}, not \{actual}"
         ArgumentCountMismatch(name, expected, actual) =>
           "call to `\{name}` expects \{expected} arguments, received \{actual}"
-        UnsupportedBinaryOperator(operator) =>
-          "binary operator `\{operator}` is not supported"
         InvalidPrototype(message) => "invalid prototype: \{message}"
         BackendFailure(message) => "LLVM construction failed: \{message}"
         VerificationFailed(message) => "LLVM verification failed: \{message}"

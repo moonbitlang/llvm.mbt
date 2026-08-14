@@ -42,6 +42,8 @@ fn parse_source(
       raise ParserFailure(error)
     @parser.ParseError::DuplicateParameter(_, _) as error =>
       raise ParserFailure(error)
+    @parser.ParseError::InvalidOperatorPrototype(_, _) as error =>
+      raise ParserFailure(error)
     error => raise UnexpectedFailure(error.to_string())
   }
 }
@@ -207,10 +209,12 @@ pub fn Session::evaluate(
       })
       jit_operation(() => self.jit.addModule(mod))
       codegen_operation(() => self.catalog.commitDefinition(prototype))
+      self.parser.commitPrototype(prototype)
       Defined(prototype.name)
     }
     Extern(prototype) => {
       codegen_operation(() => self.catalog.commitExtern(prototype))
+      self.parser.commitPrototype(prototype)
       EvalOutcome::Extern(prototype.name)
     }
     Expression(expression) => Value(self.evaluateExpression(expression))

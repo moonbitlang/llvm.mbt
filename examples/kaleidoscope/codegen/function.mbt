@@ -38,7 +38,11 @@ fn CodegenContext::codegenExpression(
   expression : @ast.Expr,
   catalog : PrototypeCatalog,
 ) -> Unit raise CodegenError {
-  let prototype : @ast.Prototype = { name: symbol_name, parameters: [] }
+  let prototype : @ast.Prototype = {
+    name: symbol_name,
+    parameters: [],
+    kind: @ast.Normal,
+  }
   let function = self.declarePrototype(prototype)
   let entry = backend(() => function.addBasicBlock(name="entry"))
   backend(() => self.builder.setInsertPoint(entry))

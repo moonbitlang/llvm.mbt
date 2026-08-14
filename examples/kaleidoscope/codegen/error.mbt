@@ -12,8 +12,6 @@ pub suberror CodegenError {
   ConflictingPrototype(String, Int, Int)
   /// Reports a call whose actual arity differs from its prototype.
   ArgumentCountMismatch(String, Int, Int)
-  /// Reports a binary operator not implemented by the current code generator.
-  UnsupportedBinaryOperator(Char)
   /// Reports a malformed prototype constructed outside the parser.
   InvalidPrototype(String)
   /// Wraps a failure reported while constructing LLVM IR.

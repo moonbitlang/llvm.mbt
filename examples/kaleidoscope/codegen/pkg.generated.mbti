@@ -19,7 +19,6 @@ pub suberror CodegenError {
   DuplicateDefinition(String)
   ConflictingPrototype(String, Int, Int)
   ArgumentCountMismatch(String, Int, Int)
-  UnsupportedBinaryOperator(Char)
   InvalidPrototype(String)
   BackendFailure(String)
   VerificationFailed(String)

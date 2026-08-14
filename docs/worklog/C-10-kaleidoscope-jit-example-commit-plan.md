@@ -356,11 +356,11 @@ parse
 | parser/codegen/session 测试 | precedence、关联、调用、失败回滚和真实执行 |
 | 相关 `pkg.generated.mbti` | 由 `moon info` 生成并审核 |
 
-- [ ] unary/binary prototype 只接受合法 operator 字符和参数数量；binary precedence 限制在已记录的有效范围。
-- [ ] parsing 一个 binary definition 的 body 时临时启用其 precedence；parse/codegen/verify/add 任一失败都恢复旧 operator table。
-- [ ] 内建运算符继续直接生成指令；非内建运算符 lowering 为普通函数调用。
-- [ ] 首轮拒绝覆盖已成功定义的 operator/function，不提供 newest-first shadowing。
-- [ ] 测试证明自定义 precedence 会改变 AST，并通过 JIT 验证 unary 和 binary 结果。
+- [x] unary/binary prototype 只接受合法 operator 字符和参数数量；binary precedence 限制在已记录的有效范围。
+- [x] parsing 一个 binary definition 的 body 时临时启用其 precedence；parse/codegen/verify/add 任一失败都恢复旧 operator table。
+- [x] 内建运算符继续直接生成指令；非内建运算符 lowering 为普通函数调用。
+- [x] 首轮拒绝覆盖已成功定义的 operator/function，不提供 newest-first shadowing。
+- [x] 测试证明自定义 precedence 会改变 AST，并通过 JIT 验证 unary 和 binary 结果。
 
 建议提交信息：`examples(kaleidoscope): add user-defined operators`
 

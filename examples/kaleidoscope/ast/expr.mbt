@@ -7,6 +7,8 @@ pub(all) enum Expr {
   Variable(String)
   /// Applies one binary operator to two operand expressions.
   Binary(Char, Expr, Expr)
+  /// Applies a user-defined unary operator to one operand expression.
+  Unary(Char, Expr)
   /// Calls a named function with zero or more argument expressions.
   Call(String, Array[Expr])
   /// Selects one of two expressions using a zero/nonzero condition.

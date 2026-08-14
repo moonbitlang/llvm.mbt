@@ -4,6 +4,7 @@ test "core binary operators produce floating-point IR" {
   let prototype : @ast.Prototype = {
     name: "operators",
     parameters: ["left", "right"],
+    kind: @ast.Normal,
   }
   let mod = compileDefinition(
     catalog,
@@ -54,6 +55,7 @@ test "function parameters use entry allocas and loads" {
   let prototype : @ast.Prototype = {
     name: "add",
     parameters: ["left", "right"],
+    kind: @ast.Normal,
   }
   let mod = compileDefinition(
     catalog,
@@ -86,7 +88,7 @@ test "function parameters use entry allocas and loads" {
 ///|
 test "catalog prototypes become local declarations" {
   let catalog = PrototypeCatalog::new()
-  catalog.commitExtern({ name: "sin", parameters: ["value"] })
+  catalog.commitExtern({ name: "sin", parameters: ["value"], kind: @ast.Normal })
   let mod = compileExpression(
     catalog,
     @ast.Call("sin", [@ast.Number(0.0)]),
@@ -114,7 +116,11 @@ test "catalog prototypes become local declarations" {
 ///|
 test "submitted definition state supports later module calls" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "twice", parameters: ["value"] }
+  let prototype : @ast.Prototype = {
+    name: "twice",
+    parameters: ["value"],
+    kind: @ast.Normal,
+  }
   compileDefinition(
     catalog,
     prototype,
@@ -168,7 +174,11 @@ test "each compilation owns a fresh LLVM context" {
 ///|
 test "catalog stores only independent prototype data" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "stable", parameters: ["value"] }
+  let prototype : @ast.Prototype = {
+    name: "stable",
+    parameters: ["value"],
+    kind: @ast.Normal,
+  }
   catalog.commitExtern(prototype)
   prototype.parameters.push("later")
   guard catalog.get("stable") is Some(stored) else {
@@ -218,7 +228,11 @@ test "unknown variables and functions are stable errors" {
 ///|
 test "catalog rejects duplicate and conflicting definitions" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "f", parameters: ["x"] }
+  let prototype : @ast.Prototype = {
+    name: "f",
+    parameters: ["x"],
+    kind: @ast.Normal,
+  }
   catalog.commitDefinition(prototype)
   try catalog.validateDefinition(prototype) catch {
     CodegenError::DuplicateDefinition("f") => ()
@@ -226,7 +240,9 @@ test "catalog rejects duplicate and conflicting definitions" {
   } noraise {
     _ => fail("expected duplicate definition")
   }
-  try catalog.commitExtern({ name: "f", parameters: [] }) catch {
+  try
+    catalog.commitExtern({ name: "f", parameters: [], kind: @ast.Normal })
+  catch {
     CodegenError::ConflictingPrototype("f", 1, 0) => ()
     error => fail("unexpected error: \{Repr(error)}")
   } noraise {
@@ -237,7 +253,7 @@ test "catalog rejects duplicate and conflicting definitions" {
 ///|
 test "calls validate arity before lowering arguments" {
   let catalog = PrototypeCatalog::new()
-  catalog.commitExtern({ name: "one", parameters: ["x"] })
+  catalog.commitExtern({ name: "one", parameters: ["x"], kind: @ast.Normal })
   try
     compileExpression(
       catalog,
@@ -255,9 +271,72 @@ test "calls validate arity before lowering arguments" {
 }
 
 ///|
+test "custom operators lower to ordinary function calls" {
+  let catalog = PrototypeCatalog::new()
+  catalog.commitExtern({
+    name: "unary!",
+    parameters: ["value"],
+    kind: @ast.Unary('!'),
+  })
+  catalog.commitExtern({
+    name: "binary%",
+    parameters: ["left", "right"],
+    kind: @ast.Binary('%', 50),
+  })
+  let mod = compileExpression(
+    catalog,
+    @ast.Binary('%', @ast.Unary('!', @ast.Number(0.0)), @ast.Number(3.0)),
+    module_name="custom_operators",
+    symbol_name="custom_operator_expression",
+  )
+  inspect(
+    "\{mod}",
+    content=(
+      #|; ModuleID = 'custom_operators'
+      #|source_filename = "custom_operators"
+      #|
+      #|define double @custom_operator_expression() {
+      #|entry:
+      #|  %calltmp = call double @"unary!"(double 0.000000e+00)
+      #|  %calltmp1 = call double @"binary%"(double %calltmp, double 3.000000e+00)
+      #|  ret double %calltmp1
+      #|}
+      #|
+      #|declare double @"binary%"(double, double)
+      #|
+      #|declare double @"unary!"(double)
+      #|
+    ),
+  )
+}
+
+///|
+test "operator prototype shape is validated outside the parser" {
+  let catalog = PrototypeCatalog::new()
+  let malformed : Array[@ast.Prototype] = [
+    { name: "unary!", parameters: [], kind: @ast.Unary('!') },
+    { name: "unarya", parameters: ["x"], kind: @ast.Unary('a') },
+    { name: "binary%", parameters: ["x", "y"], kind: @ast.Binary('%', 0) },
+    { name: "binary+", parameters: ["x", "y"], kind: @ast.Binary('+', 50) },
+  ]
+  for prototype in malformed {
+    try catalog.commitExtern(prototype) catch {
+      CodegenError::InvalidPrototype(_) => ()
+      error => fail("unexpected error: \{Repr(error)}")
+    } noraise {
+      _ => fail("expected invalid operator prototype")
+    }
+  }
+}
+
+///|
 test "if expressions merge values from nested control flow" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "choose", parameters: ["value"] }
+  let prototype : @ast.Prototype = {
+    name: "choose",
+    parameters: ["value"],
+    kind: @ast.Normal,
+  }
   let mod = compileDefinition(
     catalog,
     prototype,
@@ -310,7 +389,11 @@ test "if expressions merge values from nested control flow" {
 ///|
 test "for expressions preserve their enclosing lexical binding" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "loop", parameters: ["i"] }
+  let prototype : @ast.Prototype = {
+    name: "loop",
+    parameters: ["i"],
+    kind: @ast.Normal,
+  }
   let mod = compileDefinition(
     catalog,
     prototype,
@@ -363,7 +446,7 @@ test "for expressions preserve their enclosing lexical binding" {
 }
 
 ///|
-test "unsupported operators and malformed prototypes are rejected" {
+test "unknown operators and malformed prototypes are rejected" {
   let catalog = PrototypeCatalog::new()
   try
     compileExpression(
@@ -374,12 +457,18 @@ test "unsupported operators and malformed prototypes are rejected" {
     )
     |> ignore
   catch {
-    CodegenError::UnsupportedBinaryOperator('/') => ()
+    CodegenError::UnknownFunction("binary/") => ()
     error => fail("unexpected error: \{Repr(error)}")
   } noraise {
     _ => fail("expected unsupported operator")
   }
-  try catalog.commitExtern({ name: "bad", parameters: ["x", "x"] }) catch {
+  try
+    catalog.commitExtern({
+      name: "bad",
+      parameters: ["x", "x"],
+      kind: @ast.Normal,
+    })
+  catch {
     CodegenError::InvalidPrototype(_) => ()
     error => fail("unexpected error: \{Repr(error)}")
   } noraise {
@@ -390,7 +479,11 @@ test "unsupported operators and malformed prototypes are rejected" {
 ///|
 test "LLVM construction failures are mapped without catalog mutation" {
   let catalog = PrototypeCatalog::new()
-  let prototype : @ast.Prototype = { name: "pending", parameters: [] }
+  let prototype : @ast.Prototype = {
+    name: "pending",
+    parameters: [],
+    kind: @ast.Normal,
+  }
   try
     compileDefinition(
       catalog,

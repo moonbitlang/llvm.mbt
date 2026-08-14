@@ -46,6 +46,55 @@ test "for expressions execute finite default and explicit-step loops" {
 }
 
 ///|
+test "user-defined unary and binary operators execute with their precedence" {
+  let session = Session::new()
+  debug_inspect(
+    session.evaluate("def unary!(value) if value then 0 else 1"),
+    content="Defined(\"unary!\")",
+  )
+  debug_inspect(session.evaluate("!0 + !1"), content="Value(1)")
+  debug_inspect(
+    session.evaluate("def binary% 50 (left right) left * right"),
+    content="Defined(\"binary%\")",
+  )
+  debug_inspect(session.evaluate("1 + 2 % 3"), content="Value(7)")
+  session.close()
+}
+
+///|
+test "failed operator definitions do not commit precedence" {
+  let session = Session::new()
+  try session.evaluate("def binary& 60 (left right) missing") |> ignore catch {
+    SessionError::CodegenFailure(
+      @codegen.CodegenError::UnknownVariable("missing")
+    ) => ()
+    error => fail("unexpected codegen error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected operator codegen to fail")
+  }
+  try session.evaluate("1 & 2") |> ignore catch {
+    SessionError::ParserFailure(_) => ()
+    error => fail("unexpected rollback error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected failed precedence to remain unavailable")
+  }
+  session.evaluate("def binary& 60 (left right) left + right") |> ignore
+  debug_inspect(session.evaluate("20 & 22"), content="Value(42)")
+  try
+    session.evaluate("def binary& 10 (left right) left - right") |> ignore
+  catch {
+    SessionError::CodegenFailure(
+      @codegen.CodegenError::DuplicateDefinition("binary&")
+    ) => ()
+    error => fail("unexpected duplicate error: \{Repr(error)}")
+  } noraise {
+    _ => fail("expected duplicate operator definition to fail")
+  }
+  debug_inspect(session.evaluate("1 & 2 * 3"), content="Value(9)")
+  session.close()
+}
+
+///|
 test "extern declarations resolve current-process symbols" {
   let session = Session::new()
   debug_inspect(

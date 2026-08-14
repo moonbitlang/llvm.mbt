@@ -1,6 +1,18 @@
 ///|
 fn copy_prototype(prototype : @ast.Prototype) -> @ast.Prototype {
-  { name: prototype.name, parameters: prototype.parameters.copy() }
+  {
+    name: prototype.name,
+    parameters: prototype.parameters.copy(),
+    kind: prototype.kind,
+  }
+}
+
+///|
+fn is_operator_character(operator : Char) -> Bool {
+  [
+    '!', '$', '%', '&', '*', '+', '.', '/', ':', '<', '=', '>', '?', '@', '^', '|',
+    '~', '-',
+  ].contains(operator)
 }
 
 ///|
@@ -22,6 +34,33 @@ fn validate_prototype(prototype : @ast.Prototype) -> Unit raise CodegenError {
     }
     seen.set(parameter, true)
   }
+  match prototype.kind {
+    @ast.Normal => ()
+    @ast.Unary(operator) => {
+      guard is_operator_character(operator) &&
+        operator != '=' &&
+        prototype.name == "unary\{operator}" else {
+        raise InvalidPrototype("invalid unary operator prototype")
+      }
+      guard prototype.parameters.length() == 1 else {
+        raise InvalidPrototype("unary operator must have one parameter")
+      }
+    }
+    @ast.Binary(operator, precedence) => {
+      guard is_operator_character(operator) &&
+        operator != '=' &&
+        !['<', '+', '-', '*'].contains(operator) &&
+        prototype.name == "binary\{operator}" else {
+        raise InvalidPrototype("invalid or reserved binary operator prototype")
+      }
+      guard prototype.parameters.length() == 2 else {
+        raise InvalidPrototype("binary operator must have two parameters")
+      }
+      guard precedence >= 1 && precedence <= 100 else {
+        raise InvalidPrototype("binary precedence must be between 1 and 100")
+      }
+    }
+  }
 }
 
 ///|
@@ -34,6 +73,11 @@ fn validate_compatible(
       incoming.name,
       existing.parameters.length(),
       incoming.parameters.length(),
+    )
+  }
+  guard existing.kind == incoming.kind else {
+    raise InvalidPrototype(
+      "function `\{incoming.name}` conflicts with an existing prototype kind",
     )
   }
 }
