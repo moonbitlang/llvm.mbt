@@ -1,0 +1,10 @@
+supported_targets = "native"
+
+import {
+  "Kaida-Amethyst/llvm/IR" @llvm,
+  "Kaida-Amethyst/llvm/JIT" @jit,
+} for "test"
+
+options(
+  "is-main": false,
+)

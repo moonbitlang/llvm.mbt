@@ -2,6 +2,9 @@ name: check
 
 on:
   workflow_dispatch:
+  schedule:
+    - cron: "23 3 * * *"
+      timezone: "Asia/Shanghai"
   push:
     branches:
       - master
@@ -73,18 +76,116 @@ jobs:
       - name: Moon check
         run: moon check --target native
 
-      - name: Moon test
+      - name: Moon check with warnings denied
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: moon check --target native --deny-warn
+
+      - name: Prepare Linux test workspace
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          # readline.mbt currently ships libedit only for macOS ARM64. Moon
+          # resolves module-level dependencies before selecting build or test
+          # packages, so Linux must omit the whole Kaleidoscope member. The
+          # example remains type-checked above on Linux and fully built and
+          # tested on macOS.
+          sed -i '\#./examples/kaleidoscope#d' moon.work
+
+      - name: Moon build (debug)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: moon build --target native
+
+      - name: Moon build (release)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: moon build --target native --release
+
+      - name: Moon test (debug)
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         shell: bash
         run: |
           ulimit -s 8176
-          # readline.mbt currently ships libedit only for macOS ARM64. Moon
-          # resolves module-level dependencies before selecting test packages,
-          # so Linux must omit the whole Kaleidoscope workspace member. The
-          # example remains type-checked above on Linux and fully tested here
-          # on macOS.
-          if [[ "${{ runner.os }}" == "Linux" ]]; then
-            sed -i '\#./examples/kaleidoscope#d' moon.work
+          moon test --target native
+
+      - name: Moon test (release)
+        shell: bash
+        run: |
+          ulimit -s 8176
+          moon test --target native --release
+
+  daily-repository-consistency:
+    name: daily / repository consistency
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable MoonBit
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s latest
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Show toolchain and dependency versions
+        shell: bash
+        run: |
+          moon version --all
+          moonrun --version
+          node --version
+          moon update
+          moon tree
+
+      - name: Verify generated interfaces and formatting
+        shell: bash
+        run: |
+          moon info
+          moon fmt
+
+      - name: Generate API documentation
+        run: moon doc
+
+      - name: Validate publish package
+        run: moon package --list
+
+      - name: Verify the checkout remains unchanged
+        shell: bash
+        run: |
+          if [[ -n "$(git status --short)" ]]; then
+            git status --short
+            git diff
+            exit 1
           fi
+
+  daily-published-package-smoke:
+    name: daily / published 0.5.0 / ${{ matrix.runner.name }}
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    strategy:
+      matrix:
+        runner:
+          - name: Linux x86_64
+            os: ubuntu-22.04
+          - name: macOS ARM64
+            os: macos-15
+      fail-fast: false
+    runs-on: ${{ matrix.runner.os }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install stable MoonBit
+        shell: bash
+        run: |
+          curl -fsSL https://cli.moonbitlang.com/install/unix.sh | bash -s latest
+          echo "$HOME/.moon/bin" >> "$GITHUB_PATH"
+
+      - name: Install and test the published package
+        shell: bash
+        run: |
+          smoke_dir="$RUNNER_TEMP/llvm-mbt-published-smoke"
+          cp -R .github/published-package-smoke "$smoke_dir"
+          cd "$smoke_dir"
+          moon add Kaida-Amethyst/llvm@0.5.0
+          moon tree
+          moon check --target native --deny-warn
+          ulimit -s 8176
           moon test --target native --release
 
   moon-json-format-check:
