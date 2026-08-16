@@ -14,6 +14,7 @@ pub fn tokenize(String, source_file? : String) -> Array[Token] raise TokenizeErr
 pub suberror TokenizeError {
   TokenizeError(String)
 } derive(@debug.Debug)
+pub fn TokenizeError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) enum AssignOp {
@@ -24,6 +25,12 @@ pub(all) enum AssignOp {
   DivAssign
   ModAssign
 } derive(Eq, ToJson, @debug.Debug)
+pub fn AssignOp::equal(Self, Self) -> Bool
+pub fn AssignOp::not_equal(Self, Self) -> Bool
+pub fn AssignOp::output(Self, &Logger) -> Unit
+pub fn AssignOp::to_json(Self) -> Json
+pub fn AssignOp::to_repr(Self) -> @debug.Repr
+pub fn AssignOp::to_string(Self) -> String
 pub impl Show for AssignOp
 
 pub(all) enum BinaryOp {
@@ -45,6 +52,11 @@ pub(all) enum BinaryOp {
   BitAnd
   BitOr
 } derive(Eq, @debug.Debug)
+pub fn BinaryOp::equal(Self, Self) -> Bool
+pub fn BinaryOp::not_equal(Self, Self) -> Bool
+pub fn BinaryOp::output(Self, &Logger) -> Unit
+pub fn BinaryOp::to_repr(Self) -> @debug.Repr
+pub fn BinaryOp::to_string(Self) -> String
 pub impl Show for BinaryOp
 
 pub(all) enum Keyword {
@@ -61,12 +73,18 @@ pub(all) enum Keyword {
   Enum
   Match
 } derive(Eq, @debug.Debug)
+pub fn Keyword::equal(Self, Self) -> Bool
+pub fn Keyword::not_equal(Self, Self) -> Bool
+pub fn Keyword::output(Self, &Logger) -> Unit
+pub fn Keyword::to_repr(Self) -> @debug.Repr
+pub fn Keyword::to_string(Self) -> String
 pub impl Show for Keyword
 
 pub(all) enum ThrowLevel {
   Error
   Warning
 } derive(@debug.Debug)
+pub fn ThrowLevel::to_repr(Self) -> @debug.Repr
 
 pub struct Token {
   kind : TokenKind
@@ -76,7 +94,11 @@ pub struct Token {
   code : String
   file : String
 } derive(Eq)
+pub fn Token::equal(Self, Self) -> Bool
 pub fn Token::new(TokenKind, Int, Int, Int, String, String) -> Self
+pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::output(Self, &Logger) -> Unit
+pub fn Token::to_string(Self) -> String
 pub impl Show for Token
 
 pub(all) enum TokenKind {
@@ -100,6 +122,11 @@ pub(all) enum TokenKind {
   Wildcard
   EOF
 } derive(Eq, @debug.Debug)
+pub fn TokenKind::equal(Self, Self) -> Bool
+pub fn TokenKind::not_equal(Self, Self) -> Bool
+pub fn TokenKind::output(Self, &Logger) -> Unit
+pub fn TokenKind::to_repr(Self) -> @debug.Repr
+pub fn TokenKind::to_string(Self) -> String
 pub impl Show for TokenKind
 
 // Type aliases

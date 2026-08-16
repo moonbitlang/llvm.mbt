@@ -17,6 +17,7 @@ pub fn compile(String, source_file? : String) -> @IR.Module raise
 pub(all) suberror CodegenError {
   CodegenError(String)
 } derive(@debug.Debug)
+pub fn CodegenError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 

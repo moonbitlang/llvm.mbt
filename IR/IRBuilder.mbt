@@ -26,13 +26,21 @@ pub suberror BuilderError {
 }
 
 ///|
+/// Represents a basic block or instruction that can position an `IRBuilder`.
+///
+/// **Implementor contract:** `asInsertPtEnum` must return the same live block
+/// or instruction represented by the implementing value.
 trait InsertPoint {
+  /// Returns the concrete insertion-point classification.
   fn asInsertPtEnum(Self) -> InsertPointEnum
 }
 
 ///|
-priv enum InsertPointEnum {
+/// Closed classification of supported builder insertion points.
+pub enum InsertPointEnum {
+  /// Positions a builder at the end of a basic block.
   BasicBlock(BasicBlock)
+  /// Positions a builder immediately before an instruction.
   Instruction(&Instruction)
 }
 

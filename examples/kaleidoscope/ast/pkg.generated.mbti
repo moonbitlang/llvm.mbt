@@ -21,29 +21,44 @@ pub(all) enum Expr {
   Var(Array[VarBinding], Expr)
   Assign(String, Expr)
 } derive(Eq, @debug.Debug)
+pub fn Expr::equal(Self, Self) -> Bool
+pub fn Expr::not_equal(Self, Self) -> Bool
+pub fn Expr::to_repr(Self) -> @debug.Repr
 
 pub(all) struct Prototype {
   name : String
   parameters : Array[String]
   kind : PrototypeKind
 } derive(Eq, @debug.Debug)
+pub fn Prototype::equal(Self, Self) -> Bool
+pub fn Prototype::not_equal(Self, Self) -> Bool
+pub fn Prototype::to_repr(Self) -> @debug.Repr
 
 pub(all) enum PrototypeKind {
   Normal
   Unary(Char)
   Binary(Char, Int)
 } derive(Eq, @debug.Debug)
+pub fn PrototypeKind::equal(Self, Self) -> Bool
+pub fn PrototypeKind::not_equal(Self, Self) -> Bool
+pub fn PrototypeKind::to_repr(Self) -> @debug.Repr
 
 pub(all) enum TopLevel {
   Definition(Prototype, Expr)
   Extern(Prototype)
   Expression(Expr)
 } derive(Eq, @debug.Debug)
+pub fn TopLevel::equal(Self, Self) -> Bool
+pub fn TopLevel::not_equal(Self, Self) -> Bool
+pub fn TopLevel::to_repr(Self) -> @debug.Repr
 
 pub(all) struct VarBinding {
   name : String
   initializer : Expr?
 } derive(Eq, @debug.Debug)
+pub fn VarBinding::equal(Self, Self) -> Bool
+pub fn VarBinding::not_equal(Self, Self) -> Bool
+pub fn VarBinding::to_repr(Self) -> @debug.Repr
 
 // Type aliases
 

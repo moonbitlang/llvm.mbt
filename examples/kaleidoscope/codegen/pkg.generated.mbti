@@ -24,6 +24,7 @@ pub suberror CodegenError {
   BackendFailure(String)
   VerificationFailed(String)
 } derive(@debug.Debug)
+pub fn CodegenError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub struct CodegenContext {

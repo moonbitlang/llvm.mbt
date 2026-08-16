@@ -22,6 +22,9 @@ pub suberror SessionError {
   UnexpectedFailure(String)
 } derive(@debug.Debug)
 pub fn SessionError::message(Self) -> String
+pub fn SessionError::output(Self, &Logger) -> Unit
+pub fn SessionError::to_repr(Self) -> @debug.Repr
+pub fn SessionError::to_string(Self) -> String
 pub impl Show for SessionError
 
 // Types and methods
@@ -30,6 +33,9 @@ pub(all) enum EvalOutcome {
   Extern(String)
   Value(Double)
 } derive(Eq, @debug.Debug)
+pub fn EvalOutcome::equal(Self, Self) -> Bool
+pub fn EvalOutcome::not_equal(Self, Self) -> Bool
+pub fn EvalOutcome::to_repr(Self) -> @debug.Repr
 
 pub struct Session {
   // private fields

@@ -1803,10 +1803,13 @@ pub fn LLVMAtomicRMWBinOp::from_int(Int) -> Self
 pub fn LLVMAtomicRMWBinOp::to_int(Self) -> Int
 
 pub(all) struct LLVMAttributeIndex(UInt) derive(Eq)
+pub fn LLVMAttributeIndex::equal(Self, Self) -> Bool
 pub fn LLVMAttributeIndex::new(UInt) -> Self
+pub fn LLVMAttributeIndex::not_equal(Self, Self) -> Bool
 
 #external
 pub type LLVMAttributeRef
+pub fn LLVMAttributeRef::equal(Self, Self) -> Bool
 pub fn LLVMAttributeRef::get_enum_attribute_kind(Self) -> UInt
 pub fn LLVMAttributeRef::get_enum_attribute_value(Self) -> UInt64
 pub fn LLVMAttributeRef::get_type_attribute_value(Self) -> LLVMTypeRef
@@ -1815,12 +1818,14 @@ pub fn LLVMAttributeRef::is_not_null(Self) -> Bool
 pub fn LLVMAttributeRef::is_null(Self) -> Bool
 pub fn LLVMAttributeRef::is_string_attribute(Self) -> Bool
 pub fn LLVMAttributeRef::is_type_attribute(Self) -> Bool
+pub fn LLVMAttributeRef::not_equal(Self, Self) -> Bool
 pub impl Eq for LLVMAttributeRef
 
 #external
 pub type LLVMBasicBlockRef
 pub fn LLVMBasicBlockRef::as_value_ref(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::delete(Self) -> Unit
+pub fn LLVMBasicBlockRef::equal(Self, Self) -> Bool
 pub fn LLVMBasicBlockRef::get_first_instruction(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::get_last_instruction(Self) -> LLVMValueRef
 pub fn LLVMBasicBlockRef::get_name(Self) -> String raise @utf8.Malformed
@@ -1832,6 +1837,7 @@ pub fn LLVMBasicBlockRef::is_not_null(Self) -> Bool
 pub fn LLVMBasicBlockRef::is_null(Self) -> Bool
 pub fn LLVMBasicBlockRef::move_after(Self, Self) -> Unit
 pub fn LLVMBasicBlockRef::move_before(Self, Self) -> Unit
+pub fn LLVMBasicBlockRef::not_equal(Self, Self) -> Bool
 pub fn LLVMBasicBlockRef::remove_from_parent(Self) -> Unit
 pub impl Eq for LLVMBasicBlockRef
 
@@ -1860,6 +1866,8 @@ pub fn LLVMBinaryType::from_int(Int) -> Self
 pub fn LLVMBinaryType::to_int(Self) -> Int
 
 type LLVMBool derive(Eq)
+pub fn LLVMBool::equal(Self, Self) -> Bool
+pub fn LLVMBool::not_equal(Self, Self) -> Bool
 
 #external
 pub type LLVMBuilderRef
@@ -2055,6 +2063,7 @@ pub fn LLVMContextRef::const_struct(Self, Array[LLVMValueRef], Bool) -> LLVMValu
 pub fn LLVMContextRef::create_builder(Self) -> LLVMBuilderRef
 pub fn LLVMContextRef::dispose(Self) -> Unit
 pub fn LLVMContextRef::double_type(Self) -> LLVMTypeRef
+pub fn LLVMContextRef::equal(Self, Self) -> Bool
 pub fn LLVMContextRef::float_type(Self) -> LLVMTypeRef
 pub fn LLVMContextRef::fp128_type(Self) -> LLVMTypeRef
 pub fn LLVMContextRef::get_type_by_name(Self, String) -> LLVMTypeRef
@@ -2074,6 +2083,7 @@ pub fn LLVMContextRef::md_string_in_context(Self, String) -> LLVMValueRef
 pub fn LLVMContextRef::md_string_in_context2(Self, String) -> LLVMMetadataRef
 pub fn LLVMContextRef::metadata_type(Self) -> LLVMTypeRef
 pub fn LLVMContextRef::module_create_with_name(Self, String) -> LLVMModuleRef raise CStringError
+pub fn LLVMContextRef::not_equal(Self, Self) -> Bool
 pub fn LLVMContextRef::parse_ir(Self, LLVMMemoryBufferRef) -> (LLVMModuleRef, String, Bool)
 pub fn LLVMContextRef::pointer_type(Self, UInt) -> LLVMTypeRef
 pub fn LLVMContextRef::ppc_fp128_type(Self) -> LLVMTypeRef
@@ -2216,8 +2226,10 @@ pub fn LLVMDWARFSourceLanguage::from_int(Int) -> Self
 pub fn LLVMDWARFSourceLanguage::to_int(Self) -> Int
 
 pub(all) struct LLVMDWARFTypeEncoding(UInt) derive(Eq)
+pub fn LLVMDWARFTypeEncoding::equal(Self, Self) -> Bool
 pub fn LLVMDWARFTypeEncoding::into(Self) -> UInt
 pub fn LLVMDWARFTypeEncoding::new(UInt) -> Self
+pub fn LLVMDWARFTypeEncoding::not_equal(Self, Self) -> Bool
 
 #external
 pub type LLVMDbgRecordRef
@@ -2304,6 +2316,10 @@ pub fn LLVMJITSymbolGenericFlags::from_int(Int) -> Self
 pub fn LLVMJITSymbolGenericFlags::to_int(Self) -> Int
 
 pub(all) struct LLVMJITSymbolTargetFlags(UInt) derive(Eq)
+pub fn LLVMJITSymbolTargetFlags::equal(Self, Self) -> Bool
+pub fn LLVMJITSymbolTargetFlags::not_equal(Self, Self) -> Bool
+pub fn LLVMJITSymbolTargetFlags::output(Self, &Logger) -> Unit
+pub fn LLVMJITSymbolTargetFlags::to_string(Self) -> String
 pub impl Show for LLVMJITSymbolTargetFlags
 
 pub(all) enum LLVMLandingPadClauseTy {
@@ -2389,8 +2405,10 @@ pub fn LLVMMemoryBufferRef::get_buffer_size(Self) -> Int
 pub fn LLVMMemoryBufferRef::get_buffer_start(Self) -> String
 
 pub(all) struct LLVMMetadataKind(UInt) derive(Eq)
+pub fn LLVMMetadataKind::equal(Self, Self) -> Bool
 pub fn LLVMMetadataKind::into(Self) -> UInt
 pub fn LLVMMetadataKind::new(UInt) -> Self
+pub fn LLVMMetadataKind::not_equal(Self, Self) -> Bool
 
 #external
 pub type LLVMMetadataRef
@@ -2517,7 +2535,9 @@ pub(all) enum LLVMOpcode {
   LLVMCatchSwitch
 }
 pub fn LLVMOpcode::from_int(Int) -> Self
+pub fn LLVMOpcode::output(Self, &Logger) -> Unit
 pub fn LLVMOpcode::to_int(Self) -> Int
+pub fn LLVMOpcode::to_string(Self) -> String
 pub impl Show for LLVMOpcode
 
 #external
@@ -2530,6 +2550,11 @@ pub fn LLVMOperandBundleRef::get_num_args(Self) -> UInt
 pub type LLVMOrcExecutionSessionRef
 
 pub(all) struct LLVMOrcExecutorAddress(UInt64) derive(Default, Eq)
+pub fn LLVMOrcExecutorAddress::default() -> Self
+pub fn LLVMOrcExecutorAddress::equal(Self, Self) -> Bool
+pub fn LLVMOrcExecutorAddress::not_equal(Self, Self) -> Bool
+pub fn LLVMOrcExecutorAddress::output(Self, &Logger) -> Unit
+pub fn LLVMOrcExecutorAddress::to_string(Self) -> String
 pub fn LLVMOrcExecutorAddress::to_uint64(Self) -> UInt64
 pub impl Show for LLVMOrcExecutorAddress
 
@@ -2537,6 +2562,10 @@ pub impl Show for LLVMOrcExecutorAddress
 pub type LLVMOrcJITDylibRef
 
 pub(all) struct LLVMOrcJITTargetAddress(UInt64) derive(Eq)
+pub fn LLVMOrcJITTargetAddress::equal(Self, Self) -> Bool
+pub fn LLVMOrcJITTargetAddress::not_equal(Self, Self) -> Bool
+pub fn LLVMOrcJITTargetAddress::output(Self, &Logger) -> Unit
+pub fn LLVMOrcJITTargetAddress::to_string(Self) -> String
 pub impl Show for LLVMOrcJITTargetAddress
 
 #external
@@ -2632,7 +2661,9 @@ pub(all) enum LLVMTailCallKind {
   LLVMTailCallKindMustTail
   LLVMTailCallKindNoTail
 } derive(Eq)
+pub fn LLVMTailCallKind::equal(Self, Self) -> Bool
 pub fn LLVMTailCallKind::from_int(Int) -> Self
+pub fn LLVMTailCallKind::not_equal(Self, Self) -> Bool
 pub fn LLVMTailCallKind::to_int(Self) -> Int
 
 #external
@@ -2683,8 +2714,12 @@ pub(all) enum LLVMTypeKind {
   LLVMX86_AMXTypeKind
   LLVMTargetExtTypeKind
 } derive(Eq)
+pub fn LLVMTypeKind::equal(Self, Self) -> Bool
 pub fn LLVMTypeKind::from_int(Int) -> Self
+pub fn LLVMTypeKind::not_equal(Self, Self) -> Bool
+pub fn LLVMTypeKind::output(Self, &Logger) -> Unit
 pub fn LLVMTypeKind::to_int(Self) -> Int
+pub fn LLVMTypeKind::to_string(Self) -> String
 pub impl Show for LLVMTypeKind
 
 #external
@@ -2707,6 +2742,7 @@ pub fn LLVMTypeRef::count_param_types(Self) -> UInt
 pub fn LLVMTypeRef::count_struct_element_types(Self) -> UInt
 pub fn LLVMTypeRef::double_type() -> Self
 pub fn LLVMTypeRef::dump(Self) -> Unit
+pub fn LLVMTypeRef::equal(Self, Self) -> Bool
 pub fn LLVMTypeRef::float_type() -> Self
 pub fn LLVMTypeRef::fp128_type() -> Self
 pub fn LLVMTypeRef::function_type(Self, Array[Self], Bool) -> Self
@@ -2747,6 +2783,8 @@ pub fn LLVMTypeRef::is_opaque_struct(Self) -> Bool
 pub fn LLVMTypeRef::is_packed(Self) -> Bool
 pub fn LLVMTypeRef::is_sized(Self) -> Bool
 pub fn LLVMTypeRef::label_type() -> Self
+pub fn LLVMTypeRef::not_equal(Self, Self) -> Bool
+pub fn LLVMTypeRef::output(Self, &Logger) -> Unit
 pub fn LLVMTypeRef::pointer_type(Self, UInt) -> Self
 pub fn LLVMTypeRef::ppc_fp128_type() -> Self
 pub fn LLVMTypeRef::print_to_string(Self) -> String raise
@@ -2768,8 +2806,12 @@ pub(all) enum LLVMUnnamedAddr {
   LLVMLocalUnnamedAddr
   LLVMGlobalUnnamedAddr
 } derive(Eq)
+pub fn LLVMUnnamedAddr::equal(Self, Self) -> Bool
 pub fn LLVMUnnamedAddr::from_int(Int) -> Self
+pub fn LLVMUnnamedAddr::not_equal(Self, Self) -> Bool
+pub fn LLVMUnnamedAddr::output(Self, &Logger) -> Unit
 pub fn LLVMUnnamedAddr::to_int(Self) -> Int
+pub fn LLVMUnnamedAddr::to_string(Self) -> String
 pub impl Show for LLVMUnnamedAddr
 
 #external
@@ -2859,6 +2901,7 @@ pub fn LLVMValueRef::count_basic_blocks(Self) -> UInt
 pub fn LLVMValueRef::count_incoming(Self) -> UInt
 pub fn LLVMValueRef::delete_instruction(Self) -> Unit
 pub fn LLVMValueRef::dump(Self) -> Unit
+pub fn LLVMValueRef::equal(Self, Self) -> Bool
 pub fn LLVMValueRef::erase_global_ifunc(Self) -> Unit
 pub fn LLVMValueRef::get_aggregate_element(Self, UInt) -> Self
 pub fn LLVMValueRef::get_alignment(Self) -> UInt
@@ -3061,6 +3104,8 @@ pub fn LLVMValueRef::isa_va_arg_inst(Self) -> Self
 pub fn LLVMValueRef::isa_value_as_metadata(Self) -> Self
 pub fn LLVMValueRef::isa_z_ext_inst(Self) -> Self
 pub fn LLVMValueRef::md_string(String) -> Self
+pub fn LLVMValueRef::not_equal(Self, Self) -> Bool
+pub fn LLVMValueRef::output(Self, &Logger) -> Unit
 pub fn LLVMValueRef::print(Self) -> String raise
 pub fn LLVMValueRef::remove_global_ifunc(Self) -> Unit
 pub fn LLVMValueRef::replace_all_uses_with(Self, Self) -> Unit

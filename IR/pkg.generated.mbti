@@ -74,19 +74,44 @@ pub enum AbstractTypeEnum {
 }
 
 pub struct AddressSpace(UInt) derive(Default, Eq, Hash)
+pub fn AddressSpace::default() -> Self
+pub fn AddressSpace::equal(Self, Self) -> Bool
+pub fn AddressSpace::hash(Self) -> Int
+pub fn AddressSpace::hash_combine(Self, Hasher) -> Unit
 pub fn AddressSpace::new(UInt) -> Self
+pub fn AddressSpace::not_equal(Self, Self) -> Bool
 
 pub enum AggregateTypeEnum {
   StructType(StructType)
   ArrayType(ArrayType)
 } derive(Eq)
 pub fn AggregateTypeEnum::asTypeClass(Self) -> &Type
+pub fn AggregateTypeEnum::equal(Self, Self) -> Bool
+pub fn AggregateTypeEnum::not_equal(Self, Self) -> Bool
 pub fn AggregateTypeEnum::toTypeEnum(Self) -> TypeEnum
 
 pub struct AllocaInst {
   // private fields
 }
+pub fn AllocaInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn AllocaInst::asInstEnum(Self) -> InstructionEnum
+pub fn AllocaInst::asValueEnum(Self) -> ValueEnum
+pub fn AllocaInst::eraseFromParent(Self) -> Unit
 pub fn AllocaInst::getAllocatedType(Self) -> &Type
+pub fn AllocaInst::getContext(Self) -> Context
+pub fn AllocaInst::getNextInst(Self) -> &Instruction?
+pub fn AllocaInst::getNumArgOperands(Self) -> Int
+pub fn AllocaInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn AllocaInst::getPrevInst(Self) -> &Instruction?
+pub fn AllocaInst::getType(Self) -> &Type
+pub fn AllocaInst::getValueName(Self) -> String? raise StringError
+pub fn AllocaInst::output(Self, &Logger) -> Unit
+pub fn AllocaInst::removeFromParent(Self) -> Unit
+pub fn AllocaInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn AllocaInst::setValueName(Self, String) -> Unit raise StringError
+pub fn AllocaInst::to_string(Self) -> String
+pub fn AllocaInst::tryAsConstant(Self) -> &Constant?
+pub fn AllocaInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for AllocaInst
 pub impl Instruction for AllocaInst
 pub impl Value for AllocaInst
@@ -96,10 +121,20 @@ pub struct Argument {
   // private fields
 }
 pub fn Argument::addAttr(Self, ParamAttr) -> Unit
+pub fn Argument::asValueEnum(Self) -> ValueEnum
+pub fn Argument::getContext(Self) -> Context
 pub fn Argument::getFunction(Self) -> Function
 pub fn Argument::getName(Self) -> String? raise StringError
+pub fn Argument::getType(Self) -> &Type
+pub fn Argument::getValueName(Self) -> String? raise StringError
+pub fn Argument::output(Self, &Logger) -> Unit
 pub fn Argument::removeAttr(Self, ParamAttr) -> Unit
+pub fn Argument::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn Argument::setName(Self, String) -> Unit raise StringError
+pub fn Argument::setValueName(Self, String) -> Unit raise StringError
+pub fn Argument::to_string(Self) -> String
+pub fn Argument::tryAsConstant(Self) -> &Constant?
+pub fn Argument::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Value for Argument
 pub impl Show for Argument
 
@@ -108,8 +143,40 @@ pub struct ArrayType {
 } derive(Eq)
 pub fn ArrayType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
 pub fn ArrayType::asTypeEnum(Self) -> TypeEnum
+pub fn ArrayType::equal(Self, Self) -> Bool
+pub fn ArrayType::getContext(Self) -> Context
 pub fn ArrayType::getElementCount(Self) -> Int
 pub fn ArrayType::getElementType(Self) -> &Type
+pub fn ArrayType::getScalarType(Self) -> &Type
+pub fn ArrayType::is16bitFPTy(Self) -> Bool
+pub fn ArrayType::isAggregateType(Self) -> Bool
+pub fn ArrayType::isEmptyTy(Self) -> Bool
+pub fn ArrayType::isFPOrFPVectorTy(Self) -> Bool
+pub fn ArrayType::isFirstClassType(Self) -> Bool
+pub fn ArrayType::isFloatingPointTy(Self) -> Bool
+pub fn ArrayType::isIEEELikeFPTy(Self) -> Bool
+pub fn ArrayType::isIntOrIntVectorTy(Self) -> Bool
+pub fn ArrayType::isIntOrPtrTy(Self) -> Bool
+pub fn ArrayType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn ArrayType::isScalableTargetExtTy(Self) -> Bool
+pub fn ArrayType::isScalableTy(Self) -> Bool
+pub fn ArrayType::isSingleValueType(Self) -> Bool
+pub fn ArrayType::isSized(Self) -> Bool
+pub fn ArrayType::isValidGEPType(Self) -> Bool
+pub fn ArrayType::not_equal(Self, Self) -> Bool
+pub fn ArrayType::output(Self, &Logger) -> Unit
+pub fn ArrayType::sizeOf(Self) -> &Value?
+pub fn ArrayType::to_string(Self) -> String
+pub fn ArrayType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn ArrayType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn ArrayType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn ArrayType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn ArrayType::tryAsFPType(Self) -> &FPType?
+pub fn ArrayType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn ArrayType::tryAsIntType(Self) -> &IntegerType?
+pub fn ArrayType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn ArrayType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn ArrayType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AggregateType for ArrayType
 pub impl Type for ArrayType
 pub impl Show for ArrayType
@@ -120,6 +187,40 @@ pub struct BFloatType {
 pub fn BFloatType::asFPTypeEnum(Self) -> FPTypeEnum
 pub fn BFloatType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn BFloatType::asTypeEnum(Self) -> TypeEnum
+pub fn BFloatType::equal(Self, Self) -> Bool
+pub fn BFloatType::getBitWidth(Self) -> Int
+pub fn BFloatType::getContext(Self) -> Context
+pub fn BFloatType::getFPMantissaWidth(Self) -> UInt
+pub fn BFloatType::getScalarType(Self) -> &Type
+pub fn BFloatType::is16bitFPTy(Self) -> Bool
+pub fn BFloatType::isAggregateType(Self) -> Bool
+pub fn BFloatType::isEmptyTy(Self) -> Bool
+pub fn BFloatType::isFPOrFPVectorTy(Self) -> Bool
+pub fn BFloatType::isFirstClassType(Self) -> Bool
+pub fn BFloatType::isFloatingPointTy(Self) -> Bool
+pub fn BFloatType::isIEEELikeFPTy(Self) -> Bool
+pub fn BFloatType::isIntOrIntVectorTy(Self) -> Bool
+pub fn BFloatType::isIntOrPtrTy(Self) -> Bool
+pub fn BFloatType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn BFloatType::isScalableTargetExtTy(Self) -> Bool
+pub fn BFloatType::isScalableTy(Self) -> Bool
+pub fn BFloatType::isSingleValueType(Self) -> Bool
+pub fn BFloatType::isSized(Self) -> Bool
+pub fn BFloatType::isValidGEPType(Self) -> Bool
+pub fn BFloatType::not_equal(Self, Self) -> Bool
+pub fn BFloatType::output(Self, &Logger) -> Unit
+pub fn BFloatType::sizeOf(Self) -> &Value?
+pub fn BFloatType::to_string(Self) -> String
+pub fn BFloatType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn BFloatType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn BFloatType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn BFloatType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn BFloatType::tryAsFPType(Self) -> &FPType?
+pub fn BFloatType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn BFloatType::tryAsIntType(Self) -> &IntegerType?
+pub fn BFloatType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn BFloatType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn BFloatType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl FPType for BFloatType
 pub impl PrimitiveType for BFloatType
 pub impl Type for BFloatType
@@ -128,6 +229,8 @@ pub impl Show for BFloatType
 pub struct BasicBlock {
   // private fields
 }
+pub fn BasicBlock::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn BasicBlock::asValueEnum(Self) -> ValueEnum
 pub fn BasicBlock::eraseFromParent(Self) -> Unit raise
 pub fn BasicBlock::getContext(Self) -> Context
 pub fn BasicBlock::getFirstInst(Self) -> &Instruction?
@@ -137,10 +240,18 @@ pub fn BasicBlock::getNextBasicBlock(Self) -> Self?
 pub fn BasicBlock::getParent(Self) -> Function?
 pub fn BasicBlock::getPreviousBasicBlock(Self) -> Self?
 pub fn BasicBlock::getTerminator(Self) -> &Instruction?
+pub fn BasicBlock::getType(Self) -> &Type
+pub fn BasicBlock::getValueName(Self) -> String? raise StringError
 pub fn BasicBlock::moveAfter(Self, Self) -> Unit raise
 pub fn BasicBlock::moveBefore(Self, Self) -> Unit raise
+pub fn BasicBlock::output(Self, &Logger) -> Unit
 pub fn BasicBlock::removeFromParent(Self) -> Unit raise
+pub fn BasicBlock::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn BasicBlock::setName(Self, String) -> Unit raise StringError
+pub fn BasicBlock::setValueName(Self, String) -> Unit raise StringError
+pub fn BasicBlock::to_string(Self) -> String
+pub fn BasicBlock::tryAsConstant(Self) -> &Constant?
+pub fn BasicBlock::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for BasicBlock
 pub impl Value for BasicBlock
 pub impl Show for BasicBlock
@@ -148,6 +259,24 @@ pub impl Show for BasicBlock
 pub struct BinaryInst {
   // private fields
 }
+pub fn BinaryInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn BinaryInst::asInstEnum(Self) -> InstructionEnum
+pub fn BinaryInst::asValueEnum(Self) -> ValueEnum
+pub fn BinaryInst::eraseFromParent(Self) -> Unit
+pub fn BinaryInst::getContext(Self) -> Context
+pub fn BinaryInst::getNextInst(Self) -> &Instruction?
+pub fn BinaryInst::getNumArgOperands(Self) -> Int
+pub fn BinaryInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn BinaryInst::getPrevInst(Self) -> &Instruction?
+pub fn BinaryInst::getType(Self) -> &Type
+pub fn BinaryInst::getValueName(Self) -> String? raise StringError
+pub fn BinaryInst::output(Self, &Logger) -> Unit
+pub fn BinaryInst::removeFromParent(Self) -> Unit
+pub fn BinaryInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn BinaryInst::setValueName(Self, String) -> Unit raise StringError
+pub fn BinaryInst::to_string(Self) -> String
+pub fn BinaryInst::tryAsConstant(Self) -> &Constant?
+pub fn BinaryInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for BinaryInst
 pub impl Instruction for BinaryInst
 pub impl Value for BinaryInst
@@ -156,13 +285,31 @@ pub impl Show for BinaryInst
 pub struct BranchInst {
   // private fields
 }
+pub fn BranchInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn BranchInst::asInstEnum(Self) -> InstructionEnum
+pub fn BranchInst::asValueEnum(Self) -> ValueEnum
+pub fn BranchInst::eraseFromParent(Self) -> Unit
+pub fn BranchInst::getContext(Self) -> Context
+pub fn BranchInst::getNextInst(Self) -> &Instruction?
+pub fn BranchInst::getNumArgOperands(Self) -> Int
 pub fn BranchInst::getNumSuccessors(Self) -> Int
+pub fn BranchInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn BranchInst::getPrevInst(Self) -> &Instruction?
 pub fn BranchInst::getSuccessor(Self, Int) -> BasicBlock?
+pub fn BranchInst::getType(Self) -> &Type
+pub fn BranchInst::getValueName(Self) -> String? raise StringError
 pub fn BranchInst::isConditional(Self) -> Bool
+pub fn BranchInst::output(Self, &Logger) -> Unit
+pub fn BranchInst::removeFromParent(Self) -> Unit
+pub fn BranchInst::replaceAllUsesWith(Self, &Value) -> Unit
 #callsite(autofill(loc))
 pub fn BranchInst::setCondition(Self, &Value, loc~ : SourceLoc) -> Unit raise
 #callsite(autofill(loc))
 pub fn BranchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
+pub fn BranchInst::setValueName(Self, String) -> Unit raise StringError
+pub fn BranchInst::to_string(Self) -> String
+pub fn BranchInst::tryAsConstant(Self) -> &Constant?
+pub fn BranchInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for BranchInst
 pub impl Instruction for BranchInst
 pub impl Value for BranchInst
@@ -171,11 +318,29 @@ pub impl Show for BranchInst
 pub struct CallInst {
   // private fields
 }
+pub fn CallInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn CallInst::asInstEnum(Self) -> InstructionEnum
+pub fn CallInst::asValueEnum(Self) -> ValueEnum
+pub fn CallInst::eraseFromParent(Self) -> Unit
+pub fn CallInst::getContext(Self) -> Context
+pub fn CallInst::getNextInst(Self) -> &Instruction?
+pub fn CallInst::getNumArgOperands(Self) -> Int
+pub fn CallInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn CallInst::getPrevInst(Self) -> &Instruction?
 pub fn CallInst::getTailCallKind(Self) -> TailCallKind
+pub fn CallInst::getType(Self) -> &Type
+pub fn CallInst::getValueName(Self) -> String? raise StringError
 pub fn CallInst::isTailCall(Self) -> Bool
+pub fn CallInst::output(Self, &Logger) -> Unit
+pub fn CallInst::removeFromParent(Self) -> Unit
 pub fn CallInst::removeTailCall(Self) -> Unit
+pub fn CallInst::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn CallInst::setTailCall(Self) -> Unit
 pub fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
+pub fn CallInst::setValueName(Self, String) -> Unit raise StringError
+pub fn CallInst::to_string(Self) -> String
+pub fn CallInst::tryAsConstant(Self) -> &Constant?
+pub fn CallInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for CallInst
 pub impl Instruction for CallInst
 pub impl Value for CallInst
@@ -184,6 +349,24 @@ pub impl Show for CallInst
 pub struct CastInst {
   // private fields
 }
+pub fn CastInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn CastInst::asInstEnum(Self) -> InstructionEnum
+pub fn CastInst::asValueEnum(Self) -> ValueEnum
+pub fn CastInst::eraseFromParent(Self) -> Unit
+pub fn CastInst::getContext(Self) -> Context
+pub fn CastInst::getNextInst(Self) -> &Instruction?
+pub fn CastInst::getNumArgOperands(Self) -> Int
+pub fn CastInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn CastInst::getPrevInst(Self) -> &Instruction?
+pub fn CastInst::getType(Self) -> &Type
+pub fn CastInst::getValueName(Self) -> String? raise StringError
+pub fn CastInst::output(Self, &Logger) -> Unit
+pub fn CastInst::removeFromParent(Self) -> Unit
+pub fn CastInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn CastInst::setValueName(Self, String) -> Unit raise StringError
+pub fn CastInst::to_string(Self) -> String
+pub fn CastInst::tryAsConstant(Self) -> &Constant?
+pub fn CastInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for CastInst
 pub impl Instruction for CastInst
 pub impl Value for CastInst
@@ -209,6 +392,17 @@ pub(all) enum CodeModel {
 pub struct ConstantArray {
   // private fields
 }
+pub fn ConstantArray::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantArray::asValueEnum(Self) -> ValueEnum
+pub fn ConstantArray::getContext(Self) -> Context
+pub fn ConstantArray::getType(Self) -> &Type
+pub fn ConstantArray::getValueName(Self) -> String? raise StringError
+pub fn ConstantArray::output(Self, &Logger) -> Unit
+pub fn ConstantArray::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantArray::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantArray::to_string(Self) -> String
+pub fn ConstantArray::tryAsConstant(Self) -> &Constant?
+pub fn ConstantArray::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantArray
 pub impl Value for ConstantArray
 pub impl Show for ConstantArray
@@ -228,6 +422,17 @@ pub enum ConstantEnum {
 pub struct ConstantExpr {
   // private fields
 }
+pub fn ConstantExpr::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantExpr::asValueEnum(Self) -> ValueEnum
+pub fn ConstantExpr::getContext(Self) -> Context
+pub fn ConstantExpr::getType(Self) -> &Type
+pub fn ConstantExpr::getValueName(Self) -> String? raise StringError
+pub fn ConstantExpr::output(Self, &Logger) -> Unit
+pub fn ConstantExpr::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantExpr::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantExpr::to_string(Self) -> String
+pub fn ConstantExpr::tryAsConstant(Self) -> &Constant?
+pub fn ConstantExpr::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantExpr
 pub impl Value for ConstantExpr
 pub impl Show for ConstantExpr
@@ -235,6 +440,17 @@ pub impl Show for ConstantExpr
 pub struct ConstantFP {
   // private fields
 }
+pub fn ConstantFP::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantFP::asValueEnum(Self) -> ValueEnum
+pub fn ConstantFP::getContext(Self) -> Context
+pub fn ConstantFP::getType(Self) -> &Type
+pub fn ConstantFP::getValueName(Self) -> String? raise StringError
+pub fn ConstantFP::output(Self, &Logger) -> Unit
+pub fn ConstantFP::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantFP::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantFP::to_string(Self) -> String
+pub fn ConstantFP::tryAsConstant(Self) -> &Constant?
+pub fn ConstantFP::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantFP
 pub impl Value for ConstantFP
 pub impl Show for ConstantFP
@@ -242,10 +458,21 @@ pub impl Show for ConstantFP
 pub struct ConstantInt {
   // private fields
 }
+pub fn ConstantInt::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantInt::asValueEnum(Self) -> ValueEnum
+pub fn ConstantInt::getContext(Self) -> Context
+pub fn ConstantInt::getType(Self) -> &Type
 pub fn ConstantInt::getValueAsInt64(Self) -> Int64
 pub fn ConstantInt::getValueAsUInt64(Self) -> UInt64
+pub fn ConstantInt::getValueName(Self) -> String? raise StringError
+pub fn ConstantInt::output(Self, &Logger) -> Unit
+pub fn ConstantInt::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantInt::setValueName(Self, String) -> Unit raise StringError
 pub fn ConstantInt::to_int(Self) -> Int
+pub fn ConstantInt::to_string(Self) -> String
 pub fn ConstantInt::to_uint(Self) -> UInt
+pub fn ConstantInt::tryAsConstant(Self) -> &Constant?
+pub fn ConstantInt::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantInt
 pub impl Value for ConstantInt
 pub impl Show for ConstantInt
@@ -253,6 +480,17 @@ pub impl Show for ConstantInt
 pub struct ConstantPointerNull {
   // private fields
 }
+pub fn ConstantPointerNull::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantPointerNull::asValueEnum(Self) -> ValueEnum
+pub fn ConstantPointerNull::getContext(Self) -> Context
+pub fn ConstantPointerNull::getType(Self) -> &Type
+pub fn ConstantPointerNull::getValueName(Self) -> String? raise StringError
+pub fn ConstantPointerNull::output(Self, &Logger) -> Unit
+pub fn ConstantPointerNull::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantPointerNull::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantPointerNull::to_string(Self) -> String
+pub fn ConstantPointerNull::tryAsConstant(Self) -> &Constant?
+pub fn ConstantPointerNull::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantPointerNull
 pub impl Value for ConstantPointerNull
 pub impl Show for ConstantPointerNull
@@ -260,6 +498,17 @@ pub impl Show for ConstantPointerNull
 pub struct ConstantStruct {
   // private fields
 }
+pub fn ConstantStruct::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantStruct::asValueEnum(Self) -> ValueEnum
+pub fn ConstantStruct::getContext(Self) -> Context
+pub fn ConstantStruct::getType(Self) -> &Type
+pub fn ConstantStruct::getValueName(Self) -> String? raise StringError
+pub fn ConstantStruct::output(Self, &Logger) -> Unit
+pub fn ConstantStruct::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantStruct::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantStruct::to_string(Self) -> String
+pub fn ConstantStruct::tryAsConstant(Self) -> &Constant?
+pub fn ConstantStruct::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantStruct
 pub impl Value for ConstantStruct
 pub impl Show for ConstantStruct
@@ -267,6 +516,17 @@ pub impl Show for ConstantStruct
 pub struct ConstantVector {
   // private fields
 }
+pub fn ConstantVector::asConstantEnum(Self) -> ConstantEnum
+pub fn ConstantVector::asValueEnum(Self) -> ValueEnum
+pub fn ConstantVector::getContext(Self) -> Context
+pub fn ConstantVector::getType(Self) -> &Type
+pub fn ConstantVector::getValueName(Self) -> String? raise StringError
+pub fn ConstantVector::output(Self, &Logger) -> Unit
+pub fn ConstantVector::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ConstantVector::setValueName(Self, String) -> Unit raise StringError
+pub fn ConstantVector::to_string(Self) -> String
+pub fn ConstantVector::tryAsConstant(Self) -> &Constant?
+pub fn ConstantVector::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for ConstantVector
 pub impl Value for ConstantVector
 pub impl Show for ConstantVector
@@ -276,6 +536,7 @@ pub struct Context {
 }
 pub fn Context::addModule(Self, String) -> Module raise StringError
 pub fn Context::createBuilder(Self) -> IRBuilder
+pub fn Context::equal(Self, Self) -> Bool
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
 pub fn Context::getBFloatTy(Self) -> BFloatType
 pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray
@@ -319,6 +580,7 @@ pub fn Context::getTokenTy(Self) -> TokenType
 pub fn Context::getUndef(Self, &Type) -> UndefValue
 pub fn Context::getVoidTy(Self) -> VoidType
 pub fn Context::new() -> Self
+pub fn Context::not_equal(Self, Self) -> Bool
 pub impl Eq for Context
 
 pub struct DataLayout {
@@ -335,6 +597,40 @@ pub struct DoubleType {
 pub fn DoubleType::asFPTypeEnum(Self) -> FPTypeEnum
 pub fn DoubleType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn DoubleType::asTypeEnum(Self) -> TypeEnum
+pub fn DoubleType::equal(Self, Self) -> Bool
+pub fn DoubleType::getBitWidth(Self) -> Int
+pub fn DoubleType::getContext(Self) -> Context
+pub fn DoubleType::getFPMantissaWidth(Self) -> UInt
+pub fn DoubleType::getScalarType(Self) -> &Type
+pub fn DoubleType::is16bitFPTy(Self) -> Bool
+pub fn DoubleType::isAggregateType(Self) -> Bool
+pub fn DoubleType::isEmptyTy(Self) -> Bool
+pub fn DoubleType::isFPOrFPVectorTy(Self) -> Bool
+pub fn DoubleType::isFirstClassType(Self) -> Bool
+pub fn DoubleType::isFloatingPointTy(Self) -> Bool
+pub fn DoubleType::isIEEELikeFPTy(Self) -> Bool
+pub fn DoubleType::isIntOrIntVectorTy(Self) -> Bool
+pub fn DoubleType::isIntOrPtrTy(Self) -> Bool
+pub fn DoubleType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn DoubleType::isScalableTargetExtTy(Self) -> Bool
+pub fn DoubleType::isScalableTy(Self) -> Bool
+pub fn DoubleType::isSingleValueType(Self) -> Bool
+pub fn DoubleType::isSized(Self) -> Bool
+pub fn DoubleType::isValidGEPType(Self) -> Bool
+pub fn DoubleType::not_equal(Self, Self) -> Bool
+pub fn DoubleType::output(Self, &Logger) -> Unit
+pub fn DoubleType::sizeOf(Self) -> &Value?
+pub fn DoubleType::to_string(Self) -> String
+pub fn DoubleType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn DoubleType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn DoubleType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn DoubleType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn DoubleType::tryAsFPType(Self) -> &FPType?
+pub fn DoubleType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn DoubleType::tryAsIntType(Self) -> &IntegerType?
+pub fn DoubleType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn DoubleType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn DoubleType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl FPType for DoubleType
 pub impl PrimitiveType for DoubleType
 pub impl Type for DoubleType
@@ -343,6 +639,24 @@ pub impl Show for DoubleType
 pub struct ExtractValueInst {
   // private fields
 }
+pub fn ExtractValueInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn ExtractValueInst::asInstEnum(Self) -> InstructionEnum
+pub fn ExtractValueInst::asValueEnum(Self) -> ValueEnum
+pub fn ExtractValueInst::eraseFromParent(Self) -> Unit
+pub fn ExtractValueInst::getContext(Self) -> Context
+pub fn ExtractValueInst::getNextInst(Self) -> &Instruction?
+pub fn ExtractValueInst::getNumArgOperands(Self) -> Int
+pub fn ExtractValueInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn ExtractValueInst::getPrevInst(Self) -> &Instruction?
+pub fn ExtractValueInst::getType(Self) -> &Type
+pub fn ExtractValueInst::getValueName(Self) -> String? raise StringError
+pub fn ExtractValueInst::output(Self, &Logger) -> Unit
+pub fn ExtractValueInst::removeFromParent(Self) -> Unit
+pub fn ExtractValueInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ExtractValueInst::setValueName(Self, String) -> Unit raise StringError
+pub fn ExtractValueInst::to_string(Self) -> String
+pub fn ExtractValueInst::tryAsConstant(Self) -> &Constant?
+pub fn ExtractValueInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for ExtractValueInst
 pub impl Instruction for ExtractValueInst
 pub impl Value for ExtractValueInst
@@ -351,7 +665,25 @@ pub impl Show for ExtractValueInst
 pub struct FCmpInst {
   // private fields
 }
+pub fn FCmpInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn FCmpInst::asInstEnum(Self) -> InstructionEnum
+pub fn FCmpInst::asValueEnum(Self) -> ValueEnum
+pub fn FCmpInst::eraseFromParent(Self) -> Unit
+pub fn FCmpInst::getContext(Self) -> Context
+pub fn FCmpInst::getNextInst(Self) -> &Instruction?
+pub fn FCmpInst::getNumArgOperands(Self) -> Int
+pub fn FCmpInst::getParentBasicBlock(Self) -> BasicBlock?
 pub fn FCmpInst::getPredicate(Self) -> FloatPredicate
+pub fn FCmpInst::getPrevInst(Self) -> &Instruction?
+pub fn FCmpInst::getType(Self) -> &Type
+pub fn FCmpInst::getValueName(Self) -> String? raise StringError
+pub fn FCmpInst::output(Self, &Logger) -> Unit
+pub fn FCmpInst::removeFromParent(Self) -> Unit
+pub fn FCmpInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn FCmpInst::setValueName(Self, String) -> Unit raise StringError
+pub fn FCmpInst::to_string(Self) -> String
+pub fn FCmpInst::tryAsConstant(Self) -> &Constant?
+pub fn FCmpInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for FCmpInst
 pub impl Instruction for FCmpInst
 pub impl Value for FCmpInst
@@ -363,6 +695,40 @@ pub struct FP128Type {
 pub fn FP128Type::asFPTypeEnum(Self) -> FPTypeEnum
 pub fn FP128Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn FP128Type::asTypeEnum(Self) -> TypeEnum
+pub fn FP128Type::equal(Self, Self) -> Bool
+pub fn FP128Type::getBitWidth(Self) -> Int
+pub fn FP128Type::getContext(Self) -> Context
+pub fn FP128Type::getFPMantissaWidth(Self) -> UInt
+pub fn FP128Type::getScalarType(Self) -> &Type
+pub fn FP128Type::is16bitFPTy(Self) -> Bool
+pub fn FP128Type::isAggregateType(Self) -> Bool
+pub fn FP128Type::isEmptyTy(Self) -> Bool
+pub fn FP128Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn FP128Type::isFirstClassType(Self) -> Bool
+pub fn FP128Type::isFloatingPointTy(Self) -> Bool
+pub fn FP128Type::isIEEELikeFPTy(Self) -> Bool
+pub fn FP128Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn FP128Type::isIntOrPtrTy(Self) -> Bool
+pub fn FP128Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn FP128Type::isScalableTargetExtTy(Self) -> Bool
+pub fn FP128Type::isScalableTy(Self) -> Bool
+pub fn FP128Type::isSingleValueType(Self) -> Bool
+pub fn FP128Type::isSized(Self) -> Bool
+pub fn FP128Type::isValidGEPType(Self) -> Bool
+pub fn FP128Type::not_equal(Self, Self) -> Bool
+pub fn FP128Type::output(Self, &Logger) -> Unit
+pub fn FP128Type::sizeOf(Self) -> &Value?
+pub fn FP128Type::to_string(Self) -> String
+pub fn FP128Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn FP128Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn FP128Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn FP128Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn FP128Type::tryAsFPType(Self) -> &FPType?
+pub fn FP128Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn FP128Type::tryAsIntType(Self) -> &IntegerType?
+pub fn FP128Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn FP128Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn FP128Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl FPType for FP128Type
 pub impl PrimitiveType for FP128Type
 pub impl Type for FP128Type
@@ -376,7 +742,9 @@ pub enum FPTypeEnum {
   FP128Type(FP128Type)
 } derive(Eq)
 pub fn FPTypeEnum::asTypeClass(Self) -> &Type
+pub fn FPTypeEnum::equal(Self, Self) -> Bool
 pub fn FPTypeEnum::getFPMantissaWidth(Self) -> UInt
+pub fn FPTypeEnum::not_equal(Self, Self) -> Bool
 
 pub(all) enum FastMathFlags {
   AllowReassoc
@@ -413,6 +781,40 @@ pub struct FloatType {
 pub fn FloatType::asFPTypeEnum(Self) -> FPTypeEnum
 pub fn FloatType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn FloatType::asTypeEnum(Self) -> TypeEnum
+pub fn FloatType::equal(Self, Self) -> Bool
+pub fn FloatType::getBitWidth(Self) -> Int
+pub fn FloatType::getContext(Self) -> Context
+pub fn FloatType::getFPMantissaWidth(Self) -> UInt
+pub fn FloatType::getScalarType(Self) -> &Type
+pub fn FloatType::is16bitFPTy(Self) -> Bool
+pub fn FloatType::isAggregateType(Self) -> Bool
+pub fn FloatType::isEmptyTy(Self) -> Bool
+pub fn FloatType::isFPOrFPVectorTy(Self) -> Bool
+pub fn FloatType::isFirstClassType(Self) -> Bool
+pub fn FloatType::isFloatingPointTy(Self) -> Bool
+pub fn FloatType::isIEEELikeFPTy(Self) -> Bool
+pub fn FloatType::isIntOrIntVectorTy(Self) -> Bool
+pub fn FloatType::isIntOrPtrTy(Self) -> Bool
+pub fn FloatType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn FloatType::isScalableTargetExtTy(Self) -> Bool
+pub fn FloatType::isScalableTy(Self) -> Bool
+pub fn FloatType::isSingleValueType(Self) -> Bool
+pub fn FloatType::isSized(Self) -> Bool
+pub fn FloatType::isValidGEPType(Self) -> Bool
+pub fn FloatType::not_equal(Self, Self) -> Bool
+pub fn FloatType::output(Self, &Logger) -> Unit
+pub fn FloatType::sizeOf(Self) -> &Value?
+pub fn FloatType::to_string(Self) -> String
+pub fn FloatType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn FloatType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn FloatType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn FloatType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn FloatType::tryAsFPType(Self) -> &FPType?
+pub fn FloatType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn FloatType::tryAsIntType(Self) -> &IntegerType?
+pub fn FloatType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn FloatType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn FloatType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl FPType for FloatType
 pub impl PrimitiveType for FloatType
 pub impl Type for FloatType
@@ -430,6 +832,8 @@ pub(all) enum FnAttr {
   NoAlias
   AllocSize(Int)
 } derive(Eq)
+pub fn FnAttr::equal(Self, Self) -> Bool
+pub fn FnAttr::not_equal(Self, Self) -> Bool
 
 pub struct Function {
   // private fields
@@ -437,17 +841,32 @@ pub struct Function {
 pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock raise StringError
 pub fn Function::addFnAttr(Self, FnAttr) -> Unit
 pub fn Function::addRetAttr(Self, RetAttr) -> Unit
+pub fn Function::asGlobalEnum(Self) -> GlobalEnum
+pub fn Function::asValueEnum(Self) -> ValueEnum
 pub fn Function::countFnAttrs(Self) -> Int
 pub fn Function::getArg(Self, Int) -> Argument?
 pub fn Function::getArgs(Self) -> Array[Argument]
 pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
+pub fn Function::getContext(Self) -> Context
+pub fn Function::getLinkage(Self) -> Linkage
 pub fn Function::getName(Self) -> String? raise StringError
 pub fn Function::getNumArgs(Self) -> Int
 pub fn Function::getNumBasicBlocks(Self) -> Int
 pub fn Function::getType(Self) -> FunctionType
+pub fn Function::getUnnamedAddr(Self) -> UnnamedAddr
+pub fn Function::getValueName(Self) -> String? raise StringError
+pub fn Function::output(Self, &Logger) -> Unit
 pub fn Function::removeFnAttr(Self, FnAttr) -> Unit
 pub fn Function::removeRetAttr(Self, RetAttr) -> Unit
+pub fn Function::removeUnnamedAddr(Self) -> Unit
+pub fn Function::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn Function::setLinkage(Self, Linkage) -> Unit
 pub fn Function::setName(Self, String) -> Unit raise StringError
+pub fn Function::setUnnamedAddr(Self, UnnamedAddr) -> Unit
+pub fn Function::setValueName(Self, String) -> Unit raise StringError
+pub fn Function::to_string(Self) -> String
+pub fn Function::tryAsConstant(Self) -> &Constant?
+pub fn Function::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl GlobalValue for Function
 pub impl Value for Function
 pub impl Show for Function
@@ -457,13 +876,45 @@ pub struct FunctionType {
 } derive(Eq)
 pub fn FunctionType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
 pub fn FunctionType::asTypeEnum(Self) -> TypeEnum
+pub fn FunctionType::equal(Self, Self) -> Bool
+pub fn FunctionType::getContext(Self) -> Context
 pub fn FunctionType::getNumParams(Self) -> Int
 pub fn FunctionType::getParamType(Self, Int) -> &Type?
 pub fn FunctionType::getParamTypes(Self) -> Array[&Type]
 pub fn FunctionType::getReturnType(Self) -> &Type
+pub fn FunctionType::getScalarType(Self) -> &Type
+pub fn FunctionType::is16bitFPTy(Self) -> Bool
+pub fn FunctionType::isAggregateType(Self) -> Bool
+pub fn FunctionType::isEmptyTy(Self) -> Bool
+pub fn FunctionType::isFPOrFPVectorTy(Self) -> Bool
+pub fn FunctionType::isFirstClassType(Self) -> Bool
+pub fn FunctionType::isFloatingPointTy(Self) -> Bool
+pub fn FunctionType::isIEEELikeFPTy(Self) -> Bool
+pub fn FunctionType::isIntOrIntVectorTy(Self) -> Bool
+pub fn FunctionType::isIntOrPtrTy(Self) -> Bool
+pub fn FunctionType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn FunctionType::isScalableTargetExtTy(Self) -> Bool
+pub fn FunctionType::isScalableTy(Self) -> Bool
+pub fn FunctionType::isSingleValueType(Self) -> Bool
+pub fn FunctionType::isSized(Self) -> Bool
+pub fn FunctionType::isValidGEPType(Self) -> Bool
 pub fn FunctionType::isVarArg(Self) -> Bool
+pub fn FunctionType::not_equal(Self, Self) -> Bool
 pub fn FunctionType::numOfParams(Self) -> Int
+pub fn FunctionType::output(Self, &Logger) -> Unit
 pub fn FunctionType::params(Self) -> Array[&Type]
+pub fn FunctionType::sizeOf(Self) -> &Value?
+pub fn FunctionType::to_string(Self) -> String
+pub fn FunctionType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn FunctionType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn FunctionType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn FunctionType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn FunctionType::tryAsFPType(Self) -> &FPType?
+pub fn FunctionType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn FunctionType::tryAsIntType(Self) -> &IntegerType?
+pub fn FunctionType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn FunctionType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn FunctionType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AbstractType for FunctionType
 pub impl Type for FunctionType
 pub impl Show for FunctionType
@@ -471,10 +922,28 @@ pub impl Show for FunctionType
 pub struct GetElementPtrInst {
   // private fields
 }
+pub fn GetElementPtrInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn GetElementPtrInst::asInstEnum(Self) -> InstructionEnum
+pub fn GetElementPtrInst::asValueEnum(Self) -> ValueEnum
+pub fn GetElementPtrInst::eraseFromParent(Self) -> Unit
+pub fn GetElementPtrInst::getContext(Self) -> Context
+pub fn GetElementPtrInst::getNextInst(Self) -> &Instruction?
+pub fn GetElementPtrInst::getNumArgOperands(Self) -> Int
+pub fn GetElementPtrInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn GetElementPtrInst::getPrevInst(Self) -> &Instruction?
 pub fn GetElementPtrInst::getSourceElementType(Self) -> &Type
+pub fn GetElementPtrInst::getType(Self) -> &Type
+pub fn GetElementPtrInst::getValueName(Self) -> String? raise StringError
 pub fn GetElementPtrInst::isInBounds(Self) -> Bool
+pub fn GetElementPtrInst::output(Self, &Logger) -> Unit
+pub fn GetElementPtrInst::removeFromParent(Self) -> Unit
 pub fn GetElementPtrInst::removeInBounds(Self) -> Unit
+pub fn GetElementPtrInst::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn GetElementPtrInst::setInBounds(Self) -> Unit
+pub fn GetElementPtrInst::setValueName(Self, String) -> Unit raise StringError
+pub fn GetElementPtrInst::to_string(Self) -> String
+pub fn GetElementPtrInst::tryAsConstant(Self) -> &Constant?
+pub fn GetElementPtrInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for GetElementPtrInst
 pub impl Instruction for GetElementPtrInst
 pub impl Value for GetElementPtrInst
@@ -483,6 +952,22 @@ pub impl Show for GetElementPtrInst
 pub struct GlobalConstant {
   // private fields
 }
+pub fn GlobalConstant::asGlobalEnum(Self) -> GlobalEnum
+pub fn GlobalConstant::asValueEnum(Self) -> ValueEnum
+pub fn GlobalConstant::getContext(Self) -> Context
+pub fn GlobalConstant::getLinkage(Self) -> Linkage
+pub fn GlobalConstant::getType(Self) -> &Type
+pub fn GlobalConstant::getUnnamedAddr(Self) -> UnnamedAddr
+pub fn GlobalConstant::getValueName(Self) -> String? raise StringError
+pub fn GlobalConstant::output(Self, &Logger) -> Unit
+pub fn GlobalConstant::removeUnnamedAddr(Self) -> Unit
+pub fn GlobalConstant::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn GlobalConstant::setLinkage(Self, Linkage) -> Unit
+pub fn GlobalConstant::setUnnamedAddr(Self, UnnamedAddr) -> Unit
+pub fn GlobalConstant::setValueName(Self, String) -> Unit raise StringError
+pub fn GlobalConstant::to_string(Self) -> String
+pub fn GlobalConstant::tryAsConstant(Self) -> &Constant?
+pub fn GlobalConstant::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl GlobalValue for GlobalConstant
 pub impl Value for GlobalConstant
 pub impl Show for GlobalConstant
@@ -496,6 +981,22 @@ pub enum GlobalEnum {
 pub struct GlobalVariable {
   // private fields
 }
+pub fn GlobalVariable::asGlobalEnum(Self) -> GlobalEnum
+pub fn GlobalVariable::asValueEnum(Self) -> ValueEnum
+pub fn GlobalVariable::getContext(Self) -> Context
+pub fn GlobalVariable::getLinkage(Self) -> Linkage
+pub fn GlobalVariable::getType(Self) -> &Type
+pub fn GlobalVariable::getUnnamedAddr(Self) -> UnnamedAddr
+pub fn GlobalVariable::getValueName(Self) -> String? raise StringError
+pub fn GlobalVariable::output(Self, &Logger) -> Unit
+pub fn GlobalVariable::removeUnnamedAddr(Self) -> Unit
+pub fn GlobalVariable::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn GlobalVariable::setLinkage(Self, Linkage) -> Unit
+pub fn GlobalVariable::setUnnamedAddr(Self, UnnamedAddr) -> Unit
+pub fn GlobalVariable::setValueName(Self, String) -> Unit raise StringError
+pub fn GlobalVariable::to_string(Self) -> String
+pub fn GlobalVariable::tryAsConstant(Self) -> &Constant?
+pub fn GlobalVariable::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl GlobalValue for GlobalVariable
 pub impl Value for GlobalVariable
 pub impl Show for GlobalVariable
@@ -506,6 +1007,40 @@ pub struct HalfType {
 pub fn HalfType::asFPTypeEnum(Self) -> FPTypeEnum
 pub fn HalfType::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn HalfType::asTypeEnum(Self) -> TypeEnum
+pub fn HalfType::equal(Self, Self) -> Bool
+pub fn HalfType::getBitWidth(Self) -> Int
+pub fn HalfType::getContext(Self) -> Context
+pub fn HalfType::getFPMantissaWidth(Self) -> UInt
+pub fn HalfType::getScalarType(Self) -> &Type
+pub fn HalfType::is16bitFPTy(Self) -> Bool
+pub fn HalfType::isAggregateType(Self) -> Bool
+pub fn HalfType::isEmptyTy(Self) -> Bool
+pub fn HalfType::isFPOrFPVectorTy(Self) -> Bool
+pub fn HalfType::isFirstClassType(Self) -> Bool
+pub fn HalfType::isFloatingPointTy(Self) -> Bool
+pub fn HalfType::isIEEELikeFPTy(Self) -> Bool
+pub fn HalfType::isIntOrIntVectorTy(Self) -> Bool
+pub fn HalfType::isIntOrPtrTy(Self) -> Bool
+pub fn HalfType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn HalfType::isScalableTargetExtTy(Self) -> Bool
+pub fn HalfType::isScalableTy(Self) -> Bool
+pub fn HalfType::isSingleValueType(Self) -> Bool
+pub fn HalfType::isSized(Self) -> Bool
+pub fn HalfType::isValidGEPType(Self) -> Bool
+pub fn HalfType::not_equal(Self, Self) -> Bool
+pub fn HalfType::output(Self, &Logger) -> Unit
+pub fn HalfType::sizeOf(Self) -> &Value?
+pub fn HalfType::to_string(Self) -> String
+pub fn HalfType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn HalfType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn HalfType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn HalfType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn HalfType::tryAsFPType(Self) -> &FPType?
+pub fn HalfType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn HalfType::tryAsIntType(Self) -> &IntegerType?
+pub fn HalfType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn HalfType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn HalfType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl FPType for HalfType
 pub impl PrimitiveType for HalfType
 pub impl Type for HalfType
@@ -514,7 +1049,25 @@ pub impl Show for HalfType
 pub struct ICmpInst {
   // private fields
 }
+pub fn ICmpInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn ICmpInst::asInstEnum(Self) -> InstructionEnum
+pub fn ICmpInst::asValueEnum(Self) -> ValueEnum
+pub fn ICmpInst::eraseFromParent(Self) -> Unit
+pub fn ICmpInst::getContext(Self) -> Context
+pub fn ICmpInst::getNextInst(Self) -> &Instruction?
+pub fn ICmpInst::getNumArgOperands(Self) -> Int
+pub fn ICmpInst::getParentBasicBlock(Self) -> BasicBlock?
 pub fn ICmpInst::getPredicate(Self) -> IntPredicate
+pub fn ICmpInst::getPrevInst(Self) -> &Instruction?
+pub fn ICmpInst::getType(Self) -> &Type
+pub fn ICmpInst::getValueName(Self) -> String? raise StringError
+pub fn ICmpInst::output(Self, &Logger) -> Unit
+pub fn ICmpInst::removeFromParent(Self) -> Unit
+pub fn ICmpInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ICmpInst::setValueName(Self, String) -> Unit raise StringError
+pub fn ICmpInst::to_string(Self) -> String
+pub fn ICmpInst::tryAsConstant(Self) -> &Constant?
+pub fn ICmpInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for ICmpInst
 pub impl Instruction for ICmpInst
 pub impl Value for ICmpInst
@@ -693,9 +1246,32 @@ pub fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
 pub fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
 pub fn IRBuilder::setInsertPointBefore(Self, &Instruction) -> Unit raise BuilderError
 
+pub enum InsertPointEnum {
+  BasicBlock(BasicBlock)
+  Instruction(&Instruction)
+}
+
 pub struct InsertValueInst {
   // private fields
 }
+pub fn InsertValueInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn InsertValueInst::asInstEnum(Self) -> InstructionEnum
+pub fn InsertValueInst::asValueEnum(Self) -> ValueEnum
+pub fn InsertValueInst::eraseFromParent(Self) -> Unit
+pub fn InsertValueInst::getContext(Self) -> Context
+pub fn InsertValueInst::getNextInst(Self) -> &Instruction?
+pub fn InsertValueInst::getNumArgOperands(Self) -> Int
+pub fn InsertValueInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn InsertValueInst::getPrevInst(Self) -> &Instruction?
+pub fn InsertValueInst::getType(Self) -> &Type
+pub fn InsertValueInst::getValueName(Self) -> String? raise StringError
+pub fn InsertValueInst::output(Self, &Logger) -> Unit
+pub fn InsertValueInst::removeFromParent(Self) -> Unit
+pub fn InsertValueInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn InsertValueInst::setValueName(Self, String) -> Unit raise StringError
+pub fn InsertValueInst::to_string(Self) -> String
+pub fn InsertValueInst::tryAsConstant(Self) -> &Constant?
+pub fn InsertValueInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for InsertValueInst
 pub impl Instruction for InsertValueInst
 pub impl Value for InsertValueInst
@@ -727,6 +1303,40 @@ pub struct Int16Type {
 pub fn Int16Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
 pub fn Int16Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn Int16Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int16Type::equal(Self, Self) -> Bool
+pub fn Int16Type::getBitWidth(Self) -> Int
+pub fn Int16Type::getContext(Self) -> Context
+pub fn Int16Type::getExtendedType(Self) -> &IntegerType?
+pub fn Int16Type::getScalarType(Self) -> &Type
+pub fn Int16Type::is16bitFPTy(Self) -> Bool
+pub fn Int16Type::isAggregateType(Self) -> Bool
+pub fn Int16Type::isEmptyTy(Self) -> Bool
+pub fn Int16Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn Int16Type::isFirstClassType(Self) -> Bool
+pub fn Int16Type::isFloatingPointTy(Self) -> Bool
+pub fn Int16Type::isIEEELikeFPTy(Self) -> Bool
+pub fn Int16Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn Int16Type::isIntOrPtrTy(Self) -> Bool
+pub fn Int16Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn Int16Type::isScalableTargetExtTy(Self) -> Bool
+pub fn Int16Type::isScalableTy(Self) -> Bool
+pub fn Int16Type::isSingleValueType(Self) -> Bool
+pub fn Int16Type::isSized(Self) -> Bool
+pub fn Int16Type::isValidGEPType(Self) -> Bool
+pub fn Int16Type::not_equal(Self, Self) -> Bool
+pub fn Int16Type::output(Self, &Logger) -> Unit
+pub fn Int16Type::sizeOf(Self) -> &Value?
+pub fn Int16Type::to_string(Self) -> String
+pub fn Int16Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn Int16Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn Int16Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn Int16Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn Int16Type::tryAsFPType(Self) -> &FPType?
+pub fn Int16Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn Int16Type::tryAsIntType(Self) -> &IntegerType?
+pub fn Int16Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn Int16Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn Int16Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl IntegerType for Int16Type
 pub impl PrimitiveType for Int16Type
 pub impl Type for Int16Type
@@ -738,6 +1348,40 @@ pub struct Int1Type {
 pub fn Int1Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
 pub fn Int1Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn Int1Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int1Type::equal(Self, Self) -> Bool
+pub fn Int1Type::getBitWidth(Self) -> Int
+pub fn Int1Type::getContext(Self) -> Context
+pub fn Int1Type::getExtendedType(Self) -> &IntegerType?
+pub fn Int1Type::getScalarType(Self) -> &Type
+pub fn Int1Type::is16bitFPTy(Self) -> Bool
+pub fn Int1Type::isAggregateType(Self) -> Bool
+pub fn Int1Type::isEmptyTy(Self) -> Bool
+pub fn Int1Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn Int1Type::isFirstClassType(Self) -> Bool
+pub fn Int1Type::isFloatingPointTy(Self) -> Bool
+pub fn Int1Type::isIEEELikeFPTy(Self) -> Bool
+pub fn Int1Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn Int1Type::isIntOrPtrTy(Self) -> Bool
+pub fn Int1Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn Int1Type::isScalableTargetExtTy(Self) -> Bool
+pub fn Int1Type::isScalableTy(Self) -> Bool
+pub fn Int1Type::isSingleValueType(Self) -> Bool
+pub fn Int1Type::isSized(Self) -> Bool
+pub fn Int1Type::isValidGEPType(Self) -> Bool
+pub fn Int1Type::not_equal(Self, Self) -> Bool
+pub fn Int1Type::output(Self, &Logger) -> Unit
+pub fn Int1Type::sizeOf(Self) -> &Value?
+pub fn Int1Type::to_string(Self) -> String
+pub fn Int1Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn Int1Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn Int1Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn Int1Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn Int1Type::tryAsFPType(Self) -> &FPType?
+pub fn Int1Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn Int1Type::tryAsIntType(Self) -> &IntegerType?
+pub fn Int1Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn Int1Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn Int1Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl IntegerType for Int1Type
 pub impl PrimitiveType for Int1Type
 pub impl Type for Int1Type
@@ -749,6 +1393,40 @@ pub struct Int32Type {
 pub fn Int32Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
 pub fn Int32Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn Int32Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int32Type::equal(Self, Self) -> Bool
+pub fn Int32Type::getBitWidth(Self) -> Int
+pub fn Int32Type::getContext(Self) -> Context
+pub fn Int32Type::getExtendedType(Self) -> &IntegerType?
+pub fn Int32Type::getScalarType(Self) -> &Type
+pub fn Int32Type::is16bitFPTy(Self) -> Bool
+pub fn Int32Type::isAggregateType(Self) -> Bool
+pub fn Int32Type::isEmptyTy(Self) -> Bool
+pub fn Int32Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn Int32Type::isFirstClassType(Self) -> Bool
+pub fn Int32Type::isFloatingPointTy(Self) -> Bool
+pub fn Int32Type::isIEEELikeFPTy(Self) -> Bool
+pub fn Int32Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn Int32Type::isIntOrPtrTy(Self) -> Bool
+pub fn Int32Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn Int32Type::isScalableTargetExtTy(Self) -> Bool
+pub fn Int32Type::isScalableTy(Self) -> Bool
+pub fn Int32Type::isSingleValueType(Self) -> Bool
+pub fn Int32Type::isSized(Self) -> Bool
+pub fn Int32Type::isValidGEPType(Self) -> Bool
+pub fn Int32Type::not_equal(Self, Self) -> Bool
+pub fn Int32Type::output(Self, &Logger) -> Unit
+pub fn Int32Type::sizeOf(Self) -> &Value?
+pub fn Int32Type::to_string(Self) -> String
+pub fn Int32Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn Int32Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn Int32Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn Int32Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn Int32Type::tryAsFPType(Self) -> &FPType?
+pub fn Int32Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn Int32Type::tryAsIntType(Self) -> &IntegerType?
+pub fn Int32Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn Int32Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn Int32Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl IntegerType for Int32Type
 pub impl PrimitiveType for Int32Type
 pub impl Type for Int32Type
@@ -760,6 +1438,40 @@ pub struct Int64Type {
 pub fn Int64Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
 pub fn Int64Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn Int64Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int64Type::equal(Self, Self) -> Bool
+pub fn Int64Type::getBitWidth(Self) -> Int
+pub fn Int64Type::getContext(Self) -> Context
+pub fn Int64Type::getExtendedType(Self) -> &IntegerType?
+pub fn Int64Type::getScalarType(Self) -> &Type
+pub fn Int64Type::is16bitFPTy(Self) -> Bool
+pub fn Int64Type::isAggregateType(Self) -> Bool
+pub fn Int64Type::isEmptyTy(Self) -> Bool
+pub fn Int64Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn Int64Type::isFirstClassType(Self) -> Bool
+pub fn Int64Type::isFloatingPointTy(Self) -> Bool
+pub fn Int64Type::isIEEELikeFPTy(Self) -> Bool
+pub fn Int64Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn Int64Type::isIntOrPtrTy(Self) -> Bool
+pub fn Int64Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn Int64Type::isScalableTargetExtTy(Self) -> Bool
+pub fn Int64Type::isScalableTy(Self) -> Bool
+pub fn Int64Type::isSingleValueType(Self) -> Bool
+pub fn Int64Type::isSized(Self) -> Bool
+pub fn Int64Type::isValidGEPType(Self) -> Bool
+pub fn Int64Type::not_equal(Self, Self) -> Bool
+pub fn Int64Type::output(Self, &Logger) -> Unit
+pub fn Int64Type::sizeOf(Self) -> &Value?
+pub fn Int64Type::to_string(Self) -> String
+pub fn Int64Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn Int64Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn Int64Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn Int64Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn Int64Type::tryAsFPType(Self) -> &FPType?
+pub fn Int64Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn Int64Type::tryAsIntType(Self) -> &IntegerType?
+pub fn Int64Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn Int64Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn Int64Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl IntegerType for Int64Type
 pub impl PrimitiveType for Int64Type
 pub impl Type for Int64Type
@@ -771,6 +1483,40 @@ pub struct Int8Type {
 pub fn Int8Type::asIntegerTypeEnum(Self) -> IntegerTypeEnum
 pub fn Int8Type::asPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum
 pub fn Int8Type::asTypeEnum(Self) -> TypeEnum
+pub fn Int8Type::equal(Self, Self) -> Bool
+pub fn Int8Type::getBitWidth(Self) -> Int
+pub fn Int8Type::getContext(Self) -> Context
+pub fn Int8Type::getExtendedType(Self) -> &IntegerType?
+pub fn Int8Type::getScalarType(Self) -> &Type
+pub fn Int8Type::is16bitFPTy(Self) -> Bool
+pub fn Int8Type::isAggregateType(Self) -> Bool
+pub fn Int8Type::isEmptyTy(Self) -> Bool
+pub fn Int8Type::isFPOrFPVectorTy(Self) -> Bool
+pub fn Int8Type::isFirstClassType(Self) -> Bool
+pub fn Int8Type::isFloatingPointTy(Self) -> Bool
+pub fn Int8Type::isIEEELikeFPTy(Self) -> Bool
+pub fn Int8Type::isIntOrIntVectorTy(Self) -> Bool
+pub fn Int8Type::isIntOrPtrTy(Self) -> Bool
+pub fn Int8Type::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn Int8Type::isScalableTargetExtTy(Self) -> Bool
+pub fn Int8Type::isScalableTy(Self) -> Bool
+pub fn Int8Type::isSingleValueType(Self) -> Bool
+pub fn Int8Type::isSized(Self) -> Bool
+pub fn Int8Type::isValidGEPType(Self) -> Bool
+pub fn Int8Type::not_equal(Self, Self) -> Bool
+pub fn Int8Type::output(Self, &Logger) -> Unit
+pub fn Int8Type::sizeOf(Self) -> &Value?
+pub fn Int8Type::to_string(Self) -> String
+pub fn Int8Type::tryAsAbstractType(Self) -> &AbstractType?
+pub fn Int8Type::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn Int8Type::tryAsAggregateType(Self) -> &AggregateType?
+pub fn Int8Type::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn Int8Type::tryAsFPType(Self) -> &FPType?
+pub fn Int8Type::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn Int8Type::tryAsIntType(Self) -> &IntegerType?
+pub fn Int8Type::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn Int8Type::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn Int8Type::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl IntegerType for Int8Type
 pub impl PrimitiveType for Int8Type
 pub impl Type for Int8Type
@@ -797,13 +1543,47 @@ pub enum IntegerTypeEnum {
   Int64Type(Int64Type)
 } derive(Eq)
 pub fn IntegerTypeEnum::asTypeClass(Self) -> &Type
+pub fn IntegerTypeEnum::equal(Self, Self) -> Bool
 pub fn IntegerTypeEnum::getBitWidth(Self) -> UInt
+pub fn IntegerTypeEnum::not_equal(Self, Self) -> Bool
 
 pub struct LabelType {
   // private fields
 } derive(Eq)
 pub fn LabelType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
 pub fn LabelType::asTypeEnum(Self) -> TypeEnum
+pub fn LabelType::equal(Self, Self) -> Bool
+pub fn LabelType::getContext(Self) -> Context
+pub fn LabelType::getScalarType(Self) -> &Type
+pub fn LabelType::is16bitFPTy(Self) -> Bool
+pub fn LabelType::isAggregateType(Self) -> Bool
+pub fn LabelType::isEmptyTy(Self) -> Bool
+pub fn LabelType::isFPOrFPVectorTy(Self) -> Bool
+pub fn LabelType::isFirstClassType(Self) -> Bool
+pub fn LabelType::isFloatingPointTy(Self) -> Bool
+pub fn LabelType::isIEEELikeFPTy(Self) -> Bool
+pub fn LabelType::isIntOrIntVectorTy(Self) -> Bool
+pub fn LabelType::isIntOrPtrTy(Self) -> Bool
+pub fn LabelType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn LabelType::isScalableTargetExtTy(Self) -> Bool
+pub fn LabelType::isScalableTy(Self) -> Bool
+pub fn LabelType::isSingleValueType(Self) -> Bool
+pub fn LabelType::isSized(Self) -> Bool
+pub fn LabelType::isValidGEPType(Self) -> Bool
+pub fn LabelType::not_equal(Self, Self) -> Bool
+pub fn LabelType::output(Self, &Logger) -> Unit
+pub fn LabelType::sizeOf(Self) -> &Value?
+pub fn LabelType::to_string(Self) -> String
+pub fn LabelType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn LabelType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn LabelType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn LabelType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn LabelType::tryAsFPType(Self) -> &FPType?
+pub fn LabelType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn LabelType::tryAsIntType(Self) -> &IntegerType?
+pub fn LabelType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn LabelType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn LabelType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AbstractType for LabelType
 pub impl Type for LabelType
 pub impl Show for LabelType
@@ -831,6 +1611,24 @@ pub(all) enum Linkage {
 pub struct LoadInst {
   // private fields
 }
+pub fn LoadInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn LoadInst::asInstEnum(Self) -> InstructionEnum
+pub fn LoadInst::asValueEnum(Self) -> ValueEnum
+pub fn LoadInst::eraseFromParent(Self) -> Unit
+pub fn LoadInst::getContext(Self) -> Context
+pub fn LoadInst::getNextInst(Self) -> &Instruction?
+pub fn LoadInst::getNumArgOperands(Self) -> Int
+pub fn LoadInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn LoadInst::getPrevInst(Self) -> &Instruction?
+pub fn LoadInst::getType(Self) -> &Type
+pub fn LoadInst::getValueName(Self) -> String? raise StringError
+pub fn LoadInst::output(Self, &Logger) -> Unit
+pub fn LoadInst::removeFromParent(Self) -> Unit
+pub fn LoadInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn LoadInst::setValueName(Self, String) -> Unit raise StringError
+pub fn LoadInst::to_string(Self) -> String
+pub fn LoadInst::tryAsConstant(Self) -> &Constant?
+pub fn LoadInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for LoadInst
 pub impl Instruction for LoadInst
 pub impl Value for LoadInst
@@ -841,6 +1639,38 @@ pub struct MetadataType {
 } derive(Eq)
 pub fn MetadataType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
 pub fn MetadataType::asTypeEnum(Self) -> TypeEnum
+pub fn MetadataType::equal(Self, Self) -> Bool
+pub fn MetadataType::getContext(Self) -> Context
+pub fn MetadataType::getScalarType(Self) -> &Type
+pub fn MetadataType::is16bitFPTy(Self) -> Bool
+pub fn MetadataType::isAggregateType(Self) -> Bool
+pub fn MetadataType::isEmptyTy(Self) -> Bool
+pub fn MetadataType::isFPOrFPVectorTy(Self) -> Bool
+pub fn MetadataType::isFirstClassType(Self) -> Bool
+pub fn MetadataType::isFloatingPointTy(Self) -> Bool
+pub fn MetadataType::isIEEELikeFPTy(Self) -> Bool
+pub fn MetadataType::isIntOrIntVectorTy(Self) -> Bool
+pub fn MetadataType::isIntOrPtrTy(Self) -> Bool
+pub fn MetadataType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn MetadataType::isScalableTargetExtTy(Self) -> Bool
+pub fn MetadataType::isScalableTy(Self) -> Bool
+pub fn MetadataType::isSingleValueType(Self) -> Bool
+pub fn MetadataType::isSized(Self) -> Bool
+pub fn MetadataType::isValidGEPType(Self) -> Bool
+pub fn MetadataType::not_equal(Self, Self) -> Bool
+pub fn MetadataType::output(Self, &Logger) -> Unit
+pub fn MetadataType::sizeOf(Self) -> &Value?
+pub fn MetadataType::to_string(Self) -> String
+pub fn MetadataType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn MetadataType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn MetadataType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn MetadataType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn MetadataType::tryAsFPType(Self) -> &FPType?
+pub fn MetadataType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn MetadataType::tryAsIntType(Self) -> &IntegerType?
+pub fn MetadataType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn MetadataType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn MetadataType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AbstractType for MetadataType
 pub impl Type for MetadataType
 pub impl Show for MetadataType
@@ -862,9 +1692,11 @@ pub fn Module::getLastFunction(Self) -> Function?
 pub fn Module::getName(Self) -> String raise StringError
 pub fn Module::getSourceFileName(Self) -> String raise StringError
 pub fn Module::getTargetTriple(Self) -> String raise StringError
+pub fn Module::output(Self, &Logger) -> Unit
 pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
+pub fn Module::to_string(Self) -> String
 pub fn Module::verify(Self) -> Unit raise VerificationError
 pub fn Module::writeBitCodeToBytes(Self) -> Bytes
 pub fn Module::writeBitCodeToFile(Self, String) -> Unit raise
@@ -874,8 +1706,26 @@ pub struct PHINode {
   // private fields
 }
 pub fn PHINode::addIncoming(Self, &Value, BasicBlock) -> Unit
+pub fn PHINode::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn PHINode::asInstEnum(Self) -> InstructionEnum
+pub fn PHINode::asValueEnum(Self) -> ValueEnum
 pub fn PHINode::countIncoming(Self) -> Int
+pub fn PHINode::eraseFromParent(Self) -> Unit
+pub fn PHINode::getContext(Self) -> Context
 pub fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
+pub fn PHINode::getNextInst(Self) -> &Instruction?
+pub fn PHINode::getNumArgOperands(Self) -> Int
+pub fn PHINode::getParentBasicBlock(Self) -> BasicBlock?
+pub fn PHINode::getPrevInst(Self) -> &Instruction?
+pub fn PHINode::getType(Self) -> &Type
+pub fn PHINode::getValueName(Self) -> String? raise StringError
+pub fn PHINode::output(Self, &Logger) -> Unit
+pub fn PHINode::removeFromParent(Self) -> Unit
+pub fn PHINode::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn PHINode::setValueName(Self, String) -> Unit raise StringError
+pub fn PHINode::to_string(Self) -> String
+pub fn PHINode::tryAsConstant(Self) -> &Constant?
+pub fn PHINode::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for PHINode
 pub impl Instruction for PHINode
 pub impl Value for PHINode
@@ -887,19 +1737,64 @@ pub(all) enum ParamAttr {
   NonNull
   InReg
 } derive(Eq)
+pub fn ParamAttr::equal(Self, Self) -> Bool
+pub fn ParamAttr::not_equal(Self, Self) -> Bool
 
 pub struct PointerType {
   // private fields
 } derive(Eq)
 pub fn PointerType::asTypeEnum(Self) -> TypeEnum
+pub fn PointerType::equal(Self, Self) -> Bool
 pub fn PointerType::getAddressSpace(Self) -> AddressSpace
+pub fn PointerType::getContext(Self) -> Context
+pub fn PointerType::getScalarType(Self) -> &Type
+pub fn PointerType::is16bitFPTy(Self) -> Bool
+pub fn PointerType::isAggregateType(Self) -> Bool
+pub fn PointerType::isEmptyTy(Self) -> Bool
+pub fn PointerType::isFPOrFPVectorTy(Self) -> Bool
+pub fn PointerType::isFirstClassType(Self) -> Bool
+pub fn PointerType::isFloatingPointTy(Self) -> Bool
+pub fn PointerType::isIEEELikeFPTy(Self) -> Bool
+pub fn PointerType::isIntOrIntVectorTy(Self) -> Bool
+pub fn PointerType::isIntOrPtrTy(Self) -> Bool
 pub fn PointerType::isLoadableOrStorableType(&Type) -> Bool
+pub fn PointerType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn PointerType::isScalableTargetExtTy(Self) -> Bool
+pub fn PointerType::isScalableTy(Self) -> Bool
+pub fn PointerType::isSingleValueType(Self) -> Bool
+pub fn PointerType::isSized(Self) -> Bool
+pub fn PointerType::isValidGEPType(Self) -> Bool
+pub fn PointerType::not_equal(Self, Self) -> Bool
+pub fn PointerType::output(Self, &Logger) -> Unit
+pub fn PointerType::sizeOf(Self) -> &Value?
+pub fn PointerType::to_string(Self) -> String
+pub fn PointerType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn PointerType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn PointerType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn PointerType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn PointerType::tryAsFPType(Self) -> &FPType?
+pub fn PointerType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn PointerType::tryAsIntType(Self) -> &IntegerType?
+pub fn PointerType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn PointerType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn PointerType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl Type for PointerType
 pub impl Show for PointerType
 
 pub struct PoisonValue {
   // private fields
 }
+pub fn PoisonValue::asConstantEnum(Self) -> ConstantEnum
+pub fn PoisonValue::asValueEnum(Self) -> ValueEnum
+pub fn PoisonValue::getContext(Self) -> Context
+pub fn PoisonValue::getType(Self) -> &Type
+pub fn PoisonValue::getValueName(Self) -> String? raise StringError
+pub fn PoisonValue::output(Self, &Logger) -> Unit
+pub fn PoisonValue::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn PoisonValue::setValueName(Self, String) -> Unit raise StringError
+pub fn PoisonValue::to_string(Self) -> String
+pub fn PoisonValue::tryAsConstant(Self) -> &Constant?
+pub fn PoisonValue::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for PoisonValue
 pub impl Value for PoisonValue
 pub impl Show for PoisonValue
@@ -918,6 +1813,8 @@ pub enum PrimitiveTypeEnum {
   Int32Type(Int32Type)
   Int64Type(Int64Type)
 } derive(Eq)
+pub fn PrimitiveTypeEnum::equal(Self, Self) -> Bool
+pub fn PrimitiveTypeEnum::not_equal(Self, Self) -> Bool
 
 pub(all) enum RelocationMode {
   Default
@@ -934,10 +1831,30 @@ pub(all) enum RetAttr {
   NonNull
   InReg
 } derive(Eq)
+pub fn RetAttr::equal(Self, Self) -> Bool
+pub fn RetAttr::not_equal(Self, Self) -> Bool
 
 pub struct ReturnInst {
   // private fields
 }
+pub fn ReturnInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn ReturnInst::asInstEnum(Self) -> InstructionEnum
+pub fn ReturnInst::asValueEnum(Self) -> ValueEnum
+pub fn ReturnInst::eraseFromParent(Self) -> Unit
+pub fn ReturnInst::getContext(Self) -> Context
+pub fn ReturnInst::getNextInst(Self) -> &Instruction?
+pub fn ReturnInst::getNumArgOperands(Self) -> Int
+pub fn ReturnInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn ReturnInst::getPrevInst(Self) -> &Instruction?
+pub fn ReturnInst::getType(Self) -> &Type
+pub fn ReturnInst::getValueName(Self) -> String? raise StringError
+pub fn ReturnInst::output(Self, &Logger) -> Unit
+pub fn ReturnInst::removeFromParent(Self) -> Unit
+pub fn ReturnInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ReturnInst::setValueName(Self, String) -> Unit raise StringError
+pub fn ReturnInst::to_string(Self) -> String
+pub fn ReturnInst::tryAsConstant(Self) -> &Constant?
+pub fn ReturnInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for ReturnInst
 pub impl Instruction for ReturnInst
 pub impl Value for ReturnInst
@@ -947,14 +1864,64 @@ pub struct ScalableVectorType {
   // private fields
 } derive(Eq)
 pub fn ScalableVectorType::asTypeEnum(Self) -> TypeEnum
+pub fn ScalableVectorType::equal(Self, Self) -> Bool
+pub fn ScalableVectorType::getContext(Self) -> Context
 pub fn ScalableVectorType::getElementCount(Self) -> Int
 pub fn ScalableVectorType::getElementType(Self) -> &Type
+pub fn ScalableVectorType::getScalarType(Self) -> &Type
+pub fn ScalableVectorType::is16bitFPTy(Self) -> Bool
+pub fn ScalableVectorType::isAggregateType(Self) -> Bool
+pub fn ScalableVectorType::isEmptyTy(Self) -> Bool
+pub fn ScalableVectorType::isFPOrFPVectorTy(Self) -> Bool
+pub fn ScalableVectorType::isFirstClassType(Self) -> Bool
+pub fn ScalableVectorType::isFloatingPointTy(Self) -> Bool
+pub fn ScalableVectorType::isIEEELikeFPTy(Self) -> Bool
+pub fn ScalableVectorType::isIntOrIntVectorTy(Self) -> Bool
+pub fn ScalableVectorType::isIntOrPtrTy(Self) -> Bool
+pub fn ScalableVectorType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn ScalableVectorType::isScalableTargetExtTy(Self) -> Bool
+pub fn ScalableVectorType::isScalableTy(Self) -> Bool
+pub fn ScalableVectorType::isSingleValueType(Self) -> Bool
+pub fn ScalableVectorType::isSized(Self) -> Bool
+pub fn ScalableVectorType::isValidGEPType(Self) -> Bool
+pub fn ScalableVectorType::not_equal(Self, Self) -> Bool
+pub fn ScalableVectorType::output(Self, &Logger) -> Unit
+pub fn ScalableVectorType::sizeOf(Self) -> &Value?
+pub fn ScalableVectorType::to_string(Self) -> String
+pub fn ScalableVectorType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn ScalableVectorType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn ScalableVectorType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn ScalableVectorType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn ScalableVectorType::tryAsFPType(Self) -> &FPType?
+pub fn ScalableVectorType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn ScalableVectorType::tryAsIntType(Self) -> &IntegerType?
+pub fn ScalableVectorType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn ScalableVectorType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn ScalableVectorType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl Type for ScalableVectorType
 pub impl Show for ScalableVectorType
 
 pub struct SelectInst {
   // private fields
 }
+pub fn SelectInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn SelectInst::asInstEnum(Self) -> InstructionEnum
+pub fn SelectInst::asValueEnum(Self) -> ValueEnum
+pub fn SelectInst::eraseFromParent(Self) -> Unit
+pub fn SelectInst::getContext(Self) -> Context
+pub fn SelectInst::getNextInst(Self) -> &Instruction?
+pub fn SelectInst::getNumArgOperands(Self) -> Int
+pub fn SelectInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn SelectInst::getPrevInst(Self) -> &Instruction?
+pub fn SelectInst::getType(Self) -> &Type
+pub fn SelectInst::getValueName(Self) -> String? raise StringError
+pub fn SelectInst::output(Self, &Logger) -> Unit
+pub fn SelectInst::removeFromParent(Self) -> Unit
+pub fn SelectInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn SelectInst::setValueName(Self, String) -> Unit raise StringError
+pub fn SelectInst::to_string(Self) -> String
+pub fn SelectInst::tryAsConstant(Self) -> &Constant?
+pub fn SelectInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for SelectInst
 pub impl Instruction for SelectInst
 pub impl Value for SelectInst
@@ -963,6 +1930,24 @@ pub impl Show for SelectInst
 pub struct StoreInst {
   // private fields
 }
+pub fn StoreInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn StoreInst::asInstEnum(Self) -> InstructionEnum
+pub fn StoreInst::asValueEnum(Self) -> ValueEnum
+pub fn StoreInst::eraseFromParent(Self) -> Unit
+pub fn StoreInst::getContext(Self) -> Context
+pub fn StoreInst::getNextInst(Self) -> &Instruction?
+pub fn StoreInst::getNumArgOperands(Self) -> Int
+pub fn StoreInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn StoreInst::getPrevInst(Self) -> &Instruction?
+pub fn StoreInst::getType(Self) -> &Type
+pub fn StoreInst::getValueName(Self) -> String? raise StringError
+pub fn StoreInst::output(Self, &Logger) -> Unit
+pub fn StoreInst::removeFromParent(Self) -> Unit
+pub fn StoreInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn StoreInst::setValueName(Self, String) -> Unit raise StringError
+pub fn StoreInst::to_string(Self) -> String
+pub fn StoreInst::tryAsConstant(Self) -> &Constant?
+pub fn StoreInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for StoreInst
 pub impl Instruction for StoreInst
 pub impl Value for StoreInst
@@ -974,13 +1959,44 @@ pub struct StructType {
 pub fn StructType::asAggregateTypeEnum(Self) -> AggregateTypeEnum
 pub fn StructType::asTypeEnum(Self) -> TypeEnum
 pub fn StructType::elements(Self) -> Array[&Type]
+pub fn StructType::equal(Self, Self) -> Bool
+pub fn StructType::getContext(Self) -> Context
 pub fn StructType::getElementType(Self, Int) -> &Type?
+pub fn StructType::getScalarType(Self) -> &Type
+pub fn StructType::is16bitFPTy(Self) -> Bool
+pub fn StructType::isAggregateType(Self) -> Bool
+pub fn StructType::isEmptyTy(Self) -> Bool
+pub fn StructType::isFPOrFPVectorTy(Self) -> Bool
+pub fn StructType::isFirstClassType(Self) -> Bool
+pub fn StructType::isFloatingPointTy(Self) -> Bool
+pub fn StructType::isIEEELikeFPTy(Self) -> Bool
+pub fn StructType::isIntOrIntVectorTy(Self) -> Bool
+pub fn StructType::isIntOrPtrTy(Self) -> Bool
 pub fn StructType::isLiteral(Self) -> Bool
 pub fn StructType::isOpaque(Self) -> Bool
 pub fn StructType::isPacked(Self) -> Bool
+pub fn StructType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn StructType::isScalableTargetExtTy(Self) -> Bool
+pub fn StructType::isScalableTy(Self) -> Bool
+pub fn StructType::isSingleValueType(Self) -> Bool
 pub fn StructType::isSized(Self) -> Bool
+pub fn StructType::isValidGEPType(Self) -> Bool
+pub fn StructType::not_equal(Self, Self) -> Bool
 pub fn StructType::numOfElements(Self) -> Int
+pub fn StructType::output(Self, &Logger) -> Unit
 pub fn StructType::setBody(Self, Array[&Type], isPacked? : Bool) -> Unit raise
+pub fn StructType::sizeOf(Self) -> &Value?
+pub fn StructType::to_string(Self) -> String
+pub fn StructType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn StructType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn StructType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn StructType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn StructType::tryAsFPType(Self) -> &FPType?
+pub fn StructType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn StructType::tryAsIntType(Self) -> &IntegerType?
+pub fn StructType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn StructType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn StructType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AggregateType for StructType
 pub impl Type for StructType
 pub impl Show for StructType
@@ -989,10 +2005,28 @@ pub struct SwitchInst {
   // private fields
 }
 pub fn SwitchInst::addCase(Self, &Value, BasicBlock) -> Unit raise
+pub fn SwitchInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn SwitchInst::asInstEnum(Self) -> InstructionEnum
+pub fn SwitchInst::asValueEnum(Self) -> ValueEnum
+pub fn SwitchInst::eraseFromParent(Self) -> Unit
+pub fn SwitchInst::getContext(Self) -> Context
+pub fn SwitchInst::getNextInst(Self) -> &Instruction?
+pub fn SwitchInst::getNumArgOperands(Self) -> Int
 pub fn SwitchInst::getNumSuccessors(Self) -> Int
+pub fn SwitchInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn SwitchInst::getPrevInst(Self) -> &Instruction?
 pub fn SwitchInst::getSuccessor(Self, Int) -> BasicBlock?
+pub fn SwitchInst::getType(Self) -> &Type
+pub fn SwitchInst::getValueName(Self) -> String? raise StringError
+pub fn SwitchInst::output(Self, &Logger) -> Unit
+pub fn SwitchInst::removeFromParent(Self) -> Unit
+pub fn SwitchInst::replaceAllUsesWith(Self, &Value) -> Unit
 #callsite(autofill(loc))
 pub fn SwitchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
+pub fn SwitchInst::setValueName(Self, String) -> Unit raise StringError
+pub fn SwitchInst::to_string(Self) -> String
+pub fn SwitchInst::tryAsConstant(Self) -> &Constant?
+pub fn SwitchInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for SwitchInst
 pub impl Instruction for SwitchInst
 pub impl Value for SwitchInst
@@ -1026,6 +2060,7 @@ pub fn TargetMachine::host(TargetMachineOptions) -> Self raise
 pub struct TargetMachineOptions {
   // private fields
 }
+pub fn TargetMachineOptions::default() -> Self
 pub fn TargetMachineOptions::new(cpu? : String, features? : String, abi? : String, optimizationLevel? : CodeGenOptimizationLevel, relocationMode? : RelocationMode, codeModel? : CodeModel) -> Self raise StringError
 pub impl Default for TargetMachineOptions
 
@@ -1036,9 +2071,14 @@ pub fn TargetRegistry::lookupTarget(TargetTriple) -> Target raise TargetRegistry
 pub struct TargetTriple {
   // private fields
 } derive(Eq, @debug.Debug)
+pub fn TargetTriple::equal(Self, Self) -> Bool
 pub fn TargetTriple::host() -> Self raise StringError
 pub fn TargetTriple::new(String) -> Self raise StringError
+pub fn TargetTriple::not_equal(Self, Self) -> Bool
+pub fn TargetTriple::output(Self, &Logger) -> Unit
 pub fn TargetTriple::toString(Self) -> String
+pub fn TargetTriple::to_repr(Self) -> @debug.Repr
+pub fn TargetTriple::to_string(Self) -> String
 pub impl Show for TargetTriple
 
 pub struct TokenType {
@@ -1046,6 +2086,38 @@ pub struct TokenType {
 } derive(Eq)
 pub fn TokenType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
 pub fn TokenType::asTypeEnum(Self) -> TypeEnum
+pub fn TokenType::equal(Self, Self) -> Bool
+pub fn TokenType::getContext(Self) -> Context
+pub fn TokenType::getScalarType(Self) -> &Type
+pub fn TokenType::is16bitFPTy(Self) -> Bool
+pub fn TokenType::isAggregateType(Self) -> Bool
+pub fn TokenType::isEmptyTy(Self) -> Bool
+pub fn TokenType::isFPOrFPVectorTy(Self) -> Bool
+pub fn TokenType::isFirstClassType(Self) -> Bool
+pub fn TokenType::isFloatingPointTy(Self) -> Bool
+pub fn TokenType::isIEEELikeFPTy(Self) -> Bool
+pub fn TokenType::isIntOrIntVectorTy(Self) -> Bool
+pub fn TokenType::isIntOrPtrTy(Self) -> Bool
+pub fn TokenType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn TokenType::isScalableTargetExtTy(Self) -> Bool
+pub fn TokenType::isScalableTy(Self) -> Bool
+pub fn TokenType::isSingleValueType(Self) -> Bool
+pub fn TokenType::isSized(Self) -> Bool
+pub fn TokenType::isValidGEPType(Self) -> Bool
+pub fn TokenType::not_equal(Self, Self) -> Bool
+pub fn TokenType::output(Self, &Logger) -> Unit
+pub fn TokenType::sizeOf(Self) -> &Value?
+pub fn TokenType::to_string(Self) -> String
+pub fn TokenType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn TokenType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn TokenType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn TokenType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn TokenType::tryAsFPType(Self) -> &FPType?
+pub fn TokenType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn TokenType::tryAsIntType(Self) -> &IntegerType?
+pub fn TokenType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn TokenType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn TokenType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AbstractType for TokenType
 pub impl Type for TokenType
 pub impl Show for TokenType
@@ -1073,10 +2145,30 @@ pub enum TypeEnum {
   PointerType(PointerType)
 } derive(Eq)
 pub fn TypeEnum::asTypeClass(Self) -> &Type
+pub fn TypeEnum::equal(Self, Self) -> Bool
+pub fn TypeEnum::not_equal(Self, Self) -> Bool
 
 pub struct UnaryInst {
   // private fields
 }
+pub fn UnaryInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn UnaryInst::asInstEnum(Self) -> InstructionEnum
+pub fn UnaryInst::asValueEnum(Self) -> ValueEnum
+pub fn UnaryInst::eraseFromParent(Self) -> Unit
+pub fn UnaryInst::getContext(Self) -> Context
+pub fn UnaryInst::getNextInst(Self) -> &Instruction?
+pub fn UnaryInst::getNumArgOperands(Self) -> Int
+pub fn UnaryInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn UnaryInst::getPrevInst(Self) -> &Instruction?
+pub fn UnaryInst::getType(Self) -> &Type
+pub fn UnaryInst::getValueName(Self) -> String? raise StringError
+pub fn UnaryInst::output(Self, &Logger) -> Unit
+pub fn UnaryInst::removeFromParent(Self) -> Unit
+pub fn UnaryInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn UnaryInst::setValueName(Self, String) -> Unit raise StringError
+pub fn UnaryInst::to_string(Self) -> String
+pub fn UnaryInst::tryAsConstant(Self) -> &Constant?
+pub fn UnaryInst::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl InsertPoint for UnaryInst
 pub impl Instruction for UnaryInst
 pub impl Value for UnaryInst
@@ -1085,6 +2177,17 @@ pub impl Show for UnaryInst
 pub struct UndefValue {
   // private fields
 }
+pub fn UndefValue::asConstantEnum(Self) -> ConstantEnum
+pub fn UndefValue::asValueEnum(Self) -> ValueEnum
+pub fn UndefValue::getContext(Self) -> Context
+pub fn UndefValue::getType(Self) -> &Type
+pub fn UndefValue::getValueName(Self) -> String? raise StringError
+pub fn UndefValue::output(Self, &Logger) -> Unit
+pub fn UndefValue::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn UndefValue::setValueName(Self, String) -> Unit raise StringError
+pub fn UndefValue::to_string(Self) -> String
+pub fn UndefValue::tryAsConstant(Self) -> &Constant?
+pub fn UndefValue::tryAsConstantEnum(Self) -> ConstantEnum?
 pub impl Constant for UndefValue
 pub impl Value for UndefValue
 pub impl Show for UndefValue
@@ -1133,8 +2236,40 @@ pub struct VectorType {
   // private fields
 } derive(Eq)
 pub fn VectorType::asTypeEnum(Self) -> TypeEnum
+pub fn VectorType::equal(Self, Self) -> Bool
+pub fn VectorType::getContext(Self) -> Context
 pub fn VectorType::getElementCount(Self) -> Int
 pub fn VectorType::getElementType(Self) -> &Type
+pub fn VectorType::getScalarType(Self) -> &Type
+pub fn VectorType::is16bitFPTy(Self) -> Bool
+pub fn VectorType::isAggregateType(Self) -> Bool
+pub fn VectorType::isEmptyTy(Self) -> Bool
+pub fn VectorType::isFPOrFPVectorTy(Self) -> Bool
+pub fn VectorType::isFirstClassType(Self) -> Bool
+pub fn VectorType::isFloatingPointTy(Self) -> Bool
+pub fn VectorType::isIEEELikeFPTy(Self) -> Bool
+pub fn VectorType::isIntOrIntVectorTy(Self) -> Bool
+pub fn VectorType::isIntOrPtrTy(Self) -> Bool
+pub fn VectorType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn VectorType::isScalableTargetExtTy(Self) -> Bool
+pub fn VectorType::isScalableTy(Self) -> Bool
+pub fn VectorType::isSingleValueType(Self) -> Bool
+pub fn VectorType::isSized(Self) -> Bool
+pub fn VectorType::isValidGEPType(Self) -> Bool
+pub fn VectorType::not_equal(Self, Self) -> Bool
+pub fn VectorType::output(Self, &Logger) -> Unit
+pub fn VectorType::sizeOf(Self) -> &Value?
+pub fn VectorType::to_string(Self) -> String
+pub fn VectorType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn VectorType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn VectorType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn VectorType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn VectorType::tryAsFPType(Self) -> &FPType?
+pub fn VectorType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn VectorType::tryAsIntType(Self) -> &IntegerType?
+pub fn VectorType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn VectorType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn VectorType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl Type for VectorType
 pub impl Show for VectorType
 
@@ -1143,6 +2278,38 @@ pub struct VoidType {
 } derive(Eq)
 pub fn VoidType::asAbstractTypeEnum(Self) -> AbstractTypeEnum
 pub fn VoidType::asTypeEnum(Self) -> TypeEnum
+pub fn VoidType::equal(Self, Self) -> Bool
+pub fn VoidType::getContext(Self) -> Context
+pub fn VoidType::getScalarType(Self) -> &Type
+pub fn VoidType::is16bitFPTy(Self) -> Bool
+pub fn VoidType::isAggregateType(Self) -> Bool
+pub fn VoidType::isEmptyTy(Self) -> Bool
+pub fn VoidType::isFPOrFPVectorTy(Self) -> Bool
+pub fn VoidType::isFirstClassType(Self) -> Bool
+pub fn VoidType::isFloatingPointTy(Self) -> Bool
+pub fn VoidType::isIEEELikeFPTy(Self) -> Bool
+pub fn VoidType::isIntOrIntVectorTy(Self) -> Bool
+pub fn VoidType::isIntOrPtrTy(Self) -> Bool
+pub fn VoidType::isPtrOrPtrVectorTy(Self) -> Bool
+pub fn VoidType::isScalableTargetExtTy(Self) -> Bool
+pub fn VoidType::isScalableTy(Self) -> Bool
+pub fn VoidType::isSingleValueType(Self) -> Bool
+pub fn VoidType::isSized(Self) -> Bool
+pub fn VoidType::isValidGEPType(Self) -> Bool
+pub fn VoidType::not_equal(Self, Self) -> Bool
+pub fn VoidType::output(Self, &Logger) -> Unit
+pub fn VoidType::sizeOf(Self) -> &Value?
+pub fn VoidType::to_string(Self) -> String
+pub fn VoidType::tryAsAbstractType(Self) -> &AbstractType?
+pub fn VoidType::tryAsAbstractTypeEnum(Self) -> AbstractTypeEnum?
+pub fn VoidType::tryAsAggregateType(Self) -> &AggregateType?
+pub fn VoidType::tryAsAggregateTypeEnum(Self) -> AggregateTypeEnum?
+pub fn VoidType::tryAsFPType(Self) -> &FPType?
+pub fn VoidType::tryAsFPTypeEnum(Self) -> FPTypeEnum?
+pub fn VoidType::tryAsIntType(Self) -> &IntegerType?
+pub fn VoidType::tryAsIntTypeEnum(Self) -> IntegerTypeEnum?
+pub fn VoidType::tryAsPrimitiveType(Self) -> &PrimitiveType?
+pub fn VoidType::tryAsPrimitiveTypeEnum(Self) -> PrimitiveTypeEnum?
 pub impl AbstractType for VoidType
 pub impl Type for VoidType
 pub impl Show for VoidType

@@ -13,6 +13,7 @@ pub suberror LexError {
   InvalidCharacter(Char, SourcePos)
   MalformedNumber(String, SourcePos)
 } derive(@debug.Debug)
+pub fn LexError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub(all) struct SourcePos {
@@ -20,6 +21,11 @@ pub(all) struct SourcePos {
   line : Int
   column : Int
 } derive(Eq, @debug.Debug)
+pub fn SourcePos::equal(Self, Self) -> Bool
+pub fn SourcePos::not_equal(Self, Self) -> Bool
+pub fn SourcePos::output(Self, &Logger) -> Unit
+pub fn SourcePos::to_repr(Self) -> @debug.Repr
+pub fn SourcePos::to_string(Self) -> String
 pub impl Show for SourcePos
 
 pub(all) struct Token {
@@ -27,6 +33,11 @@ pub(all) struct Token {
   start : SourcePos
   end : SourcePos
 } derive(Eq, @debug.Debug)
+pub fn Token::equal(Self, Self) -> Bool
+pub fn Token::not_equal(Self, Self) -> Bool
+pub fn Token::output(Self, &Logger) -> Unit
+pub fn Token::to_repr(Self) -> @debug.Repr
+pub fn Token::to_string(Self) -> String
 pub impl Show for Token
 
 pub(all) enum TokenKind {
@@ -49,6 +60,11 @@ pub(all) enum TokenKind {
   Semicolon
   Eof
 } derive(Eq, @debug.Debug)
+pub fn TokenKind::equal(Self, Self) -> Bool
+pub fn TokenKind::not_equal(Self, Self) -> Bool
+pub fn TokenKind::output(Self, &Logger) -> Unit
+pub fn TokenKind::to_repr(Self) -> @debug.Repr
+pub fn TokenKind::to_string(Self) -> String
 pub impl Show for TokenKind
 
 // Type aliases

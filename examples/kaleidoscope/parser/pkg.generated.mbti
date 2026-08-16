@@ -19,6 +19,7 @@ pub suberror ParseError {
   DuplicateBinding(String, @lexer.SourcePos)
   InvalidAssignmentTarget(@lexer.SourcePos)
 } derive(@debug.Debug)
+pub fn ParseError::to_repr(Self) -> @debug.Repr
 
 // Types and methods
 pub struct OperatorTable {
