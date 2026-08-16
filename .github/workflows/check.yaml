@@ -92,11 +92,14 @@ jobs:
           sed -i '\#./examples/kaleidoscope#d' moon.work
 
       - name: Moon build (debug)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        # Kaleidoscope is the workspace's executable target and currently
+        # requires the macOS-only readline dependency. Library packages are
+        # compiled on Linux by moon check and both moon test configurations.
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && runner.os != 'Linux'
         run: moon build --target native
 
       - name: Moon build (release)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && runner.os != 'Linux'
         run: moon build --target native --release
 
       - name: Moon test (debug)
