@@ -167,12 +167,8 @@ fn[T] CodegenContext::withVariable(
 ) -> T raise CodegenError {
   let previous = self.variables.get(name)
   self.variables.set(name, storage)
-  let result = action() catch {
-    error => {
-      self.restoreVariable(name, previous)
-      raise error
-    }
-  }
+  errdefer self.restoreVariable(name, previous)
+  let result = action()
   self.restoreVariable(name, previous)
   result
 }

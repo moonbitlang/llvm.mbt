@@ -421,12 +421,8 @@ fn Parser::parseTokens(
       let (body, rest) = match prototype.kind {
         @ast.Binary(operator, precedence) => {
           let previous = self.operators.replacePrecedence(operator, precedence)
-          let parsed = parse_expression(self, rest) catch {
-            error => {
-              self.operators.restorePrecedence(operator, previous)
-              raise error
-            }
-          }
+          errdefer self.operators.restorePrecedence(operator, previous)
+          let parsed = parse_expression(self, rest)
           self.operators.restorePrecedence(operator, previous)
           parsed
         }

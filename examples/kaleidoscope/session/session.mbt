@@ -93,17 +93,8 @@ fn lookup(
 }
 
 ///|
-fn cleanup_tracker(
-  tracker : @JIT.ResourceTracker,
-  primary? : String,
-) -> Unit raise SessionError {
-  match primary {
-    None => jit_operation(() => tracker.remove())
-    Some(primary) =>
-      tracker.remove() catch {
-        error => raise CleanupFailure(primary, describe_jit_error(error))
-      }
-  }
+fn cleanup_tracker(tracker : @JIT.ResourceTracker) -> Unit raise SessionError {
+  jit_operation(() => tracker.remove())
 }
 
 ///|
@@ -120,26 +111,20 @@ fn Session::evaluateExpression(
 ) -> Double raise SessionError {
   let (module_name, symbol_name) = self.freshNames()
   let tracker = jit_operation(() => self.jit.createResourceTracker())
-  let mod = codegen_operation(() => {
-    @codegen.compileExpression(
-      self.catalog,
-      expression,
-      module_name~,
-      symbol_name~,
-    )
-  }) catch {
-    error => {
-      cleanup_tracker(tracker, primary=error.message())
-      raise error
-    }
-  }
-  jit_operation(() => self.jit.addModule(mod, tracker~)) catch {
-    error => {
-      cleanup_tracker(tracker, primary=error.message())
-      raise error
-    }
-  }
+  let mut cleanup_failure : String? = None
   let result = try {
+    errdefer (cleanup_tracker(tracker) catch {
+      error => cleanup_failure = Some(error.message())
+    })
+    let mod = codegen_operation(() => {
+      @codegen.compileExpression(
+        self.catalog,
+        expression,
+        module_name~,
+        symbol_name~,
+      )
+    })
+    jit_operation(() => self.jit.addModule(mod, tracker~))
     let address = lookup(self.jit, symbol_name)
     let callable : FuncRef[() -> Double] = jit_operation(() => {
       address.unsafeToFuncRef()
@@ -150,10 +135,11 @@ fn Session::evaluateExpression(
     })
     result
   } catch {
-    error => {
-      cleanup_tracker(tracker, primary=error.message())
-      raise error
-    }
+    error =>
+      match cleanup_failure {
+        Some(cleanup) => raise CleanupFailure(error.message(), cleanup)
+        None => raise error
+      }
   }
   cleanup_tracker(tracker)
   result
