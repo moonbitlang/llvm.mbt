@@ -19,7 +19,7 @@ fn ResourceTracker::fromOwner(
   owner : ResourceTrackerOwner,
   jitOwner : LLJITOwner,
 ) -> ResourceTracker {
-  ResourceTracker::{ owner, jitOwner }
+  ResourceTracker::{ owner, jitOwner, }
 }
 
 ///|

@@ -31,7 +31,7 @@ fn ConstantInt::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantInt {
-  ConstantInt::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantInt::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -119,7 +119,7 @@ pub struct ConstantFP {
 
 ///|
 fn ConstantFP::from_raw(value_ref : ValueRef, context : Context) -> ConstantFP {
-  ConstantFP::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantFP::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -171,7 +171,7 @@ fn ConstantPointerNull::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantPointerNull {
-  ConstantPointerNull::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantPointerNull::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -225,7 +225,7 @@ fn ConstantArray::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantArray {
-  ConstantArray::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantArray::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -278,7 +278,7 @@ fn ConstantStruct::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantStruct {
-  ConstantStruct::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantStruct::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -331,7 +331,7 @@ fn ConstantVector::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantVector {
-  ConstantVector::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantVector::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -381,7 +381,7 @@ pub struct UndefValue {
 
 ///|
 fn UndefValue::from_raw(value_ref : ValueRef, context : Context) -> UndefValue {
-  UndefValue::{ value: ContextAnchoredValue::new(value_ref, context) }
+  UndefValue::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -434,7 +434,7 @@ fn PoisonValue::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> PoisonValue {
-  PoisonValue::{ value: ContextAnchoredValue::new(value_ref, context) }
+  PoisonValue::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|
@@ -487,7 +487,7 @@ fn ConstantExpr::from_raw(
   value_ref : ValueRef,
   context : Context,
 ) -> ConstantExpr {
-  ConstantExpr::{ value: ContextAnchoredValue::new(value_ref, context) }
+  ConstantExpr::{ value: ContextAnchoredValue::new(value_ref, context), }
 }
 
 ///|

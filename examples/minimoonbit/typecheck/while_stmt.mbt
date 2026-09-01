@@ -52,14 +52,14 @@ pub fn Context::check_while_stmt(
     raise TypeCheckError("While condition must be of boolean type")
   }
   let checked_body = self.check_block_expr(while_stmt.body)
-  WhileStmt::{ cond: checked_cond, body: checked_body }
+  WhileStmt::{ cond: checked_cond, body: checked_body, }
 }
 
 ///|
 test "WhileStmt to_string Test - Simple" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false, })
   let code =
     #|while x { let y = 1 ; }
   let tokens = @lexer.tokenize(code)
@@ -86,7 +86,7 @@ test "WhileStmt to_string Test - Simple" {
 test "WhileStmt to_string Test - Complex Condition" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("i", { kind: TypeKind::Int, mutable: true })
+  ctx.type_env.set("i", { kind: TypeKind::Int, mutable: true, })
   let code =
     #|while i < 10 { i += 1 ; }
   let tokens = @lexer.tokenize(code)
@@ -114,7 +114,7 @@ test "WhileStmt to_string Test - Complex Condition" {
 test "WhileStmt to_string Test - Multiple Statements" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: true })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: true, })
   let code =
     #|while x > 0 { let a = x ; x = x - 1 ; }
   let tokens = @lexer.tokenize(code)

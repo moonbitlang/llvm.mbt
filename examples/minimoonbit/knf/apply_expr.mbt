@@ -16,7 +16,7 @@ fn handle_primitive_conversion(
         "to_double" => Some(Cast(Double, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_int_to_string", slot: 0 }, [base_name]),
+            Call(Name::{ id: "__builtin_int_to_string", slot: 0, }, [base_name]),
           )
         "reinterpret_as_float" => Some(BitCast(Float, base_name))
         _ => None
@@ -31,7 +31,9 @@ fn handle_primitive_conversion(
         "to_double" => Some(Cast(Double, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_int64_to_string", slot: 0 }, [base_name]),
+            Call(Name::{ id: "__builtin_int64_to_string", slot: 0, }, [
+              base_name,
+            ]),
           )
         "reinterpret_as_double" => Some(BitCast(Double, base_name))
         _ => None
@@ -46,7 +48,7 @@ fn handle_primitive_conversion(
         "to_double" => Some(Cast(Double, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_uint_to_string", slot: 0 }, [base_name]),
+            Call(Name::{ id: "__builtin_uint_to_string", slot: 0, }, [base_name]),
           )
         "reinterpret_as_float" => Some(BitCast(Float, base_name))
         _ => None
@@ -61,7 +63,7 @@ fn handle_primitive_conversion(
         "to_double" => Some(Cast(Double, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_uint64_to_string", slot: 0 }, [
+            Call(Name::{ id: "__builtin_uint64_to_string", slot: 0, }, [
               base_name,
             ]),
           )
@@ -78,7 +80,9 @@ fn handle_primitive_conversion(
         "to_double" => Some(Cast(Double, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_float_to_string", slot: 0 }, [base_name]),
+            Call(Name::{ id: "__builtin_float_to_string", slot: 0, }, [
+              base_name,
+            ]),
           )
         "reinterpret_as_int" => Some(BitCast(Int, base_name))
         "reinterpret_as_uint" => Some(BitCast(UInt, base_name))
@@ -94,7 +98,7 @@ fn handle_primitive_conversion(
         "to_float" => Some(Cast(Float, base_name))
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_double_to_string", slot: 0 }, [
+            Call(Name::{ id: "__builtin_double_to_string", slot: 0, }, [
               base_name,
             ]),
           )
@@ -107,7 +111,7 @@ fn handle_primitive_conversion(
       match method_name {
         "to_string" =>
           Some(
-            Call(Name::{ id: "__builtin_char_to_string", slot: 0 }, [base_name]),
+            Call(Name::{ id: "__builtin_char_to_string", slot: 0, }, [base_name]),
           )
         _ => None
       }

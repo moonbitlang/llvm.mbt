@@ -130,7 +130,7 @@ pub fn Context::check_if_expr(
 test "IfExpr to_string Test - Simple" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false, })
   let code =
     #|if x { 1 }
   let tokens = @lexer.tokenize(code)
@@ -154,7 +154,7 @@ test "IfExpr to_string Test - Simple" {
 test "IfExpr to_string Test - With Else" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|if x > 0 { 1 } else { 0 }
   let tokens = @lexer.tokenize(code)
@@ -183,7 +183,7 @@ test "IfExpr to_string Test - With Else" {
 test "IfExpr to_string Test - Else If" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|if x > 0 { 1 } else if x < 0 { 2 } else { 0 }
   let tokens = @lexer.tokenize(code)

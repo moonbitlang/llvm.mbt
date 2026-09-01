@@ -119,8 +119,8 @@ test "StructConstructExpr to_string Test - Simple" {
   ctx.struct_defs.set("Point", {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: TypeKind::Int, mutable: false } },
-      { name: "y", ty: { kind: TypeKind::Int, mutable: false } },
+      { name: "x", ty: { kind: TypeKind::Int, mutable: false, }, },
+      { name: "y", ty: { kind: TypeKind::Int, mutable: false, }, },
     ],
     methods: Map([]),
   })
@@ -149,7 +149,7 @@ test "StructConstructExpr to_string Test - Simple" {
 test "StructConstructExpr to_string Test - Empty" {
   let color = false
   let ctx = Context::new()
-  ctx.struct_defs.set("Point", { name: "Point", fields: [], methods: Map([]) })
+  ctx.struct_defs.set("Point", { name: "Point", fields: [], methods: Map([]), })
   let code =
     #|Point::{}
   let tokens = @lexer.tokenize(code)
@@ -171,7 +171,7 @@ test "StructConstructExpr to_string Test - Empty" {
 test "StructConstructExpr to_string Test - Complex Fields" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   ctx.type_env.set("get_next", {
     kind: TypeKind::Function([], TypeKind::Int),
     mutable: false,
@@ -179,9 +179,9 @@ test "StructConstructExpr to_string Test - Complex Fields" {
   ctx.struct_defs.set("Node", {
     name: "Node",
     fields: [
-      { name: "data", ty: { kind: TypeKind::Int, mutable: false } },
-      { name: "next", ty: { kind: TypeKind::Int, mutable: false } },
-      { name: "is_valid", ty: { kind: TypeKind::Bool, mutable: false } },
+      { name: "data", ty: { kind: TypeKind::Int, mutable: false, }, },
+      { name: "next", ty: { kind: TypeKind::Int, mutable: false, }, },
+      { name: "is_valid", ty: { kind: TypeKind::Bool, mutable: false, }, },
     ],
     methods: Map([]),
   })

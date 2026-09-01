@@ -17,7 +17,7 @@ pub(all) struct Name {
 ///|
 /// Performs the `wildcard` operation on `Name`.
 pub fn Name::wildcard() -> Name {
-  Name::{ id: "_", slot: 0 }
+  Name::{ id: "_", slot: 0, }
 }
 
 ///|
@@ -43,7 +43,7 @@ pub(all) struct Env {
 ///|
 /// Creates a new `Env` lowering value.
 pub fn Env::new(parent? : Env? = None) -> Env {
-  Env::{ local_: Map([]), capture: Map([]), parent }
+  Env::{ local_: Map([]), capture: Map([]), parent, }
 }
 
 ///|
@@ -141,7 +141,7 @@ pub fn Context::lookup_name(self : Context, s : String) -> (Name, Type)? {
     None =>
       match self.globals.get(s) {
         Some(t) => {
-          let name = Name::{ id: s, slot: 0 }
+          let name = Name::{ id: s, slot: 0, }
           Some((name, t))
         }
         None => None
@@ -174,13 +174,13 @@ pub fn Context::add_new_name(
   mutable? : Bool = false,
 ) -> Name {
   match self.name_env.get(s) {
-    Some({ id, slot }) => {
-      let name = Name::{ id, slot: slot + 1 }
+    Some({ id, slot, }) => {
+      let name = Name::{ id, slot: slot + 1, }
       self.name_env.set(s, name, ty, mutable)
       name
     }
     None => {
-      let name = Name::{ id: s, slot: 0 }
+      let name = Name::{ id: s, slot: 0, }
       self.name_env.set(s, name, ty, mutable)
       name
     }

@@ -277,7 +277,7 @@ pub fn TargetMachineOptions::new(
     Some(value) if value.contains_code_unit(0) => raise ContainsNul
     _ => ()
   }
-  { cpu, features, abi, optimizationLevel, relocationMode, codeModel }
+  { cpu, features, abi, optimizationLevel, relocationMode, codeModel, }
 }
 
 ///|

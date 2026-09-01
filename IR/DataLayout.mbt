@@ -17,7 +17,7 @@ fn DataLayout::from_raw(
   target_data_ref : @raw.LLVMTargetDataRef,
   owner_module : Module,
 ) -> DataLayout {
-  { target_data_ref, owner_module }
+  { target_data_ref, owner_module, }
 }
 
 ///|

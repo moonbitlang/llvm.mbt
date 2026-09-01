@@ -75,7 +75,7 @@ pub fn parse_struct_field(
     raise ParseError("Expect ':' after struct field name")
   }
   let (ty, tokens) = parse_type(tokens)
-  let struct_field = StructField::{ is_mut, name, ty }
+  let struct_field = StructField::{ is_mut, name, ty, }
   //guard tokens is [{ kind: Symbol(";"), .. }, .. tokens] else {
   //  raise ParseError("Expect ';' after struct field")
   //}
@@ -120,7 +120,7 @@ pub fn parse_struct_def(
       }
     }
   }
-  let struct_def = StructDef::{ name, fields }
+  let struct_def = StructDef::{ name, fields, }
   (struct_def, tokens)
 }
 

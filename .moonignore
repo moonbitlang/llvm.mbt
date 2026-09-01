@@ -1,0 +1,9 @@
+/target/
+/.mooncakes/
+/.DS_Store
+/llvm-19/
+/_build/
+/examples/
+/docs/
+/native_emission_test/
+/test/

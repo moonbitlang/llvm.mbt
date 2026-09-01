@@ -191,13 +191,13 @@ fn Context::from_parser_pattern(
   pattern : @parser.Pattern,
 ) -> Pattern raise TypeCheckError {
   match pattern.kind {
-    Wildcard => Pattern::{ kind: PatternKind::Wildcard }
-    Boolean(b) => Pattern::{ kind: PatternKind::Boolean(b) }
-    Integer(i) => Pattern::{ kind: PatternKind::Integer(i) }
-    Ident(name) => Pattern::{ kind: PatternKind::Ident(name) }
+    Wildcard => Pattern::{ kind: PatternKind::Wildcard, }
+    Boolean(b) => Pattern::{ kind: PatternKind::Boolean(b), }
+    Integer(i) => Pattern::{ kind: PatternKind::Integer(i), }
+    Ident(name) => Pattern::{ kind: PatternKind::Ident(name), }
     Tuple(sub_patterns) => {
       let patterns = sub_patterns.map(p => self.from_parser_pattern(p))
-      Pattern::{ kind: PatternKind::Tuple(patterns) }
+      Pattern::{ kind: PatternKind::Tuple(patterns), }
     }
     EnumVariant(tag, variant_name, sub_patterns) => {
       let patterns = sub_patterns.map(p => self.from_parser_pattern(p))
@@ -213,7 +213,7 @@ fn Context::from_parser_pattern(
           enum_defs[0].name
         }
       }
-      Pattern::{ kind: PatternKind::EnumVariant(tag, variant_name, patterns) }
+      Pattern::{ kind: PatternKind::EnumVariant(tag, variant_name, patterns), }
     }
   }
 }
@@ -237,7 +237,7 @@ pub fn Context::check_let_stmt(
   let type_kind = self.ensure_type(type_kind)
   let pattern = self.from_parser_pattern(let_stmt.pattern)
   self.bind_pattern_type(pattern, type_kind)
-  LetStmt::{ pattern, ty: type_kind, expr: checked_expr }
+  LetStmt::{ pattern, ty: type_kind, expr: checked_expr, }
 }
 
 ///|
@@ -295,7 +295,7 @@ fn Context::bind_pattern_type(
       }
     }
     Ident(name) =>
-      self.type_env.set(name, Type::{ kind: ty_kind, mutable: false })
+      self.type_env.set(name, Type::{ kind: ty_kind, mutable: false, })
     Tuple(sub_patterns) => {
       guard ty_kind is Tuple(element_types) else {
         raise TypeCheckError("Pattern is a tuple but type is not a tuple")

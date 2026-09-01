@@ -88,7 +88,7 @@ pub fn parse_left_value(
     @lexer.throw_(tokens[0], "Expect a lower ident", Error)
     raise ParseError("Expect a lower ident")
   }
-  let left_value = LeftValue::{ kind: LeftValueKind::Ident(ident) }
+  let left_value = LeftValue::{ kind: LeftValueKind::Ident(ident), }
   if !(tokens is [{ kind: Bracket('[') | Symbol("."), .. }, ..]) {
     return (left_value, tokens)
   }

@@ -232,7 +232,7 @@ pub impl Show for AtomExprKind with fn output(self, logger) {
 ///|
 fn AtomExpr::unit() -> AtomExpr {
   let kind = AtomExprKind::Unit
-  AtomExpr::{ kind, toks: [] }
+  AtomExpr::{ kind, toks: [], }
 }
 
 ///|
@@ -244,7 +244,7 @@ pub fn AtomExpr::new(
 ) -> AtomExpr {
   let len = rest_tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  AtomExpr::{ kind, toks }
+  AtomExpr::{ kind, toks, }
 }
 
 ///|

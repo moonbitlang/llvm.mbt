@@ -114,7 +114,7 @@ pub fn parse_struct_construct(
   }
   let len = tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  let struct_construct = StructConstructExpr::{ name, fields, toks }
+  let struct_construct = StructConstructExpr::{ name, fields, toks, }
   let atom_expr = AtomExpr::new(
     StructConstruct(struct_construct),
     init_tokens,

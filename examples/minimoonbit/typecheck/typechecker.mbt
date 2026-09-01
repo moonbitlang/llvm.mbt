@@ -33,9 +33,9 @@ pub fn Context::substitute_top_let_type_var(
   top_let : TopLet,
 ) -> TopLet raise TypeCheckError {
   let new_ty_kind = self.ensure_type(top_let.ty.kind)
-  let new_ty = Type::{ kind: new_ty_kind, mutable: top_let.ty.mutable }
+  let new_ty = Type::{ kind: new_ty_kind, mutable: top_let.ty.mutable, }
   let new_expr = self.substitute_expr_type_var(top_let.expr)
-  TopLet::{ name: top_let.name, ty: new_ty, expr: new_expr }
+  TopLet::{ name: top_let.name, ty: new_ty, expr: new_expr, }
 }
 
 ///|
@@ -76,7 +76,7 @@ pub fn Context::substitute_expr_type_var(
       MatchExpr(new_match_expr)
     }
   }
-  Expr::{ kind: new_expr_kind, ty: new_ty_kind, toks: expr.toks }
+  Expr::{ kind: new_expr_kind, ty: new_ty_kind, toks: expr.toks, }
 }
 
 ///|
@@ -245,7 +245,7 @@ pub fn Context::substitute_atom_expr_type_var(
       AtomExprKind::EnumConstruct(tag, name, new_exprs)
     }
   }
-  AtomExpr::{ kind: new_atom_expr_kind, ty: new_ty_kind, toks: atom_expr.toks }
+  AtomExpr::{ kind: new_atom_expr_kind, ty: new_ty_kind, toks: atom_expr.toks, }
 }
 
 ///|
@@ -312,7 +312,7 @@ pub fn Context::substitute_stmt_type_var(
       StmtKind::LocalFunction(new_local_function)
     }
   }
-  Stmt::{ kind: new_stmt_kind }
+  Stmt::{ kind: new_stmt_kind, }
 }
 
 ///|
@@ -323,7 +323,7 @@ pub fn Context::substitute_let_stmt_type_var(
 ) -> LetStmt raise TypeCheckError {
   let new_ty = self.ensure_type(let_stmt.ty)
   let new_expr = self.substitute_expr_type_var(let_stmt.expr)
-  LetStmt::{ pattern: let_stmt.pattern, ty: new_ty, expr: new_expr }
+  LetStmt::{ pattern: let_stmt.pattern, ty: new_ty, expr: new_expr, }
 }
 
 ///|
@@ -334,7 +334,7 @@ pub fn Context::substitute_let_mut_stmt_type_var(
 ) -> LetMutStmt raise TypeCheckError {
   let new_ty_kind = self.ensure_type(let_mut_stmt.ty)
   let new_expr = self.substitute_expr_type_var(let_mut_stmt.expr)
-  LetMutStmt::{ name: let_mut_stmt.name, ty: new_ty_kind, expr: new_expr }
+  LetMutStmt::{ name: let_mut_stmt.name, ty: new_ty_kind, expr: new_expr, }
 }
 
 ///|
@@ -347,7 +347,11 @@ pub fn Context::substitute_assign_stmt_type_var(
     assign_stmt.left_value,
   )
   let new_expr = self.substitute_expr_type_var(assign_stmt.expr)
-  AssignStmt::{ left_value: new_left_value, op: assign_stmt.op, expr: new_expr }
+  AssignStmt::{
+    left_value: new_left_value,
+    op: assign_stmt.op,
+    expr: new_expr,
+  }
 }
 
 ///|
@@ -371,7 +375,7 @@ pub fn Context::substitute_left_value_type_var(
   }
   LeftValue::{
     kind: new_left_value_kind,
-    ty: Type::{ kind: new_ty_kind, mutable: left_value.ty.mutable },
+    ty: Type::{ kind: new_ty_kind, mutable: left_value.ty.mutable, },
   }
 }
 
@@ -387,7 +391,7 @@ pub fn Context::substitute_block_expr_type_var(
     let new_stmt = self.substitute_stmt_type_var(stmt)
     new_stmts.push(new_stmt)
   }
-  BlockExpr::{ stmts: new_stmts, ty: new_ty_kind }
+  BlockExpr::{ stmts: new_stmts, ty: new_ty_kind, }
 }
 
 ///|
@@ -428,7 +432,7 @@ pub fn Context::substitute_match_expr_type_var(
   let new_cond_expr = self.substitute_expr_type_var(match_expr.cond)
   let new_arms = Array::new()
   for arm in match_expr.arms {
-    let { pattern, match_guard, body, toks } = arm
+    let { pattern, match_guard, body, toks, } = arm
     let match_body = match match_guard {
       Some(guard_expr) => {
         let new_guard_expr = self.substitute_expr_type_var(guard_expr)
@@ -437,10 +441,10 @@ pub fn Context::substitute_match_expr_type_var(
       None => None
     }
     let body = self.substitute_expr_type_var(body)
-    let new_arm = MatchArm::{ pattern, match_guard: match_body, body, toks }
+    let new_arm = MatchArm::{ pattern, match_guard: match_body, body, toks, }
     new_arms.push(new_arm)
   }
-  MatchExpr::{ cond: new_cond_expr, arms: new_arms, ty: new_ty_kind }
+  MatchExpr::{ cond: new_cond_expr, arms: new_arms, ty: new_ty_kind, }
 }
 
 ///|
@@ -451,7 +455,7 @@ pub fn Context::substitute_while_stmt_type_var(
 ) -> WhileStmt raise TypeCheckError {
   let new_cond = self.substitute_expr_type_var(while_stmt.cond)
   let new_body = self.substitute_block_expr_type_var(while_stmt.body)
-  WhileStmt::{ cond: new_cond, body: new_body }
+  WhileStmt::{ cond: new_cond, body: new_body, }
 }
 
 ///|
@@ -521,7 +525,7 @@ pub fn Context::substitute_top_function_type_var(
   let new_param_list = Array::new()
   for param in top_function.param_list {
     let new_param_ty_kind = self.ensure_type(param.ty)
-    new_param_list.push(Param::{ name: param.name, ty: new_param_ty_kind })
+    new_param_list.push(Param::{ name: param.name, ty: new_param_ty_kind, })
   }
   let new_ret_ty_kind = self.ensure_type(top_function.ret_ty)
   let new_body = self.substitute_block_expr_type_var(top_function.body)

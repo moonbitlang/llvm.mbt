@@ -940,7 +940,7 @@ fn HalfType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> HalfType {
-  HalfType::{ value: ContextAnchoredType::new(type_ref, context) }
+  HalfType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1008,7 +1008,7 @@ fn BFloatType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> BFloatType {
-  BFloatType::{ value: ContextAnchoredType::new(type_ref, context) }
+  BFloatType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1076,7 +1076,7 @@ fn FloatType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FloatType {
-  FloatType::{ value: ContextAnchoredType::new(type_ref, context) }
+  FloatType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1144,7 +1144,7 @@ fn DoubleType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> DoubleType {
-  DoubleType::{ value: ContextAnchoredType::new(type_ref, context) }
+  DoubleType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1217,7 +1217,7 @@ fn FP128Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FP128Type {
-  FP128Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  FP128Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1294,7 +1294,7 @@ fn Int1Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int1Type {
-  Int1Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  Int1Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1362,7 +1362,7 @@ fn Int8Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int8Type {
-  Int8Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  Int8Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1430,7 +1430,7 @@ fn Int16Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int16Type {
-  Int16Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  Int16Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1508,7 +1508,7 @@ fn Int32Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int32Type {
-  Int32Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  Int32Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1576,7 +1576,7 @@ fn Int64Type::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> Int64Type {
-  Int64Type::{ value: ContextAnchoredType::new(type_ref, context) }
+  Int64Type::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1646,7 +1646,7 @@ fn VoidType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> VoidType {
-  VoidType::{ value: ContextAnchoredType::new(type_ref, context) }
+  VoidType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1703,7 +1703,7 @@ fn LabelType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> LabelType {
-  LabelType::{ value: ContextAnchoredType::new(type_ref, context) }
+  LabelType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1763,7 +1763,7 @@ fn MetadataType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> MetadataType {
-  MetadataType::{ value: ContextAnchoredType::new(type_ref, context) }
+  MetadataType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1823,7 +1823,7 @@ fn TokenType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> TokenType {
-  TokenType::{ value: ContextAnchoredType::new(type_ref, context) }
+  TokenType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -1885,7 +1885,7 @@ fn FunctionType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> FunctionType {
-  FunctionType::{ value: ContextAnchoredType::new(type_ref, context) }
+  FunctionType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -2028,7 +2028,7 @@ fn StructType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> StructType {
-  StructType::{ value: ContextAnchoredType::new(type_ref, context) }
+  StructType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -2242,7 +2242,7 @@ fn ArrayType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ArrayType {
-  ArrayType::{ value: ContextAnchoredType::new(type_ref, context) }
+  ArrayType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -2317,7 +2317,7 @@ fn VectorType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> VectorType {
-  VectorType::{ value: ContextAnchoredType::new(type_ref, context) }
+  VectorType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -2384,7 +2384,7 @@ fn ScalableVectorType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ScalableVectorType {
-  ScalableVectorType::{ value: ContextAnchoredType::new(type_ref, context) }
+  ScalableVectorType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|
@@ -2477,7 +2477,7 @@ fn PointerType::from_raw(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> PointerType {
-  PointerType::{ value: ContextAnchoredType::new(type_ref, context) }
+  PointerType::{ value: ContextAnchoredType::new(type_ref, context), }
 }
 
 ///|

@@ -147,23 +147,23 @@ pub fn parse_pattern(
 ) -> (Pattern, ArrayView[Token]) raise ParseError {
   match tokens {
     [{ kind: Wildcard, .. }, .. tokens] => {
-      let pattern = Pattern::{ kind: Wildcard }
+      let pattern = Pattern::{ kind: Wildcard, }
       (pattern, tokens)
     }
     [{ kind: Lower(ident), .. }, .. tokens] => {
-      let pattern = Pattern::{ kind: Ident(ident) }
+      let pattern = Pattern::{ kind: Ident(ident), }
       (pattern, tokens)
     }
     [{ kind: BinaryOp(Sub), .. }, { kind: Int(v), .. }, .. tokens] => {
-      let pattern = Pattern::{ kind: Integer(-v) }
+      let pattern = Pattern::{ kind: Integer(-v), }
       (pattern, tokens)
     }
     [{ kind: Int(v), .. }, .. tokens] => {
-      let pattern = Pattern::{ kind: Integer(v) }
+      let pattern = Pattern::{ kind: Integer(v), }
       (pattern, tokens)
     }
     [{ kind: Bool(v), .. }, .. tokens] => {
-      let pattern = Pattern::{ kind: Boolean(v) }
+      let pattern = Pattern::{ kind: Boolean(v), }
       (pattern, tokens)
     }
     [{ kind: Upper(name1), .. }, .. tokens] => {
@@ -180,7 +180,7 @@ pub fn parse_pattern(
       let patterns : Array[Pattern] = Array::new()
       guard tokens is [{ kind: Bracket('('), .. } as tok, .. tokens] else {
         let patternkind = EnumVariant(tag, enum_name, patterns)
-        let pattern = Pattern::{ kind: patternkind }
+        let pattern = Pattern::{ kind: patternkind, }
         return (pattern, tokens)
       }
       let tokens = for current = tokens {
@@ -195,7 +195,7 @@ pub fn parse_pattern(
               | Bracket('(')
               | Upper(_)
               | Bool(_),
-              ..,
+              ..
             },
             ..,
           ] as tokens => {
@@ -214,7 +214,7 @@ pub fn parse_pattern(
               | Bracket(')')
               | Upper(_)
               | Bool(_),
-              ..,
+              ..
             },
             ..,
           ] as tokens => continue tokens[1:]
@@ -250,7 +250,7 @@ pub fn parse_pattern(
               | Int(_)
               | BinaryOp(Sub)
               | Bool(_),
-              ..,
+              ..
             },
             ..,
           ] as tokens => {
@@ -269,7 +269,7 @@ pub fn parse_pattern(
               | Int(_)
               | BinaryOp(Sub)
               | Bool(_),
-              ..,
+              ..
             },
             ..,
           ] as tokens => continue tokens[1:]

@@ -51,7 +51,7 @@ pub fn parse_while_stmt(
   }
   let (cond, tokens) = parse_expr(tokens)
   let (body, tokens) = parse_block_expr(tokens)
-  let while_stmt = WhileStmt::{ cond, body }
+  let while_stmt = WhileStmt::{ cond, body, }
   (while_stmt, tokens)
 }
 

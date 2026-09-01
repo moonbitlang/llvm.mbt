@@ -155,7 +155,7 @@ pub fn parse_match_expr(
       }
     }
   }
-  let match_expr = MatchExpr::{ cond: expr, arms: match_arms }
+  let match_expr = MatchExpr::{ cond: expr, arms: match_arms, }
   (match_expr, tokens)
 }
 

@@ -168,7 +168,7 @@ fn make_temporary_owner_views() -> TemporaryOwnerViews raise {
   builder.setInsertPoint(block)
   let instruction = builder.createRet(argument)
   let data_layout = mod.getDataLayout()
-  { function, instruction, value_type, constant, data_layout }
+  { function, instruction, value_type, constant, data_layout, }
 }
 
 ///|

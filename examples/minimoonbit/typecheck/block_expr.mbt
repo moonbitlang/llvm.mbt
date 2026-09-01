@@ -70,13 +70,13 @@ pub fn Context::check_block_expr(
   } else {
     Unit
   }
-  BlockExpr::{ stmts: checked_stmts, ty: tykind }
+  BlockExpr::{ stmts: checked_stmts, ty: tykind, }
 }
 
 ///|
 test "BlockExpr to_string Test - Empty" {
   let color = false
-  let block_expr = BlockExpr::{ stmts: [], ty: TypeKind::Unit }
+  let block_expr = BlockExpr::{ stmts: [], ty: TypeKind::Unit, }
   inspect(block_expr.to_string(color~), content="block (Unit) (empty)")
 }
 

@@ -114,7 +114,7 @@ pub fn parse_param(
     raise ParseError("Expect a `:`")
   }
   let (ty, tokens) = parse_type(tokens)
-  let param = Param::{ name, ty }
+  let param = Param::{ name, ty, }
   (param, tokens)
 }
 
@@ -184,11 +184,11 @@ pub fn parse_top_function(
     let (ret_ty, tokens) = parse_type(tokens)
     (param_list, ret_ty, tokens)
   } else {
-    let ret_type = Type::{ kind: Unit, toks: [] }
+    let ret_type = Type::{ kind: Unit, toks: [], }
     (Array::new(), ret_type, tokens)
   }
   let (body, tokens) = parse_block_expr(tokens)
-  let top_function = TopFunction::{ typeTag, fname, param_list, ret_ty, body }
+  let top_function = TopFunction::{ typeTag, fname, param_list, ret_ty, body, }
   (top_function, tokens)
 }
 

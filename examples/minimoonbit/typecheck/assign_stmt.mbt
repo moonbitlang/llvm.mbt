@@ -210,7 +210,7 @@ pub fn Context::check_left_value(
       guard self.type_env.get(name) is Some(ty) else {
         raise TypeCheckError("Undefined variable: \{name}")
       }
-      LeftValue::{ kind: LeftValueKind::Ident(name), ty }
+      LeftValue::{ kind: LeftValueKind::Ident(name), ty, }
     }
     ArrayAccess(array_lv, index_expr) => {
       let checked_array_lv = self.check_left_value(array_lv)
@@ -227,7 +227,7 @@ pub fn Context::check_left_value(
             kind: LeftValueKind::ArrayAccess(
               checked_array_lv, checked_index_expr,
             ),
-            ty: Type::{ kind: element_type, mutable: true },
+            ty: Type::{ kind: element_type, mutable: true, },
           }
         }
         _ => raise TypeCheckError("Attempted to index a non-array type")
@@ -281,14 +281,14 @@ pub fn Context::check_assign_stmt(
       "Compound assignment operators can only be used with Int or Double types",
     )
   }
-  AssignStmt::{ left_value: checked_left_value, op, expr: checked_expr }
+  AssignStmt::{ left_value: checked_left_value, op, expr: checked_expr, }
 }
 
 ///|
 test "AssignStmt to_string Test - Basic" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: true })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: true, })
 
   // Test simple assign: x = 42
   let code1 = "x = 42 ;"
@@ -327,12 +327,12 @@ test "AssignStmt to_string Test - Complex" {
     kind: TypeKind::Array(TypeKind::Int),
     mutable: true,
   })
-  ctx.type_env.set("point", { kind: TypeKind::Struct("Point"), mutable: true })
+  ctx.type_env.set("point", { kind: TypeKind::Struct("Point"), mutable: true, })
   ctx.struct_defs.set("Point", {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: TypeKind::Int, mutable: true } },
-      { name: "y", ty: { kind: TypeKind::Int, mutable: true } },
+      { name: "x", ty: { kind: TypeKind::Int, mutable: true, }, },
+      { name: "y", ty: { kind: TypeKind::Int, mutable: true, }, },
     ],
     methods: Map([]),
   })

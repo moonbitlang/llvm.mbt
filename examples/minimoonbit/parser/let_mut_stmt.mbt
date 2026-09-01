@@ -88,11 +88,11 @@ pub fn parse_let_mut_stmt(
       }
     }
     let expr = Expr::unit()
-    let let_mut_stmt = LetMutStmt::{ name, ty, expr }
+    let let_mut_stmt = LetMutStmt::{ name, ty, expr, }
     return (let_mut_stmt, rest)
   }
   let (expr, tokens) = parse_expr(tokens)
-  let let_mut_stmt = LetMutStmt::{ name, ty, expr }
+  let let_mut_stmt = LetMutStmt::{ name, ty, expr, }
   let tokens = if tokens is [{ kind: Symbol(";"), .. }, .. tokens] {
     tokens
   } else if tokens is [tok, ..] &&

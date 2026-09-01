@@ -160,7 +160,7 @@ pub fn Context::check_match_expr_type(
           "Failed to parse pattern in match arm: \{repr(err)}",
           Error,
         )
-        Pattern::{ kind: Wildcard }
+        Pattern::{ kind: Wildcard, }
       }
     } noraise {
       pat => pat
@@ -216,7 +216,7 @@ pub fn Context::check_match_expr_type(
     }
     self.ensure_type(arm_types[0])
   }
-  MatchExpr::{ cond: checked_cond, arms: checked_arms, ty: tykind }
+  MatchExpr::{ cond: checked_cond, arms: checked_arms, ty: tykind, }
 }
 
 ///|
@@ -339,7 +339,7 @@ fn Context::full_pattern_set_of_type_impl(
           visiting.add(enum_name)
           let variants = Array::new()
           for field in enum_def.enum_fields {
-            let { name, types } = field
+            let { name, types, } = field
             let sub_pattern_sets = types.map(t => {
               self.full_pattern_set_of_type_impl(t, visiting)
             })
@@ -431,7 +431,7 @@ fn PatternSet::subtract(
       tag2 &&
       name == name2 => {
       // Special case: pattern like Variant(_) matches all fields
-      if pats is [{ kind: Wildcard }] {
+      if pats is [{ kind: Wildcard, }] {
         return Empty
       }
       // Check if pattern length matches subset length
@@ -620,7 +620,7 @@ fn MatchExpr::check_match_exhaustiveness(
 test "MatchExpr to_string Test - Simple" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|match x { 0 => 1 ; 1 => 2 ; _ => 3 }
   let tokens = @lexer.tokenize(code)
@@ -650,7 +650,7 @@ test "MatchExpr to_string Test - Simple" {
 test "MatchExpr to_string Test - With Guard" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|match x { n if n > 0 => 1 ; _ => 0 }
   let tokens = @lexer.tokenize(code)

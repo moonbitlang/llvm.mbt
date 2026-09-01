@@ -97,13 +97,15 @@ test "var bindings and assignment preserve low right-associative precedence" {
 ///|
 test "invalid assignment and variable lists retain source positions" {
   try parse("(x + 1) = 2") |> ignore catch {
-    ParseError::InvalidAssignmentTarget({ offset: 8, line: 1, column: 9 }) => ()
+    ParseError::InvalidAssignmentTarget({ offset: 8, line: 1, column: 9, }) =>
+      ()
     error => fail("unexpected assignment error: \{error}")
   } noraise {
     _ => fail("expected invalid assignment target")
   }
   try parse("var x = 1, x = 2 in x") |> ignore catch {
-    ParseError::DuplicateBinding("x", { offset: 11, line: 1, column: 12 }) => ()
+    ParseError::DuplicateBinding("x", { offset: 11, line: 1, column: 12, }) =>
+      ()
     error => fail("unexpected duplicate error: \{error}")
   } noraise {
     _ => fail("expected duplicate variable binding")
@@ -268,7 +270,11 @@ test "invalid operator prototypes are rejected" {
 test "trailing input is rejected at the first extra token" {
   try parse("1; 2") |> ignore catch {
     ParseError::UnexpectedToken(
-      { kind: @lexer.Number(2.0), start: { offset: 3, line: 1, column: 4 }, .. },
+      {
+        kind: @lexer.Number(2.0),
+        start: { offset: 3, line: 1, column: 4, },
+        ..
+      },
       "end of input after `;`"
     ) => ()
     error => fail("unexpected error: \{error}")
@@ -277,7 +283,7 @@ test "trailing input is rejected at the first extra token" {
   }
   try parse("1;;") |> ignore catch {
     ParseError::UnexpectedToken(
-      { kind: @lexer.Semicolon, start: { offset: 2, line: 1, column: 3 }, .. },
+      { kind: @lexer.Semicolon, start: { offset: 2, line: 1, column: 3, }, .. },
       "end of input after `;`"
     ) => ()
     error => fail("unexpected error: \{error}")
@@ -289,7 +295,8 @@ test "trailing input is rejected at the first extra token" {
 ///|
 test "duplicate parameters preserve their position" {
   try parse("def f(x x) x") |> ignore catch {
-    ParseError::DuplicateParameter("x", { offset: 8, line: 1, column: 9 }) => ()
+    ParseError::DuplicateParameter("x", { offset: 8, line: 1, column: 9, }) =>
+      ()
     error => fail("unexpected error: \{error}")
   } noraise {
     _ => fail("expected duplicate parameter to fail")
@@ -313,7 +320,7 @@ test "invalid prototypes are rejected" {
 test "missing delimiters report end-of-input positions" {
   try parse("(1 + 2") |> ignore catch {
     ParseError::UnexpectedEndOfInput(
-      { offset: 6, line: 1, column: 7 },
+      { offset: 6, line: 1, column: 7, },
       "`)` after expression"
     ) => ()
     error => fail("unexpected error: \{error}")
@@ -322,7 +329,7 @@ test "missing delimiters report end-of-input positions" {
   }
   try parse("foo(1, 2") |> ignore catch {
     ParseError::UnexpectedEndOfInput(
-      { offset: 8, line: 1, column: 9 },
+      { offset: 8, line: 1, column: 9, },
       "`,` or `)` after argument"
     ) => ()
     error => fail("unexpected error: \{error}")
@@ -337,8 +344,8 @@ test "unsupported operators are not parsed as core expressions" {
     ParseError::UnexpectedToken(
       {
         kind: @lexer.Operator('/'),
-        start: { offset: 2, line: 1, column: 3 },
-        ..,
+        start: { offset: 2, line: 1, column: 3, },
+        ..
       },
       "`;` or end of input"
     ) => ()
@@ -368,7 +375,7 @@ test "control-flow delimiters are required" {
 ///|
 test "lexer errors propagate through the parser" {
   try parse("1abc") |> ignore catch {
-    @lexer.LexError::MalformedNumber("1abc", { offset: 0, line: 1, column: 1 }) =>
+    @lexer.LexError::MalformedNumber("1abc", { offset: 0, line: 1, column: 1, }) =>
       ()
     error => fail("unexpected error: \{error}")
   } noraise {

@@ -239,7 +239,7 @@ pub fn parse_for_stmt(
     }
   }
   let (body, tokens) = parse_block_expr(tokens)
-  let for_stmt = ForStmt::{ inits, cond, steps, body }
+  let for_stmt = ForStmt::{ inits, cond, steps, body, }
   (for_stmt, tokens)
 }
 

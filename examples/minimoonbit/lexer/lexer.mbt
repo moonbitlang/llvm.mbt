@@ -154,7 +154,7 @@ pub fn Token::new(
   code : String,
   file : String,
 ) -> Token {
-  Token::{ kind, line, col, idx, code, file }
+  Token::{ kind, line, col, idx, code, file, }
 }
 
 ///|
@@ -782,7 +782,7 @@ pub fn tokenize(
         continue rest
       }
       ['A'..='Z', ..] as code => {
-        let sb = StringBuilder::new()
+        let sb = StringBuilder()
         let rest = for current = code {
           match current {
             ['A'..='Z' | 'a'..='z' | '0'..='9' | '_' as c, .. rest] => {
@@ -831,7 +831,7 @@ pub fn tokenize(
 
 ///|
 fn tokenize_lower_ident(code : StringView) -> (TokenKind, Int, StringView) {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let rest = for current = code {
     match current {
       ['a'..='z' | 'A'..='Z' | '0'..='9' | '_' as c, .. rest] => {
@@ -872,7 +872,7 @@ fn tokenize_number(
   match code {
     ['0', 'x' | 'X', '0'..='9' | 'a'..='f' | 'A'..='F', ..] => {
       // Parse hexadecimal number
-      let hex_sb = StringBuilder::new()
+      let hex_sb = StringBuilder()
       let rest = match code {
         ['0', 'x' | 'X', .. rest] => rest
         _ => panic()
@@ -934,7 +934,7 @@ fn tokenize_number(
     }
     _ => {
       // Parse decimal number
-      let sb = StringBuilder::new()
+      let sb = StringBuilder()
       let mut is_float = false
 
       // Parse the numeric part
@@ -1058,7 +1058,7 @@ fn tokenize_string(
     println("Compiler ICE: Tokenize String Error")
     panic()
   }
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let rest = for current = code {
     match current {
       ['\"', .. rest] => break rest

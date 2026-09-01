@@ -102,7 +102,7 @@ pub fn Context::check_parser_type(
   mutable? : Bool = false,
 ) -> Type raise TypeCheckError {
   let tk = self.check_parser_typekind(ty.kind)
-  Type::{ kind: tk, mutable }
+  Type::{ kind: tk, mutable, }
 }
 
 ///|

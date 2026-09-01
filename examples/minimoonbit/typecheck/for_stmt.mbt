@@ -132,7 +132,7 @@ pub fn Context::check_for_stmt(
     let (name, init_expr) = init
     let checked_expr = self.check_expr(init_expr)
     let type_kind = self.ensure_type(checked_expr.ty)
-    let ty = Type::{ kind: type_kind, mutable: true }
+    let ty = Type::{ kind: type_kind, mutable: true, }
     self.type_env.set(name, ty)
     checked_inits.push((name, checked_expr))
   }

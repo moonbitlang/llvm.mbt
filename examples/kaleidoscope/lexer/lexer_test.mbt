@@ -151,7 +151,7 @@ test "malformed numbers are rejected" {
   let malformed = ["1.2.3", "1abc", ".5tail", "1e+"]
   for source in malformed {
     try tokenize(source) |> ignore catch {
-      MalformedNumber(_, { offset: 0, line: 1, column: 1 }) => ()
+      MalformedNumber(_, { offset: 0, line: 1, column: 1, }) => ()
       _ => fail("unexpected lexer error for \{source}")
     } noraise {
       _ => fail("expected malformed number for \{source}")

@@ -97,7 +97,7 @@ fn parse_prototype(
     [token, ..] => raise unexpected_token(token, "function name or operator")
     [] =>
       raise UnexpectedEndOfInput(
-        { offset: 0, line: 1, column: 1 },
+        { offset: 0, line: 1, column: 1, },
         "function name or operator",
       )
   }
@@ -137,7 +137,7 @@ fn parse_prototype(
       )
     _ => ()
   }
-  (@ast.Prototype::{ name, parameters, kind }, tokens)
+  (@ast.Prototype::{ name, parameters, kind, }, tokens)
 }
 
 ///|
@@ -284,7 +284,7 @@ fn parse_var(
       }
       _ => (None, tokens)
     }
-    bindings.push({ name, initializer })
+    bindings.push({ name, initializer, })
     match tokens {
       [{ kind: @lexer.Comma, .. }, .. rest] => continue rest
       [{ kind: @lexer.In, .. }, .. rest] => {
@@ -319,7 +319,7 @@ fn parse_primary(
     [token, ..] => raise unexpected_token(token, "expression")
     [] =>
       raise UnexpectedEndOfInput(
-        { offset: 0, line: 1, column: 1 },
+        { offset: 0, line: 1, column: 1, },
         "expression",
       )
   }
@@ -404,7 +404,7 @@ fn finish_top_level(
     [token, ..] => raise unexpected_token(token, "`;` or end of input")
     [] =>
       raise UnexpectedEndOfInput(
-        { offset: 0, line: 1, column: 1 },
+        { offset: 0, line: 1, column: 1, },
         "end-of-input token",
       )
   }

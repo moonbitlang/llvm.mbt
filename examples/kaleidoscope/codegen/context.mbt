@@ -32,7 +32,7 @@ pub fn CodegenContext::new(
 ) -> CodegenContext raise CodegenError {
   let context = @IR.Context::new()
   let mod = backend(() => context.addModule(module_name))
-  { context, mod, builder: context.createBuilder(), variables: Map([]) }
+  { context, mod, builder: context.createBuilder(), variables: Map([]), }
 }
 
 ///|

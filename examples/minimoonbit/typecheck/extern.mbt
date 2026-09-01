@@ -89,9 +89,9 @@ pub fn Context::check_extern_function(
   let param_list = Array::new()
   for i, param in func.param_list {
     let { name, .. } = param
-    let param_ty = { kind: param_types[i], mutable: false }
+    let param_ty = { kind: param_types[i], mutable: false, }
     self.type_env.set(name, param_ty)
-    param_list.push(Param::{ name, ty: param_ty.kind })
+    param_list.push(Param::{ name, ty: param_ty.kind, })
   }
   ExternFunction::{
     fname: func.fname,

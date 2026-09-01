@@ -10,7 +10,7 @@ fn ContextAnchoredType::new(
   type_ref : @raw.LLVMTypeRef,
   context : Context,
 ) -> ContextAnchoredType {
-  ContextAnchoredType::{ type_ref, context }
+  ContextAnchoredType::{ type_ref, context, }
 }
 
 ///|

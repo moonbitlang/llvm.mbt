@@ -88,11 +88,11 @@ pub fn parse_let_stmt(
       }
     }
     let expr = Expr::unit()
-    let let_stmt = LetStmt::{ pattern, ty, expr }
+    let let_stmt = LetStmt::{ pattern, ty, expr, }
     return (let_stmt, rest)
   }
   let (expr, tokens) = parse_expr(tokens)
-  let let_stmt = LetStmt::{ pattern, ty, expr }
+  let let_stmt = LetStmt::{ pattern, ty, expr, }
   let tokens = if tokens is [{ kind: Symbol(";"), .. }, .. tokens] {
     tokens
   } else if tokens is [tok, ..] &&

@@ -75,7 +75,7 @@ pub fn parse_top_let(
       }
     }
     let expr = Expr::unit()
-    let top_let = TopLet::{ name, ty, expr }
+    let top_let = TopLet::{ name, ty, expr, }
     return (top_let, rest)
   }
   let (expr, tokens) = parse_expr(tokens)
@@ -92,7 +92,7 @@ pub fn parse_top_let(
     )
     tokens
   }
-  let top_let = TopLet::{ name, ty, expr }
+  let top_let = TopLet::{ name, ty, expr, }
   (top_let, tokens)
 }
 

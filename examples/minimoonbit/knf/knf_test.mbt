@@ -3,20 +3,20 @@ test "Apply Expr Knf Transformation Test" {
   // Prelude Parts
   // set a, b, x, arr, point, max type in typecheck and knf context
   let typecheck_ctx = @typecheck.Context::new()
-  typecheck_ctx.type_env.set("a", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("b", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false })
+  typecheck_ctx.type_env.set("a", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("b", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false, })
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: Int, mutable: false } },
-      { name: "y", ty: { kind: Int, mutable: false } },
+      { name: "x", ty: { kind: Int, mutable: false, }, },
+      { name: "y", ty: { kind: Int, mutable: false, }, },
     ],
     methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
-  typecheck_ctx.type_env.set("arr", { kind: Array(Int), mutable: false })
-  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false })
+  typecheck_ctx.type_env.set("arr", { kind: Array(Int), mutable: false, })
+  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false, })
   typecheck_ctx.type_env.set("max", {
     kind: Function([Int, Int], Int),
     mutable: false,
@@ -93,14 +93,14 @@ test "Assign Stmt Knf Transformation Test" {
   let typecheck_ctx = @typecheck.Context::new()
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
-    fields: [{ name: "x", ty: { kind: Int, mutable: true } }],
+    fields: [{ name: "x", ty: { kind: Int, mutable: true, }, }],
     methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true })
-  typecheck_ctx.type_env.set("y", { kind: Double, mutable: true })
-  typecheck_ctx.type_env.set("mat", { kind: Array(Array(Int)), mutable: true })
-  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true, })
+  typecheck_ctx.type_env.set("y", { kind: Double, mutable: true, })
+  typecheck_ctx.type_env.set("mat", { kind: Array(Array(Int)), mutable: true, })
+  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false, })
   let knf_ctx = Context::new()
   let _ = knf_ctx.add_new_name("x", Int)
   let _ = knf_ctx.add_new_name("y", Double)
@@ -194,16 +194,16 @@ test "Assign Stmt Knf Transformation Test" {
 test "Atom Expr Knf Transformation Test" {
   // set a, b, x, y, z type in typecheck and knf context
   let typecheck_ctx = @typecheck.Context::new()
-  typecheck_ctx.type_env.set("a", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("b", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("x", { kind: Double, mutable: false })
-  typecheck_ctx.type_env.set("y", { kind: String, mutable: false })
-  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false })
+  typecheck_ctx.type_env.set("a", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("b", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("x", { kind: Double, mutable: false, })
+  typecheck_ctx.type_env.set("y", { kind: String, mutable: false, })
+  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false, })
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: Int, mutable: false } },
-      { name: "y", ty: { kind: Int, mutable: false } },
+      { name: "x", ty: { kind: Int, mutable: false, }, },
+      { name: "y", ty: { kind: Int, mutable: false, }, },
     ],
     methods: Map([]),
   }
@@ -373,16 +373,16 @@ test "Expr Knf Transformation Test" {
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: Int, mutable: false } },
-      { name: "y", ty: { kind: Int, mutable: false } },
+      { name: "x", ty: { kind: Int, mutable: false, }, },
+      { name: "y", ty: { kind: Int, mutable: false, }, },
     ],
     methods: Map([]),
   }
   typecheck_ctx.struct_defs.set("Point", point_struct_def)
-  typecheck_ctx.type_env.set("a", { kind: Double, mutable: false })
-  typecheck_ctx.type_env.set("b", { kind: Double, mutable: false })
-  typecheck_ctx.type_env.set("arr", { kind: Array(Int), mutable: false })
-  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false })
+  typecheck_ctx.type_env.set("a", { kind: Double, mutable: false, })
+  typecheck_ctx.type_env.set("b", { kind: Double, mutable: false, })
+  typecheck_ctx.type_env.set("arr", { kind: Array(Int), mutable: false, })
+  typecheck_ctx.type_env.set("point", { kind: Struct("Point"), mutable: false, })
   typecheck_ctx.type_env.set("sum", {
     kind: Function([Array(Int)], Int),
     mutable: false,
@@ -434,8 +434,8 @@ test "If Expr Knf Transformation Test" {
   let knf_ctx = @knf.Context::new()
 
   // Setup type environment for testing
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true })
-  typecheck_ctx.type_env.set("y", { kind: Int, mutable: false })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true, })
+  typecheck_ctx.type_env.set("y", { kind: Int, mutable: false, })
   typecheck_ctx.type_env.set("print_int", {
     kind: Function([Int], Unit),
     mutable: false,
@@ -492,7 +492,7 @@ test "If Expr Knf Transformation Test" {
   assert_true(stmts2.length() is 1)
   assert_true(
     stmts2[0] is Let(tmp_name2, Int, Int(5)) &&
-    tmp_name2 is { id: "tmp", slot: 1 },
+    tmp_name2 is { id: "tmp", slot: 1, },
   )
 
   // Test 2: Check the if expression structure (no else block)
@@ -500,7 +500,7 @@ test "If Expr Knf Transformation Test" {
     knf_if_expr2 is If(cond2, then_block2, else_block2) &&
     cond2 is Binary(LT, x_name3, tmp_cond2) &&
     x_name3 is { id: "x", .. } &&
-    tmp_cond2 is { id: "tmp", slot: 1 } &&
+    tmp_cond2 is { id: "tmp", slot: 1, } &&
     then_block2.stmts.length() is 1 &&
     then_block2.stmts[0] is ExprStmt(Call(print_func, [x_arg])) &&
     print_func is { id: "print_int", .. } &&
@@ -802,9 +802,9 @@ test "Top Function Knf Transformation Test" {
 test "Simple Apply Expr Knf Transformation Test" {
   // set x, y, z type in typecheck and knf context
   let typecheck_ctx = @typecheck.Context::new()
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("y", { kind: Double, mutable: false })
-  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("y", { kind: Double, mutable: false, })
+  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false, })
   let knf_ctx = Context::new()
   knf_ctx.globals.set("x", Int)
   let _ = knf_ctx.add_new_name("y", Double)
@@ -836,26 +836,26 @@ test "Simple Apply Expr Knf Transformation Test" {
   let (e, tok_view) = @parser.parse_apply_expr(tok_view)
   let e = typecheck_ctx.check_apply_expr(e)
   let (_, e) = knf_ctx.apply_expr_to_knf(e)
-  assert_true(e is Ident({ id: "x", slot: 0 }))
+  assert_true(e is Ident({ id: "x", slot: 0, }))
   // find Parent Ident `y`
   let (e, tok_view) = @parser.parse_apply_expr(tok_view)
   let e = typecheck_ctx.check_apply_expr(e)
   let (_, e) = knf_ctx.apply_expr_to_knf(e)
-  assert_true(e is Ident({ id: "y", slot: 0 }))
+  assert_true(e is Ident({ id: "y", slot: 0, }))
   // find Local Ident `z`
   let (e, _) = @parser.parse_apply_expr(tok_view)
   let e = typecheck_ctx.check_apply_expr(e)
   let (_, e) = knf_ctx.apply_expr_to_knf(e)
-  assert_true(e is Ident({ id: "z", slot: 0 }))
+  assert_true(e is Ident({ id: "z", slot: 0, }))
 }
 
 ///|
 test "Simple Atom Expr Knf Transformation Test" {
   // set x, y, z type in typecheck and knf context
   let typecheck_ctx = @typecheck.Context::new()
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("y", { kind: Double, mutable: false })
-  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("y", { kind: Double, mutable: false, })
+  typecheck_ctx.type_env.set("z", { kind: Bool, mutable: false, })
   let knf_ctx = Context::new()
   knf_ctx.globals.set("x", Int)
   let _ = knf_ctx.add_new_name("y", Double)
@@ -888,27 +888,27 @@ test "Simple Atom Expr Knf Transformation Test" {
   let (e, tok_view) = @parser.parse_atom_expr(tok_view)
   let e = typecheck_ctx.check_atom_expr(e)
   let (_, e) = knf_ctx.atom_expr_to_knf(e)
-  assert_true(e is Ident({ id: "x", slot: 0 }))
+  assert_true(e is Ident({ id: "x", slot: 0, }))
   // find Parent Ident `y`
   let (e, tok_view) = @parser.parse_atom_expr(tok_view)
   let e = typecheck_ctx.check_atom_expr(e)
   let (_, e) = knf_ctx.atom_expr_to_knf(e)
-  assert_true(e is Ident({ id: "y", slot: 0 }))
+  assert_true(e is Ident({ id: "y", slot: 0, }))
   // find Local Ident `z`
   let (e, _) = @parser.parse_atom_expr(tok_view)
   let e = typecheck_ctx.check_atom_expr(e)
   let (_, e) = knf_ctx.atom_expr_to_knf(e)
-  assert_true(e is Ident({ id: "z", slot: 0 }))
+  assert_true(e is Ident({ id: "z", slot: 0, }))
 }
 
 ///|
 test "Simple Expr Knf Transformation Test" {
   // set x, y, z type in typecheck and knf context
   let typecheck_ctx = @typecheck.Context::new()
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("y", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("z", { kind: Int, mutable: false })
-  typecheck_ctx.type_env.set("w", { kind: Bool, mutable: false })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("y", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("z", { kind: Int, mutable: false, })
+  typecheck_ctx.type_env.set("w", { kind: Bool, mutable: false, })
   let knf_ctx = Context::new()
   knf_ctx.globals.set("x", Int)
   let _ = knf_ctx.add_new_name("y", Int)
@@ -1093,8 +1093,8 @@ test "Stmt Knf Transformation Test" {
   let point_struct_def : @typecheck.StructDef = {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: Int, mutable: true } },
-      { name: "y", ty: { kind: Int, mutable: true } },
+      { name: "x", ty: { kind: Int, mutable: true, }, },
+      { name: "y", ty: { kind: Int, mutable: true, }, },
     ],
     methods: Map([]),
   }
@@ -1358,12 +1358,12 @@ test "Top Function Knf Transformation Test - 2" {
   assert_true(knf_func1.params.length() is 2)
   assert_true(
     knf_func1.params[0] is (param_name1, param_type1) &&
-    param_name1 is { id: "x", slot: 0 } &&
+    param_name1 is { id: "x", slot: 0, } &&
     param_type1 is Int,
   )
   assert_true(
     knf_func1.params[1] is (param_name2, param_type2) &&
-    param_name2 is { id: "y", slot: 0 } &&
+    param_name2 is { id: "y", slot: 0, } &&
     param_type2 is Int,
   )
   // Body should have: return x + y;
@@ -1384,7 +1384,7 @@ test "Top Function Knf Transformation Test - 2" {
   assert_true(knf_func2.params.length() is 1)
   assert_true(
     knf_func2.params is [(param_name3, param_type3)] &&
-    param_name3 is { id: "name", slot: 0 } &&
+    param_name3 is { id: "name", slot: 0, } &&
     param_type3 is String,
   )
   // Body should have: return ();
@@ -1400,7 +1400,7 @@ test "Top Function Knf Transformation Test - 2" {
   assert_true(knf_func3.params.length() is 1)
   assert_true(
     knf_func3.params[0] is (param_name4, param_type4) &&
-    param_name4 is { id: "n", slot: 0 } &&
+    param_name4 is { id: "n", slot: 0, } &&
     param_type4 is Int,
   )
   // Body should contain if expression and recursive calls
@@ -1455,7 +1455,7 @@ test "Top Let Knf Transformation Test" {
   let checked_top_let1 = typecheck_ctx.check_top_let(top_let1)
   let knf_top_let1 = knf_ctx.top_let_to_knf(checked_top_let1)
   assert_true(
-    knf_top_let1.name is { id: "x", slot: 0 } &&
+    knf_top_let1.name is { id: "x", slot: 0, } &&
     knf_top_let1.ty is Int &&
     knf_top_let1.expr is Int(42),
   )
@@ -1465,7 +1465,7 @@ test "Top Let Knf Transformation Test" {
   let checked_top_let2 = typecheck_ctx.check_top_let(top_let2)
   let knf_top_let2 = knf_ctx.top_let_to_knf(checked_top_let2)
   assert_true(
-    knf_top_let2.name is { id: "y", slot: 0 } &&
+    knf_top_let2.name is { id: "y", slot: 0, } &&
     knf_top_let2.ty is Double &&
     knf_top_let2.expr is Double(3.14),
   )
@@ -1477,7 +1477,7 @@ test "Top Let Knf Transformation Test" {
 
   // Test 3: Check the structure
   assert_true(
-    knf_top_let3.name is { id: "s", slot: 0 } &&
+    knf_top_let3.name is { id: "s", slot: 0, } &&
     knf_top_let3.ty is String &&
     knf_top_let3.expr is String("hello"),
   )
@@ -1493,7 +1493,7 @@ test "Top Let Knf Transformation Test" {
   let checked_top_let4 = typecheck_ctx.check_top_let(top_let4)
   let knf_top_let4 = knf_ctx.top_let_to_knf(checked_top_let4)
   assert_true(
-    knf_top_let4.name is { id: "sum", slot: 0 } &&
+    knf_top_let4.name is { id: "sum", slot: 0, } &&
     knf_top_let4.ty is Int &&
     knf_top_let4.expr is Binary(Add, l, r) &&
     l is { id: "a", .. } &&
@@ -1557,9 +1557,9 @@ test "While Stmt Knf Transformation Test" {
   let knf_ctx = @knf.Context::new()
 
   // Setup type environment for testing
-  typecheck_ctx.type_env.set("i", { kind: Int, mutable: true })
-  typecheck_ctx.type_env.set("sum", { kind: Int, mutable: true })
-  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true })
+  typecheck_ctx.type_env.set("i", { kind: Int, mutable: true, })
+  typecheck_ctx.type_env.set("sum", { kind: Int, mutable: true, })
+  typecheck_ctx.type_env.set("x", { kind: Int, mutable: true, })
   typecheck_ctx.type_env.set("print_int", {
     kind: Function([Int], Unit),
     mutable: false,
@@ -1594,12 +1594,12 @@ test "While Stmt Knf Transformation Test" {
   assert_true(cond_block.stmts.length() is 2)
   assert_true(
     cond_block.stmts[0] is Let(tmp_name, Int, Int(10)) &&
-    tmp_name is { id: "tmp", slot: 0 },
+    tmp_name is { id: "tmp", slot: 0, },
   )
   assert_true(
     cond_block.stmts[1] is ExprStmt(Binary(LT, i_name, tmp_cond)) &&
     i_name is { id: "i", .. } &&
-    tmp_cond is { id: "tmp", slot: 0 },
+    tmp_cond is { id: "tmp", slot: 0, },
   )
 
   // Body block should have:
@@ -1615,13 +1615,13 @@ test "While Stmt Knf Transformation Test" {
   )
   assert_true(
     body_block.stmts[1] is Let(tmp_lit, Int, Int(1)) &&
-    tmp_lit is { id: "tmp", slot: 1 },
+    tmp_lit is { id: "tmp", slot: 1, },
   )
   assert_true(
     body_block.stmts[2] is Assign(i_name3, Binary(Add, i_name4, tmp_add)) &&
     i_name3 is { id: "i", .. } &&
     i_name4 is { id: "i", .. } &&
-    tmp_add is { id: "tmp", slot: 1 },
+    tmp_add is { id: "tmp", slot: 1, },
   )
 
   // Test 2: While with function call: while (x > 0) { print_int(x); x = x - 1; }

@@ -130,7 +130,7 @@ pub impl Show for ApplyExprKind with fn output(self, logger) {
 ///|
 fn ApplyExpr::unit() -> ApplyExpr {
   let atom_unit = AtomExpr::unit()
-  ApplyExpr::{ kind: AtomExpr(atom_unit), toks: atom_unit.toks }
+  ApplyExpr::{ kind: AtomExpr(atom_unit), toks: atom_unit.toks, }
 }
 
 ///|
@@ -142,7 +142,7 @@ pub fn ApplyExpr::new(
 ) -> ApplyExpr {
   let len = rest_tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  ApplyExpr::{ kind, toks }
+  ApplyExpr::{ kind, toks, }
 }
 
 ///|

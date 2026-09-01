@@ -10,7 +10,7 @@ fn ModuleAnchoredValue::new(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> ModuleAnchoredValue {
-  ModuleAnchoredValue::{ value_ref, owner_module }
+  ModuleAnchoredValue::{ value_ref, owner_module, }
 }
 
 ///|
@@ -35,7 +35,7 @@ fn ContextAnchoredValue::new(
   value_ref : ValueRef,
   context : Context,
 ) -> ContextAnchoredValue {
-  ContextAnchoredValue::{ value_ref, context }
+  ContextAnchoredValue::{ value_ref, context, }
 }
 
 ///|

@@ -119,7 +119,7 @@ pub impl Show for ExprKind with fn output(self, logger) {
 ///|
 fn Expr::unit() -> Expr {
   let apply_unit = ApplyExpr::unit()
-  Expr::{ kind: ApplyExpr(apply_unit), toks: apply_unit.toks }
+  Expr::{ kind: ApplyExpr(apply_unit), toks: apply_unit.toks, }
 }
 
 ///|
@@ -131,7 +131,7 @@ pub fn Expr::new(
 ) -> Expr {
   let len = rest_tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  Expr::{ kind, toks }
+  Expr::{ kind, toks, }
 }
 
 ///|
@@ -147,7 +147,7 @@ pub fn Expr::new_binary(
   let total_len = left.toks.length() + right.toks.length()
   let lhs_init_offset = lhs_offset - init_offset
   let toks = init_tokens[lhs_init_offset:lhs_init_offset + total_len]
-  Expr::{ kind: ExprKind::BinaryExpr(bop, left, right), toks }
+  Expr::{ kind: ExprKind::BinaryExpr(bop, left, right), toks, }
 }
 
 ///|

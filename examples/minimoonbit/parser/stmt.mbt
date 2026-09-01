@@ -102,7 +102,7 @@ pub fn Stmt::new(
 ) -> Stmt {
   let len = rest_tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  Stmt::{ kind, toks }
+  Stmt::{ kind, toks, }
 }
 
 ///|

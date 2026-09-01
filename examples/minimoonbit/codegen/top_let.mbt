@@ -3,7 +3,7 @@ fn Context::top_let_codegen(
   self : Self,
   top_let : @knf.KnfTopLet,
 ) -> &@llvm.Value raise {
-  let { name, ty, expr } = top_let
+  let { name, ty, expr, } = top_let
   let name_str = name.to_string()
 
   // Heap values and function closures always require runtime initialization.

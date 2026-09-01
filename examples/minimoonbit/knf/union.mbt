@@ -41,10 +41,10 @@ pub fn Context::enum_to_knf(
   self : Context,
   enum_def : @typecheck.EnumDef,
 ) -> KnfUnion raise KnfTransformError {
-  let { name: union_name, enum_fields } = enum_def
+  let { name: union_name, enum_fields, } = enum_def
   let knf_variants : Array[KnfStructDef] = Array::new()
   for enum_field in enum_fields {
-    let { name, types } = enum_field
+    let { name, types, } = enum_field
     let fields : Array[(String, Bool, Type)] = Array::new()
     fields.push(("tag", false, Type::Int))
     for i, ty in types {
@@ -52,9 +52,9 @@ pub fn Context::enum_to_knf(
       let field_type = self.typekind_to_knf(ty)
       fields.push((field_name, false, field_type))
     }
-    let variant = KnfStructDef::{ name: "\{union_name}$\{name}", fields }
+    let variant = KnfStructDef::{ name: "\{union_name}$\{name}", fields, }
     knf_variants.push(variant)
   }
-  let knf_union = KnfUnion::{ name: union_name, variants: knf_variants }
+  let knf_union = KnfUnion::{ name: union_name, variants: knf_variants, }
   knf_union
 }

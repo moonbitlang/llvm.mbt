@@ -57,8 +57,8 @@ pub fn Context::check_top_let(
     }
   }
   let type_kind = self.ensure_type(type_kind)
-  let ty = Type::{ kind: type_kind, mutable: false }
-  let checked_top_let = TopLet::{ name: top_let.name, ty, expr: checked_expr }
+  let ty = Type::{ kind: type_kind, mutable: false, }
+  let checked_top_let = TopLet::{ name: top_let.name, ty, expr: checked_expr, }
   self.type_env.set(top_let.name, ty)
   checked_top_let
 }

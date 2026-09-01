@@ -105,7 +105,7 @@ pub fn parse_assign_stmt(
   }
   let op = AssignOp::from_tok_assign_op(op)
   let (expr, tokens) = parse_expr(tokens)
-  let assign_stmt = AssignStmt::{ left_value, op, expr }
+  let assign_stmt = AssignStmt::{ left_value, op, expr, }
   let tokens = if tokens is [{ kind: Symbol(";"), .. }, .. tokens] {
     tokens
   } else if tokens is [tok, ..] &&

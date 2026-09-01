@@ -111,7 +111,7 @@ pub fn parse_if_expr(
   }
   let len = tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  let if_expr = IfExpr::{ cond, then_block, else_block, toks }
+  let if_expr = IfExpr::{ cond, then_block, else_block, toks, }
   (if_expr, tokens)
 }
 

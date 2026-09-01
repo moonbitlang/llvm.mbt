@@ -21,7 +21,7 @@ pub fn Context::top_function_to_knf(
   let knf_params = Array::new()
   let param_types : Array[Type] = Array::new()
   for param in top_func.param_list {
-    let { name: param_name, ty: param_ty } = param
+    let { name: param_name, ty: param_ty, } = param
     let param_type = self.typekind_to_knf(param_ty)
     let param = self.add_new_name(param_name, param_type)
     self.name_env.set(param_name, param, param_type, false)
@@ -44,7 +44,7 @@ pub fn Context::top_function_to_knf(
 ///|
 /// Formats `KnfFunction` using MiniMoonBit KNF notation.
 pub impl Show for KnfFunction with fn output(self, logger) {
-  let { name, ret_ty, params, body } = self
+  let { name, ret_ty, params, body, } = self
   logger.write_string("fn \{name}")
   if name != "main" {
     logger.write_string("(")

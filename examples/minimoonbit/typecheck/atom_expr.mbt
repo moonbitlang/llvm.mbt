@@ -382,7 +382,7 @@ pub fn Context::check_atom_expr(
         Some(ty) => ty
         None => {
           self.throw_(atom_expr.toks[0], "Undefined identifier: \{name}", Error)
-          { kind: TypeKind::Unit, mutable: false }
+          { kind: TypeKind::Unit, mutable: false, }
         }
       }
       (Ident(name), ty.kind)
@@ -397,7 +397,7 @@ pub fn Context::check_atom_expr(
             "Undefined identifier: \{tag}::\{name}",
             Error,
           )
-          { kind: TypeKind::Unit, mutable: false }
+          { kind: TypeKind::Unit, mutable: false, }
         }
       }
       // Use the mangled name (whole_name) instead of just name
@@ -415,7 +415,7 @@ pub fn Context::check_atom_expr(
       self.check_enum_constuct_expr(tag, variant_name, exprs, atom_expr)
     StructConstruct(sc_expr) => self.check_struct_construct_expr(sc_expr)
   }
-  AtomExpr::{ kind: typed_atom_expr_kind, ty: type_kind, toks: atom_expr.toks }
+  AtomExpr::{ kind: typed_atom_expr_kind, ty: type_kind, toks: atom_expr.toks, }
 }
 
 ///|
@@ -479,7 +479,7 @@ pub fn Context::check_tuple_expr(
 test "AtomExpr to_string Test" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|42 ; 100L ; 200U ; 300UL ; 3.14 ; 2.5F ; 'c' ; true ; "hello" ; x ; ()
   let tokens = @lexer.tokenize(code)

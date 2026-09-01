@@ -1,11 +1,11 @@
 ///|
 fn SourcePos::advance_inline(self : SourcePos, width : Int) -> SourcePos {
-  { offset: self.offset + width, line: self.line, column: self.column + width }
+  { offset: self.offset + width, line: self.line, column: self.column + width, }
 }
 
 ///|
 fn SourcePos::advance_line(self : SourcePos, width : Int) -> SourcePos {
-  { offset: self.offset + width, line: self.line + 1, column: 1 }
+  { offset: self.offset + width, line: self.line + 1, column: 1, }
 }
 
 ///|
@@ -15,7 +15,7 @@ fn push_token(
   start : SourcePos,
   end : SourcePos,
 ) -> Unit {
-  tokens.push({ kind, start, end })
+  tokens.push({ kind, start, end, })
 }
 
 ///|
@@ -74,7 +74,11 @@ fn parse_number(raw : StringView, start : SourcePos) -> Double raise LexError {
 /// ```
 pub fn tokenize(source : String) -> Array[Token] raise LexError {
   let tokens : Array[Token] = []
-  for input = source[:], position = SourcePos::{ offset: 0, line: 1, column: 1 } {
+  for input = source[:], position = SourcePos::{
+          offset: 0,
+          line: 1,
+          column: 1,
+        } {
     lexmatch input with longest {
       re"^$" => {
         push_token(tokens, Eof, position, position)

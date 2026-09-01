@@ -65,7 +65,7 @@ pub fn parse_block_expr(
   }
   let len = tokens.start_offset() - init_tokens.start_offset()
   let toks = init_tokens[0:len]
-  let block_expr = BlockExpr::{ stmts, toks }
+  let block_expr = BlockExpr::{ stmts, toks, }
   (block_expr, tokens)
 }
 

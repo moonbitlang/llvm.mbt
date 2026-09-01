@@ -16,12 +16,12 @@ pub fn Context::struct_def_to_knf(
 ) -> KnfStructDef raise KnfTransformError {
   let knf_fields : Array[(String, Bool, Type)] = Array::new()
   for field in struct_def.fields {
-    let { name, ty } = field
-    let { kind: typekind, mutable: is_mut } = ty
+    let { name, ty, } = field
+    let { kind: typekind, mutable: is_mut, } = ty
     let field_type = self.typekind_to_knf(typekind)
     knf_fields.push((name, is_mut, field_type))
   }
-  let struct_def = KnfStructDef::{ name: struct_def.name, fields: knf_fields }
+  let struct_def = KnfStructDef::{ name: struct_def.name, fields: knf_fields, }
   struct_def
 }
 
@@ -43,7 +43,7 @@ pub fn KnfStructDef::get_field_index(
 ///|
 /// Formats `KnfStructDef` using MiniMoonBit KNF notation.
 pub impl Show for KnfStructDef with fn output(self, logger) {
-  let { name, fields } = self
+  let { name, fields, } = self
   logger.write_string("struct \{name} {\n")
   for field in fields {
     let (field_name, is_mut, field_type) = field

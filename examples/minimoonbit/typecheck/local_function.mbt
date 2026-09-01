@@ -108,13 +108,13 @@ pub fn Context::check_local_function(
   let parent_func_ret_ty = self.current_func_ret_ty
   self.set_current_func_ret_ty(ret_ty)
   let fty = Function(param_types, ret_ty)
-  let fty = Type::{ kind: fty, mutable: false }
+  let fty = Type::{ kind: fty, mutable: false, }
   self.type_env.set(func.fname, fty)
   self.enter_scope()
   let param_list = Array::new()
   for i, param in func.param_list {
     let (param_name, _) = param
-    let param_ty = Type::{ kind: param_types[i], mutable: false }
+    let param_ty = Type::{ kind: param_types[i], mutable: false, }
     self.type_env.set(param_name, param_ty)
     param_list.push((param_name, param_ty))
   }
@@ -129,7 +129,7 @@ pub fn Context::check_local_function(
   let local_func = LocalFunction::{
     fname: func.fname,
     param_list,
-    ret_ty: { kind: ret_ty, mutable: false },
+    ret_ty: { kind: ret_ty, mutable: false, },
     body: checked_block,
   }
   self.current_func_ret_ty = parent_func_ret_ty

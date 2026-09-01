@@ -11,7 +11,7 @@ test "variable scope restores an outer binding after codegen failure" {
     operation.codegenDefinition(
       prototype,
       @ast.Var(
-        [{ name: "x", initializer: Some(@ast.Number(1.0)) }],
+        [{ name: "x", initializer: Some(@ast.Number(1.0)), }],
         @ast.Variable("missing"),
       ),
       catalog,

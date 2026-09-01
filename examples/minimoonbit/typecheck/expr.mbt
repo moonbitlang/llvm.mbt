@@ -292,7 +292,7 @@ pub fn Context::check_expr(self : Self, expr : @parser.Expr) -> Expr {
   match expr.kind {
     ApplyExpr(apply_expr) => {
       let apply_expr = self.check_apply_expr(apply_expr)
-      Expr::{ kind: ApplyExpr(apply_expr), ty: apply_expr.ty, toks: expr.toks }
+      Expr::{ kind: ApplyExpr(apply_expr), ty: apply_expr.ty, toks: expr.toks, }
     }
     NotExpr(inner_expr) => {
       let checked_inner = self.check_expr(inner_expr)
@@ -304,7 +304,7 @@ pub fn Context::check_expr(self : Self, expr : @parser.Expr) -> Expr {
         println(msg)
         panic()
       }
-      Expr::{ kind: NotExpr(checked_inner), ty: Bool, toks: expr.toks }
+      Expr::{ kind: NotExpr(checked_inner), ty: Bool, toks: expr.toks, }
     }
     NegExpr(inner_expr) => {
       let checked_inner = self.check_expr(inner_expr)
@@ -462,9 +462,9 @@ pub fn Context::check_expr(self : Self, expr : @parser.Expr) -> Expr {
 test "Expr to_string Test - Basic" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false })
-  ctx.type_env.set("y", { kind: TypeKind::Int, mutable: false })
-  ctx.type_env.set("z", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Bool, mutable: false, })
+  ctx.type_env.set("y", { kind: TypeKind::Int, mutable: false, })
+  ctx.type_env.set("z", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|42 ; !x ; -y ; 1 + 2 ; y == z
   let tokens = @lexer.tokenize(code)
@@ -549,7 +549,7 @@ test "Expr to_string Test - BlockExpr" {
 test "Expr to_string Test - IfExpr" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|if x > 0 { 1 } else { 0 }
   let tokens = @lexer.tokenize(code)

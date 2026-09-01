@@ -99,7 +99,7 @@ pub struct PrototypeCatalog {
 ///|
 /// Creates an empty prototype catalog.
 pub fn PrototypeCatalog::new() -> PrototypeCatalog {
-  { prototypes: Map([]), definitions: Map([]) }
+  { prototypes: Map([]), definitions: Map([]), }
 }
 
 ///|

@@ -21,7 +21,7 @@ fn BasicBlock::from_raw(
   block_ref : @raw.LLVMBasicBlockRef,
   owner_module : Module,
 ) -> BasicBlock {
-  BasicBlock::{ block_ref, owner_module }
+  BasicBlock::{ block_ref, owner_module, }
 }
 
 ///|

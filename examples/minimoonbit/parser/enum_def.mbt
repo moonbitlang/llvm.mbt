@@ -80,7 +80,7 @@ pub fn parse_enum_field(
     } else {
       tokens
     }
-    return (EnumField::{ name, types }, tokens)
+    return (EnumField::{ name, types, }, tokens)
   }
   let rest = for current = rest {
     match current {
@@ -103,7 +103,7 @@ pub fn parse_enum_field(
       }
     }
   }
-  let enum_field = EnumField::{ name, types }
+  let enum_field = EnumField::{ name, types, }
   let rest = if rest is [{ kind: Symbol(";"), .. }, .. rest] {
     rest
   } else if rest is [tok, ..] && tok.line != last_tok.unwrap().line {
@@ -141,7 +141,7 @@ pub fn parse_enum_def(
       }
     }
   }
-  let enum_def = EnumDef::{ name, enum_fields }
+  let enum_def = EnumDef::{ name, enum_fields, }
   (enum_def, rest)
 }
 

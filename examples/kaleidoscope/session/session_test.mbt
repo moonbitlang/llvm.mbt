@@ -225,7 +225,7 @@ test "lexer failures retain their typed diagnostic" {
     SessionError::LexerFailure(
       @lexer.LexError::MalformedNumber(
         "1abc",
-        { offset: 0, line: 1, column: 1 }
+        { offset: 0, line: 1, column: 1, }
       )
     ) => ()
     error => fail("unexpected error: \{Repr(error)}")

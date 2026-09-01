@@ -20,7 +20,7 @@ fn JITAddress::fromRaw(
   address : @raw.LLVMOrcExecutorAddress,
   owner : LLJITOwner,
 ) -> JITAddress {
-  JITAddress::{ address: address.to_uint64(), owner }
+  JITAddress::{ address: address.to_uint64(), owner, }
 }
 
 ///|
@@ -43,7 +43,7 @@ priv struct FunctionRefBox[T] {
 fn boxOpaqueFunctionRef(
   function : FuncRef[() -> Unit],
 ) -> FunctionRefBox[() -> Unit] {
-  { function, marker: 0 }
+  { function, marker: 0, }
 }
 
 ///|

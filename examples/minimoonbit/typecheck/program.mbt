@@ -17,7 +17,7 @@ pub(all) struct Env {
 ///|
 /// Performs the `new` operation on `Env`.
 pub fn Env::new(parent? : Env? = None) -> Env {
-  Env::{ local_: Map([]), parent }
+  Env::{ local_: Map([]), parent, }
 }
 
 ///|
@@ -102,32 +102,32 @@ pub fn Context::has_error_happened(self : Context) -> Bool {
 /// Performs the `lookup_type` type-checker context operation.
 pub fn Context::lookup_type(self : Context, name : String) -> Type? {
   if name is ("println" | "print") {
-    let t = Type::{ kind: Function([Any], Unit), mutable: false }
+    let t = Type::{ kind: Function([Any], Unit), mutable: false, }
     return Some(t)
   }
   // Handle builtin array/string methods
   if name == "get_array_length" {
     // Array.length() - takes any array type and returns Int
-    return Some(Type::{ kind: Function([Any], Int), mutable: false })
+    return Some(Type::{ kind: Function([Any], Int), mutable: false, })
   }
   if name == "__builtin_get_string_length" {
-    return Some(Type::{ kind: Function([String], Int), mutable: false })
+    return Some(Type::{ kind: Function([String], Int), mutable: false, })
   }
   // Handle builtin array push methods
   if name.has_prefix("array_") && name.has_suffix("_push") {
     // array_int_push, array_double_push, etc. - takes (Array[T], T) and returns Unit
-    return Some(Type::{ kind: Function([Any, Any], Unit), mutable: false })
+    return Some(Type::{ kind: Function([Any, Any], Unit), mutable: false, })
   }
   // Handle builtin to_string functions
   if name.has_prefix("__builtin_") && name.has_suffix("_to_string") {
-    return Some(Type::{ kind: Function([Any], String), mutable: false })
+    return Some(Type::{ kind: Function([Any], String), mutable: false, })
   }
   match self.type_env.get(name) {
     None => None
-    Some({ kind, mutable }) => {
+    Some({ kind, mutable, }) => {
       let t = self.ensure_type(kind)
       // catch { _ => return None }
-      let t = Type::{ kind: t, mutable }
+      let t = Type::{ kind: t, mutable, }
       self.type_env.set(name, t)
       Some(t)
     }
@@ -184,7 +184,7 @@ pub(all) struct Program {
 ///|
 /// Renders this `Program` value with optional ANSI coloring.
 pub fn Program::to_string(self : Self, color? : Bool = true) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _, extern_fn in self.extern_funcions {
     sb.write_string(extern_fn.to_string(color~))
   }
@@ -277,7 +277,10 @@ pub fn Context::collect_struct_or_enum_names(
       self.struct_defs.contains(enum_def.name) {
       raise TypeCheckError("Duplicate enum name: \{enum_def.name}")
     } else {
-      let enum_def = EnumDef::{ name: enum_def.name, enum_fields: Array::new() }
+      let enum_def = EnumDef::{
+        name: enum_def.name,
+        enum_fields: Array::new(),
+      }
       self.enum_defs.set(enum_def.name, enum_def)
     }
   }
@@ -301,11 +304,11 @@ pub fn Context::collect_function_types(
       }
       let ret_ty = match ext_func.ret_ty {
         Some(ty) => self.check_parser_type(ty)
-        None => Type::{ kind: Unit, mutable: false }
+        None => Type::{ kind: Unit, mutable: false, }
       }
       let fty = Function(param_types, ret_ty.kind)
       self.func_types.set(ext_func.fname, fty)
-      self.type_env.set(ext_func.fname, Type::{ kind: fty, mutable: false })
+      self.type_env.set(ext_func.fname, Type::{ kind: fty, mutable: false, })
     }
   }
   for func in program.top_functions.values() {
@@ -324,7 +327,7 @@ pub fn Context::collect_function_types(
       let ret_ty = self.check_parser_type(func.ret_ty)
       let fty = Function(param_types, ret_ty.kind)
       self.func_types.set(func_whole_name, fty)
-      self.type_env.set(func_whole_name, Type::{ kind: fty, mutable: false })
+      self.type_env.set(func_whole_name, Type::{ kind: fty, mutable: false, })
     }
   }
 }

@@ -141,7 +141,7 @@ pub fn parse_extern_function(
     )
     raise ParseError("Expect ';' or '}' or newline after let statement")
   }
-  let extern_function = ExternFunction::{ fname, param_list, ret_ty, ffi_name }
+  let extern_function = ExternFunction::{ fname, param_list, ret_ty, ffi_name, }
   (extern_function, tokens)
 }
 

@@ -13,10 +13,10 @@ pub fn Context::if_expr_to_knf(
       let (else_stmts, nested_if_knf) = self.if_expr_to_knf(else_if_expr)
       stmts.append(else_stmts)
       let ty = self.typekind_to_knf(else_if_expr.ty)
-      KnfBlock::{ stmts: [KnfStmt::ExprStmt(nested_if_knf)], ty }
+      KnfBlock::{ stmts: [KnfStmt::ExprStmt(nested_if_knf)], ty, }
     }
     Some(Right(else_block_expr)) => self.block_expr_to_knf(else_block_expr)
-    None => KnfBlock::{ stmts: [], ty: Unit }
+    None => KnfBlock::{ stmts: [], ty: Unit, }
   }
   (stmts, If(cond_knf_expr, then_knf_block, else_knf_block))
 }

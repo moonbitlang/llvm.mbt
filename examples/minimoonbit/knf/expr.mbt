@@ -295,13 +295,13 @@ pub fn Context::expr_to_knf(
 
       // Handle String concatenation
       if bin_op is Add && left_expr.ty is String {
-        let concat_func = Name::{ id: "__builtin_string_concat", slot: 0 }
+        let concat_func = Name::{ id: "__builtin_string_concat", slot: 0, }
         return (stmts, Call(concat_func, [lhs_name, rhs_name]))
       }
 
       // Handle String comparison
       if bin_op is Eq && left_expr.ty is String {
-        let strcmp_func = Name::{ id: "moonbit_string_eq", slot: 0 }
+        let strcmp_func = Name::{ id: "moonbit_string_eq", slot: 0, }
         return (stmts, Call(strcmp_func, [lhs_name, rhs_name]))
       }
       let rhs_name_adjusted = if bin_op is (ShiftLeft | ShiftRight) {

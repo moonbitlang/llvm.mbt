@@ -19,7 +19,7 @@ fn AllocaInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> AllocaInst {
-  AllocaInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  AllocaInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -83,7 +83,7 @@ pub struct LoadInst {
 
 ///|
 fn LoadInst::from_raw(value_ref : ValueRef, owner_module : Module) -> LoadInst {
-  LoadInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  LoadInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -140,7 +140,7 @@ fn StoreInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> StoreInst {
-  StoreInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  StoreInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -193,7 +193,7 @@ pub struct CastInst {
 
 ///|
 fn CastInst::from_raw(value_ref : ValueRef, owner_module : Module) -> CastInst {
-  CastInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  CastInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -248,7 +248,7 @@ fn UnaryInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> UnaryInst {
-  UnaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  UnaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -304,7 +304,7 @@ fn BinaryInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> BinaryInst {
-  BinaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  BinaryInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -453,7 +453,7 @@ pub struct ICmpInst {
 
 ///|
 fn ICmpInst::from_raw(value_ref : ValueRef, owner_module : Module) -> ICmpInst {
-  ICmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  ICmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -599,7 +599,7 @@ pub struct FCmpInst {
 
 ///|
 fn FCmpInst::from_raw(value_ref : ValueRef, owner_module : Module) -> FCmpInst {
-  FCmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  FCmpInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -760,7 +760,7 @@ fn SelectInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> SelectInst {
-  SelectInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  SelectInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -811,7 +811,9 @@ fn ExtractValueInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> ExtractValueInst {
-  ExtractValueInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  ExtractValueInst::{
+    value: ModuleAnchoredValue::new(value_ref, owner_module),
+  }
 }
 
 ///|
@@ -874,7 +876,7 @@ fn InsertValueInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> InsertValueInst {
-  InsertValueInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  InsertValueInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -927,7 +929,7 @@ pub struct PHINode {
 
 ///|
 fn PHINode::from_raw(value_ref : ValueRef, owner_module : Module) -> PHINode {
-  PHINode::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  PHINode::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -1039,7 +1041,7 @@ fn ReturnInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> ReturnInst {
-  ReturnInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  ReturnInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -1095,7 +1097,7 @@ fn BranchInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> BranchInst {
-  BranchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  BranchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -1247,7 +1249,7 @@ fn SwitchInst::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> SwitchInst {
-  SwitchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  SwitchInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -1413,7 +1415,7 @@ pub struct CallInst {
 
 ///|
 fn CallInst::from_raw(value_ref : ValueRef, owner_module : Module) -> CallInst {
-  CallInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  CallInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|

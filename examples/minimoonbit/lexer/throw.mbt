@@ -6,7 +6,7 @@
 /// Writes the formatted diagnostic to standard output.
 pub fn throw_(tok : Token, msg : String, level : ThrowLevel) -> Unit {
   let { line, col, code, file, .. } = tok
-  let str_builder = StringBuilder::new()
+  let str_builder = StringBuilder()
   let color = match level {
     Error => @color.Color::Red
     Warning => @color.Color::Yellow
@@ -55,7 +55,7 @@ pub(all) enum ThrowLevel {
 ///|
 fn get_code_line(code : String, line : Int) -> String {
   let mut lineno = line
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for c in code {
     if c == '\n' {
       lineno -= 1

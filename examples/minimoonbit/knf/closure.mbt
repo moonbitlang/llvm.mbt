@@ -16,7 +16,7 @@ pub(all) struct KnfClosure {
 ///|
 /// Renders this `KnfClosure` KNF value as text.
 pub fn KnfClosure::to_string(self : KnfClosure, ident? : Int = 0) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let indent_str = " ".repeat(ident)
   if !self.captured_vars.is_empty() {
     sb.write_string("// Captured variables: \n")

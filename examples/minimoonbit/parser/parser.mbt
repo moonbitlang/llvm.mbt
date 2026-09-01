@@ -18,7 +18,7 @@ pub(all) struct Program {
 ///|
 /// Renders this `Program` value with optional ANSI coloring.
 pub fn Program::to_string(self : Self, color? : Bool = true) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   for _, extern_fn in self.extern_funcions {
     sb.write_string(extern_fn.to_string(color~))
   }

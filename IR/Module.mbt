@@ -14,7 +14,7 @@ pub struct Module {
 
 ///|
 fn Module::from_raw(raw : @raw.LLVMModuleRef, context : Context) -> Module {
-  Module::{ owner: ModuleOwner::new(raw, context.get_owner()) }
+  Module::{ owner: ModuleOwner::new(raw, context.get_owner()), }
 }
 
 ///|

@@ -25,7 +25,7 @@ pub fn Context::top_let_to_knf(
     )
   }
   let name = self.add_new_name(top_let.name, ty)
-  let knf_top_let = KnfTopLet::{ name, ty, expr: init_expr }
+  let knf_top_let = KnfTopLet::{ name, ty, expr: init_expr, }
   self.globals.set(top_let.name, ty)
   self.global_stmts.append(stmts)
   knf_top_let
@@ -34,6 +34,6 @@ pub fn Context::top_let_to_knf(
 ///|
 /// Formats `KnfTopLet` using MiniMoonBit KNF notation.
 pub impl Show for KnfTopLet with fn output(self, logger) {
-  let { name, ty, expr } = self
+  let { name, ty, expr, } = self
   logger.write_string("let \{name} : \{ty} = \{expr};")
 }

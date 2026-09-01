@@ -19,13 +19,13 @@ pub fn Context::block_expr_to_knf(
     stmts.append(knf_stmts)
   }
   let ty = self.typekind_to_knf(expr.ty)
-  KnfBlock::{ stmts, ty }
+  KnfBlock::{ stmts, ty, }
 }
 
 ///|
 /// Renders this `KnfBlock` KNF value as text.
 pub fn KnfBlock::to_string(self : KnfBlock, ident : Int) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string("{\n")
   for stmt in self.stmts {
     sb.write_string(stmt.to_string(ident=ident + 2))
@@ -39,7 +39,7 @@ pub fn KnfBlock::to_string(self : KnfBlock, ident : Int) -> String {
 ///|
 /// Performs the `nested_to_string` operation on `KnfBlock`.
 pub fn KnfBlock::nested_to_string(self : KnfBlock) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   sb.write_string("{")
   for stmt in self.stmts {
     sb.write_string(stmt.to_string(ident=0))

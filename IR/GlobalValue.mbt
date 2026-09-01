@@ -15,7 +15,7 @@ fn GlobalVariable::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GlobalVariable {
-  GlobalVariable::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  GlobalVariable::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -66,7 +66,7 @@ fn GlobalConstant::from_raw(
   value_ref : ValueRef,
   owner_module : Module,
 ) -> GlobalConstant {
-  GlobalConstant::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  GlobalConstant::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|

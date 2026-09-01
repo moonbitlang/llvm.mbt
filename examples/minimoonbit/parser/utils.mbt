@@ -47,7 +47,7 @@ pub fn format_lines(
   head_with? : String = "└-",
   continue_with? : String = "  ",
 ) -> String {
-  let sb = StringBuilder::new()
+  let sb = StringBuilder()
   let strs = []
   for i = 0; i < lines.length(); i = i + 1 {
     if i == 0 {

@@ -84,10 +84,10 @@ pub fn Context::check_struct_def(
 ) -> StructDef raise TypeCheckError {
   let fields : Array[StructField] = Array::new()
   for field in struct_def.fields {
-    let { name, is_mut, ty } = field
+    let { name, is_mut, ty, } = field
     let ty = self.check_parser_typekind(ty.kind)
-    let ty = Type::{ kind: ty, mutable: is_mut }
-    let checked_field = StructField::{ name, ty }
+    let ty = Type::{ kind: ty, mutable: is_mut, }
+    let checked_field = StructField::{ name, ty, }
     fields.push(checked_field)
   }
   let struct_def = StructDef::{

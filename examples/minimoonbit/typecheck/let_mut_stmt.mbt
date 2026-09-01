@@ -66,7 +66,7 @@ pub fn Context::check_let_mut_stmt(
     }
   }
   let type_kind = self.ensure_type(type_kind)
-  let ty = Type::{ kind: type_kind, mutable: true }
+  let ty = Type::{ kind: type_kind, mutable: true, }
   let checked_stmt = LetMutStmt::{
     name: stmt.name,
     ty: type_kind,
@@ -102,7 +102,7 @@ test "LetMutStmt to_string Test - Basic" {
 test "LetMutStmt to_string Test - Complex" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("a", { kind: TypeKind::Int, mutable: false })
+  ctx.type_env.set("a", { kind: TypeKind::Int, mutable: false, })
   let code =
     #|let mut sum = a + 1 ;
   let tokens = @lexer.tokenize(code)

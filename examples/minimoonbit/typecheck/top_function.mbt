@@ -113,9 +113,9 @@ pub fn Context::check_top_function(
   let param_list = Array::new()
   for i, param in func.param_list {
     let { name, .. } = param
-    let param_ty = { kind: param_types[i], mutable: false }
+    let param_ty = { kind: param_types[i], mutable: false, }
     self.type_env.set(name, param_ty)
-    param_list.push(Param::{ name, ty: param_ty.kind })
+    param_list.push(Param::{ name, ty: param_ty.kind, })
   }
   if !(func.typeTag is "") {
     guard self.struct_defs.get(func.typeTag) is Some(struct_def) else {
@@ -184,7 +184,7 @@ test "TopFunction to_string Test - Main" {
   let color = false
   let ctx = Context::new()
   ctx.func_types.set("main", Function([], Unit))
-  ctx.type_env.set("main", Type::{ kind: Function([], Unit), mutable: false })
+  ctx.type_env.set("main", Type::{ kind: Function([], Unit), mutable: false, })
   let code =
     #|fn main { let x = 42 ; }
   let tokens = @lexer.tokenize(code)

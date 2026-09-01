@@ -88,7 +88,11 @@ test "function parameters use entry allocas and loads" {
 ///|
 test "catalog prototypes become local declarations" {
   let catalog = PrototypeCatalog::new()
-  catalog.commitExtern({ name: "sin", parameters: ["value"], kind: @ast.Normal })
+  catalog.commitExtern({
+    name: "sin",
+    parameters: ["value"],
+    kind: @ast.Normal,
+  })
   let mod = compileExpression(
     catalog,
     @ast.Call("sin", [@ast.Number(0.0)]),
@@ -241,7 +245,7 @@ test "catalog rejects duplicate and conflicting definitions" {
     _ => fail("expected duplicate definition")
   }
   try
-    catalog.commitExtern({ name: "f", parameters: [], kind: @ast.Normal })
+    catalog.commitExtern({ name: "f", parameters: [], kind: @ast.Normal, })
   catch {
     CodegenError::ConflictingPrototype("f", 1, 0) => ()
     error => fail("unexpected error: \{Repr(error)}")
@@ -253,7 +257,7 @@ test "catalog rejects duplicate and conflicting definitions" {
 ///|
 test "calls validate arity before lowering arguments" {
   let catalog = PrototypeCatalog::new()
-  catalog.commitExtern({ name: "one", parameters: ["x"], kind: @ast.Normal })
+  catalog.commitExtern({ name: "one", parameters: ["x"], kind: @ast.Normal, })
   try
     compileExpression(
       catalog,
@@ -314,10 +318,10 @@ test "custom operators lower to ordinary function calls" {
 test "operator prototype shape is validated outside the parser" {
   let catalog = PrototypeCatalog::new()
   let malformed : Array[@ast.Prototype] = [
-    { name: "unary!", parameters: [], kind: @ast.Unary('!') },
-    { name: "unarya", parameters: ["x"], kind: @ast.Unary('a') },
-    { name: "binary%", parameters: ["x", "y"], kind: @ast.Binary('%', 0) },
-    { name: "binary+", parameters: ["x", "y"], kind: @ast.Binary('+', 50) },
+    { name: "unary!", parameters: [], kind: @ast.Unary('!'), },
+    { name: "unarya", parameters: ["x"], kind: @ast.Unary('a'), },
+    { name: "binary%", parameters: ["x", "y"], kind: @ast.Binary('%', 0), },
+    { name: "binary+", parameters: ["x", "y"], kind: @ast.Binary('+', 50), },
   ]
   for prototype in malformed {
     try catalog.commitExtern(prototype) catch {
@@ -464,7 +468,7 @@ test "mutable variables use entry allocas and restore shadowed bindings" {
             @ast.Binary('+', @ast.Variable("x"), @ast.Number(1.0)),
           ),
         },
-        { name: "y", initializer: None },
+        { name: "y", initializer: None, },
       ],
       @ast.Binary('+', @ast.Assign("y", @ast.Variable("x")), @ast.Variable("y")),
     ),
@@ -502,11 +506,11 @@ test "invalid mutable AST nodes fail before unsafe backend operations" {
   let catalog = PrototypeCatalog::new()
   let invalid_bindings : Array[@ast.Expr] = [
     @ast.Var([], @ast.Number(0.0)),
-    @ast.Var([{ name: "", initializer: None }], @ast.Number(0.0)),
+    @ast.Var([{ name: "", initializer: None, }], @ast.Number(0.0)),
     @ast.Var(
       [
-        { name: "x", initializer: None },
-        { name: "x", initializer: Some(@ast.Number(1.0)) },
+        { name: "x", initializer: None, },
+        { name: "x", initializer: Some(@ast.Number(1.0)), },
       ],
       @ast.Variable("x"),
     ),

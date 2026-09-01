@@ -935,8 +935,8 @@ fn handle_primitive_method_call(
 test "ApplyExpr to_string Test" {
   let color = false
   let ctx = Context::new()
-  ctx.type_env.set("x", { kind: TypeKind::Double, mutable: false })
-  ctx.type_env.set("point", { kind: TypeKind::Struct("Point"), mutable: false })
+  ctx.type_env.set("x", { kind: TypeKind::Double, mutable: false, })
+  ctx.type_env.set("point", { kind: TypeKind::Struct("Point"), mutable: false, })
   ctx.type_env.set("arr", {
     kind: TypeKind::Array(TypeKind::Int),
     mutable: false,
@@ -948,8 +948,8 @@ test "ApplyExpr to_string Test" {
   ctx.struct_defs.set("Point", {
     name: "Point",
     fields: [
-      { name: "x", ty: { kind: TypeKind::Int, mutable: false } },
-      { name: "y", ty: { kind: TypeKind::Int, mutable: false } },
+      { name: "x", ty: { kind: TypeKind::Int, mutable: false, }, },
+      { name: "y", ty: { kind: TypeKind::Int, mutable: false, }, },
     ],
     methods: Map([]),
   })

@@ -14,7 +14,7 @@ pub struct Function {
 
 ///|
 fn Function::from_raw(value_ref : ValueRef, owner_module : Module) -> Function {
-  Function::{ value: ModuleAnchoredValue::new(value_ref, owner_module) }
+  Function::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
 }
 
 ///|
@@ -585,7 +585,7 @@ fn Argument::construct(
   idx : Int,
   owner_module : Module,
 ) -> Self {
-  Argument::{ value_ref, idx, owner_module }
+  Argument::{ value_ref, idx, owner_module, }
 }
 
 ///|
