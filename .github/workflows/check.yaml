@@ -24,7 +24,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runner.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Verify runner architecture
         shell: bash
@@ -120,7 +120,7 @@ jobs:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-22.04
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install stable MoonBit
         shell: bash
@@ -171,7 +171,7 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runner.os }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Install stable MoonBit
         shell: bash
@@ -194,7 +194,7 @@ jobs:
   moon-json-format-check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Check moon.*.json format
         shell: bash
@@ -215,7 +215,7 @@ jobs:
       FORCE_COLOR: 1
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Spell check repository
         uses: crate-ci/typos@v1.19.0
