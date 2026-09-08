@@ -14,7 +14,7 @@ pub fn Context::struct_def_to_knf(
   self : Context,
   struct_def : @typecheck.StructDef,
 ) -> KnfStructDef raise KnfTransformError {
-  let knf_fields : Array[(String, Bool, Type)] = Array::Array(capacity=0)
+  let knf_fields : Array[(String, Bool, Type)] = []
   for field in struct_def.fields {
     let { name, ty, } = field
     let { kind: typekind, mutable: is_mut, } = ty

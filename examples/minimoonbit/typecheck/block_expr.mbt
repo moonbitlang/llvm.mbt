@@ -48,7 +48,7 @@ pub fn Context::check_block_expr(
   block_expr : @parser.BlockExpr,
 ) -> BlockExpr {
   self.enter_scope()
-  let checked_stmts = Array::Array(capacity=0)
+  let checked_stmts = []
   for stmt in block_expr.stmts {
     let checked_stmt = try self.check_stmt(stmt) catch {
       TypeCheckError(msg) => {

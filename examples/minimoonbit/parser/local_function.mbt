@@ -96,7 +96,7 @@ pub fn parse_local_function(
   guard tokens is [{ kind: Bracket('('), .. }, .. tokens] else {
     raise ParseError("Expect '('")
   }
-  let params : Array[(String, Type?)] = Array::Array(capacity=0)
+  let params : Array[(String, Type?)] = []
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket(')'), .. }, .. tokens] => break tokens

@@ -82,7 +82,7 @@ pub fn Context::check_struct_def(
   self : Self,
   struct_def : @parser.StructDef,
 ) -> StructDef raise TypeCheckError {
-  let fields : Array[StructField] = Array::Array(capacity=0)
+  let fields : Array[StructField] = []
   for field in struct_def.fields {
     let { name, is_mut, ty, } = field
     let ty = self.check_parser_typekind(ty.kind)

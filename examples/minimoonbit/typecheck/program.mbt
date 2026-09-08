@@ -266,7 +266,7 @@ pub fn Context::collect_struct_or_enum_names(
     } else {
       let struct_def = StructDef::{
         name: struct_def.name,
-        fields: Array::Array(capacity=0),
+        fields: [],
         methods: Map([]),
       }
       self.struct_defs.set(struct_def.name, struct_def)
@@ -277,10 +277,7 @@ pub fn Context::collect_struct_or_enum_names(
       self.struct_defs.contains(enum_def.name) {
       raise TypeCheckError("Duplicate enum name: \{enum_def.name}")
     } else {
-      let enum_def = EnumDef::{
-        name: enum_def.name,
-        enum_fields: Array::Array(capacity=0),
-      }
+      let enum_def = EnumDef::{ name: enum_def.name, enum_fields: [], }
       self.enum_defs.set(enum_def.name, enum_def)
     }
   }
@@ -296,7 +293,7 @@ pub fn Context::collect_function_types(
     if self.func_types.contains(ext_func.fname) {
       raise TypeCheckError("Duplicate function name: \{ext_func.fname}")
     } else {
-      let param_types = Array::Array(capacity=0)
+      let param_types = []
       for param in ext_func.param_list {
         let { ty, .. } = param
         let ty = self.check_parser_type(ty)
@@ -318,7 +315,7 @@ pub fn Context::collect_function_types(
         "Duplicate function name: \{func.typeTag}::\{func.fname}",
       )
     } else {
-      let param_types = Array::Array(capacity=0)
+      let param_types = []
       for param in func.param_list {
         let { ty, .. } = param
         let ty = self.check_parser_type(ty)
@@ -338,7 +335,7 @@ pub fn Context::find_enum_def_by_variant_name(
   self : Self,
   variant_name : String,
 ) -> Array[EnumDef] {
-  let enum_defs = Array::Array(capacity=0)
+  let enum_defs = []
   for _, enum_def in self.enum_defs {
     if enum_def.get_field(variant_name) is Some(_) {
       enum_defs.push(enum_def)

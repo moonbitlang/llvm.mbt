@@ -136,7 +136,7 @@ pub fn parse_match_expr(
     )
     raise ParseError("Expected `{` after match expression")
   }
-  let match_arms : Array[MatchArm] = Array::Array(capacity=0)
+  let match_arms : Array[MatchArm] = []
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket('}'), .. }, .. tokens] => break tokens

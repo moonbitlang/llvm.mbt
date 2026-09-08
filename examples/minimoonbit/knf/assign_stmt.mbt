@@ -27,7 +27,7 @@ pub fn Context::assign_stmt_to_knf(
   self : Context,
   assign_stmt : @typecheck.AssignStmt,
 ) -> Array[KnfStmt] raise KnfTransformError {
-  let stmts = Array::Array(capacity=0)
+  let stmts = []
   let (lv_stmts, knf_left_value) = self.left_value_to_knf(
     assign_stmt.left_value,
   )
@@ -135,7 +135,7 @@ pub fn Context::left_value_to_knf(
       guard self.lookup_name(name) is Some((name, _)) else {
         raise KnfTransformError("Undefined variable in left value: \{name}")
       }
-      (Array::Array(capacity=0), KnfLeftValue::Ident(name))
+      ([], KnfLeftValue::Ident(name))
     }
     ArrayAccess(array_lv, index_expr) => {
       let (stmts, knf_array_lv) = self.left_value_to_knf(array_lv)

@@ -110,7 +110,7 @@ pub fn Context::check_top_function(
     raise TypeCheckError("Function not found in environment: \{func.fname}")
   }
   self.enter_scope()
-  let param_list = Array::Array(capacity=0)
+  let param_list = []
   for i, param in func.param_list {
     let { name, .. } = param
     let param_ty = { kind: param_types[i], mutable: false, }

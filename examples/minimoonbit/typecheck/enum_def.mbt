@@ -86,7 +86,7 @@ pub fn Context::check_enum_def(
   self : Self,
   enum_def : @parser.EnumDef,
 ) -> EnumDef raise TypeCheckError {
-  let fields : Array[EnumField] = Array::Array(capacity=0)
+  let fields : Array[EnumField] = []
   for field in enum_def.enum_fields {
     let { name, types, } = field
     let checked_types : Array[TypeKind] = types.map(t => {

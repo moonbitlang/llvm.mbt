@@ -13,7 +13,7 @@ pub fn Context::block_expr_to_knf(
   self : Context,
   expr : @typecheck.BlockExpr,
 ) -> KnfBlock raise KnfTransformError {
-  let stmts = Array::Array(capacity=0)
+  let stmts = []
   for stmt in expr.stmts {
     let knf_stmts = self.stmt_to_knf(stmt)
     stmts.append(knf_stmts)

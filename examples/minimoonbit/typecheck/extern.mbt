@@ -86,7 +86,7 @@ pub fn Context::check_extern_function(
   guard self.func_types.get(func.fname) is Some(Function(param_types, ret_ty)) else {
     raise TypeCheckError("Function not found in environment: \{func.fname}")
   }
-  let param_list = Array::Array(capacity=0)
+  let param_list = []
   for i, param in func.param_list {
     let { name, .. } = param
     let param_ty = { kind: param_types[i], mutable: false, }

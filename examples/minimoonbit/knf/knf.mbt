@@ -55,7 +55,7 @@ pub fn Context::program_to_knf(
   // Step 1, process all enum definitions
   for enum_name, enum_def in prog.enum_defs {
     let knf_union = self.enum_to_knf(enum_def)
-    let union_variant_names = Array::Array(capacity=0)
+    let union_variant_names = []
     unions.set(enum_name, knf_union)
     for variant in knf_union.variants {
       struct_defs.set(variant.name, variant)

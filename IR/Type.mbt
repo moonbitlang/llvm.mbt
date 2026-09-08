@@ -2131,7 +2131,7 @@ pub fn StructType::getElementType(self : StructType, idx : Int) -> &Type? {
 /// **Notes:** Use `isOpaque` before relying on this array to distinguish an
 /// opaque struct from a complete zero-field struct.
 pub fn StructType::elements(self : StructType) -> Array[&Type] {
-  let elements : Array[&Type] = Array::Array(capacity=0)
+  let elements : Array[&Type] = []
   for i in 0..<self.numOfElements() {
     elements.push(
       self

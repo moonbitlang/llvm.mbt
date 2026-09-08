@@ -4,7 +4,7 @@ pub fn Context::let_stmt_to_knf(
   self : Context,
   let_stmt : @typecheck.LetStmt,
 ) -> Array[KnfStmt] raise KnfTransformError {
-  let stmts = Array::Array(capacity=0)
+  let stmts = []
   let (expr_stmts, init_expr) = self.expr_to_knf(let_stmt.expr)
   stmts.append(expr_stmts)
   let ty = self.typekind_to_knf(let_stmt.ty)
@@ -20,7 +20,7 @@ fn Context::bind_pattern_to_expr(
   ty : Type,
   expr : KnfExpr,
 ) -> Array[KnfStmt] raise KnfTransformError {
-  let stmts = Array::Array(capacity=0)
+  let stmts = []
   match (pattern.kind, ty, expr) {
     (Ident(name), ty, expr) => {
       let new_name = self.add_new_name(name, ty)

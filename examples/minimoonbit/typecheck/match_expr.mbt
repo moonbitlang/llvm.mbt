@@ -151,7 +151,7 @@ pub fn Context::check_match_expr_type(
       Error,
     )
   }
-  let checked_arms : Array[MatchArm] = Array::Array(capacity=0)
+  let checked_arms : Array[MatchArm] = []
   for arm in match_expr.arms {
     let pattern = try self.from_parser_pattern(arm.pattern) catch {
       err => {
@@ -337,7 +337,7 @@ fn Context::full_pattern_set_of_type_impl(
         Some(enum_def) => {
           // Mark this enum as being visited
           visiting.add(enum_name)
-          let variants = Array::Array(capacity=0)
+          let variants = []
           for field in enum_def.enum_fields {
             let { name, types, } = field
             let sub_pattern_sets = types.map(t => {
@@ -405,9 +405,9 @@ fn PatternSet::subtract(
           _ => ()
         }
       }
-      let unioned_sets = Array::Array(capacity=0)
+      let unioned_sets = []
       for i in 0..<subsets.length() {
-        let new_subsets = Array::Array(capacity=0)
+        let new_subsets = []
         for k in 0..<i {
           new_subsets.push(Single(pats[k].kind))
         }
@@ -452,9 +452,9 @@ fn PatternSet::subtract(
           _ => ()
         }
       }
-      let unioned_sets = Array::Array(capacity=0)
+      let unioned_sets = []
       for i in 0..<subsets.length() {
-        let new_subsets = Array::Array(capacity=0)
+        let new_subsets = []
         for k in 0..<i {
           new_subsets.push(Single(pats[k].kind))
         }
@@ -477,7 +477,7 @@ fn PatternSet::subtract(
     // If enum constructor and variant have different names, they don't overlap
     (EnumConstructor(_, _, _), EnumVariant(_, _, _)) => self
     (Union(sets), pat) => {
-      let new_sets = Array::Array(capacity=0)
+      let new_sets = []
       for s in sets {
         let subtracted = s.subtract(pat)
         if subtracted is Empty {

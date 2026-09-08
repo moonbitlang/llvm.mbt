@@ -125,8 +125,8 @@ pub(all) struct Context {
 pub fn Context::new() -> Context {
   Context::{
     name_env: Env::new(),
-    capture: Array::Array(capacity=0),
-    global_stmts: Array::Array(capacity=0),
+    capture: [],
+    global_stmts: [],
     globals: Map([]),
     unions: Map([]),
     struct_defs: Map([]),

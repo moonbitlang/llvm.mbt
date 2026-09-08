@@ -48,7 +48,7 @@ pub fn Context::local_function_to_knf(
   local_function : @typecheck.LocalFunction,
 ) -> KnfClosure raise KnfTransformError {
   // add function type and name to name env
-  let param_types : Array[Type] = Array::Array(capacity=0)
+  let param_types : Array[Type] = []
   for param in local_function.param_list {
     let (_, param_ty) = param
     let param_type = self.typekind_to_knf(param_ty.kind)
@@ -59,7 +59,7 @@ pub fn Context::local_function_to_knf(
   let closure_name = self.add_new_name(local_function.fname, closure_type)
   // enter new scope for function body
   self.enter_scope()
-  let knf_params = Array::Array(capacity=0)
+  let knf_params = []
   for param in local_function.param_list {
     let (param_name, param_ty) = param
     let param_type = self.typekind_to_knf(param_ty.kind)

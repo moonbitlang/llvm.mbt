@@ -83,7 +83,7 @@ pub fn parse_struct_construct(
     println("Compiler ICE: Misuse parse_struct_or_enum_construct, expected '{'")
     panic()
   }
-  let fields : Array[(String, Expr)] = Array::Array(capacity=0)
+  let fields : Array[(String, Expr)] = []
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket('}'), .. }, .. rest] => break rest

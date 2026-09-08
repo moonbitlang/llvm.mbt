@@ -336,7 +336,7 @@ fn parse_paren_expr(
     println("Compiler ICE: Misuse parse_paren_or_tuple_expr")
     panic()
   }
-  let exprs : Array[Expr] = Array::Array(capacity=0)
+  let exprs : Array[Expr] = []
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket(')'), .. }, .. rest] => break rest
@@ -420,7 +420,7 @@ fn parse_array_expr(
     println("Compiler ICE: Misuse parse_array_expr")
     panic()
   }
-  let exprs : Array[Expr] = Array::Array(capacity=0)
+  let exprs : Array[Expr] = []
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket(']'), .. }, .. rest] => break rest
@@ -460,7 +460,7 @@ fn parse_enum_construct(
       (Some(name1), variant, tokens)
     _ => (None, name1, tokens)
   }
-  let exprs : Array[Expr] = Array::Array(capacity=0)
+  let exprs : Array[Expr] = []
   guard tokens is [{ kind: Bracket('('), .. }, .. tokens] else {
     let kind = AtomExprKind::EnumConstruct(tag, variant_name, exprs)
     let atom_expr = AtomExpr::new(kind, tokens, tokens)

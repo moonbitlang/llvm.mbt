@@ -17,7 +17,7 @@ pub fn Context::extern_to_knf(
   self : Context,
   ext_func : @typecheck.ExternFunction,
 ) -> KnfExtern raise KnfTransformError {
-  let param_types : Array[Type] = Array::Array(capacity=0)
+  let param_types : Array[Type] = []
   for param in ext_func.param_list {
     let param_type = self.typekind_to_knf(param.ty)
     param_types.push(param_type)
