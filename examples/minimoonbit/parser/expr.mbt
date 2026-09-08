@@ -361,7 +361,7 @@ fn BinaryOp::precedence(self : Self) -> Int {
 fn parse_expr_list(
   tokens : ArrayView[Token],
 ) -> (Array[Expr], ArrayView[Token]) raise ParseError {
-  let exprs : Array[Expr] = Array::new()
+  let exprs : Array[Expr] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket(')'), .. }, ..] as tokens => break tokens

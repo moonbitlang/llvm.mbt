@@ -127,7 +127,7 @@ pub fn Context::check_for_stmt(
   self.enter_scope()
 
   // Check and bind init variables (they are mutable)
-  let checked_inits : Array[(String, Expr)] = Array::new()
+  let checked_inits : Array[(String, Expr)] = Array::Array(capacity=0)
   for init in for_stmt.inits {
     let (name, init_expr) = init
     let checked_expr = self.check_expr(init_expr)
@@ -162,7 +162,7 @@ pub fn Context::check_for_stmt(
   }
 
   // Check step statements
-  let checked_steps : Array[(String, AssignOp, Expr)] = Array::new()
+  let checked_steps : Array[(String, AssignOp, Expr)] = Array::Array(capacity=0)
   for step in for_stmt.steps {
     let (name, op, step_expr) = step
     // Verify the variable exists in the current scope

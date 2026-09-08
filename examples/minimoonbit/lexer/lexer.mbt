@@ -217,7 +217,7 @@ pub fn tokenize(
   source_file? : String = "demo",
 ) -> Array[Token] raise TokenizeError {
   let source_code = code
-  let tokens = Array::new()
+  let tokens = Array::Array(capacity=0)
   let mut line = 1
   let mut col = 1
   let mut idx = 0

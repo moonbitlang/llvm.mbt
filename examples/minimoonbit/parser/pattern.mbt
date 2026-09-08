@@ -177,7 +177,7 @@ pub fn parse_pattern(
       } else {
         (None, name1, tokens)
       }
-      let patterns : Array[Pattern] = Array::new()
+      let patterns : Array[Pattern] = Array::Array(capacity=0)
       guard tokens is [{ kind: Bracket('('), .. } as tok, .. tokens] else {
         let patternkind = EnumVariant(tag, enum_name, patterns)
         let pattern = Pattern::{ kind: patternkind, }
@@ -237,7 +237,7 @@ pub fn parse_pattern(
       (pattern, tokens)
     }
     [{ kind: Bracket('('), .. } as tok, .. tokens] => {
-      let patterns : Array[Pattern] = Array::new()
+      let patterns : Array[Pattern] = Array::Array(capacity=0)
       let tokens = for current = tokens {
         match current {
           [{ kind: Bracket(')'), .. }, .. tokens] => break tokens

@@ -80,7 +80,7 @@ pub fn Context::check_struct_construct_expr(
     self.throw_(sc_expr.toks[0], msg, Error)
   }
   let len = min(sc_expr.fields.length(), struct_def.fields.length())
-  let checked_fields : Array[(String, Expr)] = Array::new()
+  let checked_fields : Array[(String, Expr)] = Array::Array(capacity=0)
   for i in 0..<len {
     let (field_name, field_expr) = sc_expr.fields[i]
     let field_type = match struct_def.get_field_type(field_name) {

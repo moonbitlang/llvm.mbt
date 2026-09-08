@@ -95,7 +95,7 @@ pub fn Module::getFunction(self : Self, name : String) -> Function? {
 ///|
 /// Returns all functions in their current module order.
 pub fn Module::getFunctions(self : Self) -> Array[Function] {
-  let funcs : Array[Function] = Array::new()
+  let funcs : Array[Function] = Array::Array(capacity=0)
   for func = self.getFirstFunction() {
     match func {
       Some(f) => {

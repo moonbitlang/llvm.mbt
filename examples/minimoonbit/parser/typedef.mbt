@@ -103,7 +103,7 @@ fn parse_tuple_or_function_type(
     println("Compiler ICE: Misuse parse_tuple_or_function_type")
     panic()
   }
-  let tys : Array[TypeKind] = Array::new()
+  let tys : Array[TypeKind] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Upper(_) | Bracket('('), .. }, ..] as tokens => {

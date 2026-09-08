@@ -18,8 +18,8 @@ pub fn Context::top_function_to_knf(
   top_func : @typecheck.TopFunction,
 ) -> KnfFunction raise KnfTransformError {
   self.enter_scope()
-  let knf_params = Array::new()
-  let param_types : Array[Type] = Array::new()
+  let knf_params = Array::Array(capacity=0)
+  let param_types : Array[Type] = Array::Array(capacity=0)
   for param in top_func.param_list {
     let { name: param_name, ty: param_ty, } = param
     let param_type = self.typekind_to_knf(param_ty)

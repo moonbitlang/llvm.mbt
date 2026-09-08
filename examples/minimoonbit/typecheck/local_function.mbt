@@ -86,7 +86,7 @@ pub fn Context::check_local_function(
   self : Context,
   func : @parser.LocalFunction,
 ) -> LocalFunction raise TypeCheckError {
-  let param_types = Array::new()
+  let param_types = Array::Array(capacity=0)
   for param in func.param_list {
     let (_, param_type) = param
     let param_ty = match param_type {
@@ -111,7 +111,7 @@ pub fn Context::check_local_function(
   let fty = Type::{ kind: fty, mutable: false, }
   self.type_env.set(func.fname, fty)
   self.enter_scope()
-  let param_list = Array::new()
+  let param_list = Array::Array(capacity=0)
   for i, param in func.param_list {
     let (param_name, _) = param
     let param_ty = Type::{ kind: param_types[i], mutable: false, }

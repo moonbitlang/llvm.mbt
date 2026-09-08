@@ -156,7 +156,7 @@ pub fn parse_for_stmt(
     println("Compiler ICE: Misuse parse_for_stmt")
     panic()
   }
-  let inits : Array[(String, Expr)] = Array::new()
+  let inits : Array[(String, Expr)] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Lower(name), .. }, { kind: AssignOp(Assign), .. }, .. tokens] => {
@@ -203,7 +203,7 @@ pub fn parse_for_stmt(
     }
     (Some(expr), tokens)
   }
-  let steps : Array[(String, AssignOp, Expr)] = Array::new()
+  let steps : Array[(String, AssignOp, Expr)] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Lower(name), .. }, { kind: AssignOp(op), .. }, .. tokens] => {

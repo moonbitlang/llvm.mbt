@@ -70,7 +70,7 @@ pub fn parse_enum_field(
       "Expected enum field name, while got \{tokens[0].kind}, \{tokens[1].kind}...",
     )
   }
-  let types : Array[Type] = Array::new()
+  let types : Array[Type] = Array::Array(capacity=0)
   let mut last_tok = Some(name_tok)
   guard tokens is [{ kind: Bracket('('), .. }, .. rest] else {
     let tokens = if tokens is [{ kind: Symbol(";"), .. }, .. rest] {
@@ -129,7 +129,7 @@ pub fn parse_enum_def(
   guard tokens is [{ kind: Bracket('{'), .. }, .. rest] else {
     raise ParseError("Expected '{' after enum name")
   }
-  let enum_fields : Array[EnumField] = Array::new()
+  let enum_fields : Array[EnumField] = Array::Array(capacity=0)
   let rest = for current = rest {
     match current {
       [{ kind: Bracket('}'), .. }, .. rest] => break rest

@@ -101,7 +101,7 @@ pub fn Context::substitute_apply_expr_type_var(
       ApplyExprKind::FieldAccess(new_struct_expr, field_name)
     }
     ApplyExprKind::Call(callee_expr, arg_exprs) => {
-      let new_arg_exprs = Array::new()
+      let new_arg_exprs = Array::Array(capacity=0)
       for arg in arg_exprs {
         let new_arg = self.substitute_expr_type_var(arg)
         new_arg_exprs.push(new_arg)
@@ -202,7 +202,7 @@ pub fn Context::substitute_atom_expr_type_var(
       AtomExprKind::Paren(new_inner_expr)
     }
     AtomExprKind::Array(exprs) => {
-      let new_exprs = Array::new()
+      let new_exprs = Array::Array(capacity=0)
       for expr in exprs {
         let new_expr = self.substitute_expr_type_var(expr)
         new_exprs.push(new_expr)
@@ -215,7 +215,7 @@ pub fn Context::substitute_atom_expr_type_var(
       AtomExprKind::ArrayMake(new_size_expr, new_init_expr)
     }
     AtomExprKind::Tuple(exprs) => {
-      let new_exprs = Array::new()
+      let new_exprs = Array::Array(capacity=0)
       for expr in exprs {
         let new_expr = self.substitute_expr_type_var(expr)
         new_exprs.push(new_expr)
@@ -237,7 +237,7 @@ pub fn Context::substitute_atom_expr_type_var(
       AtomExprKind::BitCast(new_target_ty, new_expr)
     }
     AtomExprKind::EnumConstruct(tag, name, exprs) => {
-      let new_exprs = Array::new()
+      let new_exprs = Array::Array(capacity=0)
       for expr in exprs {
         let new_expr = self.substitute_expr_type_var(expr)
         new_exprs.push(new_expr)
@@ -254,7 +254,7 @@ pub fn Context::substitute_struct_construct_expr_type_var(
   self : Context,
   sc_expr : StructConstructExpr,
 ) -> StructConstructExpr raise TypeCheckError {
-  let new_fields = Array::new()
+  let new_fields = Array::Array(capacity=0)
   for field in sc_expr.fields {
     let (field_name, field_expr) = field
     let new_field_expr = self.substitute_expr_type_var(field_expr)
@@ -386,7 +386,7 @@ pub fn Context::substitute_block_expr_type_var(
   block_expr : BlockExpr,
 ) -> BlockExpr raise TypeCheckError {
   let new_ty_kind = self.ensure_type(block_expr.ty)
-  let new_stmts = Array::new()
+  let new_stmts = Array::Array(capacity=0)
   for stmt in block_expr.stmts {
     let new_stmt = self.substitute_stmt_type_var(stmt)
     new_stmts.push(new_stmt)
@@ -430,7 +430,7 @@ pub fn Context::substitute_match_expr_type_var(
 ) -> MatchExpr raise TypeCheckError {
   let new_ty_kind = self.ensure_type(match_expr.ty)
   let new_cond_expr = self.substitute_expr_type_var(match_expr.cond)
-  let new_arms = Array::new()
+  let new_arms = Array::Array(capacity=0)
   for arm in match_expr.arms {
     let { pattern, match_guard, body, toks, } = arm
     let match_body = match match_guard {
@@ -464,14 +464,14 @@ pub fn Context::substitute_for_stmt_type_var(
   self : Context,
   for_stmt : ForStmt,
 ) -> ForStmt raise TypeCheckError {
-  let new_inits = Array::new()
+  let new_inits = Array::Array(capacity=0)
   for init in for_stmt.inits {
     let (name, expr) = init
     let new_expr = self.substitute_expr_type_var(expr)
     new_inits.push((name, new_expr))
   }
   let new_cond = self.substitute_expr_type_var(for_stmt.cond)
-  let new_steps = Array::new()
+  let new_steps = Array::Array(capacity=0)
   for step in for_stmt.steps {
     let (name, op, expr) = step
     let new_expr = self.substitute_expr_type_var(expr)
@@ -492,7 +492,7 @@ pub fn Context::substitute_local_function_type_var(
   self : Context,
   local_function : LocalFunction,
 ) -> LocalFunction raise TypeCheckError {
-  let new_param_list = Array::new()
+  let new_param_list = Array::Array(capacity=0)
   for param in local_function.param_list {
     let (param_name, param_ty) = param
     let new_param_ty_kind = self.ensure_type(param_ty.kind)
@@ -522,7 +522,7 @@ pub fn Context::substitute_top_function_type_var(
   self : Context,
   top_function : TopFunction,
 ) -> TopFunction raise TypeCheckError {
-  let new_param_list = Array::new()
+  let new_param_list = Array::Array(capacity=0)
   for param in top_function.param_list {
     let new_param_ty_kind = self.ensure_type(param.ty)
     new_param_list.push(Param::{ name: param.name, ty: new_param_ty_kind, })

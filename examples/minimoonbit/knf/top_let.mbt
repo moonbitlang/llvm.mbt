@@ -15,7 +15,7 @@ pub fn Context::top_let_to_knf(
   self : Context,
   top_let : @typecheck.TopLet,
 ) -> KnfTopLet raise KnfTransformError {
-  let stmts = Array::new()
+  let stmts = Array::Array(capacity=0)
   let (expr_stmts, init_expr) = self.expr_to_knf(top_let.expr)
   stmts.append(expr_stmts)
   let ty = self.typekind_to_knf(top_let.ty.kind)

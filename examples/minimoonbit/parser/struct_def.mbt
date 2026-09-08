@@ -105,7 +105,7 @@ pub fn parse_struct_def(
   guard tokens is [{ kind: Bracket('{'), .. }, .. tokens] else {
     raise ParseError("Failed Parsing StructDef: Expect '{'")
   }
-  let fields : Array[StructField] = Array::new()
+  let fields : Array[StructField] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket('}'), .. }, .. rest] => break rest

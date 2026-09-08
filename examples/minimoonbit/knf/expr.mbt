@@ -267,7 +267,7 @@ pub fn Context::expr_to_knf(
       (stmts, Neg(tmp_name))
     }
     BinaryExpr(bin_op, left_expr, right_expr) => {
-      let stmts : Array[KnfStmt] = Array::new()
+      let stmts : Array[KnfStmt] = Array::Array(capacity=0)
       let (left_stmts, left_knf_expr) = self.expr_to_knf(left_expr)
       let (right_stmts, right_knf_expr) = self.expr_to_knf(right_expr)
       stmts.append(left_stmts)

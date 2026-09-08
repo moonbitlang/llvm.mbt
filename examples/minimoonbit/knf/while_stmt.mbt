@@ -34,7 +34,7 @@ pub fn Context::for_stmt_to_knf(
   //   }
   // }
 
-  let stmts = Array::new()
+  let stmts = Array::Array(capacity=0)
 
   // 1. Transform init statements
   for init in for_stmt.inits {
@@ -57,7 +57,7 @@ pub fn Context::for_stmt_to_knf(
   let cond_block = KnfBlock::{ stmts: cond_stmts, ty: cond_ty, }
 
   // 3. Transform body block
-  let body_stmts = Array::new()
+  let body_stmts = Array::Array(capacity=0)
   // Add original body statements
   for stmt in for_stmt.body.stmts {
     let knf_stmts = self.stmt_to_knf(stmt)

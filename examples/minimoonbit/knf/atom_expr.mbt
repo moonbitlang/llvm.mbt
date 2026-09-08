@@ -63,9 +63,9 @@ pub fn Context::atom_expr_to_knf(
       (stmts, TupleLiteral(knf_names))
     }
     StructConstruct(sc_expr) => {
-      let stmts : Array[KnfStmt] = Array::new()
+      let stmts : Array[KnfStmt] = Array::Array(capacity=0)
       let { name, fields, .. } = sc_expr
-      let knf_fields : Array[(String, Name)] = Array::new()
+      let knf_fields : Array[(String, Name)] = Array::Array(capacity=0)
       for field in fields {
         let (field_name, field_expr) = field
         let (field_stmts, field_knf_expr) = self.expr_to_knf(field_expr)
@@ -108,8 +108,8 @@ pub fn Context::atom_expr_to_knf(
           "Undefined variant: \{variant} for enum tag: \{tag}",
         )
       }
-      let stmts : Array[KnfStmt] = Array::new()
-      let knf_names : Array[Name] = Array::new()
+      let stmts : Array[KnfStmt] = Array::Array(capacity=0)
+      let knf_names : Array[Name] = Array::Array(capacity=0)
       // first field is tag
       let let_tag_name = self.add_temp(Int)
       stmts.push(Let(let_tag_name, Int, Int(idx)))
@@ -120,7 +120,7 @@ pub fn Context::atom_expr_to_knf(
         let expr_name = self.expr_to_knf_name(expr_knf_expr, expr_ty, stmts)
         knf_names.push(expr_name)
       }
-      let knf_fields : Array[(String, Name)] = Array::new()
+      let knf_fields : Array[(String, Name)] = Array::Array(capacity=0)
       knf_fields.push(("tag", let_tag_name))
       for i in 0..<knf_names.length() {
         knf_fields.push(("$\{i}", knf_names[i]))

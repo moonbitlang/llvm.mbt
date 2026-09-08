@@ -389,7 +389,7 @@ pub fn Context::check_apply_expr(
         }
 
         // Check and collect all arguments (self + user provided args)
-        let all_args = Array::new()
+        let all_args = Array::Array(capacity=0)
         let base_as_expr = Expr::{
           kind: ExprKind::ApplyExpr(checked_base_expr),
           ty: checked_base_expr.ty,
@@ -495,7 +495,7 @@ pub fn Context::check_apply_expr(
         self.throw_(apply_expr.toks[0], msg, Error)
       }
       let arg_len = min(arg_exprs.length(), arg_tys.length())
-      let new_arg_exprs = Array::new()
+      let new_arg_exprs = Array::Array(capacity=0)
       for i in 0..<arg_len {
         let arg_expr = self.check_expr(arg_exprs[i])
         let expected_ty = arg_tys[i]

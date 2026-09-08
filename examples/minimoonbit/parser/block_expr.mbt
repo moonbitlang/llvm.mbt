@@ -48,7 +48,7 @@ pub fn parse_block_expr(
     println("Compiler ICE: Misuse parse_block_expr")
     panic()
   }
-  let stmts : Array[Stmt] = Array::new()
+  let stmts : Array[Stmt] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Bracket('}'), .. }, .. rest] => break rest

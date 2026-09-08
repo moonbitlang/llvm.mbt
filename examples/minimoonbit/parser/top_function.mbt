@@ -123,7 +123,7 @@ pub fn parse_param(
 pub fn parse_param_list(
   tokens : ArrayView[Token],
 ) -> (Array[Param], ArrayView[Token]) raise ParseError {
-  let params : Array[Param] = Array::new()
+  let params : Array[Param] = Array::Array(capacity=0)
   let tokens = for current = tokens {
     match current {
       [{ kind: Lower(_), .. }, ..] as tokens => {
@@ -185,7 +185,7 @@ pub fn parse_top_function(
     (param_list, ret_ty, tokens)
   } else {
     let ret_type = Type::{ kind: Unit, toks: [], }
-    (Array::new(), ret_type, tokens)
+    (Array::Array(capacity=0), ret_type, tokens)
   }
   let (body, tokens) = parse_block_expr(tokens)
   let top_function = TopFunction::{ typeTag, fname, param_list, ret_ty, body, }
