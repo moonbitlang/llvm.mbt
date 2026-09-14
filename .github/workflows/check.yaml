@@ -2,9 +2,6 @@ name: check
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "23 3 * * *"
-      timezone: "Asia/Shanghai"
   push:
     branches:
       - master
