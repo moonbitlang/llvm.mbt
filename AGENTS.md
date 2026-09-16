@@ -1,6 +1,6 @@
 # 本项目的用途
 
-llvm的moonbit语言binding，使用llvm-19。
+llvm的moonbit语言binding，使用llvm-22。
 
 # moonbit语言命令
 
