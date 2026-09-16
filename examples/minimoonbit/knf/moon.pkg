@@ -1,6 +1,5 @@
 import {
   "Kaida-Amethyst/llvm-minimoonbit/typecheck",
-  "Kaida-Amethyst/either",
 }
 
 import {
