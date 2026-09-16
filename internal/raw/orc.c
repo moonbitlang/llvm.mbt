@@ -256,3 +256,10 @@ moonbit_bytes_t llvm_mbt_orc_resource_tracker_remove(
   return llvm_mbt_orc_take_error(LLVMOrcResourceTrackerRemove(tracker),
                                  out_failed);
 }
+
+/* MoonBit extern: llvm_error_is_success (internal/raw/Error.mbt).
+ * Borrows the error handle (including NULL); does not consume or retain it.
+ * Non-null errors still require exactly one consuming error operation. */
+int32_t llvm_mbt_error_is_success(LLVMErrorRef error) {
+  return error == LLVMErrorSuccess;
+}

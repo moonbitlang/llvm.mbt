@@ -1079,6 +1079,64 @@ pub impl Show for ReturnInst with fn output(self, logger) {
   self.get_raw_value_ref().output(logger)
 }
 
+///|
+/// Module-anchored terminator marking a path that must never execute.
+///
+/// Reaching this instruction is undefined behavior; it does not invoke panic.
+///
+/// **Construction:** Use `IRBuilder::createUnreachable` or query a block's
+/// terminator.
+///
+/// **Lifecycle:** Retains its module and context. Erasing this instruction or
+/// its parent invalidates all aliases; retaining the owner does not prevent
+/// erasure. No explicit disposal is required.
+pub struct UnreachableInst {
+  priv value : ModuleAnchoredValue
+}
+
+///|
+fn UnreachableInst::from_raw(
+  value_ref : ValueRef,
+  owner_module : Module,
+) -> UnreachableInst {
+  UnreachableInst::{ value: ModuleAnchoredValue::new(value_ref, owner_module), }
+}
+
+///|
+fn UnreachableInst::get_module(self : UnreachableInst) -> Module {
+  self.value.get_module()
+}
+
+///|
+/// Returns the internal borrowed LLVM value handle.
+fn UnreachableInst::get_raw_value_ref(self : UnreachableInst) -> ValueRef {
+  self.value.get_raw_ref()
+}
+
+///|
+/// Classifies this wrapper as `ValueEnum::UnreachableInst`.
+pub impl Value for UnreachableInst with fn asValueEnum(self) -> ValueEnum {
+  UnreachableInst(self)
+}
+
+///|
+/// Classifies this wrapper as `InstructionEnum::UnreachableInst`.
+pub impl Instruction for UnreachableInst with fn asInstEnum(self) -> InstructionEnum {
+  UnreachableInst(self)
+}
+
+///|
+/// Allows insertion immediately before this terminator.
+pub impl InsertPoint for UnreachableInst with fn asInsertPtEnum(self) {
+  Instruction(self as &Instruction)
+}
+
+///|
+/// Writes this unreachable terminator using LLVM syntax.
+pub impl Show for UnreachableInst with fn output(self, logger) {
+  self.get_raw_value_ref().output(logger)
+}
+
 // =======================================================
 // BranchInst
 // =======================================================

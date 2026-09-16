@@ -351,8 +351,10 @@ pub extern "C" fn llvm_abi_alignment_of_type(
 // unsigned LLVMElementAtOffset(LLVMTargetDataRef TD, LLVMTypeRef StructTy,
 //                              unsigned long long Offset);
 //
-// /** Computes the byte offset of the indexed struct element for a target.
-//     See the method llvm::StructLayout::getElementContainingOffset. */
-// unsigned long long LLVMOffsetOfElement(LLVMTargetDataRef TD,
-//                                        LLVMTypeRef StructTy, unsigned
-//                                        Element);
+
+///|
+pub extern "C" fn llvm_offset_of_element(
+  layout : LLVMTargetDataRef,
+  ty : LLVMTypeRef,
+  index : UInt,
+) -> UInt64 = "LLVMOffsetOfElement"

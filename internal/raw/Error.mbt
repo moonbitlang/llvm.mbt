@@ -94,3 +94,7 @@ pub fn llvm_create_string_error(err_msg : String) -> LLVMErrorRef {
   }
   __llvm_create_string_error(err_msg)
 }
+
+///|
+/// Tests the null success sentinel without consuming a non-null error.
+pub extern "C" fn llvm_error_is_success(error : LLVMErrorRef) -> Bool = "llvm_mbt_error_is_success"

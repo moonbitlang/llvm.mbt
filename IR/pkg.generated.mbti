@@ -20,6 +20,14 @@ pub suberror BuilderError {
   InValidArgument(String)
 }
 
+pub suberror CallingConvError {
+  InvalidID(UInt)
+}
+
+pub suberror DataLayoutError {
+  OffsetOutOfRange(UInt64)
+}
+
 pub suberror InValidOperation {
   InValidOperation(String)
 }
@@ -30,6 +38,16 @@ pub suberror InValidTypeError {
 
 pub suberror IndexOutOfBounds {
   IndexOutOfBounds(String)
+}
+
+pub suberror IntrinsicError {
+  UnknownName(String)
+  UnsupportedName(String)
+  ConflictingDeclaration(String)
+}
+
+pub suberror PassError {
+  PipelineFailed(String)
 }
 
 pub suberror SetBodyForNonOpaqueStruct {
@@ -318,10 +336,14 @@ pub impl Show for BranchInst
 pub struct CallInst {
   // private fields
 }
+pub fn CallInst::addFnAttr(Self, FnAttr) -> Unit
+pub fn CallInst::addParamAttr(Self, Int, ParamAttr) -> Unit raise IndexOutOfBounds
+pub fn CallInst::addRetAttr(Self, RetAttr) -> Unit
 pub fn CallInst::asInsertPtEnum(Self) -> InsertPointEnum
 pub fn CallInst::asInstEnum(Self) -> InstructionEnum
 pub fn CallInst::asValueEnum(Self) -> ValueEnum
 pub fn CallInst::eraseFromParent(Self) -> Unit
+pub fn CallInst::getCallingConv(Self) -> CallingConv
 pub fn CallInst::getContext(Self) -> Context
 pub fn CallInst::getNextInst(Self) -> &Instruction?
 pub fn CallInst::getNumArgOperands(Self) -> Int
@@ -332,9 +354,13 @@ pub fn CallInst::getType(Self) -> &Type
 pub fn CallInst::getValueName(Self) -> String? raise StringError
 pub fn CallInst::isTailCall(Self) -> Bool
 pub fn CallInst::output(Self, &Logger) -> Unit
+pub fn CallInst::removeFnAttr(Self, FnAttr) -> Unit
 pub fn CallInst::removeFromParent(Self) -> Unit
+pub fn CallInst::removeParamAttr(Self, Int, ParamAttr) -> Unit raise IndexOutOfBounds
+pub fn CallInst::removeRetAttr(Self, RetAttr) -> Unit
 pub fn CallInst::removeTailCall(Self) -> Unit
 pub fn CallInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn CallInst::setCallingConv(Self, CallingConv) -> Unit raise CallingConvError
 pub fn CallInst::setTailCall(Self) -> Unit
 pub fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
 pub fn CallInst::setValueName(Self, String) -> Unit raise StringError
@@ -345,6 +371,15 @@ pub impl InsertPoint for CallInst
 pub impl Instruction for CallInst
 pub impl Value for CallInst
 pub impl Show for CallInst
+
+pub(all) enum CallingConv {
+  C
+  Fast
+  Cold
+  Other(UInt)
+} derive(Eq)
+pub fn CallingConv::equal(Self, Self) -> Bool
+pub fn CallingConv::not_equal(Self, Self) -> Bool
 
 pub struct CastInst {
   // private fields
@@ -540,6 +575,7 @@ pub fn Context::equal(Self, Self) -> Bool
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
 pub fn Context::getBFloatTy(Self) -> BFloatType
 pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray
+pub fn Context::getConstBytes(Self, Bytes, nullTerminate? : Bool) -> ConstantArray
 pub fn Context::getConstDouble(Self, Double) -> ConstantFP
 pub fn Context::getConstFalse(Self) -> ConstantInt
 pub fn Context::getConstFloat(Self, Float) -> ConstantFP
@@ -586,6 +622,7 @@ pub impl Eq for Context
 pub struct DataLayout {
   // private fields
 }
+pub fn DataLayout::getElementOffset(Self, StructType, Int) -> Int raise
 pub fn DataLayout::getTypeAlignment(Self, &Type) -> Int
 pub fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
 pub fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
@@ -828,6 +865,7 @@ pub(all) enum FnAttr {
   Cold
   Convergent
   NoUnwind
+  NoReturn
   NoInline
   NoAlias
   AllocSize(Int)
@@ -847,6 +885,7 @@ pub fn Function::countFnAttrs(Self) -> Int
 pub fn Function::getArg(Self, Int) -> Argument?
 pub fn Function::getArgs(Self) -> Array[Argument]
 pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
+pub fn Function::getCallingConv(Self) -> CallingConv
 pub fn Function::getContext(Self) -> Context
 pub fn Function::getLinkage(Self) -> Linkage
 pub fn Function::getName(Self) -> String? raise StringError
@@ -860,6 +899,7 @@ pub fn Function::removeFnAttr(Self, FnAttr) -> Unit
 pub fn Function::removeRetAttr(Self, RetAttr) -> Unit
 pub fn Function::removeUnnamedAddr(Self) -> Unit
 pub fn Function::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn Function::setCallingConv(Self, CallingConv) -> Unit raise CallingConvError
 pub fn Function::setLinkage(Self, Linkage) -> Unit
 pub fn Function::setName(Self, String) -> Unit raise StringError
 pub fn Function::setUnnamedAddr(Self, UnnamedAddr) -> Unit
@@ -1238,6 +1278,7 @@ pub fn IRBuilder::createUDiv(Self, &Value, &Value, name? : String, loc~ : Source
 pub fn IRBuilder::createUIToFP(Self, &Value, &FPType, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
 pub fn IRBuilder::createURem(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::createUnreachable(Self) -> UnreachableInst raise BuilderError
 #callsite(autofill(loc))
 pub fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
@@ -1292,6 +1333,7 @@ pub enum InstructionEnum {
   InsertValueInst(InsertValueInst)
   PHINode(PHINode)
   ReturnInst(ReturnInst)
+  UnreachableInst(UnreachableInst)
   BranchInst(BranchInst)
   SwitchInst(SwitchInst)
   CallInst(CallInst)
@@ -1688,11 +1730,13 @@ pub fn Module::getDataLayoutStr(Self) -> String raise StringError
 pub fn Module::getFirstFunction(Self) -> Function?
 pub fn Module::getFunction(Self, String) -> Function?
 pub fn Module::getFunctions(Self) -> Array[Function]
+pub fn Module::getIntrinsicDeclaration(Self, String, Array[&Type]) -> Function raise
 pub fn Module::getLastFunction(Self) -> Function?
 pub fn Module::getName(Self) -> String raise StringError
 pub fn Module::getSourceFileName(Self) -> String raise StringError
 pub fn Module::getTargetTriple(Self) -> String raise StringError
 pub fn Module::output(Self, &Logger) -> Unit
+pub fn Module::runPasses(Self, String, targetMachine~ : TargetMachine) -> Self raise
 pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
@@ -1736,6 +1780,8 @@ pub(all) enum ParamAttr {
   NoAlias
   NonNull
   InReg
+  SExt
+  ZExt
 } derive(Eq)
 pub fn ParamAttr::equal(Self, Self) -> Bool
 pub fn ParamAttr::not_equal(Self, Self) -> Bool
@@ -1830,6 +1876,8 @@ pub(all) enum RetAttr {
   NoAlias
   NonNull
   InReg
+  SExt
+  ZExt
 } derive(Eq)
 pub fn RetAttr::equal(Self, Self) -> Bool
 pub fn RetAttr::not_equal(Self, Self) -> Bool
@@ -2198,6 +2246,32 @@ pub(all) enum UnnamedAddr {
   Global
 }
 
+pub struct UnreachableInst {
+  // private fields
+}
+pub fn UnreachableInst::asInsertPtEnum(Self) -> InsertPointEnum
+pub fn UnreachableInst::asInstEnum(Self) -> InstructionEnum
+pub fn UnreachableInst::asValueEnum(Self) -> ValueEnum
+pub fn UnreachableInst::eraseFromParent(Self) -> Unit
+pub fn UnreachableInst::getContext(Self) -> Context
+pub fn UnreachableInst::getNextInst(Self) -> &Instruction?
+pub fn UnreachableInst::getNumArgOperands(Self) -> Int
+pub fn UnreachableInst::getParentBasicBlock(Self) -> BasicBlock?
+pub fn UnreachableInst::getPrevInst(Self) -> &Instruction?
+pub fn UnreachableInst::getType(Self) -> &Type
+pub fn UnreachableInst::getValueName(Self) -> String? raise StringError
+pub fn UnreachableInst::output(Self, &Logger) -> Unit
+pub fn UnreachableInst::removeFromParent(Self) -> Unit
+pub fn UnreachableInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn UnreachableInst::setValueName(Self, String) -> Unit raise StringError
+pub fn UnreachableInst::to_string(Self) -> String
+pub fn UnreachableInst::tryAsConstant(Self) -> &Constant?
+pub fn UnreachableInst::tryAsConstantEnum(Self) -> ConstantEnum?
+pub impl InsertPoint for UnreachableInst
+pub impl Instruction for UnreachableInst
+pub impl Value for UnreachableInst
+pub impl Show for UnreachableInst
+
 pub enum ValueEnum {
   Function(Function)
   GlobalVariable(GlobalVariable)
@@ -2227,6 +2301,7 @@ pub enum ValueEnum {
   InsertValueInst(InsertValueInst)
   PHINode(PHINode)
   ReturnInst(ReturnInst)
+  UnreachableInst(UnreachableInst)
   BranchInst(BranchInst)
   SwitchInst(SwitchInst)
   CallInst(CallInst)

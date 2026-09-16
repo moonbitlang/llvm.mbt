@@ -95,6 +95,7 @@ fn instruction_kind_name(instruction : InstructionEnum) -> String {
     InsertValueInst(_) => "InsertValueInst"
     PHINode(_) => "PHINode"
     ReturnInst(_) => "ReturnInst"
+    UnreachableInst(_) => "UnreachableInst"
     BranchInst(_) => "BranchInst"
     SwitchInst(_) => "SwitchInst"
     CallInst(_) => "CallInst"
@@ -120,6 +121,7 @@ fn instruction_value_kind_matches(instruction : &Instruction) -> Bool {
     InsertValueInst(_) => Value::asValueEnum(instruction) is InsertValueInst(_)
     PHINode(_) => Value::asValueEnum(instruction) is PHINode(_)
     ReturnInst(_) => Value::asValueEnum(instruction) is ReturnInst(_)
+    UnreachableInst(_) => Value::asValueEnum(instruction) is UnreachableInst(_)
     BranchInst(_) => Value::asValueEnum(instruction) is BranchInst(_)
     SwitchInst(_) => Value::asValueEnum(instruction) is SwitchInst(_)
     CallInst(_) => Value::asValueEnum(instruction) is CallInst(_)

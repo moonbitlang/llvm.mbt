@@ -6423,7 +6423,7 @@ pub fn llvm_get_intrinsic_declaration(
   id : UInt,
   param_types : Array[LLVMTypeRef],
 ) -> LLVMValueRef {
-  let param_count = param_types.length().reinterpret_as_uint()
+  let param_count = param_types.length().to_uint64()
   let param_types = FixedArray::from_array(param_types)
   __llvm_get_intrinsic_declaration(mod, id, param_types, param_count)
 }
@@ -6434,7 +6434,7 @@ extern "C" fn __llvm_get_intrinsic_declaration(
   mod : LLVMModuleRef,
   id : UInt,
   param_types : FixedArray[LLVMTypeRef],
-  param_count : UInt,
+  param_count : UInt64,
 ) -> LLVMValueRef = "LLVMGetIntrinsicDeclaration"
 
 ///|
@@ -13436,4 +13436,19 @@ extern "C" fn __llvm_is_multithreaded() -> LLVMBool = "LLVMIsMultithreaded"
 ///|
 pub fn llvm_is_multithreaded() -> Bool {
   __llvm_is_multithreaded().to_moonbit_bool()
+}
+
+///|
+/// Copies arbitrary bytes into a context-owned i8 array constant.
+pub fn llvm_const_bytes(
+  context : LLVMContextRef,
+  bytes : Bytes,
+  null_terminate : Bool,
+) -> LLVMValueRef {
+  __llvm_const_string_in_context2(
+    context,
+    bytes,
+    bytes.length().to_uint64(),
+    to_llvm_bool(!null_terminate),
+  )
 }

@@ -96,6 +96,7 @@ pub fn Context::createBuilder(self : Self) -> IRBuilder {
       self.get_owner(),
     ),
     positioned: NotSet,
+    at_block_end: false,
   }
 }
 
@@ -1425,4 +1426,37 @@ pub fn Context::getConstPointerNull(
 ) -> ConstantPointerNull {
   let valueref = @raw.llvm_const_pointer_null(ty.get_raw_type_ref())
   ConstantPointerNull::from_raw(valueref, self)
+}
+
+///|
+/// Copies arbitrary bytes into a context-owned `[N x i8]` constant.
+///
+/// **Parameters:** `bytes` may contain NUL or invalid UTF-8; length is in bytes.
+/// `nullTerminate` defaults to false; true appends exactly one additional NUL.
+/// Empty input is supported, with length zero or one respectively.
+///
+/// **Lifecycle:** LLVM copies the input before returning. The constant retains
+/// its context and does not borrow the MoonBit bytes or belong to a module.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let bytes = ctx.getConstBytes(b"a\x00b")
+///   inspect(bytes.getType().to_string(), content="[3 x i8]")
+///   let mod = ctx.addModule("bytes")
+///   mod.addGlobalConstant(bytes.getType(), "data", bytes) |> ignore
+///   mod.verify()
+/// }
+/// ```
+pub fn Context::getConstBytes(
+  self : Self,
+  bytes : Bytes,
+  nullTerminate? : Bool = false,
+) -> ConstantArray {
+  ConstantArray::from_raw(
+    @raw.llvm_const_bytes(self.get_raw_ref(), bytes, nullTerminate),
+    self,
+  )
 }

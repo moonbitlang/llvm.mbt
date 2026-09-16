@@ -80,6 +80,8 @@ pub enum ValueEnum {
   PHINode(PHINode)
   /// Function-return terminator.
   ReturnInst(ReturnInst)
+  /// Unreachable-path terminator.
+  UnreachableInst(UnreachableInst)
   /// Conditional or unconditional branch terminator.
   BranchInst(BranchInst)
   /// Multi-way switch terminator.
@@ -172,6 +174,7 @@ fn &Value::get_raw_value_ref(self : &Value) -> ValueRef {
     InsertValueInst(value) => value.get_raw_value_ref()
     PHINode(value) => value.get_raw_value_ref()
     ReturnInst(value) => value.get_raw_value_ref()
+    UnreachableInst(value) => value.get_raw_value_ref()
     BranchInst(value) => value.get_raw_value_ref()
     SwitchInst(value) => value.get_raw_value_ref()
     CallInst(value) => value.get_raw_value_ref()
@@ -215,6 +218,7 @@ impl Value with fn getContext(self) {
     InsertValueInst(value) => value.get_module().getContext()
     PHINode(value) => value.get_module().getContext()
     ReturnInst(value) => value.get_module().getContext()
+    UnreachableInst(value) => value.get_module().getContext()
     BranchInst(value) => value.get_module().getContext()
     SwitchInst(value) => value.get_module().getContext()
     CallInst(value) => value.get_module().getContext()
@@ -430,6 +434,7 @@ fn initInstruction(valueref : ValueRef, owner_module : Module) -> &Instruction {
     LLVMInsertValue => InsertValueInst::from_raw(valueref, owner_module)
     LLVMPHI => PHINode::from_raw(valueref, owner_module)
     LLVMRet => ReturnInst::from_raw(valueref, owner_module)
+    LLVMUnreachable => UnreachableInst::from_raw(valueref, owner_module)
     LLVMBr => BranchInst::from_raw(valueref, owner_module)
     LLVMSwitch => SwitchInst::from_raw(valueref, owner_module)
     LLVMCall => CallInst::from_raw(valueref, owner_module)
@@ -463,6 +468,7 @@ fn get_instruction_module(inst : &Instruction) -> Module {
     InsertValueInst(inst) => inst.get_module()
     PHINode(inst) => inst.get_module()
     ReturnInst(inst) => inst.get_module()
+    UnreachableInst(inst) => inst.get_module()
     BranchInst(inst) => inst.get_module()
     SwitchInst(inst) => inst.get_module()
     CallInst(inst) => inst.get_module()
@@ -533,6 +539,8 @@ pub enum InstructionEnum {
   PHINode(PHINode)
   /// Function-return terminator.
   ReturnInst(ReturnInst)
+  /// Unreachable-path terminator.
+  UnreachableInst(UnreachableInst)
   /// Conditional or unconditional branch terminator.
   BranchInst(BranchInst)
   /// Multi-way switch terminator.

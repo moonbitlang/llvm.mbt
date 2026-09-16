@@ -306,6 +306,8 @@ pub fn llvm_const_array2(LLVMTypeRef, Array[LLVMValueRef]) -> LLVMValueRef
 
 pub fn llvm_const_bit_cast(LLVMValueRef, LLVMTypeRef) -> LLVMValueRef
 
+pub fn llvm_const_bytes(LLVMContextRef, Bytes, Bool) -> LLVMValueRef
+
 pub fn llvm_const_extract_element(LLVMValueRef, LLVMValueRef) -> LLVMValueRef
 
 pub fn llvm_const_gep2(LLVMTypeRef, LLVMValueRef, Array[LLVMValueRef]) -> LLVMValueRef
@@ -571,6 +573,8 @@ pub fn llvm_dump_type(LLVMTypeRef) -> Unit
 pub fn llvm_dump_value(LLVMValueRef) -> Unit
 
 pub fn llvm_erase_global_ifunc(LLVMValueRef) -> Unit
+
+pub fn llvm_error_is_success(LLVMErrorRef) -> Bool
 
 pub fn llvm_finalize_function_pass_manager(LLVMPassManagerRef) -> LLVMBool
 
@@ -1417,6 +1421,8 @@ pub fn llvm_module_create_with_name_in_context(String, LLVMContextRef) -> LLVMMo
 pub fn llvm_move_basic_block_after(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
 
 pub fn llvm_move_basic_block_before(LLVMBasicBlockRef, LLVMBasicBlockRef) -> Unit
+
+pub fn llvm_offset_of_element(LLVMTargetDataRef, LLVMTypeRef, UInt) -> UInt64
 
 pub fn llvm_orc_create_lljit() -> (LLVMOrcLLJITRef, String, Bool)
 

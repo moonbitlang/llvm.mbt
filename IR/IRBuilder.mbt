@@ -64,6 +64,7 @@ pub impl InsertPoint for BasicBlock with fn asInsertPtEnum(self) {
 pub struct IRBuilder {
   priv owner : BuilderOwner
   priv mut positioned : PositionState
+  priv mut at_block_end : Bool
 }
 
 ///|
@@ -116,7 +117,8 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   self : Self,
   insertPt : T,
 ) -> Unit raise {
-  let owner_module = match insertPt.asInsertPtEnum() {
+  let point = insertPt.asInsertPtEnum()
+  let owner_module = match point {
     BasicBlock(bb) => {
       @raw.llvm_position_builder_at_end(self.get_raw_ref(), bb.get_raw_ref())
       bb.get_module()
@@ -139,6 +141,7 @@ pub fn[T : InsertPoint] IRBuilder::setInsertPoint(
   }
   self.owner.set_module(owner_module.get_owner())
   self.positioned = Set(owner_module)
+  self.at_block_end = point is BasicBlock(_)
 }
 
 ///|
@@ -176,6 +179,7 @@ pub fn IRBuilder::setInsertPointBefore(
   let owner_module = get_instruction_module(instruction)
   self.owner.set_module(owner_module.get_owner())
   self.positioned = Set(owner_module)
+  self.at_block_end = false
 }
 
 ///|
@@ -4823,4 +4827,53 @@ pub fn IRBuilder::createGlobalString(
     @raw.EmbeddedNul => raise ContainsNul
   }
   GlobalConstant::from_raw(res_valueref, self.get_insert_module())
+}
+
+///|
+/// Inserts an `unreachable` terminator at the end of the selected block.
+///
+/// This does not call panic or insert a return. Reaching it is undefined
+/// behavior; emit the terminating runtime call separately.
+///
+/// **Errors:** Raises `BuilderError::UnsetPosition` before positioning, or
+/// `BuilderError::InValidInsertPoint` unless positioned at the end of a block
+/// without a terminator.
+///
+/// **Lifecycle:** The returned instruction retains the selected module.
+/// Erasing it or its parent invalidates all aliases.
+///
+/// **Side effects:** Terminates the block. Reposition before inserting more IR.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("never")
+///   let fty = ctx.getFunctionType(ctx.getVoidTy(), [])
+///   let panic_fn = mod.addFunction(fty, "panic")
+///   panic_fn.addFnAttr(NoReturn)
+///   let entry = mod.addFunction(fty, "entry").addBasicBlock()
+///   let builder = ctx.createBuilder()
+///   builder.setInsertPoint(entry)
+///   builder.createCall(panic_fn, []) |> ignore
+///   inspect(builder.createUnreachable(), content="  unreachable")
+///   mod.verify()
+/// }
+/// ```
+pub fn IRBuilder::createUnreachable(
+  self : Self,
+) -> UnreachableInst raise BuilderError {
+  let owner_module = self.get_insert_module()
+  guard self.at_block_end &&
+    self.getInsertBlock() is Some(bb) &&
+    bb.getTerminator() is None else {
+    raise InValidInsertPoint(
+      "unreachable requires the end of an unterminated block",
+    )
+  }
+  UnreachableInst::from_raw(
+    @raw.llvm_build_unreachable(self.get_raw_ref()),
+    owner_module,
+  )
 }

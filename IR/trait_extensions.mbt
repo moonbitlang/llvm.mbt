@@ -1834,3 +1834,40 @@ pub extend SwitchInst with InsertPoint::{asInsertPtEnum}
 ///|
 /// Exposes the selected `InsertPoint` methods as regular methods on `UnaryInst`.
 pub extend UnaryInst with InsertPoint::{asInsertPtEnum}
+
+///|
+/// Exposes the selected `Instruction` methods as regular methods on `UnreachableInst`.
+pub extend UnreachableInst with Instruction::{
+  getNextInst,
+  getParentBasicBlock,
+  getPrevInst,
+  removeFromParent,
+  getNumArgOperands,
+  asInstEnum,
+  eraseFromParent,
+}
+
+///|
+/// Exposes the selected `Show` methods as regular methods on `UnreachableInst`.
+pub extend UnreachableInst with Show::{to_string, output}
+
+///|
+/// Exposes the selected `Value` methods as regular methods on `UnreachableInst`.
+pub extend UnreachableInst with Value::{
+  tryAsConstantEnum,
+  getValueName,
+  getType,
+  tryAsConstant,
+  setValueName,
+  asValueEnum,
+  getContext,
+  replaceAllUsesWith,
+}
+
+///|
+/// Exposes the selected `InsertPoint` methods as regular methods on `UnreachableInst`.
+pub extend UnreachableInst with InsertPoint::{asInsertPtEnum}
+
+///|
+/// Compares calling convention values and their numeric payloads.
+pub extend CallingConv with Eq::{equal, not_equal}

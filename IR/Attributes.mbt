@@ -38,6 +38,8 @@ pub(all) enum FnAttr {
   //CoroDestroyOnlyWhenComplete
   /// Promises that the function does not unwind the stack.
   NoUnwind
+  /// Promises that the function never returns normally; does not insert a terminator.
+  NoReturn
   /// Forbids inlining this function.
   NoInline
   //OptimizeNone
@@ -82,6 +84,7 @@ fn FnAttr::attr_name(self : FnAttr) -> String {
     NoInline => "noinline"
     AllocSize(_) => "allocsize"
     NoUnwind => "nounwind"
+    NoReturn => "noreturn"
     NoAlias => "noalias"
   }
 }
@@ -119,6 +122,10 @@ pub(all) enum ParamAttr {
   NonNull
   /// Requests ABI register passing or return where the target supports it.
   InReg
+  /// Sign-extends this integer across the ABI boundary when the target requires it.
+  SExt
+  /// Zero-extends this integer across the ABI boundary when the target requires it.
+  ZExt
 } derive(Eq)
 
 ///|
@@ -128,6 +135,8 @@ fn ParamAttr::attr_name(self : ParamAttr) -> String {
     NoAlias => "noalias"
     NonNull => "nonnull"
     InReg => "inreg"
+    SExt => "signext"
+    ZExt => "zeroext"
   }
 }
 
@@ -157,6 +166,10 @@ pub(all) enum RetAttr {
   NonNull
   /// Requests returning the value in a register where supported by the ABI.
   InReg
+  /// Sign-extends this integer across the ABI boundary when the target requires it.
+  SExt
+  /// Zero-extends this integer across the ABI boundary when the target requires it.
+  ZExt
 } derive(Eq)
 
 ///|
@@ -165,6 +178,8 @@ fn RetAttr::attr_name(self : RetAttr) -> String {
     NoAlias => "noalias"
     NonNull => "nonnull"
     InReg => "inreg"
+    SExt => "signext"
+    ZExt => "zeroext"
   }
 }
 

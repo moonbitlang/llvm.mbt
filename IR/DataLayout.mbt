@@ -126,3 +126,87 @@ pub fn DataLayout::getTypeAlignment(self : DataLayout, ty : &Type) -> Int {
   )
   align.reinterpret_as_int()
 }
+
+///|
+/// Reports a target layout result that does not fit MoonBit's signed `Int`.
+pub suberror DataLayoutError {
+  /// Carries the exact byte offset exceeding 2147483647.
+  OffsetOutOfRange(UInt64)
+}
+
+///|
+fn contains_scalable_type(ty : @raw.LLVMTypeRef) -> Bool {
+  // Inspect raw field types so an otherwise valid layout query also handles
+  // integer widths and other fields absent from the public TypeEnum.
+  match @raw.llvm_get_type_kind(ty) {
+    LLVMScalableVectorTypeKind => true
+    LLVMArrayTypeKind => contains_scalable_type(@raw.llvm_get_element_type(ty))
+    LLVMStructTypeKind => {
+      let count = @raw.llvm_count_struct_element_types(ty).reinterpret_as_int()
+      for index in 0..<count {
+        if contains_scalable_type(
+            @raw.llvm_struct_get_type_at_index(ty, index.reinterpret_as_uint()),
+          ) {
+          return true
+        }
+      }
+      false
+    }
+    _ => false
+  }
+}
+
+///|
+/// Returns a physical struct field's byte offset under the module's current layout.
+///
+/// **Parameters:** `index` is the zero-based physical LLVM field index, not a
+/// source-language field number. Padding and nested aggregates follow LLVM's
+/// target layout. The returned `Int` is in 0..=2147483647.
+///
+/// **Errors:** Raises `IndexOutOfBounds` for negative or out-of-range indices;
+/// `InValidTypeError` for a different context, opaque/unsized struct, or scalable
+/// fields; `DataLayoutError::OffsetOutOfRange` if the byte offset does not fit.
+///
+/// **Lifecycle:** Uses this module-owned view at query time; changing the
+/// module's layout affects subsequent queries. Does not create a snapshot.
+///
+/// **LLVM API:** `LLVMOffsetOfElement`, with checked conversion from UInt64.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("layout")
+///   mod.setDataLayout("e-p:64:64-i32:32")
+///   let ty = ctx.getStructType([ctx.getInt8Ty(), ctx.getInt32Ty()])
+///   inspect(mod.getDataLayout().getElementOffset(ty, 1), content="4")
+/// }
+/// ```
+pub fn DataLayout::getElementOffset(
+  self : Self,
+  ty : StructType,
+  index : Int,
+) -> Int raise {
+  guard ty.getContext() == self.owner_module.getContext() else {
+    raise InValidTypeError(
+      "Struct and data layout must belong to the same context",
+    )
+  }
+  guard !ty.isOpaque() && ty.isSized() else {
+    raise InValidTypeError("Field offsets require a sized struct with a body")
+  }
+  guard index >= 0 && index < ty.numOfElements() else {
+    raise IndexOutOfBounds("Struct field index out of bounds: \{index}")
+  }
+  guard !contains_scalable_type((ty : &Type).get_raw_type_ref()) else {
+    raise InValidTypeError("Field offsets require fixed-size fields")
+  }
+  let offset = @raw.llvm_offset_of_element(
+    self.get_raw_ref(),
+    (ty : &Type).get_raw_type_ref(),
+    index.reinterpret_as_uint(),
+  )
+  guard offset <= 2147483647UL else { raise OffsetOutOfRange(offset) }
+  offset.to_int()
+}
