@@ -32,13 +32,13 @@ pub enum ValueEnum {
   ConstantFP(ConstantFP)
   /// Context-owned null pointer constant.
   ConstantPointerNull(ConstantPointerNull)
-  /// Context-owned array aggregate constant.
+  /// Array aggregate constant, retaining any referenced module.
   ConstantArray(ConstantArray)
-  /// Context-owned vector constant.
+  /// Vector constant, retaining any referenced module.
   ConstantVector(ConstantVector)
-  /// Context-owned struct aggregate constant.
+  /// Struct aggregate constant, retaining any referenced module.
   ConstantStruct(ConstantStruct)
-  /// Context-owned LLVM constant expression.
+  /// LLVM constant expression, retaining any referenced module.
   ConstantExpr(ConstantExpr)
   /// Context-owned undefined-value constant.
   UndefValue(UndefValue)
@@ -97,8 +97,9 @@ pub enum ValueEnum {
 /// describe the same live LLVM value. Implementations must preserve the correct
 /// context or module ownership anchor.
 ///
-/// **Lifecycle:** Constants are anchored directly to a context. Functions,
-/// globals, arguments, basic blocks, and instructions are anchored to a module.
+/// **Lifecycle:** Pure constants retain a context; constants containing global
+/// addresses additionally retain their module. Functions, globals, arguments,
+/// basic blocks, and instructions are anchored to a module.
 /// Mutation APIs that erase IR can invalidate wrappers before their anchor is
 /// disposed.
 pub trait Value: Show {
@@ -133,7 +134,10 @@ pub trait Value: Show {
   /// these conditions before calling LLVM.
   ///
   /// **Side Effects:** Mutates every current use site; it does not erase this
-  /// value itself.
+  /// value itself. LLVM may replace and destroy uniqued constants that use
+  /// this value; retained wrappers for such constants must not be used after
+  /// this operation. Rebuild them from the updated IR. This operation must not
+  /// introduce a dependency on another module into existing constant uses.
   fn replaceAllUsesWith(Self, other : &Value) -> Unit = _
 
   /// Downcasts to the constant trait, returning `None` for non-constants.
@@ -250,6 +254,8 @@ impl Value with fn replaceAllUsesWith(self, other : &Value) {
 ///|
 impl Value with fn tryAsConstant(self) {
   match self.asValueEnum() {
+    GlobalVariable(c) => Some(c as &Constant)
+    GlobalConstant(c) => Some(c)
     ConstantInt(c) => Some(c as &Constant)
     ConstantFP(c) => Some(c)
     ConstantPointerNull(c) => Some(c)
@@ -266,6 +272,8 @@ impl Value with fn tryAsConstant(self) {
 ///|
 impl Value with fn tryAsConstantEnum(self) {
   match self.asValueEnum() {
+    GlobalVariable(c) => Some(ConstantEnum::GlobalVariable(c))
+    GlobalConstant(c) => Some(ConstantEnum::GlobalConstant(c))
     ConstantInt(c) => Some(ConstantEnum::ConstantInt(c))
     ConstantFP(c) => Some(ConstantEnum::ConstantFP(c))
     ConstantPointerNull(c) => Some(ConstantEnum::ConstantPointerNull(c))
@@ -296,6 +304,10 @@ pub trait Constant: Value {
 ///|
 /// Closed classification of constants supported by the safe API.
 pub enum ConstantEnum {
+  /// Constant address of mutable global storage.
+  GlobalVariable(GlobalVariable)
+  /// Constant address of immutable global storage.
+  GlobalConstant(GlobalConstant)
   /// Integer constant.
   ConstantInt(ConstantInt)
   /// Floating-point constant.

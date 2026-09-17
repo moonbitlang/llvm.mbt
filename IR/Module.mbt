@@ -269,10 +269,15 @@ pub fn Module::verify(self : Module) -> Unit raise VerificationError {
 ///|
 /// Adds a mutable global variable.
 ///
-/// **Preconditions:** `ty` and any `initializer` must belong to this module's
-/// context, and the initializer must have type `ty`.
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in
+/// `name`, `ValueOwnerError::ContextMismatch` for a foreign type or initializer,
+/// `ValueOwnerError::ModuleMismatch` when the initializer depends on another
+/// module, or `InValidTypeError` for an invalid storage type or mismatched
+/// initializer type. Validation precedes insertion of the global.
 ///
-/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in `name`.
+/// **Lifecycle:** The returned global retains this Module. The module owns the
+/// initialized storage; it does not retain MoonBit initializer wrappers, so
+/// installing a constant anchored to this module does not create an owner cycle.
 ///
 /// **Side Effects:** Inserts a module-owned global and applies the optional
 /// initializer and linkage.
@@ -282,7 +287,17 @@ pub fn Module::addGlobalVariable(
   name : String,
   initializer? : &Constant,
   linkage? : Linkage,
-) -> GlobalVariable raise StringError {
+) -> GlobalVariable raise {
+  check_type_context(self.getContext(), ty)
+  check_constant_element_type(ty)
+  if initializer is Some(init) {
+    merge_value_owners(self.getContext(), Some(self), [init]) |> ignore
+    guard (init : &Value).getType().asTypeEnum() == ty.asTypeEnum() else {
+      raise InValidTypeError(
+        "Global initializer type does not match its storage type",
+      )
+    }
+  }
   let gv_ref = @raw.llvm_add_global(
     self.get_raw_ref(),
     ty.get_raw_type_ref(),
@@ -302,10 +317,15 @@ pub fn Module::addGlobalVariable(
 ///|
 /// Adds a constant global definition initialized by `value`.
 ///
-/// **Preconditions:** `ty` and `value` must belong to this module's context, and
-/// `value` must have type `ty`.
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in
+/// `name`, `ValueOwnerError::ContextMismatch` for a foreign type or initializer,
+/// `ValueOwnerError::ModuleMismatch` when the initializer depends on another
+/// module, or `InValidTypeError` for an invalid storage type or mismatched
+/// initializer type. Validation precedes insertion of the global.
 ///
-/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in `name`.
+/// **Lifecycle:** The returned global retains this Module. The module owns the
+/// initialized storage; it does not retain MoonBit initializer wrappers, so
+/// installing a constant anchored to this module does not create an owner cycle.
 ///
 /// **Side Effects:** Inserts a module-owned global marked constant.
 pub fn Module::addGlobalConstant(
@@ -314,7 +334,15 @@ pub fn Module::addGlobalConstant(
   name : String,
   value : &Constant,
   linkage? : Linkage,
-) -> GlobalConstant raise StringError {
+) -> GlobalConstant raise {
+  check_type_context(self.getContext(), ty)
+  check_constant_element_type(ty)
+  merge_value_owners(self.getContext(), Some(self), [value]) |> ignore
+  guard (value : &Value).getType().asTypeEnum() == ty.asTypeEnum() else {
+    raise InValidTypeError(
+      "Global initializer type does not match its storage type",
+    )
+  }
   let gv_ref = @raw.llvm_add_global(
     self.get_raw_ref(),
     ty.get_raw_type_ref(),

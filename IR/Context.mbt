@@ -1161,15 +1161,14 @@ pub fn Context::getConstZeroDouble(
 /// - `elements`: The constant elements in source order; the array length is
 ///   inferred from this collection.
 ///
-/// **Preconditions:**
+/// **Errors:** Raises `ValueOwnerError::ContextMismatch` for foreign types or
+/// operands, `ValueOwnerError::ModuleMismatch` for operands depending on
+/// different modules, and `InValidTypeError` for invalid element types or a
+/// type mismatch.
 ///
-/// `elementType` and every element must belong to this context, and every
-/// element must have `elementType`. Violating these conditions may trigger an
-/// LLVM assertion.
-///
-/// **Lifecycle:**
-///
-/// The returned constant retains this context and is not owned by a Module.
+/// **Lifecycle:** Retains this Context and the single Module referenced by any
+/// element, including nested constants. Pure constants remain reusable across
+/// modules in this Context. Erasure or RAUW can invalidate dependent wrappers.
 ///
 /// ```mbt check
 /// test {
@@ -1192,17 +1191,49 @@ pub fn Context::getConstZeroDouble(
 ///   inspect(const_array, content="[3 x i32] [i32 1, i32 2, i32 3]")
 /// }
 /// ```
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("roots")
+///   let ptr_ty = ctx.getPtrTy()
+///   let root = mod.addGlobalVariable(
+///     ptr_ty,
+///     "root",
+///     initializer=ctx.getConstPointerNull(ptr_ty),
+///   )
+///   let addresses = ctx.getConstArray(ptr_ty, [root])
+///   inspect(addresses, content="[1 x ptr] [ptr @root]")
+///   mod.addGlobalConstant(addresses.getType(), "root_addresses", addresses)
+///   |> ignore
+///   mod.verify()
+/// }
+/// ```
 pub fn Context::getConstArray(
   self : Self,
   elementType : &Type,
   elements : Array[&Constant],
-) -> ConstantArray {
+) -> ConstantArray raise {
+  check_type_context(self, elementType)
+  check_constant_element_type(elementType)
+  let owner_module = merge_value_owners(
+    self,
+    None,
+    elements.map(v => v as &Value),
+  )
+  for element in elements {
+    guard (element : &Value).getType().asTypeEnum() == elementType.asTypeEnum() else {
+      raise InValidTypeError(
+        "Array constant element type does not match elementType",
+      )
+    }
+  }
   let element_refs = elements.map(v => (v : &Value).get_raw_value_ref())
   let valueref = @raw.llvm_const_array2(
     (elementType : &Type).get_raw_type_ref(),
     element_refs,
   )
-  ConstantArray::from_raw(valueref, self)
+  ConstantArray::from_raw(valueref, self, owner_module~)
 }
 
 ///|
@@ -1213,15 +1244,14 @@ pub fn Context::getConstArray(
 /// - `scalar_constant_vals`: The lanes in source order. Their common type and
 ///   the array length determine the resulting vector type.
 ///
-/// **Preconditions:**
+/// **Errors:** Raises `ValueOwnerError::ContextMismatch` for foreign types or
+/// operands, `ValueOwnerError::ModuleMismatch` for operands depending on
+/// different modules, and `InValidTypeError` for invalid element types or a
+/// type mismatch. Vector constants must also be non-empty.
 ///
-/// The array must be non-empty. Every lane must be a constant of the same valid
-/// vector-element type and must belong to this context. Violating these
-/// conditions may trigger an LLVM assertion.
-///
-/// **Lifecycle:**
-///
-/// The returned constant retains this context and is not owned by a Module.
+/// **Lifecycle:** Retains this Context and the single Module referenced by any
+/// element, including nested constants. Pure constants remain reusable across
+/// modules in this Context. Erasure or RAUW can invalidate dependent wrappers.
 ///
 /// ```mbt check
 /// test {
@@ -1248,12 +1278,31 @@ pub fn Context::getConstArray(
 pub fn Context::getConstVector(
   self : Self,
   scalar_constant_vals : Array[&Constant],
-) -> ConstantVector {
+) -> ConstantVector raise {
+  let owner_module = merge_value_owners(
+    self,
+    None,
+    scalar_constant_vals.map(v => v as &Value),
+  )
+  guard scalar_constant_vals is [first, ..] else {
+    raise InValidTypeError("A vector constant requires at least one element")
+  }
+  let element_type = (first : &Value).getType()
+  guard element_type.isIntOrPtrTy() || element_type.tryAsFPType() is Some(_) else {
+    raise InValidTypeError(
+      "Vector elements must be scalar integers, floating-point values, or pointers",
+    )
+  }
+  for element in scalar_constant_vals {
+    guard (element : &Value).getType().asTypeEnum() == element_type.asTypeEnum() else {
+      raise InValidTypeError("Vector constant elements must have the same type")
+    }
+  }
   let scalar_refs = scalar_constant_vals.map(v => {
     (v : &Value).get_raw_value_ref()
   })
   let valueref = @raw.llvm_const_vector(scalar_refs)
-  ConstantVector::from_raw(valueref, self)
+  ConstantVector::from_raw(valueref, self, owner_module~)
 }
 
 ///|
@@ -1265,15 +1314,14 @@ pub fn Context::getConstVector(
 /// - `isPacked`: Whether the inferred literal struct type omits ABI padding
 ///   between fields.
 ///
-/// **Preconditions:**
+/// **Errors:** Raises `ValueOwnerError::ContextMismatch` for foreign types or
+/// operands, `ValueOwnerError::ModuleMismatch` for operands depending on
+/// different modules, and `InValidTypeError` for invalid element types or a
+/// type mismatch.
 ///
-/// Every element must belong to this context. This function creates a literal
-/// struct constant; it does not construct a value of an existing named struct
-/// type.
-///
-/// **Lifecycle:**
-///
-/// The returned constant retains this context and is not owned by a Module.
+/// **Lifecycle:** Retains this Context and the single Module referenced by any
+/// element, including nested constants. Pure constants remain reusable across
+/// modules in this Context. Erasure or RAUW can invalidate dependent wrappers.
 ///
 /// ```mbt check
 /// test {
@@ -1303,14 +1351,22 @@ pub fn Context::getConstStruct(
   self : Self,
   elements : Array[&Constant],
   isPacked? : Bool = false,
-) -> ConstantStruct {
+) -> ConstantStruct raise {
+  let owner_module = merge_value_owners(
+    self,
+    None,
+    elements.map(v => v as &Value),
+  )
+  for element in elements {
+    check_constant_element_type((element : &Value).getType())
+  }
   let element_refs = elements.map(v => (v : &Value).get_raw_value_ref())
   let valueref = @raw.llvm_const_struct_in_context(
     self.get_raw_ref(),
     element_refs,
     isPacked,
   )
-  ConstantStruct::from_raw(valueref, self)
+  ConstantStruct::from_raw(valueref, self, owner_module~)
 }
 
 ///|

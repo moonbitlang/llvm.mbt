@@ -1871,3 +1871,11 @@ pub extend UnreachableInst with InsertPoint::{asInsertPtEnum}
 ///|
 /// Compares calling convention values and their numeric payloads.
 pub extend CallingConv with Eq::{equal, not_equal}
+
+///|
+/// Exposes constant-address classification for this global.
+pub extend GlobalVariable with Constant::{asConstantEnum}
+
+///|
+/// Exposes constant-address classification for this global.
+pub extend GlobalConstant with Constant::{asConstantEnum}

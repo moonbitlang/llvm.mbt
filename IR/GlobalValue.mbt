@@ -53,8 +53,8 @@ pub impl Show for GlobalVariable with fn output(self, logger) {
 ///|
 /// Module-owned LLVM global whose storage is marked constant.
 ///
-/// This is a module-level global definition, not a context-owned `Constant`
-/// wrapper. Its initializer is a context-owned constant value.
+/// As a `Constant` operand this denotes the address of its storage, not the
+/// initializer. Both mutable and immutable globals have constant addresses.
 ///
 /// **Lifecycle:** The wrapper retains its module.
 pub struct GlobalConstant {
@@ -219,4 +219,20 @@ fn UnnamedAddr::to_llvm_unnamed_addr(self : Self) -> @raw.LLVMUnnamedAddr {
     Local => LLVMLocalUnnamedAddr
     Global => LLVMGlobalUnnamedAddr
   }
+}
+
+///|
+/// Views this global's address as a constant operand; does not read its storage.
+///
+/// **Lifecycle:** Preserves the global's existing module anchor.
+pub impl Constant for GlobalVariable with fn asConstantEnum(self) {
+  GlobalVariable(self)
+}
+
+///|
+/// Views this global's address as a constant operand; does not read its storage.
+///
+/// **Lifecycle:** Preserves the global's existing module anchor.
+pub impl Constant for GlobalConstant with fn asConstantEnum(self) {
+  GlobalConstant(self)
 }

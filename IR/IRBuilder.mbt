@@ -57,6 +57,11 @@ pub impl InsertPoint for BasicBlock with fn asInsertPtEnum(self) {
 /// selected block's module so returned instruction wrappers remain correctly
 /// module-anchored. Repositioning replaces that module anchor.
 ///
+/// Instruction constructors check operand/type Context and Module provenance
+/// before calling LLVM, raising `ValueOwnerError` for incompatible owners.
+/// Constant-folded results retain a module only when the result still contains
+/// a global address. Literal scalar constants remain context-owned.
+///
 /// **Lifecycle:** The builder owns its native LLVM builder and retains its
 /// context. It borrows insertion-point IR; erasing the selected block or
 /// instruction can leave LLVM's native insertion point invalid, so reposition
@@ -188,7 +193,10 @@ pub fn IRBuilder::setInsertPointBefore(
 /// **Preconditions:** The builder must be positioned in a function whose return
 /// type exactly matches `value.getType()`. Use `createRetVoid` for `void`.
 ///
-/// **Errors:** Raises `UnsetPosition` when the builder is unpositioned.
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` when the builder is unpositioned.
 ///
 /// **Side Effects:** Inserts a terminator; inserting further instructions after
 /// it without repositioning would produce invalid IR.
@@ -214,6 +222,7 @@ pub fn IRBuilder::setInsertPointBefore(
 /// ```
 pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([value])
   ReturnInst::from_raw(
     @raw.llvm_build_ret(self.get_raw_ref(), value.get_raw_value_ref()),
     self.get_insert_module(),
@@ -225,7 +234,10 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 ///
 /// **Preconditions:** The containing function must return `void`.
 ///
-/// **Errors:** Raises `UnsetPosition` when the builder is unpositioned.
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` when the builder is unpositioned.
 ///
 /// **Side Effects:** Inserts a terminator.
 ///
@@ -249,6 +261,7 @@ pub fn IRBuilder::createRet(self : Self, value : &Value) -> ReturnInst raise {
 /// ```
 pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([])
   ReturnInst::from_raw(
     @raw.llvm_build_ret_void(self.get_raw_ref()),
     self.get_insert_module(),
@@ -264,7 +277,10 @@ pub fn IRBuilder::createRetVoid(self : Self) -> ReturnInst raise {
 /// and belong to the builder's context, and the insertion point must be valid in
 /// a function. This API does not force entry-block placement.
 ///
-/// **Errors:** Raises `UnsetPosition` or `StringError::ContainsNul`.
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` or `StringError::ContainsNul`.
 ///
 /// **Notes:** LLVM assigns alignment from the current target data layout; this
 /// method does not expose an explicit alignment parameter.
@@ -293,6 +309,8 @@ pub fn IRBuilder::createAlloca(
   name? : String = "",
 ) -> AllocaInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([])
+  check_type_context(self.get_context(), data_ty)
   let value_ref = @raw.llvm_build_alloca(
     self.get_raw_ref(),
     data_ty.get_raw_type_ref(),
@@ -312,7 +330,10 @@ pub fn IRBuilder::createAlloca(
 /// `load_ty` must be sized, loadable, and belong to the compatible context. The
 /// caller must ensure the address contains a value compatible with `load_ty`.
 ///
-/// **Errors:** Raises `UnsetPosition` or `StringError::ContainsNul`. Pointer/type
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` or `StringError::ContainsNul`. Pointer/type
 /// compatibility is currently deferred to LLVM verification.
 ///
 /// **Notes:** Alignment is inferred by LLVM; volatility and atomic ordering are
@@ -344,6 +365,8 @@ pub fn IRBuilder::createLoad(
   name? : String = "",
 ) -> LoadInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([ptr])
+  check_type_context(self.get_context(), load_ty)
   let value_ref = @raw.llvm_build_load2(
     self.get_raw_ref(),
     load_ty.get_raw_type_ref(),
@@ -362,7 +385,10 @@ pub fn IRBuilder::createLoad(
 /// compatible with `value.getType()` in the same context/module. LLVM 19 opaque
 /// pointers do not encode this relationship.
 ///
-/// **Errors:** Raises `UnsetPosition` or `ValueTypeError` when `ptr` is not a
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` or `ValueTypeError` when `ptr` is not a
 /// pointer.
 ///
 /// **Notes:** Alignment is inferred by LLVM; volatility and atomic ordering are
@@ -396,6 +422,7 @@ pub fn IRBuilder::createStore(
   loc~ : SourceLoc,
 ) -> StoreInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([value, ptr])
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -487,6 +514,9 @@ fn type_check_during_create_float_binary(
 /// 
 /// This creates an integer addition instruction. Both operands must be integer types with the same bitwidth.
 ///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
@@ -522,6 +552,7 @@ pub fn IRBuilder::createAdd(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createAdd", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -533,13 +564,8 @@ pub fn IRBuilder::createAdd(
   ) catch {
     @raw.EmbeddedNul => raise ContainsNul
   }
-  //if @raw.llvm_is_constant(res_valueref) {
-  //  ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
-  //} else {
-  //  BinaryInst::from_raw(res_valueref, self.get_insert_module())
-  //}
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -553,6 +579,9 @@ pub fn IRBuilder::createAdd(
 ///
 /// **Preconditions:** Operands must be same-width integers. If signed addition
 /// overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -589,6 +618,7 @@ pub fn IRBuilder::createNSWAdd(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNSWAdd", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -601,7 +631,7 @@ pub fn IRBuilder::createNSWAdd(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -615,6 +645,9 @@ pub fn IRBuilder::createNSWAdd(
 ///
 /// **Preconditions:** Operands must be same-width integers. If unsigned addition
 /// overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -651,6 +684,7 @@ pub fn IRBuilder::createNUWAdd(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNUWAdd", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -663,7 +697,7 @@ pub fn IRBuilder::createNUWAdd(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -674,6 +708,9 @@ pub fn IRBuilder::createNUWAdd(
 /// **Note:**
 /// 
 /// This creates an integer subtraction instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -710,6 +747,7 @@ pub fn IRBuilder::createSub(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createSub", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -722,7 +760,7 @@ pub fn IRBuilder::createSub(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -736,6 +774,9 @@ pub fn IRBuilder::createSub(
 ///
 /// **Preconditions:** Operands must be same-width integers. If signed
 /// subtraction overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -772,6 +813,7 @@ pub fn IRBuilder::createNSWSub(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNSWSub", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -784,7 +826,7 @@ pub fn IRBuilder::createNSWSub(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -798,6 +840,9 @@ pub fn IRBuilder::createNSWSub(
 ///
 /// **Preconditions:** Operands must be same-width integers. If unsigned
 /// subtraction overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -834,6 +879,7 @@ pub fn IRBuilder::createNUWSub(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNUWSub", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -846,7 +892,7 @@ pub fn IRBuilder::createNUWSub(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -857,6 +903,9 @@ pub fn IRBuilder::createNUWSub(
 /// **Note:**
 /// 
 /// This creates an integer multiplication instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -893,6 +942,7 @@ pub fn IRBuilder::createMul(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createMul", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -905,7 +955,7 @@ pub fn IRBuilder::createMul(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -919,6 +969,9 @@ pub fn IRBuilder::createMul(
 ///
 /// **Preconditions:** Operands must be same-width integers. If signed
 /// multiplication overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -955,6 +1008,7 @@ pub fn IRBuilder::createNSWMul(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNSWMul", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -967,7 +1021,7 @@ pub fn IRBuilder::createNSWMul(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -981,6 +1035,9 @@ pub fn IRBuilder::createNSWMul(
 ///
 /// **Preconditions:** Operands must be same-width integers. If unsigned
 /// multiplication overflows, the result is poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1017,6 +1074,7 @@ pub fn IRBuilder::createNUWMul(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createNUWMul", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1029,7 +1087,7 @@ pub fn IRBuilder::createNUWMul(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1041,6 +1099,9 @@ pub fn IRBuilder::createNUWMul(
 /// 
 /// This creates an unsigned integer division instruction. 
 /// Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1077,6 +1138,7 @@ pub fn IRBuilder::createUDiv(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createUDiv", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1089,7 +1151,7 @@ pub fn IRBuilder::createUDiv(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1101,6 +1163,9 @@ pub fn IRBuilder::createUDiv(
 /// 
 /// This creates a signed integer division instruction.
 /// Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1137,6 +1202,7 @@ pub fn IRBuilder::createSDiv(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createSDiv", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1149,7 +1215,7 @@ pub fn IRBuilder::createSDiv(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1163,6 +1229,9 @@ pub fn IRBuilder::createSDiv(
 /// Both operands must be integer types with the same bitwidth.
 /// The `exact` promise requires a zero remainder; violating it yields poison.
 /// Division by zero also yields poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1199,6 +1268,7 @@ pub fn IRBuilder::createExactUDiv(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createExactUDiv", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1211,7 +1281,7 @@ pub fn IRBuilder::createExactUDiv(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1224,6 +1294,9 @@ pub fn IRBuilder::createExactUDiv(
 /// This creates an exact signed integer division instruction. Both operands must be integer types with the same bitwidth.
 /// The `exact` promise requires a zero remainder; violating it yields poison.
 /// Division by zero and signed minimum divided by `-1` also yield poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1260,6 +1333,7 @@ pub fn IRBuilder::createExactSDiv(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createExactSDiv", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1272,7 +1346,7 @@ pub fn IRBuilder::createExactSDiv(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1283,6 +1357,9 @@ pub fn IRBuilder::createExactSDiv(
 /// **Note:**
 /// 
 /// This creates an unsigned integer remainder instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1319,6 +1396,7 @@ pub fn IRBuilder::createURem(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createURem", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1331,7 +1409,7 @@ pub fn IRBuilder::createURem(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1342,6 +1420,9 @@ pub fn IRBuilder::createURem(
 /// **Note:**
 /// 
 /// This creates a signed integer remainder instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1378,6 +1459,7 @@ pub fn IRBuilder::createSRem(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createSRem", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1390,7 +1472,7 @@ pub fn IRBuilder::createSRem(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1413,6 +1495,9 @@ pub fn IRBuilder::createSRem(
 /// 5. `NoSignedZeros`
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1469,6 +1554,7 @@ pub fn IRBuilder::createFAdd(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFAdd", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1481,7 +1567,7 @@ pub fn IRBuilder::createFAdd(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => {
       let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
@@ -1516,6 +1602,9 @@ pub fn IRBuilder::createFAdd(
 /// 5. `NoSignedZeros`
 /// 6. `AllowReciprocal`
 /// 7. `ApproxFunc`
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1553,6 +1642,7 @@ pub fn IRBuilder::createFSub(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFSub", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1565,7 +1655,7 @@ pub fn IRBuilder::createFSub(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => {
       let inst = BinaryInst::from_raw(res_valueref, self.get_insert_module())
       match fast_math {
@@ -1589,6 +1679,9 @@ pub fn IRBuilder::createFSub(
 /// **Note:**
 /// 
 /// This creates a floating-point multiplication instruction. Both operands must be floating-point types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1625,6 +1718,7 @@ pub fn IRBuilder::createFMul(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFMul", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1637,7 +1731,7 @@ pub fn IRBuilder::createFMul(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1648,6 +1742,9 @@ pub fn IRBuilder::createFMul(
 /// **Note:**
 /// 
 /// This creates a floating-point division instruction. Both operands must be floating-point types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1684,6 +1781,7 @@ pub fn IRBuilder::createFDiv(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFDiv", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1696,7 +1794,7 @@ pub fn IRBuilder::createFDiv(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1707,6 +1805,9 @@ pub fn IRBuilder::createFDiv(
 /// **Note:**
 /// 
 /// This creates a floating-point remainder instruction. Both operands must be floating-point types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1743,6 +1844,7 @@ pub fn IRBuilder::createFRem(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFRem", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1755,7 +1857,7 @@ pub fn IRBuilder::createFRem(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1767,6 +1869,9 @@ pub fn IRBuilder::createFRem(
 /// 
 /// This creates a floating-point negation instruction that negates a floating-point value.
 /// The input value must be a floating-point type.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1799,6 +1904,7 @@ pub fn IRBuilder::createFNeg(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([value])
   guard value.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -1812,7 +1918,7 @@ pub fn IRBuilder::createFNeg(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => UnaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1823,6 +1929,9 @@ pub fn IRBuilder::createFNeg(
 /// **Note:**
 /// 
 /// This creates a bitwise AND instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1859,6 +1968,7 @@ pub fn IRBuilder::createAnd(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createAnd", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1871,7 +1981,7 @@ pub fn IRBuilder::createAnd(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1882,6 +1992,9 @@ pub fn IRBuilder::createAnd(
 /// **Note:**
 /// 
 /// This creates a bitwise OR instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1918,6 +2031,7 @@ pub fn IRBuilder::createOr(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createOr", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1930,7 +2044,7 @@ pub fn IRBuilder::createOr(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -1941,6 +2055,9 @@ pub fn IRBuilder::createOr(
 /// **Note:**
 /// 
 /// This creates a bitwise XOR instruction. Both operands must be integer types with the same bitwidth.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -1977,6 +2094,7 @@ pub fn IRBuilder::createXor(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createXor", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -1989,7 +2107,7 @@ pub fn IRBuilder::createXor(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2001,6 +2119,9 @@ pub fn IRBuilder::createXor(
 /// 
 /// This creates a bitwise NOT instruction that performs bitwise negation on an integer value.
 /// The input value must be an integer type. LLVM implements NOT as `xor val, -1`.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2034,6 +2155,7 @@ pub fn IRBuilder::createNot(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([value])
   guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2051,7 +2173,7 @@ pub fn IRBuilder::createNot(
   // to represent a bitwise NOT operation.
   // so it is BinaryInst, not UnaryInst.
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2064,6 +2186,9 @@ pub fn IRBuilder::createNot(
 /// Creates an integer left shift. Operands must be same-width integers and the
 /// shift amount must be less than the bit width; an oversized amount yields
 /// poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2100,6 +2225,7 @@ pub fn IRBuilder::createShl(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createShl", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -2112,7 +2238,7 @@ pub fn IRBuilder::createShl(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2125,6 +2251,9 @@ pub fn IRBuilder::createShl(
 /// Creates a zero-filling logical right shift. Operands must be same-width
 /// integers and the shift amount must be less than the bit width; an oversized
 /// amount yields poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2161,6 +2290,7 @@ pub fn IRBuilder::createLShr(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createLShr", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -2173,7 +2303,7 @@ pub fn IRBuilder::createLShr(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2186,6 +2316,9 @@ pub fn IRBuilder::createLShr(
 /// Creates a sign-filling arithmetic right shift. Operands must be same-width
 /// integers and the shift amount must be less than the bit width; an oversized
 /// amount yields poison.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2222,6 +2355,7 @@ pub fn IRBuilder::createAShr(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createAShr", loc)
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()
@@ -2234,7 +2368,7 @@ pub fn IRBuilder::createAShr(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => BinaryInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2251,6 +2385,9 @@ pub fn IRBuilder::createAShr(
 /// divisible by its target allocation size. Meaningful pointer subtraction also
 /// requires addresses within a compatible allocated object. The module must
 /// carry the intended target data layout.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2286,6 +2423,8 @@ pub fn IRBuilder::createPtrDiff(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
+  check_type_context(self.get_context(), elemTy)
   guard lhs.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -2314,7 +2453,11 @@ pub fn IRBuilder::createPtrDiff(
   ) catch {
     @raw.EmbeddedNul => raise ContainsNul
   }
-  BinaryInst::from_raw(res_valueref, self.get_insert_module())
+  if @raw.llvm_is_constant(res_valueref) {
+    self.wrap_constant(res_valueref)
+  } else {
+    BinaryInst::from_raw(res_valueref, self.get_insert_module())
+  }
 }
 
 ///|
@@ -2335,6 +2478,9 @@ pub fn IRBuilder::createPtrDiff(
 /// Signed predicates (`SGT`, `SGE`, `SLT`, `SLE`) interpret the high bit as a
 /// sign bit. Unsigned predicates (`UGT`, `UGE`, `ULT`, `ULE`) do not. Equality
 /// predicates have no signedness. The builder must have an insertion point.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2399,6 +2545,7 @@ pub fn IRBuilder::createICmp(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
   let pred = pred.to_llvm_int_predicate()
   let lhs_ref = lhs.get_raw_value_ref()
@@ -2413,7 +2560,7 @@ pub fn IRBuilder::createICmp(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => ICmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2588,6 +2735,9 @@ pub fn IRBuilder::createICmpULE(
 /// is NaN, while `UNO` is available through `createFCmp` and tests the opposite.
 /// The builder must have an insertion point.
 ///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
@@ -2665,6 +2815,7 @@ pub fn IRBuilder::createFCmp(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([lhs, rhs])
   type_check_during_create_float_binary(lhs, rhs, "createFCmp", loc)
   let pred = pred.to_llvm_float_predicate()
   let lhs_ref = lhs.get_raw_value_ref()
@@ -2679,7 +2830,7 @@ pub fn IRBuilder::createFCmp(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => FCmpInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2886,6 +3037,9 @@ pub fn IRBuilder::createFCmpUNE(
 /// wrapper validates the source kind but relies on LLVM for the width relation.
 /// The builder must have an insertion point; `name` must not contain NUL.
 ///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
@@ -2920,6 +3074,8 @@ pub fn IRBuilder::createTrunc(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -2939,7 +3095,7 @@ pub fn IRBuilder::createTrunc(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -2950,6 +3106,9 @@ pub fn IRBuilder::createTrunc(
 /// `from` must be an integer and `to` must be a wider integer type. This wrapper
 /// validates the source kind but relies on LLVM for the width relation. The
 /// builder must have an insertion point; `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -2985,6 +3144,8 @@ pub fn IRBuilder::createZExt(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3004,7 +3165,7 @@ pub fn IRBuilder::createZExt(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3015,6 +3176,9 @@ pub fn IRBuilder::createZExt(
 /// `from` must be an integer and `to` must be a wider integer type. This wrapper
 /// validates the source kind but relies on LLVM for the width relation. The
 /// builder must have an insertion point; `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3050,6 +3214,8 @@ pub fn IRBuilder::createSExt(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3069,7 +3235,7 @@ pub fn IRBuilder::createSExt(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3081,6 +3247,9 @@ pub fn IRBuilder::createSExt(
 /// point and `to` must be narrower. This wrapper validates the source kind but
 /// relies on LLVM for the width relation. The builder must have an insertion
 /// point; `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3115,6 +3284,8 @@ pub fn IRBuilder::createFPTrunc(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3134,7 +3305,7 @@ pub fn IRBuilder::createFPTrunc(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3145,6 +3316,9 @@ pub fn IRBuilder::createFPTrunc(
 /// `from` must be floating point and `to` must be wider. This wrapper validates
 /// the source kind but relies on LLVM for the width relation. The builder must
 /// have an insertion point; `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3175,6 +3349,8 @@ pub fn IRBuilder::createFPExt(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3194,7 +3370,7 @@ pub fn IRBuilder::createFPExt(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3205,6 +3381,9 @@ pub fn IRBuilder::createFPExt(
 /// A NaN or a value outside the destination's representable range produces
 /// poison according to LLVM semantics. The builder must have an insertion point;
 /// `from` must be floating point and `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3235,6 +3414,8 @@ pub fn IRBuilder::createFPToSI(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3254,7 +3435,7 @@ pub fn IRBuilder::createFPToSI(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3265,6 +3446,9 @@ pub fn IRBuilder::createFPToSI(
 /// A NaN or a value outside the destination's representable range produces
 /// poison according to LLVM semantics. The builder must have an insertion point;
 /// `from` must be floating point and `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3300,6 +3484,8 @@ pub fn IRBuilder::createFPToUI(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsFPType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3319,7 +3505,7 @@ pub fn IRBuilder::createFPToUI(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3330,6 +3516,9 @@ pub fn IRBuilder::createFPToUI(
 /// The conversion rounds when the destination format cannot represent the exact
 /// integer. The builder must have an insertion point; `from` must be an integer
 /// and `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3360,6 +3549,8 @@ pub fn IRBuilder::createSIToFP(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3379,7 +3570,7 @@ pub fn IRBuilder::createSIToFP(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3390,6 +3581,9 @@ pub fn IRBuilder::createSIToFP(
 /// The conversion rounds when the destination format cannot represent the exact
 /// integer. The builder must have an insertion point; `from` must be an integer
 /// and `name` must not contain NUL.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3424,6 +3618,8 @@ pub fn IRBuilder::createUIToFP(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -3443,7 +3639,7 @@ pub fn IRBuilder::createUIToFP(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true => ConstantFP::from_raw(res_valueref, self.get_context()) as &Value
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3456,10 +3652,13 @@ pub fn IRBuilder::createUIToFP(
 /// for those constraints. The builder must have an insertion point; `name` must
 /// not contain NUL.
 ///
-/// **Errors:**
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
-/// Constant-folded results whose type has no supported high-level constant
-/// wrapper raise `ValueTypeError`.
+///
+///
+/// Constant-folded results are classified by their actual LLVM value kind;
+/// expressions and global addresses retain their module dependency.
 ///
 /// ```mbt check
 /// test {
@@ -3489,7 +3688,10 @@ pub fn IRBuilder::createBitCast(
   name? : String = "",
   loc~ : SourceLoc,
 ) -> &Value raise {
+  ignore(loc)
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   let from_ref = from.get_raw_value_ref()
   let to_ref = (to : &Type).get_raw_type_ref()
   let res_valueref = @raw.llvm_build_bit_cast(
@@ -3502,26 +3704,7 @@ pub fn IRBuilder::createBitCast(
   }
   //CastInst::from_raw(res_valueref, self.get_insert_module())
   match @raw.llvm_is_constant(res_valueref) {
-    true =>
-      match to.asTypeEnum() {
-        Int1Type(_)
-        | Int8Type(_)
-        | Int16Type(_)
-        | Int32Type(_)
-        | Int64Type(_) =>
-          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
-        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::from_raw(res_valueref, self.get_context())
-        StructType(_) =>
-          ConstantStruct::from_raw(res_valueref, self.get_context())
-        _ =>
-          raise ValueTypeError(
-            (
-              $| loc: \{loc}:
-              $| Unanticipated constant type in `createBitCast`, the to type is \{to}
-            ),
-          )
-      }
+    true => self.wrap_constant(res_valueref)
     false => CastInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3532,6 +3715,9 @@ pub fn IRBuilder::createBitCast(
 /// The builder must have an insertion point, `from` must be an integer, and
 /// `name` must not contain NUL. The integer width need not equal the target
 /// pointer width: LLVM zero-extends or truncates it as necessary.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3559,6 +3745,7 @@ pub fn IRBuilder::createIntToPtr(
   name? : String = "",
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
   guard from.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       "Misuse `IRBuilder::createIntToPtr`, from must be an integer type",
@@ -3576,7 +3763,11 @@ pub fn IRBuilder::createIntToPtr(
   ) catch {
     @raw.EmbeddedNul => raise ContainsNul
   }
-  CastInst::from_raw(res_valueref, self.get_insert_module())
+  if @raw.llvm_is_constant(res_valueref) {
+    self.wrap_constant(res_valueref)
+  } else {
+    CastInst::from_raw(res_valueref, self.get_insert_module())
+  }
 }
 
 ///|
@@ -3585,6 +3776,9 @@ pub fn IRBuilder::createIntToPtr(
 /// The builder must have an insertion point, `from` must be a pointer, and
 /// `name` must not contain NUL. The result is zero-extended or truncated when
 /// `to` differs from the target's pointer width.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3615,6 +3809,8 @@ pub fn IRBuilder::createPtrToInt(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([from])
+  check_type_context(self.get_context(), to)
   guard from.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -3633,11 +3829,19 @@ pub fn IRBuilder::createPtrToInt(
   ) catch {
     @raw.EmbeddedNul => raise ContainsNul
   }
-  CastInst::from_raw(res_valueref, self.get_insert_module())
+  if @raw.llvm_is_constant(res_valueref) {
+    self.wrap_constant(res_valueref)
+  } else {
+    CastInst::from_raw(res_valueref, self.get_insert_module())
+  }
 }
 
 ///|
 /// Computes the address of a subobject without dereferencing `ptr`.
+///
+/// Returns either an instruction or a folded constant/global address. Use
+/// `asValueEnum` to obtain `GetElementPtrInst` before querying instruction-only
+/// GEP properties. A constant result retains any referenced module.
 ///
 /// **Parameters:**
 ///
@@ -3654,6 +3858,9 @@ pub fn IRBuilder::createPtrToInt(
 /// validates the remaining type relationship. Violating an `inbounds` promise
 /// produces poison rather than a checked bounds error. The builder must have an
 /// insertion point.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3696,8 +3903,11 @@ pub fn IRBuilder::createGEP(
   name? : String = "",
   inbounds? : Bool = false,
   loc~ : SourceLoc,
-) -> GetElementPtrInst raise {
+) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([ptr])
+  self.check_value_owners(indices)
+  check_type_context(self.get_context(), pointeeType)
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -3737,7 +3947,11 @@ pub fn IRBuilder::createGEP(
       @raw.EmbeddedNul => raise ContainsNul
     }
   }
-  GetElementPtrInst::from_raw(res_valueref, self.get_insert_module())
+  if @raw.llvm_is_constant(res_valueref) {
+    self.wrap_constant(res_valueref)
+  } else {
+    GetElementPtrInst::from_raw(res_valueref, self.get_insert_module())
+  }
 }
 
 ///|
@@ -3747,6 +3961,9 @@ pub fn IRBuilder::createGEP(
 /// same function. The insertion block must not already have a terminator.
 ///
 /// **Side effects:** Terminates the current block and adds a CFG edge to `dest`.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -3769,6 +3986,7 @@ pub fn IRBuilder::createGEP(
 /// ```
 pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([dest])
   let dest_ref = dest.get_raw_ref()
   let res_valueref = @raw.llvm_build_br(self.get_raw_ref(), dest_ref)
   BranchInst::from_raw(res_valueref, self.get_insert_module())
@@ -3781,7 +3999,10 @@ pub fn IRBuilder::createBr(self : Self, dest : BasicBlock) -> BranchInst raise {
 /// insertion block must belong to the same function, and the insertion block
 /// must not already have a terminator.
 ///
-/// **Errors:** Raises `ValueTypeError` when `cond` is not `i1`, or
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` when `cond` is not `i1`, or
 /// `UnsetPosition` when the builder is unpositioned.
 ///
 /// **Side effects:** Terminates the current block and adds two CFG edges.
@@ -3820,6 +4041,7 @@ pub fn IRBuilder::createCondBr(
   loc~ : SourceLoc,
 ) -> BranchInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([cond, trueDest, falseDest])
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
@@ -3846,7 +4068,10 @@ pub fn IRBuilder::createCondBr(
 /// **Preconditions:** `trueVal` and `falseVal` must have the same first-class
 /// type and share a Context with `cond` and the insertion point.
 ///
-/// **Errors:** Raises `ValueTypeError` when `cond` is not `i1`, when LLVM folds
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` when `cond` is not `i1`, when LLVM folds
 /// to a constant kind unsupported by the safe wrapper, or `UnsetPosition` when
 /// the builder is unpositioned. An embedded NUL in `name` raises `ContainsNul`.
 ///
@@ -3882,6 +4107,7 @@ pub fn IRBuilder::createSelect(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([cond, trueVal, falseVal])
   guard cond.getType().tryAsIntTypeEnum() is Some(Int1Type(_)) else {
     raise ValueTypeError(
       (
@@ -3903,27 +4129,7 @@ pub fn IRBuilder::createSelect(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true =>
-      match trueVal.getType().asTypeEnum() {
-        Int1Type(_)
-        | Int8Type(_)
-        | Int16Type(_)
-        | Int32Type(_)
-        | Int64Type(_) =>
-          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
-        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::from_raw(res_valueref, self.get_context())
-        StructType(_) =>
-          ConstantStruct::from_raw(res_valueref, self.get_context())
-        ArrayType(_) =>
-          ConstantArray::from_raw(res_valueref, self.get_context())
-        VectorType(_) =>
-          ConstantVector::from_raw(res_valueref, self.get_context())
-        _ =>
-          raise ValueTypeError(
-            "Unanticipated constant type in `createSelect`, the trueVal type is \{trueVal.getType()}",
-          )
-      }
+    true => self.wrap_constant(res_valueref)
     false => SelectInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -3937,7 +4143,10 @@ pub fn IRBuilder::createSelect(
 /// **Preconditions:** `defaultDest` and the insertion block must belong to the
 /// same function, whose current block must not already have a terminator.
 ///
-/// **Errors:** Raises `ValueTypeError` when `value` is not an integer, or
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` when `value` is not an integer, or
 /// `UnsetPosition` when the builder is unpositioned.
 ///
 /// **Side effects:** Terminates the current block and initially adds the default
@@ -3981,6 +4190,7 @@ pub fn IRBuilder::createSwitch(
 ) -> SwitchInst raise {
   // use `SwitchInst::addCase` to add cases.
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([value, defaultDest])
   guard value.getType().tryAsIntType() is Some(_) else {
     raise ValueTypeError(
       (
@@ -4010,6 +4220,9 @@ pub fn IRBuilder::createSwitch(
 /// block must be a predecessor in the same function.
 ///
 /// **Side effects:** Inserts a PHI node; later `addIncoming` calls mutate it.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -4042,6 +4255,8 @@ pub fn IRBuilder::createPHI(
 ) -> PHINode raise {
   // use `PHINode::addIncoming` to add incoming values.
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([])
+  check_type_context(self.get_context(), type_)
   let type_ref = type_.get_raw_type_ref()
   let res_valueref = @raw.llvm_build_phi(self.get_raw_ref(), type_ref, name) catch {
     @raw.EmbeddedNul => raise ContainsNul
@@ -4062,7 +4277,10 @@ fn format_type_list(types : Array[&Type]) -> String {
 /// parameter types. For variadic functions, `args` must contain at least all
 /// fixed parameters, and those prefix types must match.
 ///
-/// **Errors:** Raises `InValidArgument` for a checked parameter mismatch,
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `InValidArgument` for a checked parameter mismatch,
 /// `UnsetPosition` when unpositioned, or `ContainsNul` for an embedded NUL in
 /// `name`.
 ///
@@ -4097,6 +4315,8 @@ pub fn IRBuilder::createCall(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([func])
+  self.check_value_owners(args)
   let func_ty = func.getType()
   let param_tys = func_ty.getParamTypes()
   let arg_tys = args.map(v => v.getType())
@@ -4157,7 +4377,10 @@ pub fn IRBuilder::createCall(
 /// must include the fixed prefix. All values, types, and the insertion point must
 /// share a Context. This wrapper checks only that `funcPtr` is a pointer.
 ///
-/// **Errors:** Raises `ValueTypeError` when `funcPtr` is not a pointer,
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` when `funcPtr` is not a pointer,
 /// `UnsetPosition` when unpositioned, or `ContainsNul` for an embedded NUL in
 /// `name`.
 ///
@@ -4199,6 +4422,9 @@ pub fn IRBuilder::createCallPtr(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([funcPtr])
+  self.check_value_owners(args)
+  check_type_context(self.get_context(), funcType)
   guard funcPtr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4228,7 +4454,10 @@ pub fn IRBuilder::createCallPtr(
 /// This one-index convenience API addresses a direct struct field or array
 /// element, not a nested index path.
 ///
-/// **Errors:** Raises `ValueTypeError` unless `aggregate` is a supported
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` unless `aggregate` is a supported
 /// aggregate and `value` has the selected element type; raises
 /// `InValidArgument` when `index` is out of bounds. It also reports an unset
 /// insertion point, an embedded NUL in `name`, or an unsupported folded constant.
@@ -4269,6 +4498,7 @@ pub fn IRBuilder::createInsertValue(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([aggregate, value])
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
     raise ValueTypeError(
       (
@@ -4305,17 +4535,7 @@ pub fn IRBuilder::createInsertValue(
     @raw.EmbeddedNul => raise ContainsNul
   }
   match @raw.llvm_is_constant(res_valueref) {
-    true =>
-      match aggregate.getType().asTypeEnum() {
-        StructType(_) =>
-          ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
-        ArrayType(_) =>
-          ConstantArray::from_raw(res_valueref, self.get_context())
-        _ =>
-          raise ValueTypeError(
-            "Unanticipated constant type in `createInsertValue`, the aggregate type is \{aggregate.getType()}",
-          )
-      }
+    true => self.wrap_constant(res_valueref)
     false => InsertValueInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -4326,7 +4546,10 @@ pub fn IRBuilder::createInsertValue(
 /// This one-index convenience API addresses a direct struct field or array
 /// element, not a nested index path.
 ///
-/// **Errors:** Raises `ValueTypeError` unless `aggregate` is a supported
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `ValueTypeError` unless `aggregate` is a supported
 /// aggregate; raises `InValidArgument` when `index` is out of bounds. It also
 /// reports an unset insertion point, an embedded NUL in `name`, or an unsupported
 /// folded constant.
@@ -4360,6 +4583,7 @@ pub fn IRBuilder::createExtractValue(
   loc~ : SourceLoc,
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([aggregate])
   guard aggregate.getType().tryAsAggregateType() is Some(aggre_ty) else {
     raise ValueTypeError(
       (
@@ -4401,25 +4625,7 @@ pub fn IRBuilder::createExtractValue(
   }
   //ExtractValueInst::from_raw(res_valueref, self.get_insert_module())
   match @raw.llvm_is_constant(res_valueref) {
-    true =>
-      match aggregate.getType().asTypeEnum() {
-        Int1Type(_)
-        | Int8Type(_)
-        | Int16Type(_)
-        | Int32Type(_)
-        | Int64Type(_) =>
-          ConstantInt::from_raw(res_valueref, self.get_context()) as &Value
-        HalfType(_) | BFloatType(_) | FloatType(_) | DoubleType(_) =>
-          ConstantFP::from_raw(res_valueref, self.get_context())
-        StructType(_) =>
-          ConstantStruct::from_raw(res_valueref, self.get_context()) as &Value
-        ArrayType(_) =>
-          ConstantArray::from_raw(res_valueref, self.get_context())
-        _ =>
-          raise ValueTypeError(
-            "Unanticipated constant type in `createExtractValue`, the aggregate type is \{aggregate.getType()}",
-          )
-      }
+    true => self.wrap_constant(res_valueref)
     false => ExtractValueInst::from_raw(res_valueref, self.get_insert_module())
   }
 }
@@ -4437,6 +4643,9 @@ pub fn IRBuilder::createExtractValue(
 /// **Side effects:** Inserts a `malloc` call and may add or reuse a `malloc`
 /// declaration in the current Module. Executing the generated call allocates
 /// storage that must eventually be released, normally with `createFree`.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -4468,6 +4677,8 @@ pub fn IRBuilder::createMalloc(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([])
+  check_type_context(self.get_context(), ty)
   guard !(ty.tryAsAbstractType() is Some(_)) else {
     raise ValueTypeError(
       (
@@ -4491,6 +4702,9 @@ pub fn IRBuilder::createMalloc(
 ///
 /// **Side effects:** Inserts a `free` call and may add or reuse its declaration.
 /// Executing the generated call ends the allocation's lifetime.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -4519,6 +4733,7 @@ pub fn IRBuilder::createFree(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([ptr])
   guard ptr.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4544,6 +4759,9 @@ pub fn IRBuilder::createFree(
 ///
 /// **Side effects:** Inserts a non-volatile `llvm.memcpy` intrinsic call that
 /// writes the destination range when executed.
+///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
 ///
 /// ```mbt check
 /// test {
@@ -4582,6 +4800,7 @@ pub fn IRBuilder::createMemCpy(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([dst, src, size])
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4635,6 +4854,9 @@ pub fn IRBuilder::createMemCpy(
 /// **Side effects:** Inserts a non-volatile `llvm.memset` intrinsic call that
 /// writes the destination range when executed.
 ///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
@@ -4672,6 +4894,7 @@ pub fn IRBuilder::createMemSet(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([dst, value, size])
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4722,6 +4945,9 @@ pub fn IRBuilder::createMemSet(
 /// **Side effects:** Inserts a non-volatile `llvm.memmove` intrinsic call that
 /// writes the destination range when executed.
 ///
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
 /// ```mbt check
 /// test {
 ///   let ctx = Context::new()
@@ -4759,6 +4985,7 @@ pub fn IRBuilder::createMemMove(
   loc~ : SourceLoc,
 ) -> CallInst raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([dst, src, size])
   guard dst.getType().asTypeEnum() is PointerType(_) else {
     raise ValueTypeError(
       (
@@ -4805,7 +5032,10 @@ pub fn IRBuilder::createMemMove(
 /// **Parameters:** `string` supplies the bytes before the trailing NUL; `name`
 /// is an optional LLVM global name. Neither may contain an embedded NUL.
 ///
-/// **Errors:** Raises `UnsetPosition` when the builder has no current Module, or
+/// **Errors:** Raises `ValueOwnerError` when an operand/type has a foreign Context
+/// or an operand depends on a different Module.
+///
+/// Raises `UnsetPosition` when the builder has no current Module, or
 /// `ContainsNul` when either string cannot cross the C-string boundary.
 ///
 /// **Side effects:** Creates a new global constant in the Module associated with
@@ -4819,6 +5049,7 @@ pub fn IRBuilder::createGlobalString(
   name? : String = "",
 ) -> GlobalConstant raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
+  self.check_value_owners([])
   let res_valueref = @raw.llvm_build_global_string(
     self.get_raw_ref(),
     string,

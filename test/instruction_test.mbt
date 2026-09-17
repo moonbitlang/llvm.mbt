@@ -373,6 +373,9 @@ test "Alloca and GEP properties round trip" {
     name="element",
   )
   assert_eq(slot.getAllocatedType().to_string(), "i32")
+  guard gep.asValueEnum() is GetElementPtrInst(gep) else {
+    fail("expected GEP instruction")
+  }
   assert_eq(gep.getSourceElementType().to_string(), "i32")
   assert_false(gep.isInBounds())
   gep.setInBounds()

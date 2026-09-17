@@ -74,6 +74,11 @@ pub suberror TargetRegistryError {
   TargetNotFound(String)
 }
 
+pub suberror ValueOwnerError {
+  ContextMismatch
+  ModuleMismatch
+}
+
 pub suberror VerificationError {
   VerificationError(String)
 }
@@ -443,6 +448,8 @@ pub impl Value for ConstantArray
 pub impl Show for ConstantArray
 
 pub enum ConstantEnum {
+  GlobalVariable(GlobalVariable)
+  GlobalConstant(GlobalConstant)
   ConstantInt(ConstantInt)
   ConstantFP(ConstantFP)
   ConstantPointerNull(ConstantPointerNull)
@@ -574,7 +581,7 @@ pub fn Context::createBuilder(Self) -> IRBuilder
 pub fn Context::equal(Self, Self) -> Bool
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
 pub fn Context::getBFloatTy(Self) -> BFloatType
-pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray
+pub fn Context::getConstArray(Self, &Type, Array[&Constant]) -> ConstantArray raise
 pub fn Context::getConstBytes(Self, Bytes, nullTerminate? : Bool) -> ConstantArray
 pub fn Context::getConstDouble(Self, Double) -> ConstantFP
 pub fn Context::getConstFalse(Self) -> ConstantInt
@@ -584,13 +591,13 @@ pub fn Context::getConstInt32(Self, Int) -> ConstantInt
 pub fn Context::getConstInt64(Self, Int64) -> ConstantInt
 pub fn Context::getConstInt8(Self, Int) -> ConstantInt
 pub fn Context::getConstPointerNull(Self, &Type) -> ConstantPointerNull
-pub fn Context::getConstStruct(Self, Array[&Constant], isPacked? : Bool) -> ConstantStruct
+pub fn Context::getConstStruct(Self, Array[&Constant], isPacked? : Bool) -> ConstantStruct raise
 pub fn Context::getConstTrue(Self) -> ConstantInt
 pub fn Context::getConstUInt16(Self, UInt16) -> ConstantInt
 pub fn Context::getConstUInt32(Self, UInt) -> ConstantInt
 pub fn Context::getConstUInt64(Self, UInt64) -> ConstantInt
 pub fn Context::getConstUInt8(Self, Int) -> ConstantInt
-pub fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector
+pub fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector raise
 pub fn Context::getConstZeroDouble(Self, isNegative~ : Bool) -> ConstantFP
 pub fn Context::getConstZeroFloat(Self, isNegative~ : Bool) -> ConstantFP
 pub fn Context::getDoubleTy(Self) -> DoubleType
@@ -992,6 +999,7 @@ pub impl Show for GetElementPtrInst
 pub struct GlobalConstant {
   // private fields
 }
+pub fn GlobalConstant::asConstantEnum(Self) -> ConstantEnum
 pub fn GlobalConstant::asGlobalEnum(Self) -> GlobalEnum
 pub fn GlobalConstant::asValueEnum(Self) -> ValueEnum
 pub fn GlobalConstant::getContext(Self) -> Context
@@ -1008,6 +1016,7 @@ pub fn GlobalConstant::setValueName(Self, String) -> Unit raise StringError
 pub fn GlobalConstant::to_string(Self) -> String
 pub fn GlobalConstant::tryAsConstant(Self) -> &Constant?
 pub fn GlobalConstant::tryAsConstantEnum(Self) -> ConstantEnum?
+pub impl Constant for GlobalConstant
 pub impl GlobalValue for GlobalConstant
 pub impl Value for GlobalConstant
 pub impl Show for GlobalConstant
@@ -1021,6 +1030,7 @@ pub enum GlobalEnum {
 pub struct GlobalVariable {
   // private fields
 }
+pub fn GlobalVariable::asConstantEnum(Self) -> ConstantEnum
 pub fn GlobalVariable::asGlobalEnum(Self) -> GlobalEnum
 pub fn GlobalVariable::asValueEnum(Self) -> ValueEnum
 pub fn GlobalVariable::getContext(Self) -> Context
@@ -1037,6 +1047,7 @@ pub fn GlobalVariable::setValueName(Self, String) -> Unit raise StringError
 pub fn GlobalVariable::to_string(Self) -> String
 pub fn GlobalVariable::tryAsConstant(Self) -> &Constant?
 pub fn GlobalVariable::tryAsConstantEnum(Self) -> ConstantEnum?
+pub impl Constant for GlobalVariable
 pub impl GlobalValue for GlobalVariable
 pub impl Value for GlobalVariable
 pub impl Show for GlobalVariable
@@ -1189,7 +1200,7 @@ pub fn IRBuilder::createFSub(Self, &Value, &Value, name? : String, fast_math? : 
 #callsite(autofill(loc))
 pub fn IRBuilder::createFree(Self, &Value, loc~ : SourceLoc) -> CallInst raise
 #callsite(autofill(loc))
-pub fn IRBuilder::createGEP(Self, &Value, &Type, Array[&Value], name? : String, inbounds? : Bool, loc~ : SourceLoc) -> GetElementPtrInst raise
+pub fn IRBuilder::createGEP(Self, &Value, &Type, Array[&Value], name? : String, inbounds? : Bool, loc~ : SourceLoc) -> &Value raise
 pub fn IRBuilder::createGlobalString(Self, String, name? : String) -> GlobalConstant raise
 #callsite(autofill(loc))
 pub fn IRBuilder::createICmp(Self, IntPredicate, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
@@ -1721,8 +1732,8 @@ pub struct Module {
   // private fields
 }
 pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise StringError
-pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise StringError
-pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise StringError
+pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise
+pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
 pub fn Module::getDataLayout(Self) -> DataLayout

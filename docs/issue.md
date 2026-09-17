@@ -4,6 +4,45 @@
 
 Runa 从带 block parameter 的 SSA 生成 LLVM IR，首版包含标量、直接调用、分支、循环、局部 slot、global、struct 和有限 C FFI。GC 已决定采用非移动 mark-sweep 与编译器生成的显式根栈，不依赖 statepoint 才能开始实现。
 
+## 新增阻塞：0.5.2 的 global 地址常量（Runa GC 接入）
+
+Runa 生成 GC 描述符和全局根表时，需要把 global 地址放进常量 aggregate：
+
+```llvm
+@references = private constant [1 x i64] [i64 8]
+@descriptor = private constant { i64, i64, i64, ptr }
+  { i64 16, i64 8, i64 1, ptr @references }
+@root = internal global ptr null
+@root_addresses = private constant [1 x ptr] [ptr @root]
+```
+
+当前 `GlobalVariable`、`GlobalConstant` 没有实现 `Constant`；`Value::tryAsConstant` 和 `tryAsConstantEnum` 对它们返回 None，而 `Context::getConstArray/getConstStruct` 只接受 `&Constant`。因此已公开 API 无法表达上述 initializer。Runa 的最小复现是 `let value: String = "text"; fn main {}`：建立全局根表时无法取得 global 地址常量。Struct 的 GC 描述符引用偏移数组同样受阻。
+
+希望补齐 global 地址作为 constant operand 的公开能力，接口继续遵守本库 camelCase 风格。可以扩展现有 Constant 分类，或提供具有同等能力的 module-owned aggregate 构造接口；不要要求下游伪造 trait wrapper 或使用 raw handle。
+
+需要同时处理 ownership：global wrapper 锚定 Module，而现有 ConstantArray/ConstantStruct 锚定 Context。包含 global 地址的 aggregate 或 constant expression 必须保留所引用 Module 的生命周期，并明确拒绝跨 context/module 的非法组合；不能只把 `tryAsConstant` 改成 Some 就忽略这条依赖。
+
+验收：包含 GlobalVariable/GlobalConstant 地址的数组与 struct initializer 可构造、打印并通过 verifier；aggregate wrapper 保留时丢弃原 module 变量仍安全；非法 owner 混用的拒绝行为有测试。静态表初始化不应被迫改成运行时逐字段补写。
+
+Runa 已暂停依赖此能力的第三步实现，未修改或发布 llvm.mbt。
+
+### 该阻塞的工作区实现（2026-09-17，待 review）
+
+已接通 `GlobalVariable` / `GlobalConstant` 的 `Constant` 实现、`ConstantEnum` 和两种 `tryAsConstant` 转换。作为 operand 时表示 global 的地址，不表示其 initializer 内容。
+
+`IR/constant_owner.mbt` 集中处理常量依赖：纯常量只保留 Context；数组、struct、vector 和 constant expression 可额外保留所引用的唯一 Module。构造 aggregate、安装 global initializer 以及 builder 消费 operands 时，使用统一检查拒绝跨 Context / Module 的组合。Module 不反向持有 MoonBit initializer wrapper，避免引用环。
+
+Builder 常量折叠按实际 LLVM value kind 分类，保留结果中仍存在的 global 依赖。`createSelect`、`createInsertValue`、`createExtractValue`、GEP、指针转换及其后续算术均走同一分类入口；从含 global 的 aggregate 提取纯标量时不再保留无关 Module。
+
+兼容性变化：
+
+- `getConstArray` / `getConstStruct` / `getConstVector` 新增 `raise`；两个 `addGlobal*` 的错误签名由 `raise StringError` 扩大为 `raise`。错误包括 `ValueOwnerError::{ContextMismatch, ModuleMismatch}` 和 `InValidTypeError`，global 名称错误仍使用 `StringError`。
+- `ConstantEnum` 新增两个 global 构造器，穷尽匹配需要更新。
+- `createGEP` 返回类型从 `GetElementPtrInst` 改为 `&Value`，因为 LLVM 可能返回常量表达式或原 global 地址。需要指令专属方法时，先匹配 `asValueEnum()` 的 `GetElementPtrInst` 分支。其他可折叠方法仍返回 `&Value`，但会正确区分字面量、constant expression、global 和 instruction。
+- 不改变模块版本或发布状态。本轮的 Module 保留保证针对正常构造和读取；显式删除及 RAUW 仍可能使已有依赖 wrapper 失效，需要停止使用并重建，不提供自动跟踪或修复。
+
+验证：`test/global_constant_operand_test.mbt` 覆盖两张静态 GC 表、嵌套依赖、owner/type 反例、常量折叠和 JIT 读取根表；`IR/resource_owner_wbtest.mbt` 通过 native finalizer 事件验证释放顺序、纯标量解除依赖及无 owner 环。全量 native 测试（含 doc test）618 项通过。
+
 ## 1. 风格与交付约定
 
 - 遵守本仓库 [style-guide.md](style-guide.md)，公开接口沿用现有的 C++ 风格 camelCase，例如 `createUnreachable`、`getElementOffset`；不要引入 Runa 的 snake_case 或业务类型。

@@ -211,21 +211,28 @@ pub impl Show for ConstantPointerNull with fn output(self, logger) {
 // ==================================================
 
 ///|
-/// Context-owned LLVM array aggregate constant.
+/// LLVM array aggregate constant retaining its context and any module dependency.
 ///
-/// Every element has the array element type and belongs to the same context.
+/// **Construction:** Use `Context::getConstArray`.
 ///
-/// **Lifecycle:** The constant is owned by its `Context`, not by a module.
+/// **Lifecycle:** Pure constants retain only their Context. A value containing
+/// global addresses also retains the one Module those addresses belong to,
+/// including dependencies nested inside other constants. No explicit disposal
+/// is required. Erasure or RAUW of referenced IR can invalidate this wrapper;
+/// retaining the module does not make such mutations safe.
 pub struct ConstantArray {
-  priv value : ContextAnchoredValue
+  priv value : ConstantAnchoredValue
 }
 
 ///|
 fn ConstantArray::from_raw(
   value_ref : ValueRef,
   context : Context,
+  owner_module? : Module? = None,
 ) -> ConstantArray {
-  ConstantArray::{ value: ContextAnchoredValue::new(value_ref, context), }
+  ConstantArray::{
+    value: ConstantAnchoredValue::new(value_ref, context, owner_module),
+  }
 }
 
 ///|
@@ -263,22 +270,28 @@ pub impl Show for ConstantArray with fn output(self, logger) {
 // ==================================================
 
 ///|
-/// Context-owned LLVM struct aggregate constant.
+/// LLVM struct aggregate constant retaining its context and any module dependency.
 ///
-/// The constant may use an explicitly supplied struct type or the literal type
-/// inferred by its context factory.
+/// **Construction:** Use `Context::getConstStruct`.
 ///
-/// **Lifecycle:** The constant is owned by its `Context`, not by a module.
+/// **Lifecycle:** Pure constants retain only their Context. A value containing
+/// global addresses also retains the one Module those addresses belong to,
+/// including dependencies nested inside other constants. No explicit disposal
+/// is required. Erasure or RAUW of referenced IR can invalidate this wrapper;
+/// retaining the module does not make such mutations safe.
 pub struct ConstantStruct {
-  priv value : ContextAnchoredValue
+  priv value : ConstantAnchoredValue
 }
 
 ///|
 fn ConstantStruct::from_raw(
   value_ref : ValueRef,
   context : Context,
+  owner_module? : Module? = None,
 ) -> ConstantStruct {
-  ConstantStruct::{ value: ContextAnchoredValue::new(value_ref, context), }
+  ConstantStruct::{
+    value: ConstantAnchoredValue::new(value_ref, context, owner_module),
+  }
 }
 
 ///|
@@ -316,22 +329,28 @@ pub impl Show for ConstantStruct with fn output(self, logger) {
 // ==================================================
 
 ///|
-/// Context-owned LLVM vector constant.
+/// LLVM vector constant retaining its context and any module dependency.
 ///
-/// Its elements must share one type and context; the lane count is determined
-/// by the number of elements passed to the context factory.
+/// **Construction:** Use `Context::getConstVector`.
 ///
-/// **Lifecycle:** The constant is owned by its `Context`, not by a module.
+/// **Lifecycle:** Pure constants retain only their Context. A value containing
+/// global addresses also retains the one Module those addresses belong to,
+/// including dependencies nested inside other constants. No explicit disposal
+/// is required. Erasure or RAUW of referenced IR can invalidate this wrapper;
+/// retaining the module does not make such mutations safe.
 pub struct ConstantVector {
-  priv value : ContextAnchoredValue
+  priv value : ConstantAnchoredValue
 }
 
 ///|
 fn ConstantVector::from_raw(
   value_ref : ValueRef,
   context : Context,
+  owner_module? : Module? = None,
 ) -> ConstantVector {
-  ConstantVector::{ value: ContextAnchoredValue::new(value_ref, context), }
+  ConstantVector::{
+    value: ConstantAnchoredValue::new(value_ref, context, owner_module),
+  }
 }
 
 ///|
@@ -472,22 +491,28 @@ pub impl Show for PoisonValue with fn output(self, logger) {
 // ==================================================
 
 ///|
-/// Context-owned LLVM constant expression.
+/// LLVM constant expression constant retaining its context and any module dependency.
 ///
-/// Constant expressions are immutable computations accepted where LLVM permits
-/// a constant operand. `Type::sizeOf` is one source of this wrapper.
+/// **Construction:** Use `Type::sizeOf or a constant-folding IRBuilder operation`.
 ///
-/// **Lifecycle:** The expression is owned by its `Context`, not by a module.
+/// **Lifecycle:** Pure constants retain only their Context. A value containing
+/// global addresses also retains the one Module those addresses belong to,
+/// including dependencies nested inside other constants. No explicit disposal
+/// is required. Erasure or RAUW of referenced IR can invalidate this wrapper;
+/// retaining the module does not make such mutations safe.
 pub struct ConstantExpr {
-  priv value : ContextAnchoredValue
+  priv value : ConstantAnchoredValue
 }
 
 ///|
 fn ConstantExpr::from_raw(
   value_ref : ValueRef,
   context : Context,
+  owner_module? : Module? = None,
 ) -> ConstantExpr {
-  ConstantExpr::{ value: ContextAnchoredValue::new(value_ref, context), }
+  ConstantExpr::{
+    value: ConstantAnchoredValue::new(value_ref, context, owner_module),
+  }
 }
 
 ///|

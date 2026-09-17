@@ -258,3 +258,91 @@ test "native owners finalize exactly once in child-first order" {
   exercise_owner_finalizers()
   inspect(owner_test_take_trace(), content="321")
 }
+
+///|
+extern "C" fn owner_test_peek_trace() -> UInt64 = "llvm_mbt_ir_owner_test_peek_trace"
+
+///|
+fn scoped_address_constant(kind : Int) -> &Value raise {
+  let ctx = Context::new()
+  let mod = ctx.addModule("constant_owner_trace")
+  let builder = ctx.createBuilder()
+  owner_test_watch(ctx.get_owner(), mod.get_owner(), builder.owner)
+  let root = mod.addGlobalVariable(ctx.getInt32Ty(), "root")
+  let array = ctx.getConstArray(ctx.getPtrTy(), [root])
+  if kind == 0 {
+    return ctx.getConstStruct([array])
+  }
+  if kind == 1 {
+    return ctx.getConstVector([root])
+  }
+  let function = mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), "f")
+  builder.setInsertPoint(function.addBasicBlock())
+  let result = match kind {
+    2 => builder.createPtrToInt(root, ctx.getInt64Ty())
+    3 => builder.createExtractValue(ctx.getConstStruct([array]), 0)
+    4 => builder.createInsertValue(ctx.getUndef(array.getType()), root, 0)
+    5 => builder.createSelect(ctx.getConstTrue(), array, array)
+    6 =>
+      builder.createExtractValue(
+        ctx.getConstStruct([root, ctx.getConstInt32(7)]),
+        1,
+      )
+    _ => builder.createExtractValue(array, 0)
+  }
+  builder.createRetVoid() |> ignore
+  mod.verify()
+  result
+}
+
+///|
+fn exercise_constant_dependency(kind : Int) -> Unit raise {
+  let value = scoped_address_constant(kind)
+  // The builder is gone, but the constant must keep its referenced module.
+  assert_eq(owner_test_peek_trace(), 3UL)
+  assert_true(value_module(value) is Some(_))
+  assert_true(Show::to_string(value).contains("root"))
+}
+
+///|
+test "aggregate expression and folded wrappers retain module until their last use" {
+  for kind in [0, 1, 2, 3, 4, 5, 7] {
+    exercise_constant_dependency(kind)
+    assert_eq(owner_test_take_trace(), 321UL)
+  }
+}
+
+///|
+fn exercise_folded_scalar_owner() -> Unit raise {
+  let value = scoped_address_constant(6)
+  // Extracting a scalar drops the dependency absent from the result.
+  inspect(owner_test_peek_trace(), content="32")
+  inspect(value_module(value) is None, content="true")
+  inspect(value, content="i32 7")
+}
+
+///|
+test "folded scalar does not retain an unrelated module" {
+  exercise_folded_scalar_owner()
+  inspect(owner_test_take_trace(), content="321")
+}
+
+///|
+fn exercise_initializer_owner_cycle() -> Unit raise {
+  let ctx = Context::new()
+  let mod = ctx.addModule("no_constant_owner_cycle")
+  let builder = ctx.createBuilder()
+  owner_test_watch(ctx.get_owner(), mod.get_owner(), builder.owner)
+  let root = mod.addGlobalVariable(ctx.getInt32Ty(), "root")
+  let addresses = ctx.getConstArray(ctx.getPtrTy(), [root])
+  mod.addGlobalConstant(addresses.getType(), "addresses", addresses) |> ignore
+  mod.verify()
+}
+
+///|
+test "installing a module dependent initializer creates no owner cycle" {
+  exercise_initializer_owner_cycle()
+  let trace = owner_test_take_trace()
+  // Independent builder may be released before or after the module.
+  inspect(trace == 321UL || trace == 231UL, content="true")
+}

@@ -85,3 +85,10 @@ void llvm_mbt_ir_target_machine_owner_test_watch(void *target_machine) {
   llvm_mbt_test_trace.target_machine = target_machine;
   llvm_mbt_test_trace.events = 0;
 }
+
+/* MoonBit wbtest extern: owner_test_peek_trace (IR/resource_owner_wbtest.mbt).
+ * Reads the test-only release trace without clearing it. Watched identities
+ * remain unretained; this shares the existing non-thread-safe test trace. */
+uint64_t llvm_mbt_ir_owner_test_peek_trace(void) {
+  return llvm_mbt_test_trace.events;
+}
