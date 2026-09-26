@@ -35,6 +35,36 @@ pub impl Value for Function with fn asValueEnum(self) {
 }
 
 ///|
+/// Classifies this function's address as `ConstantEnum::Function`.
+///
+/// The inherited `Value::getType` reports the address's pointer type;
+/// `Function::getType` continues to report the function signature.
+///
+/// **Lifecycle:** The constant view retains the function's owning module.
+/// Aggregates containing this address retain the same module and may only be
+/// installed in that module. Raw deletion of the function invalidates its views.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("callable")
+///   let entry = mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), "entry")
+///   let descriptor = ctx.getConstStruct([
+///     entry,
+///     ctx.getConstPointerNull(ctx.getPtrTy()),
+///   ])
+///   mod.addGlobalConstant(descriptor.getType(), "descriptor", descriptor)
+///   |> ignore
+///   mod.verify()
+/// }
+/// ```
+pub impl Constant for Function with fn asConstantEnum(self) {
+  Function(self)
+}
+
+///|
 /// Classifies this wrapper as `GlobalEnum::Function`.
 pub impl GlobalValue for Function with fn asGlobalEnum(self) {
   Function(self)

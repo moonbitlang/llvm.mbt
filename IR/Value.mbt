@@ -254,6 +254,7 @@ impl Value with fn replaceAllUsesWith(self, other : &Value) {
 ///|
 impl Value with fn tryAsConstant(self) {
   match self.asValueEnum() {
+    Function(c) => Some(c as &Constant)
     GlobalVariable(c) => Some(c as &Constant)
     GlobalConstant(c) => Some(c)
     ConstantInt(c) => Some(c as &Constant)
@@ -272,6 +273,7 @@ impl Value with fn tryAsConstant(self) {
 ///|
 impl Value with fn tryAsConstantEnum(self) {
   match self.asValueEnum() {
+    Function(c) => Some(ConstantEnum::Function(c))
     GlobalVariable(c) => Some(ConstantEnum::GlobalVariable(c))
     GlobalConstant(c) => Some(ConstantEnum::GlobalConstant(c))
     ConstantInt(c) => Some(ConstantEnum::ConstantInt(c))
@@ -304,6 +306,8 @@ pub trait Constant: Value {
 ///|
 /// Closed classification of constants supported by the safe API.
 pub enum ConstantEnum {
+  /// Constant address of a module-owned function declaration or definition.
+  Function(Function)
   /// Constant address of mutable global storage.
   GlobalVariable(GlobalVariable)
   /// Constant address of immutable global storage.

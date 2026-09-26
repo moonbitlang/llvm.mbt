@@ -448,6 +448,7 @@ pub impl Value for ConstantArray
 pub impl Show for ConstantArray
 
 pub enum ConstantEnum {
+  Function(Function)
   GlobalVariable(GlobalVariable)
   GlobalConstant(GlobalConstant)
   ConstantInt(ConstantInt)
@@ -886,6 +887,7 @@ pub struct Function {
 pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock raise StringError
 pub fn Function::addFnAttr(Self, FnAttr) -> Unit
 pub fn Function::addRetAttr(Self, RetAttr) -> Unit
+pub fn Function::asConstantEnum(Self) -> ConstantEnum
 pub fn Function::asGlobalEnum(Self) -> GlobalEnum
 pub fn Function::asValueEnum(Self) -> ValueEnum
 pub fn Function::countFnAttrs(Self) -> Int
@@ -914,6 +916,7 @@ pub fn Function::setValueName(Self, String) -> Unit raise StringError
 pub fn Function::to_string(Self) -> String
 pub fn Function::tryAsConstant(Self) -> &Constant?
 pub fn Function::tryAsConstantEnum(Self) -> ConstantEnum?
+pub impl Constant for Function
 pub impl GlobalValue for Function
 pub impl Value for Function
 pub impl Show for Function

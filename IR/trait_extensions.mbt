@@ -651,6 +651,10 @@ pub extend FloatType with Type::{
 pub extend FnAttr with Eq::{not_equal, equal}
 
 ///|
+/// Exposes the constant classification of a function address as a regular method.
+pub extend Function with Constant::{asConstantEnum}
+
+///|
 /// Exposes the selected `GlobalValue` methods as regular methods on `Function`.
 pub extend Function with GlobalValue::{
   setLinkage,

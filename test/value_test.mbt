@@ -109,11 +109,13 @@ test "Value constant downcasts cover every ConstantEnum" {
   assert_constant_downcast(expression, value => value is ConstantExpr(_))
   assert_constant_downcast(undef, value => value is UndefValue(_))
   assert_constant_downcast(poison, value => value is PoisonValue(_))
-  let mod = context.addModule("non_constant")
+  let mod = context.addModule("function_constant")
   let function_type = context.getFunctionType(context.getVoidTy(), [])
   let function = mod.addFunction(function_type, "function")
-  assert_true(function.tryAsConstant() is None)
-  assert_true(function.tryAsConstantEnum() is None)
+  assert_constant_downcast(function, value => value is Function(_))
+  let block = function.addBasicBlock()
+  assert_true(block.tryAsConstant() is None)
+  assert_true(block.tryAsConstantEnum() is None)
 }
 
 ///|

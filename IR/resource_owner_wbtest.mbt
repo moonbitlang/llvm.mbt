@@ -346,3 +346,46 @@ test "installing a module dependent initializer creates no owner cycle" {
   // Independent builder may be released before or after the module.
   inspect(trace == 321UL || trace == 231UL, content="true")
 }
+
+///|
+fn scoped_function_constant(extract : Bool) -> &Value raise {
+  let ctx = Context::new()
+  let mod = ctx.addModule("function_constant_owner")
+  let builder = ctx.createBuilder()
+  owner_test_watch(ctx.get_owner(), mod.get_owner(), builder.owner)
+  let entry = mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), "entry")
+  let descriptor = ctx.getConstStruct([
+    entry,
+    ctx.getConstPointerNull(ctx.getPtrTy()),
+  ])
+  mod.addGlobalConstant(descriptor.getType(), "descriptor", descriptor)
+  |> ignore
+  if !extract {
+    return descriptor
+  }
+  builder.setInsertPoint(entry.addBasicBlock())
+  let address = builder.createExtractValue(descriptor, 0)
+  builder.createRetVoid() |> ignore
+  mod.verify()
+  address
+}
+
+///|
+fn exercise_function_constant_dependency(extract : Bool) -> Unit raise {
+  let value = scoped_function_constant(extract)
+  // Both the aggregate and a folded function address keep its module alive.
+  assert_eq(owner_test_peek_trace(), 3UL)
+  assert_true(value_module(value) is Some(_))
+  assert_true(Show::to_string(value).contains("entry"))
+  if extract {
+    assert_true(value.tryAsConstantEnum() is Some(Function(_)))
+  }
+}
+
+///|
+test "function constants retain their module without initializer owner cycles" {
+  for extract in [false, true] {
+    exercise_function_constant_dependency(extract)
+    assert_eq(owner_test_take_trace(), 321UL)
+  }
+}
