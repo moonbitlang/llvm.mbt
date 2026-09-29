@@ -10,13 +10,17 @@ pub suberror IntrinsicError {
 }
 
 ///|
-/// Gets or inserts a signed integer overflow intrinsic declaration in this module.
+/// Gets or inserts a signed or unsigned integer overflow intrinsic declaration in this module.
 ///
 /// **Parameters:** `name` must be the unsuffixed base name
-/// `llvm.sadd.with.overflow`, `llvm.ssub.with.overflow`, or
-/// `llvm.smul.with.overflow`. `overloadTypes` must contain exactly one scalar
+/// `llvm.sadd.with.overflow`, `llvm.ssub.with.overflow`,
+/// `llvm.smul.with.overflow`, `llvm.uadd.with.overflow`,
+/// `llvm.usub.with.overflow`, or `llvm.umul.with.overflow`.
+/// `overloadTypes` must contain exactly one scalar
 /// integer type from this module's context. The result has signature
-/// `{ T, i1 } (T, T)`, returning the arithmetic result and an overflow flag.
+/// `{ T, i1 } (T, T)`, returning the wrapped arithmetic result and an overflow
+/// flag. The `s` variants check the signed range; the `u` variants check the
+/// unsigned range, including underflow for subtraction.
 /// Vectors and other intrinsic families are not currently exposed.
 ///
 /// **Errors:** Raises `IntrinsicError::UnknownName` for an unrecognized name,
@@ -54,7 +58,10 @@ pub fn Module::getIntrinsicDeclaration(
   guard id != 0 else { raise UnknownName(name) }
   guard name == "llvm.sadd.with.overflow" ||
     name == "llvm.ssub.with.overflow" ||
-    name == "llvm.smul.with.overflow" else {
+    name == "llvm.smul.with.overflow" ||
+    name == "llvm.uadd.with.overflow" ||
+    name == "llvm.usub.with.overflow" ||
+    name == "llvm.umul.with.overflow" else {
     raise UnsupportedName(name)
   }
   guard overloadTypes is [ty] else {

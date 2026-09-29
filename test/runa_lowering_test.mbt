@@ -332,15 +332,23 @@ test "intrinsic overloads create reusable verified integer declarations" {
   for
     name in [
       "llvm.sadd.with.overflow", "llvm.ssub.with.overflow", "llvm.smul.with.overflow",
+      "llvm.uadd.with.overflow", "llvm.usub.with.overflow", "llvm.umul.with.overflow",
     ] {
-    for ty in [ctx.getInt8Ty() as &Type, ctx.getInt32Ty(), ctx.getInt64Ty()] {
+    for
+      ty in [
+        ctx.getInt1Ty() as &Type,
+        ctx.getInt8Ty(),
+        ctx.getInt16Ty(),
+        ctx.getInt32Ty(),
+        ctx.getInt64Ty(),
+      ] {
       let intrinsic = mod.getIntrinsicDeclaration(name, [ty])
       let again = mod.getIntrinsicDeclaration(name, [ty])
       assert_eq(intrinsic.getValueName(), again.getValueName())
       assert_eq(intrinsic.getType().to_string(), "{ \{ty}, i1 } (\{ty}, \{ty})")
     }
   }
-  inspect(mod.getFunctions().length(), content="9")
+  inspect(mod.getFunctions().length(), content="30")
   mod.verify()
 }
 
@@ -348,7 +356,6 @@ test "intrinsic overloads create reusable verified integer declarations" {
 test "intrinsic validation rejects unknown unsupported overload and collision" {
   let ctx = Context::new()
   let mod = ctx.addModule("intrinsic_errors")
-  let name = "llvm.sadd.with.overflow"
   assert_builder_error(
     () => mod.getIntrinsicDeclaration("llvm.does.not.exist", []),
     e => e is @IR.IntrinsicError::UnknownName(_),
@@ -359,23 +366,29 @@ test "intrinsic validation rejects unknown unsupported overload and collision" {
   )
   let foreign = Context::new()
   for
-    types in [
-      [],
-      [ctx.getInt32Ty() as &Type, ctx.getInt32Ty()],
-      [ctx.getFloatTy()],
-      [foreign.getInt32Ty()],
-      [ctx.getFixedVectorType(ctx.getInt32Ty(), 4)],
+    name in [
+      "llvm.sadd.with.overflow", "llvm.ssub.with.overflow", "llvm.smul.with.overflow",
+      "llvm.uadd.with.overflow", "llvm.usub.with.overflow", "llvm.umul.with.overflow",
     ] {
-    assert_builder_error(() => mod.getIntrinsicDeclaration(name, types), e => {
-      e is @IR.InValidTypeError(_)
-    })
+    for
+      types in [
+        [],
+        [ctx.getInt32Ty() as &Type, ctx.getInt32Ty()],
+        [ctx.getFloatTy()],
+        [foreign.getInt32Ty()],
+        [ctx.getFixedVectorType(ctx.getInt32Ty(), 4)],
+      ] {
+      assert_builder_error(() => mod.getIntrinsicDeclaration(name, types), e => {
+        e is @IR.InValidTypeError(_)
+      })
+    }
+    mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), name + ".i32")
+    |> ignore
+    assert_builder_error(
+      () => mod.getIntrinsicDeclaration(name, [ctx.getInt32Ty()]),
+      e => e is @IR.IntrinsicError::ConflictingDeclaration(_),
+    )
   }
-  mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), name + ".i32")
-  |> ignore
-  assert_builder_error(
-    () => mod.getIntrinsicDeclaration(name, [ctx.getInt32Ty()]),
-    e => e is @IR.IntrinsicError::ConflictingDeclaration(_),
-  )
 }
 
 ///|
@@ -517,21 +530,107 @@ test "call attributes address variadic actual arguments" {
 ///|
 test "intrinsic declarations reject colliding globals and definitions" {
   let ctx = Context::new()
-  let name = "llvm.sadd.with.overflow"
-  let i32 = ctx.getInt32Ty()
-  let globals = ctx.addModule("colliding_global")
-  globals.addGlobalVariable(i32, name + ".i32") |> ignore
-  assert_builder_error(() => globals.getIntrinsicDeclaration(name, [i32]), e => {
-    e is @IR.IntrinsicError::ConflictingDeclaration(_)
-  })
-  let definitions = ctx.addModule("colliding_definition")
-  let result_type = ctx.getStructType([i32, ctx.getInt1Ty()])
-  let definition = definitions.addFunction(
-    ctx.getFunctionType(result_type, [i32, i32]),
-    name + ".i32",
-  )
-  definition.addBasicBlock() |> ignore
-  assert_builder_error(() => definitions.getIntrinsicDeclaration(name, [i32]), e => {
-    e is @IR.IntrinsicError::ConflictingDeclaration(_)
-  })
+  for
+    name in [
+      "llvm.sadd.with.overflow", "llvm.ssub.with.overflow", "llvm.smul.with.overflow",
+      "llvm.uadd.with.overflow", "llvm.usub.with.overflow", "llvm.umul.with.overflow",
+    ] {
+    let i32 = ctx.getInt32Ty()
+    let globals = ctx.addModule("colliding_global")
+    globals.addGlobalVariable(i32, name + ".i32") |> ignore
+    assert_builder_error(() => globals.getIntrinsicDeclaration(name, [i32]), e => {
+      e is @IR.IntrinsicError::ConflictingDeclaration(_)
+    })
+    let definitions = ctx.addModule("colliding_definition")
+    let result_type = ctx.getStructType([i32, ctx.getInt1Ty()])
+    let definition = definitions.addFunction(
+      ctx.getFunctionType(result_type, [i32, i32]),
+      name + ".i32",
+    )
+    definition.addBasicBlock() |> ignore
+    assert_builder_error(
+      () => definitions.getIntrinsicDeclaration(name, [i32]),
+      e => e is @IR.IntrinsicError::ConflictingDeclaration(_),
+    )
+  }
+}
+
+///|
+test "unsigned overflow intrinsics execute boundary results at every integer width" {
+  let ctx = Context::new()
+  let mod = ctx.addModule("execute_unsigned_overflow")
+  let i64 = ctx.getInt64Ty()
+  let widths : Array[(&IntegerType, UInt64)] = [
+    (ctx.getInt1Ty(), 1UL),
+    (ctx.getInt8Ty(), 255UL),
+    (ctx.getInt16Ty(), 65535UL),
+    (ctx.getInt32Ty(), 4294967295UL),
+    (i64, 18446744073709551615UL),
+  ]
+  for (ty, _) in widths {
+    for op in ["uadd", "usub", "umul"] {
+      let intrinsic = mod.getIntrinsicDeclaration("llvm.\{op}.with.overflow", [
+        ty,
+      ])
+      for index in 0..<2 {
+        // Keep the host ABI at i64; narrow arguments and widen results in IR.
+        let function = mod.addFunction(
+          ctx.getFunctionType(i64, [i64, i64]),
+          "\{op}_\{ty}_\{index}",
+        )
+        guard function.getArgs() is [lhs, rhs] else {
+          fail("missing arguments")
+        }
+        let builder = ctx.createBuilder()
+        builder.setInsertPoint(function.addBasicBlock())
+        let lhs = if ty.getBitWidth() < 64 {
+          builder.createTrunc(lhs, ty)
+        } else {
+          lhs
+        }
+        let rhs = if ty.getBitWidth() < 64 {
+          builder.createTrunc(rhs, ty)
+        } else {
+          rhs
+        }
+        let pair = builder.createCall(intrinsic, [lhs, rhs])
+        let value = builder.createExtractValue(pair, index)
+        let result = if index == 1 || ty.getBitWidth() < 64 {
+          builder.createZExt(value, i64)
+        } else {
+          value
+        }
+        builder.createRet(result) |> ignore
+      }
+    }
+  }
+  mod.verify()
+  let jit = @JIT.LLJIT::host()
+  jit.addModule(mod)
+  for (ty, max) in widths {
+    let square_overflow = if ty.getBitWidth() == 1 { 0UL } else { 1UL }
+    for
+      (op, lhs, rhs, expected, overflow) in [
+        ("uadd", 0UL, 0UL, 0UL, 0UL),
+        ("uadd", max, 0UL, max, 0UL),
+        ("uadd", max, 1UL, 0UL, 1UL),
+        ("uadd", max, max, max - 1UL, 1UL),
+        ("usub", max, max, 0UL, 0UL),
+        ("usub", max, 1UL, max - 1UL, 0UL),
+        ("usub", 0UL, 1UL, max, 1UL),
+        ("umul", max, 0UL, 0UL, 0UL),
+        ("umul", max, 1UL, max, 0UL),
+        ("umul", max, max, 1UL, square_overflow),
+      ] {
+      let value : FuncRef[(UInt64, UInt64) -> UInt64] = jit
+        .lookup("\{op}_\{ty}_0")
+        .unsafeToFuncRef()
+      let flag : FuncRef[(UInt64, UInt64) -> UInt64] = jit
+        .lookup("\{op}_\{ty}_1")
+        .unsafeToFuncRef()
+      assert_eq(value(lhs, rhs), expected)
+      assert_eq(flag(lhs, rhs), overflow)
+    }
+  }
+  jit.close()
 }

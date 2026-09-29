@@ -198,7 +198,7 @@ Runa 可以暂用扩大位宽再检查范围的实现，因此此项不阻塞。
 
 第 3 节也提供了可用的首版入口：
 
-- `Module::getIntrinsicDeclaration(name, overloadTypes)` 当前只支持三种 signed overflow intrinsic 的无后缀名称和一个 scalar integer overload 类型；拒绝未知/未支持名称、错误 overload、跨 context 类型及冲突符号。JIT 测试覆盖正常运算、边界溢出、回绕结果和溢出标志。
+- `Module::getIntrinsicDeclaration(name, overloadTypes)` 支持 `sadd`/`ssub`/`smul` 与 `uadd`/`usub`/`umul` 六种 overflow intrinsic 的无后缀名称（`llvm.<op>.with.overflow`）和一个 scalar integer overload 类型；拒绝未知/未支持名称、错误 overload、跨 context 类型及冲突符号。结果为 `{ T, i1 }`，分别返回回绕结果和溢出标志；`s` 系列检查有符号范围，`u` 系列检查无符号范围（减法包括下溢）。JIT 测试覆盖正常运算、边界溢出、回绕结果和溢出标志，无符号用例覆盖 i1/i8/i16/i32/i64。
 - `Context::getConstBytes(bytes, nullTerminate=false)` 返回 context-owned `[N x i8]` 常量，复制输入字节，支持空输入、内嵌 NUL 和非 UTF-8 数据；传入 `nullTerminate=true` 时额外追加一个 NUL。`createGlobalString` 契约不变。
 - `Module::runPasses(pipeline, targetMachine=machine)` 支持 LLVM 新 pass manager 的 pipeline 字符串，要求先用匹配的 target machine 配置 module。它返回优化后的 module 副本，原 module 和已有指令 wrapper 保持有效；在副本上运行 pass 前后执行 verifier，报告 pipeline 错误并释放临时 options。后续查询和 object emission 应使用返回的 module。
 
