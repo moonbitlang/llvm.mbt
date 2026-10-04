@@ -315,6 +315,61 @@ pub fn Module::addGlobalVariable(
 }
 
 ///|
+/// Declares a constant global whose initializer can be installed later.
+///
+/// Use `GlobalConstant::setInitializer` after declaring all globals needed by
+/// the initializer. This allows forward and cyclic references through addresses.
+///
+/// **Parameters:** `linkage` defaults to external linkage. An internal or private
+/// declaration must receive an initializer before module verification or emission.
+///
+/// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in `name`,
+/// `ValueOwnerError::ContextMismatch` for a foreign type, or `InValidTypeError`
+/// for an invalid storage type. Validation precedes insertion of the global.
+///
+/// **Lifecycle:** The returned wrapper retains this module. Its address remains
+/// valid when the initializer is installed or replaced; no manual release is
+/// required. Erasing the global through the raw layer invalidates the wrapper.
+///
+/// **Side effects:** Inserts a module-owned global marked constant.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("deferred")
+///   let left = mod.declareGlobalConstant(ctx.getPtrTy(), "left")
+///   let right = mod.declareGlobalConstant(ctx.getPtrTy(), "right")
+///   left.setInitializer(right)
+///   right.setInitializer(left)
+///   mod.verify()
+///   inspect(left, content="@left = constant ptr @right")
+/// }
+/// ```
+pub fn Module::declareGlobalConstant(
+  self : Self,
+  ty : &Type,
+  name : String,
+  linkage? : Linkage,
+) -> GlobalConstant raise {
+  check_type_context(self.getContext(), ty)
+  check_constant_element_type(ty)
+  let gv_ref = @raw.llvm_add_global(
+    self.get_raw_ref(),
+    ty.get_raw_type_ref(),
+    name,
+  ) catch {
+    @raw.EmbeddedNul => raise ContainsNul
+  }
+  @raw.llvm_set_global_constant(gv_ref, true)
+  if linkage is Some(link) {
+    @raw.llvm_set_linkage(gv_ref, link.to_llvm_linkage())
+  }
+  GlobalConstant::from_raw(gv_ref, self)
+}
+
+///|
 /// Adds a constant global definition initialized by `value`.
 ///
 /// **Errors:** Raises `StringError::ContainsNul` for an embedded NUL in

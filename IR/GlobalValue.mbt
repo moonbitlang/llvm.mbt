@@ -53,6 +53,9 @@ pub impl Show for GlobalVariable with fn output(self, logger) {
 ///|
 /// Module-owned LLVM global whose storage is marked constant.
 ///
+/// **Construction:** Use `Module::addGlobalConstant` for an initialized definition,
+/// or `Module::declareGlobalConstant` followed by `setInitializer`.
+///
 /// As a `Constant` operand this denotes the address of its storage, not the
 /// initializer. Both mutable and immutable globals have constant addresses.
 ///
@@ -93,12 +96,52 @@ pub impl GlobalValue for GlobalConstant with fn asGlobalEnum(self) -> GlobalEnum
 }
 
 ///|
-/// Writes the constant global definition using LLVM syntax.
+/// Writes the constant global declaration or definition using LLVM syntax.
 pub impl Show for GlobalConstant with fn output(self, logger) {
   let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {
     error => "<LLVM global constant text unavailable: \{error}>"
   }
   logger.write_string(s)
+}
+
+///|
+/// Installs or replaces the initializer of a constant global.
+///
+/// This changes the compile-time definition, not the runtime mutability of its
+/// storage. The initializer must have the declared storage type; the global's
+/// address type is not its storage type.
+///
+/// **Errors:** Raises `ValueOwnerError::ContextMismatch` for a foreign context,
+/// `ValueOwnerError::ModuleMismatch` for a dependency on another module, or
+/// `InValidTypeError` for a mismatched initializer type. Validation completes
+/// before mutation, leaving the previous declaration or initializer intact on error.
+///
+/// **Lifecycle:** The module owns the installed LLVM initializer. It does not
+/// retain the MoonBit wrapper, so same-module cyclic address references do not
+/// create MoonBit owner cycles. Existing global handles and addresses remain valid.
+///
+/// **Side effects:** Updates this global's definition, visible through all aliases.
+///
+/// **See also:** `Module::declareGlobalConstant` demonstrates deferred initialization.
+pub fn GlobalConstant::setInitializer(
+  self : Self,
+  value : &Constant,
+) -> Unit raise {
+  let mod = self.get_module()
+  merge_value_owners(mod.getContext(), Some(mod), [value]) |> ignore
+  let storage_type = initAbstractType(
+    @raw.llvm_global_get_value_type(self.get_raw_value_ref()),
+    mod.getContext(),
+  )
+  guard (value : &Value).getType().asTypeEnum() == storage_type.asTypeEnum() else {
+    raise InValidTypeError(
+      "Global initializer type does not match its storage type",
+    )
+  }
+  @raw.llvm_set_initializer(
+    self.get_raw_value_ref(),
+    (value : &Value).get_raw_value_ref(),
+  )
 }
 
 ///|

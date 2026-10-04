@@ -9,7 +9,7 @@ MoonBit bindings for LLVM 22.1.0. The public API follows LLVM's C++ concepts
 and naming where practical, and currently supports building LLVM IR, emitting
 native object files, and running code with ORC LLJIT.
 
-Current release: **0.5.0** · MoonBit native backend · macOS ARM64 and Linux
+Current release: **0.5.6** · MoonBit native backend · macOS ARM64 and Linux
 x86_64
 
 ## Installation
@@ -144,7 +144,7 @@ llvm.mbt 是 LLVM 22.1.0 的 MoonBit binding。公开 API 在适合的地方沿�
 C++ 的概念和命名，目前支持构造 LLVM IR、生成 native object，以及通过 ORC
 LLJIT 运行生成的代码。
 
-当前版本：**0.5.0** · MoonBit native backend · macOS ARM64 和 Linux x86_64
+当前版本：**0.5.6** · MoonBit native backend · macOS ARM64 和 Linux x86_64
 
 ## 安装
 

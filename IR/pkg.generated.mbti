@@ -1013,6 +1013,7 @@ pub fn GlobalConstant::getValueName(Self) -> String? raise StringError
 pub fn GlobalConstant::output(Self, &Logger) -> Unit
 pub fn GlobalConstant::removeUnnamedAddr(Self) -> Unit
 pub fn GlobalConstant::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn GlobalConstant::setInitializer(Self, &Constant) -> Unit raise
 pub fn GlobalConstant::setLinkage(Self, Linkage) -> Unit
 pub fn GlobalConstant::setUnnamedAddr(Self, UnnamedAddr) -> Unit
 pub fn GlobalConstant::setValueName(Self, String) -> Unit raise StringError
@@ -1737,6 +1738,7 @@ pub struct Module {
 pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise StringError
 pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise
 pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise
+pub fn Module::declareGlobalConstant(Self, &Type, String, linkage? : Linkage) -> GlobalConstant raise
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
 pub fn Module::getDataLayout(Self) -> DataLayout
