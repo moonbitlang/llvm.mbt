@@ -250,6 +250,9 @@ pub fn Function::getArgs(self : Self) -> Array[Argument] {
 /// - `before`: When present, inserts immediately before that block; otherwise
 ///   appends to the function.
 ///
+/// Both forms create the block in this function's Context, including its native
+/// label type and any control-flow instructions derived from the block.
+///
 /// **Preconditions:** `before` must belong to this function and module. The
 /// implementation does not validate this relationship before calling LLVM.
 ///
@@ -280,13 +283,18 @@ pub fn Function::addBasicBlock(
   name? : String = "",
   before? : BasicBlock? = None,
 ) -> BasicBlock raise StringError {
+  let context = self.getContext().get_raw_ref()
   let blockref = match before {
     None =>
-      @raw.llvm_append_basic_block(self.get_raw_value_ref(), name) catch {
+      @raw.llvm_append_basic_block_in_context(
+        context,
+        self.get_raw_value_ref(),
+        name,
+      ) catch {
         @raw.EmbeddedNul => raise ContainsNul
       }
     Some(bb) =>
-      @raw.llvm_insert_basic_block(bb.get_raw_ref(), name) catch {
+      @raw.llvm_insert_basic_block_in_context(context, bb.get_raw_ref(), name) catch {
         @raw.EmbeddedNul => raise ContainsNul
       }
   }
