@@ -442,6 +442,35 @@ pub fn IRBuilder::createStore(
 }
 
 ///|
+/// `icmp` accepts two integers of the same bit width or two pointers in the same
+/// address space, matching LLVM's operand rules for integer comparisons.
+fn type_check_during_create_icmp(
+  lhs : &Value,
+  rhs : &Value,
+  loc : SourceLoc,
+) -> Unit raise {
+  match (lhs.getType().asTypeEnum(), rhs.getType().asTypeEnum()) {
+    (PointerType(left), PointerType(right)) =>
+      if left.getAddressSpace() != right.getAddressSpace() {
+        raise ValueTypeError(
+          (
+            $| loc: \{loc}:
+            $| Misuse IRBuilder::createICmp, pointer operands are in different address spaces
+          ),
+        )
+      }
+    (PointerType(_), _) | (_, PointerType(_)) =>
+      raise ValueTypeError(
+        (
+          $| loc: \{loc}:
+          $| Misuse IRBuilder::createICmp, a pointer can only be compared with another pointer
+        ),
+      )
+    _ => type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
+  }
+}
+
+///|
 fn type_check_during_create_int_binary(
   lhs : &Value,
   rhs : &Value,
@@ -2533,6 +2562,14 @@ pub fn IRBuilder::createPtrDiff(
 ///
 ///   let ule_cmp = builder.createICmpULE(arg0, arg1, name="ule_cmp")
 ///   inspect(ule_cmp, content="  %ule_cmp = icmp ule i32 %0, %1")
+///
+///   // Pointers compare with pointers, for example against null.
+///   let ptr_ty = ctx.getPtrTy()
+///   let slot = builder.createAlloca(ptr_ty, name="slot")
+///   let loaded = builder.createLoad(ptr_ty, slot, name="loaded")
+///   let null = ctx.getConstPointerNull(ptr_ty)
+///   let present = builder.createICmpNE(loaded, null, name="present")
+///   inspect(present, content="  %present = icmp ne ptr %loaded, null")
 /// }
 /// ```
 #callsite(autofill(loc))
@@ -2546,7 +2583,7 @@ pub fn IRBuilder::createICmp(
 ) -> &Value raise {
   guard self.positioned is Set(_) else { raise UnsetPosition }
   self.check_value_owners([lhs, rhs])
-  type_check_during_create_int_binary(lhs, rhs, "createICmp", loc)
+  type_check_during_create_icmp(lhs, rhs, loc)
   let pred = pred.to_llvm_int_predicate()
   let lhs_ref = lhs.get_raw_value_ref()
   let rhs_ref = rhs.get_raw_value_ref()

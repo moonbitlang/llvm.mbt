@@ -364,6 +364,53 @@ test "Integer Compare Test" {
 }
 
 ///|
+test "Pointer Compare Test" {
+  let ctx = Context::new()
+  let mod = ctx.addModule("demo")
+  let builder = ctx.createBuilder()
+  let ptr_ty = ctx.getPtrTy()
+  let i1_ty = ctx.getInt1Ty()
+  let fty = ctx.getFunctionType(i1_ty, [ptr_ty, ptr_ty])
+  let fval = mod.addFunction(fty, "ptrcmp")
+  let bb = fval.addBasicBlock(name="entry")
+  let arg0 = fval.getArg(0).unwrap()
+  let arg1 = fval.getArg(1).unwrap()
+  builder.setInsertPoint(bb)
+  // 指针之间可以使用全部整数比较谓词，包括与 null 比较
+  let null = ctx.getConstPointerNull(ptr_ty)
+  let _ = builder.createICmpEQ(arg0, arg1, name="eq")
+  let present = builder.createICmpNE(arg0, null, name="present")
+  let _ = builder.createICmpULT(arg0, arg1, name="ult")
+  let _ = builder.createRet(present)
+  let expect =
+    #|define i1 @ptrcmp(ptr %0, ptr %1) {
+    #|entry:
+    #|  %eq = icmp eq ptr %0, %1
+    #|  %present = icmp ne ptr %0, null
+    #|  %ult = icmp ult ptr %0, %1
+    #|  ret i1 %present
+    #|}
+    #|
+  inspect(fval, content=expect)
+  mod.verify()
+  // 错误测试：指针只能与指针比较
+  let i32_one = ctx.getConstInt32(1)
+  assert_builder_error(() => builder.createICmpEQ(arg0, i32_one), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
+  assert_builder_error(() => builder.createICmpEQ(i32_one, arg0), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
+  // 错误测试：不同地址空间的指针不能比较
+  let other = ctx.getConstPointerNull(
+    ctx.getPtrTy(addressSpace=AddressSpace::new(1)),
+  )
+  assert_builder_error(() => builder.createICmpNE(arg0, other), err => {
+    err is BuilderError::ValueTypeError(_)
+  })
+}
+
+///|
 test "Float Compare Test" {
   let ctx = Context::new()
   let mod = ctx.addModule("demo")
