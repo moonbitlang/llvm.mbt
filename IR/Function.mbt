@@ -592,6 +592,132 @@ pub fn Function::removeRetAttr(self : Self, ret_attr : RetAttr) -> Unit {
 }
 
 ///|
+/// Adds or replaces a string function attribute such as
+/// `"frame-pointer"="all"`.
+///
+/// String attributes carry target and code-generator options that have no
+/// enum attribute, for example `"frame-pointer"` (`"none"`, `"non-leaf"`, or
+/// `"all"`) or `"target-cpu"`.
+///
+/// **Parameters:**
+///
+/// - `kind`: The attribute key.
+/// - `value`: The attribute value; an empty value prints as `"kind"`.
+///
+/// **Side effects:** Mutates function attributes.
+///
+/// **LLVM API:** `LLVMCreateStringAttribute` and `LLVMAddAttributeAtIndex`.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = @IR.Context::new()
+///   let mod = ctx.addModule("attrs")
+///   let f = mod.addFunction(ctx.getFunctionType(ctx.getVoidTy(), []), "f")
+///   f.addFnStringAttr("frame-pointer", value="all")
+///   f.addFnAttr(UWTable(Async))
+///   debug_inspect(f.getFnStringAttr("frame-pointer"), content="Some(\"all\")")
+///   f.removeFnStringAttr("frame-pointer")
+///   debug_inspect(f.getFnStringAttr("frame-pointer"), content="None")
+/// }
+/// ```
+pub fn Function::addFnStringAttr(
+  self : Self,
+  kind : String,
+  value? : String = "",
+) -> Unit {
+  let attr = @raw.llvm_create_string_attribute(
+    self.getContext().get_raw_ref(),
+    kind,
+    value,
+  )
+  @raw.llvm_add_attribute_at_index(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    attr,
+  )
+}
+
+///|
+/// Returns the value of the string function attribute `kind`.
+///
+/// **Returns:** `None` when the attribute is absent; `Some("")` for an
+/// attribute without a value.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns a value that
+/// is not valid UTF-8.
+pub fn Function::getFnStringAttr(
+  self : Self,
+  kind : String,
+) -> String? raise StringError {
+  let attr = @raw.llvm_get_string_attribute_at_index(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    kind,
+  )
+  string_attribute_value(attr)
+}
+
+///|
+/// Removes the string function attribute `kind` if present.
+///
+/// **Side effects:** Mutates function attributes.
+pub fn Function::removeFnStringAttr(self : Self, kind : String) -> Unit {
+  @raw.llvm_remove_string_attribute_at_index(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    kind,
+  )
+}
+
+///|
+fn string_attribute_value(
+  attr : @raw.LLVMAttributeRef,
+) -> String? raise StringError {
+  guard !attr.is_null() else { None }
+  let value = @raw.llvm_get_string_attribute_value(attr) catch {
+    @utf8.Malformed(bytes) => raise MalformedUtf8(bytes.to_owned())
+  }
+  Some(value)
+}
+
+///|
+/// Attaches `subprogram` as this function's debug-information descriptor.
+///
+/// Instructions of a function with a subprogram may carry debug locations
+/// whose scope chain ends in this subprogram.
+///
+/// **Errors:** Raises `MetadataContextMismatch` when `subprogram` belongs to
+/// another context.
+///
+/// **Preconditions:** A function definition needs a definition subprogram
+/// (`isDefinition=true`), and a definition subprogram may be attached to only
+/// one function; the verifier rejects violations.
+///
+/// **Side effects:** Sets the function's `!dbg` attachment.
+///
+/// **LLVM API:** `LLVMSetSubprogram`.
+///
+/// **See also:** `DIBuilder` for a complete example.
+pub fn Function::setSubprogram(
+  self : Self,
+  subprogram : DISubprogram,
+) -> Unit raise DebugInfoError {
+  check_metadata_context(self.getContext(), subprogram.value.context)
+  @raw.llvm_set_subprogram(self.get_raw_value_ref(), subprogram.value.md)
+}
+
+///|
+/// Returns the function's debug-information descriptor, if attached.
+///
+/// **LLVM API:** `LLVMGetSubprogram`.
+pub fn Function::getSubprogram(self : Self) -> DISubprogram? {
+  let md = @raw.llvm_get_subprogram(self.get_raw_value_ref())
+  unless(md.is_null(), () => DISubprogram::from_raw(md, self.getContext()))
+}
+
+///|
 /// Writes the complete LLVM function declaration or definition.
 pub impl Show for Function with fn output(self, logger) {
   let s = @raw.llvm_print_value_to_string(self.get_raw_value_ref()) catch {

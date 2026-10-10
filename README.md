@@ -9,7 +9,7 @@ MoonBit bindings for LLVM 22.1.0. The public API follows LLVM's C++ concepts
 and naming where practical, and currently supports building LLVM IR, emitting
 native object files, and running code with ORC LLJIT.
 
-Current release: **0.5.7** · MoonBit native backend · macOS ARM64 and Linux
+Current release: **0.6.0** · MoonBit native backend · macOS ARM64 and Linux
 x86_64
 
 ## Installation
@@ -80,7 +80,8 @@ test "build an integer addition function" {
 ## Packages
 
 - `llvm/IR` provides types, values, modules, IR construction,
-  verification, bitcode output, target machines, and native object emission.
+  verification, bitcode output, target machines, native object emission, and
+  line-table debug information (`DIBuilder`, module flags, unwind attributes).
 - `llvm/JIT` provides host-only ORC LLJIT. Its address conversion
   and unload rules are documented in [JIT/README.md](JIT/README.md).
 - `internal/raw` contains the direct LLVM-C bindings used to implement the
@@ -118,10 +119,20 @@ for details.
 
 ## Project status
 
-Version 0.5.0 focuses on IR construction, native object emission, and host JIT.
-Optimization passes and debug information are not exposed yet; PassBuilder and
-DIBuilder are the next two major areas. Other LLVM APIs will be added as
-compiler projects require them.
+Version 0.5.0 focused on IR construction, native object emission, and host JIT.
+Version 0.6.0 adds the first debug-information API: `DIBuilder` with files,
+compile units, subprograms, lexical blocks and locations, module flags, and the
+`uwtable` and string function attributes needed for symbolized backtraces.
+Variables and composite types are not exposed yet, and neither are
+optimization passes (PassBuilder). Other LLVM APIs will be added as compiler
+projects require them.
+
+### 0.6.0 compatibility notes
+
+- `FnAttr` gained the `UWTable(UWTableKind)` constructor. Exhaustive `match`
+  expressions over `FnAttr` in downstream code need a new arm.
+- The `Instruction` trait gained `getDebugLoc` and `setDebugLoc`; it cannot be
+  implemented outside this module, so only name clashes are affected.
 
 ## Development
 
@@ -144,7 +155,7 @@ llvm.mbt 是 LLVM 22.1.0 的 MoonBit binding。公开 API 在适合的地方沿�
 C++ 的概念和命名，目前支持构造 LLVM IR、生成 native object，以及通过 ORC
 LLJIT 运行生成的代码。
 
-当前版本：**0.5.7** · MoonBit native backend · macOS ARM64 和 Linux x86_64
+当前版本：**0.6.0** · MoonBit native backend · macOS ARM64 和 Linux x86_64
 
 ## 安装
 
@@ -214,7 +225,8 @@ test "构造整数加法函数" {
 ## Packages
 
 - `llvm/IR` 提供类型、值、Module、IR 构造、验证、bitcode 输出、
-  TargetMachine 和 native object emission。
+  TargetMachine、native object emission，以及行号表调试信息（`DIBuilder`、
+  module flag 和 unwind 相关属性）。
 - `llvm/JIT` 提供 host-only ORC LLJIT。地址转换和卸载规则见
   [JIT/README.md](JIT/README.md)。
 - `internal/raw` 存放实现公开 API 所使用的直接 LLVM-C binding，下游模块不能
@@ -245,9 +257,18 @@ llvm.mbt 在以下宿主平台支持 MoonBit native backend：
 
 ## 项目状态
 
-0.5.0 主要覆盖 IR 构造、native object emission 和 host JIT。目前还没有公开
-优化 pass 和调试信息接口；PassBuilder 与 DIBuilder 是接下来的两个主要方向。
-其他 LLVM API 会根据实际编译器项目的需要逐步补充。
+0.5.0 主要覆盖 IR 构造、native object emission 和 host JIT。0.6.0 增加了第一批
+调试信息接口：`DIBuilder` 可以创建文件、编译单元、子程序、词法块和源码位置，
+并提供 module flag，以及符号化栈回溯所需的 `uwtable` 与字符串函数属性。变量与
+复合类型的调试信息、优化 pass（PassBuilder）目前还没有公开。其他 LLVM API 会
+根据实际编译器项目的需要逐步补充。
+
+### 0.6.0 兼容性说明
+
+- `FnAttr` 新增 `UWTable(UWTableKind)` 构造器，下游对 `FnAttr` 的穷尽 `match`
+  需要补充分支。
+- `Instruction` trait 新增 `getDebugLoc` 与 `setDebugLoc`；该 trait 不能在本模块
+  之外实现，因此只可能影响同名方法。
 
 ## 开发
 

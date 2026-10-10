@@ -472,13 +472,27 @@ pub fn llvm_delete_instruction(LLVMValueRef) -> Unit
 
 pub fn llvm_di_builder_create_artificial_type(LLVMDIBuilderRef, LLVMMetadataRef) -> LLVMMetadataRef
 
+pub fn llvm_di_builder_create_basic_type(LLVMDIBuilderRef, String, UInt64, UInt, Int) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_compile_unit(LLVMDIBuilderRef, Int, LLVMMetadataRef, String, Bool, String, UInt, String, Int, UInt, Bool, Bool, String, String) -> LLVMMetadataRef
+
 pub fn llvm_di_builder_create_constant_value_expression(LLVMDIBuilderRef, UInt64) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_debug_location(LLVMContextRef, UInt, UInt, LLVMMetadataRef, LLVMMetadataRef) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_file(LLVMDIBuilderRef, String, String) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_function(LLVMDIBuilderRef, LLVMMetadataRef, String, String, LLVMMetadataRef, UInt, LLVMMetadataRef, Bool, Bool, UInt, Int, Bool) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_lexical_block(LLVMDIBuilderRef, LLVMMetadataRef, LLVMMetadataRef, UInt, UInt) -> LLVMMetadataRef
 
 pub fn llvm_di_builder_create_null_ptr_type(LLVMDIBuilderRef) -> LLVMMetadataRef
 
 pub fn llvm_di_builder_create_qualified_type(LLVMDIBuilderRef, UInt, LLVMMetadataRef) -> LLVMMetadataRef
 
 pub fn llvm_di_builder_create_reference_type(LLVMDIBuilderRef, UInt, LLVMMetadataRef) -> LLVMMetadataRef
+
+pub fn llvm_di_builder_create_subroutine_type(LLVMDIBuilderRef, LLVMMetadataRef, Array[LLVMMetadataRef], Int) -> LLVMMetadataRef
 
 pub fn llvm_di_builder_create_unspecified_type(LLVMDIBuilderRef, String) -> LLVMMetadataRef
 
@@ -974,9 +988,9 @@ pub fn llvm_get_source_file_name(LLVMModuleRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_string_attribute_at_index(LLVMValueRef, LLVMAttributeIndex, String) -> LLVMAttributeRef
 
-pub fn llvm_get_string_attribute_kind(LLVMAttributeRef) -> String raise
+pub fn llvm_get_string_attribute_kind(LLVMAttributeRef) -> String raise @utf8.Malformed
 
-pub fn llvm_get_string_attribute_value(LLVMAttributeRef) -> String raise
+pub fn llvm_get_string_attribute_value(LLVMAttributeRef) -> String raise @utf8.Malformed
 
 pub fn llvm_get_struct_element_types(LLVMTypeRef) -> Array[LLVMTypeRef]
 
@@ -1410,6 +1424,8 @@ pub fn llvm_md_string_in_context2(LLVMContextRef, String) -> LLVMMetadataRef
 
 pub fn llvm_metadata_as_value(LLVMContextRef, LLVMMetadataRef) -> LLVMValueRef
 
+pub fn llvm_metadata_ref_is_null(LLVMMetadataRef) -> Bool
+
 pub fn llvm_metadata_replace_all_uses_with(LLVMMetadataRef, LLVMMetadataRef) -> Unit
 
 pub fn llvm_metadata_type_in_context(LLVMContextRef) -> LLVMTypeRef
@@ -1678,7 +1694,7 @@ pub fn llvm_stop_multithreaded() -> Unit
 
 pub fn llvm_store_size_of_type(LLVMTargetDataRef, LLVMTypeRef) -> UInt64
 
-pub fn llvm_strip_module_debug_info(LLVMModuleRef) -> LLVMBool
+pub fn llvm_strip_module_debug_info(LLVMModuleRef) -> Bool
 
 pub fn llvm_struct_create_named(LLVMContextRef, String) -> LLVMTypeRef raise CStringError
 
@@ -2418,6 +2434,11 @@ pub fn LLVMMetadataKind::not_equal(Self, Self) -> Bool
 
 #external
 pub type LLVMMetadataRef
+pub fn LLVMMetadataRef::equal(Self, Self) -> Bool
+pub fn LLVMMetadataRef::is_null(Self) -> Bool
+pub fn LLVMMetadataRef::not_equal(Self, Self) -> Bool
+pub fn LLVMMetadataRef::null() -> Self
+pub impl Eq for LLVMMetadataRef
 
 pub(all) enum LLVMModuleFlagBehavior {
   LLVMModuleFlagBehaviorError

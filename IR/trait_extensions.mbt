@@ -27,6 +27,8 @@ pub extend AllocaInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -179,6 +181,8 @@ pub extend BinaryInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -208,6 +212,8 @@ pub extend BranchInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -237,6 +243,8 @@ pub extend CallInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -266,6 +274,8 @@ pub extend CastInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -495,6 +505,8 @@ pub extend ExtractValueInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -524,6 +536,8 @@ pub extend FCmpInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -731,6 +745,8 @@ pub extend GetElementPtrInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -865,6 +881,8 @@ pub extend ICmpInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -894,6 +912,8 @@ pub extend InsertValueInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1213,6 +1233,8 @@ pub extend LoadInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1287,6 +1309,8 @@ pub extend PHINode with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1390,6 +1414,8 @@ pub extend ReturnInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1460,6 +1486,8 @@ pub extend SelectInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1489,6 +1517,8 @@ pub extend StoreInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1558,6 +1588,8 @@ pub extend SwitchInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1648,6 +1680,8 @@ pub extend UnaryInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1848,6 +1882,8 @@ pub extend UnreachableInst with Instruction::{
   removeFromParent,
   getNumArgOperands,
   asInstEnum,
+  getDebugLoc,
+  setDebugLoc,
   eraseFromParent,
 }
 
@@ -1883,3 +1919,129 @@ pub extend GlobalVariable with Constant::{asConstantEnum}
 ///|
 /// Exposes constant-address classification for this global.
 pub extend GlobalConstant with Constant::{asConstantEnum}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `Metadata`.
+pub extend Metadata with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Show` methods as regular methods on `Metadata`.
+pub extend Metadata with Show::{to_string, output}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DIFile`.
+pub extend DIFile with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `DIScope` methods as regular methods on `DIFile`.
+pub extend DIFile with DIScope::{asDIScopeEnum, getFile}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DICompileUnit`.
+pub extend DICompileUnit with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `DIScope` methods as regular methods on `DICompileUnit`.
+pub extend DICompileUnit with DIScope::{asDIScopeEnum, getFile}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DIType`.
+pub extend DIType with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DISubroutineType`.
+pub extend DISubroutineType with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DISubprogram`.
+pub extend DISubprogram with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `DIScope` methods as regular methods on `DISubprogram`.
+pub extend DISubprogram with DIScope::{asDIScopeEnum, getFile}
+
+///|
+/// Exposes the selected `DILocalScope` methods as regular methods on
+/// `DISubprogram`.
+pub extend DISubprogram with DILocalScope::{asDILocalScopeEnum}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DILexicalBlock`.
+pub extend DILexicalBlock with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `DIScope` methods as regular methods on
+/// `DILexicalBlock`.
+pub extend DILexicalBlock with DIScope::{asDIScopeEnum, getFile}
+
+///|
+/// Exposes the selected `DILocalScope` methods as regular methods on
+/// `DILexicalBlock`.
+pub extend DILexicalBlock with DILocalScope::{asDILocalScopeEnum}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DILocation`.
+pub extend DILocation with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DIFlags`.
+pub extend DIFlags with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Default` methods as regular methods on `DIFlags`.
+pub extend DIFlags with Default::{default}
+
+///|
+/// Exposes the selected `BitOr` methods as regular methods on `DIFlags`.
+pub extend DIFlags with BitOr::{lor}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `UWTableKind`.
+pub extend UWTableKind with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on `UWTableKind`.
+pub extend UWTableKind with Debug::{to_repr}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `ModFlagBehavior`.
+pub extend ModFlagBehavior with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on `ModFlagBehavior`.
+pub extend ModFlagBehavior with Debug::{to_repr}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DWARFSourceLanguage`.
+pub extend DWARFSourceLanguage with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on
+/// `DWARFSourceLanguage`.
+pub extend DWARFSourceLanguage with Debug::{to_repr}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DebugEmissionKind`.
+pub extend DebugEmissionKind with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on
+/// `DebugEmissionKind`.
+pub extend DebugEmissionKind with Debug::{to_repr}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DWARFTypeEncoding`.
+pub extend DWARFTypeEncoding with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on
+/// `DWARFTypeEncoding`.
+pub extend DWARFTypeEncoding with Debug::{to_repr}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `DIFlag`.
+pub extend DIFlag with Eq::{not_equal, equal}
+
+///|
+/// Exposes the selected `Debug` methods as regular methods on `DIFlag`.
+pub extend DIFlag with Debug::{to_repr}

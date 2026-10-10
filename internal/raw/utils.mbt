@@ -293,3 +293,40 @@ pub impl Show for LLVMValueRef with fn output(self, logger) {
   }
   logger.write_string(s)
 }
+
+///|
+/// Returns the null metadata sentinel accepted by optional LLVM-C metadata
+/// parameters, such as a missing `InlinedAt` location or a cleared debug
+/// location.
+pub extern "C" fn LLVMMetadataRef::null() -> LLVMMetadataRef = "__llvm_new_null"
+
+///|
+/// Tests whether `md` is the null pointer sentinel.
+///
+/// **LLVM API:** Binding helper `__llvm_metadata_ref_is_null`; it does not
+/// validate a non-null metadata handle or retain its Context.
+pub extern "C" fn llvm_metadata_ref_is_null(md : LLVMMetadataRef) -> Bool = "__llvm_metadata_ref_is_null"
+
+///|
+/// Returns true when this raw metadata handle is the null pointer sentinel.
+pub fn LLVMMetadataRef::is_null(self : LLVMMetadataRef) -> Bool {
+  llvm_metadata_ref_is_null(self)
+}
+
+///|
+extern "C" fn llvm_same_metadata_ref(
+  md1 : LLVMMetadataRef,
+  md2 : LLVMMetadataRef,
+) -> Bool = "__llvm_same_metadata_ref"
+
+///|
+/// Compares LLVM metadata handles by native pointer identity.
+///
+/// Uniqued metadata nodes with equal contents share one identity; distinct
+/// nodes compare equal only to themselves.
+pub impl Eq for LLVMMetadataRef with fn equal(
+  self : LLVMMetadataRef,
+  other : LLVMMetadataRef,
+) -> Bool {
+  llvm_same_metadata_ref(self, other)
+}

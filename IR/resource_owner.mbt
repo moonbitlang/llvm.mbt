@@ -26,6 +26,14 @@ priv type BuilderOwner
 priv type TargetMachineOwner
 
 ///|
+/// A MoonBit-managed owner for an LLVM debug-information builder.
+///
+/// The C payload retains the ModuleOwner the builder writes into. Its finalizer
+/// disposes the native DIBuilder (without finalizing it) before releasing that
+/// module reference.
+priv type DIBuilderOwner
+
+///|
 extern "C" fn ContextOwner::new(raw : @raw.LLVMContextRef) -> ContextOwner = "llvm_mbt_ir_context_owner_new"
 
 ///|
@@ -79,3 +87,22 @@ extern "C" fn TargetMachineOwner::new(
 extern "C" fn TargetMachineOwner::raw(
   self : TargetMachineOwner,
 ) -> @raw.LLVMTargetMachineRef = "llvm_mbt_ir_target_machine_owner_raw"
+
+///|
+#borrow(owner_module)
+extern "C" fn DIBuilderOwner::new(
+  raw : @raw.LLVMDIBuilderRef,
+  owner_module : ModuleOwner,
+) -> DIBuilderOwner = "llvm_mbt_ir_di_builder_owner_new"
+
+///|
+#borrow(self)
+extern "C" fn DIBuilderOwner::raw(
+  self : DIBuilderOwner,
+) -> @raw.LLVMDIBuilderRef = "llvm_mbt_ir_di_builder_owner_raw"
+
+///|
+#borrow(self)
+extern "C" fn DIBuilderOwner::module_owner(
+  self : DIBuilderOwner,
+) -> ModuleOwner = "llvm_mbt_ir_di_builder_owner_module"

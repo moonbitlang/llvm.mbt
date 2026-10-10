@@ -483,3 +483,228 @@ pub impl Show for Module with fn output(self, logger) {
   }
   logger.write_string(s)
 }
+
+// =======================================================
+// Module flags and debug information
+// =======================================================
+
+///|
+/// How the linker merges two module flags with the same key
+/// (`Module::ModFlagBehavior`).
+pub(all) enum ModFlagBehavior {
+  /// Emits an error if the two values differ.
+  Error
+  /// Emits a warning if the two values differ; the first module's value wins.
+  ///
+  /// LLVM uses this behavior for `"Debug Info Version"`.
+  Warning
+  /// Requires another flag to have a given value after linking; the value is a
+  /// metadata pair of that flag's key and required value.
+  Require
+  /// Uses this value regardless of the other module's value; two differing
+  /// overrides are an error.
+  Override
+  /// Appends the two values, which must be metadata nodes.
+  Append
+  /// Appends the two values, which must be metadata nodes, dropping
+  /// duplicates.
+  AppendUnique
+  /// Takes the larger of two integer values.
+  ///
+  /// Clang uses this behavior for `"Dwarf Version"`.
+  Max
+  /// Takes the smaller of two integer values.
+  Min
+} derive(Eq, Debug)
+
+///|
+fn ModFlagBehavior::to_llvm(
+  self : ModFlagBehavior,
+) -> @raw.LLVMModuleFlagBehavior? {
+  match self {
+    Error => Some(LLVMModuleFlagBehaviorError)
+    Warning => Some(LLVMModuleFlagBehaviorWarning)
+    Require => Some(LLVMModuleFlagBehaviorRequire)
+    Override => Some(LLVMModuleFlagBehaviorOverride)
+    Append => Some(LLVMModuleFlagBehaviorAppend)
+    AppendUnique => Some(LLVMModuleFlagBehaviorAppendUnique)
+    Max | Min => None
+  }
+}
+
+///|
+/// Returns the `Module::ModFlagBehavior` numeric value stored in IR.
+fn ModFlagBehavior::to_ir_value(self : ModFlagBehavior) -> UInt64 {
+  match self {
+    Error => 1
+    Warning => 2
+    Require => 3
+    Override => 4
+    Append => 5
+    AppendUnique => 6
+    Max => 7
+    Min => 8
+  }
+}
+
+///|
+/// Appends a module flag to `!llvm.module.flags`.
+///
+/// **Parameters:**
+///
+/// - `behavior`: How linking merges this flag with the same key.
+/// - `key`: The flag name, for example `"Debug Info Version"`.
+/// - `value`: The flag value; `Max` and `Min` require an integer constant.
+///
+/// **Errors:** Raises `MetadataContextMismatch` when `value` belongs to
+/// another context.
+///
+/// **Preconditions:** `key` must not already be present unless `behavior` is
+/// `Require`; duplicate keys make the module fail verification.
+///
+/// **Side effects:** Adds an operand to the module's `!llvm.module.flags`.
+///
+/// **LLVM API:** `LLVMAddModuleFlag`. LLVM-C has no `Max`/`Min` behaviors, so
+/// those flags are built as the same `!{i32 behavior, !"key", value}` node
+/// that `llvm::Module::addModuleFlag` creates.
+///
+/// **See also:** `Module::addModuleFlagInt`.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = @IR.Context::new()
+///   let mod = ctx.addModule("flags")
+///   mod.addModuleFlag(Error, "runa.abi", ctx.getMDString("v1"))
+///   guard mod.getModuleFlag("runa.abi") is Some(flag) else { fail("missing") }
+///   inspect(flag, content="!\"v1\"")
+///   mod.verify()
+/// }
+/// ```
+pub fn Module::addModuleFlag(
+  self : Module,
+  behavior : ModFlagBehavior,
+  key : String,
+  value : Metadata,
+) -> Unit raise DebugInfoError {
+  let context = self.getContext()
+  check_metadata_context(context, value.value.context)
+  match behavior.to_llvm() {
+    Some(llvm_behavior) =>
+      @raw.llvm_add_module_flag(
+        self.get_raw_ref(),
+        llvm_behavior,
+        key,
+        value.value.md,
+      )
+    None => {
+      let ctx_ref = context.get_raw_ref()
+      let behavior_md = @raw.llvm_value_as_metadata(
+        @raw.llvm_const_int(
+          @raw.llvm_int32_type_in_context(ctx_ref),
+          behavior.to_ir_value(),
+          false,
+        ),
+      )
+      let node = @raw.llvm_md_node_in_context2(ctx_ref, [
+        behavior_md,
+        @raw.llvm_md_string_in_context2(ctx_ref, key),
+        value.value.md,
+      ])
+      // The named-metadata key is a constant without NUL bytes.
+      @raw.llvm_add_named_metadata_operand(
+        self.get_raw_ref(),
+        "llvm.module.flags",
+        @raw.llvm_metadata_as_value(ctx_ref, node),
+      ) catch {
+        _ => abort("llvm.module.flags is a valid metadata name")
+      }
+    }
+  }
+}
+
+///|
+/// Appends an integer-valued module flag stored as an `i32` constant.
+///
+/// This mirrors `llvm::Module::addModuleFlag(Behavior, Key, uint32_t)` and is
+/// the usual way to record `"Debug Info Version"` and `"Dwarf Version"`.
+///
+/// **Preconditions:** `key` must not already be present unless `behavior` is
+/// `Require`.
+///
+/// **Side effects:** Adds an operand to the module's `!llvm.module.flags`.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let mod = @IR.Context::new().addModule("flags")
+///   mod.addModuleFlagInt(
+///     Warning,
+///     "Debug Info Version",
+///     @IR.debugMetadataVersion(),
+///   )
+///   mod.addModuleFlagInt(Max, "Dwarf Version", 5)
+///   guard mod.getModuleFlag("Dwarf Version") is Some(flag) else {
+///     fail("missing")
+///   }
+///   inspect(flag, content="i32 5")
+///   inspect(mod.getModuleFlag("missing") is None, content="true")
+///   inspect(mod.getDebugMetadataVersion(), content="3")
+/// }
+/// ```
+pub fn Module::addModuleFlagInt(
+  self : Module,
+  behavior : ModFlagBehavior,
+  key : String,
+  value : UInt,
+) -> Unit {
+  let context = self.getContext()
+  let constant = @raw.llvm_const_int(
+    @raw.llvm_int32_type_in_context(context.get_raw_ref()),
+    value.to_uint64(),
+    false,
+  )
+  let metadata = Metadata::from_raw(
+    @raw.llvm_value_as_metadata(constant),
+    context,
+  )
+  self.addModuleFlag(behavior, key, metadata) catch {
+    _ => abort("module flag metadata was created in the module context")
+  }
+}
+
+///|
+/// Returns the value of the module flag named `key`, or `None` when absent.
+///
+/// **LLVM API:** `LLVMGetModuleFlag`.
+pub fn Module::getModuleFlag(self : Module, key : String) -> Metadata? {
+  let md = @raw.llvm_get_module_flag(self.get_raw_ref(), key)
+  unless(md.is_null(), () => Metadata::from_raw(md, self.getContext()))
+}
+
+///|
+/// Returns the module's `"Debug Info Version"` flag, or `0` when absent.
+///
+/// **LLVM API:** `LLVMGetModuleDebugMetadataVersion`.
+pub fn Module::getDebugMetadataVersion(self : Module) -> UInt {
+  @raw.llvm_get_module_debug_metadata_version(self.get_raw_ref())
+}
+
+///|
+/// Removes all debug information from the module.
+///
+/// This drops debug-info intrinsics and records, debug-info named metadata
+/// such as `!llvm.dbg.cu`, function subprograms, and instruction locations.
+/// Module flags, including `"Debug Info Version"`, are kept.
+///
+/// **Returns:** `true` when the module was modified.
+///
+/// **Side effects:** Mutates the module. Existing `DIBuilder`s for the module
+/// must not be used afterwards.
+///
+/// **LLVM API:** `LLVMStripModuleDebugInfo`.
+pub fn Module::stripDebugInfo(self : Module) -> Bool {
+  @raw.llvm_strip_module_debug_info(self.get_raw_ref())
+}

@@ -13,6 +13,7 @@ struct llvm_mbt_owner_test_trace {
   void *module;
   void *builder;
   void *target_machine;
+  void *di_builder;
   uint64_t events;
 };
 
@@ -20,7 +21,8 @@ static struct llvm_mbt_owner_test_trace llvm_mbt_test_trace;
 
 /*
  * C test hook called after a native disposer returns. Event values 1, 2, 3,
- * and 4 denote Context, Module, Builder, and TargetMachine respectively.
+ * 4, and 5 denote Context, Module, Builder, TargetMachine, and DIBuilder
+ * respectively.
  */
 void llvm_mbt_ir_owner_test_record(void *owner, uint64_t event) {
   void **watched = NULL;
@@ -36,6 +38,9 @@ void llvm_mbt_ir_owner_test_record(void *owner, uint64_t event) {
     break;
   case 4:
     watched = &llvm_mbt_test_trace.target_machine;
+    break;
+  case 5:
+    watched = &llvm_mbt_test_trace.di_builder;
     break;
   default:
     return;
@@ -55,6 +60,7 @@ void llvm_mbt_ir_owner_test_watch(void *context, void *module, void *builder) {
   llvm_mbt_test_trace.module = module;
   llvm_mbt_test_trace.builder = builder;
   llvm_mbt_test_trace.target_machine = NULL;
+  llvm_mbt_test_trace.di_builder = NULL;
   llvm_mbt_test_trace.events = 0;
 }
 
@@ -69,6 +75,7 @@ uint64_t llvm_mbt_ir_owner_test_take_trace(void) {
   llvm_mbt_test_trace.module = NULL;
   llvm_mbt_test_trace.builder = NULL;
   llvm_mbt_test_trace.target_machine = NULL;
+  llvm_mbt_test_trace.di_builder = NULL;
   llvm_mbt_test_trace.events = 0;
   return events;
 }
@@ -83,6 +90,7 @@ void llvm_mbt_ir_target_machine_owner_test_watch(void *target_machine) {
   llvm_mbt_test_trace.module = NULL;
   llvm_mbt_test_trace.builder = NULL;
   llvm_mbt_test_trace.target_machine = target_machine;
+  llvm_mbt_test_trace.di_builder = NULL;
   llvm_mbt_test_trace.events = 0;
 }
 
@@ -91,4 +99,19 @@ void llvm_mbt_ir_target_machine_owner_test_watch(void *target_machine) {
  * remain unretained; this shares the existing non-thread-safe test trace. */
 uint64_t llvm_mbt_ir_owner_test_peek_trace(void) {
   return llvm_mbt_test_trace.events;
+}
+
+/*
+ * MoonBit wbtest extern: di_builder_owner_test_watch
+ * (IR/debug_info_wbtest.mbt). Starts one trace over unretained Context,
+ * Module, and DIBuilder owner identities; it shares the non-thread-safe trace.
+ */
+void llvm_mbt_ir_di_builder_owner_test_watch(void *context, void *module,
+                                             void *di_builder) {
+  llvm_mbt_test_trace.context = context;
+  llvm_mbt_test_trace.module = module;
+  llvm_mbt_test_trace.builder = NULL;
+  llvm_mbt_test_trace.target_machine = NULL;
+  llvm_mbt_test_trace.di_builder = di_builder;
+  llvm_mbt_test_trace.events = 0;
 }

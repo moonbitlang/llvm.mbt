@@ -386,6 +386,49 @@ pub trait Instruction: Value {
   /// **Preconditions:** LLVM defines this query only for applicable instruction
   /// kinds; the safe layer does not validate the dynamic kind.
   fn getNumArgOperands(Self) -> Int = _
+
+  /// Returns the source location attached to this instruction, if any.
+  ///
+  /// **LLVM API:** `LLVMInstructionGetDebugLoc`.
+  fn getDebugLoc(Self) -> DILocation? = _
+
+  /// Attaches a source location to this instruction, or clears it with
+  /// `None`.
+  ///
+  /// **Errors:** Raises `MetadataContextMismatch` when the location belongs
+  /// to another context.
+  ///
+  /// **Preconditions:** The location's scope must belong to the subprogram of
+  /// the function containing the instruction; the verifier rejects other
+  /// scopes.
+  ///
+  /// **Side effects:** Replaces the instruction's `!dbg` attachment.
+  ///
+  /// **LLVM API:** `LLVMInstructionSetDebugLoc`.
+  fn setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError = _
+}
+
+///|
+impl Instruction with fn getDebugLoc(self) {
+  DILocation::from_nullable(
+    @raw.llvm_instruction_get_debug_loc((self : &Value).get_raw_value_ref()),
+    get_instruction_module(self).getContext(),
+  )
+}
+
+///|
+impl Instruction with fn setDebugLoc(self, location) {
+  let md = match location {
+    Some(location) => {
+      check_metadata_context(
+        get_instruction_module(self).getContext(),
+        location.value.context,
+      )
+      location.value.md
+    }
+    None => @raw.LLVMMetadataRef::null()
+  }
+  @raw.llvm_instruction_set_debug_loc((self : &Value).get_raw_value_ref(), md)
 }
 
 ///|

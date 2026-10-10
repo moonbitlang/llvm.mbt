@@ -1314,15 +1314,32 @@ LLVMBool __llvm_use_is_null(void *use_ref) { return use_ref == NULL ? 1 : 0; }
 /* MoonBit extern: llvm_bb_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_bb_is_null(void *bb_ref) { return bb_ref == NULL ? 1 : 0; }
 
+/* MoonBit extern: llvm_attr_is_null (internal/raw/utils.mbt). */
+LLVMBool __llvm_attr_is_null(void *attr) { return attr == NULL ? 1 : 0; }
+
 /* MoonBit extern: llvm_comdat_is_null (internal/raw/utils.mbt). */
 LLVMBool __llvm_comdat_is_null(void *comdat) { return comdat == NULL ? 1 : 0; }
 
 /*
  * MoonBit extern: LLVMTypeRef::null, LLVMValueRef::null,
- * LLVMModuleRef::null, LLVMBasicBlockRef::null, and LLVMTargetRef::null
- * (internal/raw/utils.mbt).
+ * LLVMModuleRef::null, LLVMBasicBlockRef::null, LLVMTargetRef::null, and
+ * LLVMMetadataRef::null (internal/raw/utils.mbt).
  */
 void *__llvm_new_null() { return (void *)NULL; }
+
+/*
+ * MoonBit extern: llvm_metadata_ref_is_null (internal/raw/utils.mbt).
+ * Returns 1 for NULL; it never dereferences or retains the borrowed handle.
+ */
+int __llvm_metadata_ref_is_null(void *md) { return md == NULL ? 1 : 0; }
+
+/*
+ * MoonBit extern: llvm_same_metadata_ref (internal/raw/utils.mbt).
+ * Compares pointer identity only; neither handle is dereferenced.
+ */
+int __llvm_same_metadata_ref(void *md1, void *md2) {
+  return md1 == md2 ? 1 : 0;
+}
 
 /* MoonBit extern: llvm_same_type_ref (internal/raw/utils.mbt). */
 LLVMBool __llvm_same_type_ref(void *ty1, void *ty2) {

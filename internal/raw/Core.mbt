@@ -298,7 +298,9 @@ pub fn llvm_create_string_attribute(
 extern "C" fn __llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> Bytes = "llvm_mbt_get_string_attribute_kind"
 
 ///|
-pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String raise {
+pub fn llvm_get_string_attribute_kind(
+  a : LLVMAttributeRef,
+) -> String raise @utf8.Malformed {
   __llvm_get_string_attribute_kind(a) |> @utf8.decode
 }
 
@@ -307,7 +309,9 @@ pub fn llvm_get_string_attribute_kind(a : LLVMAttributeRef) -> String raise {
 extern "C" fn __llvm_get_string_attribute_value(a : LLVMAttributeRef) -> Bytes = "llvm_mbt_get_string_attribute_value"
 
 ///|
-pub fn llvm_get_string_attribute_value(a : LLVMAttributeRef) -> String raise {
+pub fn llvm_get_string_attribute_value(
+  a : LLVMAttributeRef,
+) -> String raise @utf8.Malformed {
   __llvm_get_string_attribute_value(a) |> @utf8.decode
 }
 

@@ -6,6 +6,7 @@ import {
 }
 
 // Values
+pub fn debugMetadataVersion() -> UInt
 
 // Errors
 pub suberror BasicBlockHasNoParentError {
@@ -26,6 +27,12 @@ pub suberror CallingConvError {
 
 pub suberror DataLayoutError {
   OffsetOutOfRange(UInt64)
+}
+
+pub suberror DebugInfoError {
+  DIBuilderFinalized
+  DuplicateCompileUnit
+  MetadataContextMismatch
 }
 
 pub suberror InValidOperation {
@@ -122,6 +129,7 @@ pub fn AllocaInst::asValueEnum(Self) -> ValueEnum
 pub fn AllocaInst::eraseFromParent(Self) -> Unit
 pub fn AllocaInst::getAllocatedType(Self) -> &Type
 pub fn AllocaInst::getContext(Self) -> Context
+pub fn AllocaInst::getDebugLoc(Self) -> DILocation?
 pub fn AllocaInst::getNextInst(Self) -> &Instruction?
 pub fn AllocaInst::getNumArgOperands(Self) -> Int
 pub fn AllocaInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -131,6 +139,7 @@ pub fn AllocaInst::getValueName(Self) -> String? raise StringError
 pub fn AllocaInst::output(Self, &Logger) -> Unit
 pub fn AllocaInst::removeFromParent(Self) -> Unit
 pub fn AllocaInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn AllocaInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn AllocaInst::setValueName(Self, String) -> Unit raise StringError
 pub fn AllocaInst::to_string(Self) -> String
 pub fn AllocaInst::tryAsConstant(Self) -> &Constant?
@@ -287,6 +296,7 @@ pub fn BinaryInst::asInstEnum(Self) -> InstructionEnum
 pub fn BinaryInst::asValueEnum(Self) -> ValueEnum
 pub fn BinaryInst::eraseFromParent(Self) -> Unit
 pub fn BinaryInst::getContext(Self) -> Context
+pub fn BinaryInst::getDebugLoc(Self) -> DILocation?
 pub fn BinaryInst::getNextInst(Self) -> &Instruction?
 pub fn BinaryInst::getNumArgOperands(Self) -> Int
 pub fn BinaryInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -296,6 +306,7 @@ pub fn BinaryInst::getValueName(Self) -> String? raise StringError
 pub fn BinaryInst::output(Self, &Logger) -> Unit
 pub fn BinaryInst::removeFromParent(Self) -> Unit
 pub fn BinaryInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn BinaryInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn BinaryInst::setValueName(Self, String) -> Unit raise StringError
 pub fn BinaryInst::to_string(Self) -> String
 pub fn BinaryInst::tryAsConstant(Self) -> &Constant?
@@ -313,6 +324,7 @@ pub fn BranchInst::asInstEnum(Self) -> InstructionEnum
 pub fn BranchInst::asValueEnum(Self) -> ValueEnum
 pub fn BranchInst::eraseFromParent(Self) -> Unit
 pub fn BranchInst::getContext(Self) -> Context
+pub fn BranchInst::getDebugLoc(Self) -> DILocation?
 pub fn BranchInst::getNextInst(Self) -> &Instruction?
 pub fn BranchInst::getNumArgOperands(Self) -> Int
 pub fn BranchInst::getNumSuccessors(Self) -> Int
@@ -327,6 +339,7 @@ pub fn BranchInst::removeFromParent(Self) -> Unit
 pub fn BranchInst::replaceAllUsesWith(Self, &Value) -> Unit
 #callsite(autofill(loc))
 pub fn BranchInst::setCondition(Self, &Value, loc~ : SourceLoc) -> Unit raise
+pub fn BranchInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 #callsite(autofill(loc))
 pub fn BranchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
 pub fn BranchInst::setValueName(Self, String) -> Unit raise StringError
@@ -342,6 +355,7 @@ pub struct CallInst {
   // private fields
 }
 pub fn CallInst::addFnAttr(Self, FnAttr) -> Unit
+pub fn CallInst::addFnStringAttr(Self, String, value? : String) -> Unit
 pub fn CallInst::addParamAttr(Self, Int, ParamAttr) -> Unit raise IndexOutOfBounds
 pub fn CallInst::addRetAttr(Self, RetAttr) -> Unit
 pub fn CallInst::asInsertPtEnum(Self) -> InsertPointEnum
@@ -350,6 +364,8 @@ pub fn CallInst::asValueEnum(Self) -> ValueEnum
 pub fn CallInst::eraseFromParent(Self) -> Unit
 pub fn CallInst::getCallingConv(Self) -> CallingConv
 pub fn CallInst::getContext(Self) -> Context
+pub fn CallInst::getDebugLoc(Self) -> DILocation?
+pub fn CallInst::getFnStringAttr(Self, String) -> String? raise StringError
 pub fn CallInst::getNextInst(Self) -> &Instruction?
 pub fn CallInst::getNumArgOperands(Self) -> Int
 pub fn CallInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -360,12 +376,14 @@ pub fn CallInst::getValueName(Self) -> String? raise StringError
 pub fn CallInst::isTailCall(Self) -> Bool
 pub fn CallInst::output(Self, &Logger) -> Unit
 pub fn CallInst::removeFnAttr(Self, FnAttr) -> Unit
+pub fn CallInst::removeFnStringAttr(Self, String) -> Unit
 pub fn CallInst::removeFromParent(Self) -> Unit
 pub fn CallInst::removeParamAttr(Self, Int, ParamAttr) -> Unit raise IndexOutOfBounds
 pub fn CallInst::removeRetAttr(Self, RetAttr) -> Unit
 pub fn CallInst::removeTailCall(Self) -> Unit
 pub fn CallInst::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn CallInst::setCallingConv(Self, CallingConv) -> Unit raise CallingConvError
+pub fn CallInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn CallInst::setTailCall(Self) -> Unit
 pub fn CallInst::setTailCallKind(Self, TailCallKind) -> Unit
 pub fn CallInst::setValueName(Self, String) -> Unit raise StringError
@@ -394,6 +412,7 @@ pub fn CastInst::asInstEnum(Self) -> InstructionEnum
 pub fn CastInst::asValueEnum(Self) -> ValueEnum
 pub fn CastInst::eraseFromParent(Self) -> Unit
 pub fn CastInst::getContext(Self) -> Context
+pub fn CastInst::getDebugLoc(Self) -> DILocation?
 pub fn CastInst::getNextInst(Self) -> &Instruction?
 pub fn CastInst::getNumArgOperands(Self) -> Int
 pub fn CastInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -403,6 +422,7 @@ pub fn CastInst::getValueName(Self) -> String? raise StringError
 pub fn CastInst::output(Self, &Logger) -> Unit
 pub fn CastInst::removeFromParent(Self) -> Unit
 pub fn CastInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn CastInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn CastInst::setValueName(Self, String) -> Unit raise StringError
 pub fn CastInst::to_string(Self) -> String
 pub fn CastInst::tryAsConstant(Self) -> &Constant?
@@ -579,6 +599,7 @@ pub struct Context {
 }
 pub fn Context::addModule(Self, String) -> Module raise StringError
 pub fn Context::createBuilder(Self) -> IRBuilder
+pub fn Context::createDebugLocation(Self, UInt, UInt, &DILocalScope, inlinedAt? : DILocation) -> DILocation raise DebugInfoError
 pub fn Context::equal(Self, Self) -> Bool
 pub fn Context::getArrayType(Self, &Type, Int) -> ArrayType
 pub fn Context::getBFloatTy(Self) -> BFloatType
@@ -601,6 +622,7 @@ pub fn Context::getConstUInt8(Self, Int) -> ConstantInt
 pub fn Context::getConstVector(Self, Array[&Constant]) -> ConstantVector raise
 pub fn Context::getConstZeroDouble(Self, isNegative~ : Bool) -> ConstantFP
 pub fn Context::getConstZeroFloat(Self, isNegative~ : Bool) -> ConstantFP
+pub fn Context::getConstantAsMetadata(Self, ConstantInt) -> Metadata raise DebugInfoError
 pub fn Context::getDoubleTy(Self) -> DoubleType
 pub fn Context::getFP128Ty(Self) -> FP128Type
 pub fn[T : Type] Context::getFixedVectorType(Self, T, Int) -> VectorType
@@ -613,6 +635,7 @@ pub fn Context::getInt32Ty(Self) -> Int32Type
 pub fn Context::getInt64Ty(Self) -> Int64Type
 pub fn Context::getInt8Ty(Self) -> Int8Type
 pub fn Context::getLabelTy(Self) -> LabelType
+pub fn Context::getMDString(Self, String) -> Metadata
 pub fn Context::getMetadataTy(Self) -> MetadataType
 pub fn Context::getOpaqueStructType(Self, String) -> StructType raise StringError
 pub fn Context::getPoision(Self, &Type) -> PoisonValue
@@ -627,6 +650,183 @@ pub fn Context::new() -> Self
 pub fn Context::not_equal(Self, Self) -> Bool
 pub impl Eq for Context
 
+pub struct DIBuilder {
+  // private fields
+}
+pub fn DIBuilder::createBasicType(Self, String, UInt64, DWARFTypeEncoding, flags? : DIFlags) -> DIType raise DebugInfoError
+pub fn DIBuilder::createCompileUnit(Self, DWARFSourceLanguage, DIFile, String, isOptimized? : Bool, flags? : String, runtimeVersion? : UInt, emissionKind? : DebugEmissionKind, splitName? : String, dwoId? : UInt, splitDebugInlining? : Bool, debugInfoForProfiling? : Bool, sysroot? : String, sdk? : String) -> DICompileUnit raise DebugInfoError
+pub fn DIBuilder::createFile(Self, String, String) -> DIFile raise DebugInfoError
+pub fn DIBuilder::createFunction(Self, &DIScope, String, String, DIFile, UInt, DISubroutineType, isLocalToUnit? : Bool, isDefinition? : Bool, scopeLine? : UInt, flags? : DIFlags, isOptimized? : Bool) -> DISubprogram raise DebugInfoError
+pub fn DIBuilder::createLexicalBlock(Self, &DILocalScope, DIFile, UInt, UInt) -> DILexicalBlock raise DebugInfoError
+pub fn DIBuilder::createSubroutineType(Self, DIFile, Array[DIType?], flags? : DIFlags) -> DISubroutineType raise DebugInfoError
+pub fn DIBuilder::finalize(Self) -> Unit
+pub fn DIBuilder::finalizeSubprogram(Self, DISubprogram) -> Unit raise DebugInfoError
+pub fn DIBuilder::getModule(Self) -> Module
+pub fn DIBuilder::isFinalized(Self) -> Bool
+pub fn DIBuilder::new(Module, allowUnresolved? : Bool) -> Self
+
+pub struct DICompileUnit {
+  // private fields
+}
+pub fn DICompileUnit::asDIScopeEnum(Self) -> DIScopeEnum
+pub fn DICompileUnit::equal(Self, Self) -> Bool
+pub fn DICompileUnit::getFile(Self) -> DIFile?
+pub fn DICompileUnit::not_equal(Self, Self) -> Bool
+pub impl DIScope for DICompileUnit
+pub impl Eq for DICompileUnit
+
+pub struct DIFile {
+  // private fields
+}
+pub fn DIFile::asDIScopeEnum(Self) -> DIScopeEnum
+pub fn DIFile::equal(Self, Self) -> Bool
+pub fn DIFile::getDirectory(Self) -> String raise StringError
+pub fn DIFile::getFile(Self) -> Self?
+pub fn DIFile::getFilename(Self) -> String raise StringError
+pub fn DIFile::not_equal(Self, Self) -> Bool
+pub impl DIScope for DIFile
+pub impl Eq for DIFile
+
+pub(all) enum DIFlag {
+  FwdDecl
+  AppleBlock
+  Virtual
+  Artificial
+  Explicit
+  Prototyped
+  ObjectPointer
+  StaticMember
+  LValueReference
+  RValueReference
+  BitField
+  NoReturn
+  TypePassByValue
+  TypePassByReference
+  EnumClass
+  Thunk
+  NonTrivial
+  BigEndian
+  LittleEndian
+} derive(Eq, @debug.Debug)
+pub fn DIFlag::equal(Self, Self) -> Bool
+pub fn DIFlag::not_equal(Self, Self) -> Bool
+pub fn DIFlag::to_repr(Self) -> @debug.Repr
+
+pub struct DIFlags {
+  // private fields
+} derive(Eq)
+pub fn DIFlags::contains(Self, DIFlag) -> Bool
+pub fn DIFlags::default() -> Self
+pub fn DIFlags::equal(Self, Self) -> Bool
+pub fn DIFlags::lor(Self, Self) -> Self
+pub fn DIFlags::new(Array[DIFlag]) -> Self
+pub fn DIFlags::not_equal(Self, Self) -> Bool
+pub impl BitOr for DIFlags
+pub impl Default for DIFlags
+
+pub struct DILexicalBlock {
+  // private fields
+}
+pub fn DILexicalBlock::asDILocalScopeEnum(Self) -> DILocalScopeEnum
+pub fn DILexicalBlock::asDIScopeEnum(Self) -> DIScopeEnum
+pub fn DILexicalBlock::equal(Self, Self) -> Bool
+pub fn DILexicalBlock::getFile(Self) -> DIFile?
+pub fn DILexicalBlock::not_equal(Self, Self) -> Bool
+pub impl DILocalScope for DILexicalBlock
+pub impl DIScope for DILexicalBlock
+pub impl Eq for DILexicalBlock
+
+pub enum DILocalScopeEnum {
+  DISubprogram(DISubprogram)
+  DILexicalBlock(DILexicalBlock)
+}
+
+pub struct DILocation {
+  // private fields
+}
+pub fn DILocation::equal(Self, Self) -> Bool
+pub fn DILocation::getColumn(Self) -> UInt
+pub fn DILocation::getInlinedAt(Self) -> Self?
+pub fn DILocation::getLine(Self) -> UInt
+pub fn DILocation::getScope(Self) -> &DILocalScope?
+pub fn DILocation::not_equal(Self, Self) -> Bool
+pub impl Eq for DILocation
+
+pub enum DIScopeEnum {
+  DIFile(DIFile)
+  DICompileUnit(DICompileUnit)
+  DISubprogram(DISubprogram)
+  DILexicalBlock(DILexicalBlock)
+}
+
+pub struct DISubprogram {
+  // private fields
+}
+pub fn DISubprogram::asDILocalScopeEnum(Self) -> DILocalScopeEnum
+pub fn DISubprogram::asDIScopeEnum(Self) -> DIScopeEnum
+pub fn DISubprogram::equal(Self, Self) -> Bool
+pub fn DISubprogram::getFile(Self) -> DIFile?
+pub fn DISubprogram::getLine(Self) -> UInt
+pub fn DISubprogram::not_equal(Self, Self) -> Bool
+pub impl DILocalScope for DISubprogram
+pub impl DIScope for DISubprogram
+pub impl Eq for DISubprogram
+
+pub struct DISubroutineType {
+  // private fields
+}
+pub fn DISubroutineType::equal(Self, Self) -> Bool
+pub fn DISubroutineType::not_equal(Self, Self) -> Bool
+pub impl Eq for DISubroutineType
+
+pub struct DIType {
+  // private fields
+}
+pub fn DIType::equal(Self, Self) -> Bool
+pub fn DIType::not_equal(Self, Self) -> Bool
+pub impl Eq for DIType
+
+pub(all) enum DWARFSourceLanguage {
+  C89
+  C
+  C99
+  C11
+  C17
+  CPlusPlus
+  CPlusPlus11
+  CPlusPlus14
+  CPlusPlus17
+  CPlusPlus20
+  ObjC
+  Go
+  Haskell
+  OCaml
+  Rust
+  Swift
+  Julia
+  Kotlin
+  Zig
+  Mojo
+  Assembly
+} derive(Eq, @debug.Debug)
+pub fn DWARFSourceLanguage::equal(Self, Self) -> Bool
+pub fn DWARFSourceLanguage::not_equal(Self, Self) -> Bool
+pub fn DWARFSourceLanguage::to_repr(Self) -> @debug.Repr
+
+pub(all) enum DWARFTypeEncoding {
+  Address
+  Boolean
+  Float
+  Signed
+  SignedChar
+  Unsigned
+  UnsignedChar
+  UTF
+} derive(Eq, @debug.Debug)
+pub fn DWARFTypeEncoding::equal(Self, Self) -> Bool
+pub fn DWARFTypeEncoding::not_equal(Self, Self) -> Bool
+pub fn DWARFTypeEncoding::to_repr(Self) -> @debug.Repr
+
 pub struct DataLayout {
   // private fields
 }
@@ -635,6 +835,16 @@ pub fn DataLayout::getTypeAlignment(Self, &Type) -> Int
 pub fn DataLayout::getTypeAllocSize(Self, &Type) -> Int
 pub fn DataLayout::getTypeSizeInBits(Self, &Type) -> Int
 pub fn DataLayout::getTypeStoreSize(Self, &Type) -> Int
+
+pub(all) enum DebugEmissionKind {
+  NoDebug
+  FullDebug
+  LineTablesOnly
+  DebugDirectivesOnly
+} derive(Eq, @debug.Debug)
+pub fn DebugEmissionKind::equal(Self, Self) -> Bool
+pub fn DebugEmissionKind::not_equal(Self, Self) -> Bool
+pub fn DebugEmissionKind::to_repr(Self) -> @debug.Repr
 
 pub struct DoubleType {
   // private fields
@@ -689,6 +899,7 @@ pub fn ExtractValueInst::asInstEnum(Self) -> InstructionEnum
 pub fn ExtractValueInst::asValueEnum(Self) -> ValueEnum
 pub fn ExtractValueInst::eraseFromParent(Self) -> Unit
 pub fn ExtractValueInst::getContext(Self) -> Context
+pub fn ExtractValueInst::getDebugLoc(Self) -> DILocation?
 pub fn ExtractValueInst::getNextInst(Self) -> &Instruction?
 pub fn ExtractValueInst::getNumArgOperands(Self) -> Int
 pub fn ExtractValueInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -698,6 +909,7 @@ pub fn ExtractValueInst::getValueName(Self) -> String? raise StringError
 pub fn ExtractValueInst::output(Self, &Logger) -> Unit
 pub fn ExtractValueInst::removeFromParent(Self) -> Unit
 pub fn ExtractValueInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ExtractValueInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn ExtractValueInst::setValueName(Self, String) -> Unit raise StringError
 pub fn ExtractValueInst::to_string(Self) -> String
 pub fn ExtractValueInst::tryAsConstant(Self) -> &Constant?
@@ -715,6 +927,7 @@ pub fn FCmpInst::asInstEnum(Self) -> InstructionEnum
 pub fn FCmpInst::asValueEnum(Self) -> ValueEnum
 pub fn FCmpInst::eraseFromParent(Self) -> Unit
 pub fn FCmpInst::getContext(Self) -> Context
+pub fn FCmpInst::getDebugLoc(Self) -> DILocation?
 pub fn FCmpInst::getNextInst(Self) -> &Instruction?
 pub fn FCmpInst::getNumArgOperands(Self) -> Int
 pub fn FCmpInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -725,6 +938,7 @@ pub fn FCmpInst::getValueName(Self) -> String? raise StringError
 pub fn FCmpInst::output(Self, &Logger) -> Unit
 pub fn FCmpInst::removeFromParent(Self) -> Unit
 pub fn FCmpInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn FCmpInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn FCmpInst::setValueName(Self, String) -> Unit raise StringError
 pub fn FCmpInst::to_string(Self) -> String
 pub fn FCmpInst::tryAsConstant(Self) -> &Constant?
@@ -877,6 +1091,7 @@ pub(all) enum FnAttr {
   NoInline
   NoAlias
   AllocSize(Int)
+  UWTable(UWTableKind)
 } derive(Eq)
 pub fn FnAttr::equal(Self, Self) -> Bool
 pub fn FnAttr::not_equal(Self, Self) -> Bool
@@ -886,6 +1101,7 @@ pub struct Function {
 }
 pub fn Function::addBasicBlock(Self, name? : String, before? : BasicBlock?) -> BasicBlock raise StringError
 pub fn Function::addFnAttr(Self, FnAttr) -> Unit
+pub fn Function::addFnStringAttr(Self, String, value? : String) -> Unit
 pub fn Function::addRetAttr(Self, RetAttr) -> Unit
 pub fn Function::asConstantEnum(Self) -> ConstantEnum
 pub fn Function::asGlobalEnum(Self) -> GlobalEnum
@@ -896,21 +1112,25 @@ pub fn Function::getArgs(Self) -> Array[Argument]
 pub fn Function::getBasicBlocks(Self) -> Array[BasicBlock]
 pub fn Function::getCallingConv(Self) -> CallingConv
 pub fn Function::getContext(Self) -> Context
+pub fn Function::getFnStringAttr(Self, String) -> String? raise StringError
 pub fn Function::getLinkage(Self) -> Linkage
 pub fn Function::getName(Self) -> String? raise StringError
 pub fn Function::getNumArgs(Self) -> Int
 pub fn Function::getNumBasicBlocks(Self) -> Int
+pub fn Function::getSubprogram(Self) -> DISubprogram?
 pub fn Function::getType(Self) -> FunctionType
 pub fn Function::getUnnamedAddr(Self) -> UnnamedAddr
 pub fn Function::getValueName(Self) -> String? raise StringError
 pub fn Function::output(Self, &Logger) -> Unit
 pub fn Function::removeFnAttr(Self, FnAttr) -> Unit
+pub fn Function::removeFnStringAttr(Self, String) -> Unit
 pub fn Function::removeRetAttr(Self, RetAttr) -> Unit
 pub fn Function::removeUnnamedAddr(Self) -> Unit
 pub fn Function::replaceAllUsesWith(Self, &Value) -> Unit
 pub fn Function::setCallingConv(Self, CallingConv) -> Unit raise CallingConvError
 pub fn Function::setLinkage(Self, Linkage) -> Unit
 pub fn Function::setName(Self, String) -> Unit raise StringError
+pub fn Function::setSubprogram(Self, DISubprogram) -> Unit raise DebugInfoError
 pub fn Function::setUnnamedAddr(Self, UnnamedAddr) -> Unit
 pub fn Function::setValueName(Self, String) -> Unit raise StringError
 pub fn Function::to_string(Self) -> String
@@ -977,6 +1197,7 @@ pub fn GetElementPtrInst::asInstEnum(Self) -> InstructionEnum
 pub fn GetElementPtrInst::asValueEnum(Self) -> ValueEnum
 pub fn GetElementPtrInst::eraseFromParent(Self) -> Unit
 pub fn GetElementPtrInst::getContext(Self) -> Context
+pub fn GetElementPtrInst::getDebugLoc(Self) -> DILocation?
 pub fn GetElementPtrInst::getNextInst(Self) -> &Instruction?
 pub fn GetElementPtrInst::getNumArgOperands(Self) -> Int
 pub fn GetElementPtrInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -989,6 +1210,7 @@ pub fn GetElementPtrInst::output(Self, &Logger) -> Unit
 pub fn GetElementPtrInst::removeFromParent(Self) -> Unit
 pub fn GetElementPtrInst::removeInBounds(Self) -> Unit
 pub fn GetElementPtrInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn GetElementPtrInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn GetElementPtrInst::setInBounds(Self) -> Unit
 pub fn GetElementPtrInst::setValueName(Self, String) -> Unit raise StringError
 pub fn GetElementPtrInst::to_string(Self) -> String
@@ -1109,6 +1331,7 @@ pub fn ICmpInst::asInstEnum(Self) -> InstructionEnum
 pub fn ICmpInst::asValueEnum(Self) -> ValueEnum
 pub fn ICmpInst::eraseFromParent(Self) -> Unit
 pub fn ICmpInst::getContext(Self) -> Context
+pub fn ICmpInst::getDebugLoc(Self) -> DILocation?
 pub fn ICmpInst::getNextInst(Self) -> &Instruction?
 pub fn ICmpInst::getNumArgOperands(Self) -> Int
 pub fn ICmpInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -1119,6 +1342,7 @@ pub fn ICmpInst::getValueName(Self) -> String? raise StringError
 pub fn ICmpInst::output(Self, &Logger) -> Unit
 pub fn ICmpInst::removeFromParent(Self) -> Unit
 pub fn ICmpInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ICmpInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn ICmpInst::setValueName(Self, String) -> Unit raise StringError
 pub fn ICmpInst::to_string(Self) -> String
 pub fn ICmpInst::tryAsConstant(Self) -> &Constant?
@@ -1131,6 +1355,7 @@ pub impl Show for ICmpInst
 pub struct IRBuilder {
   // private fields
 }
+pub fn IRBuilder::clearCurrentDebugLocation(Self) -> Unit
 #callsite(autofill(loc))
 pub fn IRBuilder::createAShr(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
@@ -1298,7 +1523,9 @@ pub fn IRBuilder::createUnreachable(Self) -> UnreachableInst raise BuilderError
 pub fn IRBuilder::createXor(Self, &Value, &Value, name? : String, loc~ : SourceLoc) -> &Value raise
 #callsite(autofill(loc))
 pub fn IRBuilder::createZExt(Self, &Value, &IntegerType, name? : String, loc~ : SourceLoc) -> &Value raise
+pub fn IRBuilder::getCurrentDebugLocation(Self) -> DILocation?
 pub fn IRBuilder::getInsertBlock(Self) -> BasicBlock?
+pub fn IRBuilder::setCurrentDebugLocation(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn[T : InsertPoint] IRBuilder::setInsertPoint(Self, T) -> Unit raise
 pub fn IRBuilder::setInsertPointBefore(Self, &Instruction) -> Unit raise BuilderError
 
@@ -1315,6 +1542,7 @@ pub fn InsertValueInst::asInstEnum(Self) -> InstructionEnum
 pub fn InsertValueInst::asValueEnum(Self) -> ValueEnum
 pub fn InsertValueInst::eraseFromParent(Self) -> Unit
 pub fn InsertValueInst::getContext(Self) -> Context
+pub fn InsertValueInst::getDebugLoc(Self) -> DILocation?
 pub fn InsertValueInst::getNextInst(Self) -> &Instruction?
 pub fn InsertValueInst::getNumArgOperands(Self) -> Int
 pub fn InsertValueInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -1324,6 +1552,7 @@ pub fn InsertValueInst::getValueName(Self) -> String? raise StringError
 pub fn InsertValueInst::output(Self, &Logger) -> Unit
 pub fn InsertValueInst::removeFromParent(Self) -> Unit
 pub fn InsertValueInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn InsertValueInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn InsertValueInst::setValueName(Self, String) -> Unit raise StringError
 pub fn InsertValueInst::to_string(Self) -> String
 pub fn InsertValueInst::tryAsConstant(Self) -> &Constant?
@@ -1673,6 +1902,7 @@ pub fn LoadInst::asInstEnum(Self) -> InstructionEnum
 pub fn LoadInst::asValueEnum(Self) -> ValueEnum
 pub fn LoadInst::eraseFromParent(Self) -> Unit
 pub fn LoadInst::getContext(Self) -> Context
+pub fn LoadInst::getDebugLoc(Self) -> DILocation?
 pub fn LoadInst::getNextInst(Self) -> &Instruction?
 pub fn LoadInst::getNumArgOperands(Self) -> Int
 pub fn LoadInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -1682,6 +1912,7 @@ pub fn LoadInst::getValueName(Self) -> String? raise StringError
 pub fn LoadInst::output(Self, &Logger) -> Unit
 pub fn LoadInst::removeFromParent(Self) -> Unit
 pub fn LoadInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn LoadInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn LoadInst::setValueName(Self, String) -> Unit raise StringError
 pub fn LoadInst::to_string(Self) -> String
 pub fn LoadInst::tryAsConstant(Self) -> &Constant?
@@ -1690,6 +1921,16 @@ pub impl InsertPoint for LoadInst
 pub impl Instruction for LoadInst
 pub impl Value for LoadInst
 pub impl Show for LoadInst
+
+pub struct Metadata {
+  // private fields
+}
+pub fn Metadata::equal(Self, Self) -> Bool
+pub fn Metadata::not_equal(Self, Self) -> Bool
+pub fn Metadata::output(Self, &Logger) -> Unit
+pub fn Metadata::to_string(Self) -> String
+pub impl Eq for Metadata
+pub impl Show for Metadata
 
 pub struct MetadataType {
   // private fields
@@ -1732,22 +1973,40 @@ pub impl AbstractType for MetadataType
 pub impl Type for MetadataType
 pub impl Show for MetadataType
 
+pub(all) enum ModFlagBehavior {
+  Error
+  Warning
+  Require
+  Override
+  Append
+  AppendUnique
+  Max
+  Min
+} derive(Eq, @debug.Debug)
+pub fn ModFlagBehavior::equal(Self, Self) -> Bool
+pub fn ModFlagBehavior::not_equal(Self, Self) -> Bool
+pub fn ModFlagBehavior::to_repr(Self) -> @debug.Repr
+
 pub struct Module {
   // private fields
 }
 pub fn Module::addFunction(Self, FunctionType, String, linkage? : Linkage) -> Function raise StringError
 pub fn Module::addGlobalConstant(Self, &Type, String, &Constant, linkage? : Linkage) -> GlobalConstant raise
 pub fn Module::addGlobalVariable(Self, &Type, String, initializer? : &Constant, linkage? : Linkage) -> GlobalVariable raise
+pub fn Module::addModuleFlag(Self, ModFlagBehavior, String, Metadata) -> Unit raise DebugInfoError
+pub fn Module::addModuleFlagInt(Self, ModFlagBehavior, String, UInt) -> Unit
 pub fn Module::declareGlobalConstant(Self, &Type, String, linkage? : Linkage) -> GlobalConstant raise
 pub fn Module::dump(Self) -> Unit
 pub fn Module::getContext(Self) -> Context
 pub fn Module::getDataLayout(Self) -> DataLayout
 pub fn Module::getDataLayoutStr(Self) -> String raise StringError
+pub fn Module::getDebugMetadataVersion(Self) -> UInt
 pub fn Module::getFirstFunction(Self) -> Function?
 pub fn Module::getFunction(Self, String) -> Function?
 pub fn Module::getFunctions(Self) -> Array[Function]
 pub fn Module::getIntrinsicDeclaration(Self, String, Array[&Type]) -> Function raise
 pub fn Module::getLastFunction(Self) -> Function?
+pub fn Module::getModuleFlag(Self, String) -> Metadata?
 pub fn Module::getName(Self) -> String raise StringError
 pub fn Module::getSourceFileName(Self) -> String raise StringError
 pub fn Module::getTargetTriple(Self) -> String raise StringError
@@ -1756,6 +2015,7 @@ pub fn Module::runPasses(Self, String, targetMachine~ : TargetMachine) -> Self r
 pub fn Module::setDataLayout(Self, String) -> Unit raise StringError
 pub fn Module::setName(Self, String) -> Unit
 pub fn Module::setSourceFileName(Self, String) -> Unit
+pub fn Module::stripDebugInfo(Self) -> Bool
 pub fn Module::to_string(Self) -> String
 pub fn Module::verify(Self) -> Unit raise VerificationError
 pub fn Module::writeBitCodeToBytes(Self) -> Bytes
@@ -1772,6 +2032,7 @@ pub fn PHINode::asValueEnum(Self) -> ValueEnum
 pub fn PHINode::countIncoming(Self) -> Int
 pub fn PHINode::eraseFromParent(Self) -> Unit
 pub fn PHINode::getContext(Self) -> Context
+pub fn PHINode::getDebugLoc(Self) -> DILocation?
 pub fn PHINode::getIncomingBlock(Self, Int) -> BasicBlock?
 pub fn PHINode::getNextInst(Self) -> &Instruction?
 pub fn PHINode::getNumArgOperands(Self) -> Int
@@ -1782,6 +2043,7 @@ pub fn PHINode::getValueName(Self) -> String? raise StringError
 pub fn PHINode::output(Self, &Logger) -> Unit
 pub fn PHINode::removeFromParent(Self) -> Unit
 pub fn PHINode::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn PHINode::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn PHINode::setValueName(Self, String) -> Unit raise StringError
 pub fn PHINode::to_string(Self) -> String
 pub fn PHINode::tryAsConstant(Self) -> &Constant?
@@ -1906,6 +2168,7 @@ pub fn ReturnInst::asInstEnum(Self) -> InstructionEnum
 pub fn ReturnInst::asValueEnum(Self) -> ValueEnum
 pub fn ReturnInst::eraseFromParent(Self) -> Unit
 pub fn ReturnInst::getContext(Self) -> Context
+pub fn ReturnInst::getDebugLoc(Self) -> DILocation?
 pub fn ReturnInst::getNextInst(Self) -> &Instruction?
 pub fn ReturnInst::getNumArgOperands(Self) -> Int
 pub fn ReturnInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -1915,6 +2178,7 @@ pub fn ReturnInst::getValueName(Self) -> String? raise StringError
 pub fn ReturnInst::output(Self, &Logger) -> Unit
 pub fn ReturnInst::removeFromParent(Self) -> Unit
 pub fn ReturnInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn ReturnInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn ReturnInst::setValueName(Self, String) -> Unit raise StringError
 pub fn ReturnInst::to_string(Self) -> String
 pub fn ReturnInst::tryAsConstant(Self) -> &Constant?
@@ -1973,6 +2237,7 @@ pub fn SelectInst::asInstEnum(Self) -> InstructionEnum
 pub fn SelectInst::asValueEnum(Self) -> ValueEnum
 pub fn SelectInst::eraseFromParent(Self) -> Unit
 pub fn SelectInst::getContext(Self) -> Context
+pub fn SelectInst::getDebugLoc(Self) -> DILocation?
 pub fn SelectInst::getNextInst(Self) -> &Instruction?
 pub fn SelectInst::getNumArgOperands(Self) -> Int
 pub fn SelectInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -1982,6 +2247,7 @@ pub fn SelectInst::getValueName(Self) -> String? raise StringError
 pub fn SelectInst::output(Self, &Logger) -> Unit
 pub fn SelectInst::removeFromParent(Self) -> Unit
 pub fn SelectInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn SelectInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn SelectInst::setValueName(Self, String) -> Unit raise StringError
 pub fn SelectInst::to_string(Self) -> String
 pub fn SelectInst::tryAsConstant(Self) -> &Constant?
@@ -1999,6 +2265,7 @@ pub fn StoreInst::asInstEnum(Self) -> InstructionEnum
 pub fn StoreInst::asValueEnum(Self) -> ValueEnum
 pub fn StoreInst::eraseFromParent(Self) -> Unit
 pub fn StoreInst::getContext(Self) -> Context
+pub fn StoreInst::getDebugLoc(Self) -> DILocation?
 pub fn StoreInst::getNextInst(Self) -> &Instruction?
 pub fn StoreInst::getNumArgOperands(Self) -> Int
 pub fn StoreInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -2008,6 +2275,7 @@ pub fn StoreInst::getValueName(Self) -> String? raise StringError
 pub fn StoreInst::output(Self, &Logger) -> Unit
 pub fn StoreInst::removeFromParent(Self) -> Unit
 pub fn StoreInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn StoreInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn StoreInst::setValueName(Self, String) -> Unit raise StringError
 pub fn StoreInst::to_string(Self) -> String
 pub fn StoreInst::tryAsConstant(Self) -> &Constant?
@@ -2074,6 +2342,7 @@ pub fn SwitchInst::asInstEnum(Self) -> InstructionEnum
 pub fn SwitchInst::asValueEnum(Self) -> ValueEnum
 pub fn SwitchInst::eraseFromParent(Self) -> Unit
 pub fn SwitchInst::getContext(Self) -> Context
+pub fn SwitchInst::getDebugLoc(Self) -> DILocation?
 pub fn SwitchInst::getNextInst(Self) -> &Instruction?
 pub fn SwitchInst::getNumArgOperands(Self) -> Int
 pub fn SwitchInst::getNumSuccessors(Self) -> Int
@@ -2085,6 +2354,7 @@ pub fn SwitchInst::getValueName(Self) -> String? raise StringError
 pub fn SwitchInst::output(Self, &Logger) -> Unit
 pub fn SwitchInst::removeFromParent(Self) -> Unit
 pub fn SwitchInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn SwitchInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 #callsite(autofill(loc))
 pub fn SwitchInst::setSuccessor(Self, Int, BasicBlock, loc~ : SourceLoc) -> Unit raise
 pub fn SwitchInst::setValueName(Self, String) -> Unit raise StringError
@@ -2212,6 +2482,14 @@ pub fn TypeEnum::asTypeClass(Self) -> &Type
 pub fn TypeEnum::equal(Self, Self) -> Bool
 pub fn TypeEnum::not_equal(Self, Self) -> Bool
 
+pub(all) enum UWTableKind {
+  Sync
+  Async
+} derive(Eq, @debug.Debug)
+pub fn UWTableKind::equal(Self, Self) -> Bool
+pub fn UWTableKind::not_equal(Self, Self) -> Bool
+pub fn UWTableKind::to_repr(Self) -> @debug.Repr
+
 pub struct UnaryInst {
   // private fields
 }
@@ -2220,6 +2498,7 @@ pub fn UnaryInst::asInstEnum(Self) -> InstructionEnum
 pub fn UnaryInst::asValueEnum(Self) -> ValueEnum
 pub fn UnaryInst::eraseFromParent(Self) -> Unit
 pub fn UnaryInst::getContext(Self) -> Context
+pub fn UnaryInst::getDebugLoc(Self) -> DILocation?
 pub fn UnaryInst::getNextInst(Self) -> &Instruction?
 pub fn UnaryInst::getNumArgOperands(Self) -> Int
 pub fn UnaryInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -2229,6 +2508,7 @@ pub fn UnaryInst::getValueName(Self) -> String? raise StringError
 pub fn UnaryInst::output(Self, &Logger) -> Unit
 pub fn UnaryInst::removeFromParent(Self) -> Unit
 pub fn UnaryInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn UnaryInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn UnaryInst::setValueName(Self, String) -> Unit raise StringError
 pub fn UnaryInst::to_string(Self) -> String
 pub fn UnaryInst::tryAsConstant(Self) -> &Constant?
@@ -2270,6 +2550,7 @@ pub fn UnreachableInst::asInstEnum(Self) -> InstructionEnum
 pub fn UnreachableInst::asValueEnum(Self) -> ValueEnum
 pub fn UnreachableInst::eraseFromParent(Self) -> Unit
 pub fn UnreachableInst::getContext(Self) -> Context
+pub fn UnreachableInst::getDebugLoc(Self) -> DILocation?
 pub fn UnreachableInst::getNextInst(Self) -> &Instruction?
 pub fn UnreachableInst::getNumArgOperands(Self) -> Int
 pub fn UnreachableInst::getParentBasicBlock(Self) -> BasicBlock?
@@ -2279,6 +2560,7 @@ pub fn UnreachableInst::getValueName(Self) -> String? raise StringError
 pub fn UnreachableInst::output(Self, &Logger) -> Unit
 pub fn UnreachableInst::removeFromParent(Self) -> Unit
 pub fn UnreachableInst::replaceAllUsesWith(Self, &Value) -> Unit
+pub fn UnreachableInst::setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 pub fn UnreachableInst::setValueName(Self, String) -> Unit raise StringError
 pub fn UnreachableInst::to_string(Self) -> String
 pub fn UnreachableInst::tryAsConstant(Self) -> &Constant?
@@ -2421,6 +2703,15 @@ pub trait Constant : Value {
   fn asConstantEnum(Self) -> ConstantEnum
 }
 
+pub trait DILocalScope : DIScope {
+  fn asDILocalScopeEnum(Self) -> DILocalScopeEnum
+}
+
+pub trait DIScope {
+  fn asDIScopeEnum(Self) -> DIScopeEnum
+  fn getFile(Self) -> DIFile?
+}
+
 pub trait FPType : PrimitiveType {
   fn asFPTypeEnum(Self) -> FPTypeEnum
   fn getFPMantissaWidth(Self) -> UInt
@@ -2445,6 +2736,8 @@ pub trait Instruction : Value {
   fn removeFromParent(Self) -> Unit
   fn eraseFromParent(Self) -> Unit
   fn getNumArgOperands(Self) -> Int
+  fn getDebugLoc(Self) -> DILocation?
+  fn setDebugLoc(Self, DILocation?) -> Unit raise DebugInfoError
 }
 
 pub trait IntegerType : PrimitiveType {

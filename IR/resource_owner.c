@@ -5,6 +5,7 @@
  */
 
 #include <llvm-c/Core.h>
+#include <llvm-c/DebugInfo.h>
 #include <llvm-c/TargetMachine.h>
 #include <stdint.h>
 #include <stdio.h>
@@ -30,6 +31,16 @@ struct llvm_mbt_builder_owner {
 
 struct llvm_mbt_target_machine_owner {
   LLVMTargetMachineRef raw;
+};
+
+/*
+ * A DIBuilder records unresolved nodes and the compile unit of one module and
+ * writes `llvm.dbg.cu` into it, so it retains that ModuleOwner (and through it
+ * the Context that owns every metadata node) until the DIBuilder is disposed.
+ */
+struct llvm_mbt_di_builder_owner {
+  LLVMDIBuilderRef raw;
+  struct llvm_mbt_module_owner *module;
 };
 
 /* C test hook implemented by resource_owner_test.c; it never retains owners. */
@@ -90,6 +101,16 @@ static LLVMTargetMachineRef llvm_mbt_target_machine_owner_take_raw(
   return raw;
 }
 
+static LLVMDIBuilderRef llvm_mbt_di_builder_owner_take_raw(
+    struct llvm_mbt_di_builder_owner *owner) {
+  LLVMDIBuilderRef raw = owner->raw;
+  if (raw == NULL) {
+    llvm_mbt_owner_disposal_error("DIBuilder");
+  }
+  owner->raw = NULL;
+  return raw;
+}
+
 /* Dispose the native handle, then notify the non-owning test observer. */
 static void llvm_mbt_context_owner_dispose_once(
   struct llvm_mbt_context_owner *owner) {
@@ -113,6 +134,18 @@ static void llvm_mbt_target_machine_owner_dispose_once(
     struct llvm_mbt_target_machine_owner *owner) {
   LLVMDisposeTargetMachine(llvm_mbt_target_machine_owner_take_raw(owner));
   llvm_mbt_ir_owner_test_record(owner, 4);
+}
+
+/*
+ * LLVMDisposeDIBuilder only releases the builder's bookkeeping; it neither
+ * finalizes debug info nor deletes metadata already attached to the module.
+ * The finalizer therefore never calls LLVMDIBuilderFinalize: finalization is
+ * an explicit IR mutation that must happen before verification or emission.
+ */
+static void llvm_mbt_di_builder_owner_dispose_once(
+    struct llvm_mbt_di_builder_owner *owner) {
+  LLVMDisposeDIBuilder(llvm_mbt_di_builder_owner_take_raw(owner));
+  llvm_mbt_ir_owner_test_record(owner, 5);
 }
 
 /* Finalize the only native resource owned by a ContextOwner. */
@@ -147,6 +180,17 @@ static void llvm_mbt_finalize_builder_owner(void *payload) {
   }
   if (context != NULL) {
     moonbit_decref(context);
+  }
+}
+
+/* Dispose the DIBuilder before releasing the ModuleOwner it writes into. */
+static void llvm_mbt_finalize_di_builder_owner(void *payload) {
+  struct llvm_mbt_di_builder_owner *owner = payload;
+  struct llvm_mbt_module_owner *module = owner->module;
+  owner->module = NULL;
+  llvm_mbt_di_builder_owner_dispose_once(owner);
+  if (module != NULL) {
+    moonbit_decref(module);
   }
 }
 
@@ -281,4 +325,39 @@ void *llvm_mbt_ir_builder_owner_context(
     struct llvm_mbt_builder_owner *owner) {
   moonbit_incref(owner->context);
   return owner->context;
+}
+
+/*
+ * MoonBit extern: DIBuilderOwner::new (IR/resource_owner.mbt).
+ * Assumes ownership of one non-NULL DIBuilder created for `module`'s native
+ * module and retains `module` until the DIBuilder has been disposed.
+ */
+void *llvm_mbt_ir_di_builder_owner_new(
+    LLVMDIBuilderRef raw, struct llvm_mbt_module_owner *module) {
+  struct llvm_mbt_di_builder_owner *owner = moonbit_make_external_object(
+      llvm_mbt_finalize_di_builder_owner,
+      (uint32_t)sizeof(struct llvm_mbt_di_builder_owner));
+  owner->raw = raw;
+  owner->module = module;
+  moonbit_incref(module);
+  return owner;
+}
+
+/*
+ * MoonBit extern: DIBuilderOwner::raw (IR/resource_owner.mbt).
+ * Returns a borrowed handle valid only while `owner` remains alive.
+ */
+LLVMDIBuilderRef llvm_mbt_ir_di_builder_owner_raw(
+    struct llvm_mbt_di_builder_owner *owner) {
+  return owner->raw;
+}
+
+/*
+ * MoonBit extern: DIBuilderOwner::module_owner (IR/resource_owner.mbt).
+ * Returns the retained ModuleOwner as a new MoonBit reference.
+ */
+void *llvm_mbt_ir_di_builder_owner_module(
+    struct llvm_mbt_di_builder_owner *owner) {
+  moonbit_incref(owner->module);
+  return owner->module;
 }

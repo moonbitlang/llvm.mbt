@@ -10,6 +10,16 @@ type AttributeRef = @raw.LLVMAttributeRef
 priv struct Attribute(AttributeRef)
 
 ///|
+/// Kind of unwind table requested by `FnAttr::UWTable` (`llvm::UWTableKind`).
+pub(all) enum UWTableKind {
+  /// Unwind tables that are only valid at call sites (`uwtable(sync)`).
+  Sync
+  /// Unwind tables that are valid at every instruction (`uwtable`), LLVM's
+  /// default kind and what Clang emits for `-funwind-tables`.
+  Async
+} derive(Eq, Debug)
+
+///|
 /// Supported function-level LLVM attributes.
 ///
 /// Attribute validity depends on the complete function signature and intended
@@ -64,6 +74,12 @@ pub(all) enum FnAttr {
   /// **Parameters:** The payload is encoded as LLVM's raw `allocsize` integer
   /// representation. Only the single size-argument form is exposed.
   AllocSize(Int)
+  /// Requests an unwind table entry for the function even when it does not
+  /// unwind, so stack walkers and backtrace libraries can step through it.
+  ///
+  /// **Parameters:** The payload selects synchronous (`1`) or asynchronous
+  /// (`2`) unwind tables, LLVM's `uwtable` attribute argument.
+  UWTable(UWTableKind)
   //Dereferenceable(UInt64)
   //DereferenceableOrNull(UInt64)
   //AllocSize(Int)
@@ -86,6 +102,7 @@ fn FnAttr::attr_name(self : FnAttr) -> String {
     NoUnwind => "nounwind"
     NoReturn => "noreturn"
     NoAlias => "noalias"
+    UWTable(_) => "uwtable"
   }
 }
 
@@ -93,6 +110,8 @@ fn FnAttr::attr_name(self : FnAttr) -> String {
 fn FnAttr::attr_value(self : FnAttr) -> UInt64 {
   match self {
     AllocSize(size) => size.to_uint64()
+    UWTable(Sync) => 1
+    UWTable(Async) => 2
     _ => 0
   }
 }

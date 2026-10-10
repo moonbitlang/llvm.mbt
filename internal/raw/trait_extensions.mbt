@@ -69,3 +69,7 @@ pub extend LLVMValueRef with Eq::{not_equal, equal}
 
 ///|
 pub extend LLVMValueRef with Show::{output}
+
+///|
+/// Exposes the selected `Eq` methods as regular methods on `LLVMMetadataRef`.
+pub extend LLVMMetadataRef with Eq::{not_equal, equal}

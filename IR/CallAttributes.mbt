@@ -150,3 +150,86 @@ pub fn CallInst::removeParamAttr(
     @raw.llvm_get_enum_attribute_kind_for_name(attr.attr_name()),
   )
 }
+
+///|
+/// Adds or replaces a string function attribute on this call site.
+///
+/// **Parameters:**
+///
+/// - `kind`: The attribute key.
+/// - `value`: The attribute value; an empty value prints as `"kind"`.
+///
+/// **Side effects:** Modifies this call's attributes, leaving the callee
+/// unchanged.
+///
+/// **LLVM API:** `LLVMCreateStringAttribute` and `LLVMAddCallSiteAttribute`.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = @IR.Context::new()
+///   let mod = ctx.addModule("call_attrs")
+///   let fty = ctx.getFunctionType(ctx.getVoidTy(), [])
+///   let callee = mod.addFunction(fty, "callee")
+///   let caller = mod.addFunction(fty, "caller")
+///   let builder = ctx.createBuilder()
+///   builder.setInsertPoint(caller.addBasicBlock())
+///   let call = builder.createCall(callee, [])
+///   call.addFnStringAttr("runa-call", value="safepoint")
+///   debug_inspect(
+///     call.getFnStringAttr("runa-call"),
+///     content="Some(\"safepoint\")",
+///   )
+///   call.removeFnStringAttr("runa-call")
+///   debug_inspect(call.getFnStringAttr("runa-call"), content="None")
+/// }
+/// ```
+pub fn CallInst::addFnStringAttr(
+  self : Self,
+  kind : String,
+  value? : String = "",
+) -> Unit {
+  let attr = @raw.llvm_create_string_attribute(
+    self.getContext().get_raw_ref(),
+    kind,
+    value,
+  )
+  @raw.llvm_add_call_site_attribute(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    attr,
+  )
+}
+
+///|
+/// Returns the value of the string function attribute `kind` on this call.
+///
+/// **Returns:** `None` when the call site has no such attribute (attributes of
+/// the callee are not consulted); `Some("")` for an attribute without value.
+///
+/// **Errors:** Raises `StringError::MalformedUtf8` if LLVM returns a value that
+/// is not valid UTF-8.
+pub fn CallInst::getFnStringAttr(
+  self : Self,
+  kind : String,
+) -> String? raise StringError {
+  let attr = @raw.llvm_get_call_site_string_attribute(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    kind,
+  )
+  string_attribute_value(attr)
+}
+
+///|
+/// Removes the string function attribute `kind` from this call if present.
+///
+/// **Side effects:** Modifies only this call's attributes.
+pub fn CallInst::removeFnStringAttr(self : Self, kind : String) -> Unit {
+  @raw.llvm_remove_call_site_string_attribute(
+    self.get_raw_value_ref(),
+    @uint.MAX_VALUE,
+    kind,
+  )
+}

@@ -7,7 +7,7 @@
 // unsigned LLVMDebugMetadataVersion(void);
 
 ///|
-pub extern "C" fn llvm_debug_metadata_version() -> UInt = "__llvm_debug_metadata_version"
+pub extern "C" fn llvm_debug_metadata_version() -> UInt = "LLVMDebugMetadataVersion"
 //
 // /**
 //  * The version of debug metadata that's present in the provided \c Module.
@@ -17,7 +17,7 @@ pub extern "C" fn llvm_debug_metadata_version() -> UInt = "__llvm_debug_metadata
 ///|
 pub extern "C" fn llvm_get_module_debug_metadata_version(
   mod_ref : LLVMModuleRef,
-) -> UInt = "__llvm_get_module_debug_metadata_version"
+) -> UInt = "LLVMGetModuleDebugMetadataVersion"
 //
 // /**
 //  * Strip debug info in the module if it exists.
@@ -28,9 +28,15 @@ pub extern "C" fn llvm_get_module_debug_metadata_version(
 // LLVMBool LLVMStripModuleDebugInfo(LLVMModuleRef Module);
 
 ///|
-pub extern "C" fn llvm_strip_module_debug_info(
+extern "C" fn __llvm_strip_module_debug_info(
   mod_ref : LLVMModuleRef,
-) -> LLVMBool = "__llvm_strip_module_debug_info"
+) -> LLVMBool = "LLVMStripModuleDebugInfo"
+
+///|
+/// Strip debug info in the module if it exists; returns true when modified.
+pub fn llvm_strip_module_debug_info(mod_ref : LLVMModuleRef) -> Bool {
+  __llvm_strip_module_debug_info(mod_ref).to_moonbit_bool()
+}
 //
 // /**
 //  * Construct a builder for a module, and do not allow for unresolved nodes
@@ -41,7 +47,7 @@ pub extern "C" fn llvm_strip_module_debug_info(
 ///|
 pub extern "C" fn llvm_create_di_builder_disallow_unresolved(
   mod_ref : LLVMModuleRef,
-) -> LLVMDIBuilderRef = "__llvm_create_di_builder_disallow_unresolved"
+) -> LLVMDIBuilderRef = "LLVMCreateDIBuilderDisallowUnresolved"
 //
 // /**
 //  * Construct a builder for a module and collect unresolved nodes attached
@@ -53,7 +59,7 @@ pub extern "C" fn llvm_create_di_builder_disallow_unresolved(
 ///|
 pub extern "C" fn llvm_create_di_builder(
   mod_ref : LLVMModuleRef,
-) -> LLVMDIBuilderRef = "__llvm_create_di_builder"
+) -> LLVMDIBuilderRef = "LLVMCreateDIBuilder"
 //
 // /**
 //  * Deallocates the \c DIBuilder and everything it owns.
@@ -62,7 +68,7 @@ pub extern "C" fn llvm_create_di_builder(
 // void LLVMDisposeDIBuilder(LLVMDIBuilderRef Builder);
 
 ///|
-pub extern "C" fn llvm_dispose_di_builder(builder_ref : LLVMDIBuilderRef) = "__llvm_dispose_di_builder"
+pub extern "C" fn llvm_dispose_di_builder(builder_ref : LLVMDIBuilderRef) = "LLVMDisposeDIBuilder"
 //
 // /**
 //  * Construct any deferred debug info descriptors.
@@ -70,7 +76,7 @@ pub extern "C" fn llvm_dispose_di_builder(builder_ref : LLVMDIBuilderRef) = "__l
 // void LLVMDIBuilderFinalize(LLVMDIBuilderRef Builder);
 
 ///|
-pub extern "C" fn llvm_di_builder_finalize(builder_ref : LLVMDIBuilderRef) = "__llvm_di_builder_finalize"
+pub extern "C" fn llvm_di_builder_finalize(builder_ref : LLVMDIBuilderRef) = "LLVMDIBuilderFinalize"
 //
 // /**
 //  * Finalize a specific subprogram.
@@ -83,7 +89,7 @@ pub extern "C" fn llvm_di_builder_finalize(builder_ref : LLVMDIBuilderRef) = "__
 pub extern "C" fn llvm_di_builder_finalize_subprogram(
   builder_ref : LLVMDIBuilderRef,
   subprogram_ref : LLVMMetadataRef,
-) = "__llvm_di_builder_finalize_subprogram"
+) = "LLVMDIBuilderFinalizeSubprogram"
 //
 // /**
 //  * A CompileUnit provides an anchor for all debugging
@@ -320,7 +326,7 @@ pub extern "C" fn llvm_di_builder_finalize_subprogram(
 /// - see `DILocation::getLine()`
 pub extern "C" fn llvm_di_location_get_line(
   location_ref : LLVMMetadataRef,
-) -> UInt = "__llvm_di_location_get_line"
+) -> UInt = "LLVMDILocationGetLine"
 //
 // /**
 //  * Get the column number of this debug location.
@@ -337,7 +343,7 @@ pub extern "C" fn llvm_di_location_get_line(
 /// 
 pub extern "C" fn llvm_di_location_get_column(
   location_ref : LLVMMetadataRef,
-) -> UInt = "__llvm_di_location_get_column"
+) -> UInt = "LLVMDILocationGetColumn"
 //
 // /**
 //  * Get the local scope associated with this debug location.
@@ -354,7 +360,7 @@ pub extern "C" fn llvm_di_location_get_column(
 /// 
 pub extern "C" fn llvm_di_location_get_scope(
   location_ref : LLVMMetadataRef,
-) -> LLVMMetadataRef = "__llvm_di_location_get_scope"
+) -> LLVMMetadataRef = "LLVMDILocationGetScope"
 
 // /**
 //  * Get the "inline at" location associated with this debug location.
@@ -371,7 +377,7 @@ pub extern "C" fn llvm_di_location_get_scope(
 /// 
 pub extern "C" fn llvm_di_location_get_inlined_at(
   location_ref : LLVMMetadataRef,
-) -> LLVMMetadataRef = "__llvm_di_location_get_inlined_at"
+) -> LLVMMetadataRef = "LLVMDILocationGetInlinedAt"
 //
 // /**
 //  * Get the metadata of the file associated with a given scope.
@@ -388,7 +394,7 @@ pub extern "C" fn llvm_di_location_get_inlined_at(
 /// 
 pub extern "C" fn llvm_di_scope_get_file(
   scope_ref : LLVMMetadataRef,
-) -> LLVMMetadataRef = "__llvm_di_scope_get_file"
+) -> LLVMMetadataRef = "LLVMDIScopeGetFile"
 
 //
 // /**
@@ -1489,7 +1495,7 @@ pub extern "C" fn llvm_di_builder_insert_dbg_value_record_at_end(
 /// Get the metadata of the subprogram attached to a function.
 /// 
 /// - see `llvm::Function::getSubprogram()`
-pub extern "C" fn llvm_get_subprogram(func : LLVMValueRef) -> LLVMMetadataRef = "__llvm_get_subprogram"
+pub extern "C" fn llvm_get_subprogram(func : LLVMValueRef) -> LLVMMetadataRef = "LLVMGetSubprogram"
 
 // void LLVMSetSubprogram(LLVMValueRef Func, LLVMMetadataRef SP);
 
@@ -1500,7 +1506,7 @@ pub extern "C" fn llvm_get_subprogram(func : LLVMValueRef) -> LLVMMetadataRef = 
 pub extern "C" fn llvm_set_subprogram(
   func : LLVMValueRef,
   sp : LLVMMetadataRef,
-) = "__llvm_set_subprogram"
+) = "LLVMSetSubprogram"
 
 // unsigned LLVMDISubprogramGetLine(LLVMMetadataRef Subprogram);
 
@@ -1510,7 +1516,7 @@ pub extern "C" fn llvm_set_subprogram(
 /// - see `DISubprogram::getLine()`
 pub extern "C" fn llvm_di_subprogram_get_line(
   subprogram : LLVMMetadataRef,
-) -> UInt = "__llvm_di_subprogram_get_line"
+) -> UInt = "LLVMDISubprogramGetLine"
 
 // LLVMMetadataRef LLVMInstructionGetDebugLoc(LLVMValueRef Inst);
 
@@ -1520,7 +1526,7 @@ pub extern "C" fn llvm_di_subprogram_get_line(
 /// - see `llvm::Instruction::getDebugLoc()`
 pub extern "C" fn llvm_instruction_get_debug_loc(
   inst : LLVMValueRef,
-) -> LLVMMetadataRef = "__llvm_instruction_get_debug_loc"
+) -> LLVMMetadataRef = "LLVMInstructionGetDebugLoc"
 
 // void LLVMInstructionSetDebugLoc(LLVMValueRef Inst, LLVMMetadataRef Loc);
 
@@ -1533,7 +1539,7 @@ pub extern "C" fn llvm_instruction_get_debug_loc(
 pub extern "C" fn llvm_instruction_set_debug_loc(
   inst : LLVMValueRef,
   loc : LLVMMetadataRef,
-) = "__llvm_instruction_set_debug_loc"
+) = "LLVMInstructionSetDebugLoc"
 
 //
 // /**
@@ -1602,4 +1608,267 @@ pub extern "C" fn llvm_di_builder_insert_label_at_end(
 /// - see `llvm::Metadata::getMetadataID()`
 pub extern "C" fn llvm_get_metadata_kind(
   metadata_ref : LLVMMetadataRef,
-) -> LLVMMetadataKind = "__llvm_get_metadata_kind"
+) -> LLVMMetadataKind = "LLVMGetMetadataKind"
+
+// =======================================================
+// DIBuilder node constructors used by the IR package
+// =======================================================
+
+///|
+#borrow(filename, directory)
+extern "C" fn __llvm_di_builder_create_file(
+  builder_ref : LLVMDIBuilderRef,
+  filename : Bytes,
+  filename_len : UInt64,
+  directory : Bytes,
+  directory_len : UInt64,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateFile"
+
+///|
+/// Create a file descriptor to hold debugging information for a file.
+///
+/// Strings are passed with explicit UTF-8 byte lengths, so embedded NUL bytes
+/// are forwarded unchanged.
+///
+/// - see `llvm::DIBuilder::createFile()`
+pub fn llvm_di_builder_create_file(
+  builder_ref : LLVMDIBuilderRef,
+  filename : String,
+  directory : String,
+) -> LLVMMetadataRef {
+  let filename = @utf8.encode(filename)
+  let directory = @utf8.encode(directory)
+  __llvm_di_builder_create_file(
+    builder_ref,
+    filename,
+    filename.length().to_uint64(),
+    directory,
+    directory.length().to_uint64(),
+  )
+}
+
+///|
+#borrow(producer, flags, split_name, sysroot, sdk)
+extern "C" fn __llvm_di_builder_create_compile_unit(
+  builder_ref : LLVMDIBuilderRef,
+  lang : Int,
+  file_ref : LLVMMetadataRef,
+  producer : Bytes,
+  producer_len : UInt64,
+  is_optimized : LLVMBool,
+  flags : Bytes,
+  flags_len : UInt64,
+  runtime_version : UInt,
+  split_name : Bytes,
+  split_name_len : UInt64,
+  kind : Int,
+  dwo_id : UInt,
+  split_debug_inlining : LLVMBool,
+  debug_info_for_profiling : LLVMBool,
+  sysroot : Bytes,
+  sysroot_len : UInt64,
+  sdk : Bytes,
+  sdk_len : UInt64,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateCompileUnit"
+
+///|
+/// Create a compile unit anchoring all debug information of this builder.
+///
+/// `lang` is the LLVM-C `LLVMDWARFSourceLanguage` enumerator value and `kind`
+/// is the `DICompileUnit::DebugEmissionKind` value (LLVM-C forwards it with a
+/// `static_cast`, so `3` selects `DebugDirectivesOnly`).
+///
+/// - see `llvm::DIBuilder::createCompileUnit()`
+pub fn llvm_di_builder_create_compile_unit(
+  builder_ref : LLVMDIBuilderRef,
+  lang : Int,
+  file_ref : LLVMMetadataRef,
+  producer : String,
+  is_optimized : Bool,
+  flags : String,
+  runtime_version : UInt,
+  split_name : String,
+  kind : Int,
+  dwo_id : UInt,
+  split_debug_inlining : Bool,
+  debug_info_for_profiling : Bool,
+  sysroot : String,
+  sdk : String,
+) -> LLVMMetadataRef {
+  let producer = @utf8.encode(producer)
+  let flags = @utf8.encode(flags)
+  let split_name = @utf8.encode(split_name)
+  let sysroot = @utf8.encode(sysroot)
+  let sdk = @utf8.encode(sdk)
+  __llvm_di_builder_create_compile_unit(
+    builder_ref,
+    lang,
+    file_ref,
+    producer,
+    producer.length().to_uint64(),
+    to_llvm_bool(is_optimized),
+    flags,
+    flags.length().to_uint64(),
+    runtime_version,
+    split_name,
+    split_name.length().to_uint64(),
+    kind,
+    dwo_id,
+    to_llvm_bool(split_debug_inlining),
+    to_llvm_bool(debug_info_for_profiling),
+    sysroot,
+    sysroot.length().to_uint64(),
+    sdk,
+    sdk.length().to_uint64(),
+  )
+}
+
+///|
+#borrow(name)
+extern "C" fn __llvm_di_builder_create_basic_type(
+  builder_ref : LLVMDIBuilderRef,
+  name : Bytes,
+  name_len : UInt64,
+  size_in_bits : UInt64,
+  encoding : UInt,
+  flags : Int,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateBasicType"
+
+///|
+/// Create debugging information entry for a basic type.
+///
+/// `encoding` is a raw `DW_ATE_*` value and `flags` is an `LLVMDIFlags` mask.
+///
+/// - see `llvm::DIBuilder::createBasicType()`
+pub fn llvm_di_builder_create_basic_type(
+  builder_ref : LLVMDIBuilderRef,
+  name : String,
+  size_in_bits : UInt64,
+  encoding : UInt,
+  flags : Int,
+) -> LLVMMetadataRef {
+  let name = @utf8.encode(name)
+  __llvm_di_builder_create_basic_type(
+    builder_ref,
+    name,
+    name.length().to_uint64(),
+    size_in_bits,
+    encoding,
+    flags,
+  )
+}
+
+///|
+#borrow(parameter_types)
+extern "C" fn __llvm_di_builder_create_subroutine_type(
+  builder_ref : LLVMDIBuilderRef,
+  file_ref : LLVMMetadataRef,
+  parameter_types : FixedArray[LLVMMetadataRef],
+  num_parameter_types : UInt,
+  flags : Int,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateSubroutineType"
+
+///|
+/// Create subroutine type.
+///
+/// `parameter_types` follows the DWARF convention: element zero is the return
+/// type, and a null element denotes `void`. `flags` is an `LLVMDIFlags` mask.
+///
+/// - see `llvm::DIBuilder::createSubroutineType()`
+pub fn llvm_di_builder_create_subroutine_type(
+  builder_ref : LLVMDIBuilderRef,
+  file_ref : LLVMMetadataRef,
+  parameter_types : Array[LLVMMetadataRef],
+  flags : Int,
+) -> LLVMMetadataRef {
+  let count = parameter_types.length().reinterpret_as_uint()
+  let parameter_types = FixedArray::from_array(parameter_types)
+  __llvm_di_builder_create_subroutine_type(
+    builder_ref, file_ref, parameter_types, count, flags,
+  )
+}
+
+///|
+#borrow(name, linkage_name)
+extern "C" fn __llvm_di_builder_create_function(
+  builder_ref : LLVMDIBuilderRef,
+  scope : LLVMMetadataRef,
+  name : Bytes,
+  name_len : UInt64,
+  linkage_name : Bytes,
+  linkage_name_len : UInt64,
+  file_ref : LLVMMetadataRef,
+  line : UInt,
+  ty : LLVMMetadataRef,
+  is_local_to_unit : LLVMBool,
+  is_definition : LLVMBool,
+  scope_line : UInt,
+  flags : Int,
+  is_optimized : LLVMBool,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateFunction"
+
+///|
+/// Create a new descriptor for the specified subprogram.
+///
+/// `flags` is an `LLVMDIFlags` mask.
+///
+/// - see `llvm::DIBuilder::createFunction()`
+pub fn llvm_di_builder_create_function(
+  builder_ref : LLVMDIBuilderRef,
+  scope : LLVMMetadataRef,
+  name : String,
+  linkage_name : String,
+  file_ref : LLVMMetadataRef,
+  line : UInt,
+  ty : LLVMMetadataRef,
+  is_local_to_unit : Bool,
+  is_definition : Bool,
+  scope_line : UInt,
+  flags : Int,
+  is_optimized : Bool,
+) -> LLVMMetadataRef {
+  let name = @utf8.encode(name)
+  let linkage_name = @utf8.encode(linkage_name)
+  __llvm_di_builder_create_function(
+    builder_ref,
+    scope,
+    name,
+    name.length().to_uint64(),
+    linkage_name,
+    linkage_name.length().to_uint64(),
+    file_ref,
+    line,
+    ty,
+    to_llvm_bool(is_local_to_unit),
+    to_llvm_bool(is_definition),
+    scope_line,
+    flags,
+    to_llvm_bool(is_optimized),
+  )
+}
+
+///|
+/// Create a descriptor for a lexical block with the specified parent context.
+///
+/// - see `llvm::DIBuilder::createLexicalBlock()`
+pub extern "C" fn llvm_di_builder_create_lexical_block(
+  builder_ref : LLVMDIBuilderRef,
+  scope : LLVMMetadataRef,
+  file_ref : LLVMMetadataRef,
+  line : UInt,
+  column : UInt,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateLexicalBlock"
+
+///|
+/// Creates a new DebugLocation that describes a source location.
+///
+/// Pass a null `inlined_at` when the location was not inlined.
+///
+/// - see `llvm::DILocation::get()`
+pub extern "C" fn llvm_di_builder_create_debug_location(
+  context : LLVMContextRef,
+  line : UInt,
+  column : UInt,
+  scope : LLVMMetadataRef,
+  inlined_at : LLVMMetadataRef,
+) -> LLVMMetadataRef = "LLVMDIBuilderCreateDebugLocation"

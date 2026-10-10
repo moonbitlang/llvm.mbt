@@ -5145,3 +5145,88 @@ pub fn IRBuilder::createUnreachable(
     owner_module,
   )
 }
+
+// =======================================================
+// Debug locations
+// =======================================================
+
+///|
+/// Sets the debug location attached to instructions created afterwards.
+///
+/// Passing `None` clears it, like `clearCurrentDebugLocation`. Repositioning
+/// the builder does not change the current location.
+///
+/// **Errors:** Raises `MetadataContextMismatch` when `location` belongs to
+/// another context.
+///
+/// **Preconditions:** The location's scope must belong to the subprogram of
+/// the function receiving the instructions. Calls to functions that have a
+/// subprogram must carry a location when the caller has one; the verifier
+/// rejects such calls without a location.
+///
+/// **Side effects:** Changes the builder's state only; existing instructions
+/// keep their locations. Constant-folded results are not instructions and
+/// carry no location.
+///
+/// **LLVM API:** `LLVMSetCurrentDebugLocation2`.
+///
+/// **Examples:**
+///
+/// ```mbt check
+/// test {
+///   let ctx = @IR.Context::new()
+///   let mod = ctx.addModule("locs")
+///   let dib = @IR.DIBuilder::new(mod)
+///   let file = dib.createFile("main.runa", "/src")
+///   let sp = dib.createFunction(
+///     file,
+///     "f",
+///     "f",
+///     file,
+///     1,
+///     dib.createSubroutineType(file, []),
+///   )
+///   let builder = ctx.createBuilder()
+///   inspect(builder.getCurrentDebugLocation() is None, content="true")
+///   let loc = ctx.createDebugLocation(4, 2, sp)
+///   builder.setCurrentDebugLocation(Some(loc))
+///   inspect(builder.getCurrentDebugLocation() == Some(loc), content="true")
+///   builder.clearCurrentDebugLocation()
+///   inspect(builder.getCurrentDebugLocation() is None, content="true")
+/// }
+/// ```
+pub fn IRBuilder::setCurrentDebugLocation(
+  self : Self,
+  location : DILocation?,
+) -> Unit raise DebugInfoError {
+  let md = match location {
+    Some(location) => {
+      check_metadata_context(self.get_context(), location.value.context)
+      location.value.md
+    }
+    None => @raw.LLVMMetadataRef::null()
+  }
+  @raw.llvm_set_current_debug_location2(self.get_raw_ref(), md)
+}
+
+///|
+/// Returns the debug location attached to newly created instructions, if any.
+///
+/// **LLVM API:** `LLVMGetCurrentDebugLocation2`.
+pub fn IRBuilder::getCurrentDebugLocation(self : Self) -> DILocation? {
+  DILocation::from_nullable(
+    @raw.llvm_get_current_debug_location2(self.get_raw_ref()),
+    self.get_context(),
+  )
+}
+
+///|
+/// Clears the current debug location; later instructions get no location.
+///
+/// **LLVM API:** `LLVMSetCurrentDebugLocation2` with a null location.
+pub fn IRBuilder::clearCurrentDebugLocation(self : Self) -> Unit {
+  @raw.llvm_set_current_debug_location2(
+    self.get_raw_ref(),
+    @raw.LLVMMetadataRef::null(),
+  )
+}
