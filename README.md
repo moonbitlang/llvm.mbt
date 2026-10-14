@@ -9,7 +9,7 @@ MoonBit bindings for LLVM 22.1.0. The public API follows LLVM's C++ concepts
 and naming where practical, and currently supports building LLVM IR, emitting
 native object files, and running code with ORC LLJIT.
 
-Current release: **0.6.0** · MoonBit native backend · macOS ARM64 and Linux
+Current release: **0.6.1** · MoonBit native backend · macOS ARM64 and Linux
 x86_64
 
 ## Installation
@@ -127,6 +127,10 @@ Variables and composite types are not exposed yet, and neither are
 optimization passes (PassBuilder). Other LLVM APIs will be added as compiler
 projects require them.
 
+Version 0.6.1 extends `Module::getIntrinsicDeclaration` with 16 scalar
+floating-point intrinsics, including `fabs`, `sqrt`, rounding, min/max, and
+multiply-add operations. Existing integer overflow declarations are unchanged.
+
 ### 0.6.0 compatibility notes
 
 - `FnAttr` gained the `UWTable(UWTableKind)` constructor. Exhaustive `match`
@@ -155,7 +159,7 @@ llvm.mbt 是 LLVM 22.1.0 的 MoonBit binding。公开 API 在适合的地方沿�
 C++ 的概念和命名，目前支持构造 LLVM IR、生成 native object，以及通过 ORC
 LLJIT 运行生成的代码。
 
-当前版本：**0.6.0** · MoonBit native backend · macOS ARM64 和 Linux x86_64
+当前版本：**0.6.1** · MoonBit native backend · macOS ARM64 和 Linux x86_64
 
 ## 安装
 
@@ -262,6 +266,9 @@ llvm.mbt 在以下宿主平台支持 MoonBit native backend：
 并提供 module flag，以及符号化栈回溯所需的 `uwtable` 与字符串函数属性。变量与
 复合类型的调试信息、优化 pass（PassBuilder）目前还没有公开。其他 LLVM API 会
 根据实际编译器项目的需要逐步补充。
+
+0.6.1 扩展了 `Module::getIntrinsicDeclaration`，支持 16 个标量浮点 intrinsic，
+包括 `fabs`、`sqrt`、舍入、min/max 和乘加运算。原有整数溢出声明行为保持不变。
 
 ### 0.6.0 兼容性说明
 

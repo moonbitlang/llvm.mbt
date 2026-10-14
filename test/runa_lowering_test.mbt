@@ -361,7 +361,7 @@ test "intrinsic validation rejects unknown unsupported overload and collision" {
     e => e is @IR.IntrinsicError::UnknownName(_),
   )
   assert_builder_error(
-    () => mod.getIntrinsicDeclaration("llvm.sqrt", [ctx.getDoubleTy()]),
+    () => mod.getIntrinsicDeclaration("llvm.memcpy", [ctx.getDoubleTy()]),
     e => e is @IR.IntrinsicError::UnsupportedName(_),
   )
   let foreign = Context::new()
