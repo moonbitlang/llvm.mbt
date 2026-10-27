@@ -1370,6 +1370,158 @@ pub fn Context::getConstStruct(
 }
 
 ///|
+/// Returns a constant `getelementptr` that addresses a subobject of `ptr`.
+///
+/// Unlike `IRBuilder::createGEP`, this needs no builder or insertion point, so
+/// the result can be used in global initializers and constant aggregates.
+/// LLVM may fold the expression; for example, a GEP whose indices are all zero
+/// folds to `ptr` itself. Use `asConstantEnum` to classify the result instead
+/// of assuming a `ConstantExpr`.
+///
+/// **Parameters:**
+///
+/// - `ptr`: Base address, such as a global, a function, or another constant
+///   pointer expression. It must have a scalar pointer type.
+/// - `pointeeType`: Source element type used to interpret the first index. It
+///   must be sized and must not be a scalable vector.
+/// - `indices`: Scalar integer constants describing the path. The first index
+///   steps over whole `pointeeType` objects; each later index selects an array
+///   or vector element or a struct field. Struct field indices must be `i32`
+///   `ConstantInt` values below the field count, as LLVM's language reference
+///   requires.
+/// - `inbounds`: Adds LLVM's `inbounds` promise, printed as
+///   `getelementptr inbounds`.
+///
+/// **Returns:** The folded or unfolded constant address. It has the same
+/// pointer type as `ptr`.
+///
+/// **Errors:** Raises `ValueOwnerError::ContextMismatch` for a foreign type or
+/// operand, `ValueOwnerError::ModuleMismatch` when `ptr` and the indices
+/// depend on different modules, `InValidTypeError` when `ptr` is not a pointer,
+/// `pointeeType` is unsized or a scalable vector, an index is not a scalar
+/// integer, the path indexes into a non-aggregate type, or a struct field index
+/// is not an `i32` `ConstantInt`, and `IndexOutOfBounds` when a struct field
+/// index is not below the field count. Validation completes before LLVM is
+/// called.
+///
+/// **Notes:** Array and vector indices are not range checked. Violating an
+/// `inbounds` promise produces poison rather than an error.
+///
+/// **Lifecycle:** Retains this Context and the single Module referenced by
+/// `ptr` or an index, including nested constants. A result that references no
+/// global remains reusable across modules in this Context. Erasure or RAUW of
+/// referenced IR can invalidate the wrapper.
+///
+/// **LLVM API:** `LLVMConstGEP2` and `LLVMConstInBoundsGEP2`.
+///
+/// **See also:** `IRBuilder::createGEP` builds the instruction form.
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("const_gep")
+///   let bytes = ctx.getConstArray(ctx.getInt8Ty(), [
+///     ctx.getConstInt8(104),
+///     ctx.getConstInt8(105),
+///   ])
+///   let literal = ctx.getConstStruct([ctx.getConstInt64(2), bytes])
+///   let str = mod.addGlobalConstant(literal.getType(), "str", literal)
+///   let zero = ctx.getConstInt32(0)
+///   let data = ctx.getConstGEP(
+///     str,
+///     literal.getType(),
+///     [zero, ctx.getConstInt32(1)],
+///     inbounds=true,
+///   )
+///   inspect(
+///     data,
+///     content="ptr getelementptr inbounds ({ i64, [2 x i8] }, ptr @str, i32 0, i32 1)",
+///   )
+///   let location = ctx.getConstStruct([data, ctx.getConstInt32(7)])
+///   mod.addGlobalConstant(location.getType(), "loc", location) |> ignore
+///   mod.verify()
+/// }
+/// ```
+pub fn Context::getConstGEP(
+  self : Self,
+  ptr : &Constant,
+  pointeeType : &Type,
+  indices : Array[&Constant],
+  inbounds? : Bool = false,
+) -> &Constant raise {
+  check_type_context(self, pointeeType)
+  let operands : Array[&Value] = [ptr]
+  for index in indices {
+    operands.push(index)
+  }
+  let owner_module = merge_value_owners(self, None, operands)
+  guard (ptr : &Value).getType().asTypeEnum() is PointerType(_) else {
+    raise InValidTypeError("Constant GEP base must have a pointer type")
+  }
+  guard pointeeType.isSized() &&
+    !(pointeeType.asTypeEnum() is ScalableVectorType(_)) else {
+    raise InValidTypeError(
+      "Constant GEP source element type must be sized and not scalable",
+    )
+  }
+  for index in indices {
+    guard (index : &Value).getType().tryAsIntType() is Some(_) else {
+      raise InValidTypeError("Constant GEP indices must be scalar integers")
+    }
+  }
+  check_const_gep_path(pointeeType, indices)
+  let pointee_ref = pointeeType.get_raw_type_ref()
+  let ptr_ref = (ptr : &Value).get_raw_value_ref()
+  let index_refs = indices.map(v => (v : &Value).get_raw_value_ref())
+  let value_ref = if inbounds {
+    @raw.llvm_const_in_bounds_gep2(pointee_ref, ptr_ref, index_refs)
+  } else {
+    @raw.llvm_const_gep2(pointee_ref, ptr_ref, index_refs)
+  }
+  guard wrap_constant(value_ref, self, owner_module).tryAsConstant()
+    is Some(constant) else {
+    raise ValueTypeError("Constant GEP folded to a non-constant value")
+  }
+  constant
+}
+
+///|
+// Mirrors GetElementPtrInst::getIndexedType so that invalid paths are rejected
+// before LLVM's constant folder sees them. The first index only scales the
+// source element type, so the walk starts at the second index.
+fn check_const_gep_path(source : &Type, indices : Array[&Constant]) -> Unit raise {
+  for position = 1, current = source; position < indices.length(); {
+    let index = indices[position]
+    match current.asTypeEnum() {
+      StructType(struct_ty) => {
+        guard index.asConstantEnum() is ConstantInt(field) &&
+          (index : &Value).getType().asTypeEnum() is Int32Type(_) else {
+          raise InValidTypeError(
+            "Constant GEP struct field indices must be i32 ConstantInt values",
+          )
+        }
+        let field_index = field.getValueAsUInt64()
+        guard field_index < struct_ty.numOfElements().to_uint64() else {
+          raise IndexOutOfBounds(
+            "Constant GEP struct field index \{field_index} is out of range for \{struct_ty}",
+          )
+        }
+        guard struct_ty.getElementType(field_index.to_int()) is Some(next) else {
+          raise InValidTypeError("Constant GEP struct field type is unsupported")
+        }
+        continue position + 1, next
+      }
+      ArrayType(array_ty) => continue position + 1, array_ty.getElementType()
+      VectorType(vector_ty) => continue position + 1, vector_ty.getElementType()
+      _ =>
+        raise InValidTypeError(
+          "Constant GEP cannot index into non-aggregate type \{current}",
+        )
+    }
+  }
+}
+
+///|
 /// Returns the LLVM `undef` constant for `ty`.
 ///
 /// Each use of `undef` may independently observe an arbitrary value of `ty`;

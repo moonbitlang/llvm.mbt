@@ -43,6 +43,9 @@ const ARTIFACTS = Object.freeze({
       '929ce44df61216c25af969aea1a1714c1f17250277253da012afe126ef2c9b79',
     includeDirectory: 'include',
     systemLinkFlags: Object.freeze(['-lm', '-lc++']),
+    // macOS 的 libm 只是 libSystem 的重导出，cc 总会链接 libSystem，moon 也
+    // 已经自带 `-lm`；再传一次只会让 ld64 警告重复的库。manifest 仍记录完整列表。
+    omittedLinkFlags: Object.freeze(['-lm']),
     url:
       'https://github.com/moonbitlang/llvm.mbt/releases/download/' +
       'llvm-22.1.0/llvm-22.1.0-r1-macos-arm64.tar.xz',
@@ -73,6 +76,9 @@ const ARTIFACTS = Object.freeze({
       '-lstdc++',
       '-pthread',
     ]),
+    // GNU ld 解析静态库与 `--as-needed` 时依赖参数顺序，而 moon 的 `-lm` 位于
+    // libLLVM-mbt.a 之前；去掉这里的 `-lm` 未在 Linux 上验证，因此全部保留。
+    omittedLinkFlags: Object.freeze([]),
     url:
       'https://github.com/moonbitlang/llvm.mbt/releases/download/' +
       'llvm-22.1.0/llvm-22.1.0-r1-linux-x86_64.tar.xz',
@@ -724,7 +730,9 @@ function makeBuildOutput(validated, artifact) {
 
   const linkFlags = [
     shellQuote(validated.staticLibrary),
-    ...artifact.systemLinkFlags,
+    ...artifact.systemLinkFlags.filter(
+      (flag) => !artifact.omittedLinkFlags.includes(flag),
+    ),
   ].join(' ');
 
   return {

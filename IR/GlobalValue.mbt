@@ -145,6 +145,122 @@ pub fn GlobalConstant::setInitializer(
 }
 
 ///|
+// LLVM stores alignment as a power-of-two exponent; LLVMSetAlignment(0) clears
+// the explicit alignment. Reject other values before they reach MaybeAlign.
+fn check_global_alignment(align : Int) -> UInt raise BuilderError {
+  guard align >= 0 && (align & (align - 1)) == 0 else {
+    raise InValidArgument(
+      "Global alignment must be zero or a power of two, got \{align}",
+    )
+  }
+  align.reinterpret_as_uint()
+}
+
+///|
+/// Sets the explicit alignment of this global's storage in bytes.
+///
+/// The alignment is printed as `, align N` on the global and is honored by
+/// object emission. Passing `0` removes the explicit alignment, so LLVM falls
+/// back to the target's preferred alignment for the storage type.
+///
+/// **Parameters:**
+///
+/// - `align`: Zero, or a power of two in bytes.
+///
+/// **Errors:** Raises `BuilderError::InValidArgument` when `align` is negative
+/// or a non-zero value that is not a power of two. The global is unchanged on
+/// error.
+///
+/// **Side effects:** Updates this global's definition or declaration.
+///
+/// **LLVM API:** `LLVMSetAlignment`.
+///
+/// **See also:** `GlobalConstant::setAlignment` and `getAlignment`.
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("aligned")
+///   let counter = mod.addGlobalVariable(
+///     ctx.getInt64Ty(),
+///     "counter",
+///     initializer=ctx.getConstInt64(0),
+///   )
+///   counter.setAlignment(16)
+///   inspect(counter.getAlignment(), content="16")
+///   inspect(counter, content="@counter = global i64 0, align 16")
+///   mod.verify()
+/// }
+/// ```
+pub fn GlobalVariable::setAlignment(
+  self : Self,
+  align : Int,
+) -> Unit raise BuilderError {
+  let bytes = check_global_alignment(align)
+  @raw.llvm_set_alignment(self.get_raw_value_ref(), bytes)
+}
+
+///|
+/// Returns the explicit alignment of this global's storage in bytes.
+///
+/// **Returns:** `0` when no explicit alignment is set.
+///
+/// **LLVM API:** `LLVMGetAlignment`.
+pub fn GlobalVariable::getAlignment(self : Self) -> Int {
+  @raw.llvm_get_alignment(self.get_raw_value_ref()).reinterpret_as_int()
+}
+
+///|
+/// Sets the explicit alignment of this constant global's storage in bytes.
+///
+/// Passing `0` removes the explicit alignment. The behavior matches
+/// `GlobalVariable::setAlignment`.
+///
+/// **Parameters:**
+///
+/// - `align`: Zero, or a power of two in bytes.
+///
+/// **Errors:** Raises `BuilderError::InValidArgument` when `align` is negative
+/// or a non-zero value that is not a power of two. The global is unchanged on
+/// error.
+///
+/// **Side effects:** Updates this global's definition or declaration.
+///
+/// **LLVM API:** `LLVMSetAlignment`.
+///
+/// ```mbt check
+/// test {
+///   let ctx = Context::new()
+///   let mod = ctx.addModule("aligned")
+///   let answer = mod.addGlobalConstant(
+///     ctx.getInt32Ty(),
+///     "answer",
+///     ctx.getConstInt32(42),
+///   )
+///   answer.setAlignment(8)
+///   inspect(answer.getAlignment(), content="8")
+///   inspect(answer, content="@answer = constant i32 42, align 8")
+/// }
+/// ```
+pub fn GlobalConstant::setAlignment(
+  self : Self,
+  align : Int,
+) -> Unit raise BuilderError {
+  let bytes = check_global_alignment(align)
+  @raw.llvm_set_alignment(self.get_raw_value_ref(), bytes)
+}
+
+///|
+/// Returns the explicit alignment of this constant global's storage in bytes.
+///
+/// **Returns:** `0` when no explicit alignment is set.
+///
+/// **LLVM API:** `LLVMGetAlignment`.
+pub fn GlobalConstant::getAlignment(self : Self) -> Int {
+  @raw.llvm_get_alignment(self.get_raw_value_ref()).reinterpret_as_int()
+}
+
+///|
 /// LLVM linkage controlling symbol visibility and linker resolution.
 ///
 /// Some cases are target-specific or retained only for LLVM-C compatibility.

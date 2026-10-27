@@ -493,7 +493,8 @@ pub impl Show for PoisonValue with fn output(self, logger) {
 ///|
 /// LLVM constant expression constant retaining its context and any module dependency.
 ///
-/// **Construction:** Use `Type::sizeOf or a constant-folding IRBuilder operation`.
+/// **Construction:** Use `Context::getConstGEP`, `Type::sizeOf`, or a
+/// constant-folding IRBuilder operation.
 ///
 /// **Lifecycle:** Pure constants retain only their Context. A value containing
 /// global addresses also retains the one Module those addresses belong to,
